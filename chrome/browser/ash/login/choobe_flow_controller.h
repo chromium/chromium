@@ -34,7 +34,8 @@ class ChoobeFlowController {
   static bool ShouldStartChoobe();
 
   // Whether CHOOBE flow was interrupted by a shutdown and should be resumed.
-  // The check is based on whether `kChoobeSelectedScreens` pref is stored.
+  // The check is based on whether `kChoobeSelectedScreens` or
+  // `kChoobeCompletedScreens` prefs are stored.
   static bool ShouldResumeChoobe(const PrefService& prefs);
 
   // Resume CHOOBE flow by loading stored prefs.
@@ -44,6 +45,9 @@ class ChoobeFlowController {
   // Returns `true` if CHOOBE has started and the user has selected the screen
   // from CHOOBE screen.
   bool ShouldScreenBeSkipped(OobeScreenId screen_id);
+
+  // Should be called once CHOOBE flow is completed.
+  void OnChoobeFlowExit();
 
   // Returns summaries of screens that the user is eligible to go through.
   // Used to fill CHOOBE screen tiles. The order of screens tiles should match
@@ -73,6 +77,11 @@ class ChoobeFlowController {
   base::flat_set<OobeScreenId> eligible_screens_ids_;
   base::flat_set<OobeScreenId> selected_screens_ids_;
   base::flat_set<OobeScreenId> completed_screens_ids_;
+
+  // CHOOBE Flow starts being active once `EnsureEligibleScreensPopulated()` is
+  // called and returns to the inactive state when `OnChoobeFlowExit()` is
+  // called.
+  bool is_choobe_active_ = false;
 };
 
 }  // namespace ash

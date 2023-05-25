@@ -266,7 +266,9 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     MultiDeviceSetupScreenView::kScreenId,
     ConsolidatedConsentScreenView::kScreenId,
     ThemeSelectionScreenView::kScreenId,
-};
+    ChoobeScreenView::kScreenId,
+    DisplaySizeScreenView::kScreenId,
+    TouchpadScrollScreenView::kScreenId};
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     EnableAdbSideloadingScreenView::kScreenId,
@@ -1545,6 +1547,7 @@ void WizardController::OnChoobeScreenExit(ChoobeScreen::Result result) {
       ShowTouchpadScrollScreen();
       break;
     case ChoobeScreen::Result::SKIPPED:
+      choobe_flow_controller_->OnChoobeFlowExit();
       choobe_flow_controller_.reset();
       ShowMarketingOptInScreen();
       break;
@@ -2450,6 +2453,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowGaiaInfoScreen();
   } else if (screen_id == DrivePinningScreenView::kScreenId) {
     ShowDrivePinningScreen();
+  } else if (screen_id == DisplaySizeScreenView::kScreenId) {
+    ShowDisplaySizeScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||
