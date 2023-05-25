@@ -95,6 +95,15 @@ export class NetworkProcessor {
       }
     );
 
+    cdpClient.on(
+      'Network.requestServedFromCache',
+      (params: Protocol.Network.RequestServedFromCacheEvent) => {
+        networkProcessor
+          .#getOrCreateNetworkRequest(params.requestId)
+          .onServedFromCache();
+      }
+    );
+
     await cdpClient.sendCommand('Network.enable');
 
     return networkProcessor;
