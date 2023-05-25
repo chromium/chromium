@@ -101,7 +101,7 @@ AudioBus::AudioBus(int channels)
     : channel_data_(channels), frames_(0), is_wrapper_(true) {
   CHECK_GT(channels, 0);
   for (size_t i = 0; i < channel_data_.size(); ++i)
-    channel_data_[i] = NULL;
+    channel_data_[i] = nullptr;
 }
 
 AudioBus::~AudioBus() {
