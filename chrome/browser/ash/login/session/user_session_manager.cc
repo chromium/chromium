@@ -15,6 +15,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -520,6 +521,42 @@ void RecordKnownUser(const AccountId& account_id) {
   known_user.SaveKnownUser(account_id);
 }
 
+// Returns true if current browser instance was restarted in-session.
+// I.e. restart after crash, restart to apply flags, etc.
+bool IsAfterInSessionRestart() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kLoginUser);
+}
+
+void MaybeSaveSessionStartedTimeBeforeRestart(Profile* profile) {
+  // Ignore if the browser restarted after crash.
+  if (IsAfterInSessionRestart()) {
+    return;
+  }
+
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  prefs->ClearPref(ash::prefs::kAshLoginSessionStartedTime);
+  prefs->ClearPref(ash::prefs::kAshLoginSessionStartedIsFirstSession);
+
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(profile);
+
+  if (user_manager->GetPrimaryUser() != user) {
+    return;
+  }
+
+  // Record session started time before trying to restart.
+  prefs->SetTime(ash::prefs::kAshLoginSessionStartedTime, base::Time::Now());
+  if (user_manager->IsCurrentUserNew()) {
+    prefs->SetBoolean(ash::prefs::kAshLoginSessionStartedIsFirstSession, true);
+  }
+}
+
 }  // namespace
 
 UserSessionManagerDelegate::~UserSessionManagerDelegate() {}
@@ -966,6 +1003,8 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   if (!ProfileHelper::IsUserProfile(profile)) {
     return false;
   }
+
+  MaybeSaveSessionStartedTimeBeforeRestart(profile);
 
   // Kiosk sessions keeps the startup flags.
   if (user_manager::UserManager::Get() &&

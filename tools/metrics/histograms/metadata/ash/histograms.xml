@@ -3797,6 +3797,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Login.TotalFirstSessionDuration" units="minutes"
+    expires_after="2024-05-12">
+  <owner>raging@google.com</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Total user first session time between when the user was added to the device
+    and session exit or device shutdown. Reported for primary users only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.TotalSessionDuration" units="minutes"
+    expires_after="2024-05-12">
+  <owner>raging@google.com</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Total user session time between sign-in and session exit or device shutdown.
+    Reported for primary users only. First sessions are excluded and reported in
+    a separate histogram: Ash.Login.TotalFirstSessionDuration.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Ash.LoginAnimation.Duration" units="ms"
     expires_after="2023-10-08">
   <owner>oshima@chromium.org</owner>

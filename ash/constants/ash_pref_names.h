@@ -723,6 +723,12 @@ extern const char kKeyEventRemappedToSixPackPageUp[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kKeyEventRemappedToSixPackPageDown[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshLoginSessionStartedTime[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAshLoginSessionStartedIsFirstSession[];
 }  // namespace prefs
 }  // namespace ash
 

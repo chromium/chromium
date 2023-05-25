@@ -1530,6 +1530,14 @@ const char kKeyEventRemappedToSixPackPageUp[] =
 const char kKeyEventRemappedToSixPackPageDown[] =
     "ash.settings.key_event_remapped_to_six_pack_page_down";
 
+// This pref saves the absolute session start time for UMA.
+const char kAshLoginSessionStartedTime[] = "ash.Login.SessionStarted.Time";
+
+// This pref saves the "first user session after user was added to the device"
+// flag for UMA.
+const char kAshLoginSessionStartedIsFirstSession[] =
+    "ash.Login.SessionStarted.IsFirstSession";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
