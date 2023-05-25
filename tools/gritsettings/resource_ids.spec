@@ -275,7 +275,7 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3180],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ntp4/apps_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ntp4/resources.grd": {
     "META": {"sizes": {"includes": [40]}},
     "includes": [3200],
   },

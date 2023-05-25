@@ -452,7 +452,7 @@ template("chrome_extra_paks") {
       ]
       deps += [
         "//chrome/browser/resources/app_home:resources",
-        "//chrome/browser/resources/ntp4:apps_resources",
+        "//chrome/browser/resources/ntp4:resources",
       ]
     }
 

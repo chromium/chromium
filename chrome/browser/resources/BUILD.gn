@@ -98,7 +98,7 @@ group("resources") {
     public_deps += [
       "app_home:resources",
       "app_settings:resources",
-      "ntp4:apps_resources",
+      "ntp4:resources",
     ]
   }
 

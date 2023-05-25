@@ -2,38 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_fuchsia || is_linux || is_mac || is_win)
-
-grit("apps_resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/apps_resources.grd"
-  deps = [ ":build_apps_grd" ]
-
-  outputs = [
-    "grit/apps_resources.h",
-    "grit/apps_resources_map.cc",
-    "grit/apps_resources_map.h",
-    "apps_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
 
 # Note: There are no plans to migrate this page to TypeScript, as it is a fairly
 # old page with an undecided future, and would be a lot of work. Passing JS file
 # through TS compiler to get some basic static checks (mostly validating syntax
-# but not types).
-ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  in_files = [
+# but not types) and using build_webui() to leverage other benefits, like
+# automatic minification.
+
+build_webui("build") {
+  grd_prefix = "apps"
+
+  static_files = [
+    "apps_page.css",
+    "images/error_yellow900.svg",
+    "images/trash.png",
+    "nav_dot.css",
+    "new_tab.css",
+    "new_tab.html",
+    "tile_page.css",
+    "trash.css",
+  ]
+
+  non_web_component_files = [
     "app_info.js",
     "apps_page.js",
     "card_slider.js",
@@ -55,29 +48,10 @@ ts_library("build_ts") {
     "ui.js",
     "util.js",
   ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-}
-
-generate_grd("build_apps_grd") {
-  grd_prefix = "apps"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "apps_page.css",
-    "images/error_yellow900.svg",
-    "images/trash.png",
-    "nav_dot.css",
-    "new_tab.css",
-    "new_tab.html",
-    "tile_page.css",
-    "trash.css",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
