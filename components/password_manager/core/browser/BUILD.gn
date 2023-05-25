@@ -362,6 +362,7 @@ static_library("browser") {
       "built_in_backend_to_android_backend_migrator.h",
       "password_manager_eviction_util.cc",
       "password_manager_eviction_util.h",
+      "password_store_android_backend_api_error_codes.h",
       "password_store_backend_migration_decorator.cc",
       "password_store_backend_migration_decorator.h",
       "password_store_proxy_backend.cc",

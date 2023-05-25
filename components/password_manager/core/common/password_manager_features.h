@@ -142,21 +142,6 @@ inline constexpr base::FeatureParam<bool>
 
 #if BUILDFLAG(IS_ANDROID)
 
-// Current list of the GMS Core API error codes that should be ignored and not
-// result in user eviction.
-// Errors to ignore: AUTH_ERROR_RESOLVABLE, AUTH_ERROR_UNRESOLVABLE
-inline constexpr base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", "11005,11006"};
-
-// Current list of the GMS Core API error codes considered retriable.
-// User could still be evicted if retries do not resolve the error.
-// Retriable errors: NETWORK_ERROR, API_NOT_CONNECTED,
-// CONNECTION_SUSPENDED_DURING_CALL, RECONNECTION_TIMED_OUT,
-// BACKEND_GENERIC
-inline constexpr base::FeatureParam<std::string> kRetriableGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "retriable_api_errors",
-    "7,17,20,22,11009"};
-
 inline constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
