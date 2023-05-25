@@ -192,14 +192,6 @@ Combobox::~Combobox() {
   }
 }
 
-void Combobox::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void Combobox::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 const gfx::FontList& Combobox::GetFontList() const {
   return font_list_;
 }
@@ -700,11 +692,6 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
   }
   menu_runner_->RunMenuAt(GetWidget(), nullptr, bounds,
                           MenuAnchorPosition::kTopLeft, source_type);
-
-  for (auto& observer : observers_) {
-    observer.OnActivateMenu();
-  }
-
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 }
 
