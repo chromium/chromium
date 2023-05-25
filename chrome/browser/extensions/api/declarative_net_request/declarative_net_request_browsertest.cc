@@ -554,6 +554,27 @@ class DeclarativeNetRequestBrowserTest
     navigation_observer.Wait();
   }
 
+  // Removes frame with name `frame_name` from the DOM, changes its src to
+  // `url`, and then adds it back to the DOM to trigger the navigation.
+  void RemoveNavigateAndReAddFrame(const std::string& frame_name,
+                                   const GURL& url) {
+    content::TestNavigationObserver navigation_observer(
+        web_contents(), 1 /*number_of_navigations*/);
+
+    ASSERT_TRUE(content::ExecJs(GetPrimaryMainFrame(),
+                                content::JsReplace(R"(
+          {
+            const frame = document.getElementsByName($1)[0];
+            const parentElement = frame.parentElement;
+
+            frame.remove();
+            frame.src = $2;
+            parentElement.appendChild(frame);
+          })",
+                                                   frame_name, url)));
+    navigation_observer.Wait();
+  }
+
   // Calls getMatchedRules for |extension_id| and optionally, the |tab_id| and
   // returns comma separated pairs of rule_id and tab_id, with each pair
   // delimited by '|'. Matched Rules are sorted in ascending order by ruleId,
@@ -2471,6 +2492,28 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
     SCOPED_TRACE("Extension loaded src swapped");
     test_frame_collapse(kFrameName1, false);
     test_frame_collapse(kFrameName2, true);
+  }
+
+  // Remove the frames from the DOM, swap the "src" of the frames,
+  // then add them back to the DOM. `kFrameName1` should be blocked
+  // and therefore collapsed.
+  RemoveNavigateAndReAddFrame(kFrameName1, frame_url_1);
+  RemoveNavigateAndReAddFrame(kFrameName2, frame_url_2);
+  {
+    SCOPED_TRACE("Removed src-swapped and readded to DOM");
+    test_frame_collapse(kFrameName1, true);
+    test_frame_collapse(kFrameName2, false);
+  }
+
+  // Remove the frames from the DOM again, but this time add them back
+  // without changing their "src". `kFrameName1` should still be
+  // collapsed.
+  RemoveNavigateAndReAddFrame(kFrameName1, frame_url_1);
+  RemoveNavigateAndReAddFrame(kFrameName2, frame_url_2);
+  {
+    SCOPED_TRACE("Removed and readded to DOM");
+    test_frame_collapse(kFrameName1, true);
+    test_frame_collapse(kFrameName2, false);
   }
 }
 

@@ -360,6 +360,10 @@ void HTMLFrameOwnerElement::DisconnectContentFrame() {
   // Check if removing the subframe caused |parent_doc| to finish loading.
   if (have_to_check_if_parent_is_completed)
     parent_doc.CheckCompleted();
+
+  // Reset the collapsed state. The frame element will be collapsed again if it
+  // is blocked again in the future.
+  SetCollapsed(false);
 }
 
 HTMLFrameOwnerElement::~HTMLFrameOwnerElement() {
