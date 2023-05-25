@@ -2862,8 +2862,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-
 
 # Custom-elements
 crbug.com/1351482 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
-crbug.com/1365604 [ Mac ] external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Crash Pass Timeout ]
-crbug.com/1365604 [ Win ] external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Pass Timeout ]
+crbug.com/1365604 external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Pass Timeout ]
 
 # unblock roll wpt
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
