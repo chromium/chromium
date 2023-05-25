@@ -226,12 +226,15 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   AddNewTab(kMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(2, tab_strip_model->GetTabCount());
 
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectNextTab();
+  web_contents->WasHidden();
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_FALSE(view->GetVisible());
 
@@ -239,9 +242,11 @@ TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
   EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectPreviousTab();
+  web_contents->WasShown();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 
   tab_strip_model->SelectNextTab();
+  web_contents->WasHidden();
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 

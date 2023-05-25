@@ -64,12 +64,9 @@ HighEfficiencyChipView::HighEfficiencyChipView(
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
   SetProperty(views::kElementIdentifierKey, kHighEfficiencyChipElementId);
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
-HighEfficiencyChipView::~HighEfficiencyChipView() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-}
+HighEfficiencyChipView::~HighEfficiencyChipView() = default;
 
 void HighEfficiencyChipView::OnBubbleShown() {
   PauseAnimation();
@@ -78,22 +75,6 @@ void HighEfficiencyChipView::OnBubbleShown() {
 void HighEfficiencyChipView::OnBubbleHidden() {
   UnpauseAnimation();
   bubble_ = nullptr;
-}
-
-void HighEfficiencyChipView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  content::WebContents* const web_contents = selection.old_contents;
-  if (!web_contents) {
-    return;
-  }
-
-  if (selection.active_tab_changed()) {
-    HighEfficiencyChipTabHelper* const tab_helper =
-        HighEfficiencyChipTabHelper::FromWebContents(web_contents);
-    tab_helper->SetChipHasBeenHidden();
-  }
 }
 
 void HighEfficiencyChipView::UpdateImpl() {
