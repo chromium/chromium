@@ -750,6 +750,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o conteúdo destacado.</translation>
 <translation id="5965679971710331625">Você está conectado</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 favorito excluído}one{{count} favorito excluído}other{{count} favoritos excluídos}}</translation>
 <translation id="5979837087407522202">Pesquisar senhas</translation>
 <translation id="5981230843984570095">Fechar todas as guias inativas</translation>
 <translation id="5982717868370722439">Adicionar os dados disponíveis à conta <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +998,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7438481509621345350">Agora, você verá stories de <ph name="CHANNEL_NAME" /> quando abrir uma nova guia.</translation>
 <translation id="7446583256109515732">Guia liberada</translation>
+<translation id="7451023311965289370">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7454057999980797137">Estado/Prov.</translation>
 <translation id="7459628154744868585">A proteção reforçada está ativa</translation>
 <translation id="746684838091935575">3. Selecione o Chrome</translation>

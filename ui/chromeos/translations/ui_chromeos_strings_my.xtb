@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google ဆိုက်</translation>
 <translation id="1853795129690976061">ဤဖိုင်တွဲကို Linux အား မျှဝေထားသည်</translation>
 <translation id="1864756863218646478">ဖိုင်ကို မတွေ့နိုင်ပါ။</translation>
+<translation id="1877377730633446520">၎င်းက <ph name="REQUIRED_SPACE" /> ခန့် သုံးပါမည်။ သင့်တွင် လက်ရှိ <ph name="FREE_SPACE" /> ရနိုင်သည်။</translation>
 <translation id="1884013283844450420">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ ချိတ်ဆက်ရန်</translation>
 <translation id="1920670151694390848">မလေယာလမ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1920798810075583923">ဖရဲသီး</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ဖိုင်တုံ့ပြန်မှု အကန့်များ ချဲ့ပြရန်</translation>
 <translation id="1995337122023280937">ဖိုင်တည်နေရာသို့ သွားရန်</translation>
 <translation id="2001796770603320721">Drive တွင် စီမံပါ</translation>
+<translation id="2004942826429452291">ဖိုင်များကို Cloud နှင့် ဤ Chromebook တွင် သိမ်းပါမည်။</translation>
 <translation id="2009067268969781306">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းသည် ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="2025955442973426285">တီဂရင်းညာ</translation>
 <translation id="2037845485764049925">ရုရှား</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">စက်ပစ္စည်းဆက်တင်များ</translation>
 <translation id="2084809735218147718">ကျေးဇူးတင်ကြောင်း လက်မှတ်ထိုးနေသူ</translation>
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
+<translation id="2089751716171649322">သင်အော့ဖ်လိုင်းဖြစ်နေစဉ် Google Drive ဖိုင်များကို လွယ်ကူစွာ သုံးနိုင်သည်</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ရုပ်ဖျက်မုဒ်တွင် ခွင့်ပြုရန်<ph name="END_BOLD" /> ဖွင့်ပါ</translation>
 <translation id="2114191879048183086">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
+<translation id="3501954296166022751">သင့် Google Drive ဖိုင်များကို အော့ဖ်လိုင်း သုံးနိုင်သည်</translation>
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3511705761158917664">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို စင့်ခ်လုပ်ရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5500122897333236901">အိုက်စ်လန်</translation>
 <translation id="5508696409934741614">အစက်များ</translation>
+<translation id="5519161320735100193">Google Drive ဆက်တင်များ</translation>
 <translation id="5522908512596376669">ဖိုင်စာရင်းကို စာရင်းမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="5524517123096967210">ဖိုင်ကို ဖတ်ရန် အဖြစ် မပြုလုပ်နိုင်ပါ။</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ပုံ</translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7806708061868529807">ဟီဘရူး</translation>
 <translation id="78104721049218340">Kedmanee ကီးဘုတ်ဖြင့် ထိုင်း</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ကွန်ရက်စီစဉ်သတ်မှတ်ရာတွင် အမှားအယွင်းရှိပါသည်</translation>
 <translation id="7839804798877833423">ဒီဖိုင်များကို ရယူခြင်းက မိုဘိုင်း ဒေတာ၏ <ph name="FILE_SIZE" />ခန့်ကို အသုံးပြုမည်။</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">ကသကန</translation>
 <translation id="7908793776359722643">အကန့်ခွဲတစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်တွင်သိမ်းထားသော ဒေတာအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">အင်တာနက်ချိတ်ဆက်မှု မရှိဘဲ သုံးနိုင်ရန် ‘ကျွန်ုပ်၏ Drive’ ရှိ သင့်ဖိုင်များကို Chromebook သို့ အလိုအလျောက် စင့်ခ်လုပ်ပါမည်။</translation>
 <translation id="7925247922861151263">AAA စစ်ဆေးခြင်း မအောင်မြင်ပါ</translation>
 <translation id="7925686952655276919">စင့်ခ်လုပ်ရန် အတွက် မိုဘိုင်းဒေတာကို မသုံးပါနှင့်</translation>
 <translation id="7928710562641958568">ကိရိယာကို ထုတ်ပစ်ရန်</translation>
+<translation id="7933875256234974853">Drive ဖိုင်များကို စင့်ခ်လုပ်ရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မသိသောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="7969525169268594403">ဆလိုဗင်နီးယား</translation>
 <translation id="7972920761225148017">ပြင်သစ် (ဆွစ်ဇာလန်)</translation>
 <translation id="7973962044839454485">PPP အထောက်အထား စိစစ်မှုမှာ မမှန်သည့် အသုံးပြုသူအမည် သို့မဟုတ် စကားဝှက်ကြောင့် မအောင်မြင်ခဲ့</translation>
 <translation id="7980421588063892270">Colemak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
+<translation id="7985008041109611710">ဖိုင် <ph name="NUMBER_OF_FILES_SYNCING" /> ဖိုင် စင့်ခ်လုပ်နေသည်</translation>
 <translation id="8000066093800657092">ကွန်ရက် မရှိပါ</translation>
 <translation id="8008366997883261463">ဂျက် ရစဲလ် တယ်ရီယာ</translation>
 <translation id="8028993641010258682">ဆိုက်</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="9219908252191632183">လ</translation>
+<translation id="937795003075802289">ဖိုင် ၁ ဖိုင် စင့်ခ်လုပ်နေသည်</translation>
 <translation id="938470336146445890">​​ကျေးဇူးပြုပြီး အသုံးပြုသူ လက်မှတ်ကို တပ်ဆင်ပါ။</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>

@@ -755,6 +755,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="595769230373966252">Søk med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Kan ikke opprette noen link til den markerte teksten.</translation>
 <translation id="5965679971710331625">Du er pålogget</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 bokmerke er slettet}other{{count} bokmerker er slettet}}</translation>
 <translation id="5979837087407522202">Søk etter passord</translation>
 <translation id="5981230843984570095">Lukk alle inaktive</translation>
 <translation id="5982717868370722439">Legg til eksisterende data i <ph name="USER_EMAIL" />.</translation>
@@ -1002,6 +1003,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7435356471928173109">Slått av av administratoren din</translation>
 <translation id="7438481509621345350">Nå ser du artikler fra <ph name="CHANNEL_NAME" /> når du åpner nye faner.</translation>
 <translation id="7446583256109515732">Fanen er løsnet</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bokmerket er lagret i «{title}»}other{Bokmerkene er lagret i «{title}»}}</translation>
 <translation id="7454057999980797137">Fylke/kommune</translation>
 <translation id="7459628154744868585">Økt beskyttelse er på</translation>
 <translation id="746684838091935575">3. Velg Chrome.</translation>

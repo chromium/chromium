@@ -2585,6 +2585,7 @@ Nếu không cài đặt một tiện ích được chỉ định trong chính s
 <translation id="3339271789059866414">Định cấu hình tình trạng có sẵn của dịch vụ Proxy hệ thống và thông tin xác thực proxy đối với các dịch vụ hệ thống.
       Nếu bạn không đặt chính sách này, thì dịch vụ Proxy hệ thống sẽ không dùng được.</translation>
 <translation id="334231891933432876">Đăng xuất người dùng ngay khi tài khoản của họ không còn được xác thực</translation>
+<translation id="3345323903592385588">Thứ tự hiển thị cấu hình máy ảo trong trình cài đặt. Khi bạn chỉ định nhiều cấu hình máy ảo thì cấu hình có giá trị display_order nhỏ nhất sẽ hiển thị ở đầu danh sách. Giá trị mặc định là 0.</translation>
 <translation id="3348799281602260763">Nếu bạn bật chính sách này, các kết nối ngang hàng WebRTC có thể hạ cấp xuống phiên bản 
       lỗi thời của các giao thức TLS/DTLS (DTLS 1.0, TLS 1.0 và TLS 1.1).
       Khi bạn tắt hoặc không đặt chính sách này, các phiên bản TLS/DTLS này sẽ
@@ -3363,6 +3364,11 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="4052529125939620019">Tải tiện ích thành phần CryptoToken khi khởi động</translation>
 <translation id="4053157306171963473">Tắt tính năng báo cáo thời gian hoạt động của thiết bị</translation>
 <translation id="4053612967614057854">Tắt bàn phím ảo</translation>
+<translation id="4055758693679485627">Thiết lập danh sách các loại dữ liệu duyệt web cần xoá khi người dùng đóng tất cả cửa sổ trình duyệt. Dữ liệu duyệt web gồm có các loại sau đây: nhật ký duyệt web (<ph name="DATA_TYPE_BROWSING_HISTORY" />), nhật ký tải xuống (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), bộ nhớ đệm (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), dữ liệu tự động điền (<ph name="DATA_TYPE_AUTOFILL" />), mật khẩu (<ph name="DATA_TYPE_PASSWORD" />), các chế độ cài đặt trang web (<ph name="DATA_TYPE_SITE_SETTINGS" />) và dữ liệu ứng dụng đã lưu trữ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Chính sách này không được ưu tiên hơn <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> hoặc <ph name="BROWSER_SIGNIN_POLICY_NAME" /> không tắt.
+
+      Nếu <ph name="PRODUCT_NAME" /> không thoát đúng cách (ví dụ: nếu trình duyệt hoặc hệ điều hành gặp sự cố), thì dữ liệu duyệt web sẽ bị xoá vào lần tiếp theo tải hồ sơ.</translation>
 <translation id="4056910949759281379">Vô hiệu hóa giao thức SPDY</translation>
 <translation id="4061107397839125009">Nếu đặt chính sách này, thì bạn có thể thiết lập danh sách các mẫu URL chỉ định những trang web không được phép hiển thị thông báo.
 
@@ -3771,6 +3777,15 @@ trong phiên bản 117.</translation>
 <translation id="4426601693403743089">Tắt thử nghiệm nội bộ Screencast đối với người dùng Family Link</translation>
 <translation id="4427173305799125784">Trình xem PDF không thể chú thích trong tệp PDF</translation>
 <translation id="4432762137771104529">Bật Báo cáo mở rộng trong Duyệt web an toàn</translation>
+<translation id="4434531680131327140">Thiết lập chế độ cài đặt thời gian lưu giữ dữ liệu duyệt web của <ph name="PRODUCT_NAME" />. Chính sách này cho phép quản trị viên thiết lập (theo loại dữ liệu) thời điểm trình duyệt xoá dữ liệu. Điều này hữu ích đối với những khách hàng làm việc với dữ liệu nhạy cảm của khách hàng.
+
+      Dữ liệu duyệt web gồm có các loại sau đây: <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> và <ph name="DATA_TYPE_HOSTED_APP_DATA" /> không được hỗ trợ trên Android.
+
+      Trình duyệt sẽ tự động xoá dữ liệu thuộc các loại đã chọn có khoảng thời gian lưu giữ quá <ph name="TIME_TO_LIVE_IN_HOURS" />. Giá trị tối thiểu có thể đặt là 1 giờ.
+
+      Dữ liệu hết hạn sẽ bị xoá sau 15 giây kể từ khi trình duyệt khởi động, sau đó sẽ bị xoá sau mỗi 30 phút trong khi trình duyệt đang chạy.
+
+      Cho đến Chrome 114, chính sách này yêu cầu đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Kể từ Chrome 115, việc bạn đặt chính sách này sẽ tắt tính năng đồng bộ hoá đối với các loại dữ liệu tương ứng nếu "<ph name="CHROME_SYNC_NAME" />" không bị tắt bằng cách đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> hoặc <ph name="BROWSER_SIGNIN_POLICY_NAME" /> không tắt.</translation>
 <translation id="443454694385851356">Cũ (không an toàn)</translation>
 <translation id="4435032708588431506">Cho phép QUIC</translation>
 <translation id="443665821428652897">Xóa dữ liệu trang web khi đóng trình duyệt (không dùng nữa)</translation>
@@ -5622,6 +5637,21 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
 <translation id="614665605501218241">Cho phép các trang web trong danh sách gửi yêu cầu theo cách không an toàn tới các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.</translation>
 <translation id="614753473456574270">Không cho phép người dùng đặt mã PIN yếu</translation>
 <translation id="6150320133676152520">Tắt chế độ tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá</translation>
+<translation id="61518106107420459">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách những ứng dụng và tiện ích tự động cài đặt mà không cần sự can thiệp của người dùng, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt đi. Các quyền được cấp hoàn toàn, kể cả đối với các API tiện ích enterprise.deviceAttributes và enterprise.platformKeys. (Những ứng dụng và tiện ích không buộc phải cài đặt sẽ không dùng được 2 API này.)
+
+      Khi bạn không đặt chính sách này, các ứng dụng/tiện ích sẽ không được tự động cài đặt và người dùng có thể gỡ cài đặt mọi ứng dụng/tiện ích trong <ph name="PRODUCT_NAME" />.
+
+      Chính sách này thay thế chính sách <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Nếu một ứng dụng/tiện ích buộc phải cài đặt trước đây và hiện bị xoá khỏi danh sách này, thì <ph name="PRODUCT_NAME" /> sẽ tự động gỡ cài đặt ứng dụng/tiện ích đó.
+
+      Trên các phiên bản <ph name="MS_WIN_NAME" />, những ứng dụng và tiện ích bên ngoài Cửa hàng Chrome trực tuyến chỉ có thể được buộc cài đặt nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" />` hoặc đã đăng ký `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`.
+
+      Trên các phiên bản <ph name="MAC_OS_NAME" />, những ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến chỉ có thể được buộc cài đặt nếu phiên bản đó được quản lý qua MDM, liên kết với một miền qua MCX hoặc đã đăng ký `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`
+
+      Người dùng có thể thay đổi mã nguồn của bất cứ tiện ích nào thông qua công cụ cho nhà phát triển. Việc này có thể khiến tiện ích hoạt động không chính xác. Nếu bạn lo ngại về điều này, hãy đặt chính sách <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Mỗi mục trong danh sách của chính sách là một chuỗi chứa một mã tiện ích và một URL "cập nhật" (không bắt buộc) phân tách bằng dấu chấm phẩy (;). Mã tiện ích là một chuỗi gồm 32 chữ cái, chẳng hạn như trên chrome://extensions khi ở Chế độ nhà phát triển. Nếu được chỉ định, URL "cập nhật" phải trỏ đến tài liệu XML của tệp kê khai cập nhật (https://developer.chrome.com/extensions/autoupdate). Theo mặc định, URL cập nhật của Cửa hàng Chrome trực tuyến sẽ được sử dụng. URL "cập nhật" được đặt trong chính sách này chỉ dùng cho lần cài đặt ban đầu. Các lần cập nhật tiện ích tiếp theo sẽ sử dụng URL cập nhật nêu trong tệp kê khai của tiện ích.
+
+       Lưu ý: Chính sách này không áp dụng cho Chế độ ẩn danh. Tìm hiểu về việc lưu trữ các tiện ích (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="6155350825868160236">Cho phép người dùng chọn xem có sử dụng các dịch vụ web của Google để sửa lỗi chính tả hay không</translation>
 <translation id="6155936611791017817">Đặt trạng thái của con trỏ lớn mặc định trên màn hình đăng nhập</translation>
 <translation id="6157537876488211233">Danh sách quy tắc bỏ qua proxy được phân cách bằng dấu phẩy</translation>

@@ -6109,6 +6109,7 @@
 <translation id="6343003829431264373">只列印雙數頁面</translation>
 <translation id="6344170822609224263">存取網絡連線清單</translation>
 <translation id="6344576354370880196">已儲存的打印機</translation>
+<translation id="6344608411615208519">您的<ph name="BEGIN_LINK" />瀏覽器由家長管理<ph name="END_LINK" /></translation>
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> 要求您提供使用者名稱和密碼，以便管理員設定您的網絡</translation>
 <translation id="6345878117466430440">標示為已閱讀</translation>
 <translation id="6347010704471250799">顯示通知</translation>
@@ -7632,6 +7633,7 @@
 <translation id="7684212569183643648">已由管理員安裝</translation>
 <translation id="7684559058815332124">前往網頁驗證入口登入網頁</translation>
 <translation id="7684718995427157417">如要建立並測試您的應用程式，請啟用「Android 偵錯橋接器」(ADB)。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
+<translation id="7684913007876670600">如要以簡化檢視模式顯示此頁面，請開啟側面板，並選取 [朗讀模式]</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">必須提供 PIN</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>

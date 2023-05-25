@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">អាចប្រើបានតែមុខងារ​ឯកជនប៉ុណ្ណោះ</translation>
 <translation id="2982481275546140226">សម្អាតទិន្នន័យ</translation>
 <translation id="298306318844797842">បញ្ចូលវិធីបង់ប្រាក់...</translation>
+<translation id="2988274366244053197">វិធីបង់ប្រាក់ និង​អាសយដ្ឋាន​ពី Google Pay នឹង​មិន​ត្រូវ​បានអ៊ីនគ្រីបទេ។ ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតពី Chrome នឹង​មិន​ធ្វើ​សមកាលកម្មទេ។
+
+មាន​តែ​អ្នក​ដែលមាន​ឃ្លា​សម្ងាត់​​របស់​អ្នក​ប៉ុណ្ណោះ​ទើប​អាច​អាន​ទិន្នន័យ​ដែល​បានអ៊ីនគ្រីប​របស់​អ្នក។ ឃ្លា​សម្ងាត់​មិន​ត្រូវ​បាន​ផ្ញើ ឬ​រក្សាទុក​ដោយ Google ទេ។ ប្រសិនបើអ្នក​ភ្លេចឃ្លាសម្ងាត់​របស់អ្នក ឬ​ចង់ប្ដូរ​ការកំណត់​នេះ សូម<ph name="BEGIN_LINK" />សម្អាត​ទិន្នន័យ Chrome នៅក្នុង​គណនី​របស់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="2989805286512600854">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3020183492814296499">ផ្លូវកាត់</translation>
 <translation id="3037605927509011580">អូយ ទក់!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">ធ្វើសមកាលកម្ម​ប្រវត្តិ ពាក្យសម្ងាត់​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត។</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{សម្រាប់​កម្មវិធី ឬ​គេហទំព័រ {COUNT}}other{សម្រាប់កម្មវិធី និង​គេហទំព័រ {COUNT}}}</translation>
 <translation id="3474624961160222204">បន្តជា <ph name="NAME" /></translation>
+<translation id="3476450923187944815">ចូលប្រើ​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​កម្មវិធី​ផ្សេងទៀត។</translation>
 <translation id="3478058380795961209">ខែផុតកំណត់</translation>
 <translation id="3482959374254649722">កំពុងធ្វើសមកាលកម្មផ្ទាំងរបស់អ្នក...</translation>
 <translation id="3484946776651937681">បើកនៅក្នុង "ទាញយក"</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">បង្ហាញ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5318298563956633672">អ្នកកំពុងតាមដានផលិតផលនេះស្រាប់ហើយ។</translation>
+<translation id="5325595483440111327">មើល​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត។</translation>
 <translation id="5339316356165661760">បើក​សមកាលកម្ម</translation>
 <translation id="536067926684072644">បង្ហាញចំណាំ</translation>
 <translation id="5360976571138293719">សម្រាប់​ការកំណត់​ជាច្រើនទៀត ដែលពាក់ព័ន្ធនឹង​ឯកជនភាព សុវត្ថិភាព និងការប្រមូល​ទិន្នន័យ សូមមើល<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>
@@ -750,6 +755,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="595769230373966252">ស្វែងរក​តាមរយៈ <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">មិនអាចបង្កើត​តំណទៅកាន់អត្ថបទ​ដែលបានរំលេចបានទេ។</translation>
 <translation id="5965679971710331625">អ្នកបានចូលគណនីហើយ</translation>
+<translation id="5971872012779224351">{count,plural, =1{បានលុបចំណាំ 1}other{បានលុបចំណាំ {count}}}</translation>
 <translation id="5979837087407522202">ស្វែងរកពាក្យសម្ងាត់</translation>
 <translation id="5981230843984570095">បិទ​ផ្ទាំង​អសកម្ម​ទាំងអស់</translation>
 <translation id="5982717868370722439">បន្ថែមទិន្នន័យដែលមានស្រាប់ទៅ <ph name="USER_EMAIL" /> ។</translation>
@@ -997,6 +1003,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7435356471928173109">បានបិទដោយ​អ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7438481509621345350">ឥឡូវនេះ អ្នកនឹងមើលឃើញអត្ថបទពី <ph name="CHANNEL_NAME" /> នៅពេលអ្នកបើកផ្ទាំងថ្មី។</translation>
 <translation id="7446583256109515732">បានដកខ្ទាស់ផ្ទាំង</translation>
+<translation id="7451023311965289370">{count,plural, =1{បានរក្សាទុកចំណាំទៅក្នុង "{title}"}other{បានរក្សាទុកចំណាំទៅក្នុង "{title}"}}</translation>
 <translation id="7454057999980797137">រដ្ឋ / ប្រទេស</translation>
 <translation id="7459628154744868585">ការការពារបន្ថែម​ត្រូវបានបើក</translation>
 <translation id="746684838091935575">3. ជ្រើសរើស Chrome</translation>

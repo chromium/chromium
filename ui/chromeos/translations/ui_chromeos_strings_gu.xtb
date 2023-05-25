@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google સાઇટ</translation>
 <translation id="1853795129690976061">આ ફોલ્ડર Linux સાથે શેર થાય છે</translation>
 <translation id="1864756863218646478">ફાઇલ શોધી શકાઈ નથી.</translation>
+<translation id="1877377730633446520">આ લગભગ <ph name="REQUIRED_SPACE" /> વાપરશે. તમારી પાસે હાલમાં <ph name="FREE_SPACE" /> ઉપલબ્ધ છે.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, કનેક્ટ કરો</translation>
 <translation id="1920670151694390848">મલયાલમ લિપ્યંતર</translation>
 <translation id="1920798810075583923">તરબૂચ</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
+<translation id="2004942826429452291">ફાઇલો ક્લાઉડમાં અને આ Chromebookમાં સ્ટોર કરવામાં આવશે.</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
 <translation id="2037845485764049925">રશિયન</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">ઉપકરણ સેટિંગ</translation>
 <translation id="2084809735218147718">સાંકેતિક ભાષામાં આભાર વ્યક્ત કરતી વ્યક્તિ</translation>
 <translation id="2088690981887365033">VPN નેટવર્ક</translation>
+<translation id="2089751716171649322">તમે ઑફલાઇન હો ત્યારે તમારી Google Driveની ફાઇલોને સરળતાથી ઍક્સેસ કરો</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />છૂપા મોડમાં મંજૂરી આપો<ph name="END_BOLD" /> ચાલુ કરો</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ડિલીટ કરવામાં આવશે અને તમે તેમને રિસ્ટોર કરી શકશો નહીં.</translation>
 <translation id="2122305276694332719">છુપાવેલા નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ કરવાથી અન્ય લોકો તમારું ડિવાઇસ અને અન્ય નેટવર્ક સેટિંગ જોઈ શકે છે અને તે માટે સુઝાવ આપેલો નથી.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ભૂલો.</translation>
+<translation id="3501954296166022751">તમારી Google Driveની ફાઇલો ઑફલાઇન ઉપલબ્ધ છે</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> આઇટમને સિંક કરવાની તૈયારી કરી રહ્યાં છીએ...</translation>
 <translation id="3522708245912499433">પોર્ટુગીઝ</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5500122897333236901">આઇસલેન્ડિક</translation>
 <translation id="5508696409934741614">બિંદુઓ</translation>
+<translation id="5519161320735100193">Google Drive સેટિંગ</translation>
 <translation id="5522908512596376669">ફાઇલ સૂચિને સૂચિ દૃશ્યમાં બદલી છે.</translation>
 <translation id="5524517123096967210">ફાઇલ વાંચી શકાઈ નથી.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> છબી</translation>
@@ -863,6 +868,7 @@
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7806708061868529807">હીબ્રુ</translation>
 <translation id="78104721049218340">થાઇ, Kedmanee કીબોર્ડ સાથે</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">નેટવર્કની ગોઠવણી કરતી વખતે ભૂલ આવી</translation>
 <translation id="7839804798877833423">આ ફાઇલોને મેળવવામાં લગભગ <ph name="FILE_SIZE" /> મોબાઇલ ડેટાનો ઉપયોગ થશે.</translation>
@@ -875,15 +881,18 @@
 <translation id="7903984238293908205">કટકાન</translation>
 <translation id="7908793776359722643">વિભાગને ફૉર્મેટ કરવાથી તેમાં સ્ટોર કરેલો બધો ડેટા કાઢી નાખવામાં આવશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">My-Driveની તમારી ફાઇલો તમારા Chromebook સાથે ઑટોમૅટિક રીતે સિંક થશે જેથી તમે તેને ઇન્ટરનેટ કનેક્શન વિના ઍક્સેસ કરી શકશો.</translation>
 <translation id="7925247922861151263">AAA તપાસ નિષ્ફળ</translation>
 <translation id="7925686952655276919">સમન્વયન માટે ડેટા માહિતીની ઉપયોગ કરશો નહીં</translation>
 <translation id="7928710562641958568">ઉપકરણ હટાવો</translation>
+<translation id="7933875256234974853">Drive ફાઇલોને સિંક કરવાની તૈયારી કરી રહ્યાં છીએ...</translation>
 <translation id="7943385054491506837">યુએસ કોલમેક</translation>
 <translation id="7953739707111622108">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમ ઓળખાઈ ન હતી.</translation>
 <translation id="7969525169268594403">સ્લોવેનિયન</translation>
 <translation id="7972920761225148017">ફ્રેન્ચ (સ્વિટ્ઝર્લૅન્ડ)</translation>
 <translation id="7973962044839454485">ખોટા વપરાશકર્તાનામ અથવા પાસવર્ડને કારણે PPP પ્રમાણીકરણ નિષ્ફળ થયું</translation>
 <translation id="7980421588063892270">અંગ્રેજી (યુએસ), Colemak કીબોર્ડ સાથે</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ફાઇલ સિંક થઈ રહી છે</translation>
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
 <translation id="8008366997883261463">કૂતરો</translation>
 <translation id="8028993641010258682">કદ</translation>
@@ -1038,6 +1047,7 @@
 <translation id="9213073329713032541">ઇન્સ્ટૉલેશન સફળતાપૂર્વક શરૂ થયું.</translation>
 <translation id="9219103736887031265">છબીઓ</translation>
 <translation id="9219908252191632183">ચંદ્ર</translation>
+<translation id="937795003075802289">1 ફાઇલ સિંક થઈ રહી છે</translation>
 <translation id="938470336146445890">કૃપા કરીને એક વપરાશકર્તા  પ્રમાણપત્ર ઇન્સ્ટોલ કરો.</translation>
 <translation id="939736085109172342">નવું ફોલ્ડર</translation>
 <translation id="943972244133411984">ફેરફાર કરનાર</translation>

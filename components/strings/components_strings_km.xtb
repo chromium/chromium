@@ -212,6 +212,7 @@
 <translation id="1442987760062738829">ចោះ</translation>
 <translation id="1446396933673057385">ការពិនិត្យមើល​ភាពត្រឹមត្រូវ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">ឥឡូវនេះ ការកំណត់​ដែលមាតាបិតា​របស់អ្នក​បានជ្រើសរើស​កំពុងធ្វើឱ្យអ្នក​កាន់តែមានសុវត្ថិភាព​លើអ៊ីនធឺណិត</translation>
 <translation id="1453974140256777690">អត្ថបទ​ដែលអ្នក​ដាក់ចូល ឬ​ភ្ជាប់​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បី​វិភាគ​។ ឧទាហរណ៍ អត្ថបទនោះ​អាចត្រូវបាន​ស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប​។</translation>
 <translation id="1455413310270022028">ជ័រលុប</translation>
 <translation id="1459693405370120464">អាកាសធាតុ</translation>
@@ -269,6 +270,7 @@
 <translation id="1569487616857761740">បញ្ចូលកាល​បរិច្ឆេទ​ផុត​កំណត់</translation>
 <translation id="1569694109004336106">Google Chrome កំពុងព្យាយាម​បើក Windows Hello ដើម្បីបំពេញ​ពាក្យសម្ងាត់។</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
+<translation id="1576277203042721907">ស្ថិតិទិញទំនិញ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">មានបញ្ហាអ្វីមួយកើតឡើង ខណៈពេលកំពុងបង្ហាញគេហទំព័រនេះ</translation>
 <translation id="1584492003828271317">នៅ​ពេល​អ្នក​រុករក ថាតើ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​អ្នកមើលឃើញ​ត្រូវបាន​កំណត់ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់គឺអាស្រ័យលើ​ការកំណត់នេះ ការផ្សាយពាណិជ្ជកម្ម​ដែល​ណែនាំ​ដោយ​គេហទំព័រ ការ​កំណត់​ខូគីរបស់​អ្នក និង​ថាតើ​គេហទំព័រ​ដែល​អ្នក​កំពុងមើល​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន​ឬ​អត់</translation>
@@ -1136,6 +1138,7 @@
 <translation id="3740319564441798148">រថភ្លើង និង​រថយន្តក្រុង​ដែលរត់ចម្ងាយឆ្ងាយ</translation>
 <translation id="3743765582345153106">ផ្ទៀងផ្ទាត់​ជានិច្ច នៅពេលប្រើ​មុខងារបំពេញ​ស្វ័យប្រវត្តិ</translation>
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
+<translation id="3744212718085287312">ធ្វើឱ្យកាន់តែ​មានសុវត្ថិភាព​ដោយប្រើកាតនិម្មិតនៅពេលក្រោយឬ?</translation>
 <translation id="3744286742364977428">ឯកសារ​ដែលអ្នក​ទាញយក​ត្រូវបានផ្ញើ​ទៅ Google Cloud ឬ​ភាគីទីបី​ដើម្បី​វិភាគ។ ឧទាហរណ៍ ឯកសារទាំងនោះ​អាចត្រូវបានស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប ឬ​កម្មវិធីគ្រោះថ្នាក់ និង​អាច​ត្រូវបាន​រក្សាទុក​ដោយផ្អែកតាម​គោលការណ៍​របស់ក្រុមហ៊ុន។</translation>
 <translation id="3744899669254331632">អ្នកមិនអាចទៅកាន់ <ph name="SITE" /> ទេឥឡូវនេះ ពីព្រោះគេហទំព័របានផ្ញើអត្តសញ្ញាណសម្គាល់មិនច្បាស់លាស់ ដែល Chromium មិនអាចដំណើរការបាន។ កំហុស និងការវាយប្រហារបណ្តាញជាធម្មតាកើតមានជាបណ្តោះអាសន្នទេ ដូច្នេះទំព័រនេះប្រហែលជាអាចដំណើរការវិញនាពេលក្រោយ។</translation>
 <translation id="3748148204939282805">អ្នកវាយប្រហារទៅលើ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> អាច​នឹង​បញ្ឆោត​ឲ្យ​អ្នក​ធ្វើ​អ្វី​មួយ​ដែល​គ្រោះថ្នាក់ ដូចជាដំឡើងកម្មវិធី ឬបង្ហាញព័ត៌មានផ្ទាល់ខ្លួនជាដើម (ឧទាហរណ៍៖ ពាក្យសម្ងាត់ លេខទូរសព្ទ ឬបណ្ណឥណទាន)។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1271,6 +1274,7 @@
 <translation id="410148943680000050">ការបោះផ្សាយ​ពីកុំព្យូទ័រ</translation>
 <translation id="4103249731201008433">លេខសេរ៊ីឧបករណ៍គ្មានសុពលភាព</translation>
 <translation id="4106133539597032659">ប៊ូតុង​បង្កើតគេហទំព័រ ចុច Enter ដើម្បីបង្កើត​គេហទំព័រថ្មី​នៅក្នុង Google Sites បានរហ័ស</translation>
+<translation id="4106887816571530227">មិនអនុញ្ញាត​ខ្លឹមសារ​ដែលបាន​បង្កប់ទេ</translation>
 <translation id="4110652170750985508">ពិនិត្យ​មើល​ការបង់ប្រាក់​របស់អ្នក​</translation>
 <translation id="4111546256784973544">កីឡា​បាញ់កាំភ្លើងគ្រាប់​ពណ៌</translation>
 <translation id="4112140312785995938">សា​ថយក្រោយ</translation>
@@ -1609,6 +1613,7 @@
 <translation id="4876305945144899064">គ្មាន​ឈ្មោះ​អ្នកប្រើប្រាស់​ទេ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{គ្មាន}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">ការស្វែងរក <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">អនុញ្ញាតឱ្យ​ខ្លឹមសារ​ដែលបានបង្កប់ឬ?</translation>
 <translation id="4879491255372875719">ស្វ័យប្រវត្តិ (លំនាំដើម)</translation>
 <translation id="4880827082731008257">ប្រវត្តិស្វែងរក</translation>
 <translation id="4881695831933465202">បើក</translation>
@@ -1806,6 +1811,7 @@
 <translation id="5314967030527622926">ឧបករណ៍​ធ្វើកូន​សៀវភៅ</translation>
 <translation id="5316812925700871227">បង្វិលបញ្ច្រាសទ្រនិចនាឡិកា</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
+<translation id="5323043727018853753">អនុញ្ញាតខ្លឹមសារ​ដែលបានបង្កប់</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> ក្នុង​ចំណោម <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកមិនត្រូវ​បានគ្រប់គ្រងទេ</translation>
 <translation id="5332219387342487447">វិធីសាស្រ្ត​នៃការ​ដឹកជញ្ជូន</translation>
@@ -2183,6 +2189,7 @@
 <translation id="6306713302480826305">អាសយដ្ឋាន​នេះ​នឹង​ត្រូវ​បានលុប​ពី​ឧបករណ៍​នេះ និង​ឧបករណ៍ដែល​ចូលគណនី​ផ្សេង​ទៀត</translation>
 <translation id="6312113039770857350">គេហទំព័រមិនអាចប្រើបានទេ</translation>
 <translation id="6316226860534107313">ម៉ូតូ និង​ម៉ូតូតូច</translation>
+<translation id="6316723751983724988">ថ្មី៖ ជម្រើស Family Link សម្រាប់ Chrome អនុវត្ត​នៅទីនេះ</translation>
 <translation id="63172326633386613">គ្រប់គ្រង​ការកំណត់​ភាពងាយស្រួល</translation>
 <translation id="6319249456820053699">ម៉ាស៊ីនថត​វីដេអូ និង​កាមេរ៉ា</translation>
 <translation id="6321917430147971392">ពិនិត្យការកំណត់ DNS របស់អ្នក</translation>
@@ -2735,6 +2742,7 @@
 <translation id="7598391785903975535">តិចជាង <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> មិនអាចដោះស្រាយសំណើនេះនៅពេលនេះបានទេ</translation>
 <translation id="7600965453749440009">មិនបកប្រែភាសា <ph name="LANGUAGE" /> ទៀតឡើយ</translation>
+<translation id="7601297359530599375">ជាធម្មតា អ្នកភ្ជាប់ទៅ​គេហទំព័រនេះ​ដោយសុវត្ថិភាព ប៉ុន្តែ Chrome មិនអាចប្រើ​ការតភ្ជាប់​ដែលមានសុវត្ថិភាព​នៅពេលនេះបានទេ។ អ្នកវាយ​ប្រហារ​ប្រហែលជា​កំពុង​ព្យាយាម​លួចស្ដាប់ ឬ​កែប្រែ​ការតភ្ជាប់បណ្ដាញ​របស់អ្នក។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">តម្លៃនៅក្រៅចន្លោះ <ph name="VALUE" />។</translation>
 <translation id="7613889955535752492">ផុតកំណត់៖ <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
@@ -2835,6 +2843,7 @@
 <translation id="7822320754433038727">ការប្រមាញ់ និង​ការបាញ់កាំភ្លើង</translation>
 <translation id="782886543891417279">Wi-Fi ដែលអ្នកកំពុងប្រើ (<ph name="WIFI_NAME" />) អាចតម្រូវឲ្យអ្នកទៅកាន់ទំព័រចុះឈ្មោះរបស់វា។</translation>
 <translation id="7840103971441592723">ការ​ថត​អេក្រង់​បាន​ចាប់ផ្ដើម</translation>
+<translation id="784137052867620416">ស្ថិតិទិញទំនិញ</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{គ្មាន}=1{កម្មវិធី 1 (<ph name="EXAMPLE_APP_1" />)}=2{កម្មវិធី 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{កម្មវិធី # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">ក្រោយ​មក​ គេហទំព័រ​ដែល​អ្នក​ចូលមើលអាច​ស្នើសុំ​ប្រធានបទ​​របស់​អ្នក​​ពី Chrome ដើម្បី​កំណត់​ការ​ផ្សាយពាណិជ្ជកម្ម​​ដែល​អ្នក​មើល​ឃើញ​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន។ Chrome ចែករំលែក​ប្រធានបទ​បាន​រហូត​ដល់ 3 ព្រម​ទាំង​​ការពារប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត និង​អត្តសញ្ញាណ​របស់​អ្នក។</translation>
@@ -2981,6 +2990,7 @@
 <translation id="8217748145574471584">ធនធាន​មនុស្ស</translation>
 <translation id="8218327578424803826">ទីតាំងដែលបានកំណត់៖</translation>
 <translation id="8228419419708659934">ការមើល​ជាទំព័រពីរ</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> ចង់ចូលប្រើ​ឧបករណ៍​នៅលើ​បណ្ដាញ​របស់អ្នក៖</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">ហ្គេម​កីឡា</translation>

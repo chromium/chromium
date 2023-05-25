@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">在群组内的新标签页中打开</translation>
 <translation id="1103142993930332957">帮助改进 Chrome？</translation>
 <translation id="1105960400813249514">屏幕截图</translation>
+<translation id="1108214977745280468">查看网页数据洞见</translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1110914759170138831">突出显示的内容被缩短了</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 发送者：<ph name="DEVICE_NAME" /></translation>
 <translation id="1311657260431405215">此二维码不是网址：<ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">如果您日后撤消个人资料锁定设置，系统会清除您已保存的信息。</translation>
 <translation id="1320912611264252795">书签保存流程文件夹已全屏打开</translation>
 <translation id="1327257854815634930">导航历史记录已打开</translation>
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
@@ -179,6 +181,7 @@
 <translation id="1995884366040846621">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2009341475524975924">为了衡量某个广告的效果，网站之间可分享有限类型的数据，例如一天中向您展示广告的时段。</translation>
+<translation id="201060170519281460">个人资料锁定功能可确保您的信息（包括已同步的密码、付款信息等）安全地存储在车载系统中。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 个文件}other{# 个文件}}</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
@@ -256,6 +259,7 @@
 <translation id="250020030759455918">您会在 Chrome 中看到自己的 <ph name="SITE_NAME" /> 登录状态、浏览数据和网站数据</translation>
 <translation id="2510106555128151389">正在安装“<ph name="WEBAPK_NAME" />”…</translation>
 <translation id="2513403576141822879">若想了解更多与隐私、安全和数据收集相关的设置，请参阅<ph name="BEGIN_LINK" />同步功能和 Google 服务<ph name="END_LINK" /></translation>
+<translation id="2517113738956581680">完整尺寸的动作条</translation>
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
 <translation id="2527209463677295330">如果选择纳入相应页面上的更多文字，您便可能会看到相关性更高的结果</translation>
@@ -280,6 +284,7 @@
 私密状态令牌有助于加强网络隐私保护，而且不会泄露您的身份。</translation>
 <translation id="2581165646603367611">这会清除 Chrome 认为不重要的网站的 Cookie、缓存和其他数据。</translation>
 <translation id="2587052924345400782">新版本已推出</translation>
+<translation id="2589302627584222634">设置个人资料锁定</translation>
 <translation id="2593272815202181319">等宽</translation>
 <translation id="2603212228005142861">登录以管理您的偏好设置</translation>
 <translation id="260403163289591229">已关注</translation>
@@ -541,6 +546,7 @@
 <translation id="4035877632587724847">不允许</translation>
 <translation id="4036177530563778041">轻松地从上次停下的地方继续</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="4044708993631234325">底部动作条</translation>
 <translation id="4045764304651014138">使用情况数据</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
@@ -842,6 +848,7 @@
 <translation id="564667659802381754">隐私保护指南<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5655963694829536461">搜索您的下载内容</translation>
+<translation id="5657871969392618475">为确保您的信息安全，已为您开启个人资料锁定</translation>
 <translation id="5659593005791499971">电子邮件</translation>
 <translation id="5665379678064389456">在<ph name="APP_NAME" />中创建活动</translation>
 <translation id="5683547024293500885">Chrome 无法检查是否有更新</translation>
@@ -904,6 +911,7 @@
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5966233851250124270">Chrome 会记住您的选择</translation>
 <translation id="5979084224081478209">检查密码</translation>
+<translation id="5985186846584605773">为车载系统设置个人资料锁定功能</translation>
 <translation id="5995726099713306770">再次下载此页面？</translation>
 <translation id="6000066717592683814">继续使用 Google</translation>
 <translation id="6000203700195075278">重新关注</translation>
@@ -1132,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome 已是最新版本</translation>
 <translation id="7105047059074518658">登录即可让跨设备浏览更轻松顺畅</translation>
 <translation id="7106762743910369165">您的浏览器由贵单位管理</translation>
+<translation id="7116420572655804716">若要在车载系统中同步信息并确保数据安全，您必须在安全设置中设置个人资料锁定功能。之后，每当您上车时，系统都会要求您输入验证码或密码。</translation>
 <translation id="7116588989735740310">如果想重新访问在其他设备上浏览过的网站，请同步您的标签页和历史记录</translation>
 <translation id="7130504491556983216">当您浏览网页时，此处会显示一个兴趣列表</translation>
 <translation id="7138678301420049075">其他</translation>
@@ -1351,6 +1360,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8209050860603202033">打开图片</translation>
+<translation id="8215740705341534369">侧边动作条</translation>
 <translation id="8218622182176210845">管理您的帐号</translation>
 <translation id="8221401890884589479">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
@@ -1551,6 +1561,7 @@
 <translation id="932327136139879170">首页</translation>
 <translation id="938850635132480979">错误：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">请输入密码</translation>
+<translation id="950679278154734362">若要在车载系统中同步信息并确保数据安全，您必须设置个人资料锁定功能。之后，每当您上车时，系统都会要求您输入验证码或密码。</translation>
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="962979164594783469">安装此应用</translation>
 <translation id="96681097142096641">查看简化版网页？</translation>
