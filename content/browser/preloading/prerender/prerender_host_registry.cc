@@ -1592,14 +1592,13 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
     private_footprint_total_kb += pmd.os_dump().private_footprint_kb;
   }
 
-  // TODO(crbug.com/1382697): Finalize the threshold after the experiment
-  // completes. The default acceptable percent is 10% of the system memory.
+  // The default acceptable percent is 60% of the system memory.
   int acceptable_percent_of_system_memory =
       base::GetFieldTrialParamByFeatureAsInt(
           blink::features::kPrerender2MemoryControls,
           blink::features::
               kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName,
-          10);
+          60);
 
   // When the current memory usage is higher than
   // `acceptable_percent_of_system_memory` % of the system memory, cancel a
