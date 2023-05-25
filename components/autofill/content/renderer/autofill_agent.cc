@@ -734,8 +734,6 @@ void AutofillAgent::ClearPreviewedForm() {
 
   // |password_generation_agent_| can be null in android_webview & weblayer.
   if (password_generation_agent_ &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationPreviewOnHover) &&
       password_generation_agent_->DidClearGenerationSuggestion(element_)) {
     return;
   }

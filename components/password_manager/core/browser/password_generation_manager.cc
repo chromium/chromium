@@ -405,9 +405,7 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
 
   if (accepted) {
     driver->GeneratedPasswordAccepted(pending.password_value);
-  } else if (base::FeatureList::IsEnabled(
-                 password_manager::features::
-                     kPasswordGenerationPreviewOnHover)) {
+  } else {
     driver->ClearPreviewedForm();
   }
 }

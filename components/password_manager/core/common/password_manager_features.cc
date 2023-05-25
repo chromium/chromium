@@ -301,12 +301,6 @@ BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
              "UsernameFirstFlowHonorAutocomplete",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables previewing password generation suggestion in the target form in
-// cleartext.
-BASE_FEATURE(kPasswordGenerationPreviewOnHover,
-             "PasswordGenerationPreviewOnHover",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Show, update, and delete GPM passkeys on the Chrome Password Manager.
 BASE_FEATURE(kPasswordManagerPasskeys,
