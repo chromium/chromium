@@ -90,11 +90,11 @@ int PromoteCandidate(UpdaterScope scope) {
       launcher_path->DirName().AppendASCII("launcher_new");
   if (link(updater_executable.value().c_str(),
            tmp_launcher_name.value().c_str())) {
-    return kErrorFailedToLinkLauncher;
+    return kErrorFailedToLinkCurrent;
   }
   if (rename(tmp_launcher_name.value().c_str(),
              launcher_path->value().c_str())) {
-    return kErrorFailedToRenameLauncher;
+    return kErrorFailedToRenameCurrent;
   }
 
   if (!InstallSystemdUnits(scope)) {

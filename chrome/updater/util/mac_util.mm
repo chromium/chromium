@@ -11,7 +11,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -46,6 +45,8 @@ base::FilePath ExecutableFolderPath() {
       .Append(FILE_PATH_LITERAL("MacOS"));
 }
 
+}  // namespace
+
 std::string GetDomain(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kSystem:
@@ -54,24 +55,6 @@ std::string GetDomain(UpdaterScope scope) {
       return base::StrCat({"gui/", base::NumberToString(geteuid())});
   }
 }
-
-bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
-  std::string output;
-  int exit_code = 0;
-  base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
-  launchctl.AppendArg("bootstrap");
-  launchctl.AppendArg(GetDomain(scope));
-  launchctl.AppendArgPath(path);
-  if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code) ||
-      exit_code != 0) {
-    VLOG(1) << "launchctl bootstrap of " << path << " failed: " << exit_code
-            << ": " << output;
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
 
 absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope) {
   switch (scope) {
@@ -282,78 +265,6 @@ absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
     return base::mac::NSStringToFilePath(library_paths[0])
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
         .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
-  }
-}
-
-bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
-  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
-  if (!path) {
-    VLOG(1) << "Failed to find wake plist path.";
-    return false;
-  }
-  const bool previousPlistExists = base::PathExists(*path);
-  if (!base::CreateDirectory(path->DirName())) {
-    VLOG(1) << "Failed to create " << path->DirName();
-    return false;
-  }
-  @autoreleasepool {
-    NSURL* const url = base::mac::FilePathToNSURL(*path);
-
-    // If the file is unchanged, avoid a spammy notification by not touching it.
-    if (previousPlistExists &&
-        [contents isEqualToDictionary:[NSDictionary
-                                          dictionaryWithContentsOfURL:url]]) {
-      VLOG(2) << "Skipping unnecessary update to " << path;
-      return true;
-    }
-
-    // Save a backup of the previous plist.
-    base::ScopedTempDir backup_dir;
-    if (previousPlistExists &&
-        (!backup_dir.CreateUniqueTempDir() ||
-         !base::CopyFile(*path, backup_dir.GetPath().Append("backup_plist")))) {
-      VLOG(1) << "Failed to back up previous plist.";
-      return false;
-    }
-
-    // Bootout the old plist.
-    {
-      std::string output;
-      int exit_code = 0;
-      base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
-      launchctl.AppendArg("bootout");
-      launchctl.AppendArg(GetDomain(scope));
-      launchctl.AppendArgPath(*path);
-      if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code)) {
-        VLOG(1) << "Failed to launch launchctl.";
-      } else if (exit_code != 0) {
-        // This is expected in cases where there the service doesn't exist.
-        // Unfortunately, in the user case, bootout returns 5 both for does-not-
-        // exist errors and other errors.
-        VLOG(2) << "launchctl bootout exited: " << exit_code
-                << ", stdout: " << output;
-      }
-    }
-
-    // Overwrite the plist.
-    if (![contents writeToURL:url atomically:YES]) {
-      VLOG(1) << "Failed to write " << url;
-      return false;
-    }
-
-    // Bootstrap the new plist.
-    if (!BootstrapPlist(scope, *path)) {
-      // The plist has already been replaced! If launchctl doesn't like it,
-      // this installation is now broken. Try to recover by restoring and
-      // bootstrapping the backup.
-      if (previousPlistExists &&
-          (!base::Move(backup_dir.GetPath().Append("backup_plist"), *path) ||
-           !BootstrapPlist(scope, *path))) {
-        VLOG(1) << "Failed to restore backup plist.";
-      }
-      return false;
-    }
-    return true;
   }
 }
 
