@@ -5,6 +5,7 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/sysroot.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//ui/qt/qt.gni")
 
 assert(use_qt)
@@ -127,6 +128,9 @@ component("qt") {
     "//ui/views",
   ]
   public_deps = [ "//skia" ]
+  if (enable_printing) {
+    public_deps += [ "//printing" ]
+  }
 
   sources = [
     "qt_ui.cc",
