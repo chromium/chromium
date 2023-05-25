@@ -1211,7 +1211,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 50,
+          'shards': 60,
         },
       },
       'linux-chromeos-rel': {
@@ -2734,6 +2734,11 @@
         # crbug.com/865455
         'swarming': {
           'shards': 5,
+        },
+      },
+      'Linux MSan Tests': {
+        'swarming': {
+          'shards': 4,
         },
       },
       'Linux TSan Tests': {
