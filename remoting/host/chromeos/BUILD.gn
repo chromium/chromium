@@ -10,8 +10,6 @@ source_set("chromeos") {
     "ash_mojom_video_consumer.h",
     "ash_proxy.cc",
     "ash_proxy.h",
-    "aura_desktop_capturer.cc",
-    "aura_desktop_capturer.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
     "frame_sink_desktop_capturer.cc",
@@ -119,7 +117,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "aura_desktop_capturer_unittest.cc",
     "clipboard_aura_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
     "scoped_fake_ash_proxy.cc",

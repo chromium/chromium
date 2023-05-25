@@ -19,14 +19,10 @@
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer_differ_wrapper.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
-#include "remoting/host/chromeos/aura_desktop_capturer.h"
-#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #endif
 
@@ -92,13 +88,7 @@ void DesktopCapturerProxy::Core::CreateCapturer(
   DCHECK(!capturer_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kEnableFrameSinkDesktopCapturerInCrd)) {
-    capturer_ = std::make_unique<FrameSinkDesktopCapturer>();
-  } else {
-    capturer_ = std::make_unique<webrtc::DesktopCapturerDifferWrapper>(
-        std::make_unique<AuraDesktopCapturer>());
-  }
+  capturer_ = std::make_unique<FrameSinkDesktopCapturer>();
 #elif BUILDFLAG(IS_LINUX)
   static base::nix::SessionType session_type = base::nix::SessionType::kUnset;
   if (session_type == base::nix::SessionType::kUnset) {

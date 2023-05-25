@@ -7349,12 +7349,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSavedDevicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSavedDevices)},
 
-    {"frame-sink-desktop-capturer-in-crd",
-     flag_descriptions::kFrameSinkDesktopCapturerInCrdName,
-     flag_descriptions::kFrameSinkDesktopCapturerInCrdDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         remoting::features::kEnableFrameSinkDesktopCapturerInCrd)},
-
     {"fast-pair-software-scanning",
      flag_descriptions::kFastPairSoftwareScanningName,
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,

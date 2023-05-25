@@ -8,12 +8,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
-
-class SkBitmap;
 
 namespace ash::curtain {
 class SecurityCurtainController;
@@ -47,7 +43,6 @@ class AshProxy {
 
   // Convert the scale factor to DPI.
   static int ScaleFactorToDpi(float scale_factor);
-  static int GetDpi(const display::Display& display);
 
   virtual ~AshProxy();
 
@@ -58,10 +53,6 @@ class AshProxy {
 
   virtual ash::curtain::SecurityCurtainController&
   GetSecurityCurtainController() = 0;
-
-  using ScreenshotCallback = base::OnceCallback<void(absl::optional<SkBitmap>)>;
-  virtual void TakeScreenshotOfDisplay(DisplayId display_id,
-                                       ScreenshotCallback callback) = 0;
 
   virtual void CreateVideoCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
