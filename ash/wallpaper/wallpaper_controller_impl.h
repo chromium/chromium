@@ -269,6 +269,8 @@ class ASH_EXPORT WallpaperControllerImpl
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const override;
 
+  void SetTimeOfDayWallpaper(const AccountId& account_id,
+                             SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;

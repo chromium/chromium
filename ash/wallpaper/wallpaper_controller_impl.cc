@@ -32,6 +32,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
 #include "ash/wallpaper/wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
@@ -1088,6 +1089,20 @@ bool WallpaperControllerImpl::GetDailyGooglePhotosWallpaperIdCache(
     DailyGooglePhotosIdCache& ids_out) const {
   return pref_manager_->GetDailyGooglePhotosWallpaperIdCache(account_id,
                                                              ids_out);
+}
+
+void WallpaperControllerImpl::SetTimeOfDayWallpaper(
+    const AccountId& account_id,
+    SetWallpaperCallback callback) {
+  OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
+      base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     WallpaperType::kOnline,
+                     /*start_daily_refresh_timer=*/false, std::move(callback));
+  variant_info_fetcher_->FetchTimeOfDayWallpaper(
+      account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
+      Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
+      std::move(on_fetch));
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(

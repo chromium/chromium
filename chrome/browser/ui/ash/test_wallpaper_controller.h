@@ -45,6 +45,9 @@ class TestWallpaperController : public ash::WallpaperController {
   int remove_user_wallpaper_count() const {
     return remove_user_wallpaper_count_;
   }
+  int set_default_time_of_day_wallpaper_count() const {
+    return set_default_time_of_day_wallpaper_count_;
+  }
   int set_default_wallpaper_count() const {
     return set_default_wallpaper_count_;
   }
@@ -128,6 +131,8 @@ class TestWallpaperController : public ash::WallpaperController {
       const AccountId& account_id,
       DailyGooglePhotosIdCache& ids_out) const override;
   void SetCurrentUser(const AccountId& account_id);
+  void SetTimeOfDayWallpaper(const AccountId& account_id,
+                             SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper,
                            SetWallpaperCallback callback) override;
@@ -188,6 +193,7 @@ class TestWallpaperController : public ash::WallpaperController {
   bool was_client_set_ = false;
   bool can_set_user_wallpaper_ = true;
   int remove_user_wallpaper_count_ = 0;
+  int set_default_time_of_day_wallpaper_count_ = 0;
   int set_default_wallpaper_count_ = 0;
   int set_custom_wallpaper_count_ = 0;
   int set_online_wallpaper_count_ = 0;

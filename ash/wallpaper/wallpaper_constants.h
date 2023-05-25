@@ -23,6 +23,8 @@ constexpr float kOobeBlur = ColorProvider::kBackgroundBlurSigma;
 // The ID of the time of day wallpaper collection served by backdrop server.
 constexpr char kTimeOfDayWallpaperCollectionId[] =
     "_time_of_day_chromebook_collection";
+// The ID of the default time of day wallpaper.
+constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
 
 }  // namespace wallpaper_constants
 

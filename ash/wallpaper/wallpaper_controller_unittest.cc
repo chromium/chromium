@@ -29,6 +29,7 @@
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/wallpaper/wallpaper_view.h"
@@ -369,6 +370,30 @@ class TestWallpaperControllerObserver : public WallpaperControllerObserver {
   int wallpaper_changed_count_ = 0;
   bool is_in_wallpaper_preview_ = false;
 };
+
+// Returns the time of day wallpapers in order of light, morning, late
+// afternoon, and dark.
+std::vector<backdrop::Image> TimeOfDayImageSet() {
+  const std::vector<backdrop::Image_ImageType> image_types = {
+      backdrop::Image::IMAGE_TYPE_LIGHT_MODE,
+      backdrop::Image::IMAGE_TYPE_MORNING_MODE,
+      backdrop::Image::IMAGE_TYPE_LATE_AFTERNOON_MODE,
+      backdrop::Image::IMAGE_TYPE_DARK_MODE};
+
+  std::vector<backdrop::Image> images;
+  for (size_t i = 0; i < image_types.size(); ++i) {
+    const uint64_t asset_id = i + 99;
+    const std::string url =
+        base::StringPrintf("https://preferred_wallpaper/images/%zu", asset_id);
+    backdrop::Image image;
+    image.set_asset_id(asset_id);
+    image.set_unit_id(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId);
+    image.set_image_type(image_types[i]);
+    image.set_image_url(url);
+    images.push_back(image);
+  }
+  return images;
+}
 
 }  // namespace
 
@@ -1352,6 +1377,46 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
   RunAllTasksUntilIdle();
   EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
       GURL(kDummyUrl).ExtractFileName())));
+}
+
+TEST_F(WallpaperControllerTest, SetTimeOfDayWallpaper) {
+  SetBypassDecode();
+
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  SimulateUserLogin(kAccountId1);
+
+  // Verify that calling |SetTimeOfDayWallpaper| will download the image
+  // data if it does not exist. Verify that the wallpaper is set successfully.
+  base::RunLoop run_loop;
+  ClearWallpaperCount();
+  controller_->SetTimeOfDayWallpaper(
+      kAccountId1,
+      base::BindLambdaForTesting([quit = run_loop.QuitClosure()](bool success) {
+        EXPECT_TRUE(success);
+        std::move(quit).Run();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+  // Verify that the user wallpaper info is updated.
+  WallpaperInfo wallpaper_info;
+  EXPECT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info));
+  EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+            wallpaper_info.collection_id);
+  EXPECT_EQ(WallpaperType::kOnline, wallpaper_info.type);
+  // Verify that the any of the wallpaper variant is available offline, and the
+  // returned file name should not contain the small wallpaper suffix.
+  //
+  // The ThreadPool must be flushed to ensure that the online wallpaper is saved
+  // to disc before checking the test expectation below. Ideally, we'd wait for
+  // an explicit event, but the production code does not need this and it's not
+  // worthwhile to add something to the API just for tests.
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
+      GURL(images[1].image_url()).ExtractFileName())));
 }
 
 TEST_F(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {
