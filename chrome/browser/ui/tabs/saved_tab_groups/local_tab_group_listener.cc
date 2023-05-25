@@ -108,6 +108,10 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
     TabStripModel* tab_strip_model,
     content::WebContents* web_contents,
     int tabstrip_index_of_moved_tab) {
+  if (paused_) {
+    return;
+  }
+
   // Ex:        0 1   2 3 4
   //  TabStrip: A B [ C D E ]
   //  TabGroup:       0 1 2
