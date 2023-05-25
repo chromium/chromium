@@ -304,10 +304,9 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
       std::move(callback).Run(std::move(message));
       break;
     default:
-      LOG(ERROR)
-          << "ParentAccessHandler::OnParentAccessCallback: Unknown type of "
-             "callback received and ignored: "
-          << parent_access_callback.callback_case();
+      VLOG(0) << "ParentAccessHandler::OnParentAccessCallback: Unknown type of "
+                 "callback received and ignored: "
+              << parent_access_callback.callback_case();
       RecordParentAccessWidgetError(
           ParentAccessUIHandlerImpl::ParentAccessWidgetError::kUnknownCallback);
       message->type =
