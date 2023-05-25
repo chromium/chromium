@@ -26,6 +26,10 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 
+// Returns whether banner can be displayed to the user after website filtering
+// is enabled
+bool CanDisplayFirstTimeInterstitialBanner();
+
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
 BASE_DECLARE_FEATURE(kRetireStaticDenyList);

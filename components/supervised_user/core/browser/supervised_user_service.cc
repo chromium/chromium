@@ -70,14 +70,16 @@ void SupervisedUserService::Init() {
       static_cast<supervised_user::FirstTimeInterstitialBannerState>(
           user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (banner_state ==
-          supervised_user::FirstTimeInterstitialBannerState::kUnknown &&
-      can_show_first_time_interstitial_banner_) {
-    banner_state =
-        supervised_user::FirstTimeInterstitialBannerState::kNeedToShow;
-  } else {
-    banner_state =
-        supervised_user::FirstTimeInterstitialBannerState::kSetupComplete;
+  if (supervised_user::CanDisplayFirstTimeInterstitialBanner()) {
+    if (banner_state ==
+            supervised_user::FirstTimeInterstitialBannerState::kUnknown &&
+        can_show_first_time_interstitial_banner_) {
+      banner_state =
+          supervised_user::FirstTimeInterstitialBannerState::kNeedToShow;
+    } else {
+      banner_state =
+          supervised_user::FirstTimeInterstitialBannerState::kSetupComplete;
+    }
   }
 #else
   banner_state =
@@ -414,12 +416,7 @@ void SupervisedUserService::OnSiteListUpdated() {
 }
 
 void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {
-  supervised_user::FirstTimeInterstitialBannerState banner_state =
-      static_cast<supervised_user::FirstTimeInterstitialBannerState>(
-          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
-
-  if (banner_state ==
-      supervised_user::FirstTimeInterstitialBannerState::kNeedToShow) {
+  if (ShouldShowFirstTimeInterstitialBanner()) {
     user_prefs_->SetInteger(
         prefs::kFirstTimeInterstitialBannerState,
         static_cast<int>(
@@ -427,4 +424,11 @@ void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {
   }
 }
 
+bool SupervisedUserService::ShouldShowFirstTimeInterstitialBanner() const {
+  supervised_user::FirstTimeInterstitialBannerState banner_state =
+      static_cast<supervised_user::FirstTimeInterstitialBannerState>(
+          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
+  return banner_state ==
+         supervised_user::FirstTimeInterstitialBannerState::kNeedToShow;
+}
 }  // namespace supervised_user

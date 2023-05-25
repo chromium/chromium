@@ -147,6 +147,12 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
 BASE_FEATURE(kEnableManagedByParentUi,
              "EnableManagedByParentUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool CanDisplayFirstTimeInterstitialBanner() {
+  return base::FeatureList::IsEnabled(kEnableSupervisionOnDesktopAndIOS) &&
+         base::FeatureList::IsEnabled(
+             kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+}
 // The URL which the "Managed by your parent" UI links to. This is defined as a
 // FeatureParam (but with the currently correct default) because:
 // * We expect to change this URL in the near-term, this allows us to gradually

@@ -82,10 +82,13 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
       supervised_user_service->remote_web_approvals_manager()
           .AreApprovalRequestsEnabled();
 
+  bool show_banner =
+      supervised_user_service->ShouldShowFirstTimeInterstitialBanner();
+
   return BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
-      application_locale, already_sent_request, is_main_frame);
+      application_locale, already_sent_request, is_main_frame, show_banner);
 }
 
 void SupervisedUserInterstitial::GoBack() {
