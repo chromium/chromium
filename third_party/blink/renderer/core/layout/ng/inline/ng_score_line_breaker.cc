@@ -17,26 +17,21 @@ void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
   scores_out_for_testing_ = scores_out;
 }
 
-void NGScoreLineBreaker::OptimalBreakPoints(
-    const NGInlineBreakToken* break_token,
-    NGScoreLineBreakContext& context) {
-  DCHECK(!is_balanced_ || !break_token);
+void NGScoreLineBreaker::OptimalBreakPoints(NGScoreLineBreakContext& context) {
+  DCHECK(!is_balanced_ || !break_token_);
   DCHECK(context.LineBreakPoints().empty());
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
   NGLineInfoList& line_info_list = context.LineInfoList();
   DCHECK_LT(line_info_list.Size(), NGLineInfoList::kCapacity);
   if (!line_info_list.IsEmpty()) {
-    // The incoming `break_token` should match the first cached line.
-    DCHECK_EQ((break_token ? break_token->Start() : NGInlineItemTextIndex()),
-              line_info_list.Front().Start());
-    // To compute the next line after the last cached line, update `break_token`
-    // to the last cached break token.
+    // To compute the next line after the last cached line, update
+    // `break_token_` to the last cached break token.
     const NGLineInfo& last_line = line_info_list.Back();
-    break_token = last_line.BreakToken();
+    break_token_ = last_line.BreakToken();
     // The last line should not be the end of paragraph.
     // `SuspendUntilConsumed()` should have prevented this from happening.
-    DCHECK(break_token && !last_line.HasForcedBreak());
+    DCHECK(break_token_ && !last_line.HasForcedBreak());
   }
 
   // Compute line breaks and cache the results (`NGLineInfo`) up to
@@ -46,11 +41,12 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   NGLineBreaker line_breaker(
       node_, NGLineBreakerMode::kContent, ConstraintSpace(), line_opportunity_,
       empty_leading_floats,
-      /* handled_leading_floats_index */ 0u, break_token,
+      /* handled_leading_floats_index */ 0u, break_token_,
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
   for (;;) {
     NGLineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
+    break_token_ = line_info.BreakToken();
     if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
       context.SuspendUntilConsumed();
       return;
@@ -102,7 +98,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
 
 void NGScoreLineBreaker::BalanceBreakPoints(NGScoreLineBreakContext& context) {
   is_balanced_ = true;
-  OptimalBreakPoints(/*break_token*/ nullptr, context);
+  OptimalBreakPoints(context);
 }
 
 bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,

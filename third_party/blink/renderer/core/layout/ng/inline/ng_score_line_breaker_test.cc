@@ -36,12 +36,12 @@ class NGScoreLineBreakerTest : public RenderingTest {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     NGLineLayoutOpportunity line_opportunity(width);
-    NGScoreLineBreaker optimizer(node, space, line_opportunity);
+    const NGInlineBreakToken* break_token = nullptr;
+    NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
     Vector<float> scores;
     optimizer.SetScoresOutForTesting(&scores);
     NGScoreLineBreakContext context;
-    const NGInlineBreakToken* break_token = nullptr;
-    optimizer.OptimalBreakPoints(break_token, context);
+    optimizer.OptimalBreakPoints(context);
     return scores;
   }
 };
@@ -72,12 +72,12 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
   NGLineInfoList& line_info_list = context.LineInfoList();
-  NGScoreLineBreaker optimizer(node, space, line_opportunity);
+  const NGInlineBreakToken* break_token = nullptr;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
 
   // Run the optimizer from the beginning of the `target`. This should cache
   // `NGLineInfoList::kCapacity` lines.
-  const NGInlineBreakToken* break_token = nullptr;
-  optimizer.OptimalBreakPoints(break_token, context);
+  optimizer.OptimalBreakPoints(context);
   EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity);
   TestLinesAreContiguous(line_info_list);
 
@@ -91,7 +91,7 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
     EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity - 1);
     break_token = line_info0.BreakToken();
     // Running again should cache one more line.
-    optimizer.OptimalBreakPoints(break_token, context);
+    optimizer.OptimalBreakPoints(context);
     EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity);
     TestLinesAreContiguous(line_info_list);
   }
@@ -126,7 +126,8 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   NGScoreLineBreakContext context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
-  NGScoreLineBreaker optimizer(node, space, line_opportunity);
+  const NGInlineBreakToken* break_token = nullptr;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
 
   // Run the optimizer from the beginning of the `target`. This should stop at
   // `<br>` so that paragraphs separated by forced breaks are optimized
@@ -134,20 +135,18 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   //
   // Since the paragraphs has only 2 break candidates, it should return two
   // `NGLineInfo` without the optimization.
-  const NGInlineBreakToken* break_token = nullptr;
-  optimizer.OptimalBreakPoints(break_token, context);
+  optimizer.OptimalBreakPoints(context);
   EXPECT_EQ(break_points.size(), 0u);
   EXPECT_EQ(line_info_list.Size(), 2u);
 
   // Pretend all the lines are consumed.
-  break_token = line_info_list.Back().BreakToken();
-  EXPECT_TRUE(break_token);
+  EXPECT_TRUE(optimizer.BreakToken());
   line_info_list.Clear();
   context.DidCreateLine();
 
   // Run the optimizer again to continue. This should run up to the end of
   // `target`. It has 4 break candidates so the optimization should apply.
-  optimizer.OptimalBreakPoints(break_token, context);
+  optimizer.OptimalBreakPoints(context);
   EXPECT_EQ(break_points.size(), 3u);
   // `line_info_list` should be partially cleared, only after break points were
   // different.
@@ -255,9 +254,9 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
-  NGScoreLineBreaker optimizer(node, space, line_opportunity);
   const NGInlineBreakToken* break_token = nullptr;
-  optimizer.OptimalBreakPoints(break_token, context);
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
+  optimizer.OptimalBreakPoints(context);
   EXPECT_FALSE(context.IsActive());
   if (data.disabled) {
     EXPECT_EQ(context.LineBreakPoints().size(), 0u);

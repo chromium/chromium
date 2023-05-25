@@ -1342,8 +1342,9 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     } else if (use_score_line_break) {
       DCHECK(score_line_break_context->LineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context->LineBreakPointsIndex(), 0u);
-      NGScoreLineBreaker optimizer(Node(), ConstraintSpace(), line_opportunity);
-      optimizer.OptimalBreakPoints(break_token, *score_line_break_context);
+      NGScoreLineBreaker optimizer(Node(), ConstraintSpace(), line_opportunity,
+                                   break_token);
+      optimizer.OptimalBreakPoints(*score_line_break_context);
     }
 
     bool is_line_info_cached = false;
