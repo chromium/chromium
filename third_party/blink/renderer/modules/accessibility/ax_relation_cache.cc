@@ -96,20 +96,18 @@ AXObject* AXRelationCache::ValidatedAriaOwner(const AXObject* child) {
 // Update reverse relation map, where relation_source is related to target_ids.
 // TODO Support when HasExplicitlySetAttrAssociatedElement() == true.
 void AXRelationCache::UpdateReverseRelations(
-    HashMap<String, HashSet<AXID>>& id_attr_to_axid_map,
-    const AXObject* relation_source,
+    HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+    Node* relation_source,
     const Vector<String>& target_ids) {
-  AXID relation_source_axid = relation_source->AXObjectID();
-
   // Add entries to reverse map.
   for (const String& target_id : target_ids) {
-    auto result = id_attr_to_axid_map.insert(target_id, HashSet<AXID>());
-    result.stored_value->value.insert(relation_source_axid);
+    auto result = id_attr_to_node_map.insert(target_id, HashSet<DOMNodeId>());
+    result.stored_value->value.insert(DOMNodeIds::IdForNode(relation_source));
   }
 }
 
 void AXRelationCache::UpdateReverseTextRelations(
-    const AXObject* relation_source,
+    Node* relation_source,
     const Vector<String>& target_ids) {
   UpdateReverseRelations(id_attr_to_text_relation_mapping_, relation_source,
                          target_ids);
@@ -340,7 +338,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
   }
 
   // Track reverse relations for future tree updates.
-  UpdateReverseRelations(id_attr_to_owns_relation_mapping_, owner,
+  UpdateReverseRelations(id_attr_to_owns_relation_mapping_, owner->GetNode(),
                          owned_id_vector);
 
   // Update the internal mappings of owned children.
@@ -412,7 +410,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     owner->TokenVectorFromAttribute(element, owned_id_vector,
                                     html_names::kAriaOwnsAttr);
     // Track reverse relations for future tree updates.
-    UpdateReverseRelations(id_attr_to_owns_relation_mapping_, owner,
+    UpdateReverseRelations(id_attr_to_owns_relation_mapping_, element,
                            owned_id_vector);
     for (const String& id_name : owned_id_vector) {
       Element* child_element = scope.getElementById(AtomicString(id_name));
@@ -506,7 +504,7 @@ bool AXRelationCache::MayHaveHTMLLabelViaForAttribute(
 // Fill source_objects with AXObjects for relations pointing to target.
 void AXRelationCache::GetReverseRelated(
     Node* target,
-    HashMap<String, HashSet<AXID>>& id_attr_to_axid_map,
+    HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
     HeapVector<Member<AXObject>>& source_objects) {
   auto* element = DynamicTo<Element>(target);
   if (!element)
@@ -515,12 +513,13 @@ void AXRelationCache::GetReverseRelated(
   if (!element->HasID())
     return;
 
-  auto it = id_attr_to_axid_map.find(element->GetIdAttribute());
-  if (it == id_attr_to_axid_map.end())
+  auto it = id_attr_to_node_map.find(element->GetIdAttribute());
+  if (it == id_attr_to_node_map.end()) {
     return;
+  }
 
-  for (const auto& source_axid : it->value) {
-    AXObject* source_object = ObjectFromAXID(source_axid);
+  for (DOMNodeId source_node : it->value) {
+    AXObject* source_object = Get(DOMNodeIds::NodeForId(source_node));
     if (source_object)
       source_objects.push_back(source_object);
   }

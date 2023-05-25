@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -66,11 +67,12 @@ class AXRelationCache {
   // If one or more ids aren't found, they're added to a lookup table so that if
   // an element with that id appears later, it can be added when you call
   // UpdateRelatedTree.
-  void UpdateReverseRelations(HashMap<String, HashSet<AXID>>& id_to_axid_map,
-                              const AXObject* relation_source,
-                              const Vector<String>& target_ids);
+  void UpdateReverseRelations(
+      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+      Node* relation_source,
+      const Vector<String>& target_ids);
   // Update map of ids to related objects for aria-labelledby/aria-describedby.
-  void UpdateReverseTextRelations(const AXObject* relation_source,
+  void UpdateReverseTextRelations(Node* relation_source,
                                   const Vector<String>& target_ids);
 
   // Called when the "for" attribute of a label element changes and the
@@ -130,9 +132,10 @@ class AXRelationCache {
 
   void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                        const Vector<AXID>&);
-  void GetReverseRelated(Node*,
-                         HashMap<String, HashSet<AXID>>& id_attr_to_axid_map,
-                         HeapVector<Member<AXObject>>& sources);
+  void GetReverseRelated(
+      Node*,
+      HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
+      HeapVector<Member<AXObject>>& sources);
   void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
@@ -165,8 +168,8 @@ class AXRelationCache {
   //   quickly determine if it affects an aria-owns relationship.
   // - When text changes, we can recompute any label or description based on it
   //   and fire the appropriate change events.
-  HashMap<String, HashSet<AXID>> id_attr_to_owns_relation_mapping_;
-  HashMap<String, HashSet<AXID>> id_attr_to_text_relation_mapping_;
+  HashMap<String, HashSet<DOMNodeId>> id_attr_to_owns_relation_mapping_;
+  HashMap<String, HashSet<DOMNodeId>> id_attr_to_text_relation_mapping_;
 
   // HTML id attributes that at one time havehad a <label for> pointing to it.
   // IDs are not necessarily removed from this set. It is not necessary to

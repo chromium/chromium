@@ -1944,7 +1944,8 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
 void AXObjectCacheImpl::UpdateReverseTextRelations(
     const AXObject* relation_source,
     const Vector<String>& target_ids) {
-  relation_cache_->UpdateReverseTextRelations(relation_source, target_ids);
+  relation_cache_->UpdateReverseTextRelations(relation_source->GetNode(),
+                                              target_ids);
 }
 
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
