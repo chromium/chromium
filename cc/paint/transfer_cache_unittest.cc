@@ -34,11 +34,6 @@ class TransferCacheTest : public testing::Test {
 
   void SetUp() override {
     gpu::ContextCreationAttribs attribs;
-    attribs.alpha_size = -1;
-    attribs.depth_size = 24;
-    attribs.stencil_size = 8;
-    attribs.samples = 0;
-    attribs.sample_buffers = 0;
     attribs.fail_if_major_perf_caveat = false;
     attribs.bind_generates_resource = false;
     // Enable OOP rasterization.

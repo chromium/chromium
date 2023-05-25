@@ -71,12 +71,8 @@ class GLManager : private GpuControl {
     bool force_shader_name_hashing = false;
     // Whether the buffer is multisampled.
     bool multisampled = false;
-    // Whether the backbuffer has an alpha channel.
-    bool backbuffer_alpha = true;
     // If we should use native gmb for backbuffer.
     bool should_use_native_gmb_for_backbuffer = false;
-    // Whether to preserve the backbuffer after a call to SwapBuffers().
-    bool preserve_backbuffer = false;
     // Shared memory limits
     SharedMemoryLimits shared_memory_limits = {};
   };

@@ -196,13 +196,6 @@ class RecordReplayContext : public GpuControl {
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
     ContextCreationAttribs attrib_helper;
-    attrib_helper.offscreen_framebuffer_size = gfx::Size(16, 16);
-    attrib_helper.red_size = 8;
-    attrib_helper.green_size = 8;
-    attrib_helper.blue_size = 8;
-    attrib_helper.alpha_size = 8;
-    attrib_helper.depth_size = 0;
-    attrib_helper.stencil_size = 0;
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES3;
 
     ContextResult result =

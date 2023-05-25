@@ -63,14 +63,6 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   auto* holder = TestGpuServiceHolder::GetInstance();
 
   gpu::ContextCreationAttribs attribs;
-  attribs.alpha_size = 8;
-  attribs.blue_size = 8;
-  attribs.green_size = 8;
-  attribs.red_size = 8;
-  attribs.depth_size = 0;
-  attribs.stencil_size = 8;
-  attribs.samples = 0;
-  attribs.sample_buffers = 0;
   attribs.bind_generates_resource = false;
 
   if (type_ == TestContextType::kGLES2 ||

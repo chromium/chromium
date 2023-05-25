@@ -58,14 +58,6 @@ class GLHelperTest : public testing::Test {
     feature_list_.Init();
 
     ContextCreationAttribs attributes;
-    attributes.alpha_size = 8;
-    attributes.depth_size = 24;
-    attributes.red_size = 8;
-    attributes.green_size = 8;
-    attributes.blue_size = 8;
-    attributes.stencil_size = 8;
-    attributes.samples = 4;
-    attributes.sample_buffers = 1;
     attributes.bind_generates_resource = false;
 
     context_ = std::make_unique<GLInProcessContext>();

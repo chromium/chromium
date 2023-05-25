@@ -2430,12 +2430,6 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
 #endif
 
   context_creation_attribs_.offscreen_framebuffer_size = gfx::Size(4, 4);
-  context_creation_attribs_.alpha_size = 8;
-  context_creation_attribs_.blue_size = 8;
-  context_creation_attribs_.green_size = 8;
-  context_creation_attribs_.red_size = 8;
-  context_creation_attribs_.depth_size = 24;
-  context_creation_attribs_.stencil_size = 8;
   context_creation_attribs_.bind_generates_resource = true;
 
   gl::init::InitializeStaticGLBindingsImplementation(

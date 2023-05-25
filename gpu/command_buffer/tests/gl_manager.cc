@@ -315,11 +315,9 @@ void GLManager::InitializeWithWorkaroundsImpl(
   attribs.context_type = options.context_type;
   attribs.samples = options.multisampled ? 4 : 0;
   attribs.sample_buffers = options.multisampled ? 1 : 0;
-  attribs.alpha_size = options.backbuffer_alpha ? 8 : 0;
   attribs.should_use_native_gmb_for_backbuffer =
       options.should_use_native_gmb_for_backbuffer;
   attribs.offscreen_framebuffer_size = options.size;
-  attribs.buffer_preserved = options.preserve_backbuffer;
   attribs.bind_generates_resource = options.bind_generates_resource;
 
   translator_cache_ =
