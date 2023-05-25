@@ -192,7 +192,7 @@ interface SodaClient {
   OnSpeechRecognizerEvent@2(SpeechRecognizerEvent event);
 };
 
-// The mojom interface for performing the recognition of handwritten text.
+// The mojom interface for performing the recognition of spoken text.
 // Next ordinal: 4
 [Stable]
 interface SodaRecognizer {
