@@ -621,15 +621,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Intercept.AccountInfoFetchDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the account info fetch after signin interception.
-  </summary>
-</histogram>
-
 <histogram name="Signin.Intercept.FRE.Event"
     enum="SigninInterceptFREDialogEvent" expires_after="2023-10-08">
   <owner>alexilin@chromium.org</owner>
@@ -647,26 +638,6 @@ prefs when the profile is loaded.  -->
   <summary>
     Records the outcome of the signin interception heuristic, which runs for
     each signin interception.
-  </summary>
-</histogram>
-
-<histogram name="Signin.Intercept.ProfileCreationDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the signed-in profile creation after signin
-    interception.
-  </summary>
-</histogram>
-
-<histogram name="Signin.Intercept.ProfileSwitchDuration" units="ms"
-    expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>droger@chromium.org</owner>
-  <summary>
-    Records the duration of the signed-in profile switch after signin
-    interception.
   </summary>
 </histogram>
 

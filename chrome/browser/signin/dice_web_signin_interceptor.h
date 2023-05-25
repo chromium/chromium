@@ -284,8 +284,6 @@ class DiceWebSigninInterceptor : public KeyedService,
       interception_bubble_handle_;
   // Used for metrics:
   bool was_interception_ui_displayed_ = false;
-  base::TimeTicks account_info_fetch_start_time_;
-  base::TimeTicks profile_creation_start_time_;
 
   // Timeout for the fetch of cloud user level policy value of
   // ManagedAccountsSigninRestriction. The signin interception continue with an
