@@ -6568,6 +6568,7 @@ data/service_worker/echo_request_headers.js
 data/service_worker/echo_request_headers.js.mock-http-headers
 data/service_worker/empty.html
 data/service_worker/empty.js
+data/service_worker/empty2.html
 data/service_worker/empty_fetch_event.js
 data/service_worker/empty_isolated.js
 data/service_worker/empty_isolated.js.mock-http-headers

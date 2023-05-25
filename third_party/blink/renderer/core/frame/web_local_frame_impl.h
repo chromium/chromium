@@ -387,8 +387,8 @@ class CORE_EXPORT WebLocalFrameImpl final
           soft_navigation_heuristics_task_id) override;
   void SetIsNotOnInitialEmptyDocument() override;
   bool IsOnInitialEmptyDocument() override;
-  void WillPotentiallyStartOutermostMainFrameNavigation(
-      const WebURL&) const override;
+  void MaybeStartOutermostMainFrameNavigation(
+      const WebVector<WebURL>& urls) const override;
   bool WillStartNavigation(const WebNavigationInfo&) override;
   void DidDropNavigation() override;
   void DownloadURL(

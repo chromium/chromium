@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
+#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -198,6 +200,27 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSpeculativeServiceWorkerWarmUp) &&
+        Url().IsValid()) {
+      Document& top_document = GetDocument().TopDocument();
+      if (auto* observer =
+              AnchorElementObserverForServiceWorker::From(top_document)) {
+        if (blink::features::kSpeculativeServiceWorkerWarmUpOnPointerover
+                .Get() &&
+            (event.type() == event_type_names::kMouseover ||
+             event.type() == event_type_names::kPointerover)) {
+          observer->MaybeSendNavigationTargetUrls(Vector<KURL>({Url()}));
+        } else if (blink::features::kSpeculativeServiceWorkerWarmUpOnPointerdown
+                       .Get() &&
+                   (event.type() == event_type_names::kMousedown ||
+                    event.type() == event_type_names::kPointerdown ||
+                    event.type() == event_type_names::kTouchstart)) {
+          observer->MaybeSendNavigationTargetUrls(Vector<KURL>({Url()}));
+        }
+      }
+    }
+
     if (IsFocused() && IsEnterKeyKeydownEvent(event) && IsLiveLink()) {
       event.SetDefaultHandled();
       DispatchSimulatedClick(&event);
@@ -597,6 +620,15 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
   Document& top_document = GetDocument().TopDocument();
   if (AnchorElementMetricsSender::HasAnchorElementMetricsSender(top_document)) {
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) &&
+      blink::features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
+    if (auto* observer =
+            AnchorElementObserverForServiceWorker::From(top_document)) {
+      observer->ObserveAnchorElementVisibility(*this);
+    }
   }
 
   if (isConnected() && IsLink()) {

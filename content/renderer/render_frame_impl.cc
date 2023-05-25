@@ -5193,10 +5193,10 @@ void RenderFrameImpl::BeginNavigation(
     }
   }
 
-  if (frame_->IsOutermostMainFrame() && url.SchemeIsHTTPOrHTTPS() &&
-      !url.is_empty() &&
+  if (frame_->IsOutermostMainFrame() && url.is_valid() &&
+      url.SchemeIsHTTPOrHTTPS() &&
       base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
-    frame_->WillPotentiallyStartOutermostMainFrameNavigation(url);
+    frame_->MaybeStartOutermostMainFrameNavigation(WebVector<WebURL>({url}));
   }
 
   // Depending on navigation policy, send one of three IPCs to the browser

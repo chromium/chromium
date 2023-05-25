@@ -633,6 +633,81 @@ const base::FeatureParam<ForceDarkImageClassifier>
                                    ForceDarkImageClassifier::kUseBlinkSettings,
                                    &forcedark_image_classifier_policy_options};
 
+// Enable service worker warming-up feature. (https://crbug.com/1431792)
+BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
+             "SpeculativeServiceWorkerWarmUp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, do not actually warm-up service workers.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpDryRun{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_dry_run", false};
+
+// kSpeculativeServiceWorkerWarmUp observes anchor events such as visibility,
+// pointerover, and pointerdown. These events could be triggered very often. To
+// reduce the frequency of processing, kSpeculativeServiceWorkerWarmUp uses a
+// timer to batch URL candidates together for this amount of duration.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpBatchTimer{&kSpeculativeServiceWorkerWarmUp,
+                                              "sw_warm_up_batch_timer",
+                                              base::Milliseconds(100)};
+
+// kSpeculativeServiceWorkerWarmUp warms up service workers up to this max
+// count.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpMaxCount{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_max_count", 10};
+
+// kSpeculativeServiceWorkerWarmUp remembers recent warm-up requests to prevent
+// excessive duplicate warm-up. The following cache size is the cache size for
+// duplicated request checks.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestCacheSize{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_cache_size", 1000};
+
+// kSpeculativeServiceWorkerWarmUp enqueues navigation candidate URLs. This is
+// the queue length of the candidate URLs.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestQueueLength{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_queue_length", 1000};
+
+// kSpeculativeServiceWorkerWarmUp accept requests of navigation candidate URLs.
+// This is the request count limit per document.
+const base::FeatureParam<int> kSpeculativeServiceWorkerWarmUpRequestLimit{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_request_limit", 1000};
+
+// Duration to keep worker warmed-up.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpDuration{&kSpeculativeServiceWorkerWarmUp,
+                                            "sw_warm_up_duration",
+                                            base::Minutes(10)};
+// Duration to re-warmup service worker. This duration must be shorter than
+// sw_warm_up_duration.
+const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpReWarmUpThreshold{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_re_warm_up_threshold",
+        base::Minutes(7)};
+
+// Enable IntersectionObserver to detect anchor's visibility.
+const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserver{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_intersection_observer",
+        true};
+
+// Duration from previous IntersectionObserver event to the next event.
+const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay{
+        &kSpeculativeServiceWorkerWarmUp,
+        "sw_warm_up_intersection_observer_delay", 100};
+
+// Warms up service workers when the anchor becomes visible.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnVisible{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_visible", true};
+
+// Warms up service workers when a pointerover event is triggered on an anchor.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerover", true};
+
+// Warms up service workers when a pointerdown event is triggered on an anchor.
+const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
+    &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
+
 // Instructs WebRTC to honor the Min/Max Video Encode Accelerator dimensions.
 BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
              "WebRtcUseMinMaxVEADimensions",

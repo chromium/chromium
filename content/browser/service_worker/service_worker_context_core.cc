@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -214,6 +215,15 @@ class ClearAllServiceWorkersHelper
 
   base::OnceClosure callback_;
 };
+
+int GetWarmedUpServiceWorkerCount(
+    const std::map<int64_t, ServiceWorkerVersion*>& live_versions) {
+  return base::ranges::count_if(live_versions, [](const auto& iter) {
+    ServiceWorkerVersion& service_worker_version = *iter.second;
+    return service_worker_version.IsWarmingUp() ||
+           service_worker_version.IsWarmedUp();
+  });
+}
 
 }  // namespace
 
@@ -694,6 +704,47 @@ void ServiceWorkerContextCore::WaitForRegistrationsInitializedForTest() {
   base::RunLoop loop;
   on_registrations_initialized_for_test_ = loop.QuitClosure();
   loop.Run();
+}
+
+void ServiceWorkerContextCore::AddWarmUpRequest(
+    const GURL& document_url,
+    const blink::StorageKey& key,
+    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback) {
+  const size_t kRequestQueueLength =
+      blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
+
+  warm_up_requests_.emplace_back(document_url, key, std::move(callback));
+
+  while (warm_up_requests_.size() > kRequestQueueLength) {
+    auto [front_url, front_key, front_callback] =
+        std::move(warm_up_requests_.front());
+    std::move(front_callback).Run();
+    warm_up_requests_.pop_front();
+  }
+}
+
+absl::optional<ServiceWorkerContextCore::WarmUpRequest>
+ServiceWorkerContextCore::PopNextWarmUpRequest() {
+  DCHECK(!IsProcessingWarmingUp());
+
+  if (warm_up_requests_.empty()) {
+    return absl::nullopt;
+  }
+
+  if (GetWarmedUpServiceWorkerCount(live_versions_) >=
+      blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.Get()) {
+    warm_up_requests_.clear();
+    return absl::nullopt;
+  }
+
+  // Return the most recent queued request (LIFO order) to prioritize recently
+  // added URLs. For example, the recent mouse-hoverd link will have a higher
+  // chance to navigate than the previously mouse-hoverd link.
+  absl::optional<ServiceWorkerContextCore::WarmUpRequest> request(
+      std::move(warm_up_requests_.back()));
+  warm_up_requests_.pop_back();
+  BeginProcessingWarmingUp();
+  return request;
 }
 
 void ServiceWorkerContextCore::RegistrationComplete(

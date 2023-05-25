@@ -242,6 +242,35 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageClassifier>
     kForceDarkImageClassifierParam;
 
+// TODO(crbug/1431792): Speculatively warm-up service worker.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerWarmUp);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpDryRun;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpBatchTimer;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpMaxCount;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpRequestCacheSize;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpRequestQueueLength;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpRequestLimit;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpDuration;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kSpeculativeServiceWorkerWarmUpReWarmUpThreshold;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserver;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSpeculativeServiceWorkerWarmUpIntersectionObserverDelay;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpOnVisible;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpOnPointerover;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpOnPointerdown;
+
 // Returns true when PlzDedicatedWorker is enabled.
 BLINK_COMMON_EXPORT bool IsPlzDedicatedWorkerEnabled();
 

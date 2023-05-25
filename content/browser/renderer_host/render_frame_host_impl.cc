@@ -188,6 +188,7 @@
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/common/origin_util.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/referrer_type_converters.h"
@@ -5481,32 +5482,66 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
                                     std::move(dialog_closed_callback));
 }
 
-void RenderFrameHostImpl::WillPotentiallyStartOutermostMainFrameNavigation(
-    const GURL& url) {
-  TRACE_EVENT2(
-      "navigation",
-      "RenderFrameHostImpl::WillPotentiallyStartOutermostMainFrameNavigation",
-      "url", url, "render_frame_host", this);
+void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
+    const std::vector<GURL>& urls) {
+  const bool kStartupEnabled =
+      base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup);
+  const bool kWarmUpEnabled =
+      base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp) &&
+      !blink::features::kSpeculativeServiceWorkerWarmUpDryRun.Get();
 
-  GURL filtered_url(url);
-  GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
-  if (filtered_url == GURL(kBlockedURL))
+  if (!kStartupEnabled && !kWarmUpEnabled) {
     return;
+  }
 
-  // Ask the service worker context to speculatively start a service worker for
-  // the request URL if necessary for optimization purposes. There are cases
-  // where we have already started the service worker (e.g, Prerendering or the
-  // previous navigation already started the service worker), but this call does
-  // nothing if the service worker already started for the URL.
-  if (base::FeatureList::IsEnabled(kSpeculativeServiceWorkerStartup)) {
-    if (ServiceWorkerContext* context =
-            GetStoragePartition()->GetServiceWorkerContext()) {
-      const blink::StorageKey key = blink::StorageKey::CreateFirstParty(
-          url::Origin::Create(filtered_url));
-      if (context->MaybeHasRegistrationForStorageKey(key)) {
-        context->StartServiceWorkerForNavigationHint(filtered_url, key,
-                                                     base::DoNothing());
-      }
+  TRACE_EVENT0("navigation",
+               "RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation");
+
+  ServiceWorkerContextWrapper* context =
+      GetStoragePartition()->GetServiceWorkerContext();
+
+  if (!context) {
+    return;
+  }
+
+  for (const auto& url : urls) {
+    GURL filtered_url(url);
+
+    GetProcess()->FilterURL(/*empty_allowed=*/false, &filtered_url);
+
+    if (filtered_url.spec() == kBlockedURL) {
+      continue;
+    }
+
+    if (!OriginCanAccessServiceWorkers(filtered_url)) {
+      continue;
+    }
+
+    const blink::StorageKey key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(filtered_url));
+
+    if (!context->MaybeHasRegistrationForStorageKey(key)) {
+      continue;
+    }
+
+    // Ask the service worker context to speculatively start a service worker
+    // for the request URL if necessary for optimization purposes. There are
+    // cases where we have already started the service worker (e.g, Prerendering
+    // or the previous navigation already started the service worker), but this
+    // call does nothing if the service worker already started for the URL.
+    if (kStartupEnabled) {
+      context->StartServiceWorkerForNavigationHint(filtered_url, key,
+                                                   base::DoNothing());
+    }
+
+    // Ask the service worker context to speculatively warm-up a service worker
+    // for the request URL if necessary for optimization purposes. There are
+    // cases where we have already started the service worker (e.g, Prerendering
+    // or the previous navigation already started the service worker), but this
+    // call does nothing if the service worker already started for the URL.
+    if (kWarmUpEnabled) {
+      context->WarmUpServiceWorker(filtered_url, key, base::DoNothing());
     }
   }
 }

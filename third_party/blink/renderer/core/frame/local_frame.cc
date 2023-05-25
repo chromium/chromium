@@ -1944,13 +1944,12 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   return false;
 }
 
-void LocalFrame::WillPotentiallyStartOutermostMainFrameNavigation(
-    const KURL& url) const {
-  TRACE_EVENT1("navigation",
-               "LocalFrame::WillPotentiallyStartOutermostMainFrameNavigation",
-               "url", url);
+void LocalFrame::MaybeStartOutermostMainFrameNavigation(
+    const Vector<KURL>& urls) const {
+  TRACE_EVENT0("navigation",
+               "LocalFrame::MaybeStartOutermostMainFrameNavigation");
   mojo_handler_->NonAssociatedLocalFrameHostRemote()
-      .WillPotentiallyStartOutermostMainFrameNavigation(url);
+      .MaybeStartOutermostMainFrameNavigation(urls);
 }
 
 ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {

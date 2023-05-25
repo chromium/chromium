@@ -2816,9 +2816,11 @@ void WebLocalFrameImpl::DownloadURL(
                           std::move(blob_url_token));
 }
 
-void WebLocalFrameImpl::WillPotentiallyStartOutermostMainFrameNavigation(
-    const WebURL& url) const {
-  GetFrame()->WillPotentiallyStartOutermostMainFrameNavigation(url);
+void WebLocalFrameImpl::MaybeStartOutermostMainFrameNavigation(
+    const WebVector<WebURL>& urls) const {
+  Vector<KURL> kurls;
+  std::move(urls.begin(), urls.end(), std::back_inserter(kurls));
+  GetFrame()->MaybeStartOutermostMainFrameNavigation(std::move(kurls));
 }
 
 bool WebLocalFrameImpl::WillStartNavigation(const WebNavigationInfo& info) {

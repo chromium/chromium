@@ -201,6 +201,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/anchor_element_observer_for_service_worker.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -3783,6 +3784,14 @@ void Document::ImplicitClose() {
 
   if (lazy_load_image_observer_) {
     lazy_load_image_observer_->DocumentOnLoadFinished(this);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp)) {
+    if (auto* observer =
+            AnchorElementObserverForServiceWorker::From(TopDocument())) {
+      observer->MaybeSendPendingWarmUpRequests();
+    }
   }
 }
 
