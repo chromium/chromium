@@ -7013,7 +7013,11 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
   EXPECT_FALSE(socket_data.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest,
+class URLLoaderMockSocketAuctionOnlyTest
+    : public URLLoaderMockSocketTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(URLLoaderMockSocketAuctionOnlyTest,
        FetchAuctionOnlySignalsFromRendererClosesSocket) {
   auto client_security_state = NewSecurityState();
   client_security_state->local_network_request_policy =
@@ -7028,13 +7032,15 @@ TEST_F(URLLoaderMockSocketTest,
                      "User-Agent: \r\n"
                      "Accept-Encoding: gzip, deflate\r\n\r\n"),
   };
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "%s"
+      "Content-Type: text/plain\r\n"
+      "Content-Length: 23\r\n\r\n",
+      GetParam().c_str());
   net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1,
-                    "HTTP/1.1 200 OK\r\n"
-                    "Connection: keep-alive\r\n"
-                    "X-FLEDGE-Auction-Only: true\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
@@ -7055,7 +7061,7 @@ TEST_F(URLLoaderMockSocketTest,
   EXPECT_FALSE(socket_data.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest,
+TEST_P(URLLoaderMockSocketAuctionOnlyTest,
        FetchAuctionOnlySignalsFromBrowserProcessSucceeds) {
   auto client_security_state = NewSecurityState();
   client_security_state->local_network_request_policy =
@@ -7070,13 +7076,15 @@ TEST_F(URLLoaderMockSocketTest,
                      "User-Agent: \r\n"
                      "Accept-Encoding: gzip, deflate\r\n\r\n"),
   };
+  const std::string first_read = base::StringPrintf(
+      "HTTP/1.1 200 OK\r\n"
+      "Connection: keep-alive\r\n"
+      "%s"
+      "Content-Type: text/plain\r\n"
+      "Content-Length: 23\r\n\r\n",
+      GetParam().c_str());
   net::MockRead kReads[] = {
-      net::MockRead(net::SYNCHRONOUS, 1,
-                    "HTTP/1.1 200 OK\r\n"
-                    "Connection: keep-alive\r\n"
-                    "X-FLEDGE-Auction-Only: true\r\n"
-                    "Content-Type: text/plain\r\n"
-                    "Content-Length: 23\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, 1, first_read.c_str()),
       net::MockRead(net::SYNCHRONOUS, 2, "This should not be read"),
   };
 
@@ -7093,6 +7101,16 @@ TEST_F(URLLoaderMockSocketTest,
             LoadRequest(request, /*body=*/nullptr, /*is_trusted=*/true));
   EXPECT_TRUE(socket_data.socket());
 }
+
+// TODO(crbug.com/1448564): Remove old names once API users have migrated to new
+// names.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    URLLoaderMockSocketAuctionOnlyTest,
+    testing::Values(
+        "Ad-Auction-Only: true\r\n",
+        "X-FLEDGE-Auction-Only: true\r\n",
+        "Ad-Auction-Only: true\r\nX-FLEDGE-Auction-Only: true\r\n"));
 
 TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   auto client_security_state = NewSecurityState();

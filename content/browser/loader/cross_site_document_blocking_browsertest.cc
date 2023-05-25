@@ -640,6 +640,8 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   EXPECT_EQ("", interceptor.response_body());
 }
 
+// TODO(crbug.com/1448564): Remove support for old header names once API users
+// have switched.
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
                        FledgeAuctionOnlySignalsNotReadableFromFetch) {
   embedded_test_server()->StartAcceptingConnections();
@@ -658,6 +660,54 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
 
   // Verify that X-FLEDGE-Auction-Only blocked the response before it
   // reached the renderer process.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            interceptor.completion_status().error_code);
+  EXPECT_EQ("", interceptor.response_body());
+}
+
+IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
+                       FledgeAuctionOnlySignalsNotReadableFromFetchNewName) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  // Navigate to the test page while request interceptor is active.
+  // Note that even same origin requests are blocked.
+  GURL resource_url("http://foo.com/interest_group/auction_only_new_name.json");
+  RequestInterceptor interceptor(resource_url);
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("http://foo.com/title1.html")));
+
+  // Issue the request that will be intercepted.
+  const char kScriptTemplate[] = "fetch($1)";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, resource_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  interceptor.WaitForRequestCompletion();
+
+  // Verify that Ad-Auction-Only blocked the response before it reached the
+  // renderer process.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            interceptor.completion_status().error_code);
+  EXPECT_EQ("", interceptor.response_body());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CrossSiteDocumentBlockingTest,
+    FledgeAuctionOnlySignalsNotReadableFromFetchBothNewAndOldNames) {
+  embedded_test_server()->StartAcceptingConnections();
+
+  // Navigate to the test page while request interceptor is active.
+  // Note that even same origin requests are blocked.
+  GURL resource_url(
+      "http://foo.com/interest_group/auction_only_both_new_and_old_names.json");
+  RequestInterceptor interceptor(resource_url);
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("http://foo.com/title1.html")));
+
+  // Issue the request that will be intercepted.
+  const char kScriptTemplate[] = "fetch($1)";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, resource_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  interceptor.WaitForRequestCompletion();
+
+  // Verify that Ad-Auction-Only and X-FLEDGE-Auction-Only blocked the response
+  // before it reached the renderer process.
   EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
             interceptor.completion_status().error_code);
   EXPECT_EQ("", interceptor.response_body());
@@ -1539,6 +1589,8 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
       << "PNG in a same-origin webbundle should not be blocked";
 }
 
+// TODO(crbug.com/1448564): Remove support for old header names once API users
+// have switched.
 IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
                        FledgeAuctionOnlySignalsNotReadableFromFetchWebBundle) {
   https_server()->StartAcceptingConnections();
@@ -1559,6 +1611,60 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingWebBundleTest,
 
   // Verify that X-FLEDGE-Auction-Only blocked the response before it
   // reached the renderer process.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            interceptor.completion_status().error_code);
+  EXPECT_EQ("", interceptor.response_body());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrossSiteDocumentBlockingWebBundleTest,
+    FledgeAuctionOnlySignalsNotReadableFromFetchWebBundleNewName) {
+  https_server()->StartAcceptingConnections();
+
+  // Navigate to the test page while request interceptor is active.
+  // Note that even same origin requests are blocked.
+  GURL subresource_url(
+      "https://foo.com/interest_group/auction_only_in_bundle.json");
+  RequestInterceptor interceptor(subresource_url);
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      GURL("https://foo.com/interest_group/auction_only_new_name.html")));
+
+  // Issue the request that will be intercepted.
+  const char kScriptTemplate[] = "fetch($1)";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, subresource_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  interceptor.WaitForRequestCompletion();
+
+  // Verify that Ad-Auction-Only blocked the response before it
+  // reached the renderer process.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            interceptor.completion_status().error_code);
+  EXPECT_EQ("", interceptor.response_body());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CrossSiteDocumentBlockingWebBundleTest,
+    FledgeAuctionOnlySignalsNotReadableFromFetchWebBundleBothNewAndOldNames) {
+  https_server()->StartAcceptingConnections();
+
+  // Navigate to the test page while request interceptor is active.
+  // Note that even same origin requests are blocked.
+  GURL subresource_url(
+      "https://foo.com/interest_group/auction_only_in_bundle.json");
+  RequestInterceptor interceptor(subresource_url);
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GURL("https://foo.com/interest_group/"
+                                  "auction_only_both_new_and_old_names.html")));
+
+  // Issue the request that will be intercepted.
+  const char kScriptTemplate[] = "fetch($1)";
+  EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, subresource_url),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  interceptor.WaitForRequestCompletion();
+
+  // Verify that both Ad-Auction-Only and X-FLEDGE-Auction-Only blocked the
+  // response before it reached the renderer process.
   EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
             interceptor.completion_status().error_code);
   EXPECT_EQ("", interceptor.response_body());
