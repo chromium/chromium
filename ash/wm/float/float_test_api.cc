@@ -5,7 +5,6 @@
 #include "ash/wm/float/float_test_api.h"
 
 #include "ash/shell.h"
-#include "ash/wm/float/float_controller.h"
 
 namespace ash {
 
@@ -19,6 +18,13 @@ int FloatTestApi::GetFloatedWindowMoveToAnotherDeskCounter() {
   return Shell::Get()
       ->float_controller()
       ->floated_window_move_to_another_desk_counter_;
+}
+
+// static
+FloatController::MagnetismCorner FloatTestApi::GetMagnetismCornerForBounds(
+    const gfx::Rect& bounds_in_screen) {
+  return Shell::Get()->float_controller()->GetMagnetismCornerForBounds(
+      bounds_in_screen);
 }
 
 }  // namespace ash

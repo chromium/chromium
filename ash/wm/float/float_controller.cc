@@ -123,40 +123,6 @@ void ShowFloatedWindow(aura::Window* floated_window) {
   floated_window->Show();
 }
 
-FloatController::MagnetismCorner GetMagnetismCornerForBounds(
-    const gfx::Rect& bounds_in_screen) {
-  const gfx::Point display_bounds_center =
-      display::Screen::GetScreen()
-          ->GetDisplayMatching(bounds_in_screen)
-          .bounds()
-          .CenterPoint();
-  const int display_bounds_center_x = display_bounds_center.x();
-  const int display_bounds_center_y = display_bounds_center.y();
-
-  // Check which corner to magnetize to based on which quadrant of the display
-  // the centerpoint of the window was on touch released. Not that the
-  // centerpoint may be offscreen.
-  const gfx::Point center_point = bounds_in_screen.CenterPoint();
-  const int center_point_x = center_point.x();
-  const int center_point_y = center_point.y();
-  FloatController::MagnetismCorner magnetism_corner;
-  if (center_point_x < display_bounds_center_x &&
-      center_point_y < display_bounds_center_y) {
-    magnetism_corner = FloatController::MagnetismCorner::kTopLeft;
-  } else if (center_point_x >= display_bounds_center_x &&
-             center_point_y < display_bounds_center_y) {
-    magnetism_corner = FloatController::MagnetismCorner::kTopRight;
-  } else if (center_point_x < display_bounds_center_x &&
-             center_point_y >= display_bounds_center_y) {
-    magnetism_corner = FloatController::MagnetismCorner::kBottomLeft;
-  } else {
-    CHECK_GE(center_point_x, display_bounds_center_x);
-    CHECK_GE(center_point_y, display_bounds_center_y);
-    magnetism_corner = FloatController::MagnetismCorner::kBottomRight;
-  }
-  return magnetism_corner;
-}
-
 class FloatLayoutManager : public WmDefaultLayoutManager {
  public:
   FloatLayoutManager() = default;
@@ -858,6 +824,29 @@ void FloatController::ToggleFloat(aura::Window* window) {
   const WMEvent toggle_event(window_state->IsFloated() ? WM_EVENT_RESTORE
                                                        : WM_EVENT_FLOAT);
   window_state->OnWMEvent(&toggle_event);
+}
+
+// static
+FloatController::MagnetismCorner FloatController::GetMagnetismCornerForBounds(
+    const gfx::Rect& bounds_in_screen) {
+  // Check which corner to magnetize to based on which quadrant of the display
+  // the centerpoint of the window was on touch released. Note that the
+  // centerpoint may be offscreen.
+  const gfx::Point display_bounds_center =
+      display::Screen::GetScreen()
+          ->GetDisplayMatching(bounds_in_screen)
+          .bounds()
+          .CenterPoint();
+  const gfx::Point center_point = bounds_in_screen.CenterPoint();
+  const bool is_left_half = center_point.x() < display_bounds_center.x();
+  if (center_point.y() < display_bounds_center.y()) {
+    // Top half.
+    return is_left_half ? FloatController::MagnetismCorner::kTopLeft
+                        : FloatController::MagnetismCorner::kTopRight;
+  }
+  // Bottom half.
+  return is_left_half ? FloatController::MagnetismCorner::kBottomLeft
+                      : FloatController::MagnetismCorner::kBottomRight;
 }
 
 void FloatController::FloatForTablet(aura::Window* window,

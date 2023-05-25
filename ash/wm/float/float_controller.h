@@ -153,6 +153,9 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   friend class FloatTestApi;
   friend class TabletModeWindowState;
 
+  static MagnetismCorner GetMagnetismCornerForBounds(
+      const gfx::Rect& bounds_in_screen);
+
   // Calls `FloatImpl()` and additionally updates the magnetism if needed.
   void FloatForTablet(aura::Window* window,
                       chromeos::WindowStateType old_state_type);

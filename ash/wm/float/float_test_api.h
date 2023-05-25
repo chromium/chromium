@@ -5,6 +5,8 @@
 #ifndef ASH_WM_FLOAT_FLOAT_TEST_API_H_
 #define ASH_WM_FLOAT_FLOAT_TEST_API_H_
 
+#include "ash/wm/float/float_controller.h"
+
 namespace ash {
 
 // Helper class used by tests to access FloatController's internal elements.
@@ -14,6 +16,8 @@ class FloatTestApi {
 
   static int GetFloatedWindowCounter();
   static int GetFloatedWindowMoveToAnotherDeskCounter();
+  static FloatController::MagnetismCorner GetMagnetismCornerForBounds(
+      const gfx::Rect& bounds_in_screen);
 };
 
 }  // namespace ash

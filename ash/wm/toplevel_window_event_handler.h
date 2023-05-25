@@ -176,6 +176,10 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // screen.
   gfx::PointF first_finger_touch_point_;
 
+  // True while a drag from the caption area to move the floated window is in
+  // progress. If true, stops propagation to avoid showing the tab strip.
+  bool is_moving_floated_window_ = false;
+
   // Is a window move/resize in progress because of gesture events?
   bool in_gesture_drag_ = false;
 
