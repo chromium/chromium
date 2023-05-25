@@ -252,9 +252,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
           streaming_.reset();
           return;
         }
-        case BytesConsumer::Result::kError: {
-          return AbortCompilation();
-        }
+        case BytesConsumer::Result::kError:
+          return AbortCompilation("Network error: " +
+                                  consumer_->GetError().Message());
       }
     }
   }
@@ -263,7 +263,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
 
   void Cancel() override {
     consumer_->Cancel();
-    return AbortCompilation();
+    return AbortCompilation("Cancellation requested");
   }
 
   void Trace(Visitor* visitor) const override {
@@ -303,7 +303,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
  private:
   // TODO(ahaas): replace with spec-ed error types, once spec clarifies
   // what they are.
-  void AbortCompilation() {
+  void AbortCompilation(String reason) {
     // Ignore a repeated abort request, or abort after successfully finishing.
     if (!streaming_) {
       return;
@@ -311,7 +311,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
       streaming_->Abort(V8ThrowException::CreateTypeError(
-          script_state_->GetIsolate(), "Could not download wasm module"));
+          script_state_->GetIsolate(),
+          "WebAssembly compilation aborted: " + reason));
     } else {
       // We are not allowed to execute a script, which indicates that we should
       // not reject the promise of the streaming compilation. By passing no
