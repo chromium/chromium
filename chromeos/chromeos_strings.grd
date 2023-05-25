@@ -3990,7 +3990,7 @@
           Text
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_WINDOWS_AND_DESKS" desc="Category named 'Windows and Desks' shown on the navigation sidebar">
-          Windows and Desks
+          Windows and desks
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_ACCESSIBILITY" desc="Category named 'Accessibility' shown on the navigation sidebar">
           Accessibility
@@ -4002,7 +4002,7 @@
           Developer
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_GENERAL_CONTROLS" desc="Subcategory named 'GeneralControls' shown within main shortcuts section">
-          General Controls
+          General controls
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_APPS" desc="Subcategory named 'Apps' shown within main shortcuts section">
           Apps
