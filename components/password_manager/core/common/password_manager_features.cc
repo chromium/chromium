@@ -137,7 +137,7 @@ BASE_FEATURE(kIOSPasswordBottomSheet,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kMemoryMapWeaknessCheckDictionaries,
              "MemoryMapWeaknessCheckDictionaries",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables new regex for OTP fields.
