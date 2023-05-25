@@ -9,6 +9,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -285,6 +286,14 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+#if BUILDFLAG(IS_ANDROID)
+  // Use pseudo flag to investigate histogram issue.
+  // See https://crbug.com/1439721.
+  const bool observed = true;
+  base::UmaHistogramBoolean("NetworkService.CorsURLLoaderFactoryStart",
+                            observed);
+#endif
+
   debug::ScopedResourceRequestCrashKeys request_crash_keys(resource_request);
   SCOPED_CRASH_KEY_NUMBER("net", "traffic_annotation_hash",
                           traffic_annotation.unique_id_hash_code);

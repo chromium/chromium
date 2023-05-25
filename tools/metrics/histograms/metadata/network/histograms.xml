@@ -4036,6 +4036,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.CorsURLLoaderFactoryStart" enum="Boolean"
+    expires_after="2023-11-19">
+  <owner>yoichio@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records when CorsURLLoaderFactory::CreateLoaderAndStart is called from mojo
+    to investigate another histogram issue. See https://crbug.com/1439721.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.CrossOriginResourcePolicy.ReportOnlyResult"
     enum="NetworkServiceCorpResult" expires_after="2020-09-30">
   <owner>mkwst@chromium.org</owner>
@@ -4076,6 +4086,16 @@ chromium-metrics-reviews@google.com.
     data files, and migrate the data if a migration is requested. This is
     reported each time a network context instance is created on the network
     service, even when the sandbox is not enabled or no migration is requested.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.InitializedTime" units="ms"
+    expires_after="2023-11-19">
+  <owner>yoichio@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Recoards the time from origin to the network service starts when the network
+    service is initialized. See https://crbug.com/1439721.
   </summary>
 </histogram>
 

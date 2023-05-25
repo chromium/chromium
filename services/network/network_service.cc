@@ -358,6 +358,11 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   initialized_ = true;
 
+#if BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramTimes("NetworkService.InitializedTime",
+                          base::Time::Now().since_origin());
+#endif
+
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   // Make sure OpenSSL is initialized before using it to histogram data.
   crypto::EnsureOpenSSLInit();
