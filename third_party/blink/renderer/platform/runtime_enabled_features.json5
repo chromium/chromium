@@ -1576,10 +1576,8 @@
       name: "FedCmAutoReauthn",
       depends_on: ["FedCm"],
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "none",
-      origin_trial_feature_name: "FedCmAutoReauthn",
-      origin_trial_allows_third_party: true,
     },
     {
       // This only exists so we can use RuntimeEnabled in the IDL file
