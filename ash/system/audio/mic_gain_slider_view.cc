@@ -51,7 +51,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller)
                               base::Unretained(controller)),
           controller,
           kImeMenuMicrophoneIcon,
-          IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL),
+          IDS_ASH_STATUS_TRAY_MIC_SLIDER_LABEL),
       device_id_(CrasAudioHandler::Get()->GetPrimaryActiveInputNode()),
       internal_(false) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -85,7 +85,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
                               base::Unretained(controller)),
           controller,
           kImeMenuMicrophoneIcon,
-          IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL,
+          IDS_ASH_STATUS_TRAY_MIC_SLIDER_LABEL,
           /*read_only=*/false,
           Style::kRadioActive),
       device_id_(device_id),
@@ -234,6 +234,11 @@ void MicGainSliderView::Update(bool by_user) {
         is_active ? (is_muted ? cros_tokens::kCrosSysOnSurface
                               : cros_tokens::kCrosSysSystemOnPrimaryContainer)
                   : cros_tokens::kCrosSysOnSurfaceVariant);
+    // Updates the tooltip for `slider_button()` based on the mute state.
+    std::u16string state_tooltip_text = l10n_util::GetStringUTF16(
+        GetMuteStateTooltipTextResourceId(is_muted, is_muted_by_mute_switch));
+    slider_button()->SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_MIC_GAIN, state_tooltip_text));
   }
 
   // Slider's value is in finer granularity than audio volume level(0.01),

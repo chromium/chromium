@@ -119,7 +119,8 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
       /*is_togglable=*/true,
       /*has_border=*/true));
   slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  slider_button_->SetFocusBehavior(FocusBehavior::NEVER);
+  // The `slider_button_` should be focusable by the ChromeVox.
+  slider_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   // Prevent an accessibility event while initiallizing this view.
   // Typically the first update of the slider value is conducted by the
