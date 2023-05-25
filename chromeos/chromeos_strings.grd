@@ -3923,7 +3923,7 @@
 
         <!-- Shortcut Customization -->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app">
-          Shortcuts
+          Key Shortcuts
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_KEYBOARD_SETTINGS" desc="Label for link to open keyboard settings in the Settings app.">
           Keyboard settings
