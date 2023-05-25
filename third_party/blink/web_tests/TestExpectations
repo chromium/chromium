@@ -6437,9 +6437,6 @@ crbug.com/1380485 external/wpt/wasm/webapi/esm-integration/worker.tentative.html
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 
-# Disabled to land devtools-frontend change:
-crbug.com/1376854 http/tests/devtools/elements/accessibility/autocomplete-attribute.js [ Crash Failure Pass Timeout ]
-
 # Sheriff 2022-10-20
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
