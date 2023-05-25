@@ -427,6 +427,7 @@ class WPTAdapter:
             options.restart_on_unexpected = False
             options.restart_on_new_group = False
             options.run_by_dir = 0
+            options.reuse_window = True
 
     def _check_and_update_sharding_options(self, options):
         # Command line arguments take priority over environment variables
