@@ -42,7 +42,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -108,6 +110,18 @@ std::set<int> GetWindowIDSetFromTemplate(
 void RecordTimeToLoadTemplateHistogram(const base::Time time_started) {
   base::UmaHistogramMediumTimes(kTimeToLoadTemplateHistogramName,
                                 base::Time::Now() - time_started);
+}
+
+// Retrieves desk event router
+extensions::WMDesksEventsRouter* GetDeskEventsRouter() {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  if (profile) {
+    auto* wm_events_api = extensions::WMDesksPrivateEventsAPI::Get(profile);
+    if (wm_events_api && wm_events_api->desks_event_router()) {
+      return wm_events_api->desks_event_router();
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -247,6 +261,11 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
   ~DeskEventObserver() override = default;
 
   void OnDeskAdded(const ash::Desk* desk) override {
+    // If there is listener in ash-chrome, dispatch events.
+    if (auto* desk_events_router = GetDeskEventsRouter()) {
+      desk_events_router->OnDeskAdded(desk->uuid());
+    }
+
     // CrosapiManager is always constructed even if lacros flag is disabled but
     // it's not constructed in unit test.
     if (!crosapi::CrosapiManager::IsInitialized()) {
@@ -268,6 +287,11 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
 
   void OnDeskActivationChanged(const ash::Desk* activated,
                                const ash::Desk* deactivated) override {
+    if (auto* desk_events_router = GetDeskEventsRouter()) {
+      desk_events_router->OnDeskSwitched(activated->uuid(),
+                                         deactivated->uuid());
+    }
+
     if (!crosapi::CrosapiManager::IsInitialized()) {
       return;
     }

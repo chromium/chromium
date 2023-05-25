@@ -360,6 +360,12 @@ class EventRouter : public KeyedService,
                            StorageAreaOnChangedOtherListener);
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest,
                            StorageAreaOnChangedOnlyOneListener);
+  FRIEND_TEST_ALL_PREFIXES(WMDesksPrivateEventsUnitTest,
+                           DispatchEventOnDeskAdded);
+  FRIEND_TEST_ALL_PREFIXES(WMDesksPrivateEventsUnitTest,
+                           DispatchEventOnDeskRemoved);
+  FRIEND_TEST_ALL_PREFIXES(WMDesksPrivateEventsUnitTest,
+                           DispatchEventOnDeskSwitched);
 
   enum class RegisteredEventType {
     kLazy,

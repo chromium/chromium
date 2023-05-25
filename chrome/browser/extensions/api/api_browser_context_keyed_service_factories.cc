@@ -46,6 +46,10 @@
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
@@ -118,6 +122,9 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();
   extensions::WebrtcAudioPrivateEventService::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS)
+  extensions::WMDesksPrivateEventsAPI::GetFactoryInstance();
+#endif
 }
 
 }  // namespace chrome_extensions

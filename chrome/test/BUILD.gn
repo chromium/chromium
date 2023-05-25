@@ -8515,6 +8515,11 @@ test("unit_tests") {
       deps += [ "../browser/enterprise/connectors/analysis:test_support" ]
     }
 
+    if (is_chromeos_lacros || is_chromeos_ash) {
+      sources += [ "//chrome/browser/chromeos/extensions/wm/wm_desks_private_events_unittest.cc" ]
+      deps += [ "//chrome/browser/chromeos/extensions/wm" ]
+    }
+
     allow_circular_includes_from = [
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",

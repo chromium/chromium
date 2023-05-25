@@ -34423,6 +34423,10 @@ Called by update_extension_histograms.py.-->
   <int value="516" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED"/>
   <int value="517" label="OS_EVENTS_ON_POWER_EVENT"/>
   <int value="518" label="SMART_CARD_PROVIDER_PRIVATE_ON_GET_ATTRIB_REQUESTED"/>
+  <int value="519" label="OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT"/>
+  <int value="520" label="DESK_EVENTS_ON_DESK_ADDED"/>
+  <int value="521" label="DESK_EVENTS_ON_DESK_REMOVED"/>
+  <int value="522" label="DESK_EVENTS_ON_DESK_SWITCHED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
