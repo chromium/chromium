@@ -44,4 +44,35 @@ TEST_F(ShortcutRegistryCacheTest, AddShortcut) {
   EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
 }
 
+TEST_F(ShortcutRegistryCacheTest, UpdateShortcut) {
+  std::string host_app_id = "host_app_id";
+  std::string local_id = "local_id";
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
+  ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "name";
+  shortcut->shortcut_source = ShortcutSource::kUser;
+
+  EXPECT_FALSE(cache().HasShortcut(shortcut_id));
+  cache().UpdateShortcut(std::move(shortcut));
+  ASSERT_TRUE(cache().HasShortcut(shortcut_id));
+
+  EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
+
+  auto shortcut_delta = std::make_unique<Shortcut>(host_app_id, local_id);
+  shortcut_delta->name = "new name";
+  shortcut_delta->shortcut_source = ShortcutSource::kDeveloper;
+
+  cache().UpdateShortcut(std::move(shortcut_delta));
+
+  EXPECT_EQ(cache().GetAllShortcuts().size(), 1u);
+
+  ShortcutView stored_shortcut = cache().GetShortcut(shortcut_id);
+
+  ASSERT_TRUE(stored_shortcut);
+  EXPECT_EQ(stored_shortcut->shortcut_id, shortcut_id);
+  EXPECT_EQ(stored_shortcut->name, "new name");
+  EXPECT_EQ(stored_shortcut->shortcut_source, ShortcutSource::kDeveloper);
+  EXPECT_EQ(stored_shortcut->host_app_id, host_app_id);
+  EXPECT_EQ(stored_shortcut->local_id, local_id);
+}
 }  // namespace apps

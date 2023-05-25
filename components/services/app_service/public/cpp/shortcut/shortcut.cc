@@ -34,7 +34,9 @@ std::unique_ptr<Shortcut> Shortcut::Clone() const {
 std::string Shortcut::ToString() const {
   std::stringstream out;
   out << "shortcut_id: " << shortcut_id << std::endl;
-  out << "- name: " << name << std::endl;
+  if (name.has_value()) {
+    out << "- name: " << name.value() << std::endl;
+  }
   out << "- shortcut_source: " << EnumToString(shortcut_source) << std::endl;
   out << "- host_app_id: " << host_app_id << std::endl;
   out << "- local_id: " << local_id << std::endl;

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 
 namespace apps {
 
@@ -23,8 +24,11 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   is_updating_ = true;
   const ShortcutId shortcut_id = delta->shortcut_id;
 
-  states_.emplace(shortcut_id, delta->Clone());
-  // TODO(crbug.com/1412708): Handle delta merge.
+  if (HasShortcut(shortcut_id)) {
+    ShortcutUpdate::Merge(states_[shortcut_id].get(), delta.get());
+  } else {
+    states_.emplace(shortcut_id, delta->Clone());
+  }
   // TODO(crbug.com/1412708): Update observer.
   is_updating_ = false;
 }

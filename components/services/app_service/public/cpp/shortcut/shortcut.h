@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/types/strong_alias.h"
 #include "components/services/app_service/public/cpp/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -47,7 +48,7 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // - local_id: shortcut_1
   std::string ToString() const;
   // Name of the shortcut.
-  std::string name;
+  absl::optional<std::string> name;
   // Shortcut creation source.
   ShortcutSource shortcut_source;
 
