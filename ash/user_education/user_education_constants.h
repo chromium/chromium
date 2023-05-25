@@ -12,10 +12,11 @@ namespace ash {
 
 // Element IDs -----------------------------------------------------------------
 
-// Uniquely identifies the `AppListItemView` corresponding to the Explore app
-// for user education.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kExploreAppListItemViewElementId);
+// Uniquely identifies an element corresponding to the Explore app for user
+// education. Note that this may be used in multiple contexts (e.g. app window,
+// launcher, shelf, etc.), so care must be taken to use the desired context when
+// looking up the associated element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kExploreAppElementId);
 
 // Uniquely identifies the `HoldingSpaceTray` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
@@ -27,10 +28,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
 // Uniquely identifies the `SearchBoxView` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSearchBoxViewElementId);
 
-// Uniquely identifies the `AppListItemView` corresponding to the Settings app
-// for user education.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kSettingsAppListItemViewElementId);
+// Uniquely identifies an element corresponding to the Settings app for user
+// education. Note that this may be used in multiple contexts (e.g. app window,
+// launcher, shelf, etc.), so care must be taken to use the desired context when
+// looking up the associated element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSettingsAppElementId);
 
 // Uniquely identifies the `ShelfView` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kShelfViewElementId);

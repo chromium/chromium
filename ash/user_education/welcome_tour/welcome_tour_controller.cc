@@ -176,8 +176,7 @@ WelcomeTourController::GetTutorialDescriptions() {
 
   // Step 5: Settings app.
   tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::BubbleStep(
-          kSettingsAppListItemViewElementId)
+      user_education::TutorialDescription::BubbleStep(kSettingsAppElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(user_education_util::CreateExtendedProperties(
               HelpBubbleId::kWelcomeTourSettingsApp))
@@ -185,8 +184,7 @@ WelcomeTourController::GetTutorialDescriptions() {
 
   // Step 6: Explore app.
   tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::BubbleStep(
-          kExploreAppListItemViewElementId)
+      user_education::TutorialDescription::BubbleStep(kExploreAppElementId)
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(user_education_util::CreateExtendedProperties(
               HelpBubbleId::kWelcomeTourExploreApp)));

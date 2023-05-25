@@ -158,13 +158,12 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ElementSpecifier(kSearchBoxViewElementId),
                              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(
-                      HelpBubbleId::kWelcomeTourSettingsApp,
-                      ElementSpecifier(kSettingsAppListItemViewElementId),
-                      IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
-                      /*has_next_button=*/true),
+                  BubbleStep(HelpBubbleId::kWelcomeTourSettingsApp,
+                             ElementSpecifier(kSettingsAppElementId),
+                             IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                             /*has_next_button=*/true),
                   BubbleStep(HelpBubbleId::kWelcomeTourExploreApp,
-                             ElementSpecifier(kExploreAppListItemViewElementId),
+                             ElementSpecifier(kExploreAppElementId),
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/false))))));
 }

@@ -6,6 +6,7 @@
 #define ASH_USER_EDUCATION_MOCK_USER_EDUCATION_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_delegate.h"
@@ -37,6 +38,10 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
                ui::ElementIdentifier element_id,
                ui::ElementContext element_context),
               (override));
+  MOCK_METHOD(absl::optional<ui::ElementIdentifier>,
+              GetElementIdentifierForAppId,
+              (const std::string& app_id),
+              (const, override));
   MOCK_METHOD(void,
               RegisterTutorial,
               (const AccountId& account_id,
