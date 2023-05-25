@@ -5646,6 +5646,7 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/power",
+      "//chromeos/ui/clipboard_history",
       "//chromeos/ui/wm",
       "//components/app_constants",
       "//components/arc/common",

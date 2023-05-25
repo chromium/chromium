@@ -268,6 +268,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2171,19 +2174,34 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
-                                  IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
-#endif
-
+#if BUILDFLAG(IS_CHROMEOS)
+  bool need_clipboard_history_menu = true;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* service = chromeos::LacrosService::Get();
-  if (service && service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
-    menu_model_.AddItemWithStringId(
-        IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
-        IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+  if (auto* service = chromeos::LacrosService::Get();
+      !service || !service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
+    need_clipboard_history_menu = false;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  if (need_clipboard_history_menu) {
+    // If the clipboard history refresh feature is enabled, insert a submenu of
+    // clipboard history descriptors; otherwise, insert a menu option to trigger
+    // the clipboard history menu.
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      submenu_model_ = chromeos::clipboard_history::
+          ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
+              crosapi::mojom::ClipboardHistoryControllerShowSource::
+                  kRenderViewContextMenu);
+      menu_model_.AddSubMenuWithStringId(
+          IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
+          IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU, submenu_model_.get());
+    } else {
+      menu_model_.AddItemWithStringId(
+          IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
+          IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!has_misspelled_word) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SELECTALL,
@@ -2640,10 +2658,19 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return ash::ClipboardHistoryController::Get()->HasAvailableHistoryItems();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     {
+      // Disable the clipboard history menu option if:
+      // 1. The clipboard history service is not available, or
+      // 2. The paste menu option is not enabled, or
+      // 3. There are no clipboard history item descriptors to populate a
+      //    submenu when the clipboard history refresh feature is enabled.
       auto* service = chromeos::LacrosService::Get();
-      return service &&
-             service->IsAvailable<crosapi::mojom::ClipboardHistory>() &&
-             IsPasteEnabled();
+      if (!service ||
+          !service->IsAvailable<crosapi::mojom::ClipboardHistory>() ||
+          !IsPasteEnabled()) {
+        return false;
+      }
+      return !chromeos::features::IsClipboardHistoryRefreshEnabled() ||
+             !chromeos::clipboard_history::QueryItemDescriptors().empty();
     }
 #else
       NOTREACHED() << "Unhandled id: " << id;
@@ -3110,6 +3137,11 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
 #if BUILDFLAG(IS_CHROMEOS)
+      // If the clipboard history refresh feature is enabled, we add a submenu
+      // instead of a command item. The following code should not be executed
+      // for a submenu.
+      CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
+
       auto* host_native_view = GetRenderFrameHost()
                                    ? GetRenderFrameHost()->GetNativeView()
                                    : nullptr;

@@ -79,9 +79,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ClipboardHistoryRefreshLacrosTest,
                          /*enable_clipboard_history_refresh=*/testing::Bool());
 
-// Verifies that the Lacros render view context menu clipboard history option is
-// enabled when and only when there are clipboard item(s) to show.
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest, MenuOptionEnabled) {
+// Verifies that the Lacros render view context menu clipboard history option
+// works as expected.
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
+                       MenuOptionOnRenderViewContextMenu) {
   // If the clipboard history interface is not available on this version of
   // ash-chrome, this test cannot meaningfully run.
   if (!IsInterfaceAvailable()) {
@@ -92,24 +93,54 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest, MenuOptionEnabled) {
   params.is_editable = true;
   params.edit_flags = blink::ContextMenuDataEditFlags::kCanPaste;
 
-  TestRenderViewContextMenu menu(*browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetPrimaryMainFrame(),
-                                 params);
-  menu.Init();
+  {
+    TestRenderViewContextMenu menu(*browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame(),
+                                   params);
+    menu.Init();
 
-  // When clipboard history is empty, the Clipboard option should be disabled.
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
-  EXPECT_FALSE(menu.IsItemEnabled(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
+    // When clipboard history is empty, the Clipboard option should be disabled.
+    EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
+    EXPECT_FALSE(menu.IsItemEnabled(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
+  }
 
   // Populate the clipboard so that the menu can be shown.
   WriteTextToClipboard(u"text");
 
-  // When clipboard history is not empty, the Clipboard option should be
-  // enabled.
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
-  EXPECT_TRUE(menu.IsItemEnabled(IDC_CONTENT_CLIPBOARD_HISTORY_MENU));
+  {
+    TestRenderViewContextMenu menu(*browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame(),
+                                   params);
+    menu.Init();
+
+    const ui::SimpleMenuModel& menu_model = menu.menu_model();
+    absl::optional<size_t> target_command_index =
+        menu_model.GetIndexOfCommandId(IDC_CONTENT_CLIPBOARD_HISTORY_MENU);
+    ASSERT_TRUE(target_command_index);
+
+    // The clipboard history menu option should be enabled since clipboard
+    // history is non-empty.
+    EXPECT_TRUE(menu_model.IsEnabledAt(*target_command_index));
+
+    if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+      // Because the refresh feature is enabled, the clipboard history menu item
+      // should be a submenu item.
+      ui::MenuModel* const submenu_model =
+          menu_model.GetSubmenuModelAt(*target_command_index);
+      ASSERT_TRUE(submenu_model);
+      ASSERT_EQ(submenu_model->GetItemCount(), 1u);
+      EXPECT_EQ(submenu_model->GetLabelAt(0), u"text");
+    } else {
+      // Because the refresh feature is disabled, the clipboard history menu
+      // item should be a command item.
+      EXPECT_EQ(menu_model.GetTypeAt(*target_command_index),
+                ui::MenuModel::ItemType::TYPE_COMMAND);
+    }
+  }
 }
 
 // Checks that the Lacros text services context menu clipboard history option is
