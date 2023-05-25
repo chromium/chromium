@@ -105,6 +105,8 @@ sync_pb::WebauthnCredentialSpecifics NewPasskey() {
   specifics.set_credential_id(base::RandBytesAsString(16));
   specifics.set_rp_id(kTestRpId);
   specifics.set_user_id(kTestUserId);
+  specifics.set_creation_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   return specifics;
 }
 

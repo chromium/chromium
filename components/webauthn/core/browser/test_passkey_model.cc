@@ -37,8 +37,7 @@ std::string TestPasskeyModel::AddNewPasskeyForTesting(
   return credentials_.back().credential_id();
 }
 
-bool TestPasskeyModel::DeletePasskeyForTesting(const std::string& sync_id) {
-  return base::EraseIf(credentials_, [&sync_id](const auto& credential) {
-    return credential.sync_id() == sync_id;
-  });
+bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
+  NOTIMPLEMENTED();
+  return false;
 }
