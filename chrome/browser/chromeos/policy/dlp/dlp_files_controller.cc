@@ -136,20 +136,9 @@ void DlpFilesController::RequestCopyAccess(
       MapFilePathtoPolicyComponent(profile, destination.path());
   absl::optional<data_controls::Component> src_component =
       MapFilePathtoPolicyComponent(profile, source_file.path());
-  ::dlp::DlpComponent component_proto;
-  if (!src_component.has_value()) {
-    src_component = data_controls::Component::kUnknownComponent;
-  }
-  if (dst_component.has_value()) {
-    component_proto = MapPolicyComponentToProto(dst_component.value());
-  } else {
-    // Treat non external as system. We want to allow the operation and system
-    // is allowed always
-    component_proto = ::dlp::SYSTEM;
-  }
 
   // Copy from external is not limited by DLP.
-  if (src_component != data_controls::Component::kUnknownComponent) {
+  if (src_component.has_value()) {
     std::move(result_callback)
         .Run(std::make_unique<file_access::ScopedFileAccess>(
             file_access::ScopedFileAccess::Allowed()));
@@ -160,7 +149,7 @@ void DlpFilesController::RequestCopyAccess(
   file_access_request.add_files_paths(source_file.path().value());
   file_access_request.set_destination_url(destination.path().DirName().value());
 
-  if (component_proto == ::dlp::SYSTEM) {
+  if (!dst_component.has_value()) {
     // We allow internal copy, we still have to get the scopedFS
     // and we might need to copy the source URL information.
     auto inode = GetInodeValue(source_file.path());
