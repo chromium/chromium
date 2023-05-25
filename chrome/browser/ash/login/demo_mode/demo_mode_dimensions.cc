@@ -1,0 +1,49 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
+
+namespace ash {
+namespace demo_mode {
+
+bool AreDemoDimensionsAccessible() {
+  return DemoSession::IsDeviceInDemoMode() ||
+         DemoSetupController::IsOobeDemoSetupFlowInProgress();
+}
+
+std::string Country() {
+  DCHECK(AreDemoDimensionsAccessible());
+  return g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+}
+
+std::string RetailerName() {
+  DCHECK(AreDemoDimensionsAccessible());
+  return g_browser_process->local_state()->GetString(
+      prefs::kDemoModeRetailerId);
+}
+
+std::string StoreNumber() {
+  DCHECK(AreDemoDimensionsAccessible());
+  return g_browser_process->local_state()->GetString(prefs::kDemoModeStoreId);
+}
+
+bool IsCloudGamingDevice() {
+  DCHECK(AreDemoDimensionsAccessible());
+  return chromeos::features::IsCloudGamingDeviceEnabled();
+}
+
+bool IsFeatureAwareDevice() {
+  DCHECK(AreDemoDimensionsAccessible());
+  return ash::features::IsFeatureAwareDeviceDemoModeEnabled();
+}
+
+}  // namespace demo_mode
+}  // namespace ash
