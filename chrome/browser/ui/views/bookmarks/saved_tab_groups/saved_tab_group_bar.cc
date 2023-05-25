@@ -107,10 +107,7 @@ class SavedTabGroupBar::OverflowMenu : public views::View {
     return parent_bar_->OnDragUpdated(event_copy);
   }
 
-  void OnDragExited() override {
-    parent_bar_->OnDragExited();
-    parent_bar_->HideOverflowMenu();
-  }
+  void OnDragExited() override { parent_bar_->OnDragExited(); }
 
   void OnDragDone() override { parent_bar_->OnDragDone(); }
 
@@ -320,7 +317,6 @@ void SavedTabGroupBar::HandleDrop() {
   saved_tab_group_model_->ReorderGroupLocally(drag_data_->guid(),
                                               GetDropIndex().value());
   drag_data_.release();
-  HideOverflowMenu();
   SchedulePaint();
 }
 
@@ -363,9 +359,6 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
 
   if (dragging_over_button || would_drop_into_overflow) {
     MaybeShowOverflowMenu();
-  } else if (event.location().y() < bounds().bottom()) {
-    // Hide the overflow menu if dragging in the bar but not over the button.
-    HideOverflowMenu();
   }
 
   return ui::DragDropTypes::DRAG_MOVE;
@@ -378,6 +371,7 @@ void SavedTabGroupBar::OnDragExited() {
 
 void SavedTabGroupBar::OnDragDone() {
   drag_data_.release();
+  HideOverflowMenu();
   SchedulePaint();
 }
 
@@ -504,11 +498,15 @@ void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {
     return;
   }
   AddTabGroupButton(*saved_tab_group_model_->Get(guid), index.value());
+
+  HideOverflowMenu();
   PreferredSizeChanged();
 }
 
 void SavedTabGroupBar::SavedTabGroupRemoved(const base::Uuid& guid) {
   RemoveTabGroupButton(guid);
+
+  HideOverflowMenu();
   PreferredSizeChanged();
 }
 
@@ -537,6 +535,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
     PreferredSizeChanged();
   }
 
+  HideOverflowMenu();
   SchedulePaint();
 }
 
@@ -563,6 +562,8 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
 
   // Ensure the overflow button is the last button in the view hierarchy.
   ReorderChildView(overflow_button_, children().size());
+
+  HideOverflowMenu();
   PreferredSizeChanged();
 }
 
