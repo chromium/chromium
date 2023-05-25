@@ -3741,10 +3741,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
             case ContainerQueryEvaluator::Change::kNone:
               break;
             case ContainerQueryEvaluator::Change::kNearestContainer:
-              child_change = change.ForceRecalcStyleContainerChildren();
+              child_change = child_change.ForceRecalcStyleContainerChildren();
               break;
             case ContainerQueryEvaluator::Change::kDescendantContainers:
-              child_change = change.ForceRecalcStyleContainerDescendants();
+              child_change =
+                  child_change.ForceRecalcStyleContainerDescendants();
               break;
           }
         }
