@@ -79,11 +79,12 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
     }
 
     @Override
-    protected boolean requestPostMessageChannel(
-            CustomTabsSessionToken sessionToken, Uri postMessageOrigin) {
-        Origin origin = Origin.create(postMessageOrigin);
-        if (origin == null) return false;
-        return mConnection.requestPostMessageChannel(sessionToken, origin);
+    protected boolean requestPostMessageChannel(CustomTabsSessionToken sessionToken,
+            Uri postMessageSourceOrigin, @Nullable Uri postMessageTargetOrigin) {
+        Origin sourceOrigin = Origin.create(postMessageSourceOrigin);
+        if (sourceOrigin == null) return false;
+        return mConnection.requestPostMessageChannel(
+                sessionToken, sourceOrigin, Origin.create(postMessageTargetOrigin));
     }
 
     @Override

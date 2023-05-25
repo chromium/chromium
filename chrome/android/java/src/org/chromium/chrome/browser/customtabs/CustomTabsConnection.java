@@ -772,19 +772,21 @@ public class CustomTabsConnection {
         return result;
     }
 
-    public boolean requestPostMessageChannel(
-            CustomTabsSessionToken session, Origin postMessageOrigin) {
-        boolean success = requestPostMessageChannelInternal(session, postMessageOrigin);
+    public boolean requestPostMessageChannel(CustomTabsSessionToken session,
+            Origin postMessageSourceOrigin, @Nullable Origin postMessageTargetOrigin) {
+        boolean success = requestPostMessageChannelInternal(
+                session, postMessageSourceOrigin, postMessageTargetOrigin);
         logCall("requestPostMessageChannel() with origin "
-                        + (postMessageOrigin != null ? postMessageOrigin.toString() : ""),
+                        + (postMessageSourceOrigin != null ? postMessageSourceOrigin.toString()
+                                                           : ""),
                 success);
         RecordHistogram.recordBooleanHistogram(
                 "CustomTabs.PostMessage.RequestPostMessageChannel", success);
         return success;
     }
 
-    private boolean requestPostMessageChannelInternal(
-            final CustomTabsSessionToken session, final Origin postMessageOrigin) {
+    private boolean requestPostMessageChannelInternal(final CustomTabsSessionToken session,
+            final Origin postMessageOrigin, @Nullable Origin postMessageTargetOrigin) {
         if (!mWarmupHasBeenCalled.get()) return false;
         if (!isCallerForegroundOrSelf() && !mSessionDataHolder.isActiveSession(session)) {
             return false;
@@ -801,10 +803,12 @@ public class CustomTabsConnection {
             // channel for session.
             Uri verifiedOrigin = verifyOriginForSession(session, uid, postMessageOrigin);
             if (verifiedOrigin == null) {
-                mClientManager.verifyAndInitializeWithPostMessageOriginForSession(
-                        session, postMessageOrigin, CustomTabsService.RELATION_USE_AS_ORIGIN);
+                mClientManager.verifyAndInitializeWithPostMessageOriginForSession(session,
+                        postMessageOrigin, postMessageTargetOrigin,
+                        CustomTabsService.RELATION_USE_AS_ORIGIN);
             } else {
-                mClientManager.initializeWithPostMessageOriginForSession(session, verifiedOrigin);
+                mClientManager.initializeWithPostMessageOriginForSession(session, verifiedOrigin,
+                        postMessageTargetOrigin != null ? postMessageTargetOrigin.uri() : null);
             }
         });
         return true;
@@ -1132,7 +1136,6 @@ public class CustomTabsConnection {
         if (packageName == null) return false;
         return ExternalAuthUtils.getInstance().isGoogleSigned(packageName);
     }
-
     void setIgnoreUrlFragmentsForSession(CustomTabsSessionToken session, boolean value) {
         mClientManager.setIgnoreFragmentsForSession(session, value);
     }
