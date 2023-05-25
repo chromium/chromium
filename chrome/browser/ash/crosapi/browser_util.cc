@@ -137,6 +137,28 @@ LacrosAvailability GetCachedLacrosAvailability() {
   return LacrosAvailability::kUserChoice;
 }
 
+// Returns appropriate LacrosAvailability.
+LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
+                                         PolicyInitState policy_init_state) {
+  switch (policy_init_state) {
+    case PolicyInitState::kBeforeInit:
+      // If the value is needed before policy initialization, actually,
+      // this should be the case where ash process was restarted, and so
+      // the calculated value in the previous session should be carried
+      // via command line flag.
+      // See also LacrosAvailabilityPolicyObserver how it will be propergated.
+      return ash::standalone_browser::
+          DetermineLacrosAvailabilityFromPolicyValue(
+              user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                        kLacrosAvailabilityPolicySwitch));
+
+    case PolicyInitState::kAfterInit:
+      // If policy initialization is done, the calculated value should be
+      // cached.
+      return GetCachedLacrosAvailability();
+  }
+}
+
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
 // IsLacrosEnabledForMigration with the user that the
 // IsLacrosEnabledForMigration was passed.
@@ -391,19 +413,8 @@ bool IsLacrosEnabledForMigration(const User* user,
     return true;
   }
 
-  LacrosAvailability lacros_availability;
-  if (policy_init_state == PolicyInitState::kBeforeInit) {
-    // Before Policy is initialized, the value won't be available.
-    // So, we'll use the value preserved in the feature flags.
-    // See also LacrosAvailabilityPolicyObserver how it will be propergated.
-    lacros_availability =
-        ash::standalone_browser::DetermineLacrosAvailabilityFromPolicyValue(
-            user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                      kLacrosAvailabilityPolicySwitch));
-  } else {
-    DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
-    lacros_availability = GetCachedLacrosAvailability();
-  }
+  LacrosAvailability lacros_availability =
+      GetLacrosAvailability(user, policy_init_state);
 
   if (!IsLacrosAllowedToBeEnabledWithUser(user, lacros_availability))
     return false;
@@ -500,19 +511,8 @@ bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
   if (!IsLacrosPrimaryBrowserForMigration(user, policy_init_state))
     return true;
 
-  LacrosAvailability lacros_availability;
-  if (policy_init_state == PolicyInitState::kBeforeInit) {
-    // Before Policy is initialized, the value won't be available.
-    // So, we'll use the value preserved in the feature flags.
-    // See also LacrosAvailabilityPolicyObserver how it will be propergated.
-    lacros_availability =
-        ash::standalone_browser::DetermineLacrosAvailabilityFromPolicyValue(
-            user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                      kLacrosAvailabilityPolicySwitch));
-  } else {
-    DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
-    lacros_availability = GetCachedLacrosAvailability();
-  }
+  LacrosAvailability lacros_availability =
+      GetLacrosAvailability(user, policy_init_state);
 
   switch (lacros_availability) {
     case LacrosAvailability::kUserChoice:
@@ -589,19 +589,8 @@ bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
     return true;
   }
 
-  LacrosAvailability lacros_availability;
-  if (policy_init_state == PolicyInitState::kBeforeInit) {
-    // Before Policy is initialized, the value won't be available.
-    // So, we'll use the value preserved in the feature flags.
-    // See also LacrosAvailabilityPolicyObserver how it will be propergated.
-    lacros_availability =
-        ash::standalone_browser::DetermineLacrosAvailabilityFromPolicyValue(
-            user, base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                      kLacrosAvailabilityPolicySwitch));
-  } else {
-    DCHECK_EQ(policy_init_state, PolicyInitState::kAfterInit);
-    lacros_availability = GetCachedLacrosAvailability();
-  }
+  LacrosAvailability lacros_availability =
+      GetLacrosAvailability(user, policy_init_state);
 
   if (!IsLacrosPrimaryBrowserAllowedForMigration(user, lacros_availability))
     return false;
