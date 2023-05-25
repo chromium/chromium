@@ -323,6 +323,7 @@ void HoldingSpaceTray::ShowBubble() {
   DCHECK(tray_container());
 
   bubble_ = std::make_unique<HoldingSpaceTrayBubble>(this);
+  bubble_->Init();
 
   // Observe the bubble widget so that we can close the bubble when a holding
   // space item is being dragged.

@@ -105,6 +105,12 @@ void SystemTrayNotifier::NotifySystemTrayBubbleShown() {
     observer.OnSystemTrayBubbleShown();
 }
 
+void SystemTrayNotifier::NotifyStatusAreaAnchoredBubbleShown() {
+  for (auto& observer : system_tray_observers_) {
+    observer.OnStatusAreaAnchoredBubbleShown();
+  }
+}
+
 void SystemTrayNotifier::AddVirtualKeyboardObserver(
     VirtualKeyboardObserver* observer) {
   virtual_keyboard_observers_.AddObserver(observer);

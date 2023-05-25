@@ -421,17 +421,29 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
 
 HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     HoldingSpaceTray* holding_space_tray)
-    : holding_space_tray_(holding_space_tray) {
+    : holding_space_tray_(holding_space_tray) {}
+
+HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
+  bubble_wrapper_->bubble_view()->ResetDelegate();
+
+  // Explicitly reset child bubbles so that they will stop observing the holding
+  // space controller/model while they are asynchronously destroyed.
+  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_) {
+    child_bubble->Reset();
+  }
+}
+
+void HoldingSpaceTrayBubble::Init() {
   TrayBubbleView::InitParams init_params;
-  init_params.delegate = holding_space_tray->GetWeakPtr();
-  init_params.parent_window = holding_space_tray->GetBubbleWindowContainer();
+  init_params.delegate = holding_space_tray_->GetWeakPtr();
+  init_params.parent_window = holding_space_tray_->GetBubbleWindowContainer();
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect =
-      holding_space_tray->shelf()->GetSystemTrayAnchorRect();
+      holding_space_tray_->shelf()->GetSystemTrayAnchorRect();
   init_params.insets =
       GetTrayBubbleInsets(holding_space_tray_->GetBubbleWindowContainer());
-  init_params.shelf_alignment = holding_space_tray->shelf()->alignment();
+  init_params.shelf_alignment = holding_space_tray_->shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceBubbleWidth;
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
@@ -476,7 +488,7 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
     child_bubble->Init();
 
   // Show the bubble.
-  bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(holding_space_tray);
+  bubble_wrapper_ = std::make_unique<TrayBubbleWrapper>(holding_space_tray_);
   bubble_wrapper_->ShowBubble(std::move(bubble_view));
   event_handler_ =
       std::make_unique<HoldingSpaceTrayBubbleEventHandler>(this, &delegate_);
@@ -497,15 +509,6 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
 
   shelf_observation_.Observe(holding_space_tray_->shelf());
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
-}
-
-HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
-  bubble_wrapper_->bubble_view()->ResetDelegate();
-
-  // Explicitly reset child bubbles so that they will stop observing the holding
-  // space controller/model while they are asynchronously destroyed.
-  for (HoldingSpaceTrayChildBubble* child_bubble : child_bubbles_)
-    child_bubble->Reset();
 }
 
 void HoldingSpaceTrayBubble::AnchorUpdated() {

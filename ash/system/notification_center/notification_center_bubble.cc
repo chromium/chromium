@@ -37,17 +37,15 @@ NotificationCenterBubble::NotificationCenterBubble(
   init_params.translucent = true;
 
   // Create and customize bubble view.
-  auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
-  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight(
+  bubble_view_ = std::make_unique<TrayBubbleView>(init_params);
+  bubble_view_->SetMaxHeight(CalculateMaxTrayBubbleHeight(
       notification_center_tray_->GetBubbleWindowContainer()));
 
   notification_center_view_ =
-      bubble_view->AddChildView(std::make_unique<NotificationCenterView>());
+      bubble_view_->AddChildView(std::make_unique<NotificationCenterView>());
 
-  // Show the bubble.
   bubble_wrapper_ =
       std::make_unique<TrayBubbleWrapper>(notification_center_tray_);
-  bubble_wrapper_->ShowBubble(std::move(bubble_view));
 }
 
 NotificationCenterBubble::~NotificationCenterBubble() {
@@ -55,6 +53,7 @@ NotificationCenterBubble::~NotificationCenterBubble() {
 }
 
 void NotificationCenterBubble::ShowBubble() {
+  bubble_wrapper_->ShowBubble(std::move(bubble_view_));
   notification_center_view_->Init();
   GetBubbleView()->SizeToContents();
 }

@@ -60,6 +60,9 @@ class ASH_EXPORT SystemTrayNotifier {
   void NotifyFocusOut(bool reverse);
   void NotifySystemTrayBubbleShown();
 
+  // Status area anchored bubble.
+  void NotifyStatusAreaAnchoredBubbleShown();
+
   // Virtual keyboard.
   void AddVirtualKeyboardObserver(VirtualKeyboardObserver* observer);
   void RemoveVirtualKeyboardObserver(VirtualKeyboardObserver* observer);

@@ -18,6 +18,9 @@ class ASH_PUBLIC_EXPORT SystemTrayObserver {
   // Called when the UnifiedSystemTrayBubble is shown.
   virtual void OnSystemTrayBubbleShown() {}
 
+  // Called when a status area anchored bubble is shown.
+  virtual void OnStatusAreaAnchoredBubbleShown() {}
+
  protected:
   virtual ~SystemTrayObserver() = default;
 };
