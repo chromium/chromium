@@ -119,6 +119,9 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
   std::unique_ptr<GlanceablesClassroomClientImpl> client_;
 };
 
+// ----------------------------------------------------------------------------
+// Fetch all courses:
+
 // Fetches and makes sure only "ACTIVE" courses are converted to
 // `GlanceablesClassroomCourse`.
 TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
@@ -144,6 +147,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourses) {
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillRepeatedly(Invoke(
+          []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
       .WillRepeatedly(Invoke(
           []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
 
@@ -192,6 +200,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesOnSubsequentCalls) {
   EXPECT_CALL(request_handler(),
               HandleRequest(
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
+      .WillRepeatedly(Invoke(
+          []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
       .WillRepeatedly(Invoke(
           []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
 
@@ -283,6 +296,11 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
                   Field(&HttpRequest::relative_url, HasSubstr("/courseWork?"))))
       .WillRepeatedly(Invoke(
           []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillRepeatedly(Invoke(
+          []() { return TestRequestHandler::CreateSuccessfulResponse("{}"); }));
 
   auto fetch_courses_methods = std::vector<base::RepeatingCallback<void(
       GlanceablesClassroomClientImpl::FetchCoursesCallback)>>{
@@ -304,6 +322,9 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCoursesMultiplePages) {
     EXPECT_EQ(courses->GetItemAt(2)->id, "course-id-from-page-3");
   }
 }
+
+// ----------------------------------------------------------------------------
+// Fetch all course work:
 
 // Fetches and makes sure only "PUBLISHED" course work items are converted to
 // `GlanceablesClassroomCourseWorkItem`.
@@ -460,6 +481,202 @@ TEST_F(GlanceablesClassroomClientImplTest, FetchCourseWorkMultiplePages) {
   EXPECT_EQ(courses->GetItemAt(0)->id, "course-work-item-from-page-1");
   EXPECT_EQ(courses->GetItemAt(1)->id, "course-work-item-from-page-2");
   EXPECT_EQ(courses->GetItemAt(2)->id, "course-work-item-from-page-3");
+}
+
+// ----------------------------------------------------------------------------
+// Fetch all student submissions:
+
+TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissions) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillRepeatedly(Invoke([]() {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {
+                  "id": "student-submission-1",
+                  "courseWorkId": "course-work-1",
+                  "state": "NEW"
+                },
+                {
+                  "id": "student-submission-2",
+                  "courseWorkId": "course-work-1",
+                  "state": "CREATED"
+                },
+                {
+                  "id": "student-submission-3",
+                  "courseWorkId": "course-work-1",
+                  "state": "RECLAIMED_BY_STUDENT"
+                },
+                {
+                  "id": "student-submission-4",
+                  "courseWorkId": "course-work-1",
+                  "state": "TURNED_IN"
+                },
+                {
+                  "id": "student-submission-5",
+                  "courseWorkId": "course-work-1",
+                  "state": "RETURNED"
+                },
+                {
+                  "id": "student-submission-6",
+                  "courseWorkId": "course-work-1",
+                  "state": "RETURNED",
+                  "assignedGrade": 50.0
+                },
+                {
+                  "id": "student-submission-7",
+                  "courseWorkId": "course-work-1",
+                  "state": "???"
+                }
+              ]
+            })");
+      }));
+
+  TestFuture<ui::ListModel<GlanceablesClassroomStudentSubmission>*> future;
+  client()->FetchStudentSubmissions(/*course_id=*/"course-123",
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const student_submissions = future.Get();
+  ASSERT_EQ(student_submissions->item_count(), 7u);
+
+  EXPECT_EQ(student_submissions->GetItemAt(0)->id, "student-submission-1");
+  EXPECT_EQ(student_submissions->GetItemAt(0)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(0)->state,
+            GlanceablesClassroomStudentSubmission::State::kAssigned);
+
+  EXPECT_EQ(student_submissions->GetItemAt(1)->id, "student-submission-2");
+  EXPECT_EQ(student_submissions->GetItemAt(1)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(1)->state,
+            GlanceablesClassroomStudentSubmission::State::kAssigned);
+
+  EXPECT_EQ(student_submissions->GetItemAt(2)->id, "student-submission-3");
+  EXPECT_EQ(student_submissions->GetItemAt(2)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(2)->state,
+            GlanceablesClassroomStudentSubmission::State::kAssigned);
+
+  EXPECT_EQ(student_submissions->GetItemAt(3)->id, "student-submission-4");
+  EXPECT_EQ(student_submissions->GetItemAt(3)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(3)->state,
+            GlanceablesClassroomStudentSubmission::State::kTurnedIn);
+
+  EXPECT_EQ(student_submissions->GetItemAt(4)->id, "student-submission-5");
+  EXPECT_EQ(student_submissions->GetItemAt(4)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(4)->state,
+            GlanceablesClassroomStudentSubmission::State::kAssigned);
+
+  EXPECT_EQ(student_submissions->GetItemAt(5)->id, "student-submission-6");
+  EXPECT_EQ(student_submissions->GetItemAt(5)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(5)->state,
+            GlanceablesClassroomStudentSubmission::State::kGraded);
+
+  EXPECT_EQ(student_submissions->GetItemAt(6)->id, "student-submission-7");
+  EXPECT_EQ(student_submissions->GetItemAt(6)->course_work_id, "course-work-1");
+  EXPECT_EQ(student_submissions->GetItemAt(6)->state,
+            GlanceablesClassroomStudentSubmission::State::kOther);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       FetchStudentSubmissionsOnSubsequentCalls) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "studentSubmissions": [
+              {"id": "student-submission-1", "courseWorkId": "course-work-1"}
+            ]
+          })"))));
+
+  RepeatingTestFuture<ui::ListModel<GlanceablesClassroomStudentSubmission>*>
+      future;
+  client()->FetchStudentSubmissions(/*course_id=*/"course-123",
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const student_submissions = future.Take();
+
+  // Subsequent request doesn't trigger another network call and returns a
+  // pointer to the same `ui::ListModel`.
+  client()->FetchStudentSubmissions(/*course_id=*/"course-123",
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Take(), student_submissions);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest, FetchStudentSubmissionsOnHttpError) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  HasSubstr("/studentSubmissions?"))))
+      .WillRepeatedly(
+          Invoke([]() { return TestRequestHandler::CreateFailedResponse(); }));
+
+  TestFuture<ui::ListModel<GlanceablesClassroomStudentSubmission>*> future;
+  client()->FetchStudentSubmissions(/*course_id=*/"course-123",
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const student_submissions = future.Get();
+  ASSERT_EQ(student_submissions->item_count(), 0u);
+}
+
+TEST_F(GlanceablesClassroomClientImplTest,
+       FetchStudentSubmissionsMultiplePages) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/studentSubmissions?"),
+                                        Not(HasSubstr("pageToken"))))))
+      .WillRepeatedly(Invoke([]() {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {"id": "student-submission-from-page-1"}
+              ],
+              "nextPageToken": "page-2-token"
+            })");
+      }));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/studentSubmissions?"),
+                                        HasSubstr("pageToken=page-2-token")))))
+      .WillRepeatedly(Invoke([]() {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {"id": "student-submission-from-page-2"}
+              ],
+              "nextPageToken": "page-3-token"
+            })");
+      }));
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  AllOf(HasSubstr("/studentSubmissions?"),
+                                        HasSubstr("pageToken=page-3-token")))))
+      .WillRepeatedly(Invoke([]() {
+        return TestRequestHandler::CreateSuccessfulResponse(R"(
+            {
+              "studentSubmissions": [
+                {"id": "student-submission-from-page-3"}
+              ]
+            })");
+      }));
+
+  TestFuture<ui::ListModel<GlanceablesClassroomStudentSubmission>*> future;
+  client()->FetchStudentSubmissions(/*course_id=*/"course-123",
+                                    future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const student_submissions = future.Get();
+  ASSERT_EQ(student_submissions->item_count(), 3u);
+
+  EXPECT_EQ(student_submissions->GetItemAt(0)->id,
+            "student-submission-from-page-1");
+  EXPECT_EQ(student_submissions->GetItemAt(1)->id,
+            "student-submission-from-page-2");
+  EXPECT_EQ(student_submissions->GetItemAt(2)->id,
+            "student-submission-from-page-3");
 }
 
 }  // namespace ash

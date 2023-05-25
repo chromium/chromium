@@ -29,4 +29,13 @@ GlanceablesClassroomCourseWorkItem::GlanceablesClassroomCourseWorkItem(
     const absl::optional<base::Time>& due)
     : id(id), title(title), link(link), due(due) {}
 
+// ----------------------------------------------------------------------------
+// GlanceablesClassroomStudentSubmission:
+
+GlanceablesClassroomStudentSubmission::GlanceablesClassroomStudentSubmission(
+    const std::string& id,
+    const std::string& course_work_id,
+    State state)
+    : id(id), course_work_id(course_work_id), state(state) {}
+
 }  // namespace ash

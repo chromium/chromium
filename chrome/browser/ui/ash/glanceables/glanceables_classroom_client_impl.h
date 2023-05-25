@@ -21,6 +21,7 @@
 namespace google_apis::classroom {
 class Courses;
 class CourseWork;
+class StudentSubmissions;
 }  // namespace google_apis::classroom
 
 namespace net {
@@ -31,6 +32,7 @@ namespace ash {
 
 struct GlanceablesClassroomCourse;
 struct GlanceablesClassroomCourseWorkItem;
+struct GlanceablesClassroomStudentSubmission;
 
 // Provides implementation for `GlanceablesClassroomClient`. Responsible for
 // communication with Google Classroom API.
@@ -50,6 +52,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   using FetchCourseWorkCallback = base::OnceCallback<void(
       ui::ListModel<GlanceablesClassroomCourseWorkItem>* course_work)>;
 
+  // Done callback for fetching all student submissions in a course.
+  using FetchStudentSubmissionsCallback = base::OnceCallback<void(
+      ui::ListModel<GlanceablesClassroomStudentSubmission>*
+          student_submissions)>;
+
   explicit GlanceablesClassroomClientImpl(
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
@@ -67,6 +74,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // `callback` when done.
   void FetchCourseWork(const std::string& course_id,
                        FetchCourseWorkCallback callback);
+
+  // Fetches all student submissions for the specified `course_id` and invokes
+  // `callback` when done.
+  void FetchStudentSubmissions(const std::string& course_id,
+                               FetchStudentSubmissionsCallback callback);
 
  private:
   // Fetches one page of courses.
@@ -125,6 +137,29 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
 
+  // Fetches one page of student submissions.
+  // `course_id`  - identifier of the course.
+  // `page_token` - token specifying the result page to return, comes from the
+  //                previous fetch request. Use an empty string to fetch the
+  //                first page.
+  // `callback`   - a callback that runs when all student submissions in a
+  //                course have been fetched. This may require multiple fetch
+  //                requests, in this case `callback` gets called when the final
+  //                request completes.
+  void FetchStudentSubmissionsPage(const std::string& course_id,
+                                   const std::string& page_token,
+                                   FetchStudentSubmissionsCallback callback);
+
+  // Callback for `FetchStudentSubmissionsPage()`. If `next_page_token()` in the
+  // `result` is not empty - calls another `FetchStudentSubmissionsPage()`,
+  // otherwise runs done `callback`.
+  void OnStudentSubmissionsPageFetched(
+      const std::string& course_id,
+      FetchStudentSubmissionsCallback callback,
+      base::expected<
+          std::unique_ptr<google_apis::classroom::StudentSubmissions>,
+          google_apis::ApiErrorCode> result);
+
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
@@ -146,6 +181,12 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       std::string,
       std::unique_ptr<ui::ListModel<GlanceablesClassroomCourseWorkItem>>>
       course_work_;
+
+  // All student submissions grouped by course id.
+  base::flat_map<
+      std::string,
+      std::unique_ptr<ui::ListModel<GlanceablesClassroomStudentSubmission>>>
+      student_submissions_;
 
   base::WeakPtrFactory<GlanceablesClassroomClientImpl> weak_factory_{this};
 };
