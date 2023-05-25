@@ -2716,6 +2716,9 @@
         'swarming': {
           'shards': 14,
         },
+        'android_swarming': {
+          'shards': 36,
+        },
       },
       'webgpu_cts_with_validation': {
         'args': [
@@ -2727,6 +2730,9 @@
         ],
         'swarming': {
           'shards': 14,
+        },
+        'android_swarming': {
+          'shards': 36,
         },
         'telemetry_test_name': 'webgpu_cts',
       },

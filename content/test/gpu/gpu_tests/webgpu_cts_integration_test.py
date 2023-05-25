@@ -77,6 +77,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _use_webgpu_adapter = None  # use the default
   _original_environ = None
   _use_webgpu_power_preference = None
+  _os_name = None
 
   _build_dir = None
 
@@ -226,6 +227,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def StartBrowser(cls) -> None:
     cls._page_loaded = False
     super(WebGpuCtsIntegrationTest, cls).StartBrowser()
+    cls._os_name = cls.browser.platform.GetOSName()
     # Set up the slow tests expectations' tags to match the test runner
     # expectations' tags
     WebGpuCtsIntegrationTest._GetSlowTests().set_tags(
@@ -317,6 +319,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           break
       else:
         yield (TestNameFromInputs(*test_inputs), HTML_FILENAME, test_inputs)
+
+  def GetExpectationsForTest(self):
+    if self._os_name == 'android':
+      # Temporarily expect all tests to fail
+      # TODO(crbug.com/1363409): remove this after failures suppressed
+      return (set([gpu_integration_test.ResultType.Failure]), False)
+    return super().GetExpectationsForTest()
 
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
     # Instances of WebGpuMessageTimeoutError:
