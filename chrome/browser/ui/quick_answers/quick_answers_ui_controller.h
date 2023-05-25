@@ -49,6 +49,8 @@ class QuickAnswersUiController {
 
   void OnQuickAnswersViewPressed();
 
+  void OnGoogleSearchLabelPressed();
+
   void OnRetryLabelPressed();
 
   // |bounds| is the bound of context menu.

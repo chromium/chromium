@@ -19,6 +19,10 @@ views::View* AddHorizontalUiElements(
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements,
     views::View* container);
 
+// Return the GURL that will link to the google search result for the
+// query text.
+GURL GetDetailsUrlForQuery(const std::string& query);
+
 }  // namespace quick_answers
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_UTIL_H_

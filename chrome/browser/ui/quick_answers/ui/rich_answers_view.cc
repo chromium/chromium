@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -34,11 +35,13 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -63,6 +66,11 @@ constexpr int kBorderCornerRadius = 12;
 constexpr int kResultTypeIconContainerRadius = 24;
 constexpr int kResultTypeIconSizeDip = 16;
 constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
+
+// Google search link.
+constexpr char kRobotoFont[] = "Roboto";
+constexpr int kSearchLinkLabelFontSize = 13;
+constexpr auto kSearchLinkViewInsets = gfx::Insets::TLBR(22, 60, 26, 20);
 
 }  // namespace
 
@@ -155,12 +163,16 @@ void RichAnswersView::OnFocus() {
 
 void RichAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
+
   SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/2, kBorderCornerRadius,
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
   SetBackground(views::CreateRoundedRectBackground(
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground),
       kBorderCornerRadius, /*for_border_thickness=*/2));
+
+  search_link_label_->SetEnabledColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary));
 }
 
 views::FocusTraversable* RichAnswersView::GetPaneFocusTraversable() {
@@ -199,6 +211,9 @@ void RichAnswersView::InitLayout() {
 
   // Add util buttons in the top-right corner.
   AddFrameButtons();
+
+  // Add google search link label at the bottom.
+  AddGoogleSearchLink();
 }
 
 void RichAnswersView::AddResultTypeIcon() {
@@ -238,6 +253,31 @@ void RichAnswersView::AddFrameButtons() {
                                      /*icon_size=*/kSettingsButtonSizeDip));
   settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT));
+}
+
+void RichAnswersView::AddGoogleSearchLink() {
+  auto* search_link_view =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+                       .SetInteriorMargin(kSearchLinkViewInsets)
+                       .Build());
+
+  search_link_label_ = search_link_view->AddChildView(
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(
+          IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT)));
+  search_link_label_->SetCallback(base::BindRepeating(
+      &RichAnswersView::OnGoogleSearchLinkClicked, weak_factory_.GetWeakPtr()));
+  search_link_label_->SetFontList(
+      gfx::FontList({kRobotoFont}, gfx::Font::NORMAL, kSearchLinkLabelFontSize,
+                    gfx::Font::Weight::MEDIUM));
+  search_link_label_->SetForceUnderline(false);
+}
+
+void RichAnswersView::OnGoogleSearchLinkClicked() {
+  CHECK(controller_);
+  controller_->OnGoogleSearchLabelPressed();
 }
 
 void RichAnswersView::UpdateBounds() {

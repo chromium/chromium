@@ -30,7 +30,8 @@ enum class QuickAnswersVisibility {
   kRichAnswersVisible = 4,
 };
 
-// A controller to manage quick answers UI.
+// A controller to manage Quick Answers UI. This controller manages the
+// Quick Answers requests and high-level UI handling such as creation/dismissal.
 class QuickAnswersController {
  public:
   QuickAnswersController();

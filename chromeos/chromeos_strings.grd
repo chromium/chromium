@@ -308,6 +308,9 @@
       <message name="IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Rich Answers view.">
         Additional info related to your selection
       </message>
+      <message name="IDS_RICH_ANSWERS_VIEW_SEARCH_LINK_LABEL_TEXT" desc="Display text for the Google Search link label on the Rich Answers view.">
+        Open in Google Search
+      </message>
 
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu.">
