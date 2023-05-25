@@ -39,10 +39,18 @@ export const TEST_KERBEROS_ACCOUNTS = [
   },
 ];
 
+// Account indices (to help readability).
+export const AccountIndex = {
+  FIRST: 0,
+  SECOND: 1,
+  THIRD: 2,
+};
+
 export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy
     implements KerberosAccountsBrowserProxy {
   addAccountError: KerberosErrorType;
   validateConfigResult: ValidateKerberosConfigResult;
+
   constructor() {
     super([
       'getAccounts',

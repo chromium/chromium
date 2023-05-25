@@ -14,20 +14,13 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_kerberos_accounts_browser_proxy.js';
+import {AccountIndex, TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_kerberos_accounts_browser_proxy.js';
 
 // Tests for the Kerberos Accounts settings subpage.
-suite('KerberosAccountsTests', function() {
+suite('Kerberos accounts tests', function() {
   let browserProxy = null;
   let kerberosAccounts = null;
   let accountList = null;
-
-  // Account indices (to help readability).
-  const Account = {
-    FIRST: 0,
-    SECOND: 1,
-    THIRD: 1,
-  };
 
   // Indices of 'More Actions' buttons.
   const MoreActions = {
@@ -47,6 +40,10 @@ suite('KerberosAccountsTests', function() {
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
+
+    // Setting the default value of the relevant load time data.
+    loadTimeData.overrideValues({kerberosAddAccountsAllowed: true});
+
     createDialog();
   });
 
@@ -63,6 +60,7 @@ suite('KerberosAccountsTests', function() {
     kerberosAccounts =
         document.createElement('settings-kerberos-accounts-subpage');
     document.body.appendChild(kerberosAccounts);
+    flush();
 
     accountList = kerberosAccounts.shadowRoot.querySelector('#account-list');
     assertTrue(!!accountList);
@@ -89,14 +87,14 @@ suite('KerberosAccountsTests', function() {
     });
   }
 
-  test('AccountListIsPopulatedAtStartup', async () => {
+  test('Account list is populated at startup', async () => {
     await browserProxy.whenCalled('getAccounts');
     flush();
     // The test accounts were added in |getAccounts()| mock above.
     assertEquals(TEST_KERBEROS_ACCOUNTS.length, accountList.items.length);
   });
 
-  test('AccountListSignedInSignedOutLabels', async () => {
+  test('Account list signed-in signed-out labels', async () => {
     await browserProxy.whenCalled('getAccounts');
     flush();
     accountList =
@@ -106,23 +104,24 @@ suite('KerberosAccountsTests', function() {
     // Show 'Valid for <duration>' for accounts that are signed in.
     let signedIn = accountList[0].querySelector('.signed-in');
     let signedOut = accountList[0].querySelector('.signed-out');
-    assertTrue(TEST_KERBEROS_ACCOUNTS[0].isSignedIn);
+    assertTrue(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].isSignedIn);
     assertFalse(signedIn.hidden);
     assertTrue(signedOut.hidden);
     assertEquals(
-        'Valid for ' + TEST_KERBEROS_ACCOUNTS[0].validForDuration,
+        'Valid for ' +
+            TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].validForDuration,
         signedIn.innerText);
 
     // Show 'Expired' for accounts that are not signed in.
     signedIn = accountList[1].querySelector('.signed-in');
     signedOut = accountList[1].querySelector('.signed-out');
-    assertFalse(TEST_KERBEROS_ACCOUNTS[1].isSignedIn);
+    assertFalse(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].isSignedIn);
     assertTrue(signedIn.hidden);
     assertFalse(signedOut.hidden);
     assertEquals('Expired', signedOut.innerText);
   });
 
-  test('AddAccount', function() {
+  test('Add account', function() {
     // The kerberos-add-account-dialog shouldn't be open yet.
     assertTrue(!kerberosAccounts.shadowRoot.querySelector(
         'kerberos-add-account-dialog'));
@@ -136,7 +135,7 @@ suite('KerberosAccountsTests', function() {
     assertEquals('', addDialog.$.username.value);
   });
 
-  test('ReauthenticateAccount', async () => {
+  test('Reauthenticate account', async () => {
     // Wait until accounts are loaded.
     await browserProxy.whenCalled('getAccounts');
     flush();
@@ -150,7 +149,7 @@ suite('KerberosAccountsTests', function() {
     // hidden, so click the second one (clicking a hidden button works, but
     // it feels weird).
     kerberosAccounts.shadowRoot
-        .querySelectorAll('.reauth-button')[Account.SECOND]
+        .querySelectorAll('.reauth-button')[AccountIndex.SECOND]
         .click();
     flush();
 
@@ -160,14 +159,15 @@ suite('KerberosAccountsTests', function() {
         'kerberos-add-account-dialog');
     assertTrue(!!addDialog);
     assertEquals(
-        TEST_KERBEROS_ACCOUNTS[Account.SECOND].principalName,
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].principalName,
         addDialog.$.username.value);
   });
 
   // Appending '?kerberos_reauth=<principal>' to the URL opens the reauth
   // dialog for that account.
-  test('HandleReauthQueryParameter', async () => {
-    const principal_name = TEST_KERBEROS_ACCOUNTS[Account.FIRST].principalName;
+  test('Handle reauth query parameter', async () => {
+    const principal_name =
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName;
     const params = new URLSearchParams();
     params.append('kerberos_reauth', principal_name);
     Router.getInstance().navigateTo(routes.KERBEROS_ACCOUNTS_V2, params);
@@ -183,28 +183,28 @@ suite('KerberosAccountsTests', function() {
     assertEquals(principal_name, addDialog.$.username.value);
   });
 
-  test('RefreshNow', async () => {
+  test('Refresh now', async () => {
     await browserProxy.whenCalled('getAccounts');
     flush();
-    clickMoreActions(Account.FIRST, MoreActions.REFRESH_NOW);
+    clickMoreActions(AccountIndex.FIRST, MoreActions.REFRESH_NOW);
     flush();
 
     const addDialog = kerberosAccounts.shadowRoot.querySelector(
         'kerberos-add-account-dialog');
     assertTrue(!!addDialog);
     assertEquals(
-        TEST_KERBEROS_ACCOUNTS[Account.FIRST].principalName,
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName,
         addDialog.$.username.value);
   });
 
-  test('RefreshAccountShowsToast', async () => {
+  test('Refresh account shows toast', async () => {
     const toast = kerberosAccounts.shadowRoot.querySelector('#account-toast');
     assertTrue(!!toast);
     assertFalse(toast.open);
 
     await browserProxy.whenCalled('getAccounts');
     flush();
-    clickMoreActions(Account.FIRST, MoreActions.REFRESH_NOW);
+    clickMoreActions(AccountIndex.FIRST, MoreActions.REFRESH_NOW);
     flush();
 
     const addDialog = kerberosAccounts.shadowRoot.querySelector(
@@ -221,13 +221,13 @@ suite('KerberosAccountsTests', function() {
                    .innerHTML.includes('refreshed'));
   });
 
-  test('RemoveAccount', async () => {
+  test('Remove account', async () => {
     await browserProxy.whenCalled('getAccounts');
     flush();
-    clickMoreActions(Account.FIRST, MoreActions.REMOVE_ACCOUNT);
+    clickMoreActions(AccountIndex.FIRST, MoreActions.REMOVE_ACCOUNT);
     const account = await browserProxy.whenCalled('removeAccount');
     assertEquals(
-        TEST_KERBEROS_ACCOUNTS[Account.FIRST].principalName,
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName,
         account.principalName);
   });
 
@@ -249,14 +249,14 @@ suite('KerberosAccountsTests', function() {
         'Kebab menu should be focused for settingId=1801.');
   });
 
-  test('RemoveAccountShowsToast', async () => {
+  test('Remove account shows toast', async () => {
     const toast = kerberosAccounts.shadowRoot.querySelector('#account-toast');
     assertTrue(!!toast);
     assertFalse(toast.open);
 
     await browserProxy.whenCalled('getAccounts');
     flush();
-    clickMoreActions(Account.FIRST, MoreActions.REMOVE_ACCOUNT);
+    clickMoreActions(AccountIndex.FIRST, MoreActions.REMOVE_ACCOUNT);
     await browserProxy.whenCalled('removeAccount');
     await flushTasks();
     flush();
@@ -265,26 +265,26 @@ suite('KerberosAccountsTests', function() {
                    .innerHTML.includes('removed'));
   });
 
-  test('AccountListIsUpdatedWhenKerberosAccountsUpdates', function() {
+  test('Account list is updated when Kerberos accounts updates', function() {
     assertEquals(1, browserProxy.getCallCount('getAccounts'));
     webUIListenerCallback('kerberos-accounts-changed');
     assertEquals(2, browserProxy.getCallCount('getAccounts'));
   });
 
-  test('SetAsActiveAccount', async () => {
+  test('Set as active account', async () => {
     await browserProxy.whenCalled('getAccounts');
     flush();
-    clickMoreActions(Account.SECOND, MoreActions.SET_AS_ACTIVE_ACCOUNT);
+    clickMoreActions(AccountIndex.SECOND, MoreActions.SET_AS_ACTIVE_ACCOUNT);
     const account = await browserProxy.whenCalled('setAsActiveAccount');
     assertEquals(
-        TEST_KERBEROS_ACCOUNTS[Account.SECOND].principalName,
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].principalName,
         account.principalName);
   });
 
-  test('ShowPolicyIndicatorForManagedAccounts', async () => {
+  test('Show policy indicator for managed accounts', async () => {
     // Make sure we have at least one managed and one unmanaged account.
-    assertFalse(TEST_KERBEROS_ACCOUNTS[0].isManaged);
-    assertTrue(TEST_KERBEROS_ACCOUNTS[2].isManaged);
+    assertFalse(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].isManaged);
+    assertTrue(TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD].isManaged);
 
     await browserProxy.whenCalled('getAccounts');
     flush();
@@ -319,31 +319,29 @@ suite('KerberosAccountsTests', function() {
     }
   });
 
-  test('AddAccountsAllowed', function() {
+  test('Add accounts allowed', function() {
     assertTrue(loadTimeData.getBoolean('kerberosAddAccountsAllowed'));
     createDialog();
+
     assertTrue(!kerberosAccounts.shadowRoot.querySelector(
         '#add-account-policy-indicator'));
     assertFalse(kerberosAccounts.shadowRoot.querySelector('#add-account-button')
                     .disabled);
   });
 
-  test('AddAccountsNotAllowed', function() {
+  test('Add accounts not allowed', function() {
     loadTimeData.overrideValues({kerberosAddAccountsAllowed: false});
     createDialog();
-    flush();
+
     assertTrue(!!kerberosAccounts.shadowRoot.querySelector(
         '#add-account-policy-indicator'));
     assertTrue(kerberosAccounts.shadowRoot.querySelector('#add-account-button')
                    .disabled);
-
-    // Reset for further tests.
-    loadTimeData.overrideValues({kerberosAddAccountsAllowed: true});
   });
 });
 
 // Tests for the kerberos-add-account-dialog element.
-suite('KerberosAddAccountTests', function() {
+suite('Kerberos add account tests', function() {
   let browserProxy = null;
 
   let dialog = null;
@@ -371,8 +369,12 @@ suite('KerberosAddAccountTests', function() {
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
 
-    // Start test with the "Remember password by default" feature enabled.
+    // Setting the default value of the relevant load time data.
     loadTimeData.overrideValues({kerberosRememberPasswordByDefault: true});
+    loadTimeData.overrideValues({kerberosRememberPasswordEnabled: true});
+    loadTimeData.overrideValues({isGuest: false});
+    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
+
     createDialog(null);
   });
 
@@ -389,6 +391,7 @@ suite('KerberosAddAccountTests', function() {
     dialog = document.createElement('kerberos-add-account-dialog');
     dialog.presetAccount = presetAccount;
     document.body.appendChild(dialog);
+    flush();
 
     addDialog = dialog.$.addDialog;
     assertTrue(!!addDialog);
@@ -459,7 +462,9 @@ suite('KerberosAddAccountTests', function() {
 
   // Verifies expected states if no account is preset and password should be
   // remembered by default.
-  test('StatesWithoutPresetAccountPasswordRemembered', async () => {
+  test('State without preset account and remember password check', async () => {
+    assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordByDefault'));
+
     assertTrue(title.startsWith('Add'));
     assertEquals('Add', actionButton.innerText);
     assertFalse(username.disabled);
@@ -471,22 +476,23 @@ suite('KerberosAddAccountTests', function() {
 
   // Verifies the rememberPassword state if no account is preset and password
   // should not be remembered by default.
-  test('StatesWithoutPresetAccountPasswordNotRemembered', async () => {
+  test('State without preset account and password not remembered', async () => {
     loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
     createDialog(null);
-    flush();
 
     assertFalse(rememberPassword.checked);
   });
 
-  // Verifies expected states if an account is preset.
-  test('StatesWithPresetAccount', async () => {
-    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
+  // Verifies expected state if an account is preset.
+  test('State with preset account', async () => {
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
     assertTrue(title.startsWith('Refresh'));
     assertEquals('Refresh', actionButton.innerText);
     assertTrue(username.readonly);
-    assertEquals(TEST_KERBEROS_ACCOUNTS[0].principalName, username.value);
-    assertConfig(TEST_KERBEROS_ACCOUNTS[0].config);
+    assertEquals(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName,
+        username.value);
+    assertConfig(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].config);
     // Password and remember password are tested below since the contents
     // depends on the passwordWasRemembered property of the account.
   });
@@ -494,9 +500,11 @@ suite('KerberosAddAccountTests', function() {
   // The password input field is empty and 'Remember password' is checked if
   // |passwordWasRemembered| is false and the password should be remembered by
   // default.
-  test('PasswordNotPresetIfPasswordWasNotRemembered', function() {
+  test('Password not preset if password was not remembered', function() {
+    assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordByDefault'));
     assertFalse(TEST_KERBEROS_ACCOUNTS[0].passwordWasRemembered);
     createDialog(TEST_KERBEROS_ACCOUNTS[0]);
+
     assertEquals('', password.value);
     assertTrue(rememberPassword.checked);
   });
@@ -504,30 +512,34 @@ suite('KerberosAddAccountTests', function() {
   // The password input field is empty and 'Remember password' is not checked if
   // |passwordWasRemembered| is false and the password should not be remembered
   // by default.
-  test('PasswordPresetIfPasswordWasNotRememberedAndFeatureEnabled', function() {
-    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
-    createDialog(null);
-    flush();
+  test(
+      'Checkbox unchecked if password was not remembered and feature disabled',
+      function() {
+        loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
+        createDialog(null);
 
-    assertFalse(TEST_KERBEROS_ACCOUNTS[0].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
-    assertEquals('', password.value);
-    assertFalse(rememberPassword.checked);
-  });
+        assertFalse(
+            TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].passwordWasRemembered);
+        createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
+        assertEquals('', password.value);
+        assertFalse(rememberPassword.checked);
+      });
 
   // The password input field is not empty and 'Remember password' is checked
   // if |passwordWasRemembered| is true.
-  test('PasswordPresetIfPasswordWasRemembered', function() {
-    assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
+  test('Password preset if password was remembered', function() {
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
     assertNotEquals('', password.value);
     assertTrue(rememberPassword.checked);
   });
 
-  test('RememberPasswordEnabled', function() {
+  test('Remember password enabled', function() {
     assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordEnabled'));
-    assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
 
     assertTrue(
         !dialog.shadowRoot.querySelector('#rememberPasswordPolicyIndicator'));
@@ -536,48 +548,40 @@ suite('KerberosAddAccountTests', function() {
     assertNotEquals('', password.value);
   });
 
-  test('RememberPasswordDisabled', function() {
+  test('Remember password disabled', function() {
     loadTimeData.overrideValues({kerberosRememberPasswordEnabled: false});
-    assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
-    flush();
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
 
     assertTrue(
         !!dialog.shadowRoot.querySelector('#rememberPasswordPolicyIndicator'));
     assertTrue(rememberPassword.disabled);
     assertFalse(rememberPassword.checked);
     assertEquals('', password.value);
-
-    // Reset for further tests.
-    loadTimeData.overrideValues({kerberosRememberPasswordEnabled: true});
   });
 
-  test('RememberPasswordVisibleAndCheckedOnUserSessions', function() {
+  test('Remember password visible and checked on user sessions', function() {
     assertFalse(loadTimeData.getBoolean('isGuest'));
     createDialog(null);
-    flush();
 
     assertFalse(
         dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
     assertTrue(rememberPassword.checked);
   });
 
-  test('RememberPasswordHiddenAndNotCheckedOnMgs', function() {
+  test('Remember password hidden and not checked on MGS', function() {
     loadTimeData.overrideValues({isGuest: true});
     createDialog(null);
-    flush();
 
     assertTrue(
         dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
     assertFalse(rememberPassword.checked);
-
-    // Reset for further tests.
-    loadTimeData.overrideValues({isGuest: false});
   });
 
   // By clicking the action button, all field values are passed to the
   // 'addAccount' browser proxy method.
-  test('ActionButtonPassesFieldValues', async () => {
+  test('Action button passes field values', async () => {
     const EXPECTED_USER = 'testuser';
     const EXPECTED_PASS = 'testpass';
     const EXPECTED_REMEMBER_PASS = true;
@@ -602,16 +606,16 @@ suite('KerberosAddAccountTests', function() {
   });
 
   // If an account is preset, overwriting that account should be allowed.
-  test('AllowExistingIsTrueForPresetAccounts', async () => {
+  test('Allow existing is true for preset accounts', async () => {
     // Populate dialog with preset account.
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
     actionButton.click();
     const args = await browserProxy.whenCalled('addAccount');
     assertTrue(args[AddParams.ALLOW_EXISTING]);
   });
 
   // While an account is being added, the action button is disabled.
-  test('ActionButtonDisableWhileInProgress', async () => {
+  test('Action button disable while in progress', async () => {
     assertFalse(actionButton.disabled);
     actionButton.click();
     assertTrue(actionButton.disabled);
@@ -621,9 +625,10 @@ suite('KerberosAddAccountTests', function() {
 
   // If the account has passwordWasRemembered === true and the user just
   // clicks the 'Add' button, an empty password is submitted.
-  test('SubmitsEmptyPasswordIfRememberedPasswordIsUsed', async () => {
-    assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
+  test('Submits empty password if remembered password is used', async () => {
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
     actionButton.click();
     const args = await browserProxy.whenCalled('addAccount');
     assertEquals('', args[AddParams.PASSWORD]);
@@ -633,9 +638,10 @@ suite('KerberosAddAccountTests', function() {
   // If the account has passwordWasRemembered === true and the user changes
   // the password before clicking the action button, the changed password is
   // submitted.
-  test('SubmitsChangedPasswordIfRememberedPasswordIsChanged', async () => {
-    assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[1]);
+  test('Submits changed password if password field was changed', async () => {
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
     password.inputElement.value = 'some edit';
     password.dispatchEvent(new CustomEvent('input'));
     actionButton.click();
@@ -644,7 +650,7 @@ suite('KerberosAddAccountTests', function() {
     assertTrue(args[AddParams.REMEMBER_PASSWORD]);
   });
 
-  test('AdvancedConfigOpenClose', async () => {
+  test('Advanced config open and close', async () => {
     assertTrue(!dialog.shadowRoot.querySelector('#advancedConfigDialog'));
     assertFalse(addDialog.hidden);
     advancedConfigButton.click();
@@ -670,7 +676,7 @@ suite('KerberosAddAccountTests', function() {
     assertTrue(addDialog.open);
   });
 
-  test('AdvancedConfigurationSaveKeepsConfig', async () => {
+  test('Advanced configuration save keeps config', async () => {
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
@@ -689,7 +695,7 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(modifiedConfig);
   });
 
-  test('AdvancedConfigurationCancelResetsConfig', async () => {
+  test('Advanced configuration cancel resets config', async () => {
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
@@ -707,9 +713,9 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(prevConfig);
   });
 
-  test('AdvancedConfigurationDisabledByPolicy', async () => {
-    assertTrue(TEST_KERBEROS_ACCOUNTS[2].isManaged);
-    createDialog(TEST_KERBEROS_ACCOUNTS[2]);
+  test('Advanced configuration disabled by policy', async () => {
+    assertTrue(TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD].isManaged);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD]);
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
@@ -721,7 +727,7 @@ suite('KerberosAddAccountTests', function() {
     assertTrue(advancedConfigDialog.querySelector('#config').disabled);
   });
 
-  test('AdvancedConfigurationValidationError', async () => {
+  test('Advanced configuration validation error', async () => {
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
@@ -767,7 +773,7 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(loadTimeData.getString('defaultKerberosConfig'));
   });
 
-  test('ValidateConfigurationOnAdvancedClick', async () => {
+  test('Validate configuration on advanced click', async () => {
     // Cause a validation error.
     browserProxy.validateConfigResult = {
       error: KerberosErrorType.BAD_CONFIG,
@@ -800,95 +806,92 @@ suite('KerberosAddAccountTests', function() {
     assertNotEquals(0, textArea.selectionEnd);
   });
 
-  test('DomainAutocompleteEnabled', function() {
+  test('Domain autocomplete enabled', function() {
     loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
-    createDialog();
-    flush();
+    createDialog(null);
 
     // '@' should be automatically added to the policy value.
     assertEquals(
         '@domain.com',
         dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
-
-    // Reset for further tests.
-    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
   });
 
-  test('DomainAutocompleteEnabledOverride', function() {
+  test('Domain autocomplete enabled override', function() {
     loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
     assertTrue(
-        TEST_KERBEROS_ACCOUNTS[0].principalName &&
-        TEST_KERBEROS_ACCOUNTS[0].principalName.indexOf('@') !== -1);
-    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
-    flush();
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName &&
+        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName.indexOf(
+            '@') !== -1);
+    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
 
     // If inserted principal contains '@', nothing should be shown.
     assertEquals(
         '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
-
-    // Reset for further tests.
-    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
   });
 
-  test('DomainAutocompleteDisabled', function() {
+  test('Domain autocomplete disabled', function() {
     assertEquals('', loadTimeData.getString('kerberosDomainAutocomplete'));
     assertEquals(
         '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
   });
 
-  // addAccount: KerberosErrorType.kNetworkProblem spawns a general error.
-  test('AddAccountError_NetworkProblem', async () => {
-    await checkAddAccountError(KerberosErrorType.NETWORK_PROBLEM, generalError);
-  });
+  // Testing how `addAccount` error types are handled by the UI:
 
-  // addAccount: KerberosErrorType.kParsePrincipalFailed spawns a username
-  // error.
-  test('AddAccountError_ParsePrincipalFailed', async () => {
+  // KerberosErrorType.PARSE_PRINCIPAL_FAILED spawns a username error.
+  test('Add account error - parse principal failed', async () => {
     await checkAddAccountError(
         KerberosErrorType.PARSE_PRINCIPAL_FAILED, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.BAD_PRINCIPAL spawns a username error.
-  test('AddAccountError_BadPrincipal', async () => {
+  // KerberosErrorType.BAD_PRINCIPAL spawns a username error.
+  test('Add account error - bad principal', async () => {
     await checkAddAccountError(
         KerberosErrorType.BAD_PRINCIPAL, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.DUPLICATE_PRINCIPAL_NAME spawns a username
-  // error.
-  test('AddAccountError_DuplicatePrincipalName', async () => {
+  // KerberosErrorType.DUPLICATE_PRINCIPAL_NAME spawns a username error.
+  test('Add account error - duplicate principal name', async () => {
     await checkAddAccountError(
         KerberosErrorType.DUPLICATE_PRINCIPAL_NAME, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.CONTACTING_KDC_FAILED spawns a username
-  // error.
-  test('AddAccountError_ContactingKdcFailed', async () => {
+  // KerberosErrorType.CONTACTING_KDC_FAILED spawns a username error.
+  test('Add account error - contacting KDC failed', async () => {
     await checkAddAccountError(
         KerberosErrorType.CONTACTING_KDC_FAILED, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.BAD_PASSWORD spawns a password error.
-  test('AddAccountError_BadPassword', async () => {
+  // KerberosErrorType.BAD_PASSWORD spawns a password error.
+  test('Add account error - bad password', async () => {
     await checkAddAccountError(
         KerberosErrorType.BAD_PASSWORD, password.$.error);
   });
 
-  // addAccount: KerberosErrorType.PASSWORD_EXPIRED spawns a password error.
-  test('AddAccountError_PasswordExpired', async () => {
+  // KerberosErrorType.PASSWORD_EXPIRED spawns a password error.
+  test('Add account error - password expired', async () => {
     await checkAddAccountError(
         KerberosErrorType.PASSWORD_EXPIRED, password.$.error);
   });
 
-  // addAccount: KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE spawns
-  // a general error.
-  test('AddAccountError_KdcDoesNotSupportEncryptionType', async () => {
+  // KerberosErrorType.NETWORK_PROBLEM spawns a general error.
+  test('Add account error - network problem', async () => {
+    await checkAddAccountError(KerberosErrorType.NETWORK_PROBLEM, generalError);
+  });
+
+  // KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE spawns a general
+  // error.
+  test('Add account error - KDC does not support encryption type', async () => {
     await checkAddAccountError(
         KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE, generalError);
   });
 
-  // addAccount: KerberosErrorType.UNKNOWN spawns a general error.
-  test('AddAccountError_Unknown', async () => {
+  // KerberosErrorType.UNKNOWN spawns a general error.
+  test('Add account error - unknown', async () => {
     await checkAddAccountError(KerberosErrorType.UNKNOWN, generalError);
+  });
+
+  // KerberosErrorType.BAD_CONFIG spawns a general error.
+  test('Add account error - bad config', async () => {
+    await checkAddAccountError(KerberosErrorType.BAD_CONFIG, generalError);
   });
 });
