@@ -1612,28 +1612,23 @@ constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment3[] = {
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment4[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
     {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-     "without-reviews"}};
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "reviews"}};
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment5[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
     {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-     "without-calls"}};
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment6[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
     {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "true"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-     "without-directions"}};
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "directions"}};
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment7[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "true"},
     {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-     "without-calls"}};
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
 constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestTreatment8[] = {
     {OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name, "false"},
     {OmniboxFieldTrial::kActionsInSuggestPromoteReviewsAction.name, "false"},
-    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name,
-     "without-calls"}};
+    {OmniboxFieldTrial::kActionsInSuggestRemoveActionTypes.name, "call"}};
 
 constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
     {"T1: Promote, Reviews, Directions, Calls",
