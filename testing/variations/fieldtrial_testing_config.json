@@ -10634,6 +10634,7 @@
                     },
                     "enable_features": [
                         "AllowURNsInIframes",
+                        "AttributionReportingCrossAppWeb",
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
                         "BrowsingTopicsXHR",
@@ -10661,6 +10662,7 @@
                         "implementation_type": "mparch"
                     },
                     "enable_features": [
+                        "AttributionReportingCrossAppWeb",
                         "BrowsingTopics",
                         "BrowsingTopicsXHR",
                         "FencedFrames",
