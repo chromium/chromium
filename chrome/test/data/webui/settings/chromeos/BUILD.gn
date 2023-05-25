@@ -116,7 +116,6 @@ build_webui_tests("build") {
     "app_management/app_test.js",
     "app_management/arc_detail_view_test.js",
     "app_management/borealis_detail_view_test.js",
-    "app_management/chrome_app_detail_view_test.js",
     "app_management/dom_switch_test.js",
     "app_management/fake_page_handler.ts",
     "app_management/file_handling_item_test.js",
@@ -205,6 +204,7 @@ build_webui_tests("build") {
     "os_a11y_page/tts_voice_subpage_test.ts",
 
     "os_apps_page/app_management_page/app_detail_view_test.ts",
+    "os_apps_page/app_management_page/chrome_app_detail_view_test.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",

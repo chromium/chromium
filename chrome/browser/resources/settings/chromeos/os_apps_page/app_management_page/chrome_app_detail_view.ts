@@ -18,7 +18,7 @@ import {AppManagementStoreMixin} from './store_mixin.js';
 const AppManagementChromeAppDetailViewElementBase =
     AppManagementStoreMixin(PolymerElement);
 
-class AppManagementChromeAppDetailViewElement extends
+export class AppManagementChromeAppDetailViewElement extends
     AppManagementChromeAppDetailViewElementBase {
   static get is() {
     return 'app-management-chrome-app-detail-view';
