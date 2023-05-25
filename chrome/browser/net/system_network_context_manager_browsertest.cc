@@ -612,13 +612,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 class SystemNetworkContextManagerFreezeQUICUaBrowsertest
-    : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<bool> {
+    : public SystemNetworkContextManagerBrowsertest {
  public:
-  SystemNetworkContextManagerFreezeQUICUaBrowsertest() {
-    scoped_feature_list_.InitWithFeatureState(blink::features::kReduceUserAgent,
-                                              GetParam());
-  }
+  SystemNetworkContextManagerFreezeQUICUaBrowsertest() = default;
   ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override {}
 
   void SetUpOnMainThread() override {}
@@ -627,7 +623,7 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
+IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
                        QUICUaConfig) {
   network::mojom::NetworkContextParamsPtr network_context_params =
       g_browser_process->system_network_context_manager()
@@ -635,23 +631,8 @@ IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
 
   std::string quic_ua = network_context_params->quic_user_agent_id;
 
-  if (GetParam()) {  // if the UA Freeze feature is turned on
-    EXPECT_EQ("", quic_ua);
-  } else {
-    EXPECT_THAT(quic_ua, testing::HasSubstr(chrome::GetChannelName(
-                             chrome::WithExtendedStable(false))));
-    EXPECT_THAT(quic_ua,
-                testing::HasSubstr(
-                    version_info::GetProductNameAndVersionForUserAgent()));
-    EXPECT_THAT(quic_ua, testing::HasSubstr(content::BuildOSCpuInfo(
-                             content::IncludeAndroidBuildNumber::Exclude,
-                             content::IncludeAndroidModel::Include)));
-  }
+  EXPECT_EQ("", quic_ua);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SystemNetworkContextManagerFreezeQUICUaBrowsertest,
-                         ::testing::Bool());
 
 class SystemNetworkContextManagerWPADQuickCheckBrowsertest
     : public SystemNetworkContextManagerBrowsertest,

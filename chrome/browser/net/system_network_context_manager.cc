@@ -735,25 +735,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  std::string quic_user_agent_id;
-
-  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
-    quic_user_agent_id = "";
-  } else {
-    // Extended stable reports as regular stable due to the similarity, and to
-    // avoid adding more signal to the user agent string.
-    quic_user_agent_id =
-        chrome::GetChannelName(chrome::WithExtendedStable(false));
-    if (!quic_user_agent_id.empty())
-      quic_user_agent_id.push_back(' ');
-    quic_user_agent_id.append(
-        version_info::GetProductNameAndVersionForUserAgent());
-    quic_user_agent_id.push_back(' ');
-    quic_user_agent_id.append(
-        content::BuildOSCpuInfo(content::IncludeAndroidBuildNumber::Exclude,
-                                content::IncludeAndroidModel::Include));
-  }
-  network_context_params->quic_user_agent_id = quic_user_agent_id;
+  // TODO(crbug.com/1448657) Chrome no longer supports versions of QUIC which
+  // send the quic_user_agent_id. We should remove quic_user_agent_id from
+  // Chrome completely.
+  network_context_params->quic_user_agent_id = "";
 
   // TODO(eroman): Figure out why this doesn't work in single-process mode,
   // or if it does work, now.
