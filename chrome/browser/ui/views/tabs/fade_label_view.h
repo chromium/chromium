@@ -11,7 +11,7 @@
 
 struct FadeLabelViewData {
   std::u16string text;
-  bool is_filename;
+  bool is_filename = false;
 };
 
 // Label that is able to fade when used in conjunction with FadeView
