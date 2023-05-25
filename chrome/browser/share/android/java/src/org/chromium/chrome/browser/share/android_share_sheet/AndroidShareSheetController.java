@@ -127,14 +127,21 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         Activity activity = params.getWindow().getActivity().get();
         ChromeCustomShareAction.Provider provider = null;
 
+        String urlToShare = getUrlToShare(params, chromeShareExtras);
+        // If an URL is not provided along with the image, use the content URL if it is provided.
+        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()
+                && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
+            params.setUrl(chromeShareExtras.getContentUrl().getSpec());
+        }
+
         if (showCustomActions) {
             boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
             var actionProvider =
                     new AndroidCustomActionProvider(params.getWindow().getActivity().get(),
                             params.getWindow(), mTabProvider, mController, params, mPrintCallback,
                             isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
-                            getUrlToShare(params, chromeShareExtras), profile, chromeShareExtras,
-                            isInMultiWindow, mLinkToTextCoordinator, mDeviceLockActivityLauncher);
+                            urlToShare, profile, chromeShareExtras, isInMultiWindow,
+                            mLinkToTextCoordinator, mDeviceLockActivityLauncher);
             if (actionProvider.getCustomActions().size() > 0
                     || actionProvider.getModifyShareAction() != null) {
                 provider = actionProvider;
@@ -144,12 +151,6 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
         if (provider == null) {
             Log.i(TAG, "No custom actions provided.");
-        }
-
-        // If an URL is not provided along with the image, use the content URL if it is provided.
-        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()
-                && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
-            params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
 
         if (!isLinkSharing(params, chromeShareExtras)) {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -53,9 +54,11 @@ public class ChromeShareExtras {
     /**
      * Source URL of the image.
      */
+    @NonNull
     private final GURL mImageSrcUrl;
 
     /** Url of the content being shared. */
+    @NonNull
     private final GURL mContentUrl;
 
     /** Whether it is sharing a tab group. */
@@ -115,6 +118,7 @@ public class ChromeShareExtras {
     /**
      * @return Source URL of the image.
      */
+    @NonNull
     public GURL getImageSrcUrl() {
         return mImageSrcUrl;
     }
@@ -122,6 +126,7 @@ public class ChromeShareExtras {
     /**
      * @return URL of the content being shared.
      */
+    @NonNull
     public GURL getContentUrl() {
         return mContentUrl;
     }

@@ -5,7 +5,12 @@
 package org.chromium.chrome.browser.share.android_share_sheet;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.drawable.Icon;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
@@ -33,7 +38,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +57,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     private static final String USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED =
             "SharingHubAndroid.LongScreenshotSelected.NoEditor";
+    private static final String USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED =
+            "SharingHubAndroid.CopyImageWithLinkSelected";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
 
     private final ChromeShareExtras mChromeShareExtras;
@@ -181,11 +190,13 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     @Override
     protected void maybeAddCopyFirstPartyOption() {
-        // For Android's share sheet, only use copy image
+        // For Android's share sheet, only use copy image for web share.
+        // TODO(crbug/1448944): Exclude the copy action from Context menu instead.
         if (mChromeShareExtras != null
                 && mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE) {
             mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(false));
         }
+        mOrderedFirstPartyOptions.add(createCopyImageWithLinkFirstPartyOption());
     }
 
     private FirstPartyOption createShareHighlightTextWithLink() {
@@ -210,6 +221,30 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                     mChromeOptionShareCallback.showShareSheet(
                             mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK),
                             mChromeShareExtras, SystemClock.elapsedRealtime());
+                })
+                .build();
+    }
+
+    private FirstPartyOption createCopyImageWithLinkFirstPartyOption() {
+        return new FirstPartyOptionBuilder(ContentType.IMAGE_AND_LINK)
+                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image_with_link)
+                .setFeatureNameForMetrics(USER_ACTION_SHARE_COPY_IMAGE_WITH_LINK_SELECTED)
+                .setOnClickCallback((view) -> {
+                    String linkUrl = mShareParams.getUrl();
+                    Uri imageUri = mShareParams.getImageUriToShare();
+                    if (imageUri != null) {
+                        // This call stores the URL in the cache image provider.
+                        Clipboard.getInstance().setImageUri(imageUri);
+
+                        ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
+                                Context.CLIPBOARD_SERVICE);
+                        ClipData clip = new ClipData("imageLink",
+                                new String[] {mShareParams.getFileContentType(),
+                                        ClipDescription.MIMETYPE_TEXT_PLAIN},
+                                new ClipData.Item(linkUrl, /*intent=*/null, imageUri));
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .build();
     }

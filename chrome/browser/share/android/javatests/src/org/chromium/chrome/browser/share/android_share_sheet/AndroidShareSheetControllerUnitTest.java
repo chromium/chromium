@@ -17,7 +17,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
@@ -332,8 +335,43 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image_with_link,
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+    }
+
+    @Test
+    @Config(shadows = {ShadowChooserActionHelper.class, ShadowBuildCompatForU.class})
+    public void shareImageLinkThenCopyImageAndLink() throws CanceledException {
+        Uri testImageUri = Uri.parse("content://test.image.uri");
+        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+                                     .setFileContentType("image/png")
+                                     .setSingleImageUri(testImageUri)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
+                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(intent, R.string.sharing_copy_image_with_link,
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+
+        chooseCustomAction(intent, R.string.sharing_copy_image_with_link);
+        ClipboardManager clipboardManager =
+                (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData data = clipboardManager.getPrimaryClip();
+        Assert.assertTrue("Primary clip should contain image.",
+                data.getDescription().filterMimeTypes("image/*").length > 0);
+        Assert.assertTrue("Primary clip should contain text.",
+                data.getDescription().filterMimeTypes("text/*").length > 0);
+        Assert.assertEquals(
+                "Image being copied is different.", testImageUri, data.getItemAt(0).getUri());
+        Assert.assertEquals("Link being copied is different.", JUnitTestGURLs.GOOGLE_URL,
+                data.getItemAt(0).getText());
     }
 
     @Test
@@ -475,7 +513,7 @@ public class AndroidShareSheetControllerUnitTest {
     @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class,
                     ShadowQrCodeDialog.class})
     public void
-    chooseQRCodeAction() throws CanceledException {
+    shareQrCodeForImage() throws CanceledException {
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params = new ShareParams.Builder(mWindow, "", "")
                                      .setFileContentType("image/png")
@@ -492,8 +530,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image_with_link,
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
         Assert.assertEquals("Image source URL should be used for QR Code.",
@@ -521,8 +559,8 @@ public class AndroidShareSheetControllerUnitTest {
 
         // No download option here.
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(
-                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image_with_link,
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -541,7 +579,8 @@ public class AndroidShareSheetControllerUnitTest {
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
+        assertCustomActions(intent, R.string.sharing_copy_image,
+                R.string.sharing_copy_image_with_link, R.string.sharing_send_tab_to_self,
                 R.string.qr_code_share_icon_label);
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);

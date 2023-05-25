@@ -5226,6 +5226,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image
       </message>
 
+      <message name="IDS_SHARING_COPY_IMAGE_WITH_LINK" desc="Label for the Copy Image button with link in the sharing hub.">
+        Copy image with link
+      </message>
+
       <message name="IDS_SHARING_COPY_GIF" desc="Label for the Copy GIF button in the sharing hub.">
         Copy GIF
       </message>
