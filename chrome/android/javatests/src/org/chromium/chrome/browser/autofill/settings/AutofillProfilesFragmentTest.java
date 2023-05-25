@@ -592,7 +592,11 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    public void testLocalProfiles_NoSync() throws Exception {
+    public void testLocalProfiles_UserNotSignedIn() throws Exception {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mIdentityManagerMock);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
         setUpMockSyncService(false, new HashSet());
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -609,7 +613,26 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    public void testLocalProfiles_NoSync() throws Exception {
+        setUpMockPrimaryAccount("test@account.com");
+        setUpMockSyncService(false, new HashSet());
+        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+
+        // Trigger address profile list rebuild.
+        mHelper.setProfile(sAccountProfile);
+        Assert.assertEquals(0,
+                autofillProfileFragment.findPreference(sAccountProfile.getFullName())
+                        .getWidgetLayoutResource());
+        Assert.assertEquals(R.layout.autofill_local_profile_icon,
+                autofillProfileFragment.findPreference(sLocalOrSyncProfile.getFullName())
+                        .getWidgetLayoutResource());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
     public void testLocalProfiles_AddressesNotSynced() throws Exception {
+        setUpMockPrimaryAccount("test@account.com");
         setUpMockSyncService(true, new HashSet());
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -627,6 +650,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testLocalProfiles_AddressesSynced() throws Exception {
+        setUpMockPrimaryAccount("test@account.com");
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -672,6 +696,7 @@ public class AutofillProfilesFragmentTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
                 .thenReturn(coreAccountInfo);
+        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
     }
 
     private void setUpMockSyncService(boolean enabled, Set<Integer> selectedTypes) {
