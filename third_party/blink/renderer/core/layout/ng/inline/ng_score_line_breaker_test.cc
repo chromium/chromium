@@ -15,6 +15,12 @@ namespace blink {
 
 namespace {
 
+LayoutUnit FragmentWidth(const NGInlineNode& node) {
+  const NGPhysicalBoxFragment* fragment =
+      node.GetLayoutBox()->GetPhysicalFragment(0);
+  return fragment->Size().width;
+}
+
 void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
   for (wtf_size_t i = 1; i < line_info_list.Size(); ++i) {
     EXPECT_EQ(line_info_list[i].Start(),
@@ -27,9 +33,7 @@ void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
 class NGScoreLineBreakerTest : public RenderingTest {
  public:
   Vector<float> ComputeScores(const NGInlineNode& node) {
-    const NGPhysicalBoxFragment* fragment =
-        node.GetLayoutBox()->GetPhysicalFragment(0);
-    const LayoutUnit width = fragment->Size().width;
+    const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     NGLineLayoutOpportunity line_opportunity(width);
     NGScoreLineBreaker optimizer(node, space, line_opportunity);
@@ -63,9 +67,7 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
     </div>
   )HTML");
   const NGInlineNode node = GetInlineNodeByElementId("target");
-  const NGPhysicalBoxFragment* fragment =
-      node.GetLayoutBox()->GetPhysicalFragment(0);
-  const LayoutUnit width = fragment->Size().width;
+  const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
@@ -118,9 +120,7 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
     </div>
   )HTML");
   const NGInlineNode node = GetInlineNodeByElementId("target");
-  const NGPhysicalBoxFragment* fragment =
-      node.GetLayoutBox()->GetPhysicalFragment(0);
-  const LayoutUnit width = fragment->Size().width;
+  const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
@@ -251,9 +251,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
     </style>
   )HTML") + data.html);
   const NGInlineNode node = GetInlineNodeByElementId("target");
-  const NGPhysicalBoxFragment* fragment =
-      node.GetLayoutBox()->GetPhysicalFragment(0);
-  const LayoutUnit width = fragment->Size().width;
+  const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
