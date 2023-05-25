@@ -1026,7 +1026,7 @@ class BookmarkManagerMediator
     }
 
     private ListItem buildSearchBoxRow() {
-        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
+        PropertyModel propertyModel = new PropertyModel(BookmarkSearchBoxRowProperties.ALL_KEYS);
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
 
