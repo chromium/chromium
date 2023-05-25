@@ -259,11 +259,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AlreadyOpenedGroupIsFocused) {
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
-  std::vector<SavedTabGroupTab> group_1_tabs = {
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_1)};
+  std::vector<SavedTabGroupTab> group_1_tabs = {SavedTabGroupTab(
+      GURL("chrome://newtab"), u"New Tab", guid_1, /*position=*/0)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), guid_1);
+                              std::move(group_1_tabs), absl::nullopt, guid_1);
 
   service()->model()->Add(saved_group_1);
 
@@ -342,16 +342,18 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading in persisted data on startup.
-  std::vector<SavedTabGroupTab> group_1_tabs = {
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_1)};
+  std::vector<SavedTabGroupTab> group_1_tabs = {SavedTabGroupTab(
+      GURL("chrome://newtab"), u"New Tab", guid_1, /*position=*/0)};
   std::vector<SavedTabGroupTab> group_2_tabs = {
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2),
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2)};
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2,
+                       /*position=*/0),
+      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid_2,
+                       /*position=*/1)};
 
   SavedTabGroup saved_group_1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
-                              std::move(group_1_tabs), guid_1);
+                              std::move(group_1_tabs), absl::nullopt, guid_1);
   SavedTabGroup saved_group_2(u"Group 2", tab_groups::TabGroupColorId::kRed,
-                              std::move(group_2_tabs), guid_2);
+                              std::move(group_2_tabs), absl::nullopt, guid_2);
   service()->model()->Add(saved_group_1);
   service()->model()->Add(saved_group_2);
 
@@ -398,11 +400,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Populate the SavedTabGroupModel with some test data to simulate the browser
   // loading persisted data on startup.
-  std::vector<SavedTabGroupTab> group_tabs = {
-      SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab", guid)};
+  std::vector<SavedTabGroupTab> group_tabs = {SavedTabGroupTab(
+      GURL("chrome://newtab"), u"New Tab", guid, /*position=*/0)};
 
   SavedTabGroup saved_group(u"Group", tab_groups::TabGroupColorId::kGrey,
-                            std::move(group_tabs), guid);
+                            std::move(group_tabs), absl::nullopt, guid);
   service()->model()->Add(saved_group);
 
   // Notify the KeyedService that the SavedTabGroupModel has loaded all local
@@ -458,7 +460,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, NewTabFromSyncOpensInLocalGroup) {
 
   // Add a tab to the saved group.
   const SavedTabGroupTab added_tab(GURL("chrome://newtab"), u"New Tab",
-                                   saved_group_id);
+                                   saved_group_id, /*position=*/0);
   service()->model()->AddTabToGroupFromSync(saved_group_id, added_tab);
 
   // Tab should have opened in local group too.

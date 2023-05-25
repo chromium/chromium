@@ -82,8 +82,9 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   CHECK(!Contains(group_guid));
 
   // Give a default position to groups if it is not already set.
-  if (saved_group.position() == SavedTabGroup::kUnsetPosition)
+  if (!saved_group.position().has_value()) {
     saved_group.SetPosition(Count());
+  }
 
   InsertGroupImpl(std::move(saved_group));
 
@@ -551,6 +552,8 @@ void SavedTabGroupModel::InsertGroupImpl(const SavedTabGroup& group) {
     saved_tab_groups_.emplace_back(std::move(group));
     return;
   }
+
+  CHECK(group.position().has_value());
 
   // Because saved_tab_groups_ must be in sorted order, we can immediately place
   // the group at the end of the vector if `group` is the largest

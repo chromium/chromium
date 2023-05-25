@@ -40,10 +40,11 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
 
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
+                          /*position=*/0)
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
-        guid));
+        /*position=*/absl::nullopt, guid));
     saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
@@ -78,10 +79,11 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   {  // Add an STG, open a group for it in the tabstrip, and delete the STG.
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
+        {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
+                          /*position=*/0)
              .SetTitle(u"Title")
              .SetFavicon(favicon::GetDefaultFavicon())},
-        guid));
+        /*position=*/absl::nullopt, guid));
     saved_tab_group_service->OpenSavedTabGroupInBrowser(browser(), guid);
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
@@ -122,9 +124,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   // Add the group to the SavedTabGroupModel and expect it is saved.
   stg_model->Add(SavedTabGroup(
       std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-      {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
+      {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
+                        /*position=*/0)
            .SetFavicon(favicon::GetDefaultFavicon())},
-      guid, absl::nullopt, group_id));
+      /*position=*/absl::nullopt, guid, group_id));
   EXPECT_TRUE(saved_tab_group_service->model()->Contains(group_id));
 
   // Remove the group from the SavedTabGroupModel and expect it is no longer

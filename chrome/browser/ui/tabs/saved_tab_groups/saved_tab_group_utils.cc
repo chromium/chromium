@@ -19,7 +19,7 @@ SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
   SavedTabGroupTab tab(contents->GetVisibleURL(), contents->GetTitle(),
-                       saved_tab_group_id);
+                       saved_tab_group_id, /*position=*/absl::nullopt);
   tab.SetFavicon(favicon::TabFaviconFromWebContents(contents));
   return tab;
 }

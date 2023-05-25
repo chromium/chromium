@@ -24,15 +24,12 @@
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
  public:
-  // Used to denote groups that have not been given a position.
-  static constexpr int kUnsetPosition = -1;
-
   SavedTabGroup(
       const std::u16string& title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
+      absl::optional<size_t> position,
       absl::optional<base::Uuid> saved_guid = absl::nullopt,
-      absl::optional<int> position = absl::nullopt,
       absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt,
       absl::optional<base::Time> creation_time_windows_epoch_micros =
           absl::nullopt,
@@ -57,7 +54,7 @@ class SavedTabGroup {
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
     return saved_tabs_;
   }
-  int position() const { return position_; }
+  absl::optional<size_t> position() const { return position_; }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -86,7 +83,7 @@ class SavedTabGroup {
       absl::optional<tab_groups::TabGroupId> tab_group_id);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
-  SavedTabGroup& SetPosition(int position);
+  SavedTabGroup& SetPosition(size_t position);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -189,9 +186,9 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab> saved_tabs_;
 
   // The current position of the group in relation to all other saved groups.
-  // A value of kUnsetPosition means that the group was not assigned a position
-  // and will be assigned one when it is added into the SavedTabGroupModel.
-  int position_;
+  // A value of nullopt means that the group was not assigned a position and
+  // will be assigned one when it is added into the SavedTabGroupModel.
+  absl::optional<size_t> position_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

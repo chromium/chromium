@@ -26,11 +26,12 @@ base::Token MakeUniqueToken() {
 
 SavedTabGroup CreateDefaultEmptySavedTabGroup() {
   return SavedTabGroup(std::u16string(u"default_group"),
-                       tab_groups::TabGroupColorId::kGrey, {});
+                       tab_groups::TabGroupColorId::kGrey, {}, absl::nullopt);
 }
 
 SavedTabGroupTab CreateDefaultSavedTabGroupTab(const base::Uuid& group_guid) {
-  return SavedTabGroupTab(GURL("www.google.com"), u"Default Title", group_guid);
+  return SavedTabGroupTab(GURL("www.google.com"), u"Default Title", group_guid,
+                          /*position=*/absl::nullopt);
 }
 
 void AddTabToEndOfGroup(
@@ -39,7 +40,8 @@ void AddTabToEndOfGroup(
     absl::optional<base::Token> local_tab_id = absl::nullopt) {
   group.AddTabLocally(SavedTabGroupTab(
       GURL(url::kAboutBlankURL), std::u16string(u"default_title"),
-      group.saved_guid(), &group, saved_guid, local_tab_id));
+      group.saved_guid(), /*position=*/group.saved_tabs().size(), saved_guid,
+      local_tab_id));
 }
 }  // namespace
 
@@ -100,12 +102,12 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   // possible, and have their position updated to reflect this.
   SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], first_tab);
-  EXPECT_EQ(first_tab->position(), 0);
+  EXPECT_EQ(first_tab->position(), 0u);
 
   // Expect tab_2 to be at the front of the group.
   SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-  EXPECT_EQ(second_tab->position(), 1);
+  EXPECT_EQ(second_tab->position(), 1u);
 }
 
 TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
@@ -126,7 +128,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   {
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 
   // Remove tab_1 from the group.
@@ -142,7 +144,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
     // Expect tab two to be at the front of the group.
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-    EXPECT_EQ(second_tab->position(), 0);
+    EXPECT_EQ(second_tab->position(), 0u);
   }
 }
 
@@ -166,12 +168,12 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   // Expect tab one to be at the end of the group.
   SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], first_tab);
-  EXPECT_EQ(first_tab->position(), 1);
+  EXPECT_EQ(first_tab->position(), 1u);
 
   // Expect tab two to be at the front of the group.
   SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-  EXPECT_EQ(second_tab->position(), 0);
+  EXPECT_EQ(second_tab->position(), 0u);
 }
 
 TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
@@ -192,7 +194,7 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   {
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 
   // Remove tab_1 from the group.
@@ -208,6 +210,6 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
     // Expect tab two to be at the front of the group.
     SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
-    EXPECT_EQ(second_tab->position(), 1);
+    EXPECT_EQ(second_tab->position(), 1u);
   }
 }

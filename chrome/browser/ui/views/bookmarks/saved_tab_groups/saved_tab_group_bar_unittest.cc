@@ -20,28 +20,33 @@
 
 namespace {
 
-SavedTabGroup kSavedTabGroup1(std::u16string(u"test_title_1"),
-                              tab_groups::TabGroupColorId::kGrey,
-                              {});
+const SavedTabGroup kSavedTabGroup1(std::u16string(u"test_title_1"),
+                                    tab_groups::TabGroupColorId::kGrey,
+                                    {},
+                                    absl::nullopt);
 
-SavedTabGroup kSavedTabGroup2(std::u16string(u"test_title_2"),
-                              tab_groups::TabGroupColorId::kGrey,
-                              {});
-SavedTabGroup kSavedTabGroup3(std::u16string(u"test_title_3"),
-                              tab_groups::TabGroupColorId::kGrey,
-                              {});
+const SavedTabGroup kSavedTabGroup2(std::u16string(u"test_title_2"),
+                                    tab_groups::TabGroupColorId::kGrey,
+                                    {},
+                                    absl::nullopt);
+const SavedTabGroup kSavedTabGroup3(std::u16string(u"test_title_3"),
+                                    tab_groups::TabGroupColorId::kGrey,
+                                    {},
+                                    absl::nullopt);
 
-SavedTabGroup kSavedTabGroup4(std::u16string(u"test_title_4"),
-                              tab_groups::TabGroupColorId::kGrey,
-                              {});
+const SavedTabGroup kSavedTabGroup4(std::u16string(u"test_title_4"),
+                                    tab_groups::TabGroupColorId::kGrey,
+                                    {},
+                                    absl::nullopt);
 
-SavedTabGroup kSavedTabGroup5(std::u16string(u"test_title_5"),
-                              tab_groups::TabGroupColorId::kGrey,
-                              {});
+const SavedTabGroup kSavedTabGroup5(std::u16string(u"test_title_5"),
+                                    tab_groups::TabGroupColorId::kGrey,
+                                    {},
+                                    absl::nullopt);
 
-std::u16string kNewTitle(u"kNewTitle");
+const std::u16string kNewTitle(u"kNewTitle");
 
-tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
+const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 
 }  // anonymous namespace
 
@@ -133,7 +138,9 @@ TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 
-  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
+  SavedTabGroup group_2_with_position = kSavedTabGroup2;
+  group_2_with_position.SetPosition(1);
+  saved_tab_group_model()->AddedFromSync(group_2_with_position);
   EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
 }
 
@@ -223,7 +230,9 @@ TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   EXPECT_TRUE(views::IsViewClass<SavedTabGroupOverflowButton>(
       saved_tab_group_bar()->children()[0]));
 
-  saved_tab_group_model()->AddedFromSync(kSavedTabGroup1);
+  SavedTabGroup group_1_with_position = kSavedTabGroup1;
+  group_1_with_position.SetPosition(1);
+  saved_tab_group_model()->AddedFromSync(group_1_with_position);
 
   // Remove the group and expect no buttons.
   saved_tab_group_model()->RemovedFromSync(kSavedTabGroup1.saved_guid());
@@ -234,7 +243,10 @@ TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
 
 TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
-  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
+
+  SavedTabGroup group_2_with_position = kSavedTabGroup2;
+  group_2_with_position.SetPosition(1);
+  saved_tab_group_model()->AddedFromSync(group_2_with_position);
 
   tab_groups::TabGroupVisualData saved_tab_group_visual_data(kNewTitle,
                                                              kNewColor);
