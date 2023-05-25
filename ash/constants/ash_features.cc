@@ -1726,7 +1726,7 @@ BASE_FEATURE(kOverviewDeskNavigation,
 // Enables user to provision PasspointARCSupport credentials.
 BASE_FEATURE(kPasspointARCSupport,
              "PasspointARCSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables user to display Passpoint credentials in the UI.
 BASE_FEATURE(kPasspointSettings,
