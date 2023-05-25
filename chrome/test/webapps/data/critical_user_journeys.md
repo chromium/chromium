@@ -390,10 +390,10 @@ The test behavior can change whether the site is configured to open as a window 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | launch_file_expect_no_dialog(FileHandler, OneFooFile) |
 | WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_files_loaded_in_site(FileHandler, OneFooFile) |
-| WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | check_files_loaded_in_site(FileHandler, OneFooFile) |
+| WMLC | install_or_shortcut_windowed(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, Remember) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneFooFile) | close_pwa | launch_file_expect_no_dialog(FileHandler, OneBarFile) | check_files_loaded_in_site(FileHandler, OneBarFile) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | check_window_not_created | check_tab_not_created | check_site_handles_file(FileHandler, Foo) | check_site_handles_file(FileHandler, Bar) |
-| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) |
+| WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, AskAgain) | launch_file_expect_dialog(FileHandler, OneFooFile, Allow, AskAgain) | check_files_loaded_in_site(FileHandler, OneFooFile) |
 | WMLC | install_or_shortcut(FileHandler) | launch_file_expect_dialog(FileHandler, OneFooFile, Deny, Remember) | check_window_not_created | check_tab_not_created | check_site_not_handles_file(FileHandler, Foo) | check_site_not_handles_file(FileHandler, Bar) |
 
 ### Policy test for forcing file handling approval
