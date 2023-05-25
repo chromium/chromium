@@ -177,4 +177,26 @@ void LogCaptureDeviceMetrics(
   }
 }
 
+void LogCaptureDeviceHashedModelId(
+    const media::VideoCaptureDeviceDescriptor& descriptor) {
+  // descriptor.model_id has the form "XXXX:XXXX" when a USB device is detected,
+  // and empty otherwise.
+  constexpr int kModelIdStrLength = 9;
+  constexpr int kColonPosIndex = 4;
+  uint32_t mapping = 0;
+  if (descriptor.model_id.length() == kModelIdStrLength) {
+    const std::string vid = descriptor.model_id.substr(0, kColonPosIndex);
+    const std::string pid =
+        descriptor.model_id.substr(kColonPosIndex + 1, kModelIdStrLength);
+    const std::string usb_id = vid + pid;
+    // Check if resulting usb_id is a valid Hex Number, otherwise reporting 0
+    if (std::all_of(usb_id.begin(), usb_id.end(), ::isxdigit)) {
+      std::stringstream ss;
+      ss << std::hex << usb_id;
+      ss >> mapping;
+    }
+  }
+  UMA_HISTOGRAM_SPARSE("Media.VideoCapture.Device.Opened.ByModelId", mapping);
+}
+
 }  // namespace media
