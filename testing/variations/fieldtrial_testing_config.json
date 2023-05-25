@@ -10666,6 +10666,12 @@
                     "enable_features": [
                         "CrosPrivacyHubV0"
                     ]
+                },
+                {
+                    "name": "Enabled_20230530_Dogfood",
+                    "enable_features": [
+                        "CrosPrivacyHub"
+                    ]
                 }
             ]
         }
