@@ -35,12 +35,13 @@ suite('ManagedFootnoteTest', function() {
    */
   function setupTestElement(
       isManaged: boolean, browserMessage: string, deviceMessage: string,
-      managementPageUrl: string): ManagedFootnoteElement {
+      managementPageUrl: string, iconName: string): ManagedFootnoteElement {
     loadTimeData.overrideValues({
       chromeManagementUrl: managementPageUrl,
       isManaged: isManaged,
       browserManagedByOrg: browserMessage,
       deviceManagedByOrg: deviceMessage,
+      managedByIcon: iconName,
     });
     const footnote = document.createElement('managed-footnote');
     document.body.appendChild(footnote);
@@ -49,20 +50,24 @@ suite('ManagedFootnoteTest', function() {
   }
 
   test('Hidden When isManaged Is False', function() {
-    const footnote = setupTestElement(false, '', '', '');
+    const footnote = setupTestElement(false, '', '', '', '');
     assertEquals('none', getComputedStyle(footnote).display);
   });
 
   test('Reads Attributes From loadTimeData browser message', function() {
     const browserMessage = 'the quick brown fox jumps over the lazy dog';
-    const footnote = setupTestElement(true, browserMessage, '', '');
+    const footnote =
+        setupTestElement(true, browserMessage, '', '', 'cr:jumping_fox');
 
     assertNotEquals('none', getComputedStyle(footnote).display);
+    assertEquals(
+        footnote.shadowRoot!.querySelector('iron-icon')!.icon,
+        'cr:jumping_fox');
     assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
   });
 
   test('Responds to is-managed-changed events', function() {
-    const footnote = setupTestElement(false, '', '', '');
+    const footnote = setupTestElement(false, '', '', '', '');
     assertEquals('none', getComputedStyle(footnote).display);
 
     webUIListenerCallback('is-managed-changed', [true]);
@@ -73,7 +78,8 @@ suite('ManagedFootnoteTest', function() {
   test('Reads Attributes From loadTimeData device message', function() {
     const browserMessage = 'the quick brown fox jumps over the lazy dog';
     const deviceMessage = 'the lazy dog jumps over the quick brown fox';
-    const footnote = setupTestElement(true, browserMessage, deviceMessage, '');
+    const footnote =
+        setupTestElement(true, browserMessage, deviceMessage, '', '');
 
     assertNotEquals('none', getComputedStyle(footnote).display);
     assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));

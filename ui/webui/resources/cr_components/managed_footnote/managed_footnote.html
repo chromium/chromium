@@ -28,7 +28,7 @@
     </style>
 
     <template is="dom-if" if="[[isManaged_]]">
-      <iron-icon icon="cr:domain"></iron-icon>
+      <iron-icon icon="[[managedByIcon_]]"></iron-icon>
       <div id="content"
           inner-h-t-m-l="[[getManagementString_(showDeviceInfo)]]">
       </div>
