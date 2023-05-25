@@ -14,9 +14,9 @@ desc: |-
   If the policy is set to <ph name="ALLOW_UNPUBLISHED">AllowUnpublished</ph> (0) or not set, extensions that are unpublished on the Chrome Web Store are allowed.
   If the policy is set to <ph name="DISABLE_UNPUBLISHED">DisableUnpublished</ph> (1), extensions that are unpublished on the Chrome Web Store are disabled.
 
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:115-
+- chrome_os:115-
 features:
   dynamic_refresh: true
   per_profile: true
