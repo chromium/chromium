@@ -38,7 +38,7 @@ namespace {
 
 constexpr wchar_t kAppId1[] = L"{3B1A3CCA-0525-4418-93E6-A0DB3398EC9B}";
 
-constexpr wchar_t kBadCmdLine[] = L"\"c:\\Program Files\\cmd.exe\"";
+constexpr wchar_t kBadCmdLine[] = L"\"c:\\Program Files (x86)\\cmd.exe\"";
 constexpr wchar_t kCmdLineValid[] =
     L"\"C:\\Program Files\\Windows Media Player\\wmpnscfg.exe\" /Close";
 

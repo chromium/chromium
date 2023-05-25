@@ -39,7 +39,7 @@ Command to update json files after configure update:
   - `lucicfg generate .\infra\config\main.star` (if `chromium.updater.star`
     is changed).
   - `vpython3 .\testing\buildbot\generate_buildbot_json.py`
-  
+
 Reference CLs:
   - Add a tester: https://crrev.com/c/4068601
   - Update GN args: https://crrev.com/c/3656357
@@ -64,7 +64,7 @@ Command to update json files after configure update:
   - `vpython3 .\testing\buildbot\generate_testing_json.py`
 
 Please note changes in `src-internal` needs to roll into chromium/src to take
-effect. This could take hours until a CL authored by 
+effect. This could take hours until a CL authored by
 `chromium-internal-autoroll@` lands. During transition, the configure files
 could be in inconsistent state and leads to infra error.
 
@@ -101,6 +101,10 @@ Example:
 * If your test introduces dependency on a new app on macOS, you need to let
  `mb` tool know so it can correctly figure out the dependency. Example:
   https://crrev.com/c/3470143.
+* To run tests on `Arm64`, the mb tool needs to be invoked as follows:
+  ```
+  .\tools\mb\mb run -v --swarmed --no-default-dimensions --internal -d pool chrome.tests.arm64 out\Default updater_tests_system -- --gtest_filter=LegacyAppCommandWebImplTest.FailedToLaunchStatus
+  ```
 
 ### Accessing Bots
  TODO(crbug.com/1327486): Document how to remote into bots for debugging.
