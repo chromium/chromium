@@ -65,12 +65,14 @@ FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
       url, blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
 }
 
+// static
 FileSystemURL FileSystemURL::CreateForTest(const blink::StorageKey& storage_key,
                                            FileSystemType mount_type,
                                            const base::FilePath& virtual_path) {
   return FileSystemURL(storage_key, mount_type, virtual_path);
 }
 
+// static
 FileSystemURL FileSystemURL::CreateForTest(
     const blink::StorageKey& storage_key,
     FileSystemType mount_type,
@@ -83,6 +85,52 @@ FileSystemURL FileSystemURL::CreateForTest(
   return FileSystemURL(storage_key, mount_type, virtual_path,
                        mount_filesystem_id, cracked_type, cracked_path,
                        filesystem_id, mount_option);
+}
+
+// static
+bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
+  switch (type) {
+    // Public enum values, also exposed to JavaScript.
+    case kFileSystemTypeTemporary:
+    case kFileSystemTypePersistent:
+    case kFileSystemTypeIsolated:
+    case kFileSystemTypeExternal:
+      break;
+
+      // Everything else is a private (also known as internal) enum value.
+
+    case kFileSystemInternalTypeEnumStart:
+    case kFileSystemInternalTypeEnumEnd:
+      NOTREACHED();
+      break;
+
+    case kFileSystemTypeLocal:
+    case kFileSystemTypeRestrictedLocal:
+    case kFileSystemTypeLocalMedia:
+    case kFileSystemTypeLocalForPlatformApp:
+    case kFileSystemTypeDriveFs:
+    case kFileSystemTypeSmbFs:
+    case kFileSystemTypeFuseBox:
+      return true;
+
+    case kFileSystemTypeUnknown:
+    case kFileSystemTypeTest:
+    case kFileSystemTypeDragged:
+    case kFileSystemTypeDeviceMedia:
+    case kFileSystemTypeSyncable:
+    case kFileSystemTypeSyncableForInternalSync:
+    case kFileSystemTypeForTransientFile:
+    case kFileSystemTypeProvided:
+    case kFileSystemTypeDeviceMediaAsFileStorage:
+    case kFileSystemTypeArcContent:
+    case kFileSystemTypeArcDocumentsProvider:
+      break;
+
+      // We don't use a "default:" case. Whenever `FileSystemType` gains a
+      // new enum value, raise a compiler error (with -Werror,-Wswitch) unless
+      // this switch statement is also updated.
+  }
+  return false;
 }
 
 FileSystemURL::FileSystemURL(const GURL& url,

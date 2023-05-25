@@ -48,6 +48,7 @@
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
@@ -734,10 +735,16 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
       } else if (file->url.SchemeIsFileSystem()) {
         auto file_system_url = apps::GetFileSystemURL(profile, file->url);
         if (file_system_url.is_valid()) {
-          auto crosapi_file = crosapi::mojom::IntentFile::New();
-          crosapi_file->file_path = file_system_url.path();
-          crosapi_file->mime_type = file->mime_type;
-          crosapi_files.push_back(std::move(crosapi_file));
+          base::FilePath path =
+              file_system_url.TypeImpliesPathIsReal()
+                  ? file_system_url.path()
+                  : fusebox::Server::SubstituteFuseboxFilePath(file_system_url);
+          if (!path.empty()) {
+            auto crosapi_file = crosapi::mojom::IntentFile::New();
+            crosapi_file->file_path = std::move(path);
+            crosapi_file->mime_type = file->mime_type;
+            crosapi_files.push_back(std::move(crosapi_file));
+          }
         }
       }
     }
