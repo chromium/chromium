@@ -1053,7 +1053,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
               node, self.displayedFolderNode, position,
-              _profileBookmarkModel.get(), self.browserState)];
+              _profileBookmarkModel.get(), _accountBookmarkModel.get(),
+              self.browserState)];
 }
 
 - (void)handleRefreshContextBar {
