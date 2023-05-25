@@ -17,10 +17,12 @@ class DefaultInfobarOverlayRequestConfig
   ~DefaultInfobarOverlayRequestConfig() override;
 
   // Returns the delegate attached to the InfoBar.
-  infobars::InfoBarDelegate* delegate() const { return infobar_->delegate(); }
+  infobars::InfoBarDelegate* delegate() const;
 
   // Returns the InfobarType of the InfoBar.
-  InfobarType infobar_type() const { return infobar_->infobar_type(); }
+  InfobarType infobar_type() const {
+    return weak_infobar_.get()->infobar_type();
+  }
 
  private:
   OVERLAY_USER_DATA_SETUP(DefaultInfobarOverlayRequestConfig);
@@ -31,7 +33,7 @@ class DefaultInfobarOverlayRequestConfig
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   // The InfoBar causing this overlay.
-  InfoBarIOS* infobar_ = nullptr;
+  base::WeakPtr<InfoBarIOS> weak_infobar_ = nullptr;
   // Type of Overlay.
   const InfobarOverlayType overlay_type_;
 };

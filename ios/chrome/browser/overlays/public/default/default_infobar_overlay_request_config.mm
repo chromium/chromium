@@ -15,8 +15,17 @@ OVERLAY_USER_DATA_SETUP_IMPL(DefaultInfobarOverlayRequestConfig);
 DefaultInfobarOverlayRequestConfig::DefaultInfobarOverlayRequestConfig(
     InfoBarIOS* infobar,
     InfobarOverlayType overlay_type)
-    : infobar_(infobar), overlay_type_(overlay_type) {
-  DCHECK(infobar_);
+    : weak_infobar_(infobar->GetWeakPtr()), overlay_type_(overlay_type) {
+  DCHECK(weak_infobar_.get());
+}
+
+infobars::InfoBarDelegate* DefaultInfobarOverlayRequestConfig::delegate()
+    const {
+  InfoBarIOS* infobar = weak_infobar_.get();
+  if (!infobar) {
+    return nil;
+  }
+  return infobar->delegate();
 }
 
 DefaultInfobarOverlayRequestConfig::~DefaultInfobarOverlayRequestConfig() =
@@ -24,6 +33,6 @@ DefaultInfobarOverlayRequestConfig::~DefaultInfobarOverlayRequestConfig() =
 
 void DefaultInfobarOverlayRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
-  InfobarOverlayRequestConfig::CreateForUserData(user_data, infobar_,
+  InfobarOverlayRequestConfig::CreateForUserData(user_data, weak_infobar_.get(),
                                                  overlay_type_, false);
 }
