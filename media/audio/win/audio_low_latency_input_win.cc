@@ -242,6 +242,18 @@ bool InitializeUWPSupport() {
   return initialization_result;
 }
 
+void LogFakeAudioCaptureTimestamps(bool use_fake_audio_capture_timestamps,
+                                   base::TimeDelta delta_time) {
+  TRACE_EVENT_INSTANT2(
+      "audio", "AudioCaptureWinTimestamps", TRACE_EVENT_SCOPE_THREAD,
+      "use_fake_audio_capture_timestamps", use_fake_audio_capture_timestamps,
+      "abs_timestamp_diff_ms", delta_time.InMilliseconds());
+  base::UmaHistogramBoolean("Media.Audio.Capture.Win.FakeTimestamps",
+                            use_fake_audio_capture_timestamps);
+  base::UmaHistogramLongTimes("Media.Audio.Capture.Win.AbsTimestampDiffMs",
+                              delta_time);
+}
+
 }  // namespace
 
 // Counts how often an OS capture callback reports a data discontinuity and logs
@@ -879,13 +891,11 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           (delta_time.magnitude() >
            kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps);
       if (use_fake_audio_capture_timestamps_) {
-        SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
-                       __func__);
+        LOG(WARNING) << "WAIS::" << __func__
+                     << " => (WARNING: capture timestamps will be fake)";
       }
-      TRACE_EVENT_INSTANT1("audio", "Audio Timestamps",
-                           TRACE_EVENT_SCOPE_THREAD,
-                           "use_fake_audio_capture_timestamps",
-                           use_fake_audio_capture_timestamps_.value());
+      LogFakeAudioCaptureTimestamps(use_fake_audio_capture_timestamps_.value(),
+                                    delta_time);
     }
 
     // The data in the packet is not correlated with the previous packet's

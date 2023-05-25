@@ -450,6 +450,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.AbsTimestampDiffMs" units="ms"
+    expires_after="2024-05-25">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The absolute time difference in milliseconds between a default QPC-based
+    timstamp and a timestamp from TimeTicks::Now(). By default, the difference
+    will be small and correspond to the size of the audio capture buffer which
+    is about 10 milliseconds. It can however be very large on some devices, e.g.
+    when using RDP. If the diffeence is larger than 500 milliseconds, so-called
+    fake audio capture timestamps (based on TimeTicks::Now()) will be utilized.
+    This value is logged once per audio input stream session at the first audio
+    callback.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.FakeTimestamps" enum="Boolean"
+    expires_after="2024-05-25">
+  <owner>henrika@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs whether audio capture timestamps on Windows are fake or not. By default
+    QPC-based timestamps provided by native audio APIs are utilized. In some
+    cases the QPC-based timestamps differ a lot compared with TimeTicks::Now()
+    timestamps and this can lead to issues (see http://crbug.com/1439283). If an
+    absolute difference larger than 500 msec between these two types of
+    timestamps is detected, we fall back to using TimeTicks::Now() and these
+    timestams are called fake timestamps. We expect that usage of fake
+    timestamps will be low. This value is logged once per audio input stream
+    session at the first audio callback.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
     expires_after="2023-11-05">
   <owner>olka@chromium.org</owner>
