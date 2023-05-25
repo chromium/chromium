@@ -11496,28 +11496,6 @@
             ]
         }
     ],
-    "SafeBrowsingDailyPhishingReportsLimit": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabledv2",
-                    "params": {
-                        "kMaxReportsPerIntervalESB": "3"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingDailyPhishingReportsLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [
@@ -11566,25 +11544,6 @@
                     "enable_features": [
                         "SafeBrowsingArchiveImprovements",
                         "SafeBrowsingStrictDownloadtimeout"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingPhishingClassificationESBThreshold": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingPhishingClassificationESBThreshold"
                     ]
                 }
             ]
