@@ -431,7 +431,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
   navigationBar.translucent = NO;
   [navigationBar setShadowImage:[[UIImage alloc] init]];
-  [navigationBar setBarTintColor:[UIColor colorNamed:kBackgroundColor]];
+  [navigationBar setBarTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
 
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   if (self.helpButtonAvailable) {
@@ -456,7 +456,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   if (self.titleView) {
     navigationItem.titleView = self.titleView;
-    [navigationBar setBarTintColor:self.titleView.backgroundColor];
   }
 
   if (self.showDismissBarButton) {
