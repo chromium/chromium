@@ -47,9 +47,10 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
     dest_image_size_ = size;
 
     dest_mailbox_ = sii_->CreateSharedImage(
-        gpu_memory_buffer_.get(), gpu_memory_buffer_manager, gfx::ColorSpace(),
+        viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy");
+        gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy",
+        gpu_memory_buffer_->CloneHandle());
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;
