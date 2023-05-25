@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -2037,15 +2038,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that add to reading list action works successfully from the long press
 // context menu on search results.
-// TODO(crbug.com/1412117): Test fails on simulator.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSearchOpenTabsContextMenuAddToReadingList \
-  testSearchOpenTabsContextMenuAddToReadingList
-#else
-#define MAYBE_testSearchOpenTabsContextMenuAddToReadingList \
-  DISABLED_testSearchOpenTabsContextMenuAddToReadingList
-#endif
-- (void)MAYBE_testSearchOpenTabsContextMenuAddToReadingList {
+- (void)testSearchOpenTabsContextMenuAddToReadingList {
+  // Clear the Reading List.
+  GREYAssertNil([ReadingListAppInterface clearEntries],
+                @"Unable to clear Reading List entries");
+  GREYAssertEqual(0, [ReadingListAppInterface unreadEntriesCount],
+                  @"Reading List should be empty");
+
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -2059,8 +2058,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [self longPressTabWithTitle:title2];
 
-  [self waitForSnackBarMessage:IDS_IOS_READING_LIST_SNACKBAR_MESSAGE
-      triggeredByTappingItemWithMatcher:AddToReadingListButton()];
+  [[EarlGrey selectElementWithMatcher:AddToReadingListButton()]
+      performAction:grey_tap()];
+
+  // Check that the tab was added to Reading List.
+  GREYAssertEqual(1, [ReadingListAppInterface unreadEntriesCount],
+                  @"Reading List should have one element");
 }
 
 // Tests that add to bookmarks action works successfully from the long press
