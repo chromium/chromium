@@ -68,7 +68,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // URLLoaderContext implementation.
-  bool ShouldRequireNetworkIsolationKey() const override;
+  bool ShouldRequireIsolationInfo() const override;
   const cors::OriginAccessList& GetOriginAccessList() const override;
   const mojom::URLLoaderFactoryParams& GetFactoryParams() const override;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const override;

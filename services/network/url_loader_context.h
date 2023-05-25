@@ -36,7 +36,7 @@ class URLLoaderNetworkServiceObserver;
 // by URLLoaderContextForTests in unit tests).
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
  public:
-  virtual bool ShouldRequireNetworkIsolationKey() const = 0;
+  virtual bool ShouldRequireIsolationInfo() const = 0;
   virtual const cors::OriginAccessList& GetOriginAccessList() const = 0;
   virtual const mojom::URLLoaderFactoryParams& GetFactoryParams() const = 0;
   virtual mojom::CookieAccessObserver* GetCookieAccessObserver() const = 0;

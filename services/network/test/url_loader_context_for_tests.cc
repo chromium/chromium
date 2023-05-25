@@ -9,7 +9,7 @@ namespace network {
 URLLoaderContextForTests::URLLoaderContextForTests() = default;
 URLLoaderContextForTests::~URLLoaderContextForTests() = default;
 
-bool URLLoaderContextForTests::ShouldRequireNetworkIsolationKey() const {
+bool URLLoaderContextForTests::ShouldRequireIsolationInfo() const {
   return false;
 }
 

@@ -606,8 +606,9 @@ URLLoader::URLLoader(
   if (isolation_info)
     url_request_->set_isolation_info(isolation_info.value());
 
-  if (context.ShouldRequireNetworkIsolationKey())
+  if (context.ShouldRequireIsolationInfo()) {
     DCHECK(!url_request_->isolation_info().IsEmpty());
+  }
 
   if (ShouldForceIgnoreTopFramePartyForCookies())
     url_request_->set_force_ignore_top_frame_party_for_cookies(true);
