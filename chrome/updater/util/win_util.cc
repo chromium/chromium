@@ -472,8 +472,6 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
 }
 
 HResultOr<bool> IsCOMCallerAdmin() {
-  ScopedKernelHANDLE token;
-
   HRESULT hr = ::CoImpersonateClient();
   if (hr == RPC_E_CALL_COMPLETE) {
     // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
@@ -484,17 +482,23 @@ HResultOr<bool> IsCOMCallerAdmin() {
     return base::unexpected(hr);
   }
 
-  {
+  HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
+    ScopedKernelHANDLE token;
     absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
-      hr = HRESULTFromLastError();
+      HRESULT hr = HRESULTFromLastError();
       LOG(ERROR) << "::OpenThreadToken failed: " << std::hex << hr;
       return base::unexpected(hr);
     }
+    return token;
+  }();
+
+  if (!token.has_value()) {
+    return base::unexpected(token.error());
   }
 
-  return IsTokenAdmin(token.get()).transform_error([](HRESULT error) {
+  return IsTokenAdmin(token.value().get()).transform_error([](HRESULT error) {
     CHECK(FAILED(error));
     LOG(ERROR) << "IsTokenAdmin failed: " << std::hex << error;
     return error;
