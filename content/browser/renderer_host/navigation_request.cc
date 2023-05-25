@@ -229,7 +229,7 @@ const char kIsolatedAppCSP[] =
     "default-src 'self';"
     "object-src 'none';"
     "frame-src 'self' https: blob: data:;"
-    "connect-src 'self' https:;"
+    "connect-src 'self' https: wss:;"
     "script-src 'self' 'wasm-unsafe-eval';"
     "img-src 'self' https: blob: data:;"
     "media-src 'self' https: blob: data:;"
