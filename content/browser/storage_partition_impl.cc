@@ -143,6 +143,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
@@ -1996,6 +1997,37 @@ void StoragePartitionImpl::OnAuthRequired(
       }
     }
   }
+
+  WebContents* current_web_contents = GetWebContents(context);
+  if (current_web_contents) {
+    // Evict all the BFCache entries that
+    // 1): are stored in the same BrowserContext
+    // 2): contain CCNS header
+    // 3): match the challenger information of the page that requires HTTP
+    // authentication.
+    for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
+      if (web_contents->GetBrowserContext()->UniqueId() ==
+          current_web_contents->GetBrowserContext()->UniqueId()) {
+        for (const std::unique_ptr<BackForwardCacheImpl::Entry>& entry :
+             web_contents->GetController().GetBackForwardCache().GetEntries()) {
+          RenderFrameHostImpl* rfh = entry->render_frame_host();
+          const GURL& last_committed_url = rfh->GetLastCommittedURL();
+          if (rfh->GetBackForwardCacheDisablingFeatures().Has(
+                  blink::scheduler::WebSchedulerTrackedFeature::
+                      kMainResourceHasCacheControlNoStore) &&
+              auth_info.challenger ==
+                  url::SchemeHostPort(last_committed_url.scheme(),
+                                      last_committed_url.host(),
+                                      last_committed_url.IntPort())) {
+            rfh->EvictFromBackForwardCacheWithReason(
+                BackForwardCacheMetrics::NotRestoredReason::
+                    kCacheControlNoStore);
+          }
+        }
+      }
+    }
+  }
+
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
       auth_info, head_headers, std::move(auth_challenge_responder),
