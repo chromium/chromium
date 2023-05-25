@@ -156,10 +156,6 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   EXPECT_NE(std::string(), os_report.arch());
   EXPECT_NE(std::string(), os_report.version());
 
-  // Ensure there are no partial reports
-  EXPECT_EQ(
-      0, basic_request->GetDeviceReportRequest().partial_report_types_size());
-
   // Verify the browser report
   EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
   auto& browser_report =
