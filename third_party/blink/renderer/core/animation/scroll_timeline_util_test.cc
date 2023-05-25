@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"

@@ -27,8 +27,8 @@ class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
   void Trace(Visitor*) const override;
 
  protected:
+  ScrollAxis GetAxis() const override;
   TimelineState ComputeTimelineState() const override;
-  cc::AnimationTimeline* EnsureCompositorTimeline() override;
 
  private:
   ScrollSnapshotTimeline* SingleAttachedTimeline() {
@@ -39,6 +39,8 @@ class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
   const ScrollSnapshotTimeline* SingleAttachedTimeline() const {
     return const_cast<DeferredTimeline*>(this)->SingleAttachedTimeline();
   }
+
+  void OnAttachedTimelineChange();
 
   HeapVector<Member<ScrollSnapshotTimeline>> attached_timelines_;
 };

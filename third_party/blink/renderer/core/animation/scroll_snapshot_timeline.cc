@@ -209,4 +209,24 @@ bool ScrollSnapshotTimeline::ValidateSnapshot() {
   return is_valid;
 }
 
+cc::AnimationTimeline* ScrollSnapshotTimeline::EnsureCompositorTimeline() {
+  if (compositor_timeline_) {
+    return compositor_timeline_.get();
+  }
+
+  compositor_timeline_ = scroll_timeline_util::ToCompositorScrollTimeline(this);
+  return compositor_timeline_.get();
+}
+
+void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
+  if (!compositor_timeline_) {
+    return;
+  }
+
+  ToScrollTimeline(compositor_timeline_.get())
+      ->UpdateScrollerIdAndScrollOffsets(
+          scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
+          GetResolvedScrollOffsets());
+}
+
 }  // namespace blink

@@ -9,11 +9,14 @@
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -45,6 +48,18 @@ Animation* CreateTestAnimation(AnimationTimeline* timeline) {
                                    StringKeyframeVector()),
                                timing),
                            timeline, ASSERT_NO_EXCEPTION);
+}
+
+Animation* CreateCompositableTestAnimation(Element* target,
+                                           AnimationTimeline* timeline) {
+  KeyframeEffect* effect =
+      animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+          target, CSSPropertyID::kTranslate, "50px", "100px");
+  effect->Model()->SnapshotAllCompositorKeyframesIfNecessary(
+      *target, target->GetDocument().GetStyleResolver().InitialStyle(),
+      /* parent_style */ nullptr);
+  return MakeGarbageCollected<Animation>(
+      timeline->GetDocument()->GetExecutionContext(), timeline, effect);
 }
 
 }  // namespace
@@ -124,6 +139,16 @@ class TestViewTimeline : public ViewTimeline {
   }
 
   void UpdateSnapshotForTesting() { UpdateSnapshot(); }
+};
+
+class TestDeferredTimeline : public DeferredTimeline {
+ public:
+  explicit TestDeferredTimeline(Document* document, bool snapshot = true)
+      : DeferredTimeline(document) {
+    if (snapshot) {
+      UpdateSnapshot();
+    }
+  }
 };
 
 TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfSourceIsNotScrollable) {
@@ -1077,6 +1102,62 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
           TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
           /* range_end */ TimelineOffset(NamedRange::kNone,
                                          Length::Fixed(50)))));
+}
+
+TEST_F(ScrollTimelineTest, CompositedDeferredTimelineReattachment) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow: scroll;
+        width: 100px;
+        height: 100px;
+        will-change: transform;
+        background-color: white;
+      }
+      #target {
+        width: 50px;
+        height: 50px;
+        will-change: transform;
+        background-color: green;
+      }
+      #spacer { width: 200px; height: 200px; }
+    </style>
+    <div id='target'></div>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  TestScrollTimeline* scroll_timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
+                                               GetElementById("scroller"));
+  TestDeferredTimeline* deferred_timeline =
+      MakeGarbageCollected<TestDeferredTimeline>(&GetDocument());
+
+  deferred_timeline->AttachTimeline(scroll_timeline);
+
+  Animation* animation = CreateCompositableTestAnimation(
+      GetElementById("target"), deferred_timeline);
+
+  animation->SetDeferredStartTimeForTesting();
+  animation->play();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+            CompositorAnimations::kNoFailure);
+
+  EXPECT_FALSE(animation->CompositorPending());
+  EXPECT_TRUE(deferred_timeline->CompositorTimeline());
+
+  // Change timeline attachment for deferred timeline.
+  deferred_timeline->DetachTimeline(scroll_timeline);
+  deferred_timeline->AttachTimeline(MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller")));
+
+  // Changing attachment should mark animations compositor pending,
+  // and clear the compositor timeline.
+  EXPECT_TRUE(animation->CompositorPending());
+  EXPECT_FALSE(deferred_timeline->CompositorTimeline());
 }
 
 }  //  namespace blink
