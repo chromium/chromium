@@ -53,11 +53,14 @@ std::unique_ptr<ChromeNavigationUIData>
 ChromeNavigationUIData::CreateForMainFrameNavigation(
     content::WebContents* web_contents,
     WindowOpenDisposition disposition,
-    bool is_using_https_as_default_scheme) {
+    bool is_using_https_as_default_scheme,
+    bool url_is_typed_with_http_scheme) {
   auto navigation_ui_data = std::make_unique<ChromeNavigationUIData>();
   navigation_ui_data->disposition_ = disposition;
   navigation_ui_data->is_using_https_as_default_scheme_ =
       is_using_https_as_default_scheme;
+  navigation_ui_data->url_is_typed_with_http_scheme_ =
+      url_is_typed_with_http_scheme;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   int tab_id = extension_misc::kUnknownTabId;
@@ -81,6 +84,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 
   copy->disposition_ = disposition_;
   copy->is_using_https_as_default_scheme_ = is_using_https_as_default_scheme_;
+  copy->url_is_typed_with_http_scheme_ = url_is_typed_with_http_scheme_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (extension_data_)

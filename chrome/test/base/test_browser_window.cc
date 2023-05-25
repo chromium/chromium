@@ -73,6 +73,10 @@ bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithoutScheme() const {
   return false;
 }
 
+bool TestBrowserWindow::TestLocationBar::IsInputTypedUrlWithHttpScheme() const {
+  return false;
+}
+
 // TestBrowserWindow ----------------------------------------------------------
 
 TestBrowserWindow::TestBrowserWindow() {}

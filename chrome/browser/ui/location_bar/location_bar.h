@@ -32,6 +32,7 @@ class LocationBar {
   virtual ui::PageTransition GetPageTransition() const = 0;
   virtual base::TimeTicks GetMatchSelectionTimestamp() const = 0;
   virtual bool IsInputTypedUrlWithoutScheme() const = 0;
+  virtual bool IsInputTypedUrlWithHttpScheme() const = 0;
 
   // Focuses the location bar. User-initiated focuses (like pressing Ctrl+L)
   // should have |is_user_initiated| set to true. In those cases, we want to

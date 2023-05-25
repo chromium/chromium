@@ -49,7 +49,8 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   static std::unique_ptr<ChromeNavigationUIData> CreateForMainFrameNavigation(
       content::WebContents* web_contents,
       WindowOpenDisposition disposition,
-      bool is_using_https_as_default_scheme);
+      bool is_using_https_as_default_scheme,
+      bool url_is_typed_with_http_scheme);
 
   // Creates a new ChromeNavigationUIData that is a deep copy of the original.
   // Any changes to the original after the clone is created will not be
@@ -83,6 +84,9 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   bool is_using_https_as_default_scheme() const {
     return is_using_https_as_default_scheme_;
   }
+  bool url_is_typed_with_http_scheme() const {
+    return url_is_typed_with_http_scheme_;
+  }
 
   absl::optional<base::Uuid> bookmark_id() { return bookmark_id_; }
   void set_bookmark_id(absl::optional<base::Uuid> id) { bookmark_id_ = id; }
@@ -108,6 +112,11 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // TypedNavigationUpgradeThrottle to determine if the navigation should be
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme_ = false;
+
+  // True if the navigation was initiated by typing in the omnibox, and the
+  // typed text had an explicit http scheme. This is used to opt-out of https
+  // upgrades.
+  bool url_is_typed_with_http_scheme_ = false;
 
   // Id of the bookmark which started this navigation.
   absl::optional<base::Uuid> bookmark_id_ = absl::nullopt;

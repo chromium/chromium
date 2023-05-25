@@ -1162,6 +1162,10 @@ bool LocationBarView::IsInputTypedUrlWithoutScheme() const {
   return destination_url_entered_without_scheme();
 }
 
+bool LocationBarView::IsInputTypedUrlWithHttpScheme() const {
+  return destination_url_entered_with_http_scheme();
+}
+
 WindowOpenDisposition LocationBarView::GetWindowOpenDisposition() const {
   return disposition();
 }
