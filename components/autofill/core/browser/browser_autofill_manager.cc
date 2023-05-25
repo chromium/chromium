@@ -237,6 +237,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kCreditCardEntry:
       NOTREACHED();
   }
   NOTREACHED();
@@ -1581,7 +1583,7 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
     return true;
   }
 
-  if (identifier.as_int() < 0) {
+  if (!identifier.is_an_address_or_card_popup_item_id()) {
     return false;
   }
 

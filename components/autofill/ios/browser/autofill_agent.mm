@@ -21,6 +21,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "base/uuid.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
@@ -436,8 +437,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
-  // TODO(crbug.com/1394920): Make `suggestion.identifier` a `FrontendId`.
-  autofill::Suggestion::FrontendId frontend_id(suggestion.identifier);
+  // TODO(crbug.com/1394920): Make `suggestion.identifier` a `PopupItemId`.
+  autofill::Suggestion::FrontendId frontend_id =
+      static_cast<autofill::PopupItemId>(suggestion.identifier);
 
   if (suggestion.acceptanceA11yAnnouncement != nil) {
     __weak AutofillAgent* weakSelf = self;
@@ -467,7 +469,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         });
   }
 
-  if (frontend_id.as_int() > 0) {
+  if (frontend_id.is_an_address_or_card_popup_item_id()) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
@@ -637,7 +639,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     NSString* value = nil;
     NSString* displayDescription = nil;
     UIImage* icon = nil;
-    if (popup_suggestion.frontend_id.as_int() >= 0) {
+    if (popup_suggestion.frontend_id ==
+            autofill::PopupItemId::kAutocompleteEntry ||
+        popup_suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.frontend_id ==
               autofill::PopupItemId::kAutocompleteEntry &&
@@ -693,7 +697,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                suggestionWithValue:value
                 displayDescription:displayDescription
                               icon:icon
-                        identifier:popup_suggestion.frontend_id.as_int()
+                        identifier:base::to_underlying(
+                                       popup_suggestion.frontend_id
+                                           .as_popup_item_id())
                  backendIdentifier:
                      SysUTF8ToNSString(
                          popup_suggestion

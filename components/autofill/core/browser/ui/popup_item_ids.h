@@ -7,9 +7,12 @@
 
 namespace autofill {
 
+// TODO(crbug.com/1394920): Remove the values from this enum.
 // This enum defines item identifiers for Autofill popup controller.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum PopupItemId {
+  kCreditCardEntry = 2,
+  kAddressEntry = 1,
   kAutocompleteEntry = 0,
   kInsecureContextPaymentDisabledMessage = -1,
   kPasswordEntry = -2,
@@ -44,6 +47,8 @@ enum PopupItemId {
 // when the user selects the `PopupItemId`.
 constexpr PopupItemId kItemsTriggeringFieldFilling[] = {
     PopupItemId::kAutocompleteEntry,
+    PopupItemId::kAddressEntry,
+    PopupItemId::kCreditCardEntry,
     PopupItemId::kPasswordEntry,
     PopupItemId::kDatalistEntry,
     PopupItemId::kUsernameEntry,

@@ -1888,9 +1888,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     external_delegate_->OnQuery(form, form.fields.front(), gfx::RectF());
 
     external_delegate_->DidAcceptSuggestion(
-        test::CreateAutofillSuggestion(
-            MakeFrontendId({.credit_card_id = kTestLocalCardId}), u"Test",
-            Suggestion::BackendId(kTestLocalCardId)),
+        test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
+                                       Suggestion::BackendId(kTestLocalCardId)),
         0);
 
     EXPECT_EQ(1,
@@ -1934,9 +1933,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     external_delegate_->OnQuery(form, form.fields.front(), gfx::RectF());
 
     external_delegate_->DidAcceptSuggestion(
-        test::CreateAutofillSuggestion(
-            MakeFrontendId({.credit_card_id = kTestLocalCardId}), u"Test",
-            Suggestion::BackendId(kTestLocalCardId)),
+        test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
+                                       Suggestion::BackendId(kTestLocalCardId)),
         0);
 
     EXPECT_EQ(1,
@@ -2085,9 +2083,8 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
     external_delegate_->OnQuery(form, form.fields.front(), gfx::RectF());
 
     external_delegate_->DidAcceptSuggestion(
-        test::CreateAutofillSuggestion(
-            MakeFrontendId({.profile_id = kTestProfileId}), u"Test",
-            Suggestion::BackendId(kTestProfileId)),
+        test::CreateAutofillSuggestion(PopupItemId::kCreditCardEntry, u"Test",
+                                       Suggestion::BackendId(kTestProfileId)),
         0);
 
     EXPECT_EQ(1,

@@ -45,7 +45,8 @@ namespace autofill {
 namespace {
 
 // A constant value to use as an Autofill profile ID.
-constexpr Suggestion::FrontendId kAutofillProfileId = Suggestion::FrontendId(1);
+constexpr Suggestion::FrontendId kAutofillProfileId =
+    Suggestion::FrontendId(kAddressEntry);
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -515,7 +516,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
       .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   external_delegate_->DidSelectSuggestion(
-      std::u16string(), Suggestion::FrontendId(-1), Suggestion::BackendId());
+      std::u16string(),
+      Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage),
+      Suggestion::BackendId());
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
@@ -524,7 +527,9 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
       .Times(0);
 
   external_delegate_->DidAcceptSuggestion(
-      Suggestion(Suggestion::FrontendId(-1)), 0);
+      Suggestion(
+          Suggestion::FrontendId(kInsecureContextPaymentDisabledMessage)),
+      0);
 }
 
 // Test that the Autofill delegate still allows previewing and filling
@@ -629,7 +634,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(u"baz foo", Suggestion::FrontendId(1),
+  external_delegate_->DidSelectSuggestion(u"baz foo", kAutofillProfileId,
                                           Suggestion::BackendId());
 
   // Ensure selecting an autocomplete entry will cause any previews to

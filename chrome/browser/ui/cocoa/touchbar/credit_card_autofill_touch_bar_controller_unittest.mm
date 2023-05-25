@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
+#import "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +78,8 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBar) {
   EXPECT_FALSE([touch_bar_controller_ makeTouchBar]);
 
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion::FrontendId(1), Suggestion::FrontendId(1)});
+  SetSuggestions({Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
+                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry)});
   NSTouchBar* touch_bar = [touch_bar_controller_ makeTouchBar];
   EXPECT_TRUE(touch_bar);
   EXPECT_TRUE([[touch_bar customizationIdentifier]
@@ -88,8 +90,10 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBar) {
 // Tests to check that the touch bar doesn't show more than 3 items
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion::FrontendId(1), Suggestion::FrontendId(1),
-                  Suggestion::FrontendId(1), Suggestion::FrontendId(1)});
+  SetSuggestions({Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
+                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
+                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry),
+                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry)});
   NSTouchBar* touch_bar = [touch_bar_controller_ makeTouchBar];
   EXPECT_TRUE(touch_bar);
   EXPECT_TRUE([[touch_bar customizationIdentifier]
@@ -107,8 +111,9 @@ TEST_F(CreditCardAutofillTouchBarControllerUnitTest, TouchBarCardLimit) {
 // Tests for for the credit card button.
 TEST_F(CreditCardAutofillTouchBarControllerUnitTest, CreditCardButtonCheck) {
   [touch_bar_controller_ setIsCreditCardPopup:true];
-  SetSuggestions({Suggestion("bufflehead", "canvasback", "goldeneye",
-                             Suggestion::FrontendId(1))});
+  SetSuggestions(
+      {Suggestion("bufflehead", "canvasback", "goldeneye",
+                  Suggestion::FrontendId(PopupItemId::kCreditCardEntry))});
   NSButton* button = [touch_bar_controller_ createCreditCardButtonAtRow:0];
   EXPECT_TRUE(button);
   EXPECT_EQ(0, [button tag]);

@@ -171,11 +171,6 @@ class AutofillMetricsBaseTest {
         Suggestion::BackendId(kTestProfileId), AutofillTriggerSource::kPopup);
   }
 
-  Suggestion::FrontendId MakeFrontendId(
-      const TestBrowserAutofillManager::MakeFrontendIdParams& params) {
-    return autofill_manager().MakeFrontendId(params);
-  }
-
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
     form.host_frame = test::MakeLocalFrameToken();

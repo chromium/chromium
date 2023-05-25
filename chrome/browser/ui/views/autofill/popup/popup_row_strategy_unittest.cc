@@ -55,7 +55,8 @@ struct RowStrategyTestdata {
 
 const RowStrategyTestdata kTestcases[] = {
     RowStrategyTestdata{
-        .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
+        .frontend_ids = {Suggestion::FrontendId(PopupItemId::kAddressEntry),
+                         Suggestion::FrontendId(PopupItemId::kAddressEntry),
                          PopupItemId::kSeparator,
                          PopupItemId::kAutofillOptions},
         .line_number = 1,
@@ -74,7 +75,8 @@ const RowStrategyTestdata kTestcases[] = {
         .set_index = 1,
     },
     RowStrategyTestdata{
-        .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
+        .frontend_ids = {Suggestion::FrontendId(PopupItemId::kAddressEntry),
+                         Suggestion::FrontendId(PopupItemId::kAddressEntry),
                          PopupItemId::kSeparator,
                          PopupItemId::kAutofillOptions},
         .line_number = 3,

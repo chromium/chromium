@@ -280,8 +280,7 @@ bool PopupViewViews::AcceptSelectedCell(bool tab_key_pressed) {
     }
     Suggestion::FrontendId frontend_id =
         controller_->GetSuggestionAt(index->first).frontend_id;
-    if (frontend_id.as_int() <= 0 &&
-        !base::Contains(kItemsTriggeringFieldFilling, frontend_id) &&
+    if (!base::Contains(kItemsTriggeringFieldFilling, frontend_id) &&
         frontend_id != PopupItemId::kScanCreditCard) {
       return false;
     }

@@ -106,7 +106,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // suggestions.
   has_autofill_suggestions_ = false;
   for (auto& suggestion : suggestions) {
-    if (suggestion.frontend_id.as_int() > 0) {
+    if (suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
       has_autofill_suggestions_ = true;
       break;
     }
@@ -199,7 +199,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   ClearPreviewedForm();
 
   // Only preview the data if it is a profile or a virtual card.
-  if (frontend_id.as_int() > 0) {
+  if (frontend_id.is_an_address_or_card_popup_item_id()) {
     FillAutofillFormData(frontend_id, backend_id, true,
                          AutofillTriggerSource::kKeyboardAccessory);
   } else if (frontend_id == PopupItemId::kAutocompleteEntry ||
@@ -293,8 +293,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
           suggestion.frontend_id, query_form_, query_field_);
       break;
     default:
-      if (suggestion.frontend_id.as_int() >
-          0) {  // Denotes an Autofill suggestion.
+      if (suggestion.frontend_id.is_an_address_or_card_popup_item_id()) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
@@ -333,7 +332,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(
     const std::u16string& value,
     Suggestion::FrontendId frontend_id,
     Suggestion::BackendId backend_id) {
-  if (frontend_id.as_int() > 0) {
+  if (frontend_id.is_an_address_or_card_popup_item_id()) {
     return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
   }
 

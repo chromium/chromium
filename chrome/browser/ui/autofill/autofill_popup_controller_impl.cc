@@ -466,7 +466,7 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
     return false;
   }
   Suggestion::FrontendId id = suggestions_[0].frontend_id;
-  return id.as_int() > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
+  return base::Contains(kItemsTriggeringFieldFilling, id) ||
          id == PopupItemId::kScanCreditCard;
 }
 

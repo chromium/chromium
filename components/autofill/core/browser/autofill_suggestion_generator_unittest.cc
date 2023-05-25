@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -781,66 +782,6 @@ TEST_F(AutofillSuggestionGeneratorTest,
             PopupItemId::kMerchantPromoCodeEntry);
 }
 
-TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
-  // Test that frontend ID retrieval with an invalid backend ID works correctly.
-  Suggestion::BackendId backend_id = Suggestion::BackendId();
-  EXPECT_EQ(
-      suggestion_generator()->MakeFrontendIdFromBackendId(backend_id).as_int(),
-      0);
-
-  // Test that frontend ID retrieval with valid backend IDs works correctly.
-  std::string valid_guid_digits = "00000000-0000-0000-0000-000000000000";
-  for (int i = 1; i <= 2; i++) {
-    valid_guid_digits.back() = base::NumberToString(i)[0];
-    backend_id = Suggestion::BackendId(valid_guid_digits);
-
-    // Check that querying
-    // AutofillSuggestionGenerator::MakeFrontendIdFromBackendId(~) with a new
-    // backend id creates a new entry in the backend_to_frontend_map() and
-    // frontend_to_backend_map() maps.
-    Suggestion::FrontendId frontend_id =
-        suggestion_generator()->MakeFrontendIdFromBackendId(backend_id);
-    EXPECT_GT(frontend_id.as_int(), 0);
-    EXPECT_EQ(static_cast<int>(suggestion_generator()
-                                   ->backend_to_frontend_map_for_testing()
-                                   .size()),
-              i);
-    EXPECT_EQ(static_cast<int>(suggestion_generator()
-                                   ->frontend_to_backend_map_for_testing()
-                                   .size()),
-              i);
-
-    // Check that querying
-    // AutofillSuggestionGenerator::GetBackendIdFromFrontendId(~) again returns
-    // the previously added entry, and does not create a new entry in the
-    // backend_to_frontend_map() and frontend_to_backend_map() maps.
-    EXPECT_TRUE(suggestion_generator()->MakeFrontendIdFromBackendId(
-                    backend_id) == frontend_id);
-    EXPECT_EQ(static_cast<int>(suggestion_generator()
-                                   ->backend_to_frontend_map_for_testing()
-                                   .size()),
-              i);
-    EXPECT_EQ(static_cast<int>(suggestion_generator()
-                                   ->frontend_to_backend_map_for_testing()
-                                   .size()),
-              i);
-  }
-
-  // The test cases below are run after the
-  // AutofillSuggestionGenerator::GetBackendIdFromFrontendId(~) test cases to
-  // ensure the maps backend_to_frontend_map() and frontend_to_backend_map() are
-  // populated.
-
-  // Test that backend ID retrieval with valid frontend IDs works correctly.
-  for (int i = 1; i <= 2; i++) {
-    backend_id = suggestion_generator()->GetBackendIdFromFrontendId(
-        Suggestion::FrontendId(i));
-    EXPECT_FALSE(backend_id->empty());
-    valid_guid_digits.back() = base::NumberToString(i)[0];
-    EXPECT_EQ(*backend_id, valid_guid_digits);
-  }
-}
-
 // This class helps test the credit card contents that are displayed in Autofill
 // suggestions. It covers suggestions on Desktop/Android dropdown, and on
 // Android keyboard accessory.
@@ -1129,7 +1070,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_popup_item_id(),
+            kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1148,7 +1090,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_popup_item_id(),
+            kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(real_card_suggestion, GURL(),
@@ -1190,7 +1133,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/false);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_popup_item_id(),
+            kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000002"));
   EXPECT_EQ(VerifyCardArtImageExpectation(real_card_suggestion, card_art_url,
@@ -1331,7 +1275,8 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
           /*virtual_card_option=*/false,
           /*card_linked_offer_available=*/true);
 
-  EXPECT_EQ(real_card_suggestion.frontend_id.as_int(), 0);
+  EXPECT_EQ(real_card_suggestion.frontend_id.as_popup_item_id(),
+            kCreditCardEntry);
   EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
 
