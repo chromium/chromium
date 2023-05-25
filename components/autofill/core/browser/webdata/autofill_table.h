@@ -826,6 +826,7 @@ class AutofillTable : public WebDatabaseTable,
   // No MigrateToVersion112. WebDatabase changed, but AutofillTable wasn't
   // affected.
   bool MigrateToVersion113MigrateLocalAddressProfilesToNewTable();
+  bool MigrateToVersion114DropLegacyAddressTables();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

@@ -1057,9 +1057,6 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 
 bool AutofillTable::CreateTablesIfNecessary() {
   return InitMainTable() && InitCreditCardsTable() && InitIBANsTable() &&
-         InitLegacyProfilesTable() && InitLegacyProfileAddressesTable() &&
-         InitLegacyProfileNamesTable() && InitLegacyProfileEmailsTable() &&
-         InitLegacyProfilePhonesTable() && InitLegacyProfileBirthdatesTable() &&
          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
          InitServerCardMetadataTable() && InitServerAddressesTable() &&
          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
@@ -1171,6 +1168,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 113:
       *update_compatible_version = false;
       return MigrateToVersion113MigrateLocalAddressProfilesToNewTable();
+    case 114:
+      *update_compatible_version = true;
+      return MigrateToVersion114DropLegacyAddressTables();
   }
   return true;
 }
@@ -3286,15 +3286,27 @@ bool AutofillTable::MigrateToVersion113MigrateLocalAddressProfilesToNewTable() {
                                db_, *profile, profile->modification_date());
     }
   }
-  // Delete all profiles from the legacy tables.
-  // TODO(crbug.com/1443393): Drop the tables (in a new version). This requires
-  // adapting several migration unit tests.
+  // Delete all profiles from the legacy tables. The tables are dropped in
+  // version 114.
   for (base::StringPiece deprecated_table :
        {kAutofillProfilesTable, kAutofillProfileAddressesTable,
         kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
         kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
     success = success && (!db_->DoesTableExist(deprecated_table) ||
                           Delete(db_, deprecated_table));
+  }
+  return success && transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion114DropLegacyAddressTables() {
+  sql::Transaction transaction(db_);
+  bool success = transaction.Begin();
+  for (base::StringPiece deprecated_table :
+       {kAutofillProfilesTable, kAutofillProfileAddressesTable,
+        kAutofillProfileNamesTable, kAutofillProfileEmailsTable,
+        kAutofillProfilePhonesTable, kAutofillProfileBirthdatesTable}) {
+    success = success && (!db_->DoesTableExist(deprecated_table) ||
+                          DropTable(db_, deprecated_table));
   }
   return success && transaction.Commit();
 }
