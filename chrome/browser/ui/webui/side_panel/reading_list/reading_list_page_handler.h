@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/models/simple_menu_model.h"
 
 namespace base {
 class Clock;
@@ -26,6 +27,7 @@ class WebContents;
 class WebUI;
 }  // namespace content
 
+class Browser;
 class GURL;
 class ReadingListUI;
 class ReadingListEntry;
@@ -74,6 +76,11 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   GetCurrentPageActionButtonStateForTesting() {
     return current_page_action_button_state_;
   }
+
+  std::unique_ptr<ui::SimpleMenuModel> GetItemContextMenuModelForTesting(
+      Browser* browser,
+      ReadingListModel* reading_list_model,
+      GURL url);
 
  private:
   // Gets the reading list entry data used for displaying to the user and
