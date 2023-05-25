@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
+#include "base/apple/owned_objc.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -675,7 +676,7 @@ TEST(WebInputEventBuilderMacTest, ScrollWheelMatchesUIEvent) {
   blink::WebMouseWheelEvent web_event =
       content::WebMouseWheelEventBuilder::Build(mac_event,
                                                 [window contentView]);
-  ui::MouseWheelEvent ui_event(mac_event);
+  ui::MouseWheelEvent ui_event((base::apple::OwnedNSEvent(mac_event)));
 
   EXPECT_EQ(delta_x * ui::kScrollbarPixelsPerCocoaTick, web_event.delta_x);
   EXPECT_EQ(web_event.delta_x, ui_event.x_offset());

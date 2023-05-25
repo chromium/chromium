@@ -4,6 +4,7 @@
 
 #include "base/notreached.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/platform_event.h"
 #include "ui/events/win/events_win_utils.h"
 
 namespace ui {
@@ -69,11 +70,17 @@ gfx::Vector2d GetMouseWheelTick120ths(const CHROME_MSG& native_event) {
   return GetMouseWheelOffsetFromMSG(native_event);
 }
 
-CHROME_MSG CopyNativeEvent(const CHROME_MSG& event) {
-  return CopyMSGEvent(event);
+PlatformEvent CreateInvalidPlatformEvent() {
+  PlatformEvent event;
+  memset(&event, 0, sizeof(event));
+  return event;
 }
 
-void ReleaseCopiedNativeEvent(const CHROME_MSG& event) {}
+bool IsPlatformEventValid(const PlatformEvent& event) {
+  return !(event.hwnd == 0 && event.message == 0 && event.wParam == 0 &&
+           event.lParam == 0 && event.time == 0 && event.pt.x == 0 &&
+           event.pt.y == 0);
+}
 
 PointerDetails GetTouchPointerDetailsFromNative(
     const CHROME_MSG& native_event) {

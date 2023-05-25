@@ -164,16 +164,10 @@ bool IsNearZero(const float num) {
 ////////////////////////////////////////////////////////////////////////////////
 // Event
 
-Event::~Event() {
-  if (delete_native_event_)
-    ReleaseCopiedNativeEvent(native_event_);
-}
+Event::~Event() = default;
 
 void Event::SetNativeEvent(const PlatformEvent& event) {
-  if (delete_native_event_)
-    ReleaseCopiedNativeEvent(native_event_);
-  native_event_ = CopyNativeEvent(event);
-  delete_native_event_ = true;
+  native_event_ = event;
 }
 
 const char* Event::GetName() const {
@@ -265,9 +259,7 @@ const TouchEvent* Event::AsTouchEvent() const {
 }
 
 bool Event::HasNativeEvent() const {
-  PlatformEvent null_event;
-  std::memset(&null_event, 0, sizeof(null_event));
-  return !!std::memcmp(&native_event_, &null_event, sizeof(null_event));
+  return IsPlatformEventValid(native_event_);
 }
 
 void Event::StopPropagation() {
@@ -296,7 +288,7 @@ Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
     : type_(type),
       time_stamp_(time_stamp.is_null() ? EventTimeForNow() : time_stamp),
       flags_(flags),
-      native_event_(PlatformEvent()) {
+      native_event_(CreateInvalidPlatformEvent()) {
   if (type_ < ET_LAST)
     latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
 }
@@ -322,8 +314,7 @@ Event::Event(const Event& copy)
       time_stamp_(copy.time_stamp_),
       latency_(copy.latency_),
       flags_(copy.flags_),
-      native_event_(CopyNativeEvent(copy.native_event_)),
-      delete_native_event_(true),
+      native_event_(copy.native_event_),
       source_device_id_(copy.source_device_id_),
       properties_(copy.properties_
                       ? std::make_unique<Properties>(*copy.properties_)
@@ -331,15 +322,11 @@ Event::Event(const Event& copy)
 
 Event& Event::operator=(const Event& rhs) {
   if (this != &rhs) {
-    if (delete_native_event_)
-      ReleaseCopiedNativeEvent(native_event_);
-
     type_ = rhs.type_;
     time_stamp_ = rhs.time_stamp_;
     latency_ = rhs.latency_;
     flags_ = rhs.flags_;
-    native_event_ = CopyNativeEvent(rhs.native_event_);
-    delete_native_event_ = true;
+    native_event_ = rhs.native_event_;
     cancelable_ = rhs.cancelable_;
     phase_ = rhs.phase_;
     result_ = rhs.result_;
@@ -974,7 +961,7 @@ void KeyEvent::ApplyLayout() const {
   // Native Windows character events always have is_char_ == true,
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
-  if (native_event()) {
+  if (IsPlatformEventValid(native_event())) {
     DCHECK(EventTypeFromNative(native_event()) == ET_KEY_PRESSED ||
            EventTypeFromNative(native_event()) == ET_KEY_RELEASED);
   }

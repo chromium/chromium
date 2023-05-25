@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/apple/owned_objc.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -57,7 +58,8 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     }
 
     if (!target_window || [event window] == target_window) {
-      std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
+      std::unique_ptr<ui::Event> ui_event =
+          ui::EventFromNative(base::apple::OwnedNSEvent(event));
       if (ui_event && types_.find(ui_event->type()) != types_.end()) {
         event_observer->OnEvent(*ui_event);
       }

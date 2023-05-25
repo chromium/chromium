@@ -103,11 +103,13 @@ gfx::Vector2d GetMouseWheelTick120ths(const PlatformEvent& native_event) {
   return event->tick_120ths();
 }
 
-PlatformEvent CopyNativeEvent(const PlatformEvent& event) {
-  return NULL;
+PlatformEvent CreateInvalidPlatformEvent() {
+  return nullptr;
 }
 
-void ReleaseCopiedNativeEvent(const PlatformEvent& event) {}
+bool IsPlatformEventValid(const PlatformEvent& event) {
+  return event != nullptr;
+}
 
 PointerDetails GetTouchPointerDetailsFromNative(
     const PlatformEvent& native_event) {

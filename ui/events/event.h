@@ -318,7 +318,6 @@ class EVENTS_EXPORT Event {
   LatencyInfo latency_;
   int flags_;
   PlatformEvent native_event_;
-  bool delete_native_event_ = false;
   bool cancelable_ = true;
   // Neither Event copy constructor nor the assignment operator copies
   // `target_`, as `target_` should be explicitly set so the setter will be
@@ -667,7 +666,6 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
       : LocatedEvent(model, source, target),
         unique_event_id_(model.unique_event_id_),
         may_cause_scrolling_(model.may_cause_scrolling_),
-        hovering_(false),
         pointer_details_(model.pointer_details_) {}
 
   TouchEvent(EventType type,
