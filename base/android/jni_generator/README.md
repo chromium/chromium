@@ -185,14 +185,14 @@ result in `test_module_GEN_JNI`.
 
 ### Testing for readiness: use `get()`
 
-JNI Generator automatically produces checks that verify that the Natives interface can be safely
+JNI Generator automatically produces asserts that verify that the Natives interface can be safely
 called. These checks are compiled out of Release builds, making these an excellent way to determine
 whether your code is called safely.
 
 ![Check Flow](doc/jni-check-flow.svg)
 
-Most of the time you would write your code so that you only use JNI once the native libraries are
-loaded. There's nothing extra you need to do here.
+It is not sufficient, however, to use `<Class>Jni.get()` to guarantee native is initialized - it is
+only a debugging tool to ensure that you're using native after native is loaded.
 
 If you expect your code to be called by an external caller, it's often helpful to know _ahead of
 time_ that the context is valid (ie. either native libraries are loaded or mocks are installed).
@@ -215,6 +215,11 @@ executed tests, inaccurately reporting flakiness and failures of these victim te
 * Introducing `LibraryLoader.is*()` calls in your code immediately affects all callers, forcing
 the authors of the code up the call stack to override `LibraryLoader` internal state in order to be
 able to unit-test their code.
+
+However, if your code is going to be called both before and after native is initialized, you are
+forced to call `LibraryLoader.isInitialized()` to be able to differentiate. Calling
+`<Class>Jni.get()` only provides assertions, and will fail in debug builds if you call it when
+native isn't ready.
 
 ### Calling Native -> Java
 
