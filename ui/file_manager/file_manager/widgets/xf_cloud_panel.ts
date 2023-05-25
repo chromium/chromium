@@ -21,14 +21,14 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
  */
 export enum CloudPanelType {
   OFFLINE = 'offline',
-  NOT_ENOUGH_SPACE = 'not-enough-space',
+  NOT_ENOUGH_SPACE = 'not_enough_space',
 }
 
 /**
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
- * in progress. The `type` attribute can be used with `not-enough-space` and
+ * in progress. The `type` attribute can be used with `not_enough_space` and
  * `offline` to signify possible error or paused states.
  */
 @customElement('xf-cloud-panel')
@@ -75,7 +75,10 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            if (value && value.toUpperCase() in CloudPanelType) {
+            if (!value) {
+              return null;
+            }
+            if (value.toUpperCase() in CloudPanelType) {
               return value as CloudPanelType;
             }
             console.warn(`Failed to convert ${value} to CloudPanelType`);
@@ -250,7 +253,7 @@ function getCSS() {
       display: none;
     }
 
-    :host(:not([type="not-enough-space"])) #progress-not-enough-space {
+    :host(:not([type="not_enough_space"])) #progress-not-enough-space {
       display: none;
     }
 

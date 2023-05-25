@@ -373,7 +373,7 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute(
   assertEquals(
       container!.updates, 2,
       'Bulk pin state stage should increment updates to 2');
-  assertEquals(panel!.getAttribute('type'), 'not-enough-space');
+  assertEquals(panel!.getAttribute('type'), 'not_enough_space');
   assertFalse(panel!.hasAttribute('items'));
   assertFalse(panel!.hasAttribute('percentage'));
 

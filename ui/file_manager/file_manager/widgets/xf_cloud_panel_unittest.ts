@@ -221,7 +221,7 @@ export async function testWhenOfflineTypeAttributeInUseOtherStatesHidden(
 }
 
 /**
- * Tests that when the not-enough-space type attribute is supplied, the other
+ * Tests that when the not_enough_space type attribute is supplied, the other
  * states should all be hidden.
  */
 export async function testWhenNotEnoughSpaceTypeAttributeInUseOtherStatesHidden(
@@ -261,10 +261,10 @@ export async function testWhenNotEnoughSpaceTypeAttributeInUseOtherStatesHidden(
   await waitForStyles(progressOfflineElement, 'display', 'flex');
   await waitForStyles(progressNotEnoughSpaceElement, 'display', 'none');
 
-  // Update the type to be not-enough-space.
-  element.setAttribute('type', 'not-enough-space');
+  // Update the type to be not_enough_space.
+  element.setAttribute('type', 'not_enough_space');
 
-  // Ensure the only visible div is the not-enough-space one.
+  // Ensure the only visible div is the not_enough_space one.
   await waitForStyles(progressStateElement, 'display', 'none');
   await waitForStyles(progressFinishedElement, 'display', 'none');
   await waitForStyles(progressOfflineElement, 'display', 'none');
@@ -285,7 +285,7 @@ export async function testOnlyAcceptedTypesUpdateTypeProperty(
   assertEquals(element.type, undefined);
 
   // Setting it to a valid value should update the underlying type.
-  element.setAttribute('type', 'not-enough-space');
+  element.setAttribute('type', 'not_enough_space');
   await waitForAttributeValue(element, 'type', CloudPanelType.NOT_ENOUGH_SPACE);
 
   // Setting it to some random value will update the HTML elements type
