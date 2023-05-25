@@ -52,6 +52,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -197,7 +198,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @implementation GridViewController {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
-  std::unique_ptr<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
+  absl::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
 }
 
 @synthesize thumbStripEnabled = _thumbStripEnabled;
@@ -1147,18 +1148,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)scrollViewWillBeginDragging:(UIScrollView*)scrollView {
   [self.delegate gridViewControllerWillBeginDragging:self];
   base::RecordAction(base::UserMetricsAction("MobileTabGridUserScrolled"));
-  _scopedScrollingTimeLogger = std::make_unique<ScopedScrollingTimeLogger>();
+  _scopedScrollingTimeLogger = ScopedScrollingTimeLogger();
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
                   willDecelerate:(BOOL)decelerate {
   if (!decelerate) {
-    _scopedScrollingTimeLogger = nullptr;
+    _scopedScrollingTimeLogger.reset();
   }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
-  _scopedScrollingTimeLogger = nullptr;
+  _scopedScrollingTimeLogger.reset();
 }
 
 - (void)scrollViewDidScrollToTop:(UIScrollView*)scrollView {
