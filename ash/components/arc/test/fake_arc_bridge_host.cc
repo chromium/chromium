@@ -104,6 +104,10 @@ void FakeArcBridgeHost::OnBootPhaseMonitorInstanceReady(
 void FakeArcBridgeHost::OnCameraInstanceReady(
     mojo::PendingRemote<mojom::CameraInstance> camera_remote) {}
 
+void FakeArcBridgeHost::OnChromeFeatureFlagsInstanceReady(
+    mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
+        chrome_feature_flags_remote) {}
+
 void FakeArcBridgeHost::OnClipboardInstanceReady(
     mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {}
 

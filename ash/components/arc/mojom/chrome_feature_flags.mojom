@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// This interface provides methods to propagate the feature flag status to
+// ARC++.
+//
+// Next method ID: 1
+interface ChromeFeatureFlagsInstance {
+  // Notifies ARC whether chrome://flags#QsRevamp is enabled.
+  NotifyQsRevamp@0(bool enabled);
+};
