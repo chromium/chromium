@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.components.content_relationship_verification.OriginVerifier;
 import org.chromium.components.content_relationship_verification.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  * AwOriginVerifier performs OriginVerifications for WebView.
  */
+@Lifetime.Singleton
 public class AwOriginVerifier extends OriginVerifier {
     public AwOriginVerifier(String packageName, String relationship,
             AwBrowserContext browserContext,

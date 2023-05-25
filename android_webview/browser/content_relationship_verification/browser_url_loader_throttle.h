@@ -19,9 +19,6 @@
 
 namespace android_webview {
 
-// TODO(crbug.com/1376958): Add CSP as method to allow content access in this
-// throttle and then move it to components/third_party_restrictions.
-
 // BrowserURLLoaderThrottle is used in the browser process to perform a
 // digital asset links verification to determine whether a URL and also its
 // redirect URLs are considered first party content and will be loaded.
@@ -31,6 +28,8 @@ namespace android_webview {
 // by the time the response headers are available, the request is deferred
 // until all the checks are done. It cancels the load if any URLs turn out to
 // be bad.
+//
+// Lifetime: Temporary. Created and destroyed for every URL request.
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   class OriginVerificationSchedulerBridge {
