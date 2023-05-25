@@ -301,6 +301,25 @@ void DeskAsh::AddDeskEventObserver(
   remote_desk_event_observers_.Add(std::move(remote));
 }
 
+void DeskAsh::NotifyDeskAdded(const base::Uuid& uuid) {
+  for (auto& client : remote_desk_event_observers_) {
+    client->OnDeskAdded(uuid);
+  }
+}
+
+void DeskAsh::NotifyDeskRemoved(const base::Uuid& uuid) {
+  for (auto& client : remote_desk_event_observers_) {
+    client->OnDeskRemoved(uuid);
+  }
+}
+
+void DeskAsh::NotifyDeskSwitched(const base::Uuid& current_id,
+                                 const base::Uuid& previous_id) {
+  for (auto& client : remote_desk_event_observers_) {
+    client->OnDeskSwitched(current_id, previous_id);
+  }
+}
+
 // Performs a depth-first search for a window with given App Restore Window
 // Id.
 aura::Window* DeskAsh::GetWindowByAppRestoreWindowId(

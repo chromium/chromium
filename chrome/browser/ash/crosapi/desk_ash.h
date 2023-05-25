@@ -60,6 +60,10 @@ class DeskAsh : public mojom::Desk {
                    GetDeskByIDCallback callback) override;
   void AddDeskEventObserver(
       mojo::PendingRemote<crosapi::mojom::DeskEventObserver> observer) override;
+  void NotifyDeskAdded(const base::Uuid& uuid);
+  void NotifyDeskRemoved(const base::Uuid& uuid);
+  void NotifyDeskSwitched(const base::Uuid& current_id,
+                          const base::Uuid& previous_id);
 
  private:
   // Returns the window pointer by app restore window Id.

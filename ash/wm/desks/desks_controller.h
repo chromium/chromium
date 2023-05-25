@@ -71,20 +71,24 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   class Observer {
    public:
-    // Called when |desk| has been created and added to
+    // Called when `desk` has been created and added to
     // `DesksController::desks_`. It's important to note that `desk` can be
     // added at any position in `DesksController::desks_`.
     virtual void OnDeskAdded(const Desk* desk) {}
 
-    // Called when |desk| has been removed from `DesksController::desks_`.
-    // However |desk| is kept alive temporarily and will be destroyed after all
+    // Called when `desk` has been removed from `DesksController::desks_`.
+    // However `desk` is kept alive temporarily and will be destroyed after all
     // observers have been notified with this.
     virtual void OnDeskRemoved(const Desk* desk) {}
+
+    // Called when `desk` has been been removed from `DesksController::desks_`
+    // and past the buffer so that it can no longer be revivied.
+    virtual void OnDeskRemovalFinalized(const base::Uuid& uuid) {}
 
     // Called when the desk at |old_index| is reordered to |new_index|.
     virtual void OnDeskReordered(int old_index, int new_index) {}
 
-    // Called when the |activated| desk gains activation from the |deactivated|
+    // Called when the `activated` desk gains activation from the `deactivated`
     // desk.
     virtual void OnDeskActivationChanged(const Desk* activated,
                                          const Desk* deactivated) {}

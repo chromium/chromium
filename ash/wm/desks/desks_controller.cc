@@ -1949,6 +1949,10 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
         removed_desk->windows().size());
   }
 
+  for (auto& observer : observers_) {
+    observer.OnDeskRemovalFinalized(removed_desk->uuid());
+  }
+
   ReportDesksCountHistogram();
   ReportNumberOfWindowsPerDeskHistogram();
 

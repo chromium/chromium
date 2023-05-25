@@ -200,6 +200,7 @@ class DesksClient : public ash::SessionObserver {
 
  private:
   class LaunchPerformanceTracker;
+  class DeskEventObserver;
   friend class DesksClientTest;
   friend class ScopedDesksTemplatesAppLaunchHandlerSetter;
 
@@ -292,6 +293,9 @@ class DesksClient : public ash::SessionObserver {
   // trackers.
   base::flat_map<base::Uuid, std::unique_ptr<LaunchPerformanceTracker>>
       template_ids_to_launch_performance_trackers_;
+
+  // Monitors desk events.
+  std::unique_ptr<DeskEventObserver> desk_event_observer_;
 
   base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };

@@ -38,6 +38,9 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/desk_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
@@ -229,12 +232,64 @@ class DesksClient::LaunchPerformanceTracker
   base::WeakPtrFactory<LaunchPerformanceTracker> weak_ptr_factory_{this};
 };
 
+// Observer for listening to desk related events.
+class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
+ public:
+  explicit DeskEventObserver(ash::DesksController* source) {
+    // `DesksController` not initialized in unit test.
+    if (source) {
+      obs_.Observe(source);
+    }
+  }
+  DeskEventObserver(const DeskEventObserver& observer) = delete;
+  DeskEventObserver& operator=(const DeskEventObserver& observer) = delete;
+  // ScopedObservation handles stopping observing in destruction.
+  ~DeskEventObserver() override = default;
+
+  void OnDeskAdded(const ash::Desk* desk) override {
+    // CrosapiManager is always constructed even if lacros flag is disabled but
+    // it's not constructed in unit test.
+    if (!crosapi::CrosapiManager::IsInitialized()) {
+      return;
+    }
+    crosapi::CrosapiManager::Get()->crosapi_ash()->desk_ash()->NotifyDeskAdded(
+        desk->uuid());
+  }
+
+  void OnDeskRemovalFinalized(const base::Uuid& uuid) override {
+    if (!crosapi::CrosapiManager::IsInitialized()) {
+      return;
+    }
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->desk_ash()
+        ->NotifyDeskRemoved(uuid);
+  }
+
+  void OnDeskActivationChanged(const ash::Desk* activated,
+                               const ash::Desk* deactivated) override {
+    if (!crosapi::CrosapiManager::IsInitialized()) {
+      return;
+    }
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->desk_ash()
+        ->NotifyDeskSwitched(activated->uuid(), deactivated->uuid());
+  }
+
+ private:
+  base::ScopedObservation<ash::DesksController, ash::DesksController::Observer>
+      obs_{this};
+};
+
 DesksClient::DesksClient() : desks_controller_(ash::DesksController::Get()) {
   DCHECK(!g_desks_client_instance);
   g_desks_client_instance = this;
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->AddObserver(this);
   }
+  desk_event_observer_ =
+      std::make_unique<DeskEventObserver>(ash::DesksController::Get());
 }
 
 DesksClient::~DesksClient() {
