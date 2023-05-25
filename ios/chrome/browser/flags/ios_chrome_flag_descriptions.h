@@ -259,10 +259,6 @@ extern const char kEnableFeedBottomSignInPromoDescription[];
 extern const char kEnableFeedCardMenuSignInPromoName[];
 extern const char kEnableFeedCardMenuSignInPromoDescription[];
 
-// Title and description for the flag to enable the Feed image caching.
-extern const char kEnableFeedImageCachingName[];
-extern const char kEnableFeedImageCachingDescription[];
-
 // Title and description for the flag to enable Feed synthetic capabilities.
 extern const char kEnableFeedSyntheticCapabilitiesName[];
 extern const char kEnableFeedSyntheticCapabilitiesDescription[];

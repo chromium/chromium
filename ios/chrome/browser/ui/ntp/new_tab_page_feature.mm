@@ -55,10 +55,6 @@ BASE_FEATURE(kOverrideFeedSettings,
              "OverrideFeedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedImageCaching,
-             "EnableFeedImageCaching",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFeedSyntheticCapabilities,
              "EnableFeedSyntheticCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -180,10 +176,6 @@ bool IsStickyHeaderDisabledForFollowingFeed() {
 bool IsDotEnabledForNewFollowedContent() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kFeedHeaderSettings, kEnableDotForNewFollowedContent, false);
-}
-
-bool IsFeedImageCachingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedImageCaching);
 }
 
 bool IsFeedSyntheticCapabilitiesEnabled() {
