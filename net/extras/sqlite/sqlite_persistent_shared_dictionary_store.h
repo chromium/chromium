@@ -6,6 +6,7 @@
 #define NET_EXTRAS_SQLITE_SQLITE_PERSISTENT_SHARED_DICTIONARY_STORE_H_
 
 #include <map>
+#include <set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -15,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/unguessable_token.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "url/origin.h"
 
@@ -56,6 +58,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       base::expected<std::map<SharedDictionaryStorageIsolationKey,
                               std::vector<SharedDictionaryInfo>>,
                      Error>;
+  using UnguessableTokenSetOrError =
+      base::expected<std::set<base::UnguessableToken>, Error>;
 
   SQLitePersistentSharedDictionaryStore(
       const base::FilePath& path,
@@ -81,6 +85,11 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);
   void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
+  void ClearDictionaries(
+      const base::Time start_time,
+      const base::Time end_time,
+      base::RepeatingCallback<bool(const GURL&)> url_matcher,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
                                     base::Time last_used_time);
 
@@ -88,8 +97,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   // SharedDictionaryDiskCache by using `disk_cache_key_token`.
   // TODO(crbug.com/1413922): Add a method for the clearing expired dictionary
   // logic using expiration time.
-  // TODO(crbug.com/1413922): Add a method for the clearing dictionary logic
-  // which will be called from BrowsingDataRemover.
 
   base::WeakPtr<SQLitePersistentSharedDictionaryStore> GetWeakPtr();
 

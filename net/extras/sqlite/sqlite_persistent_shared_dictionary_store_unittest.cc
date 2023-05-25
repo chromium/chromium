@@ -173,6 +173,24 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     run_loop.Run();
   }
 
+  std::set<base::UnguessableToken> ClearDictionaries(
+      const base::Time start_time,
+      const base::Time end_time,
+      base::RepeatingCallback<bool(const GURL&)> url_matcher) {
+    base::RunLoop run_loop;
+    std::set<base::UnguessableToken> tokens;
+    store_->ClearDictionaries(
+        start_time, end_time, std::move(url_matcher),
+        base::BindLambdaForTesting([&](SQLitePersistentSharedDictionaryStore::
+                                           UnguessableTokenSetOrError result) {
+          ASSERT_TRUE(result.has_value());
+          tokens = std::move(result.value());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return tokens;
+  }
+
   void CorruptDatabaseFile() {
     // Execute CreateStore(), ClearAllDictionaries() and DestroyStore() to
     // create a database file.
@@ -231,6 +249,9 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   void RunGetAllDictionariesFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
   void RunClearAllDictionariesFailureTest(
+      SQLitePersistentSharedDictionaryStore::Error expected_error);
+  void RunClearDictionariesFailureTest(
+      base::RepeatingCallback<bool(const GURL&)> url_matcher,
       SQLitePersistentSharedDictionaryStore::Error expected_error);
 
   base::ScopedTempDir temp_dir_;
@@ -670,6 +691,88 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
+void SQLitePersistentSharedDictionaryStoreTest::RunClearDictionariesFailureTest(
+    base::RepeatingCallback<bool(const GURL&)> url_matcher,
+    SQLitePersistentSharedDictionaryStore::Error expected_error) {
+  CreateStore();
+  base::RunLoop run_loop;
+  store_->ClearDictionaries(
+      base::Time::Now() - base::Seconds(10), base::Time::Now(),
+      std::move(url_matcher),
+      base::BindLambdaForTesting(
+          [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+                  result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(expected_error, result.error());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  DestroyStore();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  RunClearDictionariesFailureTest(base::RepeatingCallback<bool(const GURL&)>(),
+                                  SQLitePersistentSharedDictionaryStore::Error::
+                                      kFailedToInitializeDatabase);
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  RunClearDictionariesFailureTest(
+      base::RepeatingCallback<bool(const GURL&)>(),
+      SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesWithUrlMatcherErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  RunClearDictionariesFailureTest(
+      base::BindRepeating([](const GURL&) { return true; }),
+      SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
+}
+
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
+// MakeFileUnwritable() doesn't cause the failure on Fuchsia and Windows. So
+// disabling the test on Fuchsia and Windows.
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesErrorSqlExecutionFailure) {
+  CreateStore();
+  RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  MakeFileUnwritable();
+  RunClearDictionariesFailureTest(
+      base::RepeatingCallback<bool(const GURL&)>(),
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesWithUrlMatcherErrorSqlExecutionFailure) {
+  CreateStore();
+  RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  MakeFileUnwritable();
+  RunClearDictionariesFailureTest(
+      base::BindRepeating([](const GURL&) { return true; }),
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesErrorFailedToGetTotalDictSize) {
+  CreateStore();
+  RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  ManipulateDatabase({"DELETE FROM meta WHERE key='total_dict_size'"});
+
+  RunClearDictionariesFailureTest(
+      base::RepeatingCallback<bool(const GURL&)>(),
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
+}
+
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
   CreateStore();
   auto register_dictionary_result =
@@ -766,6 +869,198 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       }));
   store_.reset();
   RunUntilIdle();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesCallbackNotCalledAfterStoreDeleted) {
+  CreateStore();
+  store_->ClearDictionaries(
+      base::Time::Now() - base::Seconds(1), base::Time::Now(),
+      base::RepeatingCallback<bool(const GURL&)>(),
+      base::BindLambdaForTesting(
+          [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+                  result) { EXPECT_TRUE(false) << "Should not be reached."; }));
+  store_.reset();
+  RunUntilIdle();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
+  CreateStore();
+
+  auto token1 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict1 = SharedDictionaryInfo(
+      GURL("https://a.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(4),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
+      /*disk_cache_key_token=*/token1,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result1 = RegisterDictionary(isolation_key_, dict1);
+  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+
+  auto token2 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict2 = SharedDictionaryInfo(
+      GURL("https://b.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(3),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
+      /*disk_cache_key_token=*/token2,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result2 = RegisterDictionary(isolation_key_, dict2);
+  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+
+  auto token3 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict3 = SharedDictionaryInfo(
+      GURL("https://c.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(2),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/5000, net::SHA256HashValue({{0x00, 0x03}}),
+      /*disk_cache_key_token=*/token3,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result3 = RegisterDictionary(isolation_key_, dict3);
+  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+
+  auto token4 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict4 = SharedDictionaryInfo(
+      GURL("https://d.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(1),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/7000, net::SHA256HashValue({{0x00, 0x04}}),
+      /*disk_cache_key_token=*/token4,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result4 = RegisterDictionary(isolation_key_, dict4);
+  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+
+  // No matching dictionaries to be deleted.
+  EXPECT_TRUE(ClearDictionaries(base::Time::Now() - base::Seconds(200),
+                                base::Time::Now() - base::Seconds(4),
+                                base::RepeatingCallback<bool(const GURL&)>())
+                  .empty());
+
+  std::set<base::UnguessableToken> tokens =
+      ClearDictionaries(base::Time::Now() - base::Seconds(3),
+                        base::Time::Now() - base::Seconds(1),
+                        base::RepeatingCallback<bool(const GURL&)>());
+  // The dict2 which res_time is "now - 3 sec" and the dict3
+  // which res_time is "now - 2 sec" must be deleted.
+  EXPECT_THAT(tokens, UnorderedElementsAreArray({token2, token3}));
+
+  // Check the remaining dictionaries.
+  EXPECT_THAT(GetAllDictionaries(),
+              ElementsAre(Pair(isolation_key_,
+                               UnorderedElementsAreArray({dict1, dict4}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict1.size() + dict4.size(), GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       ClearDictionariesWithUrlMatcher) {
+  CreateStore();
+
+  auto isolation_key1 =
+      CreateIsolationKey("https://a1.example/", "https://a2.example/");
+  auto token1 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict1 = SharedDictionaryInfo(
+      GURL("https://a3.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(4),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
+      /*disk_cache_key_token=*/token1,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result1 = RegisterDictionary(isolation_key1, dict1);
+  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+
+  auto isolation_key2 =
+      CreateIsolationKey("https://b1.example/", "https://b2.example/");
+  auto token2 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict2 = SharedDictionaryInfo(
+      GURL("https://b3.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(3),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
+      /*disk_cache_key_token=*/token2,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result2 = RegisterDictionary(isolation_key2, dict2);
+  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+
+  auto isolation_key3 =
+      CreateIsolationKey("https://c1.example/", "https://c2.example/");
+  auto token3 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict3 = SharedDictionaryInfo(
+      GURL("https://c3.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(2),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/5000, net::SHA256HashValue({{0x00, 0x03}}),
+      /*disk_cache_key_token=*/token3,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result3 = RegisterDictionary(isolation_key3, dict3);
+  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+
+  auto isolation_key4 =
+      CreateIsolationKey("https://d1.example/", "https://d2.example/");
+  auto token4 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict4 = SharedDictionaryInfo(
+      GURL("https://d3.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(1),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/7000, net::SHA256HashValue({{0x00, 0x04}}),
+      /*disk_cache_key_token=*/token4,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result4 = RegisterDictionary(isolation_key4, dict4);
+  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+
+  // No matching dictionaries to be deleted.
+  EXPECT_TRUE(ClearDictionaries(base::Time::Now() - base::Seconds(200),
+                                base::Time::Now() - base::Seconds(4),
+                                base::BindRepeating([](const GURL&) {
+                                  EXPECT_TRUE(false)
+                                      << "Should not be reached.";
+                                  return true;
+                                }))
+                  .empty());
+  std::set<GURL> checked_urls;
+  EXPECT_TRUE(
+      ClearDictionaries(base::Time::Now() - base::Seconds(3),
+                        base::Time::Now() - base::Seconds(1),
+                        base::BindLambdaForTesting([&](const GURL& url) {
+                          checked_urls.insert(url);
+                          return false;
+                        }))
+          .empty());
+  // The dict2 which last_used_time is "now - 3 sec" and the dict3
+  // which last_used_time is "now - 2 sec" must be selected and the macher is
+  // called with those dictionaries frame_origin, top_frame_site and host.
+  EXPECT_THAT(checked_urls,
+              UnorderedElementsAreArray(
+                  {GURL("https://b1.example/"), GURL("https://b2.example/"),
+                   GURL("https://b3.example/"), GURL("https://c1.example/"),
+                   GURL("https://c2.example/"), GURL("https://c3.example/")}));
+
+  // Deletes dict3.
+  std::set<base::UnguessableToken> tokens =
+      ClearDictionaries(base::Time::Now() - base::Seconds(3),
+                        base::Time::Now() - base::Seconds(1),
+                        base::BindRepeating([](const GURL& url) {
+                          return url == GURL("https://c3.example/");
+                        }));
+  EXPECT_THAT(tokens, ElementsAreArray({token3}));
+
+  // Check the remaining dictionaries.
+  EXPECT_THAT(GetAllDictionaries(),
+              ElementsAre(Pair(isolation_key1, ElementsAreArray({dict1})),
+                          Pair(isolation_key2, ElementsAreArray({dict2})),
+                          Pair(isolation_key4, ElementsAreArray({dict4}))));
+  // Check the total size of remaining dictionaries.
+  EXPECT_EQ(dict1.size() + dict2.size() + dict4.size(),
+            GetTotalDictionarySize());
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
