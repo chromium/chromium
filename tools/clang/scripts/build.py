@@ -413,16 +413,6 @@ def DownloadRPMalloc():
   return rpmalloc_dir
 
 
-def StartGomaAndGetGomaCCPath():
-  bat_ext = '.bat' if sys.platform == 'win32' else ''
-  exe_ext = '.exe' if sys.platform == 'win32' else ''
-  subprocess.check_output(['goma_ctl' + bat_ext, 'ensure_start'])
-  return os.path.join(
-      subprocess.check_output(['goma_ctl' + bat_ext, 'goma_dir'],
-                              universal_newlines=True).rstrip(),
-      'gomacc' + exe_ext)
-
-
 def DownloadPinnedClang():
   PINNED_CLANG_VERSION = 'llvmorg-16-init-3375-gfed71b04-1'
   DownloadAndUnpackPackage('clang', PINNED_CLANG_DIR, GetDefaultHostOs(),
@@ -604,10 +594,6 @@ def main():
                       help='don\'t build Fuchsia clang_rt runtime (linux/mac)',
                       dest='with_fuchsia',
                       default=sys.platform in ('linux2', 'darwin'))
-  parser.add_argument('--with-goma',
-                      action='store_true',
-                      help='Use goma to build the stage 1 compiler')
-
   args = parser.parse_args()
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
@@ -751,13 +737,6 @@ def main():
   cflags += sanitizers_override
   cxxflags += sanitizers_override
 
-  autoninja = 'autoninja.bat' if sys.platform == 'win32' else 'autoninja'
-  goma_args = []
-  if args.with_goma:
-    goma_path = StartGomaAndGetGomaCCPath()
-    goma_args.append('-DCMAKE_C_COMPILER_LAUNCHER=' + goma_path)
-    goma_args.append('-DCMAKE_CXX_COMPILER_LAUNCHER=' + goma_path)
-
   if args.host_cc or args.host_cxx:
     assert args.host_cc and args.host_cxx, \
            "--host-cc and --host-cxx need to be used together"
@@ -879,7 +858,7 @@ def main():
     if sys.platform == 'darwin':
       # Need ARM and AArch64 for building the ios clang_rt.
       bootstrap_targets += ';ARM;AArch64'
-    bootstrap_args = base_cmake_args + goma_args + [
+    bootstrap_args = base_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=clang;lld',
         '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
@@ -913,7 +892,7 @@ def main():
     if lld is not None: bootstrap_args.append('-DCMAKE_LINKER=' + lld)
     RunCommand(['cmake'] + bootstrap_args + [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x64')
-    RunCommand([autoninja], msvc_arch='x64')
+    RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
       RunCommand(['ninja', 'check-all'], msvc_arch='x64')
     RunCommand(['ninja', 'install'], msvc_arch='x64')
@@ -1273,9 +1252,6 @@ def main():
   cmake_args.append('-DLLVM_BUILTIN_TARGETS=' + all_triples)
   cmake_args.append('-DLLVM_RUNTIME_TARGETS=' + all_triples)
 
-  if not args.bootstrap:
-    cmake_args.extend(goma_args)
-
   if os.path.exists(LLVM_BUILD_DIR):
     RmTree(LLVM_BUILD_DIR)
   EnsureDirExists(LLVM_BUILD_DIR)
@@ -1284,7 +1260,7 @@ def main():
              msvc_arch='x64',
              env=deployment_env)
   CopyLibstdcpp(args, LLVM_BUILD_DIR)
-  RunCommand([autoninja], msvc_arch='x64')
+  RunCommand(['ninja'], msvc_arch='x64')
 
   if chrome_tools:
     # If any Chromium tools were built, install those now.
