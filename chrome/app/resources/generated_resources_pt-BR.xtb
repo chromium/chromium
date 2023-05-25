@@ -6876,7 +6876,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7188508872042490670">Dados do site no dispositivo</translation>
 <translation id="7189234443051076392">Verifique se há espaço suficiente no seu dispositivo</translation>
 <translation id="7189451821249468368">Você não tem upgrades suficientes para registrar esse dispositivo. Fale com o departamento de vendas para adquirir mais. Se acredita que recebeu esta mensagem por engano, entre em contato com o suporte.</translation>
-<translation id="7189965711416741966">Impressão digital adicionada.</translation>
+<translation id="7189965711416741966">Impressão digital registrada.</translation>
 <translation id="7191063546666816478">Alguns links com suporte ainda serão abertos no app <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e em <ph name="NUMBER_OF_OTHER_APPS" /> outros apps.</translation>
 <translation id="7191159667348037">Impressora desconhecida (USB)</translation>
 <translation id="7193051357671784796">Este app foi adicionado pela sua organização. Reinicie o app para concluir a instalação.</translation>
@@ -8573,7 +8573,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8720816553731218127">A inicialização dos atributos de tempo de instalação expirou.</translation>
 <translation id="8722912030556880711">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">Sempre que vir este ícone, use sua impressão digital para se identificar ou aprovar compras.</translation>
-<translation id="8724409975248965964">Impressão digital adicionada</translation>
+<translation id="8724409975248965964">Impressão digital registrada</translation>
 <translation id="8724859055372736596">&amp;Mostrar na pasta</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8725178340343806893">Favoritos</translation>
