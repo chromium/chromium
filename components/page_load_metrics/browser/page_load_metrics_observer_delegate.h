@@ -207,9 +207,6 @@ class PageLoadMetricsObserverDelegate {
   // meaningfully modify the DOM, replacing the previous content with new one.
   virtual uint32_t GetSoftNavigationCount() const = 0;
 
-  // UKM source ID for the latest soft navigation.
-  virtual ukm::SourceId GetUkmSourceIdForSoftNavigation() const = 0;
-
   // UKM source ID for the current page load. For prerendered page loads, this
   // returns ukm::kInvalidSourceId until activation navigation.
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;

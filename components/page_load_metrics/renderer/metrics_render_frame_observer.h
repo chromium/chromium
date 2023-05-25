@@ -28,7 +28,6 @@ class OneShotTimer;
 
 namespace blink {
 struct JavaScriptFrameworkDetectionResult;
-struct SoftNavigationMetrics;
 }  // namespace blink
 
 namespace page_load_metrics {
@@ -68,7 +67,7 @@ class MetricsRenderFrameObserver
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) override;
+  void DidObserveSoftNavigation(uint32_t count) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidStartResponse(
       const url::SchemeHostPort& final_response_url,
