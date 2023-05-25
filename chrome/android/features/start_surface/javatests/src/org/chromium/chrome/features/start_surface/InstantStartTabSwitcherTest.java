@@ -399,11 +399,27 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
                     + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
-    public void testSingleAsHomepage_Landscape_TabSize() {
+    public void testSingleAsHomepage_Landscape_TabSize() throws IOException {
+     testSingleAsHomepage_Landscape_TabSize_impl();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
+            + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
+    // clang-format off
+    public void testSingleAsHomepage_Landscape_TabSize_RefactorEnabled() throws IOException {
+        testSingleAsHomepage_Landscape_TabSize_impl();
+    }
+
+   private void testSingleAsHomepage_Landscape_TabSize_impl() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -428,11 +444,15 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
         onViewWaiting(allOf(withId(org.chromium.chrome.test.R.id.tab_thumbnail), isDisplayed()));
 
-        View tabThumbnail = cta.findViewById(org.chromium.chrome.test.R.id.tab_thumbnail);
+        RecyclerView recyclerView =
+                (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
+        View tabThumbnail = recyclerView.findViewById(org.chromium.chrome.test.R.id.tab_thumbnail);
         float defaultRatio = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
         defaultRatio = MathUtils.clamp(defaultRatio, 0.5f, 2.0f);
         assertEquals(tabThumbnail.getMeasuredHeight(),
                 (int) (tabThumbnail.getMeasuredWidth() * 1.0 / defaultRatio), 2);
+
+        ActivityTestUtils.clearActivityOrientation(cta);
     }
 
     @Test
