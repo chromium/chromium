@@ -284,6 +284,10 @@
     border-radius: 16px;
   }
 
+  .help-link {
+    color: var(--text-color-action);
+    text-decoration: none;
+  }
 </style>
 <div class$="[[getPreviewContainerClass_(ambientModeEnabled_, loading_)]]" id="container">
   <!-- Use inline svg in order to reference the clip path by url() -->
@@ -321,8 +325,9 @@
           $i18n{ambientModeMainPageEnterpriseUserMessage}
         </span>
         <cr-button class="primary action-button">
-          <!-- TODO(b/258838122): on-click behavior -->
-          <div>$i18n{ambientModeLearnMoreLabel}</div>
+          <!-- TODO(b/282827734): create new p-link for the support page -->
+          <a class="help-link" href="https://support.google.com/chromebook?p=wallpaper_fileerror"
+              target="_blank">$i18n{ambientModeLearnMoreLabel}</a>
         </cr-button>
       </div>
     </template>
