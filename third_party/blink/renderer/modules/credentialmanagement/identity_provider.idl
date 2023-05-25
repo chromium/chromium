@@ -5,7 +5,7 @@
 dictionary IdentityUserInfo {
   USVString email;
   USVString name;
-  USVString given_name;
+  USVString givenName;
   USVString picture;
 };
 
