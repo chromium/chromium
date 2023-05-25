@@ -38,7 +38,9 @@ struct DowncastTraits<{{tag.interface}}> {
     return element.HasTagName({{cpp_namespace}}::{{tag|symbol}}Tag);
   }
   static bool AllowFrom(const Node& node) {
-    return node.Is{{namespace}}Element() && IsA<{{tag.interface}}>(To<{{namespace}}Element>(node));
+    // UnsafeTo<> is safe because Is*Element(), by definition, only returns
+    // true if `node` is derived from `Element`.
+    return node.Is{{namespace}}Element() && IsA<{{tag.interface}}>(UnsafeTo<{{namespace}}Element>(node));
   }
 };
 
