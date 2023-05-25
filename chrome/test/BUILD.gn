@@ -555,7 +555,6 @@ static_library("test_support") {
     deps += [
       "//build:branding_buildflags",
       "//chrome/app_shim",
-      "//chrome/browser:browser_noarc",
       "//components/upload_list",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -1340,7 +1339,6 @@ if (!is_android) {
         "//chrome/app:command_ids",
         "//chrome/app_shim",
         "//chrome/browser",
-        "//chrome/browser:browser_noarc",
         "//chrome/browser:browser_process",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/profiles:profile",
@@ -2846,7 +2844,6 @@ if (!is_android) {
       deps += [
         ":browser_tests_arc",
         "//chrome/app_shim",
-        "//chrome/browser:browser_noarc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/ui:ui_arc",
@@ -6687,7 +6684,6 @@ test("unit_tests") {
     deps += [
       ":unit_tests_arc",
       "//chrome/app_shim",
-      "//chrome/browser:browser_noarc",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
       "//chrome/browser/ui:ui_arc",
@@ -9704,10 +9700,7 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      deps += [
-        "//chrome/browser:browser_noarc",
-        "//chrome/browser/apps/app_shim:app_shim",
-      ]
+      deps += [ "//chrome/browser/apps/app_shim:app_shim" ]
       sources += [ "base/interactive_test_utils_mac.mm" ]
     }
 
@@ -10499,7 +10492,6 @@ if (!is_android) {
 
       deps += [
         ":interactive_ui_tests_arc",
-        "//chrome/browser:browser_noarc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/web_applications/extensions",
         "//components/spellcheck:buildflags",

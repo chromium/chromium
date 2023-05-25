@@ -19,7 +19,6 @@
 
 #include <algorithm>
 
-#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -47,10 +46,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -291,7 +286,7 @@ bool ShouldInstallDialog() {
   NSString* yes = l10n_util::GetNSStringWithFixup(IDS_INSTALL_FROM_DMG_YES);
   NSString* no = l10n_util::GetNSStringWithFixup(IDS_INSTALL_FROM_DMG_NO);
 
-  NSAlert* alert = [[NSAlert alloc] init];
+  NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
   alert.alertStyle = NSAlertStyleInformational;
   alert.messageText = title;
@@ -323,7 +318,7 @@ base::mac::ScopedAuthorizationRef MaybeShowAuthorizationDialog(
       IDS_INSTALL_FROM_DMG_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   return base::mac::AuthorizationCreateToRunAsRoot(
-      base::apple::NSToCFPtrCast(prompt));
+      base::mac::NSToCFCast(prompt));
 }
 
 // Invokes the installer program at `installer_path` to copy `source_path` to
@@ -426,7 +421,7 @@ void ShowErrorDialog() {
       IDS_INSTALL_FROM_DMG_ERROR, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
   NSString* ok = l10n_util::GetNSStringWithFixup(IDS_OK);
 
-  NSAlert* alert = [[NSAlert alloc] init];
+  NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
   alert.alertStyle = NSAlertStyleWarning;
   alert.messageText = title;

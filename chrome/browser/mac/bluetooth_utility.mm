@@ -8,14 +8,9 @@
 #import <IOBluetooth/IOBluetooth.h>
 #include <IOKit/IOKitLib.h>
 
-#include "base/apple/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace bluetooth_utility {
 
@@ -38,13 +33,14 @@ BluetoothAvailability GetBluetoothAvailability() {
   while (device.reset(IOIteratorNext(scoped_iter.get())), device) {
     bluetooth_available = true;
 
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
-    kr = IORegistryEntryCreateCFProperties(device, dict.InitializeInto(),
-                                           kCFAllocatorDefault, kNilOptions);
+    CFMutableDictionaryRef dict;
+    kr = IORegistryEntryCreateCFProperties(
+        device, &dict, kCFAllocatorDefault, kNilOptions);
     if (kr != KERN_SUCCESS)
       continue;
+    base::ScopedCFTypeRef<CFMutableDictionaryRef> scoped_dict(dict);
 
-    NSDictionary* objc_dict = base::apple::CFToNSPtrCast(dict.get());
+    NSDictionary* objc_dict = base::mac::CFToNSCast(scoped_dict.get());
     NSNumber* lmp_version =
         base::mac::ObjCCast<NSNumber>(objc_dict[@"LMPVersion"]);
     if (!lmp_version)

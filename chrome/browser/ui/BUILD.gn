@@ -99,7 +99,6 @@ if (is_mac) {
       "//chrome/app:command_ids",
       "//chrome/app:generated_resources",
       "//chrome/app/vector_icons",
-      "//chrome/browser:browser_noarc",
       "//chrome/browser/autofill",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/tabs:tab_enums",
@@ -122,7 +121,6 @@ if (is_mac) {
       "//ui/views",
       "//url",
     ]
-    allow_circular_includes_from = [ "//chrome/browser:browser_noarc" ]
   }
 }
 
@@ -4114,13 +4112,11 @@ static_library("ui") {
     allow_circular_includes_from += [
       ":ui_arc",
       "//chrome/browser/apps/app_shim",
-      "//chrome/browser:browser_noarc",
     ]
 
     deps += [
       ":ui_arc",
       "//base:base_arc",
-      "//chrome/browser:browser_noarc",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",

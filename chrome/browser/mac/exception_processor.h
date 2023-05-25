@@ -29,7 +29,7 @@ extern const size_t kUnknownNSException;
 // specifically, or |kUnknownNSException| if unknown.
 size_t BinForException(NSException* exception);
 
-// Use UMA to track exception occurrence.
+// Use UMA to track exception occurance.
 void RecordExceptionWithUma(NSException* exception);
 
 }  // namespace chrome

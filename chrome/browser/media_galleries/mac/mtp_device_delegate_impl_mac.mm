@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/image_capture_device.h"
@@ -17,10 +18,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace {
 
@@ -71,7 +68,7 @@ class MTPDeviceDelegateImplMac::DeviceListener
   virtual void ResetDelegate();
 
  private:
-  ImageCaptureDevice* __strong camera_device_;
+  base::scoped_nsobject<ImageCaptureDevice> camera_device_;
 
   // Weak pointer
   raw_ptr<MTPDeviceDelegateImplMac> delegate_;
@@ -79,8 +76,9 @@ class MTPDeviceDelegateImplMac::DeviceListener
 
 void MTPDeviceDelegateImplMac::DeviceListener::OpenCameraSession(
     const std::string& device_id) {
-  camera_device_ =
-      storage_monitor::ImageCaptureDeviceManager::deviceForUUID(device_id);
+  camera_device_.reset(
+      [storage_monitor::ImageCaptureDeviceManager::deviceForUUID(device_id)
+          retain]);
   [camera_device_ setListener:AsWeakPtr()];
   [camera_device_ open];
 }
@@ -119,7 +117,7 @@ void MTPDeviceDelegateImplMac::DeviceListener::DownloadedFile(
 
 void MTPDeviceDelegateImplMac::DeviceListener::DeviceRemoved() {
   [camera_device_ close];
-  camera_device_ = nil;
+  camera_device_.reset();
   if (delegate_)
     delegate_->NoMoreItems();
 }
@@ -149,7 +147,8 @@ MTPDeviceDelegateImplMac::MTPDeviceDelegateImplMac(
                      base::Unretained(camera_interface_.get()), device_id_));
 }
 
-MTPDeviceDelegateImplMac::~MTPDeviceDelegateImplMac() = default;
+MTPDeviceDelegateImplMac::~MTPDeviceDelegateImplMac() {
+}
 
 namespace {
 
