@@ -92,6 +92,7 @@
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
@@ -1198,6 +1199,12 @@ void WizardController::OnUserCreationScreenExit(
         AdvanceToSigninScreen();
       }
       break;
+    case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
+      CHECK(wizard_context_->quick_start_enabled &&
+            wizard_context_->quick_start_setup_ongoing);
+      GetScreen<QuickStartScreen>()->AttemptGoogleAccountTransfer();
+      AdvanceToScreen(QuickStartView::kScreenId);
+      break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
       AdvanceToScreen(GaiaView::kScreenId);
@@ -1663,6 +1670,16 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
 }
 
 void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
+  OnScreenExit(QuickStartView::kScreenId,
+               QuickStartScreen::GetResultString(result));
+  switch (result) {
+    case QuickStartScreen::Result::CANCEL:
+      ShowWelcomeScreen();
+      return;
+    case QuickStartScreen::Result::WIFI_CONNECTED:
+      ShowNetworkScreen();
+      return;
+  }
 }
 
 // The network screen is part of 3 different flows:
@@ -2476,7 +2493,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == SmartPrivacyProtectionView::kScreenId ||
              screen_id == ThemeSelectionScreenView::kScreenId ||
              screen_id == SamlConfirmPasswordView::kScreenId ||
-             screen_id == LocalStateErrorScreenView::kScreenId) {
+             screen_id == LocalStateErrorScreenView::kScreenId ||
+             screen_id == QuickStartView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

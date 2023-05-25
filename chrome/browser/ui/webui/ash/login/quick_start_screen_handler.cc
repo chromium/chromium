@@ -54,6 +54,14 @@ void QuickStartScreenHandler::ShowConnectedToWifi(std::string ssid,
   CallExternalAPI("showConnectedToWifi", ssid, password);
 }
 
+void QuickStartScreenHandler::ShowTransferringGaiaCredentials() {
+  CallExternalAPI("showTransferringGaiaCredentials");
+}
+
+void QuickStartScreenHandler::ShowFidoAssertionReceived(std::string email) {
+  CallExternalAPI("showFidoAssertionReceived", email);
+}
+
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("quickStartSetupTitle", IDS_LOGIN_QUICK_START_SETUP_TITLE);

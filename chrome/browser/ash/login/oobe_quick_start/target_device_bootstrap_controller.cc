@@ -96,14 +96,21 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 }
 
 void TargetDeviceBootstrapController::StopAdvertising() {
-  DCHECK_EQ(status_.step, Step::ADVERTISING);
-
   // No pending requests.
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
 
+  // Connection broker ignores the request if not advertising.
   connection_broker_->StopAdvertising(
       base::BindOnce(&TargetDeviceBootstrapController::OnStopAdvertising,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::MaybeCloseOpenConnections() {
+  // Close any existing open connection.
+  if (authenticated_connection_.MaybeValid()) {
+    authenticated_connection_->Close(
+        TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted);
+  }
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
@@ -199,8 +206,6 @@ void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
 }
 
 void TargetDeviceBootstrapController::OnStopAdvertising() {
-  DCHECK_EQ(status_.step, Step::ADVERTISING);
-
   status_.step = Step::NONE;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
@@ -304,6 +309,7 @@ void TargetDeviceBootstrapController::OnFidoAssertionReceived(
 
   status_.step = Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS;
   status_.payload.emplace<absl::monostate>();
+  status_.fido_email = assertion->email;
   NotifyObservers();
 }
 

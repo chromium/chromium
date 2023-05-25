@@ -30,6 +30,8 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual void SetDiscoverableName(const std::string& discoverable_name) = 0;
   virtual void ShowConnectingToWifi() = 0;
   virtual void ShowConnectedToWifi(std::string ssid, std::string password) = 0;
+  virtual void ShowTransferringGaiaCredentials() = 0;
+  virtual void ShowFidoAssertionReceived(std::string email) = 0;
 };
 
 // WebUI implementation of QuickStartView.
@@ -52,6 +54,8 @@ class QuickStartScreenHandler : public QuickStartView,
   void SetDiscoverableName(const std::string& discoverable_name) override;
   void ShowConnectingToWifi() override;
   void ShowConnectedToWifi(std::string ssid, std::string password) override;
+  void ShowTransferringGaiaCredentials() override;
+  void ShowFidoAssertionReceived(std::string email) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

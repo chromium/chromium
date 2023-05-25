@@ -21,7 +21,7 @@ class QuickStartScreen
  public:
   using TView = QuickStartView;
 
-  enum class Result { CANCEL };
+  enum class Result { CANCEL, WIFI_CONNECTED };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -34,6 +34,8 @@ class QuickStartScreen
   ~QuickStartScreen() override;
 
   static std::string GetResultString(Result result);
+
+  void AttemptGoogleAccountTransfer();
 
  private:
   // BaseScreen:

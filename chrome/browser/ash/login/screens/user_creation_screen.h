@@ -31,6 +31,7 @@ class UserCreationScreen
     CANCEL,
     SKIPPED,
     KIOSK_ENTERPRISE_ENROLL,
+    CONTINUE_QUICK_START_FLOW,
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
