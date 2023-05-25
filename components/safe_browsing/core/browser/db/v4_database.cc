@@ -59,6 +59,23 @@ std::vector<ListIdentifier> VerifyChecksums(
   return stores_to_reset;
 }
 
+// Returns hash prefixes matching the collection of stores.
+FullHashToStoreAndHashPrefixesMap CheckStores(
+    const std::vector<FullHashStr>& full_hashes,
+    std::vector<std::pair<ListIdentifier, V4Store*>> stores) {
+  FullHashToStoreAndHashPrefixesMap results;
+  for (const auto& store : stores) {
+    for (const auto& full_hash : full_hashes) {
+      HashPrefixStr hash_prefix =
+          store.second->GetMatchingHashPrefix(full_hash);
+      if (!hash_prefix.empty()) {
+        results[full_hash].emplace_back(store.first, hash_prefix);
+      }
+    }
+  }
+  return results;
+}
+
 }  // namespace
 
 std::unique_ptr<V4Database, base::OnTaskRunnerDeleter>
@@ -280,29 +297,28 @@ void V4Database::GetStoresMatchingFullHash(
     base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
   FullHashToStoreAndHashPrefixesMap results;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
-  for (const auto& full_hash : full_hashes) {
-    for (const ListIdentifier& identifier : stores_to_check) {
-      if (!IsStoreAvailable(identifier)) {
-        continue;
-      }
-      const auto& store_pair = store_map_->find(identifier);
-      DCHECK(store_pair != store_map_->end());
-      const std::unique_ptr<V4Store>& store = store_pair->second;
-      HashPrefixStr hash_prefix = store->GetMatchingHashPrefix(full_hash);
-      if (!hash_prefix.empty()) {
-        results[full_hash].emplace_back(identifier, hash_prefix);
-      }
+
+  std::vector<std::pair<ListIdentifier, V4Store*>> stores;
+  for (const ListIdentifier& identifier : stores_to_check) {
+    if (!IsStoreAvailable(identifier)) {
+      continue;
     }
+    const auto& store_pair = store_map_->find(identifier);
+    DCHECK(store_pair != store_map_->end());
+    stores.emplace_back(identifier, store_pair->second.get());
   }
+
+  auto check_stores =
+      base::BindOnce(CheckStores, full_hashes, std::move(stores));
 
   if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
       kMmapSafeBrowsingDatabaseAsync.Get()) {
-    // Until this is asynchronous for accessing memory mapped files on
-    // background threads, simulate this being async.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+    // The V4Stores ptrs are guaranteed to be valid because their deletion would
+    // be sequenced on the DB thread, after this posted task is serviced.
+    db_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, std::move(check_stores), std::move(callback));
   } else {
-    std::move(callback).Run(std::move(results));
+    std::move(callback).Run(std::move(check_stores).Run());
   }
 }
 
