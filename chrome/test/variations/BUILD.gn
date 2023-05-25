@@ -11,6 +11,7 @@ python_library("fixtures") {
 
   data = [
     "//build/skia_gold_common/",
+    "//chrome/test/variations/drivers/",
     "//chrome/test/variations/fixtures/",
   ]
 

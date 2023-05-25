@@ -7,6 +7,7 @@ import os
 
 import pytest
 
+from chrome.test.variations import drivers
 from chrome.test.variations import fixtures
 from http.server import HTTPServer
 from selenium import webdriver
@@ -17,7 +18,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-def test_load_simple_url(driver_factory: fixtures.DriverFactory,
+def test_load_simple_url(driver_factory: drivers.DriverFactory,
                          local_http_server: HTTPServer,
                          seed_locator: fixtures.SeedLocator):
   url = (f'http://localhost:{local_http_server.server_port}')
@@ -29,7 +30,7 @@ def test_load_simple_url(driver_factory: fixtures.DriverFactory,
       EC.presence_of_element_located((By.TAG_NAME, 'body')))
 
 
-def test_basic_rendering(driver_factory: fixtures.DriverFactory,
+def test_basic_rendering(driver_factory: drivers.DriverFactory,
                          local_http_server: HTTPServer,
                          seed_locator: fixtures.SeedLocator,
                          skia_gold_util: fixtures.VariationsSkiaGoldUtil):
@@ -47,7 +48,7 @@ def test_basic_rendering(driver_factory: fixtures.DriverFactory,
 
     assert status == 0, error_msg
 
-def test_load_crash_seed(driver_factory: fixtures.DriverFactory,
+def test_load_crash_seed(driver_factory: drivers.DriverFactory,
                          local_http_server: HTTPServer,
                          seed_locator: fixtures.SeedLocator):
   url = (f'http://localhost:{local_http_server.server_port}')
