@@ -56,7 +56,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           base::MakeRefCounted<update_client::InProcessUnzipperFactory>()),
       patch_factory_(
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
-      is_managed_device_([]() {
+      is_managed_device_([] {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         return base::IsManagedOrEnterpriseDevice();
 #else

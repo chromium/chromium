@@ -51,7 +51,7 @@ TEST(LockTest, LockThenTryLockInThreadFail) {
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
+      FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
         EXPECT_FALSE(
             ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
       }),
@@ -64,7 +64,7 @@ TEST(LockTest, TryLockInThreadSuccess) {
 
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
+      FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
         EXPECT_TRUE(
             ScopedLock::Create("foobar", GetTestScope(), base::Seconds(0)));
       }),

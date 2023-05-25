@@ -810,7 +810,7 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
       GetExecutableRelativePath().BaseName().value(),
       GetSetupExecutablePath().BaseName().value(),
       kTestProcessExecutableName,
-      []() {
+      [] {
         const base::FilePath test_executable =
             base::FilePath::FromASCII(kExecutableName).BaseName();
         return base::StrCat({test_executable.RemoveExtension().value(),

@@ -228,7 +228,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   return WaitFor(
-      base::BindRepeating([]() {
+      base::BindRepeating([] {
         std::string ps_stdout;
         EXPECT_TRUE(
             base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
@@ -239,7 +239,7 @@ bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
         return false;
       }),
       base::BindLambdaForTesting(
-          []() { VLOG(0) << "Still waiting for updater to exit..."; }));
+          [] { VLOG(0) << "Still waiting for updater to exit..."; }));
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {

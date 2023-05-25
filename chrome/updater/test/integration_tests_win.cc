@@ -702,8 +702,8 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 // the prefs lock.
 bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   return WaitFor(
-      base::BindRepeating([]() { return !IsUpdaterRunning(); }),
-      base::BindLambdaForTesting([]() {
+      base::BindRepeating([] { return !IsUpdaterRunning(); }),
+      base::BindLambdaForTesting([] {
         VLOG(0) << "Still waiting for updater to exit. "
                 << test::PrintProcesses(GetExecutableRelativePath().value());
       }));
@@ -1847,7 +1847,7 @@ void RunOfflineInstall(UpdaterScope scope,
     // Dismiss the installation completion dialog, then wait for the process
     // exit.
     EXPECT_TRUE(WaitFor(
-        base::BindRepeating([]() {
+        base::BindRepeating([] {
           // Enumerate the top-level dialogs to find the setup dialog.
           WindowEnumerator(
               ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
@@ -1878,7 +1878,7 @@ void RunOfflineInstall(UpdaterScope scope,
           return !IsUpdaterRunning();
         }),
         base::BindLambdaForTesting(
-            []() { VLOG(0) << "Still waiting for the process exit."; })));
+            [] { VLOG(0) << "Still waiting for the process exit."; })));
   }
 
   // Updater should have written "pv".

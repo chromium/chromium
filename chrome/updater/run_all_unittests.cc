@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
 
   // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.
   base::TestSuite test_suite(argc, argv);
-  updater::test::InitLoggingForUnitTest(base::FilePath([]() {
+  updater::test::InitLoggingForUnitTest(base::FilePath([] {
     switch (updater::GetTestScope()) {
       case updater::UpdaterScope::kSystem:
         return FILE_PATH_LITERAL("updater_test_system.log");
@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
   }()));
   chrome::RegisterPathProvider();
   return base::LaunchUnitTestsWithOptions(
-      argc, argv, 1, 10, true, base::BindRepeating([]() {
+      argc, argv, 1, 10, true, base::BindRepeating([] {
         LOG(ERROR) << "A test timeout has occured in "
                    << updater::test::GetTestName();
         updater::test::CreateIntegrationTestCommands()->PrintLog();

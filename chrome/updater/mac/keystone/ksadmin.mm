@@ -736,7 +736,7 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   updater::InitLogging(Scope(command_line));
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   // base::CommandLine may reorder arguments and switches, this is not the exact

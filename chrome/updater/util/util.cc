@@ -270,7 +270,7 @@ void InitLogging(UpdaterScope updater_scope) {
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
   VLOG(1) << "Log initialized for " <<
-      []() {
+      [] {
         base::FilePath file_exe;
         return base::PathService::Get(base::FILE_EXE, &file_exe)
                    ? file_exe

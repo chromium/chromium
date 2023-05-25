@@ -70,7 +70,7 @@ TEST(UnitTestUtil, Processes) {
   }
 #else
   // Test the state of the process for the unit test process itself.
-  base::FilePath::StringType unit_test = []() {
+  base::FilePath::StringType unit_test = [] {
     base::FilePath unit_test_executable;
     base::PathService::Get(base::FILE_EXE, &unit_test_executable);
     return unit_test_executable.BaseName().value();

@@ -129,7 +129,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   InitializeThreadPool("updater");
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   // Records a backtrace in the log, crashes the program, saves a crash dump,

@@ -57,7 +57,7 @@ class KSInstallApp : public App {
 
 void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
+      FROM_HERE, {base::MayBlock()}, base::BindOnce([] {
         const absl::optional<base::FilePath>& keystone_path =
             GetKeystoneFolderPath((geteuid() == 0) ? UpdaterScope::kSystem
                                                    : UpdaterScope::kUser);
@@ -125,7 +125,7 @@ int KSInstallMain(int argc, char* argv[]) {
   updater::InitLogging(GetUpdaterScope());
   InitializeThreadPool("keystone");
   const base::ScopedClosureRunner shutdown_thread_pool(
-      base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
+      base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return MakeKSInstallApp(argc, argv)->Run();
 }
