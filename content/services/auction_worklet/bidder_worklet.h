@@ -338,6 +338,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::OnceCallback<void(absl::optional<GURL> report_url,
                                 base::flat_map<std::string, GURL> ad_beacon_map,
                                 PrivateAggregationRequests pa_requests,
+                                base::TimeDelta reporting_latency,
                                 std::vector<std::string> errors)>;
 
     // Matches GenerateBidCallbackInternal, but with only one
@@ -480,6 +481,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         const absl::optional<GURL>& report_url,
         base::flat_map<std::string, GURL> ad_beacon_map,
         PrivateAggregationRequests pa_requests,
+        base::TimeDelta reporting_latency,
         std::vector<std::string> errors);
 
     void PostErrorBidCallbackToUserThread(
@@ -613,6 +615,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       absl::optional<GURL> report_url,
       base::flat_map<std::string, GURL> ad_beacon_map,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta reporting_latency,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script and WASM helper (if needed) have

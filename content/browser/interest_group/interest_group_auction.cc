@@ -3196,6 +3196,8 @@ void InterestGroupAuction::OnScoreAdComplete(
     const absl::optional<GURL>& debug_loss_report_url,
     const absl::optional<GURL>& debug_win_report_url,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta scoring_latency,
+    base::TimeDelta trusted_signals_fetch_latency,
     const std::vector<std::string>& errors) {
   DCHECK_GT(bids_being_scored_, 0);
 
@@ -3217,6 +3219,9 @@ void InterestGroupAuction::OnScoreAdComplete(
   } else {
     bid->bid_state->EndTracing();
   }
+  bid->bid_state->pa_timings(seller_phase()).script_run_time = scoring_latency;
+  bid->bid_state->pa_timings(seller_phase()).signals_fetch_time =
+      trusted_signals_fetch_latency;
 
   --bids_being_scored_;
 

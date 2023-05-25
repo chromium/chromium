@@ -529,6 +529,9 @@ interface BidderWorklet {
   //
   // `pa_requests` The various requests made to the Private Aggregation API.
   //
+  // `reporting_latency` How long it took to run the JavaScript for
+  // `reportWin()` (including the top-level).
+  //
   // `errors` is an array of any errors that occurred while attempting
   //  to run the worklet's reportWin() method. These are too sensitive for
   //  the renderer to see. There may be errors even when a `report_url` is
@@ -561,6 +564,7 @@ interface BidderWorklet {
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,
           array<PrivateAggregationRequest> pa_requests,
+          mojo_base.mojom.TimeDelta reporting_latency,
           array<string> errors);
 
   // Establishes a debugger connection to the worklet.

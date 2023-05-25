@@ -21,6 +21,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -629,6 +630,7 @@ void BidderWorklet::V8State::ReportWin(
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  base::ElapsedTimer elapsed_timer;
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -651,6 +653,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
   }
@@ -717,6 +720,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::vector<std::string>());
     return;
   }
@@ -738,6 +742,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
+                                      base::TimeDelta(),
                                       /*errors=*/std::move(errors_out));
     return;
   }
@@ -759,7 +764,7 @@ void BidderWorklet::V8State::ReportWin(
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/absl::nullopt,
         /*ad_beacon_map=*/{},
-        /*pa_requests=*/{}, std::move(errors_out));
+        /*pa_requests=*/{}, elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
 
@@ -792,7 +797,7 @@ void BidderWorklet::V8State::ReportWin(
         /*ad_beacon_map=*/{},
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
-        std::move(errors_out));
+        elapsed_timer.Elapsed(), std::move(errors_out));
     return;
   }
 
@@ -803,7 +808,7 @@ void BidderWorklet::V8State::ReportWin(
       context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
       context_recycler.private_aggregation_bindings()
           ->TakePrivateAggregationRequests(),
-      std::move(errors_out));
+      elapsed_timer.Elapsed(), std::move(errors_out));
 }
 
 void BidderWorklet::V8State::GenerateBid(
@@ -1364,12 +1369,14 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
     const absl::optional<GURL>& report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(report_url),
-                                std::move(ad_beacon_map),
-                                std::move(pa_requests), std::move(errors)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(report_url),
+                     std::move(ad_beacon_map), std::move(pa_requests),
+                     reporting_latency, std::move(errors)));
 }
 
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
@@ -1888,13 +1895,14 @@ void BidderWorklet::DeliverReportWinOnUserThread(
     absl::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   errors.insert(errors.end(), load_code_error_msgs_.begin(),
                 load_code_error_msgs_.end());
   std::move(task->callback)
       .Run(std::move(report_url), std::move(ad_beacon_map),
-           std::move(pa_requests), std::move(errors));
+           std::move(pa_requests), reporting_latency, std::move(errors));
   report_win_tasks_.erase(task);
 }
 
