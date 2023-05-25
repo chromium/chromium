@@ -11,7 +11,8 @@ import {PrintableArea} from './printable_area.js';
 import {Size} from './size.js';
 
 export interface DocumentSettings {
-  hasCssMediaStyles: boolean;
+  allPagesHaveCustomSize: boolean;
+  allPagesHaveCustomOrientation: boolean;
   hasSelection: boolean;
   isModifiable: boolean;
   isFromArc: boolean;
@@ -49,7 +50,8 @@ export class PrintPreviewDocumentInfoElement extends
         notify: true,
         value() {
           return {
-            hasCssMediaStyles: false,
+            allPagesHaveCustomSize: false,
+            allPagesHaveCustomOrientation: false,
             hasSelection: false,
             isModifiable: true,
             isFromArc: false,
@@ -113,8 +115,11 @@ export class PrintPreviewDocumentInfoElement extends
             this.onPageCountReady_(pageCount, previewResponseId, scaling));
     this.addWebUiListener(
         'page-layout-ready',
-        (pageLayout: PageLayoutInfo, hasCustomPageSizeStyle: boolean) =>
-            this.onPageLayoutReady_(pageLayout, hasCustomPageSizeStyle));
+        (pageLayout: PageLayoutInfo, allPagesHaveCustomSize: boolean,
+         allPagesHaveCustomOrientation: boolean) =>
+            this.onPageLayoutReady_(
+                pageLayout, allPagesHaveCustomSize,
+                allPagesHaveCustomOrientation));
   }
 
   /**
@@ -143,11 +148,14 @@ export class PrintPreviewDocumentInfoElement extends
    * Called when the page layout of the document is ready. Always occurs
    * as a result of a preview request.
    * @param pageLayout Layout information about the document.
-   * @param hasCustomPageSizeStyle Whether this document has a custom page size
-   *     or style to use.
+   * @param allPagesHaveCustomSize Whether this document has a custom page size
+   *     or style to use for all pages.
+   * @param allPagesHaveCustomOrientation Whether this document has a custom
+   *     page orientation to use for all pages.
    */
   private onPageLayoutReady_(
-      pageLayout: PageLayoutInfo, hasCustomPageSizeStyle: boolean) {
+      pageLayout: PageLayoutInfo, allPagesHaveCustomSize: boolean,
+      allPagesHaveCustomOrientation: boolean) {
     const origin =
         new Coordinate2d(pageLayout.printableAreaX, pageLayout.printableAreaY);
     const size =
@@ -165,7 +173,11 @@ export class PrintPreviewDocumentInfoElement extends
     if (this.isInitialized_) {
       this.printableArea = new PrintableArea(origin, size);
       this.pageSize = pageSize;
-      this.set('documentSettings.hasCssMediaStyles', hasCustomPageSizeStyle);
+      this.set(
+          'documentSettings.allPagesHaveCustomSize', allPagesHaveCustomSize);
+      this.set(
+          'documentSettings.allPagesHaveCustomOrientation',
+          allPagesHaveCustomOrientation);
       this.margins = margins;
     }
   }

@@ -385,20 +385,35 @@ bool IsPrintToPdfRequested(const base::Value::Dict& job_settings) {
   return type == mojom::PrinterType::kPdf;
 }
 
-bool PrintingFrameHasPageSizeStyle(blink::WebLocalFrame* frame,
-                                   uint32_t total_page_count) {
-  if (!frame)
-    return false;
-  bool frame_has_custom_page_size_style = false;
+void GetPageSizeAndOrientationInfo(blink::WebLocalFrame* frame,
+                                   uint32_t total_page_count,
+                                   bool* all_pages_have_custom_size,
+                                   bool* all_pages_have_custom_orientation) {
+  *all_pages_have_custom_size = true;
+  *all_pages_have_custom_orientation = true;
+  if (!frame) {
+    return;
+  }
+  // See if there are pages in the document whose size or orientation may be
+  // controlled by the UI. If all pages specify size or orientation (via CSS),
+  // the respective options in the print preview UI should be hidden (since they
+  // will have no effect).
   for (uint32_t i = 0; i < total_page_count; ++i) {
-    if (frame->GetPageSizeType(i) != blink::PageSizeType::kAuto) {
-      // TODO(crbug.com/1016235): We should propagate the page size type all the
-      // way to the UI. See the crbug issue for details.
-      frame_has_custom_page_size_style = true;
-      break;
+    auto page_size_type = frame->GetPageSizeType(i);
+    // A "fixed" page size implies that both page size and orientation are set,
+    // also when well-known page sizes (such as A4) are specified.
+    if (page_size_type != blink::PageSizeType::kFixed) {
+      // We found a page that doesn't specify the size.
+      *all_pages_have_custom_size = false;
+      if (page_size_type == blink::PageSizeType::kAuto) {
+        // We found a page that also doesn't specify the orientation. We can
+        // stop searching. This document has at least one page that should be
+        // fully customizable by the user via the print preview UI.
+        *all_pages_have_custom_orientation = false;
+        break;
+      }
     }
   }
-  return frame_has_custom_page_size_style;
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -1819,9 +1834,12 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
       ComputePageLayoutInPointsForCss(print_preview_context_.prepared_frame(),
                                       0, print_params, ignore_css_margins_,
                                       &scale_factor);
-  bool has_page_size_style =
-      PrintingFrameHasPageSizeStyle(print_preview_context_.prepared_frame(),
-                                    print_preview_context_.total_page_count());
+  bool all_pages_have_custom_size;
+  bool all_pages_have_custom_orientation;
+  GetPageSizeAndOrientationInfo(print_preview_context_.prepared_frame(),
+                                print_preview_context_.total_page_count(),
+                                &all_pages_have_custom_size,
+                                &all_pages_have_custom_orientation);
   int dpi = GetDPI(print_params);
 
   gfx::Rect printable_area_in_points(
@@ -1833,7 +1851,8 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   // Margins: Send default page layout to browser process.
   preview_ui_->DidGetDefaultPageLayout(
       std::move(default_page_layout), printable_area_in_points,
-      has_page_size_style, print_params.preview_request_id);
+      all_pages_have_custom_size, all_pages_have_custom_orientation,
+      print_params.preview_request_id);
 
   preview_ui_->DidStartPreview(
       mojom::DidStartPreviewParams::New(

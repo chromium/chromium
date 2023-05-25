@@ -78,7 +78,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
                               int32_t request_id) override;
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
                                const gfx::Rect& printable_area_in_points,
-                               bool has_custom_page_size_style,
+                               bool all_pages_have_custom_size,
+                               bool all_pages_have_custom_orientation,
                                int32_t request_id) override;
   void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
                        int32_t request_id) override;

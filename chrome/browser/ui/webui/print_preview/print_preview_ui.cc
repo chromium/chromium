@@ -797,7 +797,8 @@ void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
 void PrintPreviewUI::DidGetDefaultPageLayout(
     mojom::PageSizeMarginsPtr page_layout_in_points,
     const gfx::Rect& printable_area_in_points,
-    bool has_custom_page_size_style,
+    bool all_pages_have_custom_size,
+    bool all_pages_have_custom_orientation,
     int32_t request_id) {
   if (printable_area_in_points.width() <= 0 ||
       printable_area_in_points.height() <= 0) {
@@ -828,8 +829,8 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
   layout.Set(kSettingPrintableAreaY, printable_area_in_points.y());
   layout.Set(kSettingPrintableAreaWidth, printable_area_in_points.width());
   layout.Set(kSettingPrintableAreaHeight, printable_area_in_points.height());
-  handler_->SendPageLayoutReady(std::move(layout), has_custom_page_size_style,
-                                request_id);
+  handler_->SendPageLayoutReady(std::move(layout), all_pages_have_custom_size,
+                                all_pages_have_custom_orientation, request_id);
 }
 
 bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {

@@ -239,7 +239,8 @@ suite(model_test.suiteName, function() {
 
   function initializeModel() {
     model.documentSettings = {
-      hasCssMediaStyles: false,
+      allPagesHaveCustomSize: false,
+      allPagesHaveCustomOrientation: false,
       hasSelection: true,
       isModifiable: true,
       isScalingDisabled: false,

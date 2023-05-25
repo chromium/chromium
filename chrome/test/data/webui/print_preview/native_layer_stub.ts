@@ -114,7 +114,8 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
     const pageRanges = printTicketParsed.pageRange;
     const requestId = printTicketParsed.requestID;
     if (this.pageLayoutInfo_) {
-      webUIListenerCallback('page-layout-ready', this.pageLayoutInfo_, false);
+      webUIListenerCallback(
+          'page-layout-ready', this.pageLayoutInfo_, false, false);
     }
     if (pageRanges.length === 0) {  // assume full length document, 1 page.
       webUIListenerCallback(

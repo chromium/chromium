@@ -204,8 +204,11 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
       const {
     return print_preview_pages_;
   }
-  bool has_custom_page_size_style() const {
-    return has_custom_page_size_style_;
+  bool all_pages_have_custom_size() const {
+    return all_pages_have_custom_size_;
+  }
+  bool all_pages_have_custom_orientation() const {
+    return all_pages_have_custom_orientation_;
   }
 
   // mojom::PrintPreviewUI:
@@ -248,10 +251,12 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   }
   void DidGetDefaultPageLayout(mojom::PageSizeMarginsPtr page_layout_in_points,
                                const gfx::Rect& printable_area_in_points,
-                               bool has_custom_page_size_style,
+                               bool all_pages_have_custom_size,
+                               bool all_pages_have_custom_orientation,
                                int32_t request_id) override {
     page_layout_ = std::move(page_layout_in_points);
-    has_custom_page_size_style_ = has_custom_page_size_style;
+    all_pages_have_custom_size_ = all_pages_have_custom_size;
+    all_pages_have_custom_orientation_ = all_pages_have_custom_orientation;
   }
   void DidStartPreview(mojom::DidStartPreviewParamsPtr params,
                        int32_t request_id) override {
@@ -280,7 +285,8 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
 
   PreviewStatus preview_status_ = PreviewStatus::kNone;
   uint32_t page_count_ = 0;
-  bool has_custom_page_size_style_ = false;
+  bool all_pages_have_custom_size_ = false;
+  bool all_pages_have_custom_orientation_ = false;
   // Simulates cancelling print preview if |print_preview_pages_remaining_|
   // equals this.
   uint32_t print_preview_cancel_page_number_ = kInvalidPageIndex;
@@ -1069,13 +1075,15 @@ class PrintRenderFrameHelperPreviewTest
       EXPECT_NE(0U, data_size) << "For page " << page_number;
   }
 
-  void VerifyDefaultPageLayout(int expected_content_width,
-                               int expected_content_height,
-                               int expected_margin_top,
-                               int expected_margin_bottom,
-                               int expected_margin_left,
-                               int expected_margin_right,
-                               bool expected_page_has_print_css) {
+  void VerifyDefaultPageLayout(
+      int expected_content_width,
+      int expected_content_height,
+      int expected_margin_top,
+      int expected_margin_bottom,
+      int expected_margin_left,
+      int expected_margin_right,
+      bool expected_all_pages_have_custom_size,
+      bool expected_all_pages_have_custom_orientation) {
     EXPECT_NE(preview_ui()->page_layout(), nullptr);
     EXPECT_EQ(expected_content_width,
               preview_ui()->page_layout()->content_width);
@@ -1086,8 +1094,10 @@ class PrintRenderFrameHelperPreviewTest
     EXPECT_EQ(expected_margin_left, preview_ui()->page_layout()->margin_left);
     EXPECT_EQ(expected_margin_bottom,
               preview_ui()->page_layout()->margin_bottom);
-    EXPECT_EQ(expected_page_has_print_css,
-              preview_ui()->has_custom_page_size_style());
+    EXPECT_EQ(expected_all_pages_have_custom_size,
+              preview_ui()->all_pages_have_custom_size());
+    EXPECT_EQ(expected_all_pages_have_custom_orientation,
+              preview_ui()->all_pages_have_custom_orientation());
   }
 
   base::Value::Dict& print_settings() { return print_settings_; }
@@ -1171,7 +1181,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1199,7 +1209,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(519, 432, 216, 144, 21, 72, false);
+  VerifyDefaultPageLayout(519, 432, 216, 144, 21, 72, false, false);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1223,7 +1233,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(612, 792, 0, 0, 0, 0, true);
+  VerifyDefaultPageLayout(612, 792, 0, 0, 0, 0, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1247,7 +1257,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintToPDFSelectedHonorPrintCss) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   // Since PRINT_TO_PDF is selected, pdf page size is equal to print media page
   // size.
-  VerifyDefaultPageLayout(234, 216, 72, 0, 36, 18, true);
+  VerifyDefaultPageLayout(234, 216, 72, 0, 36, 18, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1402,7 +1412,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   // Since PRINT_TO_PDF is selected, pdf page size is equal to print media page
   // size.
-  VerifyDefaultPageLayout(915, 648, 216, 144, 21, 72, true);
+  VerifyDefaultPageLayout(915, 648, 216, 144, 21, 72, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1423,7 +1433,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(224, 188, 324, 280, 198, 190, true);
+  VerifyDefaultPageLayout(224, 188, 324, 280, 198, 190, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1455,7 +1465,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(576, 637, 89, 66, 20, 16, true);
+  VerifyDefaultPageLayout(576, 637, 89, 66, 20, 16, true, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1478,7 +1488,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHonorsOrientationCss) {
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(792, 612, 0, 0, 0, 0, true);
+  VerifyDefaultPageLayout(792, 612, 0, 0, 0, 0, false, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1507,7 +1517,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
   OnPrintPreview();
 
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDefaultPageLayout(748, 568, 21, 23, 21, 23, true);
+  VerifyDefaultPageLayout(748, 568, 21, 23, 21, 23, false, true);
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
@@ -1784,7 +1794,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, BasicBeforePrintAfterPrint) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1810,6 +1820,97 @@ TEST_F(PrintRenderFrameHelperPreviewTest, WindowPrintBeforePrintAfterPrint) {
 
   OnClosePrintPreviewDialog();
   ExpectOneBeforeOneAfterPrintEvent();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, OnlySomePagesWithCustomSize) {
+  // A specified page size will set both size and orientation (not just for any
+  // given fixed size, but also for well-known page sizes, such as B5). In this
+  // test, however, only the first page will match the @page rule, whereas the
+  // size and orientation of the second page may be freely controlled by UI
+  // settings.
+  LoadHTML(R"HTML(
+    <style>
+      @page custom { size:B5; }
+    </style>
+    <div style="page:custom;">Custom page</div>
+    Default page
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  EXPECT_FALSE(preview_ui()->all_pages_have_custom_size());
+  EXPECT_FALSE(preview_ui()->all_pages_have_custom_orientation());
+  VerifyPreviewPageCount(2);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, SingleNamedPageWithCustomSize) {
+  // There's only one page, and that page is named, and it matches the @page
+  // rule, which specifies a page size. There are no pages that can be
+  // controlled by UI options, so the options should be hidden.
+  LoadHTML(R"HTML(
+    <style>
+      @page custom { size:B5; }
+    </style>
+    <div style="page:custom;">Custom page</div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  EXPECT_TRUE(preview_ui()->all_pages_have_custom_size());
+  EXPECT_TRUE(preview_ui()->all_pages_have_custom_orientation());
+  VerifyPreviewPageCount(1);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, OnlySomePagesWithCustomOrientation) {
+  LoadHTML(R"HTML(
+    <style>
+      @page custom { size:portrait; }
+    </style>
+    <div style="page:custom;">Custom page</div>
+    Default page
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  EXPECT_FALSE(preview_ui()->all_pages_have_custom_size());
+  EXPECT_FALSE(preview_ui()->all_pages_have_custom_orientation());
+  VerifyPreviewPageCount(2);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       SingleNamedPageWithCustomOrientation) {
+  LoadHTML(R"HTML(
+    <style>
+      @page custom { size:portrait; }
+    </style>
+    <div style="page:custom;">Custom page</div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  EXPECT_FALSE(preview_ui()->all_pages_have_custom_size());
+  EXPECT_TRUE(preview_ui()->all_pages_have_custom_orientation());
+  VerifyPreviewPageCount(1);
+
+  OnClosePrintPreviewDialog();
 }
 
 class PrintRenderFrameHelperTaggedPreviewTest
@@ -1841,7 +1942,7 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
@@ -1859,7 +1960,7 @@ TEST_P(PrintRenderFrameHelperTaggedPreviewTest,
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(1);
-  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);

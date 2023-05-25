@@ -264,12 +264,15 @@ interface PrintPreviewUI {
   // Notifies the browser of the default page layout according to the currently
   // selected printer and page size.
   // `printable_area_in_points` Specifies the printable area in points.
-  // `has_custom_page_size_style` is true when the printing frame has a custom
-  // page size css otherwise false.
+  // `all_pages_have_custom_size` is true when the printing frame has a custom
+  // page size in CSS on ALL pages, otherwise false.
+  // `all_pages_have_custom_orientation` is true when the printing frame
+  // additionally has a custom orientation on ALL pages, otherwise false.
   [EnableIf=enable_print_preview]
   DidGetDefaultPageLayout(PageSizeMargins page_layout_in_points,
       gfx.mojom.Rect printable_area_in_points,
-      bool has_custom_page_size_style,
+      bool all_pages_have_custom_size,
+      bool all_pages_have_custom_orientation,
       int32 request_id);
 
   // Notifies the browser about the to-be-rendered print preview document.

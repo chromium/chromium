@@ -94,7 +94,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Send the default page layout
   void SendPageLayoutReady(base::Value::Dict layout,
-                           bool has_custom_page_size_style,
+                           bool all_pages_have_custom_size,
+                           bool all_pages_have_custom_orientation,
                            int request_id);
 
   // Notify the WebUI that the page preview is ready.
