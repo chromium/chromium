@@ -1251,7 +1251,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     has_prepared_input_sample_ = true;
   }
 
-  HRESULT hr = 0;
+  HRESULT hr = S_OK;
   {
     TRACE_EVENT1("media", "IMFTransform::ProcessInput", "timestamp",
                  input.frame->timestamp());
