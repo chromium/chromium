@@ -36,7 +36,7 @@ bool GpuMemoryBufferManager::AllocatedBufferInfo::OnMemoryDump(
     int client_id,
     uint64_t client_tracing_process_id) const {
   base::trace_event::MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(
-      base::StringPrintf("gpumemorybuffer/client_0x%" PRIX32 "/buffer_%d",
+      base::StringPrintf("gpu/gpumemorybuffer/client_0x%" PRIX32 "/buffer_%d",
                          client_id, buffer_id_.id));
   if (!dump)
     return false;
