@@ -111,6 +111,10 @@ class ClangPluginTest(object):
       open(result_file, 'w').write(actual)
       return 'no expected file found'
 
+    # Normalize backslashes to forward-slashes to avoid failure on Windows
+    actual = actual.replace('\\', '/')
+    expected = expected.replace('\\', '/')
+
     if expected != actual:
       open(result_file, 'w').write(actual)
       error = 'expected and actual differed\n'
