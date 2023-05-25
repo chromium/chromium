@@ -18,9 +18,10 @@ namespace blink {
 //       using DynamicTo<T> instead (see below). Note that this also returns
 //       false if |x| is nullptr.
 //
-//   To<T>(x): unconditionally downcasts and returns |x| as a T*. DCHECKs if the
+//   To<T>(x): unconditionally downcasts and returns |x| as a T*. CHECKs if the
 //       downcast is unsafe. Use when IsA<T>(x) is known to be true due to
-//       external invariants. If |x| is nullptr, returns nullptr.
+//       external invariants and not on a performance sensitive path.
+//       If |x| is nullptr, returns nullptr.
 //
 //   DynamicTo<T>(x): downcasts and returns |x| as a T* iff IsA<T>(x) is true,
 //       and nullptr otherwise. This is useful for combining a conditional
@@ -30,6 +31,12 @@ namespace blink {
 //       can be written:
 //           if (auto* derived = DynamicTo<DerivedClass>(x))
 //             derived->...;
+//
+//   UnsafeTo<T>(x): unconditionally downcasts and returns |x| as a T*. DCHECKs
+//       if the downcast is unsafe. Use when IsA<T>(x) is known to be true due
+//       to external invariants. Prefer To<T> over this method, but this is ok
+//       to use in performance sensitive code. If |x| is nullptr, returns
+//       nullptr.
 //
 // Marking downcasts as safe is done by specializing the DowncastTraits
 // template:
@@ -112,6 +119,7 @@ bool IsA(Base* from) {
 // pointer overloads, returns nullptr if the input pointer is nullptr.
 template <typename Derived, typename Base>
 const Derived& To(const Base& from) {
+  // TODO(https://crbug.com/1448838): Upgrade this to a CHECK.
   SECURITY_DCHECK(IsA<Derived>(from));
   return static_cast<const Derived&>(from);
 }
@@ -123,6 +131,7 @@ const Derived* To(const Base* from) {
 
 template <typename Derived, typename Base>
 Derived& To(Base& from) {
+  // TODO(https://crbug.com/1448838): Upgrade this to a CHECK.
   SECURITY_DCHECK(IsA<Derived>(from));
   return static_cast<Derived&>(from);
 }
@@ -152,6 +161,30 @@ Derived* DynamicTo(Base* from) {
 template <typename Derived, typename Base>
 Derived* DynamicTo(Base& from) {
   return IsA<Derived>(from) ? &To<Derived>(from) : nullptr;
+}
+
+// Unconditionally downcasts from Base to Derived. Internally, this asserts
+// that |from| is a Derived to help catch bad casts in testing/fuzzing. For the
+// pointer overloads, returns nullptr if the input pointer is nullptr.
+template <typename Derived, typename Base>
+const Derived& UnsafeTo(const Base& from) {
+  SECURITY_DCHECK(IsA<Derived>(from));
+  return static_cast<const Derived&>(from);
+}
+
+template <typename Derived, typename Base>
+const Derived* UnsafeTo(const Base* from) {
+  return from ? &UnsafeTo<Derived>(*from) : nullptr;
+}
+
+template <typename Derived, typename Base>
+Derived& UnsafeTo(Base& from) {
+  SECURITY_DCHECK(IsA<Derived>(from));
+  return static_cast<Derived&>(from);
+}
+template <typename Derived, typename Base>
+Derived* UnsafeTo(Base* from) {
+  return from ? &UnsafeTo<Derived>(*from) : nullptr;
 }
 
 }  // namespace blink

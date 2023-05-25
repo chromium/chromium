@@ -470,8 +470,11 @@ def bind_callback_local_vars(code_node, cg_context):
             text = ("DOMWindow* ${blink_receiver} = "
                     "${class_name}::ToWrappableUnsafe(${v8_receiver});")
         else:
-            text = ("LocalDOMWindow* ${blink_receiver} = To<LocalDOMWindow>("
-                    "${class_name}::ToWrappableUnsafe(${v8_receiver}));")
+            # ToWrappableUnsafe will always return non-null, so we can use
+            # UnsafeTo via a reference to avoid the nullptr check as well.
+            text = (
+                "LocalDOMWindow* ${blink_receiver} = &UnsafeTo<LocalDOMWindow>("
+                "*${class_name}::ToWrappableUnsafe(${v8_receiver}));")
     else:
         pattern = ("{_1}* ${blink_receiver} = "
                    "${class_name}::ToWrappableUnsafe(${v8_receiver});")
