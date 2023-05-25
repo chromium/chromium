@@ -23,7 +23,6 @@ class AccountSelectionBubbleViewInterface;
 // account chooser to the user.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public AccountSelectionBubbleView::Observer,
-                                  public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   TabStripModelObserver,
                                   views::WidgetObserver {
@@ -62,9 +61,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
-
-  // FedCmModalDialogView::Observer
-  void OnFedCmModalDialogViewDestroyed() override;
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -163,7 +159,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
 
-  raw_ptr<FedCmModalDialogView> idp_signin_modal_dialog_{nullptr};
+  std::unique_ptr<FedCmModalDialogView> idp_signin_modal_dialog_;
 
   // Callback to show accounts dialog upon closing IDP sign-in modal dialog.
   base::OnceClosure show_accounts_dialog_callback_;

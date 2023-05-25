@@ -48,14 +48,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   Close();
 
   TabStripModelObserver::StopObservingAll(this);
-
-  if (idp_signin_modal_dialog_) {
-    // Important to remove the observer here, so that we don't try to use it in
-    // FedCmModalDialogView's destructor to inform this
-    // FedCmAccountSelectionView, which would cause a use-after-free.
-    idp_signin_modal_dialog_->RemoveObserver();
-    CloseModalDialog();
-  }
 }
 
 void FedCmAccountSelectionView::Show(
@@ -377,22 +369,17 @@ void FedCmAccountSelectionView::OnSigninToIdP() {
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     const GURL& url) {
-  idp_signin_modal_dialog_ = FedCmModalDialogView::ShowFedCmModalDialog(
-      delegate_->GetWebContents(), url, this);
+  idp_signin_modal_dialog_ =
+      FedCmModalDialogView::ShowPopupWindow(delegate_->GetWebContents(), url);
   input_protector_->VisibilityChanged(false);
   bubble_widget_->Hide();
-  return idp_signin_modal_dialog_->GetWebViewWebContents();
+  return idp_signin_modal_dialog_->GetWebContents();
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
   if (idp_signin_modal_dialog_) {
-    idp_signin_modal_dialog_->CloseFedCmModalDialog();
+    idp_signin_modal_dialog_->ClosePopupWindow();
   }
-}
-
-void FedCmAccountSelectionView::OnFedCmModalDialogViewDestroyed() {
-  // The underlying FedCmModalDialogView has been destroyed.
-  idp_signin_modal_dialog_ = nullptr;
 
   if (show_accounts_dialog_callback_) {
     std::move(show_accounts_dialog_callback_).Run();
