@@ -9,8 +9,11 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/utils.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -63,7 +66,23 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 @end
 
-@implementation PopupMenuHelpCoordinator
+@implementation PopupMenuHelpCoordinator {
+  segmentation_platform::DeviceSwitcherResultDispatcher*
+      _deviceSwitcherResultDispatcher;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    if (!browser->GetBrowserState()->IsOffTheRecord()) {
+      _deviceSwitcherResultDispatcher =
+          segmentation_platform::SegmentationPlatformServiceFactory::
+              GetDispatcherForBrowserState(browser->GetBrowserState());
+    }
+  }
+  return self;
+}
 
 #pragma mark - Getters
 
@@ -304,8 +323,12 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 #pragma mark - Feature Engagement Tracker queries
 
 // Queries the feature engagement tracker to see if IPH can currently be
-// displayed. Once this is called, the IPH MUST be shown and dismissed.
+// displayed. Once this is returning YES, the IPH MUST be shown and dismissed.
 - (BOOL)canShowIPHForPopupMenu {
+  if (!iph_for_new_chrome_user::IsUserEligible(
+          _deviceSwitcherResultDispatcher)) {
+    return NO;
+  }
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
   const base::Feature& feature =
       feature_engagement::kIPHiOSHistoryOnOverflowMenuFeature;

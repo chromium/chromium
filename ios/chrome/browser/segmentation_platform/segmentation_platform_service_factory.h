@@ -30,7 +30,7 @@ class SegmentationPlatformServiceFactory
       SegmentationPlatformServiceFactory&) = delete;
 
   // Returns the dispatcher used to retrieve or store the classification result
-  // for the user in the given browser state.
+  // for the user in the given browser state. Do not call for OTR context.
   static DeviceSwitcherResultDispatcher* GetDispatcherForBrowserState(
       ChromeBrowserState* context);
 

@@ -215,9 +215,13 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
 DeviceSwitcherResultDispatcher*
 SegmentationPlatformServiceFactory::GetDispatcherForBrowserState(
     ChromeBrowserState* context) {
+  CHECK(!context->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForBrowserState(context);
+  if (!service) {
+    return nullptr;
+  }
   return static_cast<segmentation_platform::DeviceSwitcherResultDispatcher*>(
-      GetForBrowserState(context)->GetUserData(
-          kSegmentationDeviceSwitcherUserDataKey));
+      service->GetUserData(kSegmentationDeviceSwitcherUserDataKey));
 }
 
 // static

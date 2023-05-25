@@ -214,7 +214,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 }
 
 // Tests that the overflow menu IPH shows up when triggered.
-- (void)testOverflowMenuIPHForHistory {
+// TODO(crbug.com/1439920) enable test when able to force the device switcher
+// result.
+- (void)DISABLED_testOverflowMenuIPHForHistory {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
