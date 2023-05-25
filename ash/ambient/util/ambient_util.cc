@@ -98,10 +98,16 @@ bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
   static const base::NoDestructor<std::string> kAssetIdPatternStr(
       base::StrCat({kLottieCustomizableIdPrefix,
                     R"(_Photo_Position([[:alnum:]]+)_([[:digit:]]+).*)"}));
-  static const base::NoDestructor<RE2> kAssetIdPattern(
-      kAssetIdPatternStr->data());
-  return RE2::FullMatch(asset_id.data(), *kAssetIdPattern,
-                        &parsed_output.position_id, &parsed_output.idx);
+  static const base::NoDestructor<RE2> kAssetIdPattern(*kAssetIdPatternStr);
+  // TODO(crbug.com/1447090, crbug.com/691162): When RE2 is updated, replace
+  // this with passing `asset_id` directly. At that point, `re2::StringPiece`
+  // will be the same type as `std::string_view`, and `base::StringPiece` has
+  // implicit conversions to the standard one. Alternatively, when
+  // `base::StringPiece` is the same as `std::string_view`, `asset_id` can also
+  // be passed directly.
+  return RE2::FullMatch(re2::StringPiece(asset_id.data(), asset_id.size()),
+                        *kAssetIdPattern, &parsed_output.position_id,
+                        &parsed_output.idx);
 }
 
 }  // namespace util
