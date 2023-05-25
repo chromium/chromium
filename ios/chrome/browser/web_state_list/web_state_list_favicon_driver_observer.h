@@ -66,6 +66,10 @@ class WebStateListFaviconDriverObserver
   // `driver_to_web_state_map_`.
   void AddNewWebState(web::WebState* web_state);
 
+  // Stops observing the FaviconDriver for `web_state` and updates the
+  // `driver_to_web_state_map_`.
+  void DetachWebState(web::WebState* web_state);
+
   // The WebStateFaviconDriverObserver to which the FaviconDriver notification
   // are forwarded. Should not be nil.
   __weak id<WebStateFaviconDriverObserver> favicon_observer_;
