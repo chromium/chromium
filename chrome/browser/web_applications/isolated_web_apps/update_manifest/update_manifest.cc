@@ -4,13 +4,64 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include <array>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "net/base/url_util.h"
 #include "url/url_constants.h"
 
 namespace web_app {
+
+// This parser validates that the given version matches `<version core>` in the
+// Semantic Versioning specification: https://semver.org.
+base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+ParseIwaVersionIntoComponents(base::StringPiece version_string) {
+  constexpr size_t NUM_COMPONENTS = 3;
+  std::array<uint32_t, NUM_COMPONENTS> components;
+
+  std::vector<base::StringPiece> component_strings = base::SplitStringPiece(
+      version_string, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (component_strings.size() != NUM_COMPONENTS) {
+    return base::unexpected(IwaVersionParseError::kNotThreeComponents);
+  }
+
+  for (size_t component_idx = 0; component_idx < NUM_COMPONENTS;
+       ++component_idx) {
+    const auto& component_string = component_strings[component_idx];
+
+    if (component_string.empty()) {
+      return base::unexpected(IwaVersionParseError::kEmptyComponent);
+    }
+
+    // Disallow leading 0s, but allow a single 0.
+    if (component_string.size() > 1 && component_string[0] == '0') {
+      return base::unexpected(IwaVersionParseError::kLeadingZero);
+    }
+
+    // Check that the component only consists of digits.
+    if (!base::ranges::all_of(component_string, &base::IsAsciiDigit<char>)) {
+      return base::unexpected(IwaVersionParseError::kNonDigit);
+    }
+
+    unsigned int number;
+    if (!StringToUint(component_string, &number)) {
+      return base::unexpected(IwaVersionParseError::kCannotConvertToNumber);
+    }
+    // StringToUint returns unsigned int but Version fields are uint32_t.
+    static_assert(sizeof(uint32_t) == sizeof(unsigned int),
+                  "uint32_t must be same as unsigned int");
+
+    components[component_idx] = number;
+  }
+  return components;
+}
 
 // static
 base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
@@ -42,10 +93,14 @@ UpdateManifest::CreateFromJson(const base::Value& json,
       continue;
     }
 
-    base::Version version(*version_string);
-    if (!version.IsValid()) {
+    base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+        version_components = ParseIwaVersionIntoComponents(*version_string);
+    if (!version_components.has_value()) {
       continue;
     }
+    base::Version version(std::vector<uint32_t>(version_components->begin(),
+                                                version_components->end()));
+    CHECK(version.IsValid());
 
     GURL src = update_manifest_url.Resolve(*src_string);
     if (!src.is_valid()) {

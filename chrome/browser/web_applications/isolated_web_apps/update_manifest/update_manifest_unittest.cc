@@ -4,9 +4,11 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
+#include <array>
 #include <tuple>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +21,92 @@ using testing::Eq;
 using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsTrue;
+
+struct IwaVersionTestParam {
+  std::string version_string;
+  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+      expected_components;
+};
+
+using IwaVersionTest = testing::TestWithParam<IwaVersionTestParam>;
+
+TEST_P(IwaVersionTest, ParsesSuccessfully) {
+  base::expected<std::array<uint32_t, 3>, IwaVersionParseError> components =
+      ParseIwaVersionIntoComponents(GetParam().version_string);
+
+  ASSERT_THAT(components, Eq(GetParam().expected_components));
+  if (components.has_value()) {
+    base::Version version(
+        std::vector<uint32_t>(components->begin(), components->end()));
+    EXPECT_THAT(version.IsValid(), IsTrue());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix*/,
+    IwaVersionTest,
+    testing::ValuesIn(std::vector<IwaVersionTestParam>{
+        {.version_string = "1",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+        {.version_string = "1.2",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+        // This is bigger than what uint32_t can handle
+        {.version_string = "999994294967295.2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kCannotConvertToNumber)},
+        {.version_string = "0.0.0",
+         .expected_components = std::array<uint32_t, 3>{0, 0, 0}},
+        {.version_string = "1.2.3",
+         .expected_components = std::array<uint32_t, 3>{1, 2, 3}},
+        {.version_string = "1.2.3.4",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+        {.version_string = "10.20.30",
+         .expected_components = std::array<uint32_t, 3>{10, 20, 30}},
+        {.version_string = "1.-2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1..2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
+        {.version_string = "1..3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kEmptyComponent)},
+        {.version_string = "1.--2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.+2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "a.2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.a.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.2.a",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.2.3-a",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.2.3+a",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "1.2.3-a+a",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kNonDigit)},
+        {.version_string = "01.2.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kLeadingZero)},
+        {.version_string = "1.02.3",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kLeadingZero)},
+        {.version_string = "1.2.03",
+         .expected_components =
+             base::unexpected(IwaVersionParseError::kLeadingZero)}}));
 
 TEST(UpdateManifestTest, FailsToParseManifestWithoutKeys) {
   auto update_manifest = UpdateManifest::CreateFromJson(
@@ -65,14 +153,14 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalKeys) {
               .Set("foo", base::Value(123))
               .Set("versions", base::Value::List().Append(
                                    base::Value::Dict()
-                                       .Set("version", "1.2.3.4.5")
+                                       .Set("version", "1.2.3")
                                        .Set("src", "https://example.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
               ElementsAre<UpdateManifest::VersionEntry>(
-                  {GURL("https://example.com"), base::Version("1.2.3.4.5")}));
+                  {GURL("https://example.com"), base::Version("1.2.3")}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithVersion) {
@@ -80,14 +168,14 @@ TEST(UpdateManifestTest, ParsesManifestWithVersion) {
       base::Value(base::Value::Dict().Set(
           "versions",
           base::Value::List().Append(base::Value::Dict()
-                                         .Set("version", "1.2.3.4.5")
+                                         .Set("version", "1.2.3")
                                          .Set("src", "https://example.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
               ElementsAre<UpdateManifest::VersionEntry>(
-                  {GURL("https://example.com"), base::Version("1.2.3.4.5")}));
+                  {GURL("https://example.com"), base::Version("1.2.3")}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithRelativeSrc) {
@@ -132,30 +220,30 @@ TEST(UpdateManifestTest, IgnoresVersionsWithoutUrl) {
           base::Value::List()
               .Append(base::Value::Dict().Set("src", "https://example.com"))
               .Append(base::Value::Dict()
-                          .Set("version", "2")
+                          .Set("version", "2.0.0")
                           .Set("src", "https://example2.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
               ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example2.com"), base::Version("2")}));
+                  GURL("https://example2.com"), base::Version("2.0.0")}));
 }
 
 TEST(UpdateManifestTest, IgnoresVersionsWithoutSrc) {
   auto update_manifest = UpdateManifest::CreateFromJson(
       base::Value(base::Value::Dict().Set(
           "versions", base::Value::List()
-                          .Append(base::Value::Dict().Set("version", "1"))
+                          .Append(base::Value::Dict().Set("version", "1.0.0"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "2")
+                                      .Set("version", "2.0.0")
                                       .Set("src", "https://example2.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
               ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example2.com"), base::Version("2")}));
+                  GURL("https://example2.com"), base::Version("2.0.0")}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
@@ -164,14 +252,14 @@ TEST(UpdateManifestTest, ParsesManifestWithAdditionalVersionKeys) {
           "versions",
           base::Value::List().Append(base::Value::Dict()
                                          .Set("foo", 123)
-                                         .Set("version", "1.2.3.4.5")
+                                         .Set("version", "1.2.3")
                                          .Set("src", "https://example.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
               ElementsAre(UpdateManifest::VersionEntry{
-                  GURL("https://example.com"), base::Version("1.2.3.4.5")}));
+                  GURL("https://example.com"), base::Version("1.2.3")}));
 }
 
 TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
@@ -179,10 +267,10 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
       base::Value(base::Value::Dict().Set(
           "versions", base::Value::List()
                           .Append(base::Value::Dict()
-                                      .Set("version", "1.2.3.4.5")
+                                      .Set("version", "1.2.3")
                                       .Set("src", "https://example.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "3")
+                                      .Set("version", "3.0.0")
                                       .Set("src", "http://localhost")))),
       GURL("https://c.de/um.json"));
 
@@ -190,9 +278,9 @@ TEST(UpdateManifestTest, ParsesManifestWithMultipleVersions) {
   EXPECT_THAT(
       update_manifest->versions(),
       ElementsAre(UpdateManifest::VersionEntry{GURL("https://example.com"),
-                                               base::Version("1.2.3.4.5")},
+                                               base::Version("1.2.3")},
                   UpdateManifest::VersionEntry{GURL("http://localhost"),
-                                               base::Version("3")}));
+                                               base::Version("3.0.0")}));
 }
 
 TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
@@ -200,28 +288,29 @@ TEST(UpdateManifestTest, OverwritesRepeatedEntriesWithSameVersion) {
       base::Value(base::Value::Dict().Set(
           "versions", base::Value::List()
                           .Append(base::Value::Dict()
-                                      .Set("version", "3")
+                                      .Set("version", "3.0.0")
                                       .Set("src", "https://v3-1.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "3")
+                                      .Set("version", "3.0.0")
                                       .Set("src", "https://v3-2.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "5")
+                                      .Set("version", "5.0.0")
                                       .Set("src", "https://v5-1.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "3")
+                                      .Set("version", "3.0.0")
                                       .Set("src", "https://v3-3.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "5")
+                                      .Set("version", "5.0.0")
                                       .Set("src", "https://v5-2.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
-  EXPECT_THAT(update_manifest->versions(),
-              ElementsAre(UpdateManifest::VersionEntry{GURL("https://v3-3.com"),
-                                                       base::Version("3")},
-                          UpdateManifest::VersionEntry{GURL("https://v5-2.com"),
-                                                       base::Version("5")}));
+  EXPECT_THAT(
+      update_manifest->versions(),
+      ElementsAre(UpdateManifest::VersionEntry{GURL("https://v3-3.com"),
+                                               base::Version("3.0.0")},
+                  UpdateManifest::VersionEntry{GURL("https://v5-2.com"),
+                                               base::Version("5.0.0")}));
 }
 
 class UpdateManifestValidVersionTest
@@ -244,7 +333,7 @@ TEST_P(UpdateManifestValidVersionTest, ParsesValidVersion) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          UpdateManifestValidVersionTest,
-                         ::testing::Values("1", "10", "1.2.3.4.5.6"));
+                         ::testing::Values("1.2.3", "10.20.30", "0.0.0"));
 
 class UpdateManifestInvalidVersionTest
     : public testing::TestWithParam<std::string> {};
@@ -269,7 +358,7 @@ TEST_P(UpdateManifestInvalidVersionTest, IgnoresEntriesWithInvalidVersions) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          UpdateManifestInvalidVersionTest,
-                         ::testing::Values("abc", "1.3-beta", ""));
+                         ::testing::Values("abc", "1.3.4-beta", ""));
 
 class UpdateManifestValidSrcTest : public testing::TestWithParam<std::string> {
 };
@@ -277,15 +366,15 @@ class UpdateManifestValidSrcTest : public testing::TestWithParam<std::string> {
 TEST_P(UpdateManifestValidSrcTest, ParsesValidSrc) {
   auto update_manifest = UpdateManifest::CreateFromJson(
       base::Value(base::Value::Dict().Set(
-          "versions",
-          base::Value::List().Append(
-              base::Value::Dict().Set("version", "1").Set("src", GetParam())))),
+          "versions", base::Value::List().Append(base::Value::Dict()
+                                                     .Set("version", "1.0.0")
+                                                     .Set("src", GetParam())))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(update_manifest->versions(),
-              ElementsAre(UpdateManifest::VersionEntry{GURL(GetParam()),
-                                                       base::Version("1")}));
+              ElementsAre(UpdateManifest::VersionEntry{
+                  GURL(GetParam()), base::Version("1.0.0")}));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -331,23 +420,23 @@ TEST(GetLatestVersionEntryTest, CalculatesLatestVersionCorrectly) {
                                       .Set("version", "3.99.123")
                                       .Set("src", "https://v3.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "5.6")
+                                      .Set("version", "5.6.0")
                                       .Set("src", "https://v5.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "10.3")
+                                      .Set("version", "10.3.0")
                                       .Set("src", "https://v10.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "10.11")
+                                      .Set("version", "10.11.0")
                                       .Set("src", "https://v10.com"))
                           .Append(base::Value::Dict()
-                                      .Set("version", "4.5")
+                                      .Set("version", "4.5.0")
                                       .Set("src", "https://v4.com")))),
       GURL("https://c.de/um.json"));
 
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(GetLatestVersionEntry(*update_manifest),
               Eq(UpdateManifest::VersionEntry{GURL("https://v10.com"),
-                                              base::Version("10.11")}));
+                                              base::Version("10.11.0")}));
 }
 
 }  // namespace
