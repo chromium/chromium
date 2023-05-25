@@ -12,13 +12,21 @@ source_set("permissions") {
 
   deps = [
     "//base",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
+    "//ios/web/public/permissions",
     "//ui/base",
+    "//url",
   ]
 }
 
@@ -34,6 +42,8 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/permissions:infobar_delegate",

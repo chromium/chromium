@@ -26,7 +26,6 @@ source_set("tab_helper") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/overlays/public/infobar_modal/permissions",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/web/public",
   ]

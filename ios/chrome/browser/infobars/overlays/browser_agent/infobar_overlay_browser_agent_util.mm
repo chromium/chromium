@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm/confirm_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_modal_interaction_handler.h"
-#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/permissions/permissions_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_banner_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card/save_card_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/sync_error/sync_error_infobar_banner_interaction_handler.h"
@@ -76,11 +75,8 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       std::make_unique<SaveAddressProfileInfobarBannerInteractionHandler>(),
       std::make_unique<SaveAddressProfileInfobarModalInteractionHandler>()));
-  browser_agent->AddInfobarInteractionHandler(
-      std::make_unique<InfobarInteractionHandler>(
-          InfobarType::kInfobarTypePermissions,
-          std::make_unique<PermissionsInfobarBannerInteractionHandler>(),
-          /*modal_handler=*/nullptr));
+  browser_agent->AddDefaultInfobarInteractionHandlerForInfobarType(
+      InfobarType::kInfobarTypePermissions);
   browser_agent->AddInfobarInteractionHandler(
       std::make_unique<InfobarInteractionHandler>(
           InfobarType::kInfobarTypeSyncError,
