@@ -11,6 +11,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -173,7 +174,8 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
 
 DriveFsHttpClient::DriveFsHttpClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    : throttling_profile_id_(base::UnguessableToken::Create()),
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 DriveFsHttpClient::~DriveFsHttpClient() = default;
 
@@ -204,6 +206,7 @@ void DriveFsHttpClient::ExecuteHttpRequest(
     resource_request.request_body = new network::ResourceRequestBody();
     resource_request.request_body->AppendDataPipe(std::move(data_pipe_getter));
   }
+  resource_request.throttling_profile_id = throttling_profile_id_;
   // Start execution, the `DriveFsURLLoaderClient` will remove itself from the
   // `clients_` map on completion.
   url_loader_factory_->CreateLoaderAndStart(
