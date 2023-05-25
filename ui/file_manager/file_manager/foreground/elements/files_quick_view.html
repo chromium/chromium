@@ -40,16 +40,20 @@ found in the LICENSE file.
         <template is="dom-if" if="[[isHtml_(type, subtype)]]">
           <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="html" class="content text-content" src="[[sourceContent]]"></files-safe-media>
           <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
-            <div generic-thumbnail="[[type]]"></div>
-            <div class="no-preview">[[noPreviewText]]</div>
+            <div class="no-preview-container">
+              <div generic-thumbnail="[[type]]"></div>
+              <div class="no-preview">[[noPreviewText]]</div>
+            </div>
           </template>
         </template>
         <!-- Image -->
         <template is="dom-if" if="[[isImage_(type)]]">
           <files-safe-media hidden="[[!hasContent_(sourceContent)]]" type="image" class="content no-close-on-click" src="[[sourceContent]]"></files-safe-media>
           <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
-            <div generic-thumbnail="image"></div>
-            <div class="no-preview">[[noPreviewText]]</div>
+            <div class="no-preview-container">
+              <div generic-thumbnail="image"></div>
+              <div class="no-preview">[[noPreviewText]]</div>
+            </div>
           </template>
         </template>
         <!-- Video -->
@@ -58,8 +62,10 @@ found in the LICENSE file.
             <div class="thumbnail" hidden="[[!videoPoster]]">
               <files-safe-media type="image" id="video-poster" src="[[videoPoster]]"></files-safe-media>
             </div>
-            <div hidden="[[videoPoster]]" generic-thumbnail="video"></div>
-            <div class="no-preview">[[noPlaybackText]]</div>
+            <div class="no-preview-container">
+              <div hidden="[[videoPoster]]" generic-thumbnail="video"></div>
+              <div class="no-preview">[[noPlaybackText]]</div>
+            </div>
           </template>
           <template is="dom-if" if="[[hasContent_(sourceContent)]]">
             <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[sourceContent]]" poster="[[videoPoster]]"></files-safe-media>
@@ -76,11 +82,13 @@ found in the LICENSE file.
         </div>
         <template is="dom-if" if="[[isAudio_(type)]]">
           <template is="dom-if" if="[[!hasContent_(sourceContent)]]">
-            <div generic-thumbnail="audio"></div>
-            <div class="no-preview">[[noPlaybackText]]</div>
+            <div class="no-preview-container">
+              <div generic-thumbnail="audio"></div>
+              <div class="no-preview">[[noPlaybackText]]</div>
+            </div>
           </template>
         </template>
-        <div hidden="[[!isUnsupported_(type, subtype, browsable)]]">
+        <div class="no-preview-container" hidden="[[!isUnsupported_(type, subtype, browsable)]]">
           <div generic-thumbnail$="[[type]]"></div>
           <div class="no-preview">[[noPreviewText]]</div>
         </div>

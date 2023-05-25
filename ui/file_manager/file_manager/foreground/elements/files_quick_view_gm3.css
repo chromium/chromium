@@ -244,7 +244,21 @@ iron-icon {
 }
 
 .no-preview {
-  margin-top: 16px;
+  max-width: 130px;
+}
+
+.no-preview-container {
+  -webkit-mask-image: url(../images/files/ui/quickview_star.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 224px;
+  align-items: center;
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
+  display: flex;
+  flex-direction: column;
+  height: 224px;
+  justify-content: center;
 }
 
 /* Large generic thumbnails, used when a file does not have a thumbnail. */
@@ -252,34 +266,28 @@ iron-icon {
   -webkit-mask-image: url(../images/filetype/filetype_generic.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: auto 88px;
+  -webkit-mask-size: 80px;
   background-color: currentColor;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: auto 88px;
-  height: 88px;
+  height: 80px;
+  margin-bottom: 8px;
+  width: 80px;
 }
 
 [generic-thumbnail='.folder'] {
   -webkit-mask-image: url(../images/filetype/filetype_folder.svg);
-  -webkit-mask-size: auto 72px;
 }
 
 [generic-thumbnail='audio'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_audio.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
+  background-color: var(--cros-sys-error);
 }
 
 [generic-thumbnail='image'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_image.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
+  background-color: var(--cros-sys-error);
 }
 
 [generic-thumbnail='video'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_video.svg);
-  background-size: auto 72px;
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
+  background-color: var(--cros-sys-error);
 }

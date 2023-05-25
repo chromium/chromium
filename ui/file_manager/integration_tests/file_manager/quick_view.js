@@ -944,8 +944,7 @@ testcase.openQuickViewUtf8Text = async () => {
         appId, preview, getTextContent);
 
     // Check: the content of ENTRIES.utf8Text should be shown.
-    if (!text || !text[0] ||
-        !text[0].includes('їсти मुझे |∊☀✌✂♁ 🙂\n')) {
+    if (!text || !text[0] || !text[0].includes('їсти मुझे |∊☀✌✂♁ 🙂\n')) {
       return pending(caller, 'Waiting for preview content.');
     }
   });
@@ -1919,11 +1918,12 @@ testcase.openQuickViewBrokenImage = async () => {
 
   /**
    * The [generic-thumbnail] element resides in the #quick-view shadow DOM
-   * as a sibling of the files-safe-media[type="image"] element.
+   * as a child of .no-preview-container which is a sibling of the
+   * files-safe-media[type="image"] element.
    */
   const genericThumbnail = [
     '#quick-view',
-    'files-safe-media[type="image"][hidden] + [generic-thumbnail="image"]',
+    'files-safe-media[type="image"][hidden] + .no-preview-container > [generic-thumbnail="image"]',
   ];
 
   // Open Files app on Downloads containing ENTRIES.brokenJpeg.
@@ -2684,7 +2684,6 @@ testcase.openQuickViewWithMultipleFilesKeyboardLeftRight = async () => {
 
   // Wait until the preview displays that file's content.
   await repeatUntil(async () => {
-
     const getTextContent = contentWindowQuery + '.document.body.textContent';
     const text = await executeJsInPreviewTagAndCatchErrors(
         appId, preview, getTextContent);
