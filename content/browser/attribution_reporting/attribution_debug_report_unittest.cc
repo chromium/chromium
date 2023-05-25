@@ -80,8 +80,8 @@ TEST(AttributionDebugReportTest,
   }])";
   EXPECT_EQ(report->ReportBody(), base::test::ParseJson(kExpectedJsonString));
 
-  EXPECT_EQ(report->report_url(), GURL("https://report.test/.well-known/"
-                                       "attribution-reporting/debug/verbose"));
+  EXPECT_EQ(report->ReportUrl(), GURL("https://report.test/.well-known/"
+                                      "attribution-reporting/debug/verbose"));
 }
 
 TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {

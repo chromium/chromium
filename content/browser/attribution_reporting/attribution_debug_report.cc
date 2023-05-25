@@ -403,16 +403,16 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
   return dict;
 }
 
-GURL ReportURL(const attribution_reporting::SuitableOrigin& reporting_origin) {
+}  // namespace
+
+GURL AttributionDebugReport::ReportUrl() const {
   static constexpr char kPath[] =
       "/.well-known/attribution-reporting/debug/verbose";
 
   GURL::Replacements replacements;
   replacements.SetPathStr(kPath);
-  return reporting_origin->GetURL().ReplaceComponents(replacements);
+  return reporting_origin_->GetURL().ReplaceComponents(replacements);
 }
-
-}  // namespace
 
 // static
 absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
@@ -480,10 +480,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 AttributionDebugReport::AttributionDebugReport(
     base::Value::List report_body,
-    const attribution_reporting::SuitableOrigin& reporting_origin,
+    attribution_reporting::SuitableOrigin reporting_origin,
     base::Time original_report_time)
     : report_body_(std::move(report_body)),
-      report_url_(ReportURL(reporting_origin)),
+      reporting_origin_(std::move(reporting_origin)),
       original_report_time_(original_report_time) {
   DCHECK(!report_body_.empty());
 }

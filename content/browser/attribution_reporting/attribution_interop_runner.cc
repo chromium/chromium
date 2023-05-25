@@ -161,7 +161,7 @@ struct AttributionReportJsonConverter {
 
     base::Value::Dict value;
     value.Set("payload", std::move(report_body));
-    value.Set("report_url", report.report_url().spec());
+    value.Set("report_url", report.ReportUrl().spec());
     value.Set("report_time", FormatTime(time));
     return value;
   }
