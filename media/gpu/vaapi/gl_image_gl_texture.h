@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_image.h"
 
@@ -43,9 +44,6 @@ class GLImageGLTexture : public gl::GLImage {
   gfx::NativePixmapHandle ExportHandleForTesting() { return ExportHandle(); }
 
  private:
-  // Overridden from GLImage:
-  gfx::Size GetSize() override;
-
   // Binds image to texture currently bound to |target|.
   void BindTexImage(unsigned target);
 

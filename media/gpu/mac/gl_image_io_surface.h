@@ -16,6 +16,7 @@
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/generic_shared_memory_id.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
@@ -50,9 +51,6 @@ class MEDIA_GPU_EXPORT GLImageIOSurface : public gl::GLImage {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name);
-
-  // Overridden from GLImage:
-  gfx::Size GetSize() override;
 
   GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;

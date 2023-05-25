@@ -8,6 +8,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_image.h"
 
 typedef void* EGLStreamKHR;
@@ -20,7 +21,6 @@ class GLImageEGLStream : public gl::GLImage {
   GLImageEGLStream(const gfx::Size& size, EGLStreamKHR stream);
 
   // GLImage implementation.
-  gfx::Size GetSize() override;
   Type GetType() const override;
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> texture() { return texture_; }

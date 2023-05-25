@@ -48,8 +48,4 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
   return !!pixmap_gl_binding_;
 }
 
-gfx::Size GLImageNativePixmap::GetSize() {
-  return size_;
-}
-
 }  // namespace gpu

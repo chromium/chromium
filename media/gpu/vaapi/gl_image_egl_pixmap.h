@@ -27,9 +27,6 @@ class GLImageEGLPixmap : public gl::GLImage {
 
   bool Initialize(x11::Pixmap pixmap);
 
-  // Overridden from GLImage:
-  gfx::Size GetSize() override;
-
   // Binds image to texture currently bound to |target|. Returns true on
   // success.
   bool BindTexImage(unsigned target);

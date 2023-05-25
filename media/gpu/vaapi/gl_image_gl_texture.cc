@@ -217,10 +217,6 @@ gfx::NativePixmapHandle GLImageGLTexture::ExportHandle() {
   return handle;
 }
 
-gfx::Size GLImageGLTexture::GetSize() {
-  return size_;
-}
-
 void GLImageGLTexture::BindTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

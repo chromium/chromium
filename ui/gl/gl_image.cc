@@ -38,11 +38,6 @@ media::GLImagePbuffer* GLImage::ToGLImagePbuffer(GLImage* image) {
   return reinterpret_cast<media::GLImagePbuffer*>(image);
 }
 
-gfx::Size GLImage::GetSize() {
-  NOTREACHED();
-  return gfx::Size();
-}
-
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }

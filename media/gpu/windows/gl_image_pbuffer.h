@@ -20,7 +20,6 @@ class GLImagePbuffer final : public gl::GLImage {
   GLImagePbuffer(const gfx::Size& size, EGLSurface surface);
 
   // gl::GLImage implementation.
-  gfx::Size GetSize() override;
   gl::GLImage::Type GetType() const override;
 
  private:
