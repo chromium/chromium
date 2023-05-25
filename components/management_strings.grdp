@@ -150,8 +150,8 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_CRASH_REPORTS" desc="Message stating that administrators see the numbers and causes of the crashes that occurred on the device recently.">
       Numbers and causes of the crashes that occurred recently
     </message>
-    <message name="IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY" desc="Message stating that administrators see application install information and activity times.">
-      Apps installed and how often they are used
+    <message name="IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY" desc="Message stating that administrators see application install or uninstall information and activity times.">
+      Apps installed or uninstalled and how often they are used
     </message>
     <message name="IDS_MANAGEMENT_REPORT_PRINTING" desc="Message stating that administrators can see names of printed files.">
       Names of files that you print

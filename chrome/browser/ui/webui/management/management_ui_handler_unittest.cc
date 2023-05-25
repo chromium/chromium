@@ -16,6 +16,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -363,6 +365,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     std::string device_domain;
     base::FilePath crostini_ansible_playbook_filepath;
     bool insights_extension_enabled;
+    base::Value::List report_app_inventory;
+    base::Value::List report_app_usage;
   };
 
   void ResetTestConfig() { ResetTestConfig(true); }
@@ -388,6 +392,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.managed_device = false;
     setup_config_.device_domain = "devicedomain.com";
     setup_config_.insights_extension_enabled = false;
+    setup_config_.report_app_inventory = base::Value::List();
+    setup_config_.report_app_usage = base::Value::List();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -467,6 +473,12 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     profile_->GetPrefs()->SetBoolean(
         ::prefs::kInsightsExtensionEnabled,
         GetTestConfig().insights_extension_enabled);
+
+    profile_->GetPrefs()->SetList(
+        ::ash::reporting::kReportAppInventory,
+        std::move(GetTestConfig().report_app_inventory));
+    profile_->GetPrefs()->SetList(::ash::reporting::kReportAppUsage,
+                                  std::move(GetTestConfig().report_app_usage));
 
     const policy::SystemLogUploader system_log_uploader(
         /*syslog_delegate=*/nullptr,
@@ -1151,6 +1163,30 @@ TEST_F(ManagementUIHandlerTests, ReportDeviceXdrEventsEnabled) {
   const base::Value::List info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
+      {kManagementReportAppInfoAndActivity, "app info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportAppInventory) {
+  ResetTestConfig(false);
+  base::Value::List allowed_app_types;
+  allowed_app_types.Append(::ash::reporting::kAppCategoryAndroidApps);
+  GetTestConfig().report_app_inventory = std::move(allowed_app_types);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportAppInfoAndActivity, "app info and activity"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, ReportAppUsage) {
+  ResetTestConfig(false);
+  base::Value::List allowed_app_types;
+  allowed_app_types.Append(::ash::reporting::kAppCategoryAndroidApps);
+  GetTestConfig().report_app_usage = std::move(allowed_app_types);
+  const base::Value::List info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
       {kManagementReportAppInfoAndActivity, "app info and activity"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);

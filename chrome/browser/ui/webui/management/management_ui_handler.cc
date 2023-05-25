@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -360,7 +361,13 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
     AddDeviceReportingElement(report_sources, kManagementReportCrashReports,
                               DeviceReportingType::kCrashReport);
   }
-  if (collector->IsReportingAppInfoAndActivity() || device_report_xdr_events) {
+
+  const auto& app_inventory_app_types =
+      profile->GetPrefs()->GetList(::ash::reporting::kReportAppInventory);
+  const auto& app_usage_app_types =
+      profile->GetPrefs()->GetList(::ash::reporting::kReportAppUsage);
+  if (collector->IsReportingAppInfoAndActivity() || device_report_xdr_events ||
+      !app_inventory_app_types.empty() || !app_usage_app_types.empty()) {
     AddDeviceReportingElement(report_sources,
                               kManagementReportAppInfoAndActivity,
                               DeviceReportingType::kAppInfoAndActivity);
