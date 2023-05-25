@@ -1593,6 +1593,7 @@
                     "params": {
                         "create_gaps": "false",
                         "expand_assigned_sections": "false",
+                        "expand_over_unfocsuable_fields": "false",
                         "ignore_autocomplete": "false"
                     },
                     "enable_features": [
