@@ -8,6 +8,7 @@
 
 AccessCodeCastDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
+AppMenuBrowserTest*.InvokeUi_*
 AskGoogleForSuggestionsDialogTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*

@@ -43,7 +43,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncogntioWindowCount) {
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   Profile* profile = browser()->profile();
   Browser* browser1 = CreateIncognitoBrowser(profile);
   EXPECT_FALSE(GetWindowCountInAvatarButtonText(browser1).has_value());

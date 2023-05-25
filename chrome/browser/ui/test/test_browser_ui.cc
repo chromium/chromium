@@ -116,9 +116,14 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   // screenshots.
   ScopedMouseDisabler disable(view);
 
-  // Clear widget focus to avoid flakiness caused by some widgets having focus
-  // and some not due to tests being run in parallel.
-  view->GetWidget()->GetFocusManager()->ClearFocus();
+  // If there is a focused view, clear it to avoid flakiness caused by
+  // unpredictable widget focus (due to test parallelism). It's important to not
+  // do this unless necessary, since it will close transient UI like menus,
+  // which interferes with tests attempting to verify such UI.
+  if (auto* const focus_manager = view->GetWidget()->GetFocusManager();
+      focus_manager->GetFocusedView()) {
+    focus_manager->ClearFocus();
+  }
 
   // Request that the compositor perform a frame and then wait for it to
   // complete. Because there might not be anything left to draw after waiting
