@@ -1726,15 +1726,19 @@ void URLLoader::ContinueOnResponseStarted() {
     return;
   }
 
-  // Enforce FLEDGE auction-only signals -- the renderer process isn't allowed
-  // to read auction-only signals for FLEDGE auctions; only the browser process
+  // Enforce ad-auction-only signals -- the renderer process isn't allowed
+  // to read auction-only signals for ad auctions; only the browser process
   // is allowed to read those, and only the browser process can issue trusted
   // requests.
-  std::string fledge_auction_only_signals;
+  std::string auction_only;
+  // TODO(crbug.com/1448564): Remove old names once API users have migrated to
+  // new names.
   if (!factory_params_->is_trusted && response_->headers &&
-      response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
-                                              &fledge_auction_only_signals) &&
-      base::EqualsCaseInsensitiveASCII(fledge_auction_only_signals, "true")) {
+      (response_->headers->GetNormalizedHeader("Ad-Auction-Only",
+                                               &auction_only) ||
+       response_->headers->GetNormalizedHeader("X-FLEDGE-Auction-Only",
+                                               &auction_only)) &&
+      base::EqualsCaseInsensitiveASCII(auction_only, "true")) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false);
     url_request_->AbortAndCloseConnection();
     DeleteSelf();

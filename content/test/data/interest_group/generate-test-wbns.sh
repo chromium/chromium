@@ -14,3 +14,7 @@ if ! command -v gen-bundle > /dev/null 2>&1; then
 fi
 
 gen-bundle -version b2 -har auction_only.har -o auction_only.wbn
+gen-bundle -version b2 -har auction_only_new_name.har \
+  -o auction_only_new_name.wbn
+gen-bundle -version b2 -har auction_only_both_new_and_old_names.har \
+  -o auction_only_both_new_and_old_names.wbn
