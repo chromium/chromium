@@ -29,9 +29,7 @@ class CredentialLeakControllerAndroid {
       const GURL& origin,
       const std::u16string& username,
       ui::WindowAndroid* window_android,
-      std::unique_ptr<PasswordCheckupLauncherHelper>
-          checkup_launcher,  // Metrics recorder for leak dialog related UMA and
-                             // UKM logging.
+      std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher,
       std::unique_ptr<password_manager::metrics_util::LeakDialogMetricsRecorder>
           metrics_recorder);
 

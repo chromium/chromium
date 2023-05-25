@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,7 @@ using password_manager::metrics_util::LeakDialogDismissalReason;
 using password_manager::metrics_util::LeakDialogMetricsRecorder;
 using password_manager::metrics_util::LeakDialogType;
 using testing::_;
+using testing::StrictMock;
 using UkmEntry = ukm::builders::PasswordManager_LeakWarningDialog;
 
 namespace {
@@ -96,12 +98,14 @@ TEST(CredentialLeakControllerAndroidTest, ClickedCancel) {
                               LeakDialogDismissalReason::kClickedClose);
 }
 
-TEST(CredentialLeakControllerAndroidTest, ClickedOk) {
+TEST(CredentialLeakControllerAndroidTest, ClickedOkDoesNotLaunchCheckup) {
   base::test::TaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  MakeController(std::make_unique<MockPasswordCheckupLauncherHelper>(),
-                 IsSaved(false), IsReused(false), IsSyncing(false))
+  std::unique_ptr<StrictMock<MockPasswordCheckupLauncherHelper>> mock_launcher =
+      std::make_unique<StrictMock<MockPasswordCheckupLauncherHelper>>();
+  MakeController(std::move(mock_launcher), IsSaved(false), IsReused(false),
+                 IsSyncing(false))
       ->OnAcceptDialog();
 
   histogram_tester.ExpectUniqueSample(

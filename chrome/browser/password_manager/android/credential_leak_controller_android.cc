@@ -70,6 +70,8 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
 
   switch (dialog_type) {
     case LeakDialogType::kChange:
+      // No-op.
+      break;
     case LeakDialogType::kCheckup:
     case LeakDialogType::kCheckupAndChange:
       checkup_launcher_->LaunchLocalCheckup(
