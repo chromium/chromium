@@ -534,6 +534,26 @@ TEST(ValuesTest, ListInsert) {
   EXPECT_EQ(*iter, "Hello world!");
 }
 
+TEST(ValuesTest, ListResize) {
+  auto list = base::Value::List().Append("Hello world!");
+  EXPECT_EQ(list.size(), 1U);
+
+  list.resize(2);
+  // Adds an empty entry to the back to match the size.
+  EXPECT_EQ(list.size(), 2U);
+  EXPECT_TRUE(list[0].is_string());
+  EXPECT_TRUE(list[1].is_none());
+
+  list.resize(1);
+  // Shrinks the list and kicks the new entry out.
+  EXPECT_EQ(list.size(), 1U);
+  EXPECT_TRUE(list[0].is_string());
+
+  list.resize(0);
+  // Removes the remaining entry too.
+  EXPECT_EQ(list.size(), 0U);
+}
+
 TEST(ValuesTest, ReverseIter) {
   Value::List list;
   const Value::List& const_list = list;
