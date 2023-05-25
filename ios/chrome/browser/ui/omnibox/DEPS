@@ -4,6 +4,6 @@ include_rules = [
   "+ios/chrome/browser/ui/gestures",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ui/orchestrator",
-  "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
   "+ios/chrome/browser/ui/toolbar/public",
 ]
