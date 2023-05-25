@@ -6810,6 +6810,7 @@ crbug.com/1446040 [ Mac13 ] virtual/oopr-canvas2d/external/wpt/mediacapture-reco
 crbug.com/1446742 virtual/gpu/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
 crbug.com/1446742 virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
 crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
+crbug.com/1446742 [ Debug Linux ] fast/canvas/canvas-drawImage-svg.html [ Failure ]
 
 crbug.com/1447239 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
 crbug.com/1447531 [ Mac10.13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass Timeout ]
