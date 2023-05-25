@@ -7,12 +7,15 @@
 #include <map>
 #include <memory>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 
 namespace apps {
 
 struct PromiseApp;
+class PromiseAppUpdate;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 using PromiseAppCacheMap = std::map<PackageId, PromiseAppPtr>;
 
@@ -20,6 +23,41 @@ using PromiseAppCacheMap = std::map<PackageId, PromiseAppPtr>;
 // system.
 class PromiseAppRegistryCache {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
+    // The apps::PromiseAppUpdate argument shouldn't be accessed after
+    // OnPromiseAppUpdate returns.
+    virtual void OnPromiseAppUpdate(const PromiseAppUpdate& update) {}
+
+    // Called when the PromiseAppRegistryCache object (the thing that this
+    // observer observes) will be destroyed. In response, the observer, |this|,
+    // should call "cache->RemoveObserver(this)", whether directly or indirectly
+    // (e.g. via base::ScopedObservation::Remove or via Observe(nullptr)).
+    virtual void OnPromiseAppRegistryCacheWillBeDestroyed(
+        PromiseAppRegistryCache* cache) = 0;
+
+   protected:
+    // Use this constructor when the observer |this| is tied to a single
+    // PromiseAppRegistryCache for its entire lifetime, or until the observee
+    // (the PromiseAppRegistryCache) is destroyed, whichever comes first.
+    explicit Observer(PromiseAppRegistryCache* cache);
+
+    // Use this constructor when the observer |this| wants to observe a
+    // PromiseAppRegistryCache for part of its lifetime. It can then call
+    // Observe() to start and stop observing.
+    Observer();
+
+    ~Observer() override;
+
+    void Observe(PromiseAppRegistryCache* cache);
+
+   private:
+    raw_ptr<PromiseAppRegistryCache> cache_ = nullptr;
+  };
+
   PromiseAppRegistryCache();
 
   PromiseAppRegistryCache(const PromiseAppRegistryCache&) = delete;
@@ -47,12 +85,17 @@ class PromiseAppRegistryCache {
   // not store the pointer as the promise app may be destroyed at any time.
   const PromiseApp* GetPromiseAppForTesting(const PackageId& package_id) const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   // Retrieve the registered promise app with the specified package_id. Returns
   // nullptr if the promise app does not exist.
   PromiseApp* FindPromiseApp(const PackageId& package_id) const;
 
   apps::PromiseAppCacheMap promise_app_map_;
+
+  base::ObserverList<Observer> observers_;
 
   // Flag to check whether an update to a promise app is already in progress. We
   // shouldn't have more than one concurrent update to a package_id, e.g. if

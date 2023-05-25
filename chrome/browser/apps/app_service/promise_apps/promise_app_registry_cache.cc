@@ -10,9 +10,45 @@
 
 namespace apps {
 
+PromiseAppRegistryCache::Observer::Observer(PromiseAppRegistryCache* cache) {
+  Observer::Observe(cache);
+}
+
+PromiseAppRegistryCache::Observer::Observer() = default;
+
+PromiseAppRegistryCache::Observer::~Observer() {
+  if (cache_) {
+    cache_->RemoveObserver(this);
+  }
+}
+
+void PromiseAppRegistryCache::Observer::Observe(
+    PromiseAppRegistryCache* cache) {
+  if (cache == cache_) {
+    // Early exit to avoid infinite loops if we're in the middle of a callback.
+    return;
+  }
+  if (cache_) {
+    cache_->RemoveObserver(this);
+  }
+  cache_ = cache;
+  if (cache_) {
+    cache_->AddObserver(this);
+  }
+}
+
 PromiseAppRegistryCache::PromiseAppRegistryCache() = default;
 
 PromiseAppRegistryCache::~PromiseAppRegistryCache() = default;
+
+void PromiseAppRegistryCache::AddObserver(Observer* observer) {
+  DCHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void PromiseAppRegistryCache::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -26,17 +62,17 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   // Retrieve the current promise app state.
   apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
-  // Update the existing promise app if it exists.
   if (state) {
+    // Update the existing promise app if it exists.
     PromiseAppUpdate::Merge(state, delta.get());
-    update_in_progress_ = false;
-    return;
+  } else {
+    // Add the promise app instance to the cache if it isn't registered yet.
+    promise_app_map_[delta->package_id] = delta->Clone();
   }
 
-  // Add the promise app instance to the cache if it isn't registered yet.
-  promise_app_map_[delta->package_id] = delta->Clone();
-
-  // TODO(b/261907495): Notify observers.
+  for (auto& observer : observers_) {
+    observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
+  }
 
   update_in_progress_ = false;
 }
