@@ -2840,6 +2840,10 @@
                     "enable_features": [
                         "CrOSLateBootSchedUtilHints60",
                         "SchedUtilHints"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootSchedUtilHints40",
+                        "CrOSLateBootSchedUtilHints80"
                     ]
                 }
             ]
