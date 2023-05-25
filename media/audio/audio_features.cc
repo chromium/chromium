@@ -21,6 +21,12 @@ BASE_FEATURE(kDumpOnAudioServiceHang,
 BASE_FEATURE(kUseAAudioDriver,
              "UseAAudioDriver",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables loading and using AAudio instead of OpenSLES on compatible devices,
+// for audio input streams.
+BASE_FEATURE(kUseAAudioInput,
+             "UseAAudioInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_WIN)
