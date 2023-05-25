@@ -497,9 +497,11 @@ class TestHostResolverManager : public HostResolverManager {
   const bool ipv4_reachable_;
   const bool is_async_;
 
-  int StartGloballyReachableCheck(const IPAddress& dest,
-                                  const NetLogWithSource& net_log,
-                                  CompletionOnceCallback callback) override {
+  int StartGloballyReachableCheck(
+      const IPAddress& dest,
+      const NetLogWithSource& net_log,
+      raw_ptr<ClientSocketFactory> client_socket_factory,
+      CompletionOnceCallback callback) override {
     int rv = OK;
     if (dest.IsIPv6()) {
       rv = ipv6_reachable_ ? OK : ERR_FAILED;
@@ -665,9 +667,12 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
     return DnsClient::kMaxInsecureFallbackFailures;
   }
 
-  int StartIPv6ReachabilityCheck(const NetLogWithSource& net_log,
-                                 CompletionOnceCallback callback) {
-    return resolver_->StartIPv6ReachabilityCheck(net_log, std::move(callback));
+  int StartIPv6ReachabilityCheck(
+      const NetLogWithSource& net_log,
+      raw_ptr<ClientSocketFactory> client_socket_factory,
+      CompletionOnceCallback callback) {
+    return resolver_->StartIPv6ReachabilityCheck(net_log, client_socket_factory,
+                                                 std::move(callback));
   }
 
   bool GetLastIpv6ProbeResult() { return resolver_->last_ipv6_probe_result_; }
@@ -2911,24 +2916,46 @@ TEST_F(HostResolverManagerTest, StartIPv6ReachabilityCheck) {
   RecordingNetLogObserver net_log_observer;
   NetLogWithSource net_log =
       NetLogWithSource::Make(net::NetLog::Get(), NetLogSourceType::NONE);
+  MockClientSocketFactory socket_factory;
+  SequencedSocketData sync_connect(MockConnect(SYNCHRONOUS, OK),
+                                   base::span<net::MockRead>(),
+                                   base::span<net::MockWrite>());
+  SequencedSocketData async_connect(MockConnect(ASYNC, OK),
+                                    base::span<net::MockRead>(),
+                                    base::span<net::MockWrite>());
+  socket_factory.AddSocketDataProvider(&sync_connect);
+  socket_factory.AddSocketDataProvider(&async_connect);
 
-  int attempt1 =
-      StartIPv6ReachabilityCheck(net_log, base::DoNothingAs<void(int)>());
+  int attempt1 = StartIPv6ReachabilityCheck(net_log, &socket_factory,
+                                            base::DoNothingAs<void(int)>());
   EXPECT_EQ(attempt1, OK);
   int result1 = GetLastIpv6ProbeResult();
-  int attempt2 =
-      StartIPv6ReachabilityCheck(net_log, base::DoNothingAs<void(int)>());
+
+  int attempt2 = StartIPv6ReachabilityCheck(net_log, &socket_factory,
+                                            base::DoNothingAs<void(int)>());
   EXPECT_EQ(attempt2, OK);
   int result2 = GetLastIpv6ProbeResult();
   EXPECT_EQ(result1, result2);
-  // Filter reachability check events and verify that there are two of them.
+
+  // Verify that async socket connections also return the same value.
+  resolver_->ResetIPv6ProbeTimeForTesting();
+  TestCompletionCallback callback;
+  int attempt3 =
+      StartIPv6ReachabilityCheck(net_log, &socket_factory, callback.callback());
+  EXPECT_EQ(attempt3, ERR_IO_PENDING);
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  int result3 = GetLastIpv6ProbeResult();
+  EXPECT_EQ(result1, result3);
+
+  // Filter reachability check events and verify that there are three of them.
   auto probe_event_list = net_log_observer.GetEntriesWithType(
       NetLogEventType::HOST_RESOLVER_MANAGER_IPV6_REACHABILITY_CHECK);
-  ASSERT_EQ(2U, probe_event_list.size());
-
-  // Verify that the first request was not cached and the second one was.
+  ASSERT_EQ(3U, probe_event_list.size());
+  // Verify that the first and third requests were not cached and the second one
+  // was.
   EXPECT_FALSE(GetBooleanValueFromParams(probe_event_list[0], "cached"));
   EXPECT_TRUE(GetBooleanValueFromParams(probe_event_list[1], "cached"));
+  EXPECT_FALSE(GetBooleanValueFromParams(probe_event_list[0], "cached"));
 }
 
 TEST_F(HostResolverManagerTest, IncludeCanonicalName) {
