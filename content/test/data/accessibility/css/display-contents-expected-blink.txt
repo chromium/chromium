@@ -1,0 +1,31 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++button name='Button'
+++++++++++staticText name='Button'
+++++++++++++inlineTextBox name='Button'
+++++++paragraph ignored
+++++++listBox
+++++++++staticText name='Listbox'
+++++++++++inlineTextBox name='Listbox'
+++++++paragraph ignored
+++++++paragraph ignored
+++++++genericContainer description='Description' descriptionFrom=relatedElement
+++++++genericContainer
+++++++++staticText name='Description'
+++++++++++inlineTextBox name='Description'
+++++++paragraph ignored
+++++++genericContainer ignored
+++++++++staticText name='Generic'
+++++++++++inlineTextBox name='Generic'
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++staticText name='Generic (nested)'
+++++++++++++inlineTextBox name='Generic (nested)'
+++++++main ignored invisible
+++++++++paragraph ignored invisible
+++++++++++staticText ignored invisible name='Paragraph inside of hidden main that's also display:contents'
+++++++complementary ignored invisible
+++++++++paragraph ignored invisible
+++++++++++staticText ignored invisible name='Display:contents paragraph inside of hidden complementary'

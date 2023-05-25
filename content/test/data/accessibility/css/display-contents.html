@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<style>
+.contents {
+  display: contents;
+}
+</style>
+
+<p><button class="contents">Button</button></p>
+<p><div class="contents" role="listbox">Listbox</div></p>
+<p>
+  <div class="contents" aria-describedby="desc"></div>
+  <div class="contents" id="desc">Description</div>
+</p>
+<div class="contents">Generic</div>
+<div><div class="contents">Generic (nested)</div></div>
+<div role="main" class="contents" style="display:none"><p>Paragraph inside of hidden main that's also display:contents</p></div>
+<div role="complementary" style="display:none"><p class="contents">Display:contents paragraph inside of hidden complementary</p></div>

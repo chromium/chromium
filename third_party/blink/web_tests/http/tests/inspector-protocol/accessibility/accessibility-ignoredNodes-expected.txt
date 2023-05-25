@@ -696,7 +696,7 @@ RootWebArea
     ignored : true
     ignoredReasons : [
         [0] : {
-            name : notRendered
+            name : uninteresting
             value : {
                 type : boolean
                 value : true
