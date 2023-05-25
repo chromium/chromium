@@ -606,6 +606,22 @@ void CaptureModeController::SetRecordingType(RecordingType recording_type) {
   }
 }
 
+void CaptureModeController::SetAudioRecordingMode(AudioRecordingMode mode) {
+  audio_recording_mode_ = mode;
+
+  if (IsActive()) {
+    capture_mode_session_->OnAudioRecordingModeChanged();
+  }
+}
+
+void CaptureModeController::EnableDemoTools(bool enable) {
+  enable_demo_tools_ = enable;
+
+  if (IsActive()) {
+    capture_mode_session_->OnDemoToolsSettingsChanged();
+  }
+}
+
 void CaptureModeController::Start(CaptureModeEntryType entry_type,
                                   OnSessionStartAttemptCallback callback) {
   // To be invoked at the exit of this function or

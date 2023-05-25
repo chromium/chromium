@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -322,6 +323,47 @@ TEST_F(GameDashboardCaptureModeTest, FocusNavigationOfCaptureBar) {
   EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
                   start_recording_button)
                   ->has_focus());
+}
+
+TEST_F(GameDashboardCaptureModeTest, GameCaptureModeSessionConfigs) {
+  // Verify capture mode session configs for the game dashboard initiated
+  // capture session.
+  auto* controller = StartGameCaptureModeSession();
+  EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
+  EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
+  EXPECT_EQ(controller->audio_recording_mode(),
+            features::IsCaptureModeAudioMixingEnabled()
+                ? AudioRecordingMode::kSystemAndMicrophone
+                : AudioRecordingMode::kMicrophone);
+  EXPECT_EQ(controller->enable_demo_tools(), false);
+
+  // Update the audio recording mode and demo tools configs and stop the
+  // session.
+  controller->SetAudioRecordingMode(AudioRecordingMode::kSystem);
+  controller->EnableDemoTools(true);
+  controller->Stop();
+
+  // Start another game dashboard initiated capture mode session and verify
+  // that the audio recording mode and demo tools settings are restored from
+  // previous session.
+  StartGameCaptureModeSession();
+  EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
+  EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
+  EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kSystem);
+  EXPECT_TRUE(controller->enable_demo_tools());
+  controller->Stop();
+
+  // Verify that the session configs from the game dashboard initiated capture
+  // mode session will not be carried over to the default capture mode session.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
+  EXPECT_EQ(controller->recording_type(), RecordingType::kWebM);
+  EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kOff);
+  EXPECT_FALSE(controller->enable_demo_tools());
+  controller->Stop();
 }
 
 }  // namespace ash

@@ -110,6 +110,15 @@ class CaptureModeBehavior {
   // actual type of the behavior.
   gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
 
+  // Notifies the behavior on audio recording mode settings change and the
+  // behavior will decide whether to remember the audio recording mode settings
+  // for future sessions settings restoration or not.
+  virtual void OnAudioRecordingModeChanged();
+  // Notifies the behavior on demo tools settings change and the behavior will
+  // decide whether to remember the demo tools settings for future sessions
+  // settings restoration or not.
+  virtual void OnDemoToolsSettingsChanged();
+
  protected:
   CaptureModeBehavior(const CaptureModeSessionConfigs& configs,
                       const BehaviorType behavior_type);

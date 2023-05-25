@@ -255,6 +255,16 @@ class GameDashboardBehavior : public CaptureModeBehavior,
                 IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE)}};
   }
 
+  void OnAudioRecordingModeChanged() override {
+    capture_mode_configs_.audio_recording_mode =
+        CaptureModeController::Get()->audio_recording_mode();
+  }
+
+  void OnDemoToolsSettingsChanged() override {
+    capture_mode_configs_.demo_tools_enabled =
+        CaptureModeController::Get()->enable_demo_tools();
+  }
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     CHECK_EQ(window, pre_selected_window_);
@@ -458,5 +468,9 @@ gfx::Rect CaptureModeBehavior::GetBarAnchorBoundsInScreen(
 int CaptureModeBehavior::GetCaptureBarWidth() const {
   return kFullCaptureBarWidth;
 }
+
+void CaptureModeBehavior::OnAudioRecordingModeChanged() {}
+
+void CaptureModeBehavior::OnDemoToolsSettingsChanged() {}
 
 }  // namespace ash

@@ -716,6 +716,14 @@ void CaptureModeSession::OnRecordingTypeChanged() {
   }
 }
 
+void CaptureModeSession::OnAudioRecordingModeChanged() {
+  active_behavior_->OnAudioRecordingModeChanged();
+}
+
+void CaptureModeSession::OnDemoToolsSettingsChanged() {
+  active_behavior_->OnDemoToolsSettingsChanged();
+}
+
 void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
   is_waiting_for_dlp_confirmation_ = true;
 

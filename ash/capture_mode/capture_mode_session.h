@@ -134,10 +134,13 @@ class ASH_EXPORT CaptureModeSession
   // Called when switching a capture type from another capture type.
   void A11yAlertCaptureType();
 
-  // Called when either the capture source, type, or recording type changes.
+  // Called when either the capture source, type, recording type, audio
+  // recording mode or demo tools changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
   void OnRecordingTypeChanged();
+  void OnAudioRecordingModeChanged();
+  void OnDemoToolsSettingsChanged();
 
   // When performing capture, or at the end of the 3-second count down, the DLP
   // manager is checked for any restricted content. The DLP manager may choose
