@@ -517,7 +517,7 @@ void ImageLoader::DoUpdateFromElement(
         document.PageDismissalEventBeingDispatched() != Document::kNoDismissal;
     if (page_is_being_dismissed) {
       resource_request.SetHttpHeaderField(http_names::kCacheControl,
-                                          "max-age=0");
+                                          AtomicString("max-age=0"));
       resource_request.SetKeepalive(true);
       resource_request.SetRequestContext(
           mojom::blink::RequestContextType::PING);

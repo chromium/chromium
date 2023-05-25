@@ -1737,7 +1737,7 @@ void FrameLoader::ModifyRequestForCSP(
     }
 
     resource_request.SetHttpHeaderField(http_names::kUpgradeInsecureRequests,
-                                        "1");
+                                        AtomicString("1"));
   }
 
   MixedContentChecker::UpgradeInsecureRequest(

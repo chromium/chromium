@@ -337,15 +337,15 @@ void FrameFetchContext::PrepareRequest(
   }
 
   const bool ua_reduced =
-      request.HttpHeaderField(
+      request.HttpHeaderField(AtomicString(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kUAReduced)
-              .c_str()) == "?1";
+              .c_str())) == "?1";
   const bool ua_full =
-      request.HttpHeaderField(
+      request.HttpHeaderField(AtomicString(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
-              .c_str()) == "?1";
+              .c_str())) == "?1";
 
   String user_agent =
       ua_full ? GetFullUserAgent()
@@ -476,12 +476,13 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       image_info->viewport_height = GetFrame()->View()->ViewportHeight();
     }
 
-    prefers_color_scheme = document_->InDarkMode()
-                               ? network::kPrefersColorSchemeDark
-                               : network::kPrefersColorSchemeLight;
-    prefers_reduced_motion = GetSettings()->GetPrefersReducedMotion()
-                                 ? network::kPrefersReducedMotionReduce
-                                 : network::kPrefersReducedMotionNoPreference;
+    prefers_color_scheme = AtomicString(
+        document_->InDarkMode() ? network::kPrefersColorSchemeDark
+                                : network::kPrefersColorSchemeLight);
+    prefers_reduced_motion =
+        AtomicString(GetSettings()->GetPrefersReducedMotion()
+                         ? network::kPrefersReducedMotionReduce
+                         : network::kPrefersReducedMotionNoPreference);
   }
 
   // GetClientHintsPreferences() has things parsed for this document
@@ -516,8 +517,9 @@ void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(
   const String& reduced_accept_language = GetReducedAcceptLanguage();
   if (!reduced_accept_language.empty() &&
       request.HttpHeaderField(http_names::kAcceptLanguage).empty()) {
-    request.SetHttpHeaderField(http_names::kAcceptLanguage,
-                               reduced_accept_language.Ascii().c_str());
+    request.SetHttpHeaderField(
+        http_names::kAcceptLanguage,
+        AtomicString(reduced_accept_language.Ascii().c_str()));
   }
 }
 

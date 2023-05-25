@@ -1684,8 +1684,8 @@ bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
 
 void DocumentLoader::InitializeEmptyResponse() {
   response_ = ResourceResponse(url_);
-  response_.SetMimeType("text/html");
-  response_.SetTextEncodingName("utf-8");
+  response_.SetMimeType(AtomicString("text/html"));
+  response_.SetTextEncodingName(AtomicString("utf-8"));
 }
 
 void DocumentLoader::StartLoading() {
@@ -2004,14 +2004,14 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     CHECK(is_error_page_for_failed_navigation_);
     CHECK(origin_to_commit_->IsOpaque());
     origin = origin_to_commit_;
-    origin_calculation_debug_info_ = "use_origin_to_commit";
+    origin_calculation_debug_info_ = AtomicString("use_origin_to_commit");
   } else if (IsPagePopupRunningInWebTest(frame_)) {
     // If we are a page popup in LayoutTests ensure we use the popup
     // owner's security origin so the tests can possibly access the
     // document via internals API.
     auto* owner_context = frame_->PagePopupOwner()->GetExecutionContext();
     origin = owner_context->GetSecurityOrigin()->IsolatedCopy();
-    origin_calculation_debug_info_ = "use_popup_owner_origin";
+    origin_calculation_debug_info_ = AtomicString("use_popup_owner_origin");
   } else if (owner_document && owner_document->domWindow()) {
     // Prefer taking `origin` from `owner_document` if one is available - this
     // will correctly inherit/alias `SecurityOrigin::domain_` from the
@@ -2030,9 +2030,9 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // But origin_to_commit_ is currently cloned with IsolatedCopy() which
     // breaks aliasing...
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
-    origin_calculation_debug_info_ = "use_owner_document_origin";
+    origin_calculation_debug_info_ = AtomicString("use_owner_document_origin");
   } else {
-    origin_calculation_debug_info_ = "use_url_with_precursor";
+    origin_calculation_debug_info_ = AtomicString("use_url_with_precursor");
     // Otherwise, create an origin that propagates precursor information
     // as needed. For non-opaque origins, this creates a standard tuple
     // origin, but for opaque origins, it creates an origin with the
@@ -2793,7 +2793,7 @@ void DocumentLoader::CreateParserPostCommit() {
     parsing_policy = kForceSynchronousParsing;
   }
   const AtomicString& encoding = commit_reason_ == CommitReason::kXSLT
-                                     ? "UTF-8"
+                                     ? AtomicString("UTF-8")
                                      : response_.TextEncodingName();
 
   Document* document = frame_->GetDocument();
