@@ -36,10 +36,6 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
 
  private:
   // AuthenticatorSheetModelBase:
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override {
-    return gfx::kNoneIcon;
-  }
   std::u16string GetStepTitle() const override { return std::u16string(); }
   std::u16string GetStepDescription() const override {
     return std::u16string();

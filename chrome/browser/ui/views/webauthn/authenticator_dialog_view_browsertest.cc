@@ -52,11 +52,6 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   bool IsAcceptButtonEnabled() const override { return true; }
   std::u16string GetAcceptButtonLabel() const override { return u"Test OK"; }
 
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override {
-    return gfx::kNoneIcon;
-  }
-
   std::u16string GetStepTitle() const override { return u"Test Title"; }
 
   std::u16string GetStepDescription() const override {

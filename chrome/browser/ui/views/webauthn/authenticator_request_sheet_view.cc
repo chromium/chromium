@@ -40,8 +40,6 @@ namespace {
 // Margin between the top of the dialog and the start of any illustration.
 constexpr int kImageMarginTop = 22;
 
-using ImageColorScheme = AuthenticatorRequestSheetModel::ImageColorScheme;
-
 template <typename T>
 void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
   illustration->SetBorder(views::CreateEmptyBorder(
@@ -106,14 +104,13 @@ AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
   // because it's not until that point that we know whether the light or dark
   // illustration should be used.
   View* illustration;
-  if (model()->lottie_illustration_light_id()) {
+  if (model()->lottie_illustrations()) {
     auto animation = std::make_unique<views::AnimatedImageView>();
     animation->SetPreferredSize(gfx::Size(dialog_width, kImageHeight));
     ConfigureHeaderIllustration(animation.get(), header_size);
     step_illustration_animation_ = animation.get();
     illustration = animation.release();
-  } else if (&model()->GetStepIllustration(ImageColorScheme::kLight) !=
-             &gfx::kNoneIcon) {
+  } else if (model()->vector_illustrations()) {
     auto image_view = std::make_unique<NonAccessibleImageView>();
     ConfigureHeaderIllustration(image_view.get(), header_size);
     step_illustration_image_ = image_view.get();
@@ -233,12 +230,11 @@ void AuthenticatorRequestSheetView::OnThemeChanged() {
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
   const bool is_dark = GetNativeTheme()->ShouldUseDarkColors();
   if (step_illustration_image_) {
-    gfx::IconDescription icon_description(model()->GetStepIllustration(
-        is_dark ? ImageColorScheme::kDark : ImageColorScheme::kLight));
+    gfx::IconDescription icon_description(
+        model()->vector_illustrations()->get(is_dark));
     step_illustration_image_->SetImage(gfx::CreateVectorIcon(icon_description));
   } else if (step_illustration_animation_) {
-    const int lottie_id = is_dark ? *model()->lottie_illustration_dark_id()
-                                  : *model()->lottie_illustration_light_id();
+    const int lottie_id = model()->lottie_illustrations()->get(is_dark);
     absl::optional<std::vector<uint8_t>> lottie_bytes =
         ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_id);
     scoped_refptr<cc::SkottieWrapper> skottie =

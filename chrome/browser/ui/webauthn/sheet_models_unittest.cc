@@ -32,11 +32,9 @@ class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
       AuthenticatorRequestDialogModel* dialog_model,
       OtherMechanismButtonVisibility other_mechanism_button_visibility)
       : AuthenticatorSheetModelBase(dialog_model,
-                                    other_mechanism_button_visibility) {}
-
-  const gfx::VectorIcon& GetStepIllustration(
-      ImageColorScheme color_scheme) const override {
-    return kPasskeyHeaderDarkIcon;
+                                    other_mechanism_button_visibility) {
+    vector_illustrations_.emplace(kPasskeyHeaderDarkIcon,
+                                  kPasskeyHeaderDarkIcon);
   }
 
   std::u16string GetStepTitle() const override { return u"Step title"; }
