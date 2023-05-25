@@ -252,14 +252,14 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
       : SimpleMenuModel(delegate) {
     int kAvatarIconSize =
         GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
+    avatar_image_model_ = ui::ImageModel::FromVectorIcon(
+        kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, kAvatarIconSize);
     if (profile->IsIncognitoProfile()) {
       avatar_image_model_ = ui::ImageModel::FromVectorIcon(
           kIncognitoIcon, ui::kColorAvatarIconIncognito, kAvatarIconSize);
       profile_name_ =
           l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
     } else if (profile->IsGuestSession()) {
-      avatar_image_model_ = ui::ImageModel::FromVectorIcon(
-          kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, kAvatarIconSize);
       profile_name_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
     } else {
       ProfileAttributesEntry* profile_attributes =
@@ -267,12 +267,18 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
       // If the profile is being deleted, profile_attributes may be null.
       if (profile_attributes) {
         AccountInfo account_info = GetAccountInfoFromProfile(profile);
-        gfx::Image avatar_image = profiles::GetSizedAvatarIcon(
+        gfx::Image avatar_image =
             account_info.IsEmpty()
                 ? profile_attributes->GetAvatarIcon(kAvatarIconSize)
-                : account_info.account_image,
-            kAvatarIconSize, kAvatarIconSize, profiles::SHAPE_CIRCLE);
-        avatar_image_model_ = ui::ImageModel::FromImage(avatar_image);
+                : account_info.account_image;
+        // The avatar image can be empty if the account image hasn't been
+        // fetched yet, if there is no image, or in tests.
+        if (!avatar_image.IsEmpty()) {
+          avatar_image_model_ =
+              ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+                  avatar_image, kAvatarIconSize, kAvatarIconSize,
+                  profiles::SHAPE_CIRCLE));
+        }
         profile_name_ = profile_attributes->GetName();
       }
     }
