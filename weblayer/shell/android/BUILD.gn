@@ -113,6 +113,7 @@ android_apk("weblayer_support_apk") {
   product_config_java_packages = [ weblayer_product_config_java_package ]
 
   shared_libraries = [ "//weblayer:libweblayer_test" ]
+  srcjar_deps = [ "//weblayer:libweblayer_test__jni_registration" ]
 }
 
 android_resources("webengine_shell_resources") {

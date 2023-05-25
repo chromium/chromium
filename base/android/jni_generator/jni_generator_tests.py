@@ -158,14 +158,16 @@ class BaseTest(unittest.TestCase):
       else:
         java_sources = native_sources
 
+      cmd = [self._JoinScriptDir('jni_registration_generator.py')]
+
       java_sources_file = pathlib.Path(tdir) / 'java_sources.txt'
       java_sources_file.write_text('\n'.join(java_sources))
-      native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
-      native_sources_file.write_text('\n'.join(native_sources))
-
-      cmd = [self._JoinScriptDir('jni_registration_generator.py')]
       cmd += ['--java-sources-files', str(java_sources_file)]
-      cmd += ['--native-sources-file', str(native_sources_file)]
+      if native_sources:
+        native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
+        native_sources_file.write_text('\n'.join(native_sources))
+        cmd += ['--native-sources-file', str(native_sources_file)]
+
       srcjar_path = os.path.join(tdir, 'srcjar.jar')
       cmd += ['--srcjar-path', srcjar_path]
       if header_golden:
@@ -340,6 +342,20 @@ class Tests(BaseTest):
     }
     self._TestEndToEndRegistration(
         input_java_files + extra_input_java_files,
+        options,
+        name_to_goldens,
+        src_files_for_asserts_and_stubs=stubs_java_files)
+
+  def testFullStubs(self):
+    stubs_java_files = ['TinySample.java']
+    options = JniRegistrationGeneratorOptions()
+    options.add_stubs_for_missing_native = True
+    name_to_goldens = {
+        'org/chromium/base/natives/GEN_JNI.java':
+        'TinySample_full_stubs_GenJni.java.golden'
+    }
+    self._TestEndToEndRegistration(
+        [],
         options,
         name_to_goldens,
         src_files_for_asserts_and_stubs=stubs_java_files)

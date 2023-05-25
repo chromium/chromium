@@ -23,6 +23,7 @@ import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
+  import("//build/config/android/jni.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/features.gni")
   import("//components/safe_browsing/buildflags.gni")
@@ -869,7 +870,7 @@ if (is_android) {
     deps = [ "//weblayer/browser/java:jni" ]
   }
 
-  shared_library("libweblayer_test") {
+  shared_library_with_jni("libweblayer_test") {
     testonly = true
     sources = [ "app/entry_point.cc" ]
     deps = [
@@ -880,6 +881,7 @@ if (is_android) {
     ]
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [ "//build/config/android:hide_all_but_jni" ]
+    java_targets = [ "//weblayer/shell/android:weblayer_support_apk" ]
   }
 } else {
   source_set("weblayer_lib") {

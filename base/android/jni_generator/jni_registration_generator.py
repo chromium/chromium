@@ -1002,11 +1002,14 @@ def main(argv):
     native_sources = _GetFilesSetFromSources([args.native_sources_file],
                                              args.file_exclusions)
   else:
-    assert not args.add_stubs_for_missing_native
     assert not args.remove_uncalled_methods
-    # Just treating it like we have perfect alignment between native and java
-    # when only looking at java.
-    native_sources = java_sources
+    if args.add_stubs_for_missing_native:
+      # This will create a fully stubbed out GEN_JNI.
+      native_sources = set()
+    else:
+      # Just treating it like we have perfect alignment between native and java
+      # when only looking at java.
+      native_sources = java_sources
 
   _Generate(args, native_sources, java_sources=java_sources)
 
