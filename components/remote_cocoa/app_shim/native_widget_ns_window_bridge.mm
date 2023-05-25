@@ -861,8 +861,7 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
         return event;
       }
 
-      std::unique_ptr<ui::Event> ui_event =
-          ui::EventFromNative(base::apple::OwnedNSEvent(event));
+      std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
       bool event_handled = false;
       weak_ptr->host_->DispatchMonitorEvent(std::move(ui_event),
                                             &event_handled);

@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "base/apple/owned_objc.h"
 #include "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
@@ -327,26 +326,24 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (remote_cocoa::IsNSToolbarFullScreenWindow(target)) {
     // We are in immersive fullscreen. This event is generated from the overlay
     // window which sits atop the toolbar. Convert the event location to the
-    // content view coordinate, which should have the same bounds as the overlay
+    // content view coordiate, which should have the same bounds as the overlay
     // window.
     // This is to handle the case that `target` may contain the titlebar which
     // the overlay window does not contain. Without this, buttons in the toolbar
     // are not clickable when the titlebar is revealed.
-    event_location = MovePointToView(theEvent.locationInWindow, source, self);
+    event_location = MovePointToView([theEvent locationInWindow], source, self);
   } else {
     event_location =
-        MovePointToWindow(theEvent.locationInWindow, source, target);
+        MovePointToWindow([theEvent locationInWindow], source, target);
   }
   [self updateTooltipIfRequiredAt:event_location];
 
   if (isScrollEvent) {
-    auto event =
-        std::make_unique<ui::ScrollEvent>(base::apple::OwnedNSEvent(theEvent));
+    auto event = std::make_unique<ui::ScrollEvent>(theEvent);
     event->set_location(event_location);
     _bridge->host()->OnScrollEvent(std::move(event));
   } else {
-    auto event =
-        std::make_unique<ui::MouseEvent>(base::apple::OwnedNSEvent(theEvent));
+    auto event = std::make_unique<ui::MouseEvent>(theEvent);
     event->set_location(event_location);
     _bridge->host()->OnMouseEvent(std::move(event));
   }
@@ -434,7 +431,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (!_hasUnhandledKeyDownEvent)
     return NO;
 
-  ui::KeyEvent event((base::apple::OwnedNSEvent(_keyDownEvent)));
+  ui::KeyEvent event(_keyDownEvent);
   [self handleKeyEvent:&event];
   _hasUnhandledKeyDownEvent = NO;
   return event.handled();
@@ -462,7 +459,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // key events!
   if (NSApp.currentEvent.type == NSEventTypeKeyDown ||
       NSApp.currentEvent.type == NSEventTypeKeyUp) {
-    event.SetNativeEvent(base::apple::OwnedNSEvent(NSApp.currentEvent));
+    event.SetNativeEvent(NSApp.currentEvent);
   }
 
   if ([self dispatchKeyEventToMenuController:&event])
@@ -647,8 +644,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     return;
 
   DCHECK([theEvent type] != NSEventTypeScrollWheel);
-  auto event =
-      std::make_unique<ui::MouseEvent>(base::apple::OwnedNSEvent(theEvent));
+  auto event = std::make_unique<ui::MouseEvent>(theEvent);
   [self adjustUiEventLocation:event.get() fromNativeEvent:theEvent];
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
@@ -838,7 +834,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (void)keyUp:(NSEvent*)theEvent {
-  ui::KeyEvent event((base::apple::OwnedNSEvent(theEvent)));
+  ui::KeyEvent event(theEvent);
   [self handleKeyEvent:&event];
 }
 
@@ -850,7 +846,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     // is also sent, so we should drop this one. See https://crbug.com/889618
     return;
   }
-  ui::KeyEvent event((base::apple::OwnedNSEvent(theEvent)));
+  ui::KeyEvent event(theEvent);
   [self handleKeyEvent:&event];
 }
 
@@ -858,8 +854,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (!_bridge)
     return;
 
-  auto event =
-      std::make_unique<ui::ScrollEvent>(base::apple::OwnedNSEvent(theEvent));
+  auto event = std::make_unique<ui::ScrollEvent>(theEvent);
   [self adjustUiEventLocation:event.get() fromNativeEvent:theEvent];
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
@@ -885,14 +880,13 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   swipeDetails.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
   swipeDetails.set_touch_points(3);
 
-  base::apple::OwnedNSEvent owned_event(event);
-  gfx::PointF location = ui::EventLocationFromNative(owned_event);
+  gfx::PointF location = ui::EventLocationFromNative(event);
   // Note this uses the default unique_touch_event_id of 0 (Swipe events do not
   // support -[NSEvent eventNumber]). This doesn't seem like a real omission
   // because the three-finger swipes are instant and can't be tracked anyway.
   auto gestureEvent = std::make_unique<ui::GestureEvent>(
-      location.x(), location.y(), ui::EventFlagsFromNative(owned_event),
-      ui::EventTimeFromNative(owned_event), swipeDetails);
+      location.x(), location.y(), ui::EventFlagsFromNative(event),
+      ui::EventTimeFromNative(event), swipeDetails);
   _bridge->host()->OnGestureEvent(std::move(gestureEvent));
 }
 
@@ -900,8 +894,8 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (!_bridge)
     return;
 
-  const gfx::Point locationInContent = gfx::ToFlooredPoint(
-      ui::EventLocationFromNative(base::apple::OwnedNSEvent(theEvent)));
+  const gfx::Point locationInContent =
+      gfx::ToFlooredPoint(ui::EventLocationFromNative(theEvent));
 
   bool foundWord = false;
   gfx::DecoratedText decoratedWord;
