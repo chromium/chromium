@@ -100,7 +100,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "events_api_browsertests.cc",
+    "events_api_browsertest.cc",
     "fake_events_service.cc",
     "fake_events_service.h",
   ]
