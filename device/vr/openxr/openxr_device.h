@@ -59,7 +59,7 @@ class DEVICE_VR_EXPORT OpenXrDevice
   void OnPresentingControllerMojoConnectionError();
   bool IsArBlendModeSupported();
 
-  XrInstance instance_;
+  XrInstance instance_{XR_NULL_HANDLE};
   std::unique_ptr<OpenXrExtensionHelper> extension_helper_;
   std::unique_ptr<OpenXrRenderLoop> render_loop_;
 
