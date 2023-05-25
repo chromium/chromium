@@ -721,7 +721,8 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     uint32_t usage,
     GLenum gl_target,
     bool framebuffer_attachment_angle,
-    bool is_cleared)
+    bool is_cleared,
+    bool retain_gl_texture)
     : SharedImageBacking(mailbox,
                          format,
                          size,
@@ -738,20 +739,20 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
       cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
-  DCHECK(io_surface_);
+  CHECK(io_surface_);
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
   // https://crbug.com/1251724
-  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)
+  if (usage & SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU) {
     return;
+  }
 
-// iOS uses Metal and doesn't need to retain the GL texture.
-#if !BUILDFLAG(IS_IOS)
   // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
   // best approach as it can lead to issues with context losses.
-  egl_state_for_legacy_mailbox_ = RetainGLTexture();
-#endif
+  if (retain_gl_texture) {
+    egl_state_for_legacy_mailbox_ = RetainGLTexture();
+  }
 }
 
 IOSurfaceImageBacking::~IOSurfaceImageBacking() {
@@ -926,17 +927,18 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     WGPUBackendType backend_type,
     std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
-  // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
-  // regarding RGBA versus BGRA.
+  // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
+  // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
   viz::SharedImageFormat actual_format = format();
-  if (actual_format == viz::SinglePlaneFormat::kRGBA_8888) {
+  const uint32_t io_surface_format = IOSurfaceGetPixelFormat(io_surface_);
+  if (io_surface_format == 'BGRA') {
     actual_format = viz::SinglePlaneFormat::kBGRA_8888;
   }
 
   // TODO(crbug.com/1293514): Remove this if condition after using single
   // multiplanar mailbox and actual_format could report multiplanar format
   // correctly.
-  if (IOSurfaceGetPixelFormat(io_surface_) == '420v') {
+  if (io_surface_format == '420v') {
     actual_format = viz::LegacyMultiPlaneFormat::kNV12;
   }
 

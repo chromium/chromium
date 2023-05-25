@@ -200,7 +200,8 @@ SharedImageFactory::SharedImageFactory(
   }
 
   if (!feature_info) {
-    // For some unit tests, shared_context_state_ could be nullptr.
+    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
+    // could be nullptr.
     bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
                            gles2::PassthroughCommandDecoderSupported();
     feature_info = new gles2::FeatureInfo(workarounds, gpu_feature_info);
@@ -338,12 +339,21 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
-  auto iosurface_backing_factory =
-      std::make_unique<IOSurfaceImageBackingFactory>(
-          gpu_preferences, workarounds, feature_info.get(),
-          shared_context_state_ ? shared_context_state_->progress_reporter()
-                                : nullptr);
-  factories_.push_back(std::move(iosurface_backing_factory));
+  {
+    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
+    // could be nullptr.
+    int32_t max_texture_size = shared_context_state_
+                                   ? shared_context_state_->GetMaxTextureSize()
+                                   : 8192;
+    auto* progress_reporter = shared_context_state_
+                                  ? shared_context_state_->progress_reporter()
+                                  : nullptr;
+    auto iosurface_backing_factory =
+        std::make_unique<IOSurfaceImageBackingFactory>(
+            gpu_preferences.gr_context_type, max_texture_size,
+            feature_info.get(), progress_reporter);
+    factories_.push_back(std::move(iosurface_backing_factory));
+  }
 #endif
 }
 

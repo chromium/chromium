@@ -1851,13 +1851,25 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     front_buffer_mailbox = mailboxes.front_buffer;
   } else {
     if (ShouldUseChromiumImage()) {
-      viz::SharedImageFormat si_format = color_buffer_format_;
-      if (si_format == viz::SinglePlaneFormat::kRGBX_8888 &&
+      auto gmb_si_format = color_buffer_format_;
+      // For Mac, explicitly specify BGRA/X instead of RGBA/X so that IOSurface
+      // format matches shared image format. This is necessary for Graphite.
+      // For ChromeOS explicitly specify BGRX instead of RGBX since some older
+      // Intel GPUs (i8xx) don't support RGBX overlays.
+      if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBX_8888 &&
           gpu::IsImageFromGpuMemoryBufferFormatSupported(
               gfx::BufferFormat::BGRX_8888,
               ContextProvider()->GetCapabilities())) {
-        si_format = viz::SinglePlaneFormat::kBGRX_8888;
+        gmb_si_format = viz::SinglePlaneFormat::kBGRX_8888;
       }
+#if BUILDFLAG(IS_MAC)
+      if (color_buffer_format_ == viz::SinglePlaneFormat::kRGBA_8888 &&
+          gpu::IsImageFromGpuMemoryBufferFormatSupported(
+              gfx::BufferFormat::BGRA_8888,
+              ContextProvider()->GetCapabilities())) {
+        gmb_si_format = viz::SinglePlaneFormat::kBGRA_8888;
+      }
+#endif
       // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
       // order to allocate the GMB service-side and avoid a synchronous
@@ -1870,17 +1882,18 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-              viz::BufferFormat(si_format.resource_format()),
+              viz::BufferFormat(gmb_si_format.resource_format()),
               ContextProvider()->GetCapabilities())) {
         gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-            size, viz::BufferFormat(si_format.resource_format()), buffer_usage,
-            gpu::kNullSurfaceHandle, nullptr);
+            size, viz::BufferFormat(gmb_si_format.resource_format()),
+            buffer_usage, gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
           gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
-              si_format, size, color_space_, origin, back_buffer_alpha_type,
+              gmb_si_format, size, color_space_, origin, back_buffer_alpha_type,
               usage | additional_usage_flags, "WebGLDrawingBuffer",
               gpu_memory_buffer->CloneHandle());
+          color_buffer_format_ = gmb_si_format;
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
           // parameters on OSX.
