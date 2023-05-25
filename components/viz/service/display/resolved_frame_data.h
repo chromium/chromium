@@ -168,7 +168,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
  public:
   ResolvedFrameData(DisplayResourceProvider* resource_provider,
                     Surface* surface,
-                    uint64_t prev_frame_index);
+                    uint64_t prev_frame_index,
+                    AggregatedRenderPassId prev_root_pass_id);
   ~ResolvedFrameData();
   ResolvedFrameData(ResolvedFrameData&& other) = delete;
   ResolvedFrameData& operator=(ResolvedFrameData&& other) = delete;
@@ -268,6 +269,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
       aggregated_id_map_;
 
   uint64_t previous_frame_index_ = kInvalidFrameIndex;
+
+  const AggregatedRenderPassId prev_root_pass_id_;
 
   // Track if the this resolved frame was used this aggregation.
   bool used_in_aggregation_ = false;

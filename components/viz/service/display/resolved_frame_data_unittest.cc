@@ -99,7 +99,8 @@ TEST_F(ResolvedFrameDataTest, UpdateActiveFrame) {
                    .Build();
 
   Surface* surface = SubmitCompositorFrame(std::move(frame));
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   // The resolved frame should be false after construction.
   EXPECT_FALSE(resolved_frame.is_valid());
@@ -131,7 +132,8 @@ TEST_F(ResolvedFrameDataTest, DupliateRenderPassIds) {
                    .Build();
 
   Surface* surface = SubmitCompositorFrame(std::move(frame));
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
@@ -149,7 +151,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsSelfCycle) {
       CompositorFrameBuilder().AddRenderPass(std::move(render_pass)).Build();
 
   Surface* surface = SubmitCompositorFrame(std::move(frame));
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.is_valid());
@@ -170,7 +173,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassIdsCycle) {
                    .AddRenderPass(std::move(render_pass2))
                    .Build();
   Surface* surface = SubmitCompositorFrame(std::move(frame));
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   // RenderPasses have duplicate IDs so the resolved frame should be marked as
   // invalid.
@@ -196,7 +200,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
 
   Surface* surface = SubmitCompositorFrame(std::move(frame));
   EXPECT_EQ(surface->GetActiveFrameIndex(), kFrameIndexStart);
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 1u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 1u,
+                                   AggregatedRenderPassId());
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   ASSERT_TRUE(resolved_frame.is_valid());
@@ -213,7 +218,8 @@ TEST_F(ResolvedFrameDataTest, RenderPassWithPerQuadDamage) {
 
 TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
   Surface* surface = SubmitCompositorFrame(MakeSimpleFrame());
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
   EXPECT_FALSE(resolved_frame.WasUsedInAggregation());
@@ -262,7 +268,8 @@ TEST_F(ResolvedFrameDataTest, MarkAsUsed) {
 // Verifies that SetFullDamageForNextAggregation()
 TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
   Surface* surface = SubmitCompositorFrame(MakeSimpleFrame());
-  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u);
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   AggregatedRenderPassId());
 
   // First aggregation to setup existing state.
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
@@ -282,6 +289,21 @@ TEST_F(ResolvedFrameDataTest, SetFullDamageNextAggregation) {
   // damaged.
   EXPECT_EQ(resolved_frame.GetFrameDamageType(), FrameDamageType::kFull);
   EXPECT_EQ(resolved_frame.GetSurfaceDamage(), kOutputRect);
+}
+
+// Verifies that the ResolvedFrameData will reuse a provided root pass ID
+TEST_F(ResolvedFrameDataTest, ReusePreviousRootPassId) {
+  Surface* surface = SubmitCompositorFrame(MakeSimpleFrame());
+  AggregatedRenderPassId prev_root_pass_id =
+      render_pass_id_generator_.GenerateNextId();
+  ResolvedFrameData resolved_frame(&resource_provider_, surface, 0u,
+                                   prev_root_pass_id);
+
+  resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
+  resolved_frame.MarkAsUsedInAggregation();
+
+  EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
+            prev_root_pass_id);
 }
 
 }  // namespace

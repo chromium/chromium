@@ -537,6 +537,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
       return nullptr;
     }
 
+    AggregatedRenderPassId prev_root_pass_id;
     uint64_t prev_frame_index = 0u;
     // If this is the first frame in a new surface there might be damage
     // compared to the previous frame in a different surface.
@@ -546,13 +547,17 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
       if (prev_resolved_frame_iter != resolved_frames_.end()) {
         prev_frame_index =
             prev_resolved_frame_iter->second.previous_frame_index();
+        prev_root_pass_id =
+            prev_resolved_frame_iter->second.GetRootRenderPassData()
+                .remapped_id();
       }
     }
 
     iter = resolved_frames_
                .emplace(
                    std::piecewise_construct, std::forward_as_tuple(surface_id),
-                   std::forward_as_tuple(provider_, surface, prev_frame_index))
+                   std::forward_as_tuple(provider_, surface, prev_frame_index,
+                                         prev_root_pass_id))
                .first;
   }
 
