@@ -449,6 +449,17 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return view;
   }
 
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  T* AddChildView(raw_ptr<T, Traits> view) {
+    AddChildViewAtImpl(view.get(), children_.size());
+    return view;
+  }
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  T* AddChildViewAt(raw_ptr<T, Traits> view, size_t index) {
+    AddChildViewAtImpl(view.get(), index);
+    return view;
+  }
+
   // Moves |view| to the specified |index|. An |index| at least as large as that
   // of the last child moves the view to the end.
   void ReorderChildView(View* view, size_t index);
@@ -471,8 +482,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   }
 
   // Partially specialized version to directly take a raw_ptr<T>.
-  template <typename T>
-  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T> view) {
+  template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T, Traits> view) {
     return RemoveChildViewT(view.get());
   }
 
