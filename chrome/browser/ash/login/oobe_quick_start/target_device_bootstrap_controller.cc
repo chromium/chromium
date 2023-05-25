@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +30,16 @@
 namespace ash::quick_start {
 
 namespace {
+
+// Passing "--quick-start-test-forced-update" on the command line will simulate
+// the "Forced Update" flow after the wifi credentials transfer is complete.
+// This is for testing only and will not install an actual update. If this
+// switch is present, the Chromebook reboots and attempts to automatically
+// resume the Quick Start connection after reboot.
+// TODO(b/280308144): Delete this switch. The OOBE update screen should call
+// PrepareForUpdate() and trigger the update/reboot.
+constexpr char kQuickStartTestForcedUpdateSwitch[] =
+    "quick-start-test-forced-update";
 
 TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
     std::vector<uint8_t> blob) {
@@ -114,7 +126,7 @@ void TargetDeviceBootstrapController::MaybeCloseOpenConnections() {
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED || !authenticated_connection_) {
+  if (status_.step != Step::CONNECTED_TO_WIFI || !authenticated_connection_) {
     return;
   }
 
@@ -215,7 +227,8 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
     bool ack_successful) {
   CHECK(authenticated_connection_);
 
-  if (ack_successful) {
+  if (ack_successful || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            kQuickStartTestForcedUpdateSwitch)) {
     QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
@@ -227,6 +240,13 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   authenticated_connection_->Close(
       TargetDeviceConnectionBroker::ConnectionClosedReason::
           kTargetDeviceUpdate);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kQuickStartTestForcedUpdateSwitch)) {
+    chromeos::PowerManagerClient::Get()->RequestRestart(
+        power_manager::REQUEST_RESTART_FOR_UPDATE,
+        "Testing OOBE Quick Start Forced Update flow");
+  }
 }
 
 void TargetDeviceBootstrapController::WaitForUserVerification(
@@ -282,6 +302,11 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   status_.ssid = credentials->ssid;
   status_.password = credentials->password;
   NotifyObservers();
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kQuickStartTestForcedUpdateSwitch)) {
+    PrepareForUpdate();
+  }
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
