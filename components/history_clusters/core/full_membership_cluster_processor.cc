@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/full_membership_cluster_processor.h"
 
 #include <iterator>
+#include <unordered_set>
 
 #include "base/containers/contains.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -17,8 +18,9 @@ FullMembershipClusterProcessor::~FullMembershipClusterProcessor() = default;
 
 void FullMembershipClusterProcessor::ProcessClusters(
     std::vector<history::Cluster>* clusters) {
-  std::vector<base::flat_set<SimilarVisit, SimilarVisit::Comp>> visit_sets(
-      clusters->size());
+  std::vector<std::unordered_set<SimilarVisit, SimilarVisit::Hash,
+                                 SimilarVisit::Equals>>
+      visit_sets(clusters->size());
   for (size_t i = 0; i < clusters->size(); i++) {
     for (const auto& visit : clusters->at(i).visits) {
       visit_sets[i].insert(SimilarVisit(visit));
@@ -42,7 +44,8 @@ void FullMembershipClusterProcessor::ProcessClusters(
       const std::vector<history::ClusterVisit>& smaller_cluster_visits =
           cluster_i_size < cluster_j_size ? clusters->at(i).visits
                                           : clusters->at(j).visits;
-      base::flat_set<SimilarVisit, SimilarVisit::Comp>& larger_cluster_visits =
+      std::unordered_set<SimilarVisit, SimilarVisit::Hash,
+                         SimilarVisit::Equals>& larger_cluster_visits =
           cluster_i_size < cluster_j_size ? visit_sets[j] : visit_sets[i];
 
       bool has_full_set_membership = true;

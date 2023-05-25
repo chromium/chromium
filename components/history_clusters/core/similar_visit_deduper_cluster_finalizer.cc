@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 
+#include <unordered_map>
+
 #include "base/ranges/algorithm.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -18,7 +20,8 @@ SimilarVisitDeduperClusterFinalizer::~SimilarVisitDeduperClusterFinalizer() =
 
 void SimilarVisitDeduperClusterFinalizer::FinalizeCluster(
     history::Cluster& cluster) {
-  base::flat_map<SimilarVisit, history::ClusterVisit*, SimilarVisit::Comp>
+  std::unordered_map<SimilarVisit, history::ClusterVisit*, SimilarVisit::Hash,
+                     SimilarVisit::Equals>
       similar_visit_to_canonical_visits;
   // First do a prepass to find the canonical visit for each SimilarVisit key.
   // This simply marks the last visit in `cluster` with any given SimilarVisit
