@@ -9,6 +9,7 @@
 // Obj-C and have no C++ in them.
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 
 // Explicitly import the bridging header of the Swift dependencies, as the

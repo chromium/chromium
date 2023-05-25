@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/data_response_provider.h"
@@ -2541,6 +2543,45 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                  conditionDescription);
 }
 
+// Checks that tabs are sorted by their recency when the feature is enabled.
+- (void)testRecencySort {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The RecencyTab Grid Recency Sort"
+                           @"feature is only supported on iPhone.");
+  }
+
+  [self relaunchAppWithTabGridRecencySortEnabled];
+  [self loadTestURLsInNewTabs];
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:4];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Third tab has no title by design in this test class, so its URL is its
+  // fallback title. But since it depends on the port of the HTTP server
+  // underneath, it is not easily computable and checkable. So, don't check for
+  // it directly.
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle4, 3)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the second tab.
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 1)]
+      performAction:grey_tap()];
+
+  // Check that the order changed in the tab grid: 1, 3, 4, 2.
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:4];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle4, 2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 3)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
@@ -2710,6 +2751,14 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
       kTabInactivityThresholdParameterName + "/" +
       kTabInactivityThresholdImmediateDemoParam);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+// Relaunches the app with tab-grid-recency-sort enabled.
+- (void)relaunchAppWithTabGridRecencySortEnabled {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kTabGridRecencySort);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
@@ -99,11 +100,6 @@ const CGFloat kMinBackwardVelocityToCancelDismiss = 10;
 // grid is popped, but to avoid having it emptied immediately (producing a
 // glitch), delay the closing of the tabs in the mediator.
 const base::TimeDelta kCloseAllInactiveTabsDelay = base::Seconds(0.3);
-
-// NSUserDefaults key to check whether the user education screen has ever been
-// shown. The associated value in user defaults is a BOOL.
-NSString* const kInactiveTabsUserEducationShownOnce =
-    @"InactiveTabsUserEducationShownOnce";
 
 }  // namespace
 
@@ -625,7 +621,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 // no-op.
 - (void)startUserEducationIfNeeded {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  if ([defaults boolForKey:kInactiveTabsUserEducationShownOnce]) {
+  if ([defaults boolForKey:kInactiveTabsUserEducationShownOnceKey]) {
     return;
   }
 
@@ -637,7 +633,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   [self.userEducationCoordinator start];
 
   // Record the presentation.
-  [defaults setBool:YES forKey:kInactiveTabsUserEducationShownOnce];
+  [defaults setBool:YES forKey:kInactiveTabsUserEducationShownOnceKey];
 }
 
 // Called when the user confirmed wanting to close all inactive tabs.

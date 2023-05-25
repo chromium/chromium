@@ -171,9 +171,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
                                        timeout:(base::TimeDelta)timeout;
 
-// Waits for there to be `count` number of non-incognito tabs within a timeout,
-// or a GREYAssert is induced.
+// Waits for there to be `count` number of non-incognito, active, tabs within a
+// timeout, or a GREYAssert is induced.
 - (void)waitForMainTabCount:(NSUInteger)count;
+
+// Waits for there to be `count` number of inactive tabs within a timeout, or a
+// GREYAssert is induced.
+- (void)waitForInactiveTabCount:(NSUInteger)count;
 
 // Waits for there to be `count` number of incognito tabs within a timeout, or a
 // GREYAssert is induced.

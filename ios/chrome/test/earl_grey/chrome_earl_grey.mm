@@ -607,6 +607,25 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
+- (void)waitForInactiveTabCount:(NSUInteger)count {
+  NSString* errorString = [NSString
+      stringWithFormat:
+          @"Failed waiting for inactive tab count to become %" PRIuNS, count];
+
+  // Allow the UI to become idle, in case any tabs are being opened or closed.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  GREYCondition* tabCountCheck = [GREYCondition
+      conditionWithName:errorString
+                  block:^{
+                    return
+                        [ChromeEarlGreyAppInterface inactiveTabCount] == count;
+                  }];
+  bool tabCountEqual =
+      [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
+}
+
 - (void)waitForIncognitoTabCount:(NSUInteger)count {
   NSString* errorString = [NSString
       stringWithFormat:
