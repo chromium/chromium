@@ -13,7 +13,6 @@
 
 @protocol BookmarksFolderChooserMediatorDelegate;
 class AuthenticationService;
-class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -45,7 +44,6 @@ class SyncService;
                      editedNodes:
                          (std::set<const bookmarks::BookmarkNode*>)editedNodes
            authenticationService:(AuthenticationService*)authenticationService
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

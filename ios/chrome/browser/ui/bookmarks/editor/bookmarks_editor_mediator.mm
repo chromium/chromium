@@ -30,9 +30,9 @@
                                        SyncObserverModelBridge> {
   PrefService* _prefs;
 
+  // Observer for the bookmark model of `self.bookmark`.
   std::unique_ptr<BookmarkModelBridge> _bookmarkModelBridgeObserver;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
-  SyncSetupService* _syncSetupService;
   ChromeBrowserState* _browserState;
   // Whether the user manually changed the folder. In which case it must be
   // saved as last used folder on "save".
@@ -47,6 +47,7 @@
 @implementation BookmarksEditorMediator {
   base::WeakPtr<bookmarks::BookmarkModel> _profileBookmarkModel;
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
+  syncer::SyncService* _syncService;
 }
 
 - (instancetype)
@@ -54,7 +55,6 @@
             accountBookmarkModel:(bookmarks::BookmarkModel*)accountBookmarkModel
                     bookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode
                            prefs:(PrefService*)prefs
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
                     browserState:(ChromeBrowserState*)browserState {
   self = [super init];
@@ -79,8 +79,8 @@
     _prefs = prefs;
     _bookmarkModelBridgeObserver.reset(
         new BookmarkModelBridge(self, self.bookmarkModel));
+    _syncService = syncService;
     _syncObserverModelBridge.reset(new SyncObserverBridge(self, syncService));
-    _syncSetupService = syncSetupService;
     _browserState = browserState;
   }
   return self;
@@ -92,8 +92,9 @@
   _bookmark = nullptr;
   _folder = nullptr;
   _prefs = nullptr;
-  _bookmarkModelBridgeObserver = nullptr;
-  _syncObserverModelBridge = nullptr;
+  _bookmarkModelBridgeObserver.reset();
+  _syncService = nullptr;
+  _syncObserverModelBridge.reset();
   _browserState = nullptr;
 }
 
@@ -118,8 +119,7 @@
       self.folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   switch (type) {
     case bookmarks::StorageType::kLocalOrSyncable:
-      return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-          _syncSetupService);
+      return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
     case bookmarks::StorageType::kAccount:
       return NO;
   }

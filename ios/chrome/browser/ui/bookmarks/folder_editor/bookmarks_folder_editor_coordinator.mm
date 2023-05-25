@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
@@ -95,8 +94,6 @@
       ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
   _viewController = [[BookmarksFolderEditorViewController alloc]
@@ -105,7 +102,6 @@
                         folderNode:_folderNode
                   parentFolderNode:_parentFolderNode
              authenticationService:authService
-                  syncSetupService:syncSetupService
                        syncService:syncService
                            browser:self.browser];
   _viewController.delegate = self;

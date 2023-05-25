@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator_delegate.h"
@@ -89,15 +88,14 @@
           browserState);
   bookmarks::BookmarkModel* accountBookmarkModel =
       ios::AccountBookmarkModelFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
   _mediator = [[BookmarksEditorMediator alloc]
       initWithProfileBookmarkModel:profileBookmarkModel
               accountBookmarkModel:accountBookmarkModel
                       bookmarkNode:_node
                              prefs:browserState->GetPrefs()
-                  syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
-                                       browserState)
-                       syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)
+                       syncService:syncService
                       browserState:browserState];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
