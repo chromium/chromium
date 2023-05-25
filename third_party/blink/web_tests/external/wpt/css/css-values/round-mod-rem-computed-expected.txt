@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 120 tests; 117 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 120 tests; 118 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS round(10,10) should be used-value-equivalent to 10
 PASS mod(1,1) should be used-value-equivalent to 0
 PASS rem(1,1) should be used-value-equivalent to 0
@@ -102,9 +102,9 @@ PASS mod(100px,1rem) should be used-value-equivalent to 4px
 PASS mod(10s,6000ms) should be used-value-equivalent to 4s
 PASS mod(10000ms,6s) should be used-value-equivalent to 4s
 PASS mod(18px,100% / 15) should be used-value-equivalent to 3px
-FAIL mod(-18px,100% / 15) should be used-value-equivalent to 2px assert_equals: mod(-18px,100% / 15) and 2px serialize to the same thing in used values. expected "2px" but got "1.98438px"
+PASS mod(-18px,100% / 10) should be used-value-equivalent to 4.5px
 PASS mod(18%,5%) should be used-value-equivalent to 3%
-PASS mod(-18%,5%) should be used-value-equivalent to 2%
+PASS mod(-19%,5%) should be used-value-equivalent to 1%
 PASS mod(18vw,5vw) should be used-value-equivalent to 3vw
 PASS mod(-18vw,5vw) should be used-value-equivalent to 2vw
 PASS rem(10%,1px) should be used-value-equivalent to 0.5px
