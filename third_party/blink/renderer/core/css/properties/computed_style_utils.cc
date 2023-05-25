@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -68,6 +69,72 @@
 #include "third_party/blink/renderer/platform/transforms/skew_transform_operation.h"
 
 namespace blink {
+
+namespace {
+
+CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
+  switch (palette->GetPaletteNameKind()) {
+    case blink::FontPalette::kNormalPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    case blink::FontPalette::kLightPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kLight);
+    case blink::FontPalette::kDarkPalette:
+      return CSSIdentifierValue::Create(CSSValueID::kDark);
+    case blink::FontPalette::kCustomPalette:
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          palette->GetPaletteValuesName());
+    case blink::FontPalette::kInterpolablePalette: {
+      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+      CSSFunctionValue* result = nullptr;
+      blink::FontPalette::InterpolablePaletteOperationType type =
+          palette->GetOperation().type;
+      switch (type) {
+        case blink::FontPalette::kMixPalettes:
+          result =
+              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteMix);
+          break;
+        case blink::FontPalette::kAddPalettes:
+          result =
+              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteAdd);
+          break;
+        case blink::FontPalette::kScalePalette:
+          result =
+              MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPaletteScale);
+          break;
+        case blink::FontPalette::kNoInterpolation:
+          NOTREACHED();
+      }
+      CSSValue* start = ConvertFontPaletteToCSSValue(palette->GetStart().get());
+      result->Append(*start);
+
+      if (type != blink::FontPalette::kScalePalette) {
+        CSSValue* end = ConvertFontPaletteToCSSValue(palette->GetEnd().get());
+        if (*start == *end && type == blink::FontPalette::kMixPalettes) {
+          return start;
+        }
+        result->Append(*end);
+      }
+
+      if (type != blink::FontPalette::kAddPalettes) {
+        CSSValue* param = CSSNumericLiteralValue::Create(
+            palette->GetOperation().param,
+            CSSPrimitiveValue::UnitType::kNumber);
+        if (palette->GetOperation().param == 1 &&
+            type == blink::FontPalette::kScalePalette) {
+          return start;
+        }
+        result->Append(*param);
+      }
+
+      return result;
+    }
+    default:
+      NOTREACHED();
+  }
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
+}
+
+}  // namespace
 
 static Length Negate(const Length& length) {
   if (length.IsCalculated()) {
@@ -1289,6 +1356,16 @@ CSSValue* ComputedStyleUtils::ValueForFontVariationSettings(
     list->Append(*variation_value);
   }
   return list;
+}
+
+CSSValue* ComputedStyleUtils::ValueForFontPalette(const ComputedStyle& style) {
+  blink::FontPalette* palette = style.GetFontDescription().GetFontPalette();
+
+  if (!palette) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+
+  return ConvertFontPaletteToCSSValue(palette);
 }
 
 CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {

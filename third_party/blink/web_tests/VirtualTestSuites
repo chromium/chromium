@@ -2083,5 +2083,15 @@
       "--enable-blink-features=NetInfoConstantType"
     ],
     "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "font-palette-animation",
+    "platforms": ["Linux"],
+    "bases": ["wpt_internal/css/css-fonts/animations"],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=FontPaletteAnimation"
+    ],
+    "expires": "Dec 1, 2023"
   }
 ]

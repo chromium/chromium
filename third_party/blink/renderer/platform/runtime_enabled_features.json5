@@ -1765,7 +1765,6 @@
     },
     {
       name: "FontPaletteAnimation",
-      base_feature: "none",
     },
     {
       name: "FontSrcLocalMatching",

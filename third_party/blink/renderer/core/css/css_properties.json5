@@ -1123,6 +1123,7 @@
     {
       name: "font-palette",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
+      interpolable: true,
       inherited: true,
       font: true,
       converter: "ConvertFontPalette",
