@@ -480,12 +480,17 @@ void ParseDiffSizeInfo(char* file,
     exit(1);
   }
 
+  auto get_uint_field = [&](const char* key) -> unsigned long {
+    return fields.isMember(key) ? fields[key].asUInt() : 0;
+  };
+
   unsigned long header_len = rest - file;
-  unsigned long before_len = fields["before_length"].asUInt();
+  unsigned long before_len = get_uint_field("before_length");
   unsigned long after_len = len - header_len - before_len;
 
   ParseSizeInfo(rest, before_len, before);
-  ParseSizeInfo(rest + before_len, after_len, after);
+  rest += before_len;
+  ParseSizeInfo(rest, after_len, after);
 }
 
 }  // namespace caspian

@@ -13,6 +13,7 @@ bool IsDiffSizeInfo(const char* file, unsigned long len);
 
 // Parses a .sizediff, and writes out the two sparse SizeInfos it contains.
 // Diffing still needs to be done on the result to obtain a DeltaSizeInfo.
+// |file| is not const char* owing to strsep() usage.
 void ParseDiffSizeInfo(char* file,
                        unsigned long len,
                        SizeInfo* before,

@@ -308,7 +308,7 @@ struct SizeInfo : BaseSizeInfo {
 };
 
 struct DeltaSizeInfo : BaseSizeInfo {
-  DeltaSizeInfo(const SizeInfo* before, const SizeInfo* after);
+  DeltaSizeInfo(const SizeInfo* before_in, const SizeInfo* after_in);
   ~DeltaSizeInfo() override;
   DeltaSizeInfo(const DeltaSizeInfo&);
   DeltaSizeInfo& operator=(const DeltaSizeInfo&);
@@ -368,7 +368,7 @@ struct NodeStats {
 };
 
 struct TreeNode {
-  TreeNode();
+  explicit TreeNode(ArtifactType artifact_type);
   ~TreeNode();
 
   using CompareFunc =
@@ -378,6 +378,7 @@ struct TreeNode {
                      int depth,
                      Json::Value* out);
 
+  const ArtifactType artifact_type;
   GroupedPath id_path;
   const char* src_path = nullptr;
   const char* component = nullptr;
@@ -388,8 +389,6 @@ struct TreeNode {
   int32_t flags = 0;
   NodeStats node_stats;
   int32_t short_name_index = 0;
-
-  ArtifactType artifact_type = ArtifactType::kSymbol;
 
   std::vector<TreeNode*> children;
   TreeNode* parent = nullptr;
