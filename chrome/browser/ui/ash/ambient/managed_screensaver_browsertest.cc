@@ -41,7 +41,11 @@
 
 namespace ash {
 
+constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
+
 const char kTestEmail[] = "test@example.com";
+const char kTestLargeImage[] = "test_large.jpg";
+const char kTestInvalidImage[] = "test_invalid.jpf";
 const char kRedImageFileName[] = "chromeos/screensaver/red.jpg";
 const char kGreenImageFileName[] = "chromeos/screensaver/green.jpg";
 const char kBlueImageFileName[] = "chromeos/screensaver/blue.jpg";
@@ -91,6 +95,8 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   void InitializeForLockScreen() {
     const auto& users = login_manager_mixin_.users();
     EXPECT_EQ(users.size(), 1u);
+    // Required so that fake session manager can be initialized with the correct
+    // policy blob.
     user_policy_mixin_.RequestPolicyUpdate();
 
     LoginUser(test_account_id_);
@@ -114,6 +120,8 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     // Setup the HTTPS test server
     https_server_.ServeFilesFromDirectory(GetChromeTestDataDir());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &ManagedScreensaverBrowserTest::HandleRequest, base::Unretained(this)));
 
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
@@ -123,6 +131,30 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
     https_server_.StartAcceptingConnections();
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    GURL absolute_url = https_server_.GetURL(request.relative_url);
+    auto path = absolute_url.path();
+    if (!path.ends_with(kTestLargeImage) &&
+        !path.ends_with(kTestInvalidImage)) {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+
+    if (path.ends_with(kTestLargeImage)) {
+      http_response->set_content(std::string(kMaxFileSizeInBytes + 1, 'a'));
+    }
+    if (path.ends_with(kTestInvalidImage)) {
+      http_response->set_content("invalid");
+    }
+    http_response->set_content_type("image/jpeg");
+
+    return http_response;
   }
 
   void TearDownOnMainThread() override {
@@ -357,6 +389,43 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
       /*on_timeout=*/run_loop_->QuitClosure());
   run_loop_->Run();
 
+  ASSERT_EQ(nullptr, GetContainerView());
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
+                       ImageMoreThanMaxSizeNotDownloadedOrShown) {
+  Init();
+  SetImages({kTestLargeImage, kBlueImageFileName});
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  AutotestAmbientApi test_api;
+  run_loop_ = std::make_unique<base::RunLoop>();
+  // The large image will not even be downloaded and will fail to download.
+  test_api.WaitForPhotoTransitionAnimationCompleted(
+      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_timeout=*/run_loop_->QuitClosure());
+  run_loop_->Run();
+  ASSERT_EQ(nullptr, GetContainerView());
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
+                       InvalidImageDownloadedButNotShown) {
+  Init();
+  SetImages({kTestInvalidImage, kBlueImageFileName});
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  AutotestAmbientApi test_api;
+  run_loop_ = std::make_unique<base::RunLoop>();
+  // The invalid image is downloaded but the screensaver will not start up and
+  // show images as the second image will fail to decode.
+  test_api.WaitForPhotoTransitionAnimationCompleted(
+      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_timeout=*/run_loop_->QuitClosure());
+  run_loop_->Run();
   ASSERT_EQ(nullptr, GetContainerView());
 }
 
