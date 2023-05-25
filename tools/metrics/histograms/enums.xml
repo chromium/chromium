@@ -22878,6 +22878,20 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Update Engine is active"/>
 </enum>
 
+<enum name="CrosHibernateCycleEvent">
+  <int value="0" label="SuspendAttempt"/>
+  <int value="1" label="SuspendSuccess"/>
+  <int value="2" label="SuspendFailure"/>
+  <int value="3" label="ResumeAttempt"/>
+  <int value="4" label="ResumeSuccess"/>
+  <int value="5" label="ResumeFailure"/>
+</enum>
+
+<enum name="CrosHibernateFileSystemStatus">
+  <int value="0" label="Clean"/>
+  <int value="1" label="Has errors"/>
+</enum>
+
 <enum name="CrosSelectToSpeakActivationMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Canceled with menu button"/>
