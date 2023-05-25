@@ -8,6 +8,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -53,8 +54,9 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   if (power_bookmarks_side_panel_enabled) {
     // Icon column
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetImage(gfx::CreateVectorIcon(omnibox::kPriceTrackingDisabledIcon,
-                                         SkColor(gfx::kGoogleGrey700)));
+    icon->SetImage(
+        ui::ImageModel::FromVectorIcon(omnibox::kPriceTrackingDisabledIcon,
+                                       kColorBookmarkDialogTrackPriceIcon));
     icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
     icon->SetProperty(views::kMarginsKey,
                       gfx::Insets::TLBR(0, 0, 0, kIconMargin));
@@ -72,8 +74,8 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
             .SetImageSize(gfx::Size(kProductImageSize, kProductImageSize))
             .SetPreferredSize(gfx::Size(kProductImageSize, kProductImageSize))
             // TODO(meiliang@): Verify color and corner radius with UX.
-            .SetBorder(views::CreateRoundedRectBorder(
-                1, kImageBorderRadius, SkColorSetA(gfx::kGoogleGrey900, 0x24)))
+            .SetBorder(views::CreateThemedRoundedRectBorder(
+                1, kImageBorderRadius, kColorBookmarkDialogProductImageBorder))
             .SetImage(
                 gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
                     gfx::Size(kProductImageSize, kProductImageSize),

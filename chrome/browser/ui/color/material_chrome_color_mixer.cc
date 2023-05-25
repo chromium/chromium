@@ -60,8 +60,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkBarForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorBookmarkBarSeparatorChromeRefresh] = {ui::kColorSysOnBaseDivider};
   mixer[kColorBookmarkButtonIcon] = {kColorBookmarkBarForeground};
-  mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
+  mixer[kColorBookmarkDialogProductImageBorder] = {ui::kColorSysNeutralOutline};
+  mixer[kColorBookmarkDialogTrackPriceIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
+  mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
   mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
       ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
