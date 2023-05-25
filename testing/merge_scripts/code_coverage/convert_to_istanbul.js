@@ -99,7 +99,6 @@ async function validateSourceMaps(instrumentedFilePath) {
     }
   });
 
-  console.log(validMap)
   // Destroy consumer as we dont need it anymore.
   consumer.destroy();
   return validMap;
