@@ -141,4 +141,80 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       SkColorTypeToResourceFormat(color_type));
 }
 
+bool HasEquivalentBufferFormat(SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    switch (format.resource_format()) {
+      case BGRA_8888:
+      case RED_8:
+      case R16_EXT:
+      case RG16_EXT:
+      case RGBA_4444:
+      case RGBA_8888:
+      case RGBA_F16:
+      case BGR_565:
+      case RG_88:
+      case RGBX_8888:
+      case BGRX_8888:
+      case RGBA_1010102:
+      case BGRA_1010102:
+      case YVU_420:
+      case YUV_420_BIPLANAR:
+      case YUVA_420_TRIPLANAR:
+      case P010:
+        return true;
+      case ETC1:
+      case ALPHA_8:
+      case LUMINANCE_8:
+      case RGB_565:
+      case LUMINANCE_F16:
+        return false;
+    }
+  }
+
+  return format == MultiPlaneFormat::kYV12 ||
+         format == MultiPlaneFormat::kNV12 ||
+         format == MultiPlaneFormat::kNV12A ||
+         format == MultiPlaneFormat::kP010;
+}
+
+SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::BGRA_8888:
+      return SinglePlaneFormat::kBGRA_8888;
+    case gfx::BufferFormat::R_8:
+      return SinglePlaneFormat::kR_8;
+    case gfx::BufferFormat::R_16:
+      return SinglePlaneFormat::kR_16;
+    case gfx::BufferFormat::RG_1616:
+      return SinglePlaneFormat::kRG_1616;
+    case gfx::BufferFormat::RGBA_4444:
+      return SinglePlaneFormat::kRGBA_4444;
+    case gfx::BufferFormat::RGBA_8888:
+      return SinglePlaneFormat::kRGBA_8888;
+    case gfx::BufferFormat::RGBA_F16:
+      return SinglePlaneFormat::kRGBA_F16;
+    case gfx::BufferFormat::BGR_565:
+      return SinglePlaneFormat::kBGR_565;
+    case gfx::BufferFormat::RG_88:
+      return SinglePlaneFormat::kRG_88;
+    case gfx::BufferFormat::RGBX_8888:
+      return SinglePlaneFormat::kRGBX_8888;
+    case gfx::BufferFormat::BGRX_8888:
+      return SinglePlaneFormat::kBGRX_8888;
+    case gfx::BufferFormat::RGBA_1010102:
+      return SinglePlaneFormat::kRGBA_1010102;
+    case gfx::BufferFormat::BGRA_1010102:
+      return SinglePlaneFormat::kBGRA_1010102;
+    case gfx::BufferFormat::YVU_420:
+      return LegacyMultiPlaneFormat::kYV12;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return LegacyMultiPlaneFormat::kNV12;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return LegacyMultiPlaneFormat::kNV12A;
+    case gfx::BufferFormat::P010:
+      return LegacyMultiPlaneFormat::kP010;
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace viz

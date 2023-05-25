@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
@@ -32,10 +31,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataType(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
 
-// Checks if there is an equivalent BufferFormat.
-VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
-    SharedImageFormat format);
-
 // Returns the pixel format of the resource when mapped into client-side memory.
 // Returns a default value when IsGpuMemoryBufferFormatSupported() returns false
 // for a given format, as in this case the resource will not be mapped into
@@ -52,9 +47,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
 // Returns whether the format can be used with GpuMemoryBuffer texture storage.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
     ResourceFormat format);
-
-VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
-GetSharedImageFormat(gfx::BufferFormat format);
 
 #if BUILDFLAG(ENABLE_VULKAN)
 VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);

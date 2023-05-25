@@ -14,6 +14,7 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "ui/gfx/geometry/size.h"
 
