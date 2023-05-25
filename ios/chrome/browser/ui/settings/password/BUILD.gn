@@ -290,6 +290,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/shared/ui/util",

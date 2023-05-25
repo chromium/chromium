@@ -19,6 +19,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/sync_prefs.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -579,6 +580,10 @@ id<GREYMatcher> EditDoneButton() {
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordCheckup);
   }
+
+  // TODO(crbug.com/1448574): Re-enable CPE promo and update
+  // testCopyPasswordToast and testCopyPasswordMenuItem to check for the promo.
+  config.features_disabled.push_back(kCredentialProviderExtensionPromo);
 
   return config;
 }
