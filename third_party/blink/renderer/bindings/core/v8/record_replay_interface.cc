@@ -2627,12 +2627,21 @@ const {
   writeToRecordingDirectory,
   addRecordingEvent,
   addNewScriptHandler,
-  getScriptSource
+  getScriptSource,
+  recordingDirectoryFileExists,
+  readFromRecordingDirectory,
+  getRecordingFilePath,
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
   if (!relativeSourceMapURL || relativeSourceMapURL.startsWith("data:"))
     return;
+
+  const recordingId = getRecordingId();
+  if (!recordingId) {
+    // The recording has been invalidated.
+    return;
+  }
 
   const urls = getSourceMapURLs(sourceURL, relativeSourceMapURL);
   if (!urls)
@@ -2652,31 +2661,33 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
 
   const scriptSource = getScriptSource(scriptId);
 
-  const recordingId = getRecordingId();
-  if (!recordingId) {
-    // The recording has been invalidated.
-    return;
+  const hash = sha256DigestHex(scriptSource);
+
+  const id = hash;
+  const name = `sourcemap-${id}.map`;
+  const lookupName = `sourcemap-${id}.lookup`;
+
+  let sources;
+  if (!recordingDirectoryFileExists(name) || !recordingDirectoryFileExists(lookupName)) {
+    writeToRecordingDirectory(name, sourceMap);    
+
+    sources = collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
+    writeToRecordingDirectory(lookupName, JSON.stringify(sources));
+  } else {
+    sources = JSON.parse(readFromRecordingDirectory(lookupName));
   }
 
-  const id = String(Math.floor(Math.random() * 10000000000));
-  const name = `sourcemap-${id}.map`;
-  const path = await writeToRecordingDirectory(name, sourceMap);
-  await addRecordingEvent(JSON.stringify({
+  addRecordingEvent(JSON.stringify({
     kind: "sourcemapAdded",
-    path,
+    path: getRecordingFilePath(name),
     recordingId,
     id,
     url: sourceMapURL,
     baseURL: sourceMapBaseURL,
-    targetContentHash: typeof scriptSource === "string"
-      ? makeAPIHash(scriptSource)
-      : undefined,
+    targetContentHash: `sha256:${hash}`,
     targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
     targetMapURLHash: makeAPIHash(sourceMapURL),
   }));
-
-  const { sources } =
-    collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
 
   for (const { offset, url } of sources) {
     let sourceContent;
@@ -2686,12 +2697,15 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
       log(`Failed to read original source ${url}: ${err.message}`);
       continue;
     }
-    const sourceId = String(Math.floor(Math.random() * 10000000000));
-    const name = `original-source-${id}-${sourceId}`;
-    const path = await writeToRecordingDirectory(name, sourceContent);
-    await addRecordingEvent(JSON.stringify({
+    const hash = sha256DigestHex(sourceContent);
+    const name = `source-${hash}`;
+
+    if (!recordingDirectoryFileExists(name)) {
+      writeToRecordingDirectory(name, sourceContent);
+    }
+    addRecordingEvent(JSON.stringify({
       kind: "originalSourceAdded",
-      path,
+      path: getRecordingFilePath(name),
       recordingId,
       parentId: id,
       parentOffset: offset,
@@ -2777,9 +2791,7 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
     }
   }
 
-  return {
-    sources: unresolvedSources,
-  };
+  return unresolvedSources;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3466,6 +3478,42 @@ static void SHA256DigestHex(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 
   args.GetReturnValue().Set(ToV8String(isolate, digestHex));
+}
+
+static void GetRecordingFilePath(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() && "must be called with one string");
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value filename(isolate, args[0]);
+
+  std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
+
+  args.GetReturnValue().Set(ToV8String(isolate, path.c_str()));
+}
+
+static void RecordingDirectoryFileExists(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() && "must be called with one string");
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value filename(isolate, args[0]);
+
+  std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
+
+  std::ifstream stream(path);
+
+  args.GetReturnValue().Set(v8::Boolean::New(isolate, stream.good()));
+}
+
+static void ReadFromRecordingDirectory(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() && "must be called with one string");
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value filename(isolate, args[0]);
+
+  std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
+  std::ifstream stream(path);
+  std::string data;
+  stream >> data;
+  stream.close();
+
+  args.GetReturnValue().Set(ToV8String(isolate, data.c_str()));
 }
 
 static void WriteToRecordingDirectory(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -4778,6 +4826,13 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
                       v8::FunctionCallbackRecordReplayAddNewScriptHandler);
   SetFunctionProperty(isolate, args, "getScriptSource",
                       v8::FunctionCallbackRecordReplayGetScriptSource);
+  
+  SetFunctionProperty(isolate, args, "recordingDirectoryFileExists",
+                      RecordingDirectoryFileExists);
+  SetFunctionProperty(isolate, args, "readFromRecordingDirectory",
+                      ReadFromRecordingDirectory);
+  SetFunctionProperty(isolate, args, "getRecordingFilePath",
+                      GetRecordingFilePath);
   SetFunctionProperty(isolate, args, "getPersistentId",
                       GetPersistentId);
   SetFunctionProperty(isolate, args, "checkPersistentId",
