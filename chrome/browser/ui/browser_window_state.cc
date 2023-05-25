@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/defaults.h"
@@ -30,21 +31,12 @@ namespace {
 bool ParseCommaSeparatedIntegers(const std::string& str,
                                  int* ret_num1,
                                  int* ret_num2) {
-  size_t num1_size = str.find_first_of(',');
-  if (num1_size == std::string::npos)
-    return false;
-
-  size_t num2_pos = num1_size + 1;
-  size_t num2_size = str.size() - num2_pos;
-  int num1 = 0;
-  int num2 = 0;
-  if (!base::StringToInt(str.substr(0, num1_size), &num1) ||
-      !base::StringToInt(str.substr(num2_pos, num2_size), &num2))
-    return false;
-
-  *ret_num1 = num1;
-  *ret_num2 = num2;
-  return true;
+  const size_t comma = str.find(',');
+  return (comma != std::string::npos) &&
+         base::StringToInt(base::StringPiece(str.data(), comma), ret_num1) &&
+         base::StringToInt(
+             base::StringPiece(str.data() + comma + 1, str.size() - comma - 1),
+             ret_num2);
 }
 
 }  // namespace
