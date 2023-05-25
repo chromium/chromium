@@ -39,7 +39,7 @@ def NaclRevision():
       return None
     return subprocess.check_output(
         ['git', 'log', '-1', '--format=%H'],
-        cwd= nacl_dir,
+        cwd= nacl_dir, shell=os.name == 'nt',
     ).decode('utf-8').strip()
 
 class CipdError(Exception):
