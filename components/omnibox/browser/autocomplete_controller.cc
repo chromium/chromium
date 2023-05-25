@@ -1168,7 +1168,7 @@ void AutocompleteController::AttachActions() {
                                  result_);
 #endif
   }
-  result_.TrimOmniboxActions();
+  result_.TrimOmniboxActions(input_.IsZeroSuggest());
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(

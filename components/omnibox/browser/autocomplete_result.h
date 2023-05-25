@@ -142,7 +142,7 @@ class AutocompleteResult {
   void GroupAndDemoteMatchesInGroups();
 
   // Filter and remove OmniboxActions according to Platform-specific rules.
-  void TrimOmniboxActions();
+  void TrimOmniboxActions(bool is_zero_suggest);
 
   // Sets |action| in matches that have Pedal-triggering text.
   void AttachPedalsToMatches(const AutocompleteInput& input,
@@ -294,6 +294,7 @@ class AutocompleteResult {
   friend class AutocompleteProviderTest;
   friend class HistoryURLProviderTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Desktop_TwoColumnRealbox);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Android_TrimOmniboxActions);
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 

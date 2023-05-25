@@ -532,7 +532,7 @@ void AutocompleteResult::SortAndCull(
 #endif
 }
 
-void AutocompleteResult::TrimOmniboxActions() {
+void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   // Platform rules:
   // Android:
   // - First two positions allow all types of OmniboxActionId
@@ -554,8 +554,9 @@ void AutocompleteResult::TrimOmniboxActions() {
 
     for (size_t index = 0u; index < matches_.size(); ++index) {
       matches_[index].FilterOmniboxActions(
-          index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD ? include_all
-          : index < PEDALS_CUTOFF_THRESHOLD           ? include_at_most_pedals
+          (!is_zero_suggest && index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD)
+              ? include_all
+          : index < PEDALS_CUTOFF_THRESHOLD ? include_at_most_pedals
                                             : include_at_most_history_clusters);
       if (index < ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD) {
         matches_[index].FilterAndSortActionsInSuggest();
