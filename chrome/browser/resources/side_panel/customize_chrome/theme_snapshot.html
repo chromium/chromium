@@ -1,12 +1,16 @@
 <style>
-  .theme-snapshot {
+  :host {
+    --image-background-color: var(--customize-chrome-color-background-color);
+  }
+
+  .snapshot-container {
     box-sizing: border-box;
     padding: 0 16px 8px;
     text-align: center;
     width: 100%;
   }
 
-  .theme-snapshot img {
+  .image-background img {
     object-fit: cover;
   }
 
@@ -18,9 +22,9 @@
     width: 100%;
   }
 
-  #classicChrome {
+  #classicChromeBackground {
     align-items: center;
-    background-color: var(--customize-chrome-color-background-color);
+    background-color: var(--image-background-color);
     display: flex;
     justify-content: center;
   }
@@ -28,6 +32,31 @@
   #miniNewTabPage {
     height: 130px;
     width: 256px;
+  }
+
+  :host-context([chrome-refresh-2023]):host {
+    --image-background-color: var(--cr-fallback-color-tonal-container);
+  }
+
+  :host-context([chrome-refresh-2023]) .image-background {
+    align-items: center;
+    background-color: var(--image-background-color);
+    border: 0;
+    border-radius: 12px;
+    display: flex;
+    height: 158px;
+    justify-content: center;
+    margin-bottom: 12px;
+    width: 272px;
+  }
+
+  :host-context([chrome-refresh-2023]) img {
+    border: 0;
+    border-radius: 8px;
+    box-shadow: var(--cr-elevation-2);
+    height: 126px;
+    margin-bottom: 0;
+    width: 240px;
   }
 
   .theme-title {
@@ -38,19 +67,22 @@
   }
 </style>
 <iron-pages selected="[[themeType_]]" attr-for-selected="theme-type">
-  <div class="theme-snapshot"
+  <div class="snapshot-container"
       theme-type="customTheme">
-    <img class="image" id="customThemeImage" is="cr-auto-img"
-        auto-src="[[theme_.backgroundImage.snapshotUrl.url]]" draggable="false"
-        aria-labelledby="customThemeTitle">
-    </img>
+    <div class="image-background">
+      <img class="image" id="customThemeImage" is="cr-auto-img"
+          auto-src="[[theme_.backgroundImage.snapshotUrl.url]]"
+          draggable="false"
+          aria-labelledby="customThemeTitle">
+      </img>
+    </div>
     <div id="customThemeTitle" class="theme-title">
         [[theme_.backgroundImage.title]]
     </div>
   </div>
-  <div class="theme-snapshot"
+  <div class="snapshot-container"
       theme-type="classicChrome">
-    <div class="image" id="classicChrome">
+    <div class="image-background image" id="classicChromeBackground">
       <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
           aria-labelledby="classicChromeThemeTitle">
       </img>
@@ -59,11 +91,14 @@
         $i18n{classicChrome}
     </div>
   </div>
-  <div class="theme-snapshot"
+  <div class="snapshot-container"
       theme-type="uploadedImage">
-    <img class="image" id="uploadedThemeImage"
-          src="icons/uploaded_image.svg"
-          aria-labelledby="uploadedThemeTitle"></img>
+    <div class="image-background">
+      <img class="image" id="uploadedThemeImage"
+            src="icons/uploaded_image.svg"
+            aria-labelledby="uploadedThemeTitle">
+      </img>
+    </div>
     <div id="uploadedThemeTitle" class="theme-title">
         $i18n{uploadedImage}
     </div>
