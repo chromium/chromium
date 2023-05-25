@@ -3835,8 +3835,8 @@
     // https://w3c.github.io/webauthn/#prf-extension
     {
       name: "WebAuthenticationPRF",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
+      base_feature: "WebAuthenticationPRFExtension",
     },
     {
       name: "WebAuthenticationRemoteDesktopSupport",
