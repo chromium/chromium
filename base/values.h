@@ -653,6 +653,14 @@ class BASE_EXPORT GSL_OWNER Value {
     // the size. Assume all existing iterators will be invalidated.
     void reserve(size_t capacity);
 
+    // Resizes the list.
+    // If `new_size` is greater than current size, the extra elements in the
+    // back will be destroyed.
+    // If `new_size` is less than current size, new default-initialized elements
+    // will be added to the back.
+    // Assume all existing iterators will be invalidated.
+    void resize(size_t new_size);
+
     // Returns a reference to the value at `index` in this list. Fails with a
     // `CHECK()` if `index >= size()`.
     const Value& operator[](size_t index) const;

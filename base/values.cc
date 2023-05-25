@@ -957,6 +957,10 @@ void Value::List::reserve(size_t capacity) {
   storage_.reserve(capacity);
 }
 
+void Value::List::resize(size_t new_size) {
+  storage_.resize(new_size);
+}
+
 const Value& Value::List::operator[](size_t index) const {
   CHECK_LT(index, storage_.size());
   return storage_[index];

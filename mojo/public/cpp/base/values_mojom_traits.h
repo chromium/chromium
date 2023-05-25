@@ -54,6 +54,15 @@ struct ArrayTraits<base::Value::List> {
   static const base::Value& GetAt(const base::Value::List& in, size_t index) {
     return in[index];
   }
+
+  static base::Value& GetAt(base::Value::List& in, size_t index) {
+    return in[index];
+  }
+
+  static bool Resize(base::Value::List& in, size_t size) {
+    in.resize(size);
+    return true;
+  }
 };
 
 template <>

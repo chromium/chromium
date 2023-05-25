@@ -47,6 +47,14 @@ struct MediaSerializer<base::Value> {
   }
 };
 
+// Serialize list value.
+template <>
+struct MediaSerializer<base::Value::List> {
+  static base::Value Serialize(const base::Value::List& value) {
+    return base::Value(value.Clone());
+  }
+};
+
 // Serialize vectors of things
 template <typename VecType>
 struct MediaSerializer<std::vector<VecType>> {

@@ -706,7 +706,7 @@ struct StructTraits<media::stable::mojom::StatusDataDataView,
 
   static std::string message(const media::internal::StatusData& input);
 
-  static base::span<const base::Value> frames(
+  static const base::Value::List& frames(
       const media::internal::StatusData& input);
 
   static absl::optional<media::internal::StatusData> cause(
