@@ -8,6 +8,9 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
@@ -61,14 +64,20 @@
 // `request`'s overlay UI.
 // TODO(crbug.com/1447483): Clean the switch when the default flow is added.
 - (Class)coordinatorClassForRequest:(OverlayRequest*)request {
+  if (DefaultInfobarOverlayRequestConfig::RequestSupport()->IsRequestSupported(
+          request)) {
+    DefaultInfobarOverlayRequestConfig* config =
+        request->GetConfig<DefaultInfobarOverlayRequestConfig>();
+    return [self coordinatorClassForInfobarType:config->infobar_type()];
+  }
+
   switch (_modality) {
     case OverlayModality::kTesting:
       // Use TestOverlayRequestCoordinatorFactory to create factories for
       // OverlayModality::kTesting.
       // TODO(crbug.com/1056837): Remove requirement once modalities are
       // converted to no longer use enums.
-      NOTREACHED() << "Received unsupported modality.";
-      break;
+      NOTREACHED_NORETURN() << "Received unsupported modality.";
       return nil;
     case OverlayModality::kWebContentArea:
       return [AlertOverlayCoordinator class];
@@ -95,17 +104,34 @@
               ->IsRequestSupported(request)) {
         return [TranslateInfobarModalOverlayCoordinator class];
       }
-      if (@available(iOS 15.0, *)) {
-        if ([PermissionsInfobarModalOverlayCoordinator requestSupport]
-                ->IsRequestSupported(request)) {
-          return [PermissionsInfobarModalOverlayCoordinator class];
-        }
-      }
       break;
   }
+  NOTREACHED_NORETURN() << "Received unsupported request type.";
+}
 
-  return nil;
-  NOTREACHED() << "Received unsupported request type.";
+// Returns the coordinator class corresponding to the given `infobarType`.
+- (Class)coordinatorClassForInfobarType:(InfobarType)infobarType {
+  switch (_modality) {
+    case OverlayModality::kTesting:
+      // Use TestOverlayRequestCoordinatorFactory to create factories for
+      // OverlayModality::kTesting.
+      // TODO(crbug.com/1056837): Remove requirement once modalities are
+      // converted to no longer use enums.
+      NOTREACHED_NORETURN() << "Received unsupported modality.";
+    case OverlayModality::kWebContentArea:
+      NOTREACHED_NORETURN()
+          << "None implemented yet. Received unsupported modality.";
+    case OverlayModality::kInfobarBanner:
+      return [InfobarBannerOverlayCoordinator class];
+    case OverlayModality::kInfobarModal:
+      switch (infobarType) {
+        case InfobarType::kInfobarTypePermissions:
+          return [PermissionsInfobarModalOverlayCoordinator class];
+        default:
+          break;
+      }
+  }
+  NOTREACHED_NORETURN() << "Received unsupported infobar type.";
 }
 
 @end

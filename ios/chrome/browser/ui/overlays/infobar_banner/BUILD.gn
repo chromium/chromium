@@ -13,8 +13,11 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/default",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/browser/ui/infobars/banners",
