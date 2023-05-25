@@ -3630,12 +3630,6 @@ const char kAnimatedImageDragShadowDescription[] =
     "Image drag on Android is available when flag touch-drag-and-context-menu "
     "is enabled.";
 
-const char kAutofillAccessoryViewName[] =
-    "Autofill suggestions as keyboard accessory view";
-const char kAutofillAccessoryViewDescription[] =
-    "Shows Autofill suggestions on top of the keyboard rather than in a "
-    "dropdown.";
-
 const char kAutofillUseMobileLabelDisambiguationName[] =
     "Autofill Uses Mobile Label Disambiguation";
 const char kAutofillUseMobileLabelDisambiguationDescription[] =

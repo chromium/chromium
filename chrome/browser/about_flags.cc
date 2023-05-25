@@ -4923,12 +4923,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"autofill-keyboard-accessory-view",
-     flag_descriptions::kAutofillAccessoryViewName,
-     flag_descriptions::kAutofillAccessoryViewDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillKeyboardAccessory)},
-#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
      flag_descriptions::kMacSyscallSandboxDescription, kOsMac,

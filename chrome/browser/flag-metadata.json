@@ -594,11 +594,6 @@
     "expiry_milestone": 86
   },
   {
-    "name": "autofill-keyboard-accessory-view",
-    "owners": [ "fhorschig@chromium.org" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "autofill-more-prominent-popup",
     "owners": [
       "vykochko@google.com",
