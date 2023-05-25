@@ -22,6 +22,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -115,8 +116,8 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    public void
-    validIndexAfterRestored_FromPreviousActivity() {
+    @DisabledTest(message = "https://crbug.com/1448777")
+    public void validIndexAfterRestored_FromPreviousActivity() {
         sActivityTestRule.recreateActivity();
         ChromeTabbedActivity newActivity = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(newActivity.getTabModelSelector()::isTabStateInitialized);
