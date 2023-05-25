@@ -593,21 +593,11 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
   // We store the origin to make sure it's the same when executing page access
   // commands.
   origin_ = url::Origin::Create(url);
-
   auto* permissions_manager = PermissionsManager::Get(profile_);
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    auto add_page_access_secondary_buttons = [](ui::SimpleMenuModel* parent) {
-      parent->AddSeparator(ui::NORMAL_SEPARATOR);
-      parent->AddItemWithStringId(
-          PAGE_ACCESS_PERMISSIONS_PAGE,
-          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
-      parent->AddItemWithStringId(
-          PAGE_ACCESS_LEARN_MORE,
-          IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE);
-    };
-
+    bool add_separator_for_permissions_page = true;
     // User site setting takes preference over extension settings. Therefore, we
     // only show the page access submenu with change extension settings options
     // if the site settings is set to "customize by extension". Otherwise, shows
@@ -620,8 +610,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
                 GetCurrentSite(url)));
-        add_page_access_secondary_buttons(this);
-        return;
+        break;
 
       case PermissionsManager::UserSiteSetting::kBlockAllExtensions:
         AddItem(
@@ -629,18 +618,17 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
                 GetCurrentSite(url)));
-        add_page_access_secondary_buttons(this);
-        return;
+        break;
 
       case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
-        // The extension wants site access but cant't run on the page if it does
+        // The extension wants site access but can't run on the page if it does
         // not have at least "on click" access.
         if (!permissions_manager->CanUserSelectSiteAccess(
                 *extension, url,
                 PermissionsManager::UserSiteAccess::kOnClick)) {
           AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
                               IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
-          return;
+          break;
         }
 
         // The extension wants site access and can ran on the page.  Add the
@@ -662,14 +650,25 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
             PAGE_ACCESS_RUN_ON_ALL_SITES,
             IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2,
             kRadioGroup);
-        add_page_access_secondary_buttons(page_access_submenu_.get());
 
         AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
-                               IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS,
+                               IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS,
                                page_access_submenu_.get());
+
+        // Permissions page entry should be in the same section (no separator)
+        // when the site permissions submenu is present.
+        add_separator_for_permissions_page = false;
+        break;
     }
+
+    if (add_separator_for_permissions_page) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+    AddItemWithStringId(
+        PAGE_ACCESS_PERMISSIONS_PAGE,
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
   } else {
-    // The extension wants site access but cant't run on the page if it does
+    // The extension wants site access but can't run on the page if it does
     // not have at least "on click" access.
     if (!permissions_manager->CanUserSelectSiteAccess(
             *extension, url, PermissionsManager::UserSiteAccess::kOnClick)) {
