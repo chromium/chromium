@@ -8003,7 +8003,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode_AttractLoop_Break">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when exiting current Attract Loop by moving cursor, clicking mouse
@@ -8012,7 +8012,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode_Highlights_HomeButtonClick">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when Home button is clicked in the Highlights app.
@@ -8020,7 +8020,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode_Highlights_HomePage_Click">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when buttons are clicked in the Home page of the Highlights app.
@@ -8028,7 +8028,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode_Highlights_Navbar_Click">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when pillar buttons are clicked on the nav bar of the Highlights
@@ -8037,7 +8037,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="DemoMode_Highlights_PillarPage_Click">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <description>
     Recorded when the buttons are clicked in the pillar page of the Highlights

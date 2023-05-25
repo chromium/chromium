@@ -4564,8 +4564,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Highlights.FirstInteraction"
-    enum="DemoModeHighlightsAction" expires_after="2023-05-22">
-  <owner>lbowen@google.com</owner>
+    enum="DemoModeHighlightsAction" expires_after="2024-05-24">
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The first interaction (button clicks) after entering the Highlights app. The
@@ -4575,8 +4575,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.Highlights.PageStayDuration.{HighlightsPageName}"
-    units="seconds" expires_after="2023-05-22">
-  <owner>lbowen@google.com</owner>
+    units="seconds" expires_after="2024-05-24">
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     The time duration a user stays in each page of the Highlights app, e.g. the
@@ -4693,7 +4693,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DemoMode.UserClicksAndPresses" units="clicks"
     expires_after="2023-11-19">
-  <owner>lbowen@google.com</owner>
+  <owner>brandonmendez@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
     Records how many times the user clicks mouse and presses screen in the demo
