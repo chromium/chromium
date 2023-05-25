@@ -158,12 +158,14 @@ void ScrollSnapshotTimeline::ScheduleNextService() {
 
 void ScrollSnapshotTimeline::UpdateSnapshot() {
   auto state = ComputeTimelineState();
-  bool invalidate_timing =
-      !state.HasConsistentLayout(timeline_state_snapshotted_);
+  bool layout_changed = !state.HasConsistentLayout(timeline_state_snapshotted_);
   timeline_state_snapshotted_ = state;
-  if (invalidate_timing) {
+
+  if (layout_changed) {
+    // Force recalculation of an auto-aligned start time, and invalidate
+    // normalized timing.
     for (Animation* animation : GetAnimations()) {
-      animation->InvalidateNormalizedTiming();
+      animation->OnValidateSnapshot(layout_changed);
     }
   }
   ResolveTimelineOffsets();
@@ -192,7 +194,6 @@ bool ScrollSnapshotTimeline::ValidateSnapshot() {
   bool is_valid = timeline_state_snapshotted_ == new_state;
   bool state_changed =
       !timeline_state_snapshotted_.HasConsistentLayout(new_state);
-
   // Note that `timeline_state_snapshotted_` must be updated before
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
