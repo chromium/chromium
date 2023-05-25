@@ -303,11 +303,11 @@ void MediaDialogView::UpdateBubbleSize() {
                                ChromeLayoutProvider::Get()->GetDistanceMetric(
                                    views::DISTANCE_RELATED_LABEL_HORIZONTAL)),
                   target_language_container_height));
-  }
 
-  separator_->SetPreferredLength(width);
-  caption_settings_button_->SetPreferredSize(
-      gfx::Size(width, live_caption_height));
+    separator_->SetPreferredLength(width);
+    caption_settings_button_->SetPreferredSize(
+        gfx::Size(width, live_caption_height));
+  }
 }
 
 void MediaDialogView::OnLiveCaptionEnabledChanged() {
@@ -439,11 +439,11 @@ void MediaDialogView::Init() {
   InitializeLiveCaptionSection();
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
     InitializeLiveTranslateSection();
-  }
 
-  separator_ = AddChildView(std::make_unique<views::Separator>());
-  separator_->SetOrientation(views::Separator::Orientation::kHorizontal);
-  InitializeCaptionSettingsSection();
+    separator_ = AddChildView(std::make_unique<views::Separator>());
+    separator_->SetOrientation(views::Separator::Orientation::kHorizontal);
+    InitializeCaptionSettingsSection();
+  }
 }
 
 void MediaDialogView::WindowClosing() {
