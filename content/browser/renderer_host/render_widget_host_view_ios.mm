@@ -294,6 +294,10 @@ void RenderWidgetHostViewIOS::Destroy() {
   if (text_input_manager_) {
     text_input_manager_->RemoveObserver(this);
   }
+  browser_compositor_.reset();
+  // Call this before the derived class is destroyed so that virtual function
+  // calls back into `this` still work.
+  NotifyObserversAboutShutdown();
   RenderWidgetHostViewBase::Destroy();
   delete this;
 }
@@ -377,7 +381,10 @@ void RenderWidgetHostViewIOS::InitAsPopup(
     const gfx::Rect& anchor_rect) {}
 void RenderWidgetHostViewIOS::UpdateCursor(const ui::Cursor& cursor) {}
 void RenderWidgetHostViewIOS::SetIsLoading(bool is_loading) {}
-void RenderWidgetHostViewIOS::RenderProcessGone() {}
+
+void RenderWidgetHostViewIOS::RenderProcessGone() {
+  Destroy();
+}
 
 void RenderWidgetHostViewIOS::ShowWithVisibility(
     PageVisibilityState page_visibility) {
