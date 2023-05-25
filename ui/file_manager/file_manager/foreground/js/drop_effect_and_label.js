@@ -12,37 +12,3 @@ export const DropEffectType = {
   MOVE: 'move',
   LINK: 'link',
 };
-
-/**
- * Represents a drop effect and a label to describe it.
- */
-export class DropEffectAndLabel {
-  /**
-   * @param {!DropEffectType} dropEffect
-   * @param {?string} label
-   */
-  constructor(dropEffect, label) {
-    /** @private @const {!DropEffectType} */
-    this.dropEffect_ = dropEffect;
-
-    /**
-     * Optional description why the drop operation is (not) permitted.
-     * @private @const {?string}
-     */
-    this.label_ = label;
-  }
-
-  /**
-   * @return {!DropEffectType} Returns the type of the drop effect.
-   */
-  getDropEffect() {
-    return this.dropEffect_;
-  }
-
-  /**
-   * @return {?string} Returns the label. |none| if a label should not appear.
-   */
-  getLabel() {
-    return this.label_;
-  }
-}

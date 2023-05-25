@@ -1072,18 +1072,6 @@
   <message name="IDS_FILE_BROWSER_SUGGEST_DIALOG_INSTALLATION_FAILED" desc="Error message when the installation of the app from WebStore is failed.">
     Installation failed.
   </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_DEVICE_WRITE_PROTECTED" desc="Tooltip label displayed besides mouse pointer while dragging files or folders over a write-protected folder or disk.">
-    Device is read-only
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_ACCESS_RESTRICTED" desc="Tooltip label displayed besides mouse pointer when dragging files or folders over a removable device whose write access is restricted by administration policy.">
-    Access restricted
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_FOLDER_NO_MOVE_PERMISSION" desc="Tooltip label displayed besides mouse pointer while dragging files or folders over a Team Drive or folder in Drive that does not have write access.">
-    You don't have permission to move files into '<ph name="FOLDER_NAME">$1<ex>Trip Photos</ex></ph>'.
-  </message>
-  <message name="IDS_FILE_BROWSER_DROP_TARGET_OPENING_LINUX_FILES" desc="Tooltip label displayed besides mouse pointer when dragging files or folders over Linux files root before the container has been started and mounted.">
-    Opening Linux files...
-  </message>
 
   <message name="IDS_FILE_BROWSER_SELECT_FOLDER_TITLE" desc="Select folder title.">
     Select a folder to open
