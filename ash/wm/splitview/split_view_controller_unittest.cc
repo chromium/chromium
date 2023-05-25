@@ -1494,12 +1494,22 @@ TEST_F(SplitViewControllerTest, OverviewNotStealFocusOnSwapWindows) {
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
+class SplitViewControllerFloatTest : public SplitViewControllerTest {
+ public:
+  SplitViewControllerFloatTest() = default;
+  SplitViewControllerFloatTest(const SplitViewControllerFloatTest&) = delete;
+  SplitViewControllerFloatTest& operator=(const SplitViewControllerFloatTest&) =
+      delete;
+  ~SplitViewControllerFloatTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::wm::features::kWindowLayoutMenu};
+};
+
 // Tests that the floated window is not auto-snapped if it's on top of two
 // snapped windows. It should only get snapped if it's activated from overview.
-TEST_F(SplitViewControllerTest, DontAutosnapFloatedWindow) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::wm::features::kWindowLayoutMenu);
-
+TEST_F(SplitViewControllerFloatTest, DontAutosnapFloatedWindow) {
   // Create 2 normal windows and 1 floated window.
   std::unique_ptr<aura::Window> window1(CreateAppWindow());
   std::unique_ptr<aura::Window> window2(CreateAppWindow());
