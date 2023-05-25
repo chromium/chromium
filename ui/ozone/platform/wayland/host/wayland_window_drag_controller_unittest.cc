@@ -285,6 +285,7 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
   SendDndMotion({10, 10});
 
@@ -294,6 +295,10 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
     ASSERT_EQ(kDropping, test_step);
     EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
     EXPECT_EQ(State::kDropped, drag_controller()->state());
+    // Ensure PlatformScreen keeps consistent.
+    gfx::Point expected_point{20, 20};
+    expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
+    EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
     EXPECT_EQ(window_->GetWidget(),
               screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
     test_step = kDone;
@@ -729,6 +734,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
   SendDndMotion({10, 10});
 
@@ -791,6 +797,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
     location.Offset(0, 3);
   }
 
+  EXPECT_EQ(gfx::Point(30, 42), screen_->GetCursorScreenPoint());
   EXPECT_EQ(target_window->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({50, 50}, {}));
 
