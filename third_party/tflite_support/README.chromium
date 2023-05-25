@@ -42,6 +42,7 @@ Modifications:
 15) Use abs() from std in tflite::task::core::Category
 16) Fix dependencies which were moved out of experimental folder.
 17) Fix shim headers being removed in TFLite.
+18) Fix shim headers for Text Embedder and related header/cc files.
 
 Update Process (internal: http://shortn/_nwz8liqimy):
 1) Run these commands:

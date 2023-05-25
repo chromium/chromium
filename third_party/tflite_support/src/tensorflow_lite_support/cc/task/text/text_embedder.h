@@ -21,7 +21,7 @@ limitations under the License.
 
 #include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/shims/cc/kernels/register.h"
+#include "tensorflow/lite/core/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/processor/embedding_postprocessor.h"
@@ -64,7 +64,7 @@ class TextEmbedder
   CreateFromOptions(
       const TextEmbedderOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
 
   // Performs actual feature vector extraction on the provided raw text.
   tflite::support::StatusOr<processor::EmbeddingResult> Embed(
