@@ -795,12 +795,12 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
       CommitAndWait();
     }
 
-    SkBitmap window_readback =
+    gl::GLTestHelper::WindowPixels window_readback =
         gl::GLTestHelper::ReadBackWindow(window(), window_size());
-    EXPECT_SKCOLOR_EQ(SK_ColorRED, gl::GLTestHelper::GetColorAtPoint(
-                                       window_readback, middle_of_left_half));
-    EXPECT_SKCOLOR_EQ(SK_ColorRED, gl::GLTestHelper::GetColorAtPoint(
-                                       window_readback, middle_of_right_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorRED,
+                      window_readback.GetPixel(middle_of_left_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorRED,
+                      window_readback.GetPixel(middle_of_right_half));
   }
 
   // Next two draws will be partial, drawing different colors to each side
@@ -825,12 +825,12 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
     // No Commit is needed, but we should wait for swap chains to flip.
     CommitAndWait();
 
-    SkBitmap window_readback =
+    gl::GLTestHelper::WindowPixels window_readback =
         gl::GLTestHelper::ReadBackWindow(window(), window_size());
-    EXPECT_SKCOLOR_EQ(SK_ColorGREEN, gl::GLTestHelper::GetColorAtPoint(
-                                         window_readback, middle_of_left_half));
-    EXPECT_SKCOLOR_EQ(SK_ColorBLUE, gl::GLTestHelper::GetColorAtPoint(
-                                        window_readback, middle_of_right_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorGREEN,
+                      window_readback.GetPixel(middle_of_left_half));
+    EXPECT_SKCOLOR_EQ(SK_ColorBLUE,
+                      window_readback.GetPixel(middle_of_right_half));
   }
 }
 

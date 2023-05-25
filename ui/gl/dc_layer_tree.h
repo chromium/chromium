@@ -203,9 +203,7 @@ class DCLayerTree {
       bool Update(IDCompositionDevice2* dcomp_device,
                   Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
                   uint64_t dcomp_surface_serial,
-                  const gfx::Rect& content_rect,
-                  const gfx::Rect& quad_rect,
-                  bool nearest_neighbor_filter,
+                  const gfx::Vector2d& quad_rect_offset,
                   const gfx::Transform& quad_to_root_transform,
                   const absl::optional<gfx::Rect>& clip_rect_in_root);
 
@@ -247,18 +245,8 @@ class DCLayerTree {
       // is updated.
       uint64_t dcomp_surface_serial_ = 0;
 
-      // The portion of |dcomp_visual_content_| to display. This area will be
-      // mapped to |quad_rect_|'s bounds.
-      gfx::Rect content_rect_;
-
-      // The bounds which contain this overlay. When mapped by |transform_|,
-      // this is the bounds of the overlay in root space.
-      gfx::Rect quad_rect_;
-
-      // Whether or not to use nearest-neighbor filtering to scale
-      // |dcomp_visual_content_|. This is applied to |transform_visual_| since
-      // both it and |content_visual_| can scale the content.
-      bool nearest_neighbor_filter_ = false;
+      // Offset of the top left of the visual in quad space
+      gfx::Vector2d offset_;
 
       // Transform from quad space to root space
       gfx::Transform transform_;

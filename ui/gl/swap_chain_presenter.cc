@@ -1154,8 +1154,6 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
                                             gfx::Transform* visual_transform,
                                             gfx::Rect* visual_clip_rect) {
   DCHECK(params.overlay_image);
-  DCHECK_NE(params.overlay_image->type(),
-            gl::DCLayerOverlayType::kDCompVisualContent);
 
   gl::DCLayerOverlayType overlay_type = params.overlay_image->type();
 
@@ -1173,8 +1171,35 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // content is shown again.
   ReleaseDCOMPSurfaceResourcesIfNeeded();
 
-  gfx::Size swap_chain_size =
-      CalculateSwapChainSize(params, visual_transform, visual_clip_rect);
+  gfx::Size content_size;
+  gfx::Size swap_chain_size;
+  if (overlay_type == gl::DCLayerOverlayType::kDCompVisualContent) {
+    content_size = params.overlay_image->size();
+    // |visual_transform| now scales from |content_size| to on screen bounds.
+    UpdateSwapChainTransform(params.quad_rect.size(), content_size,
+                             visual_transform);
+  } else {
+    swap_chain_size =
+        CalculateSwapChainSize(params, visual_transform, visual_clip_rect);
+    content_size = swap_chain_size;
+  }
+
+  TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToSwapChain", "image_type",
+               DCLayerOverlayTypeToString(overlay_type), "size",
+               content_size.ToString());
+
+  // Swap chain image already has a swap chain that's presented by the client
+  // e.g. for webgl/canvas low-latency/desynchronized mode.
+  if (overlay_type == gl::DCLayerOverlayType::kDCompVisualContent) {
+    DCHECK(params.overlay_image->dcomp_visual_content());
+    if (last_overlay_image_ != params.overlay_image) {
+      ReleaseSwapChainResources();
+      content_ = params.overlay_image->dcomp_visual_content();
+      content_size_ = content_size;
+      last_overlay_image_ = std::move(params.overlay_image);
+    }
+    return true;
+  }
 
   if (overlay_type == gl::DCLayerOverlayType::kNV12Texture &&
       !params.overlay_image->nv12_texture()) {

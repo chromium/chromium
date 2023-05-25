@@ -113,57 +113,6 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateNV12Texture(
 // margin for error.
 const int kMaxColorChannelDeviation = 10;
 
-// Create an overlay image with an initial color and rectangles, drawn using the
-// painter's algorithm.
-DCLayerOverlayImage CreateDCompSurface(
-    const gfx::Size& surface_size,
-    SkColor4f initial_color,
-    std::vector<std::pair<gfx::Rect, SkColor4f>> rectangles_back_to_front =
-        {}) {
-  HRESULT hr = S_OK;
-
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
-      gl::GetDirectCompositionDevice();
-
-  Microsoft::WRL::ComPtr<IDCompositionSurface> surface;
-  hr = dcomp_device->CreateSurface(surface_size.width(), surface_size.height(),
-                                   DXGI_FORMAT_B8G8R8A8_UNORM,
-                                   DXGI_ALPHA_MODE_IGNORE, &surface);
-  CHECK_EQ(S_OK, hr);
-
-  // Add a rect that initializes the whole surface to |initial_color|.
-  rectangles_back_to_front.insert(rectangles_back_to_front.begin(),
-                                  {gfx::Rect(surface_size), initial_color});
-
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
-  d3d11_device->GetImmediateContext(&immediate_context);
-
-  for (const auto& [draw_rect, color] : rectangles_back_to_front) {
-    CHECK(gfx::Rect(surface_size).Contains(draw_rect));
-
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
-    RECT rect = draw_rect.ToRECT();
-    POINT update_offset;
-    hr = surface->BeginDraw(&rect, IID_PPV_ARGS(&update_texture),
-                            &update_offset);
-    CHECK_EQ(S_OK, hr);
-
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
-    hr = d3d11_device->CreateRenderTargetView(update_texture.Get(), nullptr,
-                                              &rtv);
-    CHECK_EQ(S_OK, hr);
-
-    immediate_context->ClearRenderTargetView(rtv.Get(), color.vec());
-
-    hr = surface->EndDraw();
-    CHECK_EQ(S_OK, hr);
-  }
-
-  return DCLayerOverlayImage(surface_size, surface);
-}
-
 }  // namespace
 
 class DCompPresenterTest : public testing::Test {
@@ -178,11 +127,11 @@ class DCompPresenterTest : public testing::Test {
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*gpu_preference=*/gl::GpuPreference::kDefault);
+    if (!DirectCompositionSupported()) {
+      LOG(WARNING) << "DirectComposition not supported, skipping test.";
+      return;
+    }
     presenter_ = CreateDCompPresenter();
-
-    // All bots run on non-blocklisted hardware that supports DComp (>Win7)
-    ASSERT_TRUE(DirectCompositionSupported());
-
     gl_surface_ = init::CreateOffscreenGLSurface(
         gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
     context_ = CreateGLContext(gl_surface_);
@@ -249,6 +198,10 @@ class DCompPresenterTest : public testing::Test {
 
 // Ensure that the overlay image isn't presented again unless it changes.
 TEST_F(DCompPresenterTest, NoPresentTwice) {
+  if (!presenter_) {
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -329,6 +282,10 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is support - swapchain should be set to the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
+  if (!presenter_) {
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -396,6 +353,10 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
 // Ensure the swapchain size is set to the correct size if HW overlay scaling
 // is not support - swapchain should be the onscreen video size.
 TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
+  if (!presenter_) {
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -452,6 +413,10 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
 
 // Test protected video flags
 TEST_F(DCompPresenterTest, ProtectedVideos) {
+  if (!presenter_) {
+    return;
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
 
@@ -536,13 +501,43 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
   // via an overlay the size of the window.
   void InitializeRootAndScheduleRootSurface(const gfx::Size& window_size,
                                             SkColor4f initial_color) {
+    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
+        gl::GetDirectCompositionDevice();
+    Microsoft::WRL::ComPtr<IDCompositionSurface> root_surface;
+    ASSERT_HRESULT_SUCCEEDED(dcomp_device->CreateSurface(
+        window_size.width(), window_size.height(), DXGI_FORMAT_B8G8R8A8_UNORM,
+        DXGI_ALPHA_MODE_IGNORE, &root_surface));
+
+    // Clear the root surface to |initial_color|
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
+    RECT rect = gfx::Rect(window_size).ToRECT();
+    POINT update_offset;
+    ASSERT_HRESULT_SUCCEEDED(root_surface->BeginDraw(
+        &rect, IID_PPV_ARGS(&update_texture), &update_offset));
+
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        gl::QueryD3D11DeviceObjectFromANGLE();
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> immediate_context;
+    d3d11_device->GetImmediateContext(&immediate_context);
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
+    D3D11_RENDER_TARGET_VIEW_DESC desc;
+    desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    desc.Texture2D.MipSlice = 0;
+    ASSERT_HRESULT_SUCCEEDED(d3d11_device->CreateRenderTargetView(
+        update_texture.Get(), &desc, &rtv));
+    immediate_context->ClearRenderTargetView(rtv.Get(), initial_color.vec());
+
+    ASSERT_HRESULT_SUCCEEDED(root_surface->EndDraw());
+
     // Schedule the root surface as a normal overlay
     std::unique_ptr<DCLayerOverlayParams> params =
         std::make_unique<DCLayerOverlayParams>();
     params->z_order = 0;
     params->quad_rect = gfx::Rect(window_size);
     params->content_rect = params->quad_rect;
-    params->overlay_image = CreateDCompSurface(window_size, initial_color);
+    params->overlay_image = DCLayerOverlayImage(window_size, root_surface,
+                                                /*dcomp_presenter_serial=*/0);
     EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
   }
 
@@ -571,135 +566,6 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
 
     Sleep(1000);
-  }
-
-  // If |scale_via_buffer| is true, use the content/quad rects to scale the
-  // buffer. If it is false, use the overlay's transform to scale the visual.
-  void RunNearestNeighborTest(bool scale_via_buffer) {
-    const gfx::Size window_size(100, 100);
-
-    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
-
-    InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
-
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->content_rect = gfx::Rect(2, 2);
-    dc_layer_params->overlay_image = CreateDCompSurface(
-        dc_layer_params->content_rect.size(), SkColors::kBlack,
-        {{gfx::Rect(0, 0, 1, 1), SkColors::kRed},
-         {gfx::Rect(1, 0, 1, 1), SkColors::kGreen},
-         {gfx::Rect(0, 1, 1, 1), SkColors::kBlue},
-         {gfx::Rect(1, 1, 1, 1), SkColors::kBlack}});
-    dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
-    dc_layer_params->z_order = 1;
-    dc_layer_params->nearest_neighbor_filter = true;
-
-    if (scale_via_buffer) {
-      // Pick a large quad rect so the buffer is scaled up
-      dc_layer_params->quad_rect = gfx::Rect(window_size);
-    } else {
-      // Pick a small quad rect and assign a transform so the quad rect is
-      // scaled up
-      dc_layer_params->quad_rect = dc_layer_params->content_rect;
-      dc_layer_params->transform = gfx::Transform::MakeScale(
-          window_size.width() / dc_layer_params->quad_rect.width(),
-          window_size.height() / dc_layer_params->quad_rect.height());
-    }
-
-    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
-
-    SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
-
-    EXPECT_SKCOLOR_EQ(
-        SK_ColorRED, GLTestHelper::GetColorAtPoint(pixels, gfx::Point(49, 49)));
-    EXPECT_SKCOLOR_EQ(SK_ColorGREEN, GLTestHelper::GetColorAtPoint(
-                                         pixels, gfx::Point(51, 49)));
-    EXPECT_SKCOLOR_EQ(SK_ColorBLUE, GLTestHelper::GetColorAtPoint(
-                                        pixels, gfx::Point(49, 51)));
-    EXPECT_SKCOLOR_EQ(SK_ColorBLACK, GLTestHelper::GetColorAtPoint(
-                                         pixels, gfx::Point(51, 51)));
-  }
-
-  // These colors are used for |CheckOverlayExactlyFillsHole|.
-  // The initial root surface color
-  const SkColor4f kRootSurfaceInitialColor = SkColors::kBlack;
-  // The "hole" in the root surface that we expect the overlay to completely
-  // cover.
-  const SkColor4f kRootSurfaceHiddenColor = SkColors::kRed;
-  // The color of the visible portion of the overlay image.
-  const SkColor4f kOverlayExpectedColor = SkColors::kBlue;
-  // The color of the portion of the overlay image hidden by the content rect.
-  const SkColor4f kOverlayImageHiddenColor = SkColors::kGreen;
-
-  const char* CheckOverlayExactlyFillsHoleColorToString(SkColor4f c) {
-    if (c == kRootSurfaceInitialColor) {
-      return "RootSurfaceInitialColor";
-    } else if (c == kRootSurfaceHiddenColor) {
-      return "RootSurfaceHiddenColor";
-    } else if (c == kOverlayExpectedColor) {
-      return "OverlayExpectedColor";
-    } else if (c == kOverlayImageHiddenColor) {
-      return "OverlayImageHiddenColor";
-    }
-    return "unexpected color";
-  }
-
-  // Check that |fit_in_hole_overlay| exactly covers |root_surface_hole|.
-  // This test uses the colors defined above to test for coverage: the resulting
-  // image should only contain |kOverlayExpectedColor| where the hole was and
-  // |kRootSurfaceInitialColor| elsewhere.
-  void CheckOverlayExactlyFillsHole(
-      const gfx::Size& window_size,
-      const gfx::Rect& root_surface_hole,
-      std::unique_ptr<DCLayerOverlayParams> fit_in_hole_overlay) {
-    EXPECT_TRUE(gfx::Rect(window_size).Contains(root_surface_hole));
-
-    EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
-    EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
-
-    auto root_surface = std::make_unique<DCLayerOverlayParams>();
-    root_surface->quad_rect = gfx::Rect(window_size);
-    root_surface->content_rect = gfx::Rect(window_size);
-    root_surface->overlay_image =
-        CreateDCompSurface(window_size, kRootSurfaceInitialColor,
-                           {{root_surface_hole, kRootSurfaceHiddenColor}});
-    root_surface->color_space = gfx::ColorSpace::CreateSRGB();
-    root_surface->z_order = 0;
-    presenter_->ScheduleDCLayer(std::move(root_surface));
-
-    presenter_->ScheduleDCLayer(std::move(fit_in_hole_overlay));
-
-    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
-
-    auto pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
-
-    for (int y = 0; y < window_size.height(); y++) {
-      for (int x = 0; x < window_size.width(); x++) {
-        gfx::Point location(x, y);
-        bool in_hole = root_surface_hole.Contains(location);
-        SkColor actual_color = GLTestHelper::GetColorAtPoint(pixels, location);
-        SkColor expected_color =
-            (in_hole ? kOverlayExpectedColor : kRootSurfaceInitialColor)
-                .toSkColor();
-        if (actual_color != expected_color) {
-          ADD_FAILURE() << "Unexpected pixel at " << location.ToString()
-                        << " (in_hole=" << in_hole << ")\n"
-                        << "Expected:\n  " << std::hex << "0x" << expected_color
-                        << " ("
-                        << CheckOverlayExactlyFillsHoleColorToString(
-                               SkColor4f::FromColor(expected_color))
-                        << ")\n"
-                        << "But got:\n  "
-                        << "0x" << actual_color << " ("
-                        << CheckOverlayExactlyFillsHoleColorToString(
-                               SkColor4f::FromColor(actual_color))
-                        << ")";
-          return;
-        }
-      }
-    }
   }
 
   TestPlatformDelegate platform_delegate_;
@@ -786,6 +652,10 @@ TEST_F(DCompPresenterVideoPixelTest, InvalidColorSpace) {
 }
 
 TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
+  if (!presenter_) {
+    return;
+  }
+
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -816,6 +686,10 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
+  if (!presenter_) {
+    return;
+  }
+
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -830,6 +704,10 @@ TEST_F(DCompPresenterPixelTest, VideoHandleSwapchain) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
+  if (!presenter_) {
+    return;
+  }
+
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
   gfx::Rect content_rect(texture_size);
@@ -846,6 +724,9 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyBoundsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
+  if (!presenter_) {
+    return;
+  }
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -885,6 +766,9 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
 }
 
 TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
+  if (!presenter_) {
+    return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -916,13 +800,15 @@ TEST_F(DCompPresenterPixelTest, NV12SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
+  if (!presenter_) {
+    return;
+  }
+  // CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format on
+  // Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    GTEST_SKIP()
-        << "CreateSwapChainForCompositionSurfaceHandle fails with YUY2 format "
-           "on Win10/AMD bot (Radeon RX550). See https://crbug.com/967860.";
-  }
+          std::string::npos)
+    return;
 
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
@@ -957,6 +843,9 @@ TEST_F(DCompPresenterPixelTest, YUY2SwapChain) {
 }
 
 TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
+  if (!presenter_) {
+    return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -985,14 +874,16 @@ TEST_F(DCompPresenterPixelTest, NonZeroBoundsOffset) {
   for (const auto& test_case : test_cases) {
     const auto& point = test_case.point;
     const auto& expected_color = test_case.expected_color;
-    EXPECT_SKCOLOR_CLOSE(expected_color,
-                         GLTestHelper::GetColorAtPoint(pixels, point),
+    EXPECT_SKCOLOR_CLOSE(expected_color, pixels.GetPixel(point),
                          kMaxColorChannelDeviation)
         << " at " << point.ToString();
   }
 }
 
 TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
+  if (!presenter_) {
+    return;
+  }
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
@@ -1115,11 +1006,14 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 }
 
 TEST_F(DCompPresenterPixelTest, SwapChainImage) {
+  if (!presenter_) {
+    return;
+  }
+  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
   if (context_ && context_->GetVersionInfo() &&
       context_->GetVersionInfo()->driver_vendor.find("AMD") !=
-          std::string::npos) {
-    GTEST_SKIP() << "Fails on AMD RX 5500 XT. https://crbug.com/1152565.";
-  }
+          std::string::npos)
+    return;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       QueryD3D11DeviceObjectFromANGLE();
@@ -1278,6 +1172,16 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
 // Test that the overlay quad rect's offset is affected by its transform.
 TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
+  if (!presenter_) {
+    return;
+  }
+  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
+  if (context_ && context_->GetVersionInfo() &&
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos) {
+    return;
+  }
+
   // Our overlay quad rect is at 0,50 50x50 and scaled down by 1/2. Since we
   // expect the transform to affect the quad rect offset, we expect the output
   // rect to be at 0,25 25x25.
@@ -1285,15 +1189,41 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   const gfx::Transform quad_to_root_transform(
       gfx::AxisTransform2d(0.5, gfx::Vector2dF()));
 
+  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
+      GetDirectCompositionDevice();
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  d3d11_device->GetImmediateContext(&context);
+  ASSERT_TRUE(context);
+
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
   EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
+  Microsoft::WRL::ComPtr<IDCompositionSurface> surface;
+  ASSERT_HRESULT_SUCCEEDED(dcomp_device->CreateSurface(
+      quad_rect.width(), quad_rect.height(), DXGI_FORMAT_B8G8R8A8_UNORM,
+      DXGI_ALPHA_MODE_IGNORE, &surface));
+  RECT update_rect = D2D1::Rect(0, 0, quad_rect.width(), quad_rect.height());
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
+  POINT update_offset;
+  ASSERT_HRESULT_SUCCEEDED(surface->BeginDraw(
+      &update_rect, IID_PPV_ARGS(&update_texture), &update_offset));
+  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
+  ASSERT_HRESULT_SUCCEEDED(d3d11_device->CreateRenderTargetView(
+      update_texture.Get(), nullptr, &rtv));
+  context->ClearRenderTargetView(rtv.Get(), SkColors::kRed.vec());
+  ASSERT_HRESULT_SUCCEEDED(surface->EndDraw());
+
   auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
   dc_layer_params->overlay_image =
-      CreateDCompSurface(quad_rect.size(), SkColors::kRed);
+      DCLayerOverlayImage(quad_rect.size(), surface);
   dc_layer_params->content_rect = gfx::Rect(quad_rect.size());
   dc_layer_params->quad_rect = quad_rect;
   dc_layer_params->transform = quad_to_root_transform;
@@ -1307,12 +1237,12 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   // to composite it.
   const gfx::Rect mapped_quad_rect = quad_to_root_transform.MapRect(quad_rect);
 
-  SkBitmap pixels = GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
+  GLTestHelper::WindowPixels pixels =
+      GLTestHelper::ReadBackWindow(window_.hwnd(), window_size);
 
   // Check the top edge of the scaled overlay
   EXPECT_SKCOLOR_CLOSE(SK_ColorBLACK,
-                       GLTestHelper::GetColorAtPoint(
-                           pixels, gfx::Point(0, mapped_quad_rect.y() - 1)),
+                       pixels.GetPixel(gfx::Point(0, mapped_quad_rect.y() - 1)),
                        kMaxColorChannelDeviation);
   EXPECT_SKCOLOR_CLOSE(SK_ColorRED,
                        GLTestHelper::ReadBackWindowPixel(
@@ -1322,119 +1252,11 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
   // Check the bottom edge of the scaled overlay
   EXPECT_SKCOLOR_CLOSE(
       SK_ColorRED,
-      GLTestHelper::GetColorAtPoint(
-          pixels, gfx::Point(0, mapped_quad_rect.bottom() - 1)),
+      pixels.GetPixel(gfx::Point(0, mapped_quad_rect.bottom() - 1)),
       kMaxColorChannelDeviation);
   EXPECT_SKCOLOR_CLOSE(
-
-      SK_ColorBLACK,
-      GLTestHelper::GetColorAtPoint(pixels,
-                                    gfx::Point(0, mapped_quad_rect.bottom())),
+      SK_ColorBLACK, pixels.GetPixel(gfx::Point(0, mapped_quad_rect.bottom())),
       kMaxColorChannelDeviation);
-}
-
-// Test that scaling a (very) small texture up works with nearest neighbor
-// filtering using the content rect and quad rects.
-TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaBuffer) {
-  RunNearestNeighborTest(true);
-}
-
-// Test that scaling a (very) small texture up works with nearest neighbor
-// filtering using the overlay's transform.
-TEST_F(DCompPresenterPixelTest, NearestNeighborFilteringScaleViaTransform) {
-  RunNearestNeighborTest(false);
-}
-
-// Test that the |content_rect| of an overlay scales the buffer to fit the
-// display rect, if needed.
-TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
-  const gfx::Size window_size(100, 100);
-  const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
-
-  // Provide an overlay that's smaller than the hole it needs to fill
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(1, 1);
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), kOverlayExpectedColor);
-  overlay->color_space = gfx::ColorSpace::CreateSRGB();
-  overlay->z_order = 1;
-  CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
-                               std::move(overlay));
-}
-
-// Test that the |content_rect| of an overlay scales the buffer to fit the
-// display rect, if needed.
-TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
-  const gfx::Size window_size(100, 100);
-  const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
-
-  // Provide an overlay that's larger than the hole it needs to fill
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(75, 100);
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), kOverlayExpectedColor);
-  overlay->color_space = gfx::ColorSpace::CreateSRGB();
-  overlay->z_order = 1;
-  CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
-                               std::move(overlay));
-}
-
-// Test that the |content_rect| of an overlay clips portions of the buffer.
-TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
-  const gfx::Size window_size(100, 100);
-  const gfx::Rect tex_coord = gfx::Rect(1, 2, 50, 60);
-  const gfx::Rect root_surface_hole =
-      gfx::Rect(gfx::Point(20, 25), tex_coord.size());
-
-  // Ensure the overlay is not scaled.
-  EXPECT_EQ(root_surface_hole.width(), tex_coord.width());
-  EXPECT_EQ(root_surface_hole.height(), tex_coord.height());
-
-  // Provide an overlay that is the right size, but has extra data that is
-  // clipped via content rect
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = tex_coord;
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(window_size, kOverlayImageHiddenColor,
-                         {{tex_coord, kOverlayExpectedColor}});
-  overlay->color_space = gfx::ColorSpace::CreateSRGB();
-  overlay->z_order = 1;
-  CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
-                               std::move(overlay));
-}
-
-// Test that the |content_rect| of an overlay can clip a buffer and scale it's
-// contents.
-TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
-  const gfx::Size window_size(100, 100);
-  const gfx::Rect tex_coord = gfx::Rect(5, 10, 15, 20);
-  const gfx::Rect root_surface_hole =
-      gfx::Rect(gfx::Point(20, 25), gfx::Size(50, 60));
-
-  // Ensure the overlay is scaled
-  EXPECT_NE(root_surface_hole.width(), tex_coord.width());
-  EXPECT_NE(root_surface_hole.height(), tex_coord.height());
-
-  // Provide an overlay that needs to be scaled and has extra data that is
-  // clipped via content rect
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = tex_coord;
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(window_size, kOverlayImageHiddenColor,
-                         {{tex_coord, kOverlayExpectedColor}});
-  overlay->color_space = gfx::ColorSpace::CreateSRGB();
-  overlay->z_order = 1;
-
-  // Use nearest neighbor to avoid interpolation at the edges of the content
-  // rect
-  overlay->nearest_neighbor_filter = true;
-
-  CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
-                               std::move(overlay));
 }
 
 class DCompPresenterBufferCountTest : public DCompPresenterTest,
@@ -1462,6 +1284,10 @@ class DCompPresenterBufferCountTest : public DCompPresenterTest,
 };
 
 TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
+  if (!presenter_) {
+    return;
+  }
+
   SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   constexpr gfx::Size window_size(100, 100);
