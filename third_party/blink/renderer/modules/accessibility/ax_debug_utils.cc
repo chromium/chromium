@@ -20,9 +20,7 @@ std::string NewlineToSpaceReplacer(std::string str) {
 
 }  // namespace
 
-std::string TreeToStringWithHelper(const AXObject* obj,
-                                   int indent,
-                                   bool verbose) {
+std::string TreeToStringHelper(const AXObject* obj, int indent, bool verbose) {
   return TreeToStringWithMarkedObjectHelper(obj, nullptr, indent, verbose);
 }
 
@@ -34,12 +32,16 @@ std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
     return "";
   }
 
+  // Use cached properties only unless it's frozen and thus safe to use compute
+  // methods.
+  bool cached = !obj->IsDetached() && !obj->AXObjectCache().IsFrozen();
+
   std::string extra = obj == marked_object ? "*" : " ";
   return std::accumulate(
       obj->CachedChildrenIncludingIgnored().begin(),
       obj->CachedChildrenIncludingIgnored().end(),
       extra + std::string(std::max(2 * indent - 1, 0), ' ') +
-          NewlineToSpaceReplacer(obj->ToString(verbose).Utf8()) + "\n",
+          NewlineToSpaceReplacer(obj->ToString(verbose, cached).Utf8()) + "\n",
       [indent, verbose, marked_object](const std::string& str,
                                        const AXObject* child) {
         return str + TreeToStringWithMarkedObjectHelper(child, marked_object,
