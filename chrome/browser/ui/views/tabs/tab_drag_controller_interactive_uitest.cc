@@ -2182,11 +2182,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
 }
 
-// Flaky on lacros - it appears that the tab close animation sometimes completes
-// before we have a chance to check for ownership during said animation.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TabDragContextOwnsClosingDraggedTabs \
   DISABLED_TabDragContextOwnsClosingDraggedTabs
 #else
