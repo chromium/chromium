@@ -10870,7 +10870,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Device Trust Consent dialog -->
-      <if expr="is_win or is_macosx or is_linux">
+      <if expr="is_win or is_macosx or is_linux or is_chromeos">
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_TITLE" desc="Title of the dialog shown when user consent is required to share device signals.">
           Share device signals?
         </message>

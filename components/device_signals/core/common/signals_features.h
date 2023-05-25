@@ -20,16 +20,22 @@ extern const base::FeatureParam<bool> kDisableSettings;
 extern const base::FeatureParam<bool> kDisableAntiVirus;
 extern const base::FeatureParam<bool> kDisableHotfix;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-BASE_DECLARE_FEATURE(kDeviceSignalsPromoAfterSigninIntercept);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
 // Enum used to map a given function to its kill switch.
 enum class NewEvFunction { kFileSystemInfo, kSettings, kAntiVirus, kHotfix };
 
 // Returns true if the function pointed at by `new_ev_function` is considered
 // to be enabled based on the feature flag and its parameters.
 bool IsNewFunctionEnabled(NewEvFunction new_ev_function);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kDeviceSignalsConsentDialog);
+
+// Returns true if device signals consent dialog has been enabled for
+// consent collection.
+bool IsConsentDialogEnabled();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_signals::features
 

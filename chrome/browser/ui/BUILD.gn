@@ -4347,12 +4347,21 @@ static_library("ui") {
     }
   }
 
+  # Device signals sharing currently only supports win, mac, linux and
+  # ash-chromeos, so the corresponding consent functionality are
+  # limited to the same set of platforms.
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    sources += [
+      "device_signals_consent/consent_requester.h",
+      "views/device_signals_consent/consent_dialog_coordinator.cc",
+      "views/device_signals_consent/consent_dialog_coordinator.h",
+    ]
+  }
+
   if (is_win || is_mac || is_linux) {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
-      "views/device_signals_consent/device_signals_consent_dialog_coordinator.cc",
-      "views/device_signals_consent/device_signals_consent_dialog_coordinator.h",
     ]
   }
 
@@ -6346,6 +6355,14 @@ static_library("test_support") {
       "//components/ukm:test_support",
       "//services/metrics/public/mojom",
     ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    sources += [
+      "device_signals_consent/mock_consent_requester.cc",
+      "device_signals_consent/mock_consent_requester.h",
+    ]
+    deps += [ "//components/device_signals/core/browser" ]
   }
 
   if (is_chromeos_ash) {
