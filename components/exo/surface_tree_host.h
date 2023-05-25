@@ -172,14 +172,14 @@ class SurfaceTreeHost : public SurfaceDelegate,
     bounds_is_dirty_ = bounds_is_dirty;
   }
 
+  // If the client has submitted a scale factor, we use that. Otherwise we use
+  // the host window's layer's scale factor.
+  float GetScaleFactor();
+
  private:
   viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
   void HandleContextLost();
-
-  // If the client has submitted a scale factor, we use that. Otherwise we use
-  // the host window's layer's scale factor.
-  float GetScaleFactor();
 
   void CleanUpCallbacks();
 
