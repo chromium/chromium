@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-17-init-12166-g7586aeab'
-CLANG_SUB_REVISION = 2
+CLANG_SUB_REVISION = 3
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '17'
@@ -62,7 +62,7 @@ def RmTree(dir):
   """Delete dir."""
   if sys.platform == 'win32':
     # Avoid problems with paths longer than MAX_PATH
-    # https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation 
+    # https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
     dir = f'\\\\?\\{dir}'
 
   def ChmodAndRetry(func, path, _):

@@ -65,7 +65,7 @@ CRUBIT_SUB_REVISION = 1
 # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
 # include Crubit binaries in the generated package.  See also a TODO comment
 # in BuildCrubit in package_rust.py.
-FALLBACK_REVISION = '2a8221dbdfd180a2d56d4b0089f4f3952d8c2bcd-1-llvmorg-17-init-10134-g3da83fba-1'
+FALLBACK_REVISION = 'f3d597b31c0f101a02c230798afa31a36bdacbc6-1-llvmorg-17-init-12166-g7586aeab-2'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
