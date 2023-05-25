@@ -1,4 +1,15 @@
 {
+  "linux-exp-tsan-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "fail_on_san_warnings": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_tsan": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-ubsan-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": false,
