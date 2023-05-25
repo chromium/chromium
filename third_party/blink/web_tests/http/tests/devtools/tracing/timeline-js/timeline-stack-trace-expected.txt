@@ -1,7 +1,0 @@
-Test that checks whether the returned stackTrace of a timeline correctly formats the scriptId as a string.
-
-Stack trace for: TimerInstall
-[{"columnNumber":19,"functionName":"performActions","lineNumber":31,"scriptId":"7","url":"performActions.js"}]
-Stack trace for: TimerRemove
-[{"columnNumber":7,"functionName":"intervalTimerWork","lineNumber":38,"scriptId":"7","url":"performActions.js"}]
-
