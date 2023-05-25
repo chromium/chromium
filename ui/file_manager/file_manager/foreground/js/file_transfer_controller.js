@@ -98,6 +98,10 @@ export class FileTransferController {
     /**
      * @private {!MetadataModel}
      * @const
+     * Note: We use synchronous `getCache` method under assumption that fields
+     * we request are already cached. See constants.js, specifically
+     * LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES for list of fields which
+     * are safe to use.
      */
     this.metadataModel_ = metadataModel;
 
