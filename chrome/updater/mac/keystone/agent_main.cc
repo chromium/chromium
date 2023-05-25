@@ -193,7 +193,7 @@ void KSAgentApp::Wake() {
       continue;
     }
     base::CommandLine command(*path);
-    command.AppendSwitch(kWakeSwitch);
+    command.AppendSwitch(kWakeAllSwitch);
     if (scope == UpdaterScope::kSystem) {
       command.AppendSwitch(kSystemSwitch);
     }
