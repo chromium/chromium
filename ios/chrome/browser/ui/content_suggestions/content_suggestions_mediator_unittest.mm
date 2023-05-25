@@ -16,7 +16,11 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
@@ -86,6 +90,13 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     chrome_browser_state_ = test_cbs_builder.Build();
 
+    scoped_feature_list_.InitWithFeatures({kIOSSetUpList}, {});
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    FirstRun::RemoveSentinel();
+    base::File::Error fileError;
+    FirstRun::CreateSentinel(&fileError);
+    FirstRun::LoadSentinelInfo();
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -154,6 +165,8 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
     histogram_tester_.reset(new base::HistogramTester());
   }
+
+  ~ContentSuggestionsMediatorTest() override { [mediator_ disconnect]; }
 
  protected:
   std::unique_ptr<web::FakeWebState> CreateWebState(const char* url) {
@@ -294,9 +307,34 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
 // Tests that the reload logic (e.g. setting the consumer) triggers the correct
 // consumer calls when the Magic Stack feature is enabled.
 TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
-  scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
+  consumer_ = OCMStrictProtocolMock(@protocol(ContentSuggestionsConsumer));
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({kMagicStack, kIOSSetUpList}, {});
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
+  OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
   mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+TEST_F(ContentSuggestionsMediatorTest, TestSetUpListConsumerCall) {
+  consumer_ = OCMStrictProtocolMock(@protocol(ContentSuggestionsConsumer));
+  OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
+  mediator_.consumer = consumer_;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ markSetUpListItemComplete:SetUpListItemType::kSignInSync
+                                      completion:[OCMArg any]]);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kSignInSync);
+  OCMExpect([consumer_
+      markSetUpListItemComplete:SetUpListItemType::kDefaultBrowser
+                     completion:[OCMArg any]]);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kDefaultBrowser);
+  OCMExpect([consumer_ markSetUpListItemComplete:SetUpListItemType::kAutofill
+                                      completion:[OCMArg any]]);
+  set_up_list_prefs::MarkItemComplete(local_state_.Get(),
+                                      SetUpListItemType::kAutofill);
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
