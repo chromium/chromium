@@ -1120,11 +1120,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "colr-v1-fonts",
-    "owners": [ "drott", "layout-dev@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "confirmation-chip",
     "owners": [
       "fjacky",
