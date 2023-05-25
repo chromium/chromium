@@ -190,6 +190,11 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
 
   in_progress_query_clusters_tasks_.erase(pending_task_id);
 
+  // Within each cluster, sort visits.
+  for (auto& cluster : clusters) {
+    history_clusters::StableSortVisits(cluster.visits);
+  }
+
   // Do additional filtering on clusters.
   history_clusters::CoalesceRelatedSearches(clusters);
 
@@ -289,11 +294,6 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     }
 
     return;
-  }
-
-  // Within each cluster, sort visits.
-  for (auto& cluster : clusters) {
-    history_clusters::StableSortVisits(cluster.visits);
   }
 
   if (module_ranker_) {
