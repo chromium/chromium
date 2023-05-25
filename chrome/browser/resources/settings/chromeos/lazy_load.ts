@@ -115,6 +115,7 @@ export {TimezoneSubpageElement} from './date_time_page/timezone_subpage.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
+export {SettingsHotspotSubpageElement} from './internet_page/hotspot_subpage.js';
 export {SettingsPasspointSubpageElement} from './internet_page/passpoint_subpage.js';
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_page/kerberos_accounts_browser_proxy.js';

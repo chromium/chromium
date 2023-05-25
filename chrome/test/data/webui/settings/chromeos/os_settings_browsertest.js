@@ -310,11 +310,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
- [
-   'HotspotSubpage',
-   'hotspot_subpage_tests.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
@@ -341,6 +336,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'InternetPageHotspotConfigDialog',
    'internet_page/hotspot_config_dialog_test.js',
+   {enabled: ['ash::features::kHotspot']},
+ ],
+ [
+   'InternetPageHotspotSubpage',
+   'internet_page/hotspot_subpage_test.js',
    {enabled: ['ash::features::kHotspot']},
  ],
  [
