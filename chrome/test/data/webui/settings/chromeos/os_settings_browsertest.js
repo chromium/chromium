@@ -383,6 +383,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'kerberos_page/kerberos_accounts_subpage_test.js',
  ],
  [
+   'KerberosPageKerberosAddAccountDialog',
+   'kerberos_page/kerberos_add_account_dialog_test.js',
+ ],
+ [
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
