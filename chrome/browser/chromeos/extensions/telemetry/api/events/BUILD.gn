@@ -4,7 +4,6 @@
 
 import("//chrome/common/chromeos/extensions/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
@@ -25,15 +24,7 @@ source_set("events") {
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
     "//extensions/browser",
-    "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-    ]
-  }
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
@@ -123,7 +114,6 @@ source_set("browser_tests") {
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
-    "//url",
   ]
 
   data = [ "//chrome/test/data" ]
@@ -134,11 +124,7 @@ source_set("browser_tests") {
       "fake_events_service_factory.h",
     ]
 
-    deps += [
-      "//chrome/browser/ash/telemetry_extension/events",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-    ]
+    deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
   }
 
   if (is_chromeos_lacros) {

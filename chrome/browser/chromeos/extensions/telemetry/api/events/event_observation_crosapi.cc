@@ -104,18 +104,10 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
         break;
       }
       case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
-          kKeyboardDiagnosticEventInfo:
-        base::Value::List args;
-        args.Append(converters::ConvertStructPtr<
-                        api::os_events::KeyboardDiagnosticEventInfo>(
-                        std::move(info->get_keyboard_diagnostic_event_info()))
-                        .ToValue());
-
-        event = std::make_unique<extensions::Event>(
-            extensions::events::OS_EVENTS_ON_KEYBOARD_DIAGNOSTIC_EVENT,
-            api::os_events::OnKeyboardDiagnosticEvent::kEventName,
-            std::move(args), browser_context_);
+          kKeyboardDiagnosticEventInfo: {
+        NOTIMPLEMENTED();
         break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)
