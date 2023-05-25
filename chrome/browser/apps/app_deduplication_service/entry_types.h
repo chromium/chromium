@@ -14,27 +14,26 @@ class GURL;
 
 namespace apps::deduplication {
 
-enum class EntryType {
-  kApp,
-  kWebPage,
-  kPhoneHubApp,
-};
+enum class EntryType { kApp, kWebPage };
 
-struct EntryId {
-  EntryId() = default;
+// Deduplication entry, each entry represents an app or a web page that could be
+// identified as duplicates with each other.
+struct Entry {
+  Entry() = default;
+
   // Constructor for apps.
-  EntryId(std::string app_id, AppType app_type);
+  Entry(std::string app_id, AppType app_type);
 
   // Constructor for web pages.
-  explicit EntryId(const GURL& url);
+  explicit Entry(const GURL& url);
 
-  EntryId(const EntryId&) = default;
-  EntryId& operator=(const EntryId&) = default;
-  EntryId(EntryId&&) = default;
-  EntryId& operator=(EntryId&&) = default;
+  Entry(const Entry&) = default;
+  Entry& operator=(const Entry&) = default;
+  Entry(Entry&&) = default;
+  Entry& operator=(Entry&&) = default;
 
-  bool operator==(const EntryId& other) const;
-  bool operator<(const EntryId& other) const;
+  bool operator==(const Entry& other) const;
+  bool operator<(const Entry& other) const;
 
   EntryType entry_type;
 
@@ -46,24 +45,7 @@ struct EntryId {
 };
 
 // For logging and debugging purposes.
-std::ostream& operator<<(std::ostream& out, const EntryId& entry_id);
-
-// Deduplication entry, each entry represents an app or a web page that could be
-// identified as duplicates with each other.
-struct Entry {
-  explicit Entry(EntryId entry_id);
-
-  Entry(const Entry&) = default;
-  Entry& operator=(const Entry&) = default;
-  Entry(Entry&&) = default;
-  Entry& operator=(Entry&&) = default;
-
-  bool operator==(const Entry& other) const;
-  bool operator<(const Entry& other) const;
-
-  // Unique identifier for deduplication entry.
-  EntryId entry_id;
-};
+std::ostream& operator<<(std::ostream& out, const Entry& entry);
 
 }  // namespace apps::deduplication
 

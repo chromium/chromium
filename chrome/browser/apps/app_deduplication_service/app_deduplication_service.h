@@ -44,8 +44,8 @@ class AppDeduplicationService : public KeyedService,
   // This function returns true if the Deduplication Service has been
   // properly initialised, ensuring the correctness of method responses.
   bool IsServiceOn();
-  std::vector<Entry> GetDuplicates(const EntryId& entry_id);
-  bool AreDuplicates(const EntryId& entry_id_1, const EntryId& entry_id_2);
+  std::vector<Entry> GetDuplicates(const Entry& entry);
+  bool AreDuplicates(const Entry& entry_1, const Entry& entry_2);
 
   // Registers prefs used for the App Deduplication Service.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -102,7 +102,7 @@ class AppDeduplicationService : public KeyedService,
   // Returns the map key of the duplicate group in the duplication map if a
   // group is found, and return nullptr if the entry id doesn't belong to
   // and duplicate group.
-  absl::optional<uint32_t> FindDuplicationIndex(const EntryId& entry_id);
+  absl::optional<uint32_t> FindDuplicationIndex(const Entry& entry);
 
   // Calls server connector to make a request to the Fondue server to retrieve
   // duplicate app group data.
@@ -134,8 +134,8 @@ class AppDeduplicationService : public KeyedService,
   }
 
   std::map<uint32_t, DuplicateGroup> duplication_map_;
-  std::map<EntryId, uint32_t> entry_to_group_map_;
-  std::map<EntryId, EntryStatus> entry_status_;
+  std::map<Entry, uint32_t> entry_to_group_map_;
+  std::map<Entry, EntryStatus> entry_status_;
   raw_ptr<Profile, ExperimentalAsh> profile_;
 
   base::ScopedObservation<AppProvisioningDataManager,
