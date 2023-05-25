@@ -1213,6 +1213,9 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
   caps.max_texture_size = shared_context_state_->GetMaxTextureSize();
+  caps.using_vulkan_context =
+      shared_context_state_->GrContextIsVulkan() ? true : false;
+
   if (feature_info()->workarounds().webgl_or_caps_max_texture_size) {
     caps.max_texture_size =
         std::min(caps.max_texture_size,

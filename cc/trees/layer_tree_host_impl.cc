@@ -3931,6 +3931,12 @@ bool LayerTreeHostImpl::InitializeFrameSink(
         worker_context_provider);
     raster_caps_.max_texture_size =
         worker_context_provider->ContextCapabilities().max_texture_size;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, DMSAA is only enabled for vulkan until GL regressions are
+    // fixed.
+    raster_caps_.use_dmsaa_for_tiles &=
+        worker_context_provider->ContextCapabilities().using_vulkan_context;
+#endif
   } else if (context_provider) {
     raster_caps_.max_texture_size =
         context_provider->ContextCapabilities().max_texture_size;
