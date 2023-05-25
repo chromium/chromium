@@ -383,6 +383,7 @@ void MediaNotificationViewImpl::UpdateWithMediaMetadata(
       metadata.source_title.empty() ? default_app_name_ : metadata.source_title;
 
   if (header_row_) {
+    header_row_->SetAppNameElideBehavior(gfx::ELIDE_HEAD);
     header_row_->SetAppName(app_name);
     header_row_->SetSummaryText(metadata.album);
   } else {
