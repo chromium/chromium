@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -135,6 +136,12 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
           std::make_unique<developer::ExtensionInfo>(std::move(list[0]));
     }
     std::move(quit_closure_).Run();
+  }
+
+  api::developer_private::SafetyCheckStrings CreateSafetyCheckDisplayStringTest(
+      CWSInfoService::CWSInfo& cws_info) {
+    return ExtensionInfoGenerator(browser_context())
+        .CreateSafetyCheckDisplayString(cws_info);
   }
 
   std::unique_ptr<developer::ExtensionInfo> GenerateExtensionInfo(
@@ -498,6 +505,50 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
                                  InspectableViewsFinder::ViewList(),
                                  expected_outputs_path.AppendASCII(
                                      "bjafgdebaacbbbecmhlhpofkepfkgcpa.json"));
+}
+
+// Test the safety check display strings
+TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest) {
+  CWSInfoService::CWSInfo cws_info;
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kMalware;
+  cws_info.unpublished_long_ago = true;
+  developer::SafetyCheckStrings display_strings =
+      CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(
+      "This extension contains malware and is unsafe. Remove it from Chromium "
+      "so it can no longer see and change your data on sites you visit, "
+      "including your personal info.",
+      display_strings.detail_string);
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kPolicy;
+  cws_info.unpublished_long_ago = true;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(
+      "This extension violates the Chrome Web Store policy, and might be "
+      "unsafe. Remove it from Chromium so it can no longer see and change your "
+      "data on sites you visit, including your personal info.",
+      display_strings.detail_string);
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
+  cws_info.unpublished_long_ago = true;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(
+      "This extension was unpublished by its developer, and might be unsafe. "
+      "Remove it from Chromium so it can no longer see and change your data on "
+      "sites you visit, including your personal info.",
+      display_strings.detail_string);
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckEmptyStringTest) {
+  CWSInfoService::CWSInfo cws_info;
+  cws_info.is_present = false;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
+  cws_info.unpublished_long_ago = false;
+  developer::SafetyCheckStrings display_strings;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(display_strings.detail_string, "");
+  EXPECT_EQ(display_strings.panel_string, "");
 }
 
 // Tests the generation of the runtime host permissions entries.
