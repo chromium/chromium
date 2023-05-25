@@ -39,6 +39,9 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
   void GetSubAppIds(const web_app::AppId& app_id,
                     GetSubAppIdsCallback callback) override;
   void GetSubAppToParentMap(GetSubAppToParentMapCallback callback) override;
+  void InstallPreloadWebApp(
+      mojom::PreloadWebAppInstallInfoPtr preload_install_info,
+      InstallPreloadWebAppCallback callback) override;
 
  private:
   static void WebAppInstalledInArcImpl(
@@ -65,6 +68,10 @@ class WebAppProviderBridgeLacros : public mojom::WebAppProviderBridge {
                                Profile* profile);
   static void GetSubAppToParentMapImpl(GetSubAppToParentMapCallback callback,
                                        Profile* profile);
+  static void InstallPreloadWebAppImpl(
+      mojom::PreloadWebAppInstallInfoPtr preload_install_info,
+      InstallPreloadWebAppCallback callback,
+      Profile* profile);
 
   mojo::Receiver<mojom::WebAppProviderBridge> receiver_{this};
 };

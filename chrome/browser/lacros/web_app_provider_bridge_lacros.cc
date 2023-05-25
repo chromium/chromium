@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
+
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -26,7 +29,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
-namespace crosapi {
+    namespace crosapi {
 
 WebAppProviderBridgeLacros::WebAppProviderBridgeLacros() {
   auto* service = chromeos::LacrosService::Get();
@@ -105,6 +108,16 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMap(
       /*incognito=*/false,
       base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppToParentMapImpl,
                      std::move(callback)));
+}
+
+void WebAppProviderBridgeLacros::InstallPreloadWebApp(
+    mojom::PreloadWebAppInstallInfoPtr preload_install_info,
+    InstallPreloadWebAppCallback callback) {
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath(),
+      /*incognito=*/false,
+      base::BindOnce(&WebAppProviderBridgeLacros::InstallPreloadWebAppImpl,
+                     std::move(preload_install_info), std::move(callback)));
 }
 
 // static
@@ -206,6 +219,26 @@ void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
       base::BindOnce([](web_app::AllAppsLock& lock) {
         return lock.registrar().GetSubAppToParentMap();
       }).Then(std::move(callback)));
+}
+
+// static
+void WebAppProviderBridgeLacros::InstallPreloadWebAppImpl(
+    mojom::PreloadWebAppInstallInfoPtr preload_install_info,
+    InstallPreloadWebAppCallback callback, Profile * profile) {
+  CHECK(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+
+  // TODO(b/284053861) Move allowlist into InstallPreloadedVerifiedAppCommand.
+  base::flat_set<std::string> host_allowlist = {
+      "meltingpot.googleusercontent.com", "127.0.0.1" /*FOR TESTING*/};
+
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
+          webapps::WebappInstallSource::PRELOADED_OEM,
+          preload_install_info->document_url,
+          preload_install_info->manifest_url, preload_install_info->manifest,
+          preload_install_info->expected_app_id, std::move(host_allowlist),
+          std::move(callback)));
 }
 
 }  // namespace crosapi

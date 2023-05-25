@@ -61,3 +61,19 @@ struct ArcWebAppInstallInfo {
   gfx.mojom.ImageSkia icon@4;
   [MinVersion=1] array<string>? additional_policy_ids@5;
 };
+
+// The set of information necessary to install a preloaded web app in Lacros.
+[Stable]
+struct PreloadWebAppInstallInfo {
+  // The url from which the web app is installed.
+  url.mojom.Url document_url@0;
+
+  // The url from which the manifest is fetched.
+  url.mojom.Url manifest_url@1;
+
+  // The expected app id for the installed web app.
+  string expected_app_id@2;
+
+  // The standard web app manifest, encoded as a JSON string.
+  string manifest@3;
+};
