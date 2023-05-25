@@ -34,7 +34,7 @@ import re
 from collections import defaultdict
 from collections import OrderedDict
 from functools import reduce
-from typing import Collection, Dict, FrozenSet, Optional, Tuple
+from typing import Collection, Dict, FrozenSet, List, Optional, Tuple
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models import typ_types
@@ -457,28 +457,27 @@ class TestExpectations:
             if not pattern_to_exps[exp.test]:
                 pattern_to_exps.pop(exp.test)
 
-    def add_expectations(self, path, exps, lineno=0, append_to_end_of_file=False):
+    def add_expectations(self,
+                         path: str,
+                         exps: List[typ_types.Expectation],
+                         lineno: int = 0):
         """This method adds Expectation instances to an expectations file. It will
         add the new instances after the line number passed through the lineno parameter.
         If the lineno is set to a value outside the range of line numbers in the file
         then it will append the expectations to the end of the file
 
-        args:
+        Arguments:
             path: Absolute path of file where expectations will be added to.
             exps: List of Expectation instances to be added to the file.
             lineno: Line number in expectations file where the expectations will
-                    be added."""
+                be added. Provide 0 to append to the end of the file.
+        """
         idx = list(self._expectations_dict.keys()).index(path)
         typ_expectations = self._expectations[idx]
         added_glob = False
 
         if lineno < 0:
             raise ValueError('lineno cannot be negative.')
-        if (append_to_end_of_file and lineno or
-                not append_to_end_of_file and not lineno):
-            raise ValueError('If append_to_end_of_file is set then lineno '
-                             'must be 0. Also if lineno is 0 then '
-                             'append_to_end_of_file must be set to True.')
 
         for exp in exps:
             exp.lineno = lineno
