@@ -31,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
@@ -1205,10 +1206,10 @@ class OriginTrialsControllerDelegateMock
       const base::Time current_time) override {
     NOTREACHED() << "not used by test";
   }
-  bool IsTrialPersistedForOrigin(const url::Origin& origin,
-                                 const url::Origin& partition_origin,
-                                 const base::StringPiece trial_name,
-                                 const base::Time current_time) override {
+  bool IsFeaturePersistedForOrigin(const url::Origin& origin,
+                                   const url::Origin& partition_origin,
+                                   blink::OriginTrialFeature feature,
+                                   const base::Time current_time) override {
     DCHECK(false) << "Method not implemented for test.";
     return false;
   }

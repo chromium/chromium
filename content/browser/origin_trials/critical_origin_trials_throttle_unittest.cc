@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
@@ -69,10 +70,18 @@ class MockOriginTrialsDelegate
     }
   }
 
-  bool IsTrialPersistedForOrigin(const url::Origin& origin,
-                                 const url::Origin& top_level_origin,
-                                 const base::StringPiece trial_name,
-                                 const base::Time current_time) override {
+  bool IsFeaturePersistedForOrigin(const url::Origin& origin,
+                                   const url::Origin& top_level_origin,
+                                   blink::OriginTrialFeature feature,
+                                   const base::Time current_time) override {
+    std::string trial_name = "";
+    switch (feature) {
+      case blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature:
+        trial_name = kPersistentTrialName;
+        break;
+      default:
+        break;
+    }
     const auto& it = persisted_trials_.find(origin);
     return it != persisted_trials_.end() && it->second.contains(trial_name);
   }

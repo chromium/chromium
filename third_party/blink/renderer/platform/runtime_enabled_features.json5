@@ -2563,6 +2563,15 @@
     // As above. Do not change this flag to stable, as it exists solely to
     // generate code used by the origin trials sample API implementation.
     {
+      name: "OriginTrialsSampleAPIPersistentInvalidOS",
+      base_feature: "none",
+      origin_trial_feature_name: "FrobulatePersistentInvalidOS",
+      origin_trial_allows_third_party: true,
+      origin_trial_os: ["invalid"],
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    {
       name: "OriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature",
       base_feature: "none",
       origin_trial_feature_name: "FrobulatePersistentThirdPartyDeprecation",

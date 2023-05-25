@@ -106,6 +106,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-test-utils.h"
@@ -1116,9 +1117,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   OriginTrialsControllerDelegate* delegate = GetOriginTrialsDelegate();
 
   url::Origin trial_origin = url::Origin::Create(GURL(kOriginTrialUrl));
-  EXPECT_TRUE(delegate->IsTrialPersistedForOrigin(
+  EXPECT_TRUE(delegate->IsFeaturePersistedForOrigin(
       /*origin=*/trial_origin, /*partition_origin=*/trial_origin,
-      "FrobulatePersistent", validTime));
+      blink::OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature,
+      validTime));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
@@ -1170,9 +1172,11 @@ IN_PROC_BROWSER_TEST_F(
   // The Trial should be enabled in the context where it was set.
   url::Origin main_origin = url::Origin::Create(GURL(kOriginTrialUrl));
   url::Origin trial_origin = url::Origin::Create(GURL(kThirdPartyScriptUrl));
-  EXPECT_TRUE(delegate->IsTrialPersistedForOrigin(
+  EXPECT_TRUE(delegate->IsFeaturePersistedForOrigin(
       /*origin=*/trial_origin, /*partition_origin=*/main_origin,
-      "FrobulatePersistentThirdPartyDeprecation", validTime));
+      blink::OriginTrialFeature::
+          kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
+      validTime));
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,

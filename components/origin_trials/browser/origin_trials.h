@@ -17,6 +17,7 @@
 #include "components/origin_trials/common/persisted_trial_token.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace url {
@@ -30,7 +31,7 @@ namespace origin_trials {
 // This class manages persistent origin trials, allowing the browser to check
 // if a given trial is enabled or not.
 //
-// Persisting the enabled trials is handled by the |persistence_provider| passed
+// Persisting the enabled trials is handled by the `persistence_provider` passed
 // in through the constructor.
 class OriginTrials : public KeyedService,
                      public content::OriginTrialsControllerDelegate {
@@ -58,10 +59,10 @@ class OriginTrials : public KeyedService,
       base::span<const url::Origin> script_origins,
       const base::span<const std::string> header_tokens,
       const base::Time current_time) override;
-  bool IsTrialPersistedForOrigin(const url::Origin& origin,
-                                 const url::Origin& partition_origin,
-                                 const base::StringPiece trial_name,
-                                 const base::Time current_time) override;
+  bool IsFeaturePersistedForOrigin(const url::Origin& origin,
+                                   const url::Origin& partition_origin,
+                                   blink::OriginTrialFeature feature,
+                                   const base::Time current_time) override;
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
       const url::Origin& partition_origin,
@@ -81,19 +82,20 @@ class OriginTrials : public KeyedService,
                              bool append_only);
 
   // Helper to return the still-valid persisted trials, with an optional
-  // |trial_name_match| which can be passed to ensure we only validate
-  // and return the trial if it matches the passed name.
-  // If no |trial_name_match| is provided, it will return all persisted trials
-  // that are still valid.
+  // `trial_feature_match` which can be passed to ensure we only validate
+  // and return the trial if it enables the desired trial feature.
+  // If no `trial_feature_match` is provided, it will return all persisted
+  // trials that are still valid.
   base::flat_set<std::string> GetPersistedTrialsForOriginWithMatch(
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::Time current_time,
-      const absl::optional<const base::StringPiece> trial_name_match) const;
+      const absl::optional<blink::OriginTrialFeature> trial_feature_match)
+      const;
 
-  // Update the stored tokens for |origin| with the |new_tokens|, partitioned by
-  // |partition_site|.
-  // Will clean any tokens not found in |new_tokens| unless |append_only| is set
+  // Update the stored tokens for `origin` with the `new_tokens`, partitioned by
+  // `partition_site`.
+  // Will clean any tokens not found in `new_tokens` unless `append_only` is set
   // to true.
   void UpdatePersistedTokenSet(const url::Origin& origin,
                                base::span<const blink::TrialToken> new_tokens,
@@ -102,7 +104,7 @@ class OriginTrials : public KeyedService,
 
   // Get the 'site' used as the partitioning key for trial tokens.
   //
-  // The key is the eTLD+1 of the |origin|, taking private registries such as
+  // The key is the eTLD+1 of the `origin`, taking private registries such as
   // blogspot.com into account.
   static std::string GetTokenPartitionSite(const url::Origin& origin);
 };
