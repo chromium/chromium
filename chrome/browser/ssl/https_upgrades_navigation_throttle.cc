@@ -151,6 +151,13 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
     // heuristic.
   }
 
+  // TODO(crbug.com/1448371): There are some cases where the navigation may
+  // "restart", such as if we encounter an exempted transient network error on
+  // the upgraded HTTPS URL, show a net error page, and then reload the tab. In
+  // these cases the navigation will proceed with the upgrade/fallback logic,
+  // but the navigation timeout will no longer be set. Currently, re-starting
+  // the timer here would trigger a DCHECK in NavigationRequest.
+
   // Navigation is HTTPS or an initial HTTP navigation (which will get
   // upgraded by the interceptor). Fallback HTTP navigations are handled in
   // WillRedirectRequest().
