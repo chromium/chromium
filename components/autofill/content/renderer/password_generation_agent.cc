@@ -359,7 +359,7 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
   std::u16string generated_password =
       current_generation_item_->generation_element_.Value().Utf16();
   if (presaved_form_data) {
-    DCHECK_NE(std::u16string(), generated_password);
+    CHECK(!generated_password.empty());
     GetPasswordGenerationDriver().PresaveGeneratedPassword(*presaved_form_data,
                                                            generated_password);
   }
@@ -569,6 +569,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
       if (presaved_form_data) {
+        CHECK(!generated_password.empty());
         GetPasswordGenerationDriver().PresaveGeneratedPassword(
             *presaved_form_data, generated_password);
       }
@@ -612,6 +613,7 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
       if (presaved_form_data) {
+        CHECK(!generated_password.empty());
         GetPasswordGenerationDriver().PresaveGeneratedPassword(
             *presaved_form_data, generated_password);
       }
