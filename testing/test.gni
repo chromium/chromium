@@ -432,10 +432,6 @@ template("test") {
         shared_library = ":$_library_target_name"
         if (_generate_final_jni) {
           srcjar_deps = [ "${shared_library}__jni_registration" ]
-        } else {
-          # TODO(smaier) delete this once we clean up our apk targets to never
-          # have the fallback path of __final_jni.
-          generate_final_jni = _generate_final_jni
         }
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
