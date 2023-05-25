@@ -176,7 +176,7 @@ void OverviewSession::Init(const WindowList& windows,
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
     hide_windows_for_saved_desks_grid_ =
         std::make_unique<ScopedOverviewHideWindows>(
-            /*windows=*/std::vector<aura::Window*>({}), /*forced_hidden=*/true);
+            /*windows=*/std::vector<aura::Window*>{}, /*forced_hidden=*/true);
   }
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
