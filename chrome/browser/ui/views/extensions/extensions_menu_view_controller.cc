@@ -666,8 +666,9 @@ void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
     return;
   }
 
-  DCHECK(GetMainPage(current_page_));
-  UpdatePage(GetActiveWebContents());
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
+  DCHECK(main_page);
+  UpdateMainPage(main_page, GetActiveWebContents());
 
   // TODO(crbug.com/1390952): Update the "highlighted section" based on the
   // `site_setting` and whether a page refresh is needed.
