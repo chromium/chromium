@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ໂຮສ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">ກຳລັງເປີດໄຟລ໌ Linux...</translation>
 <translation id="1547964879613821194">ພາ​ສາ​ອັງ​ກິດກາ​ນາ​ດາ​</translation>
 <translation id="1556189134700913550">ໃຊ້ກັບ​ທັງ​ຫມົດ</translation>
 <translation id="1561842594491319104">ອຸປະກອນ Chrome</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">ການປ່ຽນການຕັ້ງຄ່ານີ້ຈະມີຜົນຕໍ່ກັບທຸກເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="3737576078404241332">ລຶບອອກຈາກແຖບດ້ານຂ້າງ</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
-<translation id="3780536599611287598">ທ່ານບໍ່ມີການອະນຸຍາດຍ້າຍໄຟລ໌ໄປໃສ່ '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">ທ່ານອອຟລາຍນ໌ຢູ່</translation>
 <translation id="3789841737615482174">​ຕິດ​ຕັ້ງ</translation>
 <translation id="3793469551756281394">ເວລາຍັງເຫຼືອປະມານ <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">ອາໂວຄາໂດ</translation>
 <translation id="4805966553127040832">ກຳລັງກູ້ຄືນ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍ 1 ລາຍການ}other{ເພື່ອໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ອົງກອນຂອງທ່ານຈຳເປັນຕ້ອງມີສ່ວນຂະຫຍາຍຈຳນວນໜຶ່ງ}}</translation>
-<translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
 <translation id="4826849268470072925">ພາສາທາມິລ (ITRANS)</translation>
 <translation id="482932175346970750">ພິມ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ໃສ່ໃນໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -681,7 +678,6 @@
 <translation id="6327785803543103246">ຄົ້ນຫາເວັບພຣັອກຊີໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6337014272874260727">ຖອນໝຸດຈາກໄຟລ໌ດ່ວນ</translation>
 <translation id="6339145975392024142">ສະຫະລັດສາກົນ (ຄອມພິວເຕີ)</translation>
-<translation id="6346310558342052870">ຈຳກັດການເຂົ້າເຖິງໄວ້ແລ້ວ</translation>
 <translation id="6356685157277930264">ໜ້າຈໍຄຳເຫັນຂອງ Files</translation>
 <translation id="6358884629796491903">ມັງກອນ</translation>
 <translation id="636254897931573416">ຄ່າການຈັບຄູ່ສ່ວນຕໍ່ທ້າຍຂອງໂດເມນບໍ່ຖືກຕ້ອງ</translation>

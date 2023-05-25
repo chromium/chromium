@@ -961,16 +961,6 @@ Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan melakukan pemeriksaan pencabutan online pada <ph name="PRODUCT_NAME" /> 19 dan yang lebih baru.
 
       Catatan: Pemeriksaan <ph name="OCSP_CRL_LABEL" /> tidak memberikan manfaat keamanan yang efektif.</translation>
-<translation id="1904685047904049720">Jika kebijakan ini disetel ke aktif, ekstensi yang tidak dipublikasikan di Chrome Web
-Store akan dinonaktifkan pada <ph name="PRODUCT_NAME" />.
-Kebijakan ini hanya berlaku untuk ekstensi yang diinstal dan diupdate dari
-Chrome Web Store. Ekstensi dari luar Chrome Web Store seperti ekstensi mode developer yang diinstal
-menggunakan mode developer dan ekstensi yang diinstal menggunakan tombol command line
-akan diabaikan. Ekstensi yang diinstal otomatis dan tidak diupdate dari
-Chrome Web Store serta semua ekstensi yang ditetapkan ke versi tertentu juga akan diabaikan.
-
-Jika kebijakan disetel ke <ph name="ALLOW_UNPUBLISHED" /> (0) atau tidak disetel, ekstensi yang tidak dipublikasikan di Chrome Web Store akan diizinkan.
-Jika kebijakan disetel ke <ph name="DISABLE_UNPUBLISHED" /> (1), ekstensi yang tidak dipublikasikan di Chrome Web Store akan dinonaktifkan.</translation>
 <translation id="1905061765326052857">Jangan izinkan pengguna yang tidak terafiliasi menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
 <translation id="1907696459350079081">Jangan aktifkan screensaver di layar login.</translation>
 <translation id="1910704279188129272">Memungkinkan untuk menetapkan pembatasan penggunaan per aplikasi.

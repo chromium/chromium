@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">英語（アメリカ）（Dvorak）キーボード</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ホスト</translation>
 <translation id="1521655867290435174">Google スプレッドシート</translation>
-<translation id="1538729222189715449">[Linux ファイル] を開いています...</translation>
 <translation id="1547964879613821194">カナダ英語</translation>
 <translation id="1556189134700913550">すべてに適用</translation>
 <translation id="1561842594491319104">Chrome デバイス</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
 <translation id="3737576078404241332">サイドバーから削除</translation>
 <translation id="3749289110408117711">ファイル名</translation>
-<translation id="3780536599611287598">ファイルを「<ph name="FOLDER_NAME" />」に移動する権限がありません。</translation>
 <translation id="3786301125658655746">現在オフラインです</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3793469551756281394">残り約 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> 個のアイテムを復元しています</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}other{シークレット モードを使用するには、拡張機能をオンにするよう組織が求めています}}</translation>
-<translation id="4823651846660089135">デバイスは読み取り専用です</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
 <translation id="482932175346970750">ブラウザに「<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />」と入力する</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
 <translation id="6337014272874260727">クイック ファイルへの固定を解除</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
-<translation id="6346310558342052870">アクセスが制限されています</translation>
 <translation id="6356685157277930264">ファイルのフィードバック ウィンドウ</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
 <translation id="636254897931573416">無効なドメイン サフィックス マッチの値</translation>

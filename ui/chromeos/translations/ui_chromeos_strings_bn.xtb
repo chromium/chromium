@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - হোস্ট</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ফাইল খোলা হচ্ছে...</translation>
 <translation id="1547964879613821194">কানাডীয় ইংরেজি</translation>
 <translation id="1556189134700913550">সবগুলিতে প্রয়োগ করুন</translation>
 <translation id="1561842594491319104">Chrome ডিভাইস</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">এই সেটিং পরিবর্তন করা হলে শেয়ার করা সব নেটওয়ার্ক প্রভাবিত হবে</translation>
 <translation id="3737576078404241332">সাইডবার থেকে সরিয়ে দিন</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
-<translation id="3780536599611287598">আপনার কাছে '<ph name="FOLDER_NAME" />'-এ ফাইলগুলি সরানোর অনুমতি নেই।</translation>
 <translation id="3786301125658655746">আপনি অফলাইন আছেন</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3793469551756281394">আরও প্রায় <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> সময় লাগবে</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">অ্যাভোকাডো</translation>
 <translation id="4805966553127040832"><ph name="COUNT" />টি আইটেম ফিরিয়ে আনা হচ্ছে</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}one{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}other{ছদ্মবেশী মোড ব্যবহার করতে, আপনার প্রতিষ্ঠানের একটি এক্সটেনশন প্রয়োজন}}</translation>
-<translation id="4823651846660089135">ডিভাইস শুধুমাত্র পঠনযোগ্য</translation>
 <translation id="4826849268470072925">তামিল আইট্রান্স</translation>
 <translation id="482932175346970750">আপনার ব্রাউজারে <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ করুন</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">ওয়েব প্রক্সী স্বতঃআবিষ্কার</translation>
 <translation id="6337014272874260727">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে আনপিন করুন</translation>
 <translation id="6339145975392024142">US ইন্টারন্যাশনাল (PC)</translation>
-<translation id="6346310558342052870">সীমাবদ্ধ অ্যাক্সেস</translation>
 <translation id="6356685157277930264">ফাইল সম্পর্কে মতামত জানানোর উইন্ডো</translation>
 <translation id="6358884629796491903">ড্রাগন</translation>
 <translation id="636254897931573416">ডোমেন সাফিক্সের সাথে মিল থাকা মানটি ভুল</translation>

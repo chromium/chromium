@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Tiếng Anh (Mỹ) bằng bàn phím Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Máy chủ lưu trữ</translation>
 <translation id="1521655867290435174">Google Trang tính</translation>
-<translation id="1538729222189715449">Đang mở tệp Linux...</translation>
 <translation id="1547964879613821194">Tiếng Anh ở Canada</translation>
 <translation id="1556189134700913550">Áp dụng cho tất cả</translation>
 <translation id="1561842594491319104">Thiết bị Chrome</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">Việc thay đổi cài đặt này sẽ ảnh hưởng đến tất cả các mạng chia sẻ</translation>
 <translation id="3737576078404241332">Xoá khỏi thanh bên</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
-<translation id="3780536599611287598">Bạn không có quyền di chuyển tệp vào '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Bạn đang ngoại tuyến</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3793469551756281394">Còn khoảng <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> nữa</translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4805966553127040832">Đang khôi phục <ph name="COUNT" /> mục</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Để sử dụng chế độ Ẩn danh, tổ chức của bạn cần có một tiện ích}other{Để sử dụng chế độ Ẩn danh, tổ chức của bạn cần có một số tiện ích}}</translation>
-<translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
 <translation id="4826849268470072925">Tiếng Tamil (ITRANS)</translation>
 <translation id="482932175346970750">Nhập <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> vào trình duyệt</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -682,7 +679,6 @@
 <translation id="6327785803543103246">Tự động phát hiện proxy web</translation>
 <translation id="6337014272874260727">Bỏ ghim khỏi tệp nhanh</translation>
 <translation id="6339145975392024142">Bàn phím quốc tế Hoa Kỳ (PC)</translation>
-<translation id="6346310558342052870">Truy cập bị hạn chế</translation>
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
 <translation id="6358884629796491903">Rồng</translation>
 <translation id="636254897931573416">Giá trị so khớp hậu tố tên miền không hợp lệ</translation>

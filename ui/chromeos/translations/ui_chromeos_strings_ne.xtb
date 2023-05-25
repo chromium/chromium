@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">अङ्ग्रेजी (सं. रा. अमेरिकी) ड्भोराक किबोर्ड</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
 <translation id="1521655867290435174">Google पाना</translation>
-<translation id="1538729222189715449">Linux का फाइलहरू खोल्दै...</translation>
 <translation id="1547964879613821194">क्यानाडाली अंग्रेजी</translation>
 <translation id="1556189134700913550">सबैमा लागू गर्नुहोस्</translation>
 <translation id="1561842594491319104">Chrome यन्त्रहरू</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">यो सेटिङ परिवर्तन गर्नुले आदान प्रदान गरिएका सबै नेटवर्कहरूमा असर पार्नेछ</translation>
 <translation id="3737576078404241332">साइडबारबाट हटाउनुहोस्</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
-<translation id="3780536599611287598">तपाईंसँग '<ph name="FOLDER_NAME" />' मा फाइलहरू सार्ने अनुमति छैन।</translation>
 <translation id="3786301125658655746">तपाईं अफलाइन हुनुहुन्छ</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="3793469551756281394">लगभग <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> बाँकी</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">अभोकाडो</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> वटा फाइल रिस्टोर गरिँदै छ</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{तपाईंले आफ्नो सङ्गठनले तोकेको एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}other{तपाईंले आफ्नो सङ्गठनले तोकेका केही एक्स्टेन्सन अन गरेपछि मात्र तपाईं इन्कोग्निटो मोड प्रयोग गर्न पाउनुहुन्छ}}</translation>
-<translation id="4823651846660089135">यन्त्र पढ्ने-मात्र मोडमा छ</translation>
 <translation id="4826849268470072925">तमिल ITRANS</translation>
 <translation id="482932175346970750">आफ्नो ब्राउजरमा <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> टाइप गर्नुहोस्</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">वेब प्रोक्सीको स्वत:खोज</translation>
 <translation id="6337014272874260727">"क्विक फाइलहरू" बाट अनपिन गरियोस्</translation>
 <translation id="6339145975392024142">अमेरिकी अन्तर्राष्ट्रिय (PC)</translation>
-<translation id="6346310558342052870">पहुँचलाई सीमित गरिको छ</translation>
 <translation id="6356685157277930264">फाइलहरूसम्बन्धी प्रतिक्रिया दिने विन्डो</translation>
 <translation id="6358884629796491903">ड्रागन</translation>
 <translation id="636254897931573416">डोमेन सफिक्ससँग मिल्दोजुल्दो मान अवैध छ</translation>

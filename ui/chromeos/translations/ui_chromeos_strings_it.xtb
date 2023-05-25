@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglese (USA) con tastiera Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Fogli Google</translation>
-<translation id="1538729222189715449">Apertura di file Linux…</translation>
 <translation id="1547964879613821194">Inglese canadese</translation>
 <translation id="1556189134700913550">Applica a tutti</translation>
 <translation id="1561842594491319104">Dispositivi Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">La modifica di questa impostazione avrà effetto su tutte le reti condivise</translation>
 <translation id="3737576078404241332">Rimuovi dalla barra laterale</translation>
 <translation id="3749289110408117711">Nome file</translation>
-<translation id="3780536599611287598">Non hai l'autorizzazione per spostare questi file in "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Sei offline</translation>
 <translation id="3789841737615482174">Installa</translation>
 <translation id="3793469551756281394">Tempo rimanente: circa <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832">Ripristino di <ph name="COUNT" /> elementi in corso…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{La tua organizzazione richiede un'estensione per usare la modalità di navigazione in incognito}other{La tua organizzazione richiede alcune estensioni per usare la modalità di navigazione in incognito}}</translation>
-<translation id="4823651846660089135">Il dispositivo è in sola lettura</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Digita <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> nel browser</translation>
 <translation id="4843566743023903107">I Chromebase</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Rilevamento automatico proxy web</translation>
 <translation id="6337014272874260727">Sblocca dai file rapidi</translation>
 <translation id="6339145975392024142">Inglese internazionale (PC)</translation>
-<translation id="6346310558342052870">Accesso limitato</translation>
 <translation id="6356685157277930264">Finestra di feedback dei file</translation>
 <translation id="6358884629796491903">Drago</translation>
 <translation id="636254897931573416">Valore corrispondenza suffisso di dominio non valida</translation>

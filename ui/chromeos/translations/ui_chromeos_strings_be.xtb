@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Табліцы Google</translation>
-<translation id="1538729222189715449">Адкрываюцца файлы Linux...</translation>
 <translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
 <translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
 <translation id="3749289110408117711">Назва файла</translation>
-<translation id="3780536599611287598">У вас няма дазволу на перамяшчэнне файлаў у папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Вы па-за сеткай</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3793469551756281394">Прыблізны час да завяршэння: <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Авакада</translation>
 <translation id="4805966553127040832">Элементы (<ph name="COUNT" />) аднаўляюцца</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуецца пашырэнне}one{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}few{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}many{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}other{У вашай арганізацыі для работы ў рэжыме інкогніта патрабуюцца пашырэнні}}</translation>
-<translation id="4823651846660089135">Прылада толькі для чытання</translation>
 <translation id="4826849268470072925">Тамільская (раскладка ITRANS)</translation>
 <translation id="482932175346970750">Увядзіце <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> у адрасным радку браўзера.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Аўтаматычная наладка проксі-сервера</translation>
 <translation id="6337014272874260727">Выдаліць з раздзела "Хуткія файлы"</translation>
 <translation id="6339145975392024142">ЗША, міжнародная (PC)</translation>
-<translation id="6346310558342052870">Доступ абмежаваны</translation>
 <translation id="6356685157277930264">Акно водгукаў на праграму "Файлы"</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Несапраўднае значэнне супадзення па суфіксе дамена</translation>

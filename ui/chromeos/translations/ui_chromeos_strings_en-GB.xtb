@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) with Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Opening Linux files...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Apply to all</translation>
 <translation id="1561842594491319104">Chrome devices</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
 <translation id="3737576078404241332">Remove from sidebar</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3780536599611287598">You don't have permission to move files into '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">You are offline</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3793469551756281394">About <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> remaining</translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832">Restoring <ph name="COUNT" /> items</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{To use Incognito, your organisation requires an extension}other{To use Incognito, your organisation requires some extensions}}</translation>
-<translation id="4823651846660089135">Device is read-only</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Type <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> into your browser</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -682,7 +679,6 @@
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
 <translation id="6337014272874260727">Unpin from quick files</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
-<translation id="6346310558342052870">Access restricted</translation>
 <translation id="6356685157277930264">Files feedback window</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Invalid domain suffix match value</translation>

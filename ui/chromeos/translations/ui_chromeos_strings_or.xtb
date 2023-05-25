@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ହୋଷ୍ଟ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଖୋଲୁଛି...</translation>
 <translation id="1547964879613821194">କାନାଡିଆନ୍ ଇଂରାଜୀ</translation>
 <translation id="1556189134700913550">ସମସ୍ତ ପାଇଁ ଲାଗୁ ହେବ</translation>
 <translation id="1561842594491319104">Chrome ଡିଭାଇସଗୁଡ଼ିକ</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">ଏହି ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନ କରିବା ଦ୍ୱାରା ସମସ୍ତ ସେୟାର୍‍ କରାଯାଇଥିବା ନେଟ୍‍ୱର୍କ ପ୍ରଭାବିତ ହେବ</translation>
 <translation id="3737576078404241332">ସାଇଡବାରରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
-<translation id="3780536599611287598">ଫାଇଲ୍‌ଗୁଡ଼ିକୁ '<ph name="FOLDER_NAME" />'କୁ ନେବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଅନୁମତି ନାହିଁ।</translation>
 <translation id="3786301125658655746">ଆପଣ ଅଫ୍‌ଲାଇନ୍ ଅଛନ୍ତି</translation>
 <translation id="3789841737615482174">ସଂସ୍ଥାପନ</translation>
 <translation id="3793469551756281394">ପ୍ରାୟ <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ବାକି ଅଛି</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" />ଟି ଆଇଟମକୁ ରିଷ୍ଟୋର କରାଯାଉଛି</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଏକ ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}other{ଇନକଗ୍ନିଟୋ ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ ସଂସ୍ଥା କିଛି ଏକ୍ସଟେନସନ ଆବଶ୍ୟକ କରେ}}</translation>
-<translation id="4823651846660089135">ଡିଭାଇସ୍‌ କେବଳ ପଢ଼ିବା ପାଇଁ ଅଟେ</translation>
 <translation id="4826849268470072925">ତାମିଲ ITRANS</translation>
 <translation id="482932175346970750">ଆପଣଙ୍କ ବ୍ରାଉଜରରେ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -671,7 +668,6 @@
 <translation id="6327785803543103246">ୱେବ୍ ପ୍ରକ୍ସି ଅଟୋଡିସ୍କୋଭରୀ</translation>
 <translation id="6337014272874260727">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
-<translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
 <translation id="636254897931573416">ଡୋମେନ୍ ସଫିକ୍ସ ସହ ମେଳ ହେଉଥିବା ମୂଲ୍ୟ ଅବୈଧ ଅଟେ</translation>

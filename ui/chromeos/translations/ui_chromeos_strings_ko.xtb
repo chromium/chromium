@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">영어(미국, 드보락 키보드)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 호스트</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux 파일을 여는 중...</translation>
 <translation id="1547964879613821194">영어(캐나다)</translation>
 <translation id="1556189134700913550">모두 적용</translation>
 <translation id="1561842594491319104">Chrome 기기</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
 <translation id="3737576078404241332">사이드바에서 삭제</translation>
 <translation id="3749289110408117711">파일 이름</translation>
-<translation id="3780536599611287598">파일을 '<ph name="FOLDER_NAME" />'(으)로 이동할 권한이 없습니다.</translation>
 <translation id="3786301125658655746">오프라인 상태입니다.</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3793469551756281394">약 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> 남음</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">아보카도</translation>
 <translation id="4805966553127040832">항목 <ph name="COUNT" />개 복원 중</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{시크릿 모드를 사용하려면 조직에 확장 프로그램이 필요합니다}other{시크릿 모드를 사용하려면 조직에 일부 확장 프로그램이 필요합니다}}</translation>
-<translation id="4823651846660089135">읽기 전용 기기</translation>
 <translation id="4826849268470072925">타밀어(ITRANS)</translation>
 <translation id="482932175346970750">브라우저에 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />를 입력합니다.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">웹 프록시 자동검색</translation>
 <translation id="6337014272874260727">빠른 파일에서 고정 해제</translation>
 <translation id="6339145975392024142">미국 국제(PC)</translation>
-<translation id="6346310558342052870">액세스 제한됨</translation>
 <translation id="6356685157277930264">파일 의견 창</translation>
 <translation id="6358884629796491903">용</translation>
 <translation id="636254897931573416">잘못된 도메인 서픽스 일치 값</translation>

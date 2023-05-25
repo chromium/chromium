@@ -1105,7 +1105,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Request could not be signed</translation>
-<translation id="3678342917559046352">Invalid extension: Expected the value to be of one of the following forms: &lt;extension_id&gt; or &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Open page in a new incognito window (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certificate information</translation>
 <translation id="3681421644246505351">Chrome notes topics of interest based on your recent browsing history.</translation>
@@ -2971,7 +2970,6 @@ Additional details:
 <translation id="8190193880870196235">Managed by an extension</translation>
 <translation id="8194797478851900357">&amp;Undo Move</translation>
 <translation id="8200772114523450471">Resume</translation>
-<translation id="8201077131113104583">Invalid update URL for extension with ID "<ph name="EXTENSION_ID" />".</translation>
 <translation id="8202097416529803614">Order summary</translation>
 <translation id="8202370299023114387">Conflict</translation>
 <translation id="8208363704094329105">300 mm x 400 mm</translation>

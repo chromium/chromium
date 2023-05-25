@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
 <translation id="1561842594491319104">Mga Chrome device</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Maaapektuhan ang lahat ng nakabahaging network kung babaguhin ang setting na ito</translation>
 <translation id="3737576078404241332">Alisin sa sidebar</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3780536599611287598">Wala kang pahintulot na maglipat ng mga file sa '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Naka-offline ka</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3793469551756281394">Humigit-kumulang <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ang natitira</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Abukado</translation>
 <translation id="4805966553127040832">Nire-restore ang <ph name="COUNT" /> (na) item</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Para magamit ang Incognito, may nire-require na extension ang iyong organisasyon}one{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}other{Para magamit ang Incognito, may nire-require na ilang extension ang iyong organisasyon}}</translation>
-<translation id="4823651846660089135">Read-only ang device</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">I-type ang <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> sa iyong browser</translation>
 <translation id="4843566743023903107">Mga Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Web proxy autodiscovery</translation>
 <translation id="6337014272874260727">I-unpin sa mga mabilisang file</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
-<translation id="6346310558342052870">Pinaghihigpitan ang access</translation>
 <translation id="6356685157277930264">Window ng feedback ng mga file</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="636254897931573416">Invalid na value ng pagtugma ng domain suffix</translation>

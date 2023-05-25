@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) enekhibhodi ye-Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Umsingathi</translation>
 <translation id="1521655867290435174">Amashidi we-Google</translation>
-<translation id="1538729222189715449">Ivula amafayela e-Linux...</translation>
 <translation id="1547964879613821194">I-Canadian English</translation>
 <translation id="1556189134700913550">Sebenzisa kukho konke</translation>
 <translation id="1561842594491319104">Amadivayisi e-Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Ukushintsha lesi silungiselelo kuzothinta onke amanethiwekhi abiwe</translation>
 <translation id="3737576078404241332">Susa kwibha eseceleni</translation>
 <translation id="3749289110408117711">Igama lefayela</translation>
-<translation id="3780536599611287598">Awunayo imvume yokuhambisa amafayela ku-'<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Awuxhunyiwe ku-inthanethi</translation>
 <translation id="3789841737615482174">Faka</translation>
 <translation id="3793469551756281394">Cishe kusele okungu-<ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Ukotapeya</translation>
 <translation id="4805966553127040832">Ibuyisela izinto ezingu-<ph name="COUNT" /></translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Ukuze usebenzise i-Incognito, inhlangano yakho idinga isandiso}one{Ukuze usebenzise i-Incognito, inhlangano yakho idinga izandiso}other{Ukuze usebenzise i-Incognito, inhlangano yakho idinga izandiso}}</translation>
-<translation id="4823651846660089135">Idivayisi eyokufunda kuphela</translation>
 <translation id="4826849268470072925">I-Tamil ITRANS</translation>
 <translation id="482932175346970750">Thayipha u-<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kubhrawuza yakho</translation>
 <translation id="4843566743023903107">Ama-Chromebase</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Ukuthola ngokuzenzakalela ummeleli wewebhu</translation>
 <translation id="6337014272874260727">Susa ukuphina emafayeleni asheshayo</translation>
 <translation id="6339145975392024142">I-US international (PC)</translation>
-<translation id="6346310558342052870">Ukufinyelela kukhawulelwe</translation>
 <translation id="6356685157277930264">Impendulo yewindi le-Files</translation>
 <translation id="6358884629796491903">Isilo</translation>
 <translation id="636254897931573416">Inani lokufana lesiqeda sesizinda elingavumelekile</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ဆာဗာပင်ရင်း</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ဖိုင်များကို ဖွင့်နေသည်...</translation>
 <translation id="1547964879613821194">ကနေဒါ အင်္ဂလိပ်</translation>
 <translation id="1556189134700913550">အားလုံး အတွက် အသုံးပြုရန်</translation>
 <translation id="1561842594491319104">Chrome စက်ပစ္စည်းများ</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">ဤဆက်တင်ကို ပြောင်းလဲခြင်းအားဖြင့် မျှဝေထားသည့် ကွန်ရက်အားလုံးကို အကျိုးသက်ရောက်စေပါလိမ့်မည်</translation>
 <translation id="3737576078404241332">ဆိုက်ဘားမှ ဖယ်ရှားရန်</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
-<translation id="3780536599611287598">ဖိုင်များကို '<ph name="FOLDER_NAME" />' သို့ ရွှေ့ရန် သင့်ထံတွင် ခွင့်ပြုချက်မရှိပါ။</translation>
 <translation id="3786301125658655746">သင်သည် အော့ဖ်လိုင်း ဖြစ်နေ</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="3793469551756281394"><ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ခန့် ကျန်သေးသည်</translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
 <translation id="4805966553127040832">ဖိုင် <ph name="COUNT" /> ဖိုင် ပြန်ယူနေသည်</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲတစ်ခု လိုအပ်သည်}other{‘ရုပ်ဖျက်မုဒ်’ သုံးရန် သင့်အဖွဲ့အစည်းက နောက်ဆက်တွဲအချို့ လိုအပ်သည်}}</translation>
-<translation id="4823651846660089135">စက်ပစ္စည်းကို ဖတ်ခွင့်သာရှိသည်</translation>
 <translation id="4826849268470072925">တမီးလ် ITRANS</translation>
 <translation id="482932175346970750">သင့်ဘရောင်ဇာတွင် <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ကိုရိုက်ထည့်ပါ</translation>
 <translation id="4843566743023903107">Chromebase များ</translation>
@@ -681,7 +678,6 @@
 <translation id="6327785803543103246">ဝဘ်ပရောက်စီ အလိုအလျောက် ရှာဖွေမှု</translation>
 <translation id="6337014272874260727">အမြန်သုံးဖိုင်များမှ ပင်ဖြုတ်ရန်</translation>
 <translation id="6339145975392024142">ယူအက်စ် နိုင်ငံတကာ (PC)</translation>
-<translation id="6346310558342052870">အသုံးပြုခွင့်ကို ကန့်သတ်ထားသည်</translation>
 <translation id="6356685157277930264">ဖိုင်များ အကြံပြုချက်ဝင်းဒိုး</translation>
 <translation id="6358884629796491903">နဂါး</translation>
 <translation id="636254897931573416">မှန်ကန်မှုမရှိသည့် ဒိုမိန်းနောက်ဆက် ကိုက်ညီမှု တန်ဖိုး</translation>

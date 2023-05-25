@@ -1333,7 +1333,6 @@
 <translation id="2114995631896158695">Не е вметната SIM-картичка</translation>
 <translation id="2116619964159595185">Сајтовите обично се поврзуваат со уреди со Bluetooth за функции како поставување или синхронизирање ознаки со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
 <translation id="2117655453726830283">Следен слајд</translation>
-<translation id="2119349053129246860">Отвори во <ph name="APP" /></translation>
 <translation id="2119461801241504254">„Безбедно прелистување“ е вклучено и ве заштитува од штетни сајтови и преземања</translation>
 <translation id="2120297377148151361">Активност и интеракции</translation>
 <translation id="2120639962942052471">Блокирана е <ph name="PERMISSION" /></translation>
@@ -2136,7 +2135,6 @@
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2783024642731649028">1 ставка во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Преземено</translation>
-<translation id="2783321960289401138">Креирај кратенка...</translation>
 <translation id="2783829359200813069">Избор на типови шифрирање</translation>
 <translation id="2783952358106015700">Користете го безбедносниот клуч со <ph name="APP_NAME" /></translation>
 <translation id="2785267875302712148">Password Checkup</translation>
@@ -3059,7 +3057,6 @@
 <translation id="3627320433825461852">Преостанува помалку од 1 минута</translation>
 <translation id="3627588569887975815">Отвори ја врската во инко&amp;гнито прозорец</translation>
 <translation id="3627671146180677314">Време за обновување сертификат на Netscape</translation>
-<translation id="3627879631695760395">Инсталирај ја <ph name="APP" />…</translation>
 <translation id="3628275722731025472">Исклучи Bluetooth</translation>
 <translation id="3629664892718440872">Запомни го изборов</translation>
 <translation id="3630132874740063857">Вашиот телефон</translation>
@@ -3691,7 +3688,6 @@
 <translation id="4159501637165962616"><ph name="BEGIN_PARAGRAPH1" />Ако дозволите уредите со Chrome OS да испраќаат автоматски извештаи, тоа ќе ни помогне да правиме приоритетни поправки и да го подобруваме Chrome OS. Извештаиве може да содржат податоци за падовите на Chrome OS, кои функции ги користите, колку меморија типично користите и дијагностички податоци и податоци за користењето на апликации на Android. И некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако е вклучена и синхронизацијата на апликациите, ќе се прибираат и дијагностички и податоци за користењето на други апликации, меѓу кои и апликации за Android и веб-апликации.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Може да ги дозволите или да ги откажете извештаиве во секое време во поставките за уредот со Chrome OS. Ако сте администратор на доменот, поставкава може да ја промените во администраторската конзола.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Ако сте ја вклучиле поставката „Активност на интернет и апликации“ за сметката на Google, податоците на Android може да ви се зачувуваат во сметката на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="4161601078867475601">Google Password Manager</translation>
 <translation id="4163560723127662357">Непозната тастатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не припаѓа на важечка организација. Контактирајте со администраторот. Ако сте администратор, може да ја поставите вашата организација на: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
@@ -4677,6 +4673,7 @@
 <translation id="5059429103770496207">Стил на приказ</translation>
 <translation id="5059526285558225588">Изберете што да се сподели</translation>
 <translation id="5060332552815861872">Има 1 печатач достапен за зачувување.</translation>
+<translation id="5060419232449737386">Поставки за титлови</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Оваа папка содржи обележувач. Дали сте сигурни дека сакате да ја избришете?}one{Оваа папка содржи # обележувач. Дали сте сигурни дека сакате да ја избришете?}other{Оваа папка содржи # обележувачи. Дали сте сигурни дека сакате да ја избришете?}}</translation>
 <translation id="5062930723426326933">Пријавувањето не успеа, поврзете се на интернет и обидете се повторно.</translation>
 <translation id="5063480226653192405">Користење</translation>
@@ -5309,7 +5306,6 @@
 <translation id="5627086634964711283">Контролира и која страница се прикажува кога ќе кликнете на копчето Почеток.</translation>
 <translation id="5627676517703583263">Прелистувајте паметно со Chrome</translation>
 <translation id="5627832140542566187">Ориентација на екранот</translation>
-<translation id="5628393161682339323">Кога ќе кликнам на екстензијата</translation>
 <translation id="562935524653278697">Администраторот ја оневозможил синхронизацијата на обележувачите, историјата, лозинките и другите поставки.</translation>
 <translation id="5631017369956619646">Употреба на ЦПУ</translation>
 <translation id="5632059346822207074">Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
@@ -5643,7 +5639,6 @@
 <translation id="592740088639760830">Запрете го контејнеров</translation>
 <translation id="592880897588170157">Преземај ги PDF-датотеките наместо автоматски да ги отвораш во Chrome</translation>
 <translation id="5928969282301718193">Сѐ е завршено засега</translation>
-<translation id="592919310198008711">Кога ќе кликнам на екстензијата</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Сајтот прикажува нападни или лажни реклами</translation>
 <translation id="59324397759951282">USB-уред од <ph name="MANUFACTURER_NAME" /></translation>
@@ -8300,7 +8295,6 @@
 <translation id="8248381369318572865">Пристап до микрофонот и анализа на вашиот говор</translation>
 <translation id="8248887045858762645">Совет за Chrome</translation>
 <translation id="8249048954461686687">Папка на OEM</translation>
-<translation id="8249615410597138718">Испратете до вашите уреди</translation>
 <translation id="8250210000648910632">Нема простор за складирање</translation>
 <translation id="8251441930213048644">Освежи сега</translation>
 <translation id="8251509999076836464">Се спарува со <ph name="DEVICE_NAME" /></translation>
@@ -9353,7 +9347,6 @@
         <ph name="BREAK" />
         Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="9154194610265714752">Ажурно</translation>
-<translation id="91568222606626347">Креирај кратенка...</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Не успеа поставувањето автоматски ажурирања за сите корисници (грешка при стартување preflight: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Вратата на печатачот е отворена</translation>

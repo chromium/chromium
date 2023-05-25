@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">અંગ્રેજી (યુએસ), Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - હોસ્ટ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ફાઇલો ખોલી રહ્યાં છીએ...</translation>
 <translation id="1547964879613821194">કેનેડિયન અંગ્રેજી</translation>
 <translation id="1556189134700913550">બધા પર લાગુ કરો</translation>
 <translation id="1561842594491319104">Chrome ડિવાઇસ</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
 <translation id="3737576078404241332">સાઇડબારમાંથી કાઢી નાખો</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
-<translation id="3780536599611287598">તમને ફાઇલોને '<ph name="FOLDER_NAME" />'માં ખસેડવાની પરવાનગી નથી.</translation>
 <translation id="3786301125658655746">તમે ઑફલાઇન છો</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3793469551756281394">લગભગ <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> બાકી</translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">એવોકેડો</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{છૂપા મોડનો ઉપયોગ કરવા માટે, તમારી સંસ્થા માટે એક્સ્ટેન્શનની જરૂર છે}one{છૂપા મોડનો ઉપયોગ કરવા માટે, તમારી સંસ્થા માટે અમુક એક્સ્ટેન્શનની જરૂર છે}other{છૂપા મોડનો ઉપયોગ કરવા માટે, તમારી સંસ્થા માટે અમુક એક્સ્ટેન્શનની જરૂર છે}}</translation>
-<translation id="4823651846660089135">ઉપકરણ ફક્ત વાંચવા માટે છે</translation>
 <translation id="4826849268470072925">તમિળ ITRANS</translation>
 <translation id="482932175346970750">તમારા બ્રાઉઝરમાં <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ટાઇપ કરો</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -682,7 +679,6 @@
 <translation id="6327785803543103246">વેબ પ્રૉક્સીની ઑટોમૅટિક ખોજ</translation>
 <translation id="6337014272874260727">ફાઇલોના ઝડપી ઍક્સેસમાંથી અનપિન કરો</translation>
 <translation id="6339145975392024142">US આંતરરાષ્ટ્રીય (PC)</translation>
-<translation id="6346310558342052870">ઍક્સેસ પ્રતિબંધિત</translation>
 <translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિન્ડો</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
 <translation id="636254897931573416">ડોમેન સફિક્સના મૂલ્યનો અમાન્ય મેળ</translation>

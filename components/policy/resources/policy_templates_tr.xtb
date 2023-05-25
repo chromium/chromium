@@ -957,16 +957,6 @@ Uzantıların kullanılabilirliği diğer politikalar tarafından kontrol edilme
       Politika False (Yanlış) değerine ayarlanır veya hiç ayarlanmazsa <ph name="PRODUCT_NAME" /> online iptal etme denetimlerini <ph name="PRODUCT_NAME" /> 19 ve sonraki sürümler için yapmaz.
 
       Not: <ph name="OCSP_CRL_LABEL" /> denetimleri güvenlik açısından verimli değildir.</translation>
-<translation id="1904685047904049720">Bu politika etkinleştirilirse Chrome Web Mağazası'nda yayından kaldırılan uzantılar
-<ph name="PRODUCT_NAME" /> ürününde devre dışı bırakılır.
-Bu politika yalnızca Chrome Web Mağazası'ndan yüklenen ve güncellenen uzantılar
-için geçerlidir. Geliştirici modu kullanılarak yüklenen paketlenmemiş uzantılar ve
-komut satırı anahtarı kullanılarak yüklenen uzantılar gibi mağaza dışındaki uzantılar
-yoksayılır. Zorunlu yüklenmiş ancak Chrome Web Mağazası'ndan
-güncellenmeyen ve sürüme sabitlenmiş tüm uzantılar da yoksayılır.
-
-Politika <ph name="ALLOW_UNPUBLISHED" /> (0) değerine ayarlanırsa veya ayarlanmadan bırakılırsa Chrome Web Mağazası'nda yayından kaldırılan uzantılara izin verilir.
-Politika <ph name="DISABLE_UNPUBLISHED" /> (1) değerine ayarlanırsa Chrome Web Mağazası'nda yayından kaldırılan uzantılar devre dışı bırakılır.</translation>
 <translation id="1905061765326052857">Bağlı olmayan kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin verme</translation>
 <translation id="1907696459350079081">Giriş ekranında ekran koruyucuyu etkinleştirme.</translation>
 <translation id="1910704279188129272">Uygulama başına kullanım kısıtlamaları ayarlamaya olanak tanır.

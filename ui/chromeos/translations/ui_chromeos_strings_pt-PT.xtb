@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Anfitrião</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">A abrir ficheiros Linux…</translation>
 <translation id="1547964879613821194">Inglês canadiano</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
 <translation id="1561842594491319104">dispositivos Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Alterar esta definição afetará todas as redes partilhadas</translation>
 <translation id="3737576078404241332">Remover da barra lateral</translation>
 <translation id="3749289110408117711">Nome do ficheiro</translation>
-<translation id="3780536599611287598">Não tem autorização para mover ficheiros para "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Está offline</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3793469551756281394">Falta(m) cerca de <ph name="REMAINING_TIME_HOUR" /> e <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Abacate</translation>
 <translation id="4805966553127040832">A restaurar <ph name="COUNT" /> itens</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Para usar a Navegação anónima, a sua organização requer uma extensão}other{Para usar a Navegação anónima, a sua organização requer algumas extensões}}</translation>
-<translation id="4823651846660089135">O dispositivo é apenas de leitura</translation>
 <translation id="4826849268470072925">Tâmil ITRANS</translation>
 <translation id="482932175346970750">Escreva <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Deteção automática de proxy da Web</translation>
 <translation id="6337014272874260727">Desafixar dos ficheiros rápidos</translation>
 <translation id="6339145975392024142">Americano internacional (PC)</translation>
-<translation id="6346310558342052870">Acesso restrito</translation>
 <translation id="6356685157277930264">Janela de comentários dos ficheiros</translation>
 <translation id="6358884629796491903">Dragão</translation>
 <translation id="636254897931573416">Valor da correspondência do sufixo do domínio inválido</translation>

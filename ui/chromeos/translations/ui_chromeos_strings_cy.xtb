@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Saesneg (UDA) gyda bysellfwrdd Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Gwesteiwr</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Wrthi'n agor ffeiliau Linux...</translation>
 <translation id="1547964879613821194">Saesneg Canada</translation>
 <translation id="1556189134700913550">Gweithredu ar gyfer pob un</translation>
 <translation id="1561842594491319104">Dyfeisiau Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Bydd newid y gosodiad hwn yn effeithio ar yr holl rwydweithiau cyffredin</translation>
 <translation id="3737576078404241332">Tynnu o'r bar ochr</translation>
 <translation id="3749289110408117711">Enw'r ffeil</translation>
-<translation id="3780536599611287598">Nid oes gennych ganiatâd i symud ffeiliau i '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Rydych chi all-lein</translation>
 <translation id="3789841737615482174">Gosod</translation>
 <translation id="3793469551756281394">Tua <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ar ôl</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Afocado</translation>
 <translation id="4805966553127040832">Adfer <ph name="COUNT" /> eitem</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Er mwyn defnyddio'r modd Anhysbys, mae angen estyniad ar eich sefydliad}zero{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}two{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}few{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}many{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}other{Er mwyn defnyddio'r modd Anhysbys, mae angen rhai estyniadau ar eich sefydliad}}</translation>
-<translation id="4823651846660089135">Darllen yn unig yw'r ddyfais</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Teipiwch <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yn eich porwr</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Awtoddarganfod dirprwy weinydd y we</translation>
 <translation id="6337014272874260727">Dad-binio o ffeiliau cyflym</translation>
 <translation id="6339145975392024142">Rhyngwladol UDA (PC)</translation>
-<translation id="6346310558342052870">Mae mynediad wedi'i gyfyngu</translation>
 <translation id="6356685157277930264">Ffenestr adborth ffeiliau</translation>
 <translation id="6358884629796491903">Draig</translation>
 <translation id="636254897931573416">Gwerth cyfateb ôl-ddodiad parth annilys</translation>

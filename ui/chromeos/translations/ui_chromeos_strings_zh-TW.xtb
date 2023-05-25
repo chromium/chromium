@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">英文 (美國) 搭配 Dvorak 鍵盤</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主機</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
-<translation id="1538729222189715449">正在開啟 Linux 檔案…</translation>
 <translation id="1547964879613821194">加拿大英文</translation>
 <translation id="1556189134700913550">全部套用</translation>
 <translation id="1561842594491319104">Chrome 裝置</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">變更這項設定會影響所有共用網路</translation>
 <translation id="3737576078404241332">從側欄中移除</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
-<translation id="3780536599611287598">你沒有將檔案移入「<ph name="FOLDER_NAME" />」的權限。</translation>
 <translation id="3786301125658655746">你處於離線狀態</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3793469551756281394">大約還剩 <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">酪梨</translation>
 <translation id="4805966553127040832">正在還原 <ph name="COUNT" /> 個項目</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{如要使用無痕模式，貴機構必須允許執行特定擴充功能}other{如要使用無痕模式，貴機構必須允許執行特定擴充功能}}</translation>
-<translation id="4823651846660089135">裝置目前是唯讀模式</translation>
 <translation id="4826849268470072925">泰米爾文 (印度文音譯)</translation>
 <translation id="482932175346970750">在瀏覽器中輸入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">網路 Proxy 自動探索</translation>
 <translation id="6337014272874260727">從快速檔案中取消固定</translation>
 <translation id="6339145975392024142">美式國際鍵盤 (PC)</translation>
-<translation id="6346310558342052870">權限受到限制</translation>
 <translation id="6356685157277930264">檔案狀態視窗</translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="636254897931573416">網域字尾比對值無效</translation>

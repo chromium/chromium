@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">angol (USA) billentyűzet Dvorak kiosztással</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gazdagép</translation>
 <translation id="1521655867290435174">Google Táblázatok</translation>
-<translation id="1538729222189715449">Linux-fájlok megnyitása…</translation>
 <translation id="1547964879613821194">kanadai angol</translation>
 <translation id="1556189134700913550">Alkalmazás az összesre</translation>
 <translation id="1561842594491319104">Chrome-eszközök</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">A beállítás módosítása az összes megosztott hálózatot érinti</translation>
 <translation id="3737576078404241332">Eltávolítás az oldalsávról</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
-<translation id="3780536599611287598">Nincs jogosultsága fájlok áthelyezésére a(z) „<ph name="FOLDER_NAME" />” mappába.</translation>
 <translation id="3786301125658655746">Ön jelenleg offline állapotban van</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3793469551756281394">Fennmaradó idő kb. <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />…</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokádó</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elem visszaállítása</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Az inkognitó mód használatához szervezetének szüksége van egy bővítményre}other{Az inkognitó mód használatához szervezetének szüksége van bizonyos bővítményekre}}</translation>
-<translation id="4823651846660089135">Az eszköz csak olvasható</translation>
 <translation id="4826849268470072925">tamil, ITRANS</translation>
 <translation id="482932175346970750">Írja be a <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> kifejezést a böngészőbe.</translation>
 <translation id="4843566743023903107">Chromebase-ek</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Webproxy automatikus észlelése</translation>
 <translation id="6337014272874260727">A gyorsfájlok között való kitűzés megszüntetése</translation>
 <translation id="6339145975392024142">Amerikai nemzetközi (PC)</translation>
-<translation id="6346310558342052870">Korlátozott hozzáférés</translation>
 <translation id="6356685157277930264">Fájlokkal kapcsolatos visszajelzésre vonatkozó ablak</translation>
 <translation id="6358884629796491903">Sárkány</translation>
 <translation id="636254897931573416">Érvénytelen érték: Domainvégződés – egyezés</translation>

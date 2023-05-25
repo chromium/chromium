@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglisht (SHBA) me tastierë Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - pritësi</translation>
 <translation id="1521655867290435174">Fletët e Google</translation>
-<translation id="1538729222189715449">Po hapen skedarët e Linux...</translation>
 <translation id="1547964879613821194">Anglishte kanadeze</translation>
 <translation id="1556189134700913550">Zbatoje për të gjitha</translation>
 <translation id="1561842594491319104">Pajisjet e Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
 <translation id="3737576078404241332">Hiq nga shiriti anësor</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
-<translation id="3780536599611287598">Nuk ke autorizim për t'i lëvizur skedarët në "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Je jashtë linje</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3793469551756281394">Koha e mbetur: <ph name="REMAINING_TIME_HOUR" /> e <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> artikuj po restaurohen</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Për të përdorur modalitetin "e fshehtë", organizata jote kërkon një shtesë}other{Për të përdorur modalitetin "e fshehtë", organizata jote kërkon disa shtesa}}</translation>
-<translation id="4823651846660089135">Pajisja është vetëm për lexim</translation>
 <translation id="4826849268470072925">Tamilisht ITRANS</translation>
 <translation id="482932175346970750">Shkruaj <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> në shfletuesin tënd</translation>
 <translation id="4843566743023903107">Pajisjet Chromebase</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Zbulimi automatik i përfaqësuesit të uebit</translation>
 <translation id="6337014272874260727">Zhgozhdo nga skedarët e shpejtë</translation>
 <translation id="6339145975392024142">Amerikane ndërkombëtare (PC)</translation>
-<translation id="6346310558342052870">Qasja e kufizuar</translation>
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="636254897931573416">Vlerë e pavlefshme për përputhjen e prapashtesës së domenit</translation>

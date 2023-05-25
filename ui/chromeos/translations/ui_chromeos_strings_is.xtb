@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Enska (bandarísk) með Dvorak-lyklaborði</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hýsill</translation>
 <translation id="1521655867290435174">Google töflureiknar</translation>
-<translation id="1538729222189715449">Opnar Linux-skrár...</translation>
 <translation id="1547964879613821194">Kanadísk enska</translation>
 <translation id="1556189134700913550">Nota á allt</translation>
 <translation id="1561842594491319104">Chrome tæki</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Ef þessari stillingu er breytt hefur það áhrif á öll samnýtt netkerfi</translation>
 <translation id="3737576078404241332">Fjarlægja af hliðarstiku</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
-<translation id="3780536599611287598">Þú hefur ekki heimild til að færa skrár í „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="3786301125658655746">Þú ert ekki á netinu</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="3793469551756281394">Um <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> eftir</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avókadó</translation>
 <translation id="4805966553127040832">Endurheimtir <ph name="COUNT" /> atriði</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Fyrirtækið þitt krefst viðbótar svo hægt sé að nota huliðsstillingu}one{Fyrirtækið þitt krefst viðbóta svo hægt sé að nota huliðsstillingu}other{Fyrirtækið þitt krefst viðbóta svo hægt sé að nota huliðsstillingu}}</translation>
-<translation id="4823651846660089135">Tæki er skrifvarið</translation>
 <translation id="4826849268470072925">Tamíl ITRANS</translation>
 <translation id="482932175346970750">Sláðu <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> inn í vafrann</translation>
 <translation id="4843566743023903107">Chromebase tæki</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Sjálfvirk uppgötvun vefstaðgengilsþjóna</translation>
 <translation id="6337014272874260727">Losa úr „Skrár fljótt“</translation>
 <translation id="6339145975392024142">Bandarískt alþjóðlegt tölvulyklaborð</translation>
-<translation id="6346310558342052870">Takmarkaður aðgangur</translation>
 <translation id="6356685157277930264">Gluggi með upplýsingum um skrár</translation>
 <translation id="6358884629796491903">Dreki</translation>
 <translation id="636254897931573416">Ógilt samsvörunargildi fyrir lénsendingu</translation>

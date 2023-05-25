@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">englanti (Yhdysvallat), Dvorak-näppäimistö</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – isäntä</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Avataan Linux-tiedostoja…</translation>
 <translation id="1547964879613821194">englanti (Kanada)</translation>
 <translation id="1556189134700913550">Käytä kaikkiin</translation>
 <translation id="1561842594491319104">Chrome-laitteet</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Tämän asetuksen muuttaminen vaikuttaa kaikkiin jaettuihin verkkoihin.</translation>
 <translation id="3737576078404241332">Poista sivupalkista</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
-<translation id="3780536599611287598">Sinulla ei ole lupaa siirtää tiedostoja kansioon <ph name="FOLDER_NAME" />.</translation>
 <translation id="3786301125658655746">Olet offline-tilassa</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="3793469551756281394">Noin <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> jäljellä</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Palautetaan <ph name="COUNT" /> kohdetta</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Organisaatiosi tarvitsee laajennuksen, jotta voit käyttää incognito-tilaa}other{Organisaatiosi tarvitsee joitakin laajennuksia, jotta voit käyttää incognito-tilaa}}</translation>
-<translation id="4823651846660089135">Laite on vain luku ‑tilassa.</translation>
 <translation id="4826849268470072925">tamil (ITRANS)</translation>
 <translation id="482932175346970750">Kirjoita selaimeen <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebaset</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Verkkovälityspalvelimen automaattinen tunnistaminen</translation>
 <translation id="6337014272874260727">Irrota pikatiedostoista</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
-<translation id="6346310558342052870">Käyttö rajoitettu</translation>
 <translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
 <translation id="636254897931573416">Virheellinen verkkotunnuksen päätteen vastaavuusarvo</translation>

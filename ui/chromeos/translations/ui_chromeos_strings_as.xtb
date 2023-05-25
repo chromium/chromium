@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - হ’ষ্ট</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ফাইল খুলি থকা হৈছে...</translation>
 <translation id="1547964879613821194">কানাডিয়ান ইংৰাজী</translation>
 <translation id="1556189134700913550">সকলোতে প্ৰয়োগ কৰক</translation>
 <translation id="1561842594491319104">Chrome ডিভাইচ</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">এই ছেটিংটো সলনি কৰিলে শ্বেয়াৰ কৰা সকলো নেটৱৰ্কত প্ৰভাৱ পৰিব</translation>
 <translation id="3737576078404241332">ছাইডবাৰৰ পৰা আঁতৰাওক</translation>
 <translation id="3749289110408117711">ফাইলৰ নাম</translation>
-<translation id="3780536599611287598">আপোনাৰ ’<ph name="FOLDER_NAME" />’লৈ ফাইল স্থানান্তৰ কৰাৰ অনুমতি নাই।</translation>
 <translation id="3786301125658655746">আপুনি অফলাইন হৈ আছে</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="3793469551756281394">প্ৰায় <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> বাকী আছে</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">এভ‘কাড‘</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> টা বস্তু পুনঃস্থাপন কৰি থকা হৈছে</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক এটা এক্সটেনশ্বনৰ প্ৰয়োজন}one{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}other{ইনক’গনিট’ ম’ড ব্যৱহাৰ কৰিবলৈ, আপোনাৰ প্ৰতিষ্ঠানক কিছুমান এক্সটেনশ্বনৰ প্ৰয়োজন}}</translation>
-<translation id="4823651846660089135">ডিভাইচটো কেৱল পঢ়িব পৰা</translation>
 <translation id="4826849268470072925">তামিল ITRANS</translation>
 <translation id="482932175346970750">আপোনাৰ ব্ৰাউজাৰত <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> টাইপ কৰক</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">ৱেব প্ৰক্সিৰ স্বয়ংক্রিয় চিনাক্তকৰণ</translation>
 <translation id="6337014272874260727">ক্ষিপ্ৰতাৰে এক্সেছ কৰিব পৰা ফাইলৰ পৰা আনপিন কৰক</translation>
 <translation id="6339145975392024142">ইউএছ ইণ্টাৰনেশ্বনেল (PC)</translation>
-<translation id="6346310558342052870">এক্সেছ সীমিত কৰা হৈছে</translation>
 <translation id="6356685157277930264">ফাইলসমূহৰ বিষয়ে থকা মতামতৰ ৱিণ্ড’</translation>
 <translation id="6358884629796491903">ড্ৰেগন</translation>
 <translation id="636254897931573416">ডমেইন চাফিক্সৰ সৈতে মিলা মান অমান্য</translation>

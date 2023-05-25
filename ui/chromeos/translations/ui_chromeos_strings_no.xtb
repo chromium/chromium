@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engelsk (USA) med Dvorak-tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – vert</translation>
 <translation id="1521655867290435174">Google Regneark</translation>
-<translation id="1538729222189715449">Åpner Linux-filer …</translation>
 <translation id="1547964879613821194">Canadisk engelsk</translation>
 <translation id="1556189134700913550">Gjelder alle</translation>
 <translation id="1561842594491319104">Chrome-enheter</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">Endringer i denne innstillingen påvirker alle delte nettverk</translation>
 <translation id="3737576078404241332">Fjern fra sidefeltet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
-<translation id="3780536599611287598">Du har ikke tillatelse til å flytte filer til «<ph name="FOLDER_NAME" />».</translation>
 <translation id="3786301125658655746">Du er ikke tilkoblet Internett</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3793469551756281394">Omtrent <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> gjenstår</translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Gjenoppretter <ph name="COUNT" /> elementer</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Organisasjonen din må forlenge bruk for å bruke inkognitomodus}other{Organisasjonen din krever enkelte utvidelser for å bruke Inkognito-modus}}</translation>
-<translation id="4823651846660089135">Enheten er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="482932175346970750">Skriv inn <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> i nettleseren.</translation>
 <translation id="4843566743023903107">Chromebase-enheter</translation>
@@ -682,7 +679,6 @@
 <translation id="6327785803543103246">Automatisk oppdagelse av proxy-tjenere</translation>
 <translation id="6337014272874260727">Løsne fra hurtigfiler</translation>
 <translation id="6339145975392024142">USA internasjonalt (PC)</translation>
-<translation id="6346310558342052870">Tilgangsbegrenset</translation>
 <translation id="6356685157277930264">Tilbakemeldingsvindu for Filer</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="636254897931573416">Ugyldig verdi i listen over samsvarende domenesuffikser</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏انگلیسی (امریکایی) با صفحه‌کلید Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
-<translation id="1538729222189715449">‏درحال باز کردن فایل‌های Linux…</translation>
 <translation id="1547964879613821194">انگلیسی کانادا</translation>
 <translation id="1556189134700913550">اعمال به همه</translation>
 <translation id="1561842594491319104">‏دستگاه‌های Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">تغییر این تنظیم همه شبکه‌های به اشتراک‌گذاشته‌شده را تحت تأثیر قرار می‌دهد</translation>
 <translation id="3737576078404241332">حذف از نوار کناری</translation>
 <translation id="3749289110408117711">نام فایل</translation>
-<translation id="3780536599611287598">اجازه ندارید فایل‌ها را به «<ph name="FOLDER_NAME" />» منتقل کنید.</translation>
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> و <ph name="REMAINING_TIME_MINUTE" /> باقی مانده است</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">آووکادو</translation>
 <translation id="4805966553127040832">درحال بازیابی <ph name="COUNT" /> مورد</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}one{برای استفاده از «حالت ناشناس»، سازمانتان به افزونه نیاز دارد}other{برای استفاده از «حالت ناشناس»، سازمانتان به چند افزونه نیاز دارد}}</translation>
-<translation id="4823651846660089135">دستگاه فقط خواندنی است</translation>
 <translation id="4826849268470072925">‏تامیل (ITRANS)</translation>
 <translation id="482932175346970750">‏<ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> را در مرورگرتان تایپ کنید</translation>
 <translation id="4843566743023903107">‏دستگاه‌های Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">کشف خودکار پراکسی وب</translation>
 <translation id="6337014272874260727">برداشتن سنجاق از «فایل‌های سریع»</translation>
 <translation id="6339145975392024142">بین‌المللی آمریکایی (رایانه شخصی)</translation>
-<translation id="6346310558342052870">دسترسی محدود</translation>
 <translation id="6356685157277930264">پنجره بازخورد فایل‌ها</translation>
 <translation id="6358884629796491903">اژدها</translation>
 <translation id="636254897931573416">مقدار واردشده برای «مطابقت پسوند دامنه» نامعتبر است</translation>

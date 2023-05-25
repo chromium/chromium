@@ -958,15 +958,6 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
       Se a política for definida como falsa ou não for definida, o <ph name="PRODUCT_NAME" /> não fará verificações de revogação on-line no <ph name="PRODUCT_NAME" /> 19 e versões mais recentes.
 
       Observação: as verificações de <ph name="OCSP_CRL_LABEL" /> não resultam em nenhum benefício de segurança eficaz.</translation>
-<translation id="1904685047904049720">Se a política for ativada, as extensões não publicadas na Chrome Web
-Store vão ser desativadas no <ph name="PRODUCT_NAME" />.
-Esta política se aplica apenas às extensões instaladas e atualizadas pela
-Chrome Web Store. Extensões fora da loja, como as descompactadas instaladas
-no modo de desenvolvedor e as instaladas usando a opção de linha de comando,
-são ignoradas. As extensões com instalação forçada que não são atualizadas na Chrome Web Store e todas as extensões fixadas em versões também são ignoradas.
-
-Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas na Chrome Web Store serão permitidas.
-Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas.</translation>
 <translation id="1905061765326052857">Não permitir que usuários não afiliados usem as máquinas virtuais necessárias para os apps do Linux</translation>
 <translation id="1907696459350079081">Não ativar o protetor na tela de bloqueio.</translation>
 <translation id="1910704279188129272">Permite definir restrições de uso por app.

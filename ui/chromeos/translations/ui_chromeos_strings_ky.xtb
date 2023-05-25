@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англисче (АКШ) жана Dvorak баскычтобу</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Башкы түйүн</translation>
 <translation id="1521655867290435174">Google Таблицалары</translation>
-<translation id="1538729222189715449">Linux файлдары ачылууда...</translation>
 <translation id="1547964879613821194">Англисче (Канада)</translation>
 <translation id="1556189134700913550">Бардыгы үчүн колдонуу</translation>
 <translation id="1561842594491319104">Chrome түзмөктөрү</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Бул жөндөө өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
 <translation id="3737576078404241332">Капталдагы тактадан өчүрүү</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
-<translation id="3780536599611287598">Файлдарды "<ph name="FOLDER_NAME" />" папкасына жылдырууга уруксатыңыз жок.</translation>
 <translation id="3786301125658655746">Офлайндасыз</translation>
 <translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3793469551756281394">Болжол менен <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> калды</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> нерсе калыбына келтирилүүдө</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Жашыруун режимди колдонуу үчүн уюмуңузга кеңейтүү керектелет}other{Жашыруун режимди колдонуу үчүн уюмуңузга кеңейтүүлөр керектелет}}</translation>
-<translation id="4823651846660089135">Түзмөк окуу үчүн гана уруксат берет</translation>
 <translation id="4826849268470072925">Тамилче (ITRANS)</translation>
 <translation id="482932175346970750">Серепчиңизде төмөнкүнү териңиз: <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase түзмөктөрү</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Веб проксини автоматтык түрдө табуу</translation>
 <translation id="6337014272874260727">Ыкчам ачылуучу файлдардан алып коюу</translation>
 <translation id="6339145975392024142">Эл аралык АКШ баскычтобу (жеке компьютер үчүн)</translation>
-<translation id="6346310558342052870">Кирүү мүмкүнчүлүгү чектелген</translation>
 <translation id="6356685157277930264">Files колдонмосу тууралуу пикирлер көрсөтүлгөн терезе</translation>
 <translation id="6358884629796491903">Ажыдаар</translation>
 <translation id="636254897931573416">Домен суффиксине окшош жараксыз маани</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Angielski (USA) z klawiaturą Dvoraka</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Arkusze Google</translation>
-<translation id="1538729222189715449">Otwieram pliki Linuksa…</translation>
 <translation id="1547964879613821194">kanadyjski angielski</translation>
 <translation id="1556189134700913550">Zastosuj do wszystkich</translation>
 <translation id="1561842594491319104">Urządzenia z Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Zmiana tego ustawienia wpłynie na wszystkie sieci współdzielone</translation>
 <translation id="3737576078404241332">Usuń z paska bocznego</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
-<translation id="3780536599611287598">Nie masz uprawnień, by przenieść pliki do folderu „<ph name="FOLDER_NAME" />”.</translation>
 <translation id="3786301125658655746">Jesteś offline</translation>
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3793469551756281394">Zostało około <ph name="REMAINING_TIME_HOUR" /> i <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Awokado</translation>
 <translation id="4805966553127040832">Przywracam elementy (<ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Aby korzystać z trybu incognito, musisz używać rozszerzenia wymaganego przez organizację}few{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}many{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}other{Aby korzystać z trybu incognito, musisz używać rozszerzeń wymaganych przez organizację}}</translation>
-<translation id="4823651846660089135">Urządzenie tylko do odczytu</translation>
 <translation id="4826849268470072925">Tamilski ITRANS</translation>
 <translation id="482932175346970750">Wpisz w przeglądarce <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Komputery Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Automatyczne wykrywanie internetowego serwera proxy</translation>
 <translation id="6337014272874260727">Odepnij od szybkich plików</translation>
 <translation id="6339145975392024142">Amerykańska międzynarodowa (PC)</translation>
-<translation id="6346310558342052870">Ograniczony dostęp</translation>
 <translation id="6356685157277930264">Okno informacji zwrotnych o plikach</translation>
 <translation id="6358884629796491903">Smok</translation>
 <translation id="636254897931573416">Nieprawidłowa wartość dopasowania sufiksu domeny</translation>

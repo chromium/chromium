@@ -60,7 +60,6 @@
 <translation id="1499943022354839699">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Κεντρικός υπολογιστής</translation>
 <translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
-<translation id="1538729222189715449">Άνοιγμα αρχείων Linux…</translation>
 <translation id="1547964879613821194">Αγγλικά Καναδά</translation>
 <translation id="1556189134700913550">Εφαρμογή σε όλα</translation>
 <translation id="1561842594491319104">Συσκευές Chrome</translation>
@@ -340,7 +339,6 @@
 <translation id="3727148787322499904">Η αλλαγή αυτής της ρύθμισης θα επηρεάσει όλα τα κοινόχρηστα δίκτυα</translation>
 <translation id="3737576078404241332">Κατάργηση από την πλευρική γραμμή</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
-<translation id="3780536599611287598">Δεν έχετε άδεια για τη μετακίνηση αρχείων στον φάκελο "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Είστε εκτός σύνδεσης</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="3793469551756281394">Απομένουν περίπου <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" />.</translation>
@@ -481,7 +479,6 @@
 <translation id="4804827417948292437">Αβοκάντο</translation>
 <translation id="4805966553127040832">Επαναφορά <ph name="COUNT" /> στοιχείων</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Ο οργανισμός σας απαιτεί μια επέκταση για να χρησιμοποιήσετε την ανώνυμη περιήγηση}other{Ο οργανισμός σας απαιτεί ορισμένες επεκτάσεις για να χρησιμοποιήσετε την ανώνυμη περιήγηση.}}</translation>
-<translation id="4823651846660089135">Η συσκευή είναι μόνο για ανάγνωση</translation>
 <translation id="4826849268470072925">Ταμίλ ITRANS</translation>
 <translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -695,7 +692,6 @@
 <translation id="6327785803543103246">Αυτόματη ανακάλυψη διακομιστή μεσολάβησης ιστού</translation>
 <translation id="6337014272874260727">Ξεκαρφίτσωμα από τα γρήγορα αρχεία</translation>
 <translation id="6339145975392024142">Διεθνές ΗΠΑ (PC)</translation>
-<translation id="6346310558342052870">Περιορισμένη πρόσβαση</translation>
 <translation id="6356685157277930264">Παράθυρο πληροφοριών αρχείων</translation>
 <translation id="6358884629796491903">Δράκος</translation>
 <translation id="636254897931573416">Μη έγκυρη τιμή αντιστοιχίας επιθήματος τομέα</translation>

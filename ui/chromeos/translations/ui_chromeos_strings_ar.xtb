@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
-<translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
 <translation id="1561842594491319104">‏أجهزة Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">سيؤثر تغيير هذا الإعداد في جميع الشبكات المشتركة</translation>
 <translation id="3737576078404241332">الإزالة من الشريط الجانبي</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
-<translation id="3780536599611287598">ليس لديك إذن لنقل الملفات إلى '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">أنت غير متصل بالإنترنت.</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="3793469551756281394">تبقّى <ph name="REMAINING_TIME_HOUR" /> و<ph name="REMAINING_TIME_MINUTE" /> تقريبًا</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">أفوكادو</translation>
 <translation id="4805966553127040832">جارٍ استعادة <ph name="COUNT" /> عنصر…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{يجب تفعيل إضافة واحدة في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}zero{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}two{يجب تفعيل إضافتَين في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}few{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}many{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}other{يجب تفعيل بعض الإضافات في حساب مؤسستك لاستخدام وضع التصفّح المتخفي}}</translation>
-<translation id="4823651846660089135">الجهاز للقراءة فقط</translation>
 <translation id="4826849268470072925">‏التاميلية باستخدام لوحة مفاتيح ITRANS</translation>
 <translation id="482932175346970750">‏كتابة <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> في المتصفِّح</translation>
 <translation id="4843566743023903107">‏أجهزة Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">اكتشاف الخادم الوكيل للويب تلقائيًا</translation>
 <translation id="6337014272874260727">إزالة التثبيت من قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="6339145975392024142">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
-<translation id="6346310558342052870">تم تقييد عملية الوصول</translation>
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
 <translation id="6358884629796491903">تنين</translation>
 <translation id="636254897931573416">قيمة غير صالحة لمطابقة لاحقة النطاق</translation>

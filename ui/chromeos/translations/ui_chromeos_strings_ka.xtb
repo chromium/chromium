@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ინგლისური (აშშ) Dvorak კლავიატურით</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — ჰოსტი</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">მიმდინარეობს Linux ფაილების გახსნა...</translation>
 <translation id="1547964879613821194">კანადური ინგლისური</translation>
 <translation id="1556189134700913550">ყველასთვის გამოყენება</translation>
 <translation id="1561842594491319104">Chrome მოწყობილობები</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">ამ პარამეტრის შეცვლა ყველა გაზიარებულ ქსელზე აისახება</translation>
 <translation id="3737576078404241332">გვერდითი ზოლიდან წაშლა</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
-<translation id="3780536599611287598">თქვენ არ გაქვთ „<ph name="FOLDER_NAME" />“-ში ფაილების გადატანის ნებართვა.</translation>
 <translation id="3786301125658655746">თქვენ ოფლაინში ხართ</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="3793469551756281394">დარჩა დაახლოებით <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">ავოკადო</translation>
 <translation id="4805966553127040832">მიმდინარეობს <ph name="COUNT" /> ერთეულის აღდგენა</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გაფართოებას}other{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გარკვეულ გაფართოებებს}}</translation>
-<translation id="4823651846660089135">მოწყობილობა მხოლოდ კითხვადია</translation>
 <translation id="4826849268470072925">ტამილური ITRANS</translation>
 <translation id="482932175346970750">აკრიფეთ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> თქვენს ბრაუზერში</translation>
 <translation id="4843566743023903107">Chromebase-ები</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">ვებ პროქსი-სერვერის ავტომატური აღმოჩენა</translation>
 <translation id="6337014272874260727">სწრაფი ფაილებიდან ჩამაგრების მოხსნა</translation>
 <translation id="6339145975392024142">აშშ საერთაშორისო (PC)</translation>
-<translation id="6346310558342052870">წვდომა შეზღუდულია</translation>
 <translation id="6356685157277930264">ფაილებთან დაკავშირებული გამოხმაურების ფანჯარა</translation>
 <translation id="6358884629796491903">დრაკონი</translation>
 <translation id="636254897931573416">დომენის სუფიქსის დამთხვევის მნიშვნელობა არასწორია</translation>

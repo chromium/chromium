@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak klavye ile İngilizce (ABD)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Ana Makine</translation>
 <translation id="1521655867290435174">Google E-Tablolar</translation>
-<translation id="1538729222189715449">Linux dosyaları açılıyor...</translation>
 <translation id="1547964879613821194">Kanada İngilizcesi</translation>
 <translation id="1556189134700913550">Tümüne uygula</translation>
 <translation id="1561842594491319104">Chrome cihazlar</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Bu ayarı değiştirmek tüm paylaşılan ağları etkiler</translation>
 <translation id="3737576078404241332">Kenar çubuğundan kaldır</translation>
 <translation id="3749289110408117711">Dosya adı</translation>
-<translation id="3780536599611287598">Dosyaları "<ph name="FOLDER_NAME" />" klasörüne taşıma izniniz yok.</translation>
 <translation id="3786301125658655746">Çevrimdışısınız</translation>
 <translation id="3789841737615482174">Yükle</translation>
 <translation id="3793469551756281394">Yaklaşık <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> kaldı</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> öğe geri yükleniyor</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Gizli modu kullanmak için kuruluşunuzun bir uzantıya ihtiyacı var}other{Gizli modu kullanmak için kuruluşunuzun bazı uzantılara ihtiyacı var}}</translation>
-<translation id="4823651846660089135">Cihaz salt okunur</translation>
 <translation id="4826849268470072925">Tamilce ITRANS</translation>
 <translation id="482932175346970750">Tarayıcınıza <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> yazın</translation>
 <translation id="4843566743023903107">Chromebase'ler</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Web proxy otomatik keşfi</translation>
 <translation id="6337014272874260727">Hızlı dosyalardaki sabitlemeyi kaldır</translation>
 <translation id="6339145975392024142">ABD uluslararası (PC)</translation>
-<translation id="6346310558342052870">Erişim kısıtlı</translation>
 <translation id="6356685157277930264">Dosya geri bildirim penceresi</translation>
 <translation id="6358884629796491903">Ejderha</translation>
 <translation id="636254897931573416">Alan adı son eki eşleşme değeri geçersiz</translation>

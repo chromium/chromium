@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ಡ್ವೊರಾಕ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ಹೋಸ್ಟ್</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1547964879613821194">ಕೆನೆಡಿಯನ್ ಇಂಗ್ಲಿಷ್</translation>
 <translation id="1556189134700913550">ಎಲ್ಲಕ್ಕೂ ಅನ್ವಯಿಸು</translation>
 <translation id="1561842594491319104">Chrome ಸಾಧನಗಳು</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಎಲ್ಲಾ ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗೆ ಪರಿಣಾಮ ಬೀರುತ್ತದೆ</translation>
 <translation id="3737576078404241332">ಸೈಡ್‌ಬಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="3749289110408117711">ಫೈಲ್ ಹೆಸರು</translation>
-<translation id="3780536599611287598">ಫೈಲ್‌ಗಳನ್ನು '<ph name="FOLDER_NAME" />' ಗೆ ಸರಿಸಲು ನಿಮಗೆ ಅನುಮತಿಯಿಲ್ಲ.</translation>
 <translation id="3786301125658655746">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3793469551756281394">ಸುಮಾರು <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">ಆವಕಾಡೊ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ವಿಸ್ತರಣೆಯ ಅಗತ್ಯವಿದೆ}one{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಕೆಲವು ವಿಸ್ತರಣೆಗಳ ಅಗತ್ಯವಿದೆ}other{ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಬಳಸಲು, ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಕೆಲವು ವಿಸ್ತರಣೆಗಳ ಅಗತ್ಯವಿದೆ}}</translation>
-<translation id="4823651846660089135">ಸಾಧನ ಓದಲು ಮಾತ್ರ ಆಗಿದೆ</translation>
 <translation id="4826849268470072925">ತಮಿಳು ITRANS</translation>
 <translation id="482932175346970750">ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂಅನ್ವೇಷಣೆ</translation>
 <translation id="6337014272874260727">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6339145975392024142">US ಅಂತರಾಷ್ಟ್ರೀಯ (PC)</translation>
-<translation id="6346310558342052870">ಆ್ಯಕ್ಸೆಸ್ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6356685157277930264">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ವಿಂಡೋ</translation>
 <translation id="6358884629796491903">ಡ್ರ್ಯಾಗನ್‌</translation>
 <translation id="636254897931573416">ಅಮಾನ್ಯವಾದ ಡೊಮೇನ್ ಸಫಿಕ್ಸ್ ಹೊಂದಾಣಿಕೆಯ ಮೌಲ್ಯ</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglés (EUA) con teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
-<translation id="1538729222189715449">Abrindo ficheiros de Linux…</translation>
 <translation id="1547964879613821194">Inglés canadense</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
 <translation id="1561842594491319104">Dispositivos Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Ao cambiar esta opción de configuración, veranse afectadas todas as redes compartidas</translation>
 <translation id="3737576078404241332">Quitar da barra lateral</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
-<translation id="3780536599611287598">Non tes permiso para mover os ficheiros a "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Non tes conexión</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3793469551756281394">Tempo restante aproximado: <ph name="REMAINING_TIME_HOUR" /> e <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Aguacate</translation>
 <translation id="4805966553127040832">Restaurando <ph name="COUNT" /> elementos</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Para poder utilizar o modo de incógnito, a túa organización esixe o uso dunha extensión}other{Para poder usar o modo de incógnito, a túa organización esixe o uso de varias extensións}}</translation>
-<translation id="4823651846660089135">O dispositivo é de só lectura</translation>
 <translation id="4826849268470072925">Támil (ITRANS)</translation>
 <translation id="482932175346970750">Escribe <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> no navegador</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Detección automática do proxy web</translation>
 <translation id="6337014272874260727">Deixar de fixar en ficheiros rápidos</translation>
 <translation id="6339145975392024142">Internacional dos EUA (PC)</translation>
-<translation id="6346310558342052870">Acceso restrinxido</translation>
 <translation id="6356685157277930264">Ventá de información sobre a aplicación Ficheiros</translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="636254897931573416">O valor da coincidencia do sufixo de dominio non é válido</translation>

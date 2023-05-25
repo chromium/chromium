@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійська (США), розкладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблиці</translation>
-<translation id="1538729222189715449">Відкриваються файли Linux…</translation>
 <translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
 <translation id="1561842594491319104">Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
 <translation id="3737576078404241332">Видалити з бічної панелі</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
-<translation id="3780536599611287598">У вас немає дозволу переміщати файли в папку "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Ви в режимі офлайн</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="3793469551756281394">Залишилося приблизно <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832">Відновлення об’єктів (<ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{За вимогами вашої організації, ви повинні встановити розширення, щоб використовувати анонімний режим}one{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}few{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}many{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}other{За вимогами вашої організації, ви повинні встановити кілька розширень, щоб використовувати анонімний режим}}</translation>
-<translation id="4823651846660089135">Пристрій лише для перегляду</translation>
 <translation id="4826849268470072925">Тамільська, ITRANS</translation>
 <translation id="482932175346970750">У веб-переглядачі введіть <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
 <translation id="6337014272874260727">Відкріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
-<translation id="6346310558342052870">Доступ обмежено</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="636254897931573416">Недійсне значення збігу із суфіксом домену</translation>

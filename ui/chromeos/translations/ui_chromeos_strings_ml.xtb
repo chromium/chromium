@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ഹോസ്റ്റ്</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux ഫയലുകൾ തുറക്കുന്നു...</translation>
 <translation id="1547964879613821194">കനേഡിയന്‍ ഇംഗ്ലീഷ്</translation>
 <translation id="1556189134700913550">എല്ലാത്തിലും പ്രയോഗിക്കുക</translation>
 <translation id="1561842594491319104">Chrome ഉപകരണങ്ങൾ</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">ഈ ക്രമീകരണം മാറ്റുന്നത് എല്ലാ പങ്കിട്ട നെറ്റ്‌വർക്കുകളെയും ബാധിക്കാനിടയാക്കും</translation>
 <translation id="3737576078404241332">സൈഡ്‌ബാറിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
-<translation id="3780536599611287598">'<ph name="FOLDER_NAME" />'-ലേക്ക് ഫയലുകൾ നീക്കാൻ നിങ്ങൾക്ക് അനുമതിയില്ല.</translation>
 <translation id="3786301125658655746">നിങ്ങൾ ഓഫ്‌ലൈനിലാണ്</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
 <translation id="3793469551756281394">ഏകദേശം <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> ശേഷിക്കുന്നു</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">അവൊക്കാഡോ</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> ഇനങ്ങൾ പുനഃസ്ഥാപിക്കുന്നു</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ഒരു വിപുലീകരണം ആവശ്യമാണ്}other{അദൃശ്യ മോഡ് ഉപയോഗിക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ചില വിപുലീകരണങ്ങൾ ആവശ്യമാണ്}}</translation>
-<translation id="4823651846660089135">ഉപകരണം വായിക്കാൻ മാത്രമുള്ള മോഡിലാണ്</translation>
 <translation id="4826849268470072925">തമിഴ് ITRANS</translation>
 <translation id="482932175346970750">നിങ്ങളുടെ ബ്രൗസറിൽ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="4843566743023903107">Chromebase-കൾ</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">വെബ് പ്രോക്‌സി സ്വയമേവ കണ്ടെത്തൽ</translation>
 <translation id="6337014272874260727">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകളിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="6339145975392024142">യുഎസ് അന്തര്‍ദേശീയ (PC)</translation>
-<translation id="6346310558342052870">ആക്‌സസ് നിയന്ത്രിതമാണ്</translation>
 <translation id="6356685157277930264">ഫയലുകളുടെ ഫീഡ്‌ബാക്ക് വിൻ‍ഡോ</translation>
 <translation id="6358884629796491903">ഡ്രാഗൺ</translation>
 <translation id="636254897931573416">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തത്തിന്റെ മൂല്യം അസാധുവാണ്</translation>

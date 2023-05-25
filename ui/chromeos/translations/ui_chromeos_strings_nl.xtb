@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engels (VS) met Dvorak-toetsenbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Google Spreadsheets</translation>
-<translation id="1538729222189715449">Linux-bestanden openen…</translation>
 <translation id="1547964879613821194">Canadees Engels</translation>
 <translation id="1556189134700913550">Op alles toepassen</translation>
 <translation id="1561842594491319104">Chrome-apparaten</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Het wijzigen van deze instelling is van invloed op alle gedeelde netwerken</translation>
 <translation id="3737576078404241332">Verwijderen uit zijbalk</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
-<translation id="3780536599611287598">Je hebt geen rechten om bestanden te verplaatsen naar '<ph name="FOLDER_NAME" />'.</translation>
 <translation id="3786301125658655746">Je bent offline</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3793469551756281394">Ongeveer <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> resterend</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> items herstellen</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Je organisatie vereist een extensie voor het gebruik van de incognitomodus}other{Je organisatie vereist bepaalde extensies voor het gebruik van de incognitomodus}}</translation>
-<translation id="4823651846660089135">Apparaat is alleen-lezen</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="482932175346970750">Typ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> in de browser</translation>
 <translation id="4843566743023903107">Chromebases</translation>
@@ -678,7 +675,6 @@
 <translation id="6327785803543103246">Webproxy automatisch vinden</translation>
 <translation id="6337014272874260727">Losmaken van Snelle bestanden</translation>
 <translation id="6339145975392024142">Amerikaans internationaal (pc)</translation>
-<translation id="6346310558342052870">Beperkte toegang</translation>
 <translation id="6356685157277930264">Feedbackvenster voor bestanden</translation>
 <translation id="6358884629796491903">Draak</translation>
 <translation id="636254897931573416">Ongeldige invoer voor overeenkomst voor domeinextensie</translation>

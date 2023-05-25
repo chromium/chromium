@@ -953,11 +953,6 @@
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 不會在 <ph name="PRODUCT_NAME" /> 19 以上版本中執行線上撤銷檢查。
 
       注意：<ph name="OCSP_CRL_LABEL" /> 檢查無法提供實際的安全性效益。</translation>
-<translation id="1904685047904049720">這項政策啟用後，<ph name="PRODUCT_NAME" /> 將停用在 Chrome 線上應用程式商店中取消發布的擴充功能。
-這項政策僅適用於透過 Chrome 線上應用程式商店安裝及更新的擴充功能。系統會忽略不是透過 Chrome 應用程式商店安裝的擴充功能，例如在開發人員模式下安裝的未封裝擴充功能，以及透過指令列選項安裝的擴充功能。此外，系統也會忽略不是透過 Chrome 線上應用程式商店更新的強制安裝擴充功能和所有固定版本的擴充功能。
-
-如果將這項政策設為 <ph name="ALLOW_UNPUBLISHED" /> (0) 或不設定，系統將允許使用在 Chrome 線上應用程式商店中取消發布的擴充功能。
-如果將這項政策設為 <ph name="DISABLE_UNPUBLISHED" /> (1)，系統將停用在 Chrome 線上應用程式商店中取消發布的擴充功能。</translation>
 <translation id="1905061765326052857">不允許無關聯的使用者透過虛擬機器執行 Linux 應用程式</translation>
 <translation id="1907696459350079081">不啟用登入畫面螢幕保護程式。</translation>
 <translation id="1910704279188129272">可讓你設定個別應用程式的使用限制。

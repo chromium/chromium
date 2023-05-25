@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">engleski (SAD), sa tastaturom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google tabele</translation>
-<translation id="1538729222189715449">Otvaraju se Linux datoteke…</translation>
 <translation id="1547964879613821194">kanadska engleska</translation>
 <translation id="1556189134700913550">Primeni na sve</translation>
 <translation id="1561842594491319104">Chrome uređaji</translation>
@@ -333,7 +332,6 @@
 <translation id="3727148787322499904">Ako promenite ovo podešavanje, to će uticati na sve deljene mreže</translation>
 <translation id="3737576078404241332">Ukloni sa bočne trake</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
-<translation id="3780536599611287598">Nemate dozvolu da premeštate datoteke u „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="3786301125658655746">Oflajn ste</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3793469551756281394">Preostalo je oko <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -472,7 +470,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćaju se stavke (<ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Da biste koristili režim bez arhiviranja, organizacija zahteva dodatak}one{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}few{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}other{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}}</translation>
-<translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
 <translation id="482932175346970750">Unesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> u pregledač</translation>
 <translation id="4843566743023903107">Chromebase-ovi</translation>
@@ -682,7 +679,6 @@
 <translation id="6327785803543103246">Automatsko otkrivanje veb-proksija</translation>
 <translation id="6337014272874260727">Otkači iz brzog pristupa fajlovima</translation>
 <translation id="6339145975392024142">Američka internacionalna tastatura (PC)</translation>
-<translation id="6346310558342052870">Pristup je ograničen</translation>
 <translation id="6356685157277930264">Prozor za povratne informacije datoteka</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="636254897931573416">Nevažeća vrednost podudaranja sufiksa domena</translation>

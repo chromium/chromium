@@ -958,11 +958,6 @@ Khả năng sử dụng tiện ích vẫn chịu sự kiểm soát của các ch
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không thực hiện các hoạt động kiểm tra thu hồi trực tuyến ở <ph name="PRODUCT_NAME" /> 19 trở lên.
 
       Lưu ý: Các hoạt động kiểm tra <ph name="OCSP_CRL_LABEL" /> không giúp cải thiện hiệu quả bảo mật.</translation>
-<translation id="1904685047904049720">Nếu bạn bật chính sách này thì các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ bị vô hiệu hoá trên <ph name="PRODUCT_NAME" />.
-Chính sách này chỉ áp dụng cho các tiện ích được cài đặt và cập nhật từ Cửa hàng Chrome trực tuyến. Tiện ích từ bên ngoài cửa hàng, chẳng hạn như tiện ích đã giải nén được cài đặt bằng chế độ nhà phát triển và tiện ích được cài đặt bằng tuỳ chọn chuyển dòng lệnh sẽ bị bỏ qua. Tiện ích buộc cài đặt không cập nhật từ Cửa hàng Chrome trực tuyến và tất cả tiện ích cố định ở một phiên bản cũng sẽ bị bỏ qua.
-
-Nếu bạn đặt chính sách này thành <ph name="ALLOW_UNPUBLISHED" /> (0) hoặc không đặt, các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ được cho phép.
-Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1) thì các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ bị vô hiệu hoá.</translation>
 <translation id="1905061765326052857">Không cho phép người dùng chưa liên kết sử dụng máy ảo cần thiết để hỗ trợ các ứng dụng Linux</translation>
 <translation id="1907696459350079081">Không bật trình bảo vệ màn hình trên màn hình đăng nhập.</translation>
 <translation id="1910704279188129272">Cho phép đặt giới hạn sử dụng cho mỗi ứng dụng.

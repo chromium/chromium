@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Ағылшын (АҚШ), Дворак пернетақтасымен</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1538729222189715449">Linux файлдары ашылуда…</translation>
 <translation id="1547964879613821194">Ағылшын (Канада)</translation>
 <translation id="1556189134700913550">Барлығына қолдану</translation>
 <translation id="1561842594491319104">Chrome құрылғылары</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Бұл параметрдің өзгерісі барлық ортақ желілерге әсерін етеді</translation>
 <translation id="3737576078404241332">Жылжыту жолағынан өшіру</translation>
 <translation id="3749289110408117711">Файл атауы</translation>
-<translation id="3780536599611287598">Файлдарды "<ph name="FOLDER_NAME" />" қалтасына салатын рұқсатыңыз жоқ.</translation>
 <translation id="3786301125658655746">Желіде емессіз</translation>
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="3793469551756281394">Шамамен <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> қалды.</translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Авокадо</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> элемент қалпына келтірілуде…</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Инкогнито режимін пайдалану үшін ұйымыңыз кеңейтімді қажет етеді}other{Инкогнито режимін пайдалану үшін ұйымыңыз кейбір кеңейтімдерді қажет етеді}}</translation>
-<translation id="4823651846660089135">Құрылғы тек оқуға арналған</translation>
 <translation id="4826849268470072925">Тамиль (ITRANS)</translation>
 <translation id="482932175346970750">Браузеріңізге <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> деп теріңіз</translation>
 <translation id="4843566743023903107">Chromebase құрылғылары</translation>
@@ -676,7 +673,6 @@
 <translation id="6327785803543103246">Вебпрокси-серверді автоматты анықтау</translation>
 <translation id="6337014272874260727">"Файлдарға жылдам өту" бөлімінен босату</translation>
 <translation id="6339145975392024142">АҚШ халықаралық (ДК)</translation>
-<translation id="6346310558342052870">Пайдалануға тыйым салынған</translation>
 <translation id="6356685157277930264">Файлдар пікірлері терезесі</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
 <translation id="636254897931573416">Домен суффиксі сәйкестігінің мәні жарамсыз.</translation>

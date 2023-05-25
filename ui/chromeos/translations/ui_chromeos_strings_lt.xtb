@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglų k. (JAV) su Dvorako klaviatūra</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – priegloba</translation>
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
-<translation id="1538729222189715449">Atidaromi „Linux“ failai...</translation>
 <translation id="1547964879613821194">Kanados anglų</translation>
 <translation id="1556189134700913550">Taikyti visiems</translation>
 <translation id="1561842594491319104">„Chrome“ įrenginiai</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Šio nustatymo pakeitimas turės įtakos visiems bendrinamiems tinklams</translation>
 <translation id="3737576078404241332">Pašalinti iš šoninės juostos</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
-<translation id="3780536599611287598">Neturite leidimo perkelti failų į aplanką „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="3786301125658655746">Esate neprisijungę</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="3793469551756281394">Liko maždaug <ph name="REMAINING_TIME_HOUR" /> ir <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokadas</translation>
 <translation id="4805966553127040832">Atkuriama elementų: <ph name="COUNT" /></translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Norint naudoti inkognito režimą, organizacijai reikia plėtinio}one{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}few{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}many{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}other{Norint naudoti inkognito režimą, organizacijai reikia kai kurių plėtinių}}</translation>
-<translation id="4823651846660089135">Įrenginys yra tik skaitomas</translation>
 <translation id="4826849268470072925">Tamilų k. ITRANS</translation>
 <translation id="482932175346970750">Naršyklėje įveskite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Automatinis žiniatinklio tarpinio serverio aptikimas</translation>
 <translation id="6337014272874260727">Atsegti iš sparčiųjų failų</translation>
 <translation id="6339145975392024142">JAV tarptautinė (AK) klaviatūra</translation>
-<translation id="6346310558342052870">Prieiga apribota</translation>
 <translation id="6356685157277930264">Failų atsiliepimų langas</translation>
 <translation id="6358884629796491903">Drakonas</translation>
 <translation id="636254897931573416">Netinkama domeno plėtinio atitikties vertė</translation>

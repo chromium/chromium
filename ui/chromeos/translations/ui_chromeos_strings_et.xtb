@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">inglise (USA), Dvoraki klaviatuuriga</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google'i arvutustabelid</translation>
-<translation id="1538729222189715449">Linuxi failide avamine …</translation>
 <translation id="1547964879613821194">Kanada inglise</translation>
 <translation id="1556189134700913550">Rakenda kõigil</translation>
 <translation id="1561842594491319104">Chrome'i seadmed</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Selle seade muutmine mõjutab kõiki jagatud võrke</translation>
 <translation id="3737576078404241332">Eemalda külgribalt</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
-<translation id="3780536599611287598">Teil ei ole luba failide teisaldamiseks kausta „<ph name="FOLDER_NAME" />”.</translation>
 <translation id="3786301125658655746">Olete võrguühenduseta</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="3793469551756281394">Jäänud on ligikaudu <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokaado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> üksuse taastamine</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Inkognito režiimi kasutamiseks vajab teie organisatsioon laiendust}other{Inkognito režiimi kasutamiseks vajab teie organisatsioon mõningaid laiendusi}}</translation>
-<translation id="4823651846660089135">Seade on kirjutuskaitstud</translation>
 <translation id="4826849268470072925">tamili, ITRANS</translation>
 <translation id="482932175346970750">Tippige brauseris <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebase'id</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Veebipõhise puhverserveri automaattuvastamine</translation>
 <translation id="6337014272874260727">Vabasta kiirfailidest</translation>
 <translation id="6339145975392024142">USA rahvusvaheline (PC)</translation>
-<translation id="6346310558342052870">Juurdepääs on piiratud</translation>
 <translation id="6356685157277930264">Failide tagasiside aken</translation>
 <translation id="6358884629796491903">Draakon</translation>
 <translation id="636254897931573416">Sobimatu domeenisufiksi vaste väärtus</translation>

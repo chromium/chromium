@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">engleski (SAD) s Dvorak tastaturom</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host računar</translation>
 <translation id="1521655867290435174">Google Tabele</translation>
-<translation id="1538729222189715449">Otvaranje Linux fajlova...</translation>
 <translation id="1547964879613821194">Kanadska engleska</translation>
 <translation id="1556189134700913550">Primijeni na sve</translation>
 <translation id="1561842594491319104">Chrome uređaji</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Promjenom ove postavke uticat ćete na sve dijeljene mreže</translation>
 <translation id="3737576078404241332">Ukloni s bočne trake</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
-<translation id="3780536599611287598">Nemate odobrenje da premjestite fajlove u folder "<ph name="FOLDER_NAME" />".</translation>
 <translation id="3786301125658655746">Niste povezani na mrežu</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3793469551756281394">Preostalo je oko <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćanje stavki (ukupno <ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Da koristite anonimni način rada, organizacija zahtijeva ekstenziju}one{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}few{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}other{Da koristite anonimni način rada, organizacija zahtijeva određene ekstenzije}}</translation>
-<translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
 <translation id="482932175346970750">Upišite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> u pregledniku</translation>
 <translation id="4843566743023903107">Uređaji Chromebase</translation>
@@ -677,7 +674,6 @@
 <translation id="6327785803543103246">Automatsko otkrivanje web proksi servera</translation>
 <translation id="6337014272874260727">Otkači s brzih fajlova</translation>
 <translation id="6339145975392024142">SAD međunarodna (PC)</translation>
-<translation id="6346310558342052870">Pristup je ograničen</translation>
 <translation id="6356685157277930264">Prozor za povratne informacije za fajlove</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="636254897931573416">Nevažeća vrijednost podudaranja sufiksa domene</translation>

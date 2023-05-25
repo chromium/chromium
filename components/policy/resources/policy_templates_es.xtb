@@ -957,11 +957,6 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
       Si se le asigna el valor "False" o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> no realizará comprobaciones de revocación online en <ph name="PRODUCT_NAME" /> 19 y versiones posteriores.
 
       Nota: Las comprobaciones de <ph name="OCSP_CRL_LABEL" /> no proporcionan una seguridad efectiva.</translation>
-<translation id="1904685047904049720">Si se habilita esta política, las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
-Esta política solo se aplica a las extensiones que se instalan y actualizan desde Chrome Web Store. Se ignoran las extensiones no incluidas en la tienda, como las que se descomprimen en el modo Desarrollador o las que se instalan mediante el interruptor de la línea de comandos. También se ignoran las extensiones de instalación forzada que no se actualizan desde Chrome Web Store y todas las extensiones con una versión fija.
-
-Si se le asigna el valor <ph name="ALLOW_UNPUBLISHED" /> (0) a esta política o no se define, se permitirán las extensiones no publicadas en Chrome Web Store.
-Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política, se inhabilitarán las extensiones cuya publicación se haya anulado en Chrome Web Store.</translation>
 <translation id="1905061765326052857">No permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
 <translation id="1907696459350079081">No habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
 <translation id="1910704279188129272">Permite especificar restricciones de uso por aplicación.

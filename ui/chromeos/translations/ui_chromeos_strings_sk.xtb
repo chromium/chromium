@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglická (US) klávesnica s rozložením Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hostiteľ</translation>
 <translation id="1521655867290435174">Tabuľky Google</translation>
-<translation id="1538729222189715449">Otvárajú sa súbory Linux…</translation>
 <translation id="1547964879613821194">Kanadská anglická klávesnica</translation>
 <translation id="1556189134700913550">Použiť pre všetky položky</translation>
 <translation id="1561842594491319104">Zariadenia Chrome</translation>
@@ -329,7 +328,6 @@
 <translation id="3727148787322499904">Zmena tohto nastavenia ovplyvní všetky zdieľané siete</translation>
 <translation id="3737576078404241332">Odstrániť z bočného panela</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
-<translation id="3780536599611287598">Na presunutie súborov do priečinka <ph name="FOLDER_NAME" /> nemáte povolenie.</translation>
 <translation id="3786301125658655746">Ste offline</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3793469551756281394">Zostáva približne <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
@@ -468,7 +466,6 @@
 <translation id="4804827417948292437">Avokádo</translation>
 <translation id="4805966553127040832">Obnovujú sa položky (<ph name="COUNT" />)</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{Ak chcete používať režim inkognito, vaša organizácia vyžaduje rozšírenie}few{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}many{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}other{Ak chcete používať režim inkognito, vaša organizácia vyžaduje niektoré rozšírenia}}</translation>
-<translation id="4823651846660089135">Zariadenie je len na čítanie</translation>
 <translation id="4826849268470072925">Tamilská klávesnica s rozložením ITRANS</translation>
 <translation id="482932175346970750">Zadajte v prehliadači <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" />.</translation>
 <translation id="4843566743023903107">Zariadenia Chromebase</translation>
@@ -677,7 +674,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6327785803543103246">Automatické zisťovanie webového proxy servera</translation>
 <translation id="6337014272874260727">Odopnúť z rýchlych súborov</translation>
 <translation id="6339145975392024142">Americká klávesnica s medzinárodným rozložením klávesov (PC)</translation>
-<translation id="6346310558342052870">Prístup je zakázaný</translation>
 <translation id="6356685157277930264">Okno spätnej väzby týkajúcej sa súborov</translation>
 <translation id="6358884629796491903">Drak</translation>
 <translation id="636254897931573416">Neplatná hodnota zhody prípony domény</translation>
