@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -14,6 +15,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
@@ -231,6 +233,95 @@ TEST_F(GameDashboardCaptureModeTest, CameraPreviewWidgetTest) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(camera_controller->should_show_preview());
   EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
+TEST_F(GameDashboardCaptureModeTest, FocusNavigationOfCaptureBar) {
+  UpdateDisplay("1200x1100");
+  AddDefaultCamera();
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  auto* controller = StartGameCaptureModeSession();
+  ASSERT_TRUE(GetCaptureModeBarWidget());
+  EXPECT_EQ(controller->capture_mode_session()->GetSelectedWindow(),
+            game_window());
+  // Make the selected window large enough to hold collapsible camera preview.
+  game_window()->SetBounds({0, 0, 800, 700});
+
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  auto* event_generator = GetEventGenerator();
+
+  // First tab should focus on the start recording button.
+  auto* start_recording_button = GetStartRecordingButton();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kStartRecordingButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  start_recording_button)
+                  ->has_focus());
+
+  // Tab again should advance the focus to the camera preview.
+  auto* camera_preview_view = camera_controller->camera_preview_view();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+
+  // Tab again should advance the focus to the resize button inside the camera
+  // preview.
+  auto* resize_button = camera_preview_view->resize_button();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+
+  // Tab again should advance the focus to the settings button.
+  auto* settings_button = GetSettingsButton();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(settings_button)
+          ->has_focus());
+
+  // Tab again should advance the focus to the close button.
+  auto* close_button = GetCloseButton();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(close_button)
+                  ->has_focus());
+
+  // Shift tab should advance the focus from the close button to the settings
+  // button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(
+      CaptureModeSessionFocusCycler::HighlightHelper::Get(settings_button)
+          ->has_focus());
+
+  // Shift tab again should advance the focus from the settings button to the
+  // resize button inside the camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(resize_button->has_focus());
+
+  // Shift tab again should advance the focus from the resize button to the
+  // camera preview.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(FocusGroup::kCameraPreview, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(camera_preview_view->has_focus());
+
+  // Shift tab again should advance the focus from the camera preview to the
+  // start recording button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(FocusGroup::kStartRecordingButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  start_recording_button)
+                  ->has_focus());
 }
 
 }  // namespace ash

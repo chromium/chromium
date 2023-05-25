@@ -70,10 +70,11 @@ void SetCaptureModeSessionConfigs(const CaptureModeSessionConfigs& configs) {
 class DefaultBehavior : public CaptureModeBehavior {
  public:
   DefaultBehavior()
-      : CaptureModeBehavior({CaptureModeType::kImage,
-                             CaptureModeSource::kRegion, RecordingType::kWebM,
-                             AudioRecordingMode::kOff,
-                             /*demo_tools_enabled=*/false}) {}
+      : CaptureModeBehavior(
+            {CaptureModeType::kImage, CaptureModeSource::kRegion,
+             RecordingType::kWebM, AudioRecordingMode::kOff,
+             /*demo_tools_enabled=*/false},
+            BehaviorType::kDefault) {}
 
   DefaultBehavior(const DefaultBehavior&) = delete;
   DefaultBehavior& operator=(const DefaultBehavior&) = delete;
@@ -90,7 +91,8 @@ class ProjectorBehavior : public CaptureModeBehavior {
       : CaptureModeBehavior(
             {CaptureModeType::kVideo, CaptureModeSource::kFullscreen,
              RecordingType::kWebM, AudioRecordingMode::kMicrophone,
-             /*demo_tools_enabled=*/true}) {}
+             /*demo_tools_enabled=*/true},
+            BehaviorType::kProjector) {}
 
   ProjectorBehavior(const ProjectorBehavior&) = delete;
   ProjectorBehavior& operator=(const ProjectorBehavior&) = delete;
@@ -180,7 +182,8 @@ class GameDashboardBehavior : public CaptureModeBehavior,
                              features::IsCaptureModeAudioMixingEnabled()
                                  ? AudioRecordingMode::kSystemAndMicrophone
                                  : AudioRecordingMode::kMicrophone,
-                             /*demo_tools_enabled=*/false}) {}
+                             /*demo_tools_enabled=*/false},
+                            BehaviorType::kGameDashboard) {}
 
   GameDashboardBehavior(const GameDashboardBehavior&) = delete;
   GameDashboardBehavior operator=(const GameDashboardBehavior&) = delete;
@@ -281,8 +284,9 @@ class GameDashboardBehavior : public CaptureModeBehavior,
 // CaptureModeBehavior:
 
 CaptureModeBehavior::CaptureModeBehavior(
-    const CaptureModeSessionConfigs& configs)
-    : capture_mode_configs_(configs) {}
+    const CaptureModeSessionConfigs& configs,
+    const BehaviorType behavior_type)
+    : capture_mode_configs_(configs), behavior_type_(behavior_type) {}
 
 // static
 std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(

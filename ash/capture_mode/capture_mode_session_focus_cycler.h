@@ -46,6 +46,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     kNone = 0,
     // The buttons to select the capture type and source on the capture bar.
     kTypeSource,
+    // The start recording button inside the game capture bar.
+    kStartRecordingButton,
     // In region mode, the UI to adjust a partial region.
     kSelection,
     // The button in the middle of a selection region to capture or record.
@@ -309,6 +311,10 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   const std::vector<FocusGroup> groups_for_fullscreen_;
   const std::vector<FocusGroup> groups_for_region_;
   const std::vector<FocusGroup> groups_for_window_;
+
+  // Focusable groups for the game capture session that always has `kWindow`
+  // capture source selected. And the selected window is not changeable.
+  const std::vector<FocusGroup> groups_for_game_capture_;
 
   // Highlightable windows of the focus group `kCaptureWindow`. Windows opened
   // after the session starts will not be included.

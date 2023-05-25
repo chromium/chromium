@@ -54,6 +54,8 @@ class CaptureModeBehavior {
     return capture_mode_configs_;
   }
 
+  BehaviorType behavior_type() const { return behavior_type_; }
+
   // Called when this behavior becomes the active behavior of a newly created
   // capture session. Sub classes can choose to do any specific session
   // initialization that they need.
@@ -109,7 +111,8 @@ class CaptureModeBehavior {
   gfx::Rect GetCaptureBarBounds(aura::Window* root) const;
 
  protected:
-  explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);
+  CaptureModeBehavior(const CaptureModeSessionConfigs& configs,
+                      const BehaviorType behavior_type);
 
   // Returns the anchor bounds of the bar in screen coordinates, which depends
   // on the anchor window of the bar. The anchor window can be the given `root`
@@ -129,6 +132,9 @@ class CaptureModeBehavior {
   // Can be used to cache the old capture mode session configs before this
   // behavior is attached to a new session.
   absl::optional<CaptureModeSessionConfigs> cached_configs_;
+
+ private:
+  const BehaviorType behavior_type_;
 };
 
 }  // namespace ash
