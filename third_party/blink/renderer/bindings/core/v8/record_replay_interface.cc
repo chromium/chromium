@@ -56,7 +56,6 @@ extern void FunctionCallbackRecordReplaySetCommandCallback(const FunctionCallbac
 extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const FunctionCallbackInfo<Value>& callArgs);
 extern void FunctionCallbackRecordReplayAddNewScriptHandler(const FunctionCallbackInfo<Value>& args);
 extern void FunctionCallbackRecordReplayGetScriptSource(const FunctionCallbackInfo<Value>& args);
-extern void FunctionCallbackRecordReplayAsyncGetScriptHash(const FunctionCallbackInfo<Value>& args);
 
 namespace internal {
 
@@ -2697,7 +2696,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     id,
     url: sourceMapURL,
     baseURL: sourceMapBaseURL,
-    targetContentHash: hash,
+    targetContentHash: `sha256:${hash}`,
     targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
     targetMapURLHash: makeAPIHash(sourceMapURL),
   }));
