@@ -14,8 +14,6 @@
 
 namespace viz {
 
-class CopyOutputResult;
-
 namespace copy_output {
 
 // Returns the pixels in the scaled result coordinate space that are affected by
@@ -50,30 +48,6 @@ struct VIZ_COMMON_EXPORT RenderPassGeometry {
 
   std::string ToString() const;
 };
-
-// Returns size (in bytes) required to fit luma plane of the |result|. The
-// |result| must not be an empty `CopyOutputResponse`. The pixel format of the
-// |result| must be either I420 or NV12.
-int VIZ_COMMON_EXPORT GetLumaPlaneSize(const CopyOutputResult& result);
-
-// Returns stride (in bytes) of the luma plane of the |result|. The |result|
-// must not be an empty `CopyOutputResponse`. The pixel format of the |result|
-// must be either I420 or NV12.
-int VIZ_COMMON_EXPORT GetLumaPlaneStride(const CopyOutputResult& result);
-
-// Returns size (in bytes) required to fit chroma plane(s) of the |result|. The
-// |result| must not be an empty `CopyOutputResponse`. The pixel format of the
-// |result| must be either I420 or NV12. For NV12, the return value will be the
-// byte size required for an interleaved UV plane. For I420, the return value
-// will be the byte size required for each of the U & V planes.
-int VIZ_COMMON_EXPORT GetChromaPlaneSize(const CopyOutputResult& result);
-
-// Returns stride (in bytes) of the chroma plane(s) of the |result|. The
-// |result| must not be an empty `CopyOutputResponse`. The pixel format of the
-// |result| must be either I420 or NV12. For NV12, the return value will be the
-// stride of an interleaved UV plane. For I420, the return value will be the
-// stride of each of the U & V planes.
-int VIZ_COMMON_EXPORT GetChromaPlaneStride(const CopyOutputResult& result);
 
 }  // namespace copy_output
 }  // namespace viz
