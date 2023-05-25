@@ -11,8 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace base {
-namespace ios {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace base::ios {
 namespace {
 
 class ScopedCriticalActionTest : public PlatformTest {
@@ -124,5 +127,4 @@ TEST_F(ScopedCriticalActionTest,
 }
 
 }  // namespace
-}  // namespace ios
-}  // namespace base
+}  // namespace base::ios

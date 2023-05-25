@@ -4,6 +4,8 @@
 
 #include "base/mac/foundation_util.h"
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <Foundation/Foundation.h>
 #include <limits.h>
 #include <stddef.h>
 
@@ -15,45 +17,45 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace base::mac {
 
 TEST(FoundationUtilTest, CFCast) {
   // Build out the CF types to be tested as empty containers.
   ScopedCFTypeRef<CFTypeRef> test_array(
-      CFArrayCreate(NULL, NULL, 0, &kCFTypeArrayCallBacks));
+      CFArrayCreate(nullptr, nullptr, 0, &kCFTypeArrayCallBacks));
   ScopedCFTypeRef<CFTypeRef> test_array_mutable(
-      CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks));
+      CFArrayCreateMutable(nullptr, 0, &kCFTypeArrayCallBacks));
   ScopedCFTypeRef<CFTypeRef> test_bag(
-      CFBagCreate(NULL, NULL, 0, &kCFTypeBagCallBacks));
+      CFBagCreate(nullptr, nullptr, 0, &kCFTypeBagCallBacks));
   ScopedCFTypeRef<CFTypeRef> test_bag_mutable(
-      CFBagCreateMutable(NULL, 0, &kCFTypeBagCallBacks));
+      CFBagCreateMutable(nullptr, 0, &kCFTypeBagCallBacks));
   CFTypeRef test_bool = kCFBooleanTrue;
-  ScopedCFTypeRef<CFTypeRef> test_data(
-      CFDataCreate(NULL, NULL, 0));
-  ScopedCFTypeRef<CFTypeRef> test_data_mutable(
-      CFDataCreateMutable(NULL, 0));
-  ScopedCFTypeRef<CFTypeRef> test_date(
-      CFDateCreate(NULL, 0));
-  ScopedCFTypeRef<CFTypeRef> test_dict(
-      CFDictionaryCreate(NULL, NULL, NULL, 0,
-                         &kCFCopyStringDictionaryKeyCallBacks,
-                         &kCFTypeDictionaryValueCallBacks));
-  ScopedCFTypeRef<CFTypeRef> test_dict_mutable(
-      CFDictionaryCreateMutable(NULL, 0,
-                                &kCFCopyStringDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
+  ScopedCFTypeRef<CFTypeRef> test_data(CFDataCreate(nullptr, nullptr, 0));
+  ScopedCFTypeRef<CFTypeRef> test_data_mutable(CFDataCreateMutable(nullptr, 0));
+  ScopedCFTypeRef<CFTypeRef> test_date(CFDateCreate(nullptr, 0));
+  ScopedCFTypeRef<CFTypeRef> test_dict(CFDictionaryCreate(
+      nullptr, nullptr, nullptr, 0, &kCFCopyStringDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
+  ScopedCFTypeRef<CFTypeRef> test_dict_mutable(CFDictionaryCreateMutable(
+      nullptr, 0, &kCFCopyStringDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
   int int_val = 256;
   ScopedCFTypeRef<CFTypeRef> test_number(
-      CFNumberCreate(NULL, kCFNumberIntType, &int_val));
+      CFNumberCreate(nullptr, kCFNumberIntType, &int_val));
   CFTypeRef test_null = kCFNull;
   ScopedCFTypeRef<CFTypeRef> test_set(
-      CFSetCreate(NULL, NULL, 0, &kCFTypeSetCallBacks));
+      CFSetCreate(nullptr, nullptr, 0, &kCFTypeSetCallBacks));
   ScopedCFTypeRef<CFTypeRef> test_set_mutable(
-      CFSetCreateMutable(NULL, 0, &kCFTypeSetCallBacks));
-  ScopedCFTypeRef<CFTypeRef> test_str(
-      CFStringCreateWithBytes(NULL, NULL, 0, kCFStringEncodingASCII, false));
+      CFSetCreateMutable(nullptr, 0, &kCFTypeSetCallBacks));
+  ScopedCFTypeRef<CFTypeRef> test_str(CFStringCreateWithBytes(
+      nullptr, nullptr, 0, kCFStringEncodingASCII, false));
   CFTypeRef test_str_const = CFSTR("hello");
-  ScopedCFTypeRef<CFTypeRef> test_str_mutable(CFStringCreateMutable(NULL, 0));
+  ScopedCFTypeRef<CFTypeRef> test_str_mutable(
+      CFStringCreateMutable(nullptr, 0));
 
   // Make sure the allocations of CF types are good.
   EXPECT_TRUE(test_array);
@@ -93,7 +95,7 @@ TEST(FoundationUtilTest, CFCast) {
   EXPECT_EQ(test_str_const, CFCast<CFStringRef>(test_str_const));
   EXPECT_EQ(test_str_mutable, CFCast<CFStringRef>(test_str_mutable));
 
-  // When given an incorrect CF cast, provide NULL.
+  // When given an incorrect CF cast, provide nullptr.
   EXPECT_FALSE(CFCast<CFStringRef>(test_array));
   EXPECT_FALSE(CFCast<CFStringRef>(test_array_mutable));
   EXPECT_FALSE(CFCast<CFStringRef>(test_bag));
@@ -112,17 +114,17 @@ TEST(FoundationUtilTest, CFCast) {
   EXPECT_FALSE(CFCast<CFArrayRef>(test_str_const));
   EXPECT_FALSE(CFCast<CFArrayRef>(test_str_mutable));
 
-  // Giving a NULL provides a NULL.
-  EXPECT_FALSE(CFCast<CFArrayRef>(NULL));
-  EXPECT_FALSE(CFCast<CFBagRef>(NULL));
-  EXPECT_FALSE(CFCast<CFBooleanRef>(NULL));
-  EXPECT_FALSE(CFCast<CFDataRef>(NULL));
-  EXPECT_FALSE(CFCast<CFDateRef>(NULL));
-  EXPECT_FALSE(CFCast<CFDictionaryRef>(NULL));
-  EXPECT_FALSE(CFCast<CFNullRef>(NULL));
-  EXPECT_FALSE(CFCast<CFNumberRef>(NULL));
-  EXPECT_FALSE(CFCast<CFSetRef>(NULL));
-  EXPECT_FALSE(CFCast<CFStringRef>(NULL));
+  // Giving a nullptr provides a nullptr.
+  EXPECT_FALSE(CFCast<CFArrayRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFBagRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFBooleanRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFDataRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFDateRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFDictionaryRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFNullRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFNumberRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFSetRef>(nullptr));
+  EXPECT_FALSE(CFCast<CFStringRef>(nullptr));
 
   // CFCastStrict: correct cast results in correct pointer being returned.
   EXPECT_EQ(test_array, CFCastStrict<CFArrayRef>(test_array));
@@ -144,17 +146,17 @@ TEST(FoundationUtilTest, CFCast) {
   EXPECT_EQ(test_str_const, CFCastStrict<CFStringRef>(test_str_const));
   EXPECT_EQ(test_str_mutable, CFCastStrict<CFStringRef>(test_str_mutable));
 
-  // CFCastStrict: Giving a NULL provides a NULL.
-  EXPECT_FALSE(CFCastStrict<CFArrayRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFBagRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFBooleanRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFDataRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFDateRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFDictionaryRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFNullRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFNumberRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFSetRef>(NULL));
-  EXPECT_FALSE(CFCastStrict<CFStringRef>(NULL));
+  // CFCastStrict: Giving a nullptr provides a nullptr.
+  EXPECT_FALSE(CFCastStrict<CFArrayRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFBagRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFBooleanRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFDataRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFDateRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFDictionaryRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFNullRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFNumberRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFSetRef>(nullptr));
+  EXPECT_FALSE(CFCastStrict<CFStringRef>(nullptr));
 }
 
 TEST(FoundationUtilTest, ObjCCast) {
@@ -314,8 +316,9 @@ TEST(FoundationUtilTest, NSStringToFilePath) {
 }
 
 TEST(FoundationUtilTest, FilePathToCFURL) {
-  EXPECT_NSEQ([NSURL fileURLWithPath:@"/a/b"],
-              base::mac::CFToNSCast(FilePathToCFURL(FilePath("/a/b"))));
+  ScopedCFTypeRef<CFURLRef> url(CFURLCreateWithFileSystemPath(
+      nullptr, CFSTR("/a/b"), kCFURLPOSIXPathStyle, false));
+  EXPECT_TRUE(CFEqual(url.get(), FilePathToCFURL(FilePath("/a/b"))));
 }
 
 TEST(FoundationUtilTest, CFRangeToNSRange) {
@@ -368,11 +371,11 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
-  for (size_t i = 0; i < std::size(nsinteger_cases); ++i) {
-    EXPECT_EQ(nsinteger_cases[i].expected,
-              StringPrintf("%" PRIdNS, nsinteger_cases[i].value));
-    EXPECT_EQ(nsinteger_cases[i].expected_hex,
-              StringPrintf("%" PRIxNS, nsinteger_cases[i].value));
+  for (const auto& nsinteger_case : nsinteger_cases) {
+    EXPECT_EQ(nsinteger_case.expected,
+              StringPrintf("%" PRIdNS, nsinteger_case.value));
+    EXPECT_EQ(nsinteger_case.expected_hex,
+              StringPrintf("%" PRIxNS, nsinteger_case.value));
   }
 
   // Check that format specifier works correctly for NSUInteger.
@@ -392,11 +395,11 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
-  for (size_t i = 0; i < std::size(nsuinteger_cases); ++i) {
-    EXPECT_EQ(nsuinteger_cases[i].expected,
-              StringPrintf("%" PRIuNS, nsuinteger_cases[i].value));
-    EXPECT_EQ(nsuinteger_cases[i].expected_hex,
-              StringPrintf("%" PRIxNS, nsuinteger_cases[i].value));
+  for (const auto& nsuinteger_case : nsuinteger_cases) {
+    EXPECT_EQ(nsuinteger_case.expected,
+              StringPrintf("%" PRIuNS, nsuinteger_case.value));
+    EXPECT_EQ(nsuinteger_case.expected_hex,
+              StringPrintf("%" PRIxNS, nsuinteger_case.value));
   }
 }
 

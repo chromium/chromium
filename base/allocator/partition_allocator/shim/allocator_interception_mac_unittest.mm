@@ -10,6 +10,10 @@
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace allocator_shim {
 
 namespace {
@@ -25,7 +29,8 @@ void ResetAllMallocZones() {
 
   vm_address_t* zones;
   unsigned int count;
-  kern_return_t kr = malloc_get_all_zones(mach_task_self(), 0, &zones, &count);
+  kern_return_t kr = malloc_get_all_zones(mach_task_self(), /*reader=*/nullptr,
+                                          &zones, &count);
   if (kr != KERN_SUCCESS) {
     return;
   }

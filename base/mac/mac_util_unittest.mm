@@ -15,10 +15,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace base::mac {
 
@@ -249,10 +252,12 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {
   EXPECT_EQ(0, setxattr(file_path_str, "com.apple.quarantine",
       quarantine_str, strlen(quarantine_str), 0, 0));
   EXPECT_EQ(static_cast<long>(strlen(quarantine_str)),
-      getxattr(file_path_str, "com.apple.quarantine",
-          NULL, 0, 0, 0));
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
+                     /*size=*/0, /*position=*/0, /*options=*/0));
   EXPECT_TRUE(RemoveQuarantineAttribute(dummy_folder_path));
-  EXPECT_EQ(-1, getxattr(file_path_str, "com.apple.quarantine", NULL, 0, 0, 0));
+  EXPECT_EQ(-1,
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
+                     /*size=*/0, /*position=*/0, /*options=*/0));
   EXPECT_EQ(ENOATTR, errno);
 }
 
@@ -262,7 +267,9 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttributeTwice) {
   FilePath dummy_folder_path = temp_dir_.GetPath().Append("DummyFolder");
   const char* file_path_str = dummy_folder_path.value().c_str();
   ASSERT_TRUE(base::CreateDirectory(dummy_folder_path));
-  EXPECT_EQ(-1, getxattr(file_path_str, "com.apple.quarantine", NULL, 0, 0, 0));
+  EXPECT_EQ(-1,
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
+                     /*size=*/0, /*position=*/0, /*options=*/0));
   // No quarantine attribute to begin with, but RemoveQuarantineAttribute still
   // succeeds because in the end the folder still doesn't have the quarantine
   // attribute set.

@@ -7,12 +7,15 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/bind.h"
 #include "base/mac/scoped_cftyperef.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface TestModalAlertCloser : NSObject
 - (void)runTestThenCloseAlert:(NSAlert*)alert;
@@ -107,10 +110,9 @@ TEST(MessagePumpMacTest, ScopedPumpMessagesAttemptWithModalDialog) {
     EXPECT_EQ(kAllModesMask, allow_private.GetModeMaskForTest());
   }
 
-  base::scoped_nsobject<NSAlert> alert([[NSAlert alloc] init]);
+  NSAlert* alert = [[NSAlert alloc] init];
   [alert addButtonWithTitle:@"OK"];
-  base::scoped_nsobject<TestModalAlertCloser> closer(
-      [[TestModalAlertCloser alloc] init]);
+  TestModalAlertCloser* closer = [[TestModalAlertCloser alloc] init];
   [closer performSelector:@selector(runTestThenCloseAlert:)
                withObject:alert
                afterDelay:0
@@ -123,10 +125,11 @@ TEST(MessagePumpMacTest, QuitWithModalWindow) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
   NSWindow* window =
-      [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                                   styleMask:NSWindowStyleMaskBorderless
-                                     backing:NSBackingStoreBuffered
-                                       defer:NO] autorelease];
+      [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
+                                  styleMask:NSWindowStyleMaskBorderless
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
+  window.releasedWhenClosed = NO;
 
   // Check that quitting the run loop while a modal window is shown applies to
   // |run_loop| rather than the internal NSApplication modal run loop.

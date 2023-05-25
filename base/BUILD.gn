@@ -2956,17 +2956,14 @@ if (is_apple) {
 }
 
 if (is_apple) {
-  source_set("base_unittests_arc") {
+  source_set("base_unittests_noarc") {
     testonly = true
     sources = [
-      "ios/crb_protocol_observers_unittest.mm",
-      "mac/bind_objc_block_unittest_arc.mm",
-      "mac/scoped_nsobject_unittest_arc.mm",
+      "mac/bind_objc_block_unittest.mm",
+      "mac/scoped_nsobject_unittest.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       ":base",
-      "//base/ios",
       "//base/test:test_support",
       "//testing/gtest",
     ]
@@ -3482,7 +3479,7 @@ test("base_unittests") {
   if (is_apple) {
     public_deps = [ ":base_unittests_bundle_data" ]
 
-    deps += [ ":base_unittests_arc" ]
+    deps += [ ":base_unittests_noarc" ]
   }
 
   if (!is_ios) {
@@ -3574,34 +3571,6 @@ test("base_unittests") {
     if (!is_nacl) {
       deps += [ ":stack_canary_linux_unittests" ]
     }
-  }
-
-  if (is_mac) {
-    sources += [
-      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
-      "apple/backup_util_unittest.mm",
-      "enterprise_util_mac_unittest.mm",
-      "mac/bind_objc_block_unittest.mm",
-      "mac/call_with_eh_frame_unittest.mm",
-      "mac/dispatch_source_mach_unittest.cc",
-      "mac/foundation_util_unittest.mm",
-      "mac/mac_util_unittest.mm",
-      "mac/mach_port_rendezvous_unittest.cc",
-      "mac/scoped_mach_vm_unittest.cc",
-      "mac/scoped_nsobject_unittest.mm",
-      "mac/scoped_objc_class_swizzler_unittest.mm",
-      "mac/scoped_sending_event_unittest.mm",
-      "message_loop/message_pump_mac_unittest.mm",
-      "power_monitor/thermal_state_observer_mac_unittest.mm",
-      "process/memory_unittest_mac.h",
-      "process/memory_unittest_mac.mm",
-      "strings/sys_string_conversions_mac_unittest.mm",
-    ]
-  }
-
-  if (is_apple && enable_mach_absolute_time_ticks) {
-    sources += [ "time/time_mac_unittest.mm" ]
   }
 
   if (is_posix) {
@@ -3713,11 +3682,48 @@ test("base_unittests") {
     sources += [ "debug/allocation_trace_unittest.cc" ]
   }
 
+  if (is_apple) {
+    sources += [
+      "apple/backup_util_unittest.mm",
+      "mac/bind_objc_block_unittest_arc.mm",
+      "mac/foundation_util_unittest.mm",
+      "mac/scoped_nsobject_unittest_arc.mm",
+      "strings/sys_string_conversions_mac_unittest.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
+  if (is_apple && enable_mach_absolute_time_ticks) {
+    sources += [ "time/time_mac_unittest.mm" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
+      "enterprise_util_mac_unittest.mm",
+      "mac/call_with_eh_frame_unittest.mm",
+      "mac/dispatch_source_mach_unittest.cc",
+      "mac/mac_util_unittest.mm",
+      "mac/mach_port_rendezvous_unittest.cc",
+      "mac/scoped_mach_vm_unittest.cc",
+      "mac/scoped_objc_class_swizzler_unittest.mm",
+      "mac/scoped_sending_event_unittest.mm",
+      "message_loop/message_pump_mac_unittest.mm",
+      "power_monitor/thermal_state_observer_mac_unittest.mm",
+      "process/memory_unittest_mac.h",
+      "process/memory_unittest_mac.mm",
+    ]
+  }
+
   if (is_ios) {
     sources += [
+      "ios/crb_protocol_observers_unittest.mm",
       "ios/device_util_unittest.mm",
       "ios/scoped_critical_action_unittest.mm",
     ]
+
+    deps += [ "//base/ios" ]
 
     if (is_cronet_build) {
       sources += [ "message_loop/message_pump_io_ios_unittest.cc" ]
@@ -3739,15 +3745,6 @@ test("base_unittests") {
       "test/gtest_xml_unittest_result_printer_unittest.cc",
       "test/launcher/test_launcher_unittest.cc",
       "test/launcher/test_results_tracker_unittest.cc",
-    ]
-
-    sources += [
-      # Pull in specific Mac files for iOS.
-      "apple/backup_util_unittest.mm",
-      "mac/bind_objc_block_unittest.mm",
-      "mac/foundation_util_unittest.mm",
-      "mac/scoped_nsobject_unittest.mm",
-      "strings/sys_string_conversions_mac_unittest.mm",
     ]
 
     sources -= [
@@ -4898,8 +4895,9 @@ source_set("partition_alloc_test_support") {
   if (is_win) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_win_for_testing.cc" ]
   }
-  if (is_mac || is_ios) {
+  if (is_apple) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_mac_for_testing.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_linux || is_chromeos) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_linux_for_testing.cc" ]
