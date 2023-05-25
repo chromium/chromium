@@ -512,10 +512,9 @@ void SystemNotificationManager::HandleBulkPinningNotificationClick(
     absl::optional<int> button_index) {
   if (button_index.has_value()) {
     VLOG(1) << "Click on button #" << *button_index;
-    if (*button_index == 1) {
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
-    }
+    DCHECK_EQ(*button_index, 0);
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
   } else {
     VLOG(1) << "Click on notification";
   }
@@ -558,14 +557,9 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
           &SystemNotificationManager::HandleBulkPinningNotificationClick,
           weak_ptr_factory_.GetWeakPtr())));
 
-  // Add buttons to the notification.
-  std::vector<ButtonInfo> buttons;
-  buttons.reserve(2);
-  ButtonInfo& dismiss_button =
-      buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_DISMISS_LABEL));
-  dismiss_button.type = message_center::ButtonType::DISMISS;
-  buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_SETTINGS_LABEL));
-  notification->set_buttons(std::move(buttons));
+  // Add button to the notification.
+  notification->set_buttons(
+      {ButtonInfo(GetStringUTF16(IDS_FILE_BROWSER_SETTINGS_LABEL))});
 
   return notification;
 }
