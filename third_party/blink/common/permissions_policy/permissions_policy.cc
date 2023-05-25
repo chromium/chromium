@@ -407,7 +407,8 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
   return new_policy;
 }
 
-// Implements Permissions Policy 9.9: Is feature enabled in document for origin?
+// Implements Permissions Policy 9.8: Is feature enabled in document for origin?
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230322/
 bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
     mojom::PermissionsPolicyFeature feature,
     const url::Origin& origin,
@@ -417,13 +418,13 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
 
   auto inherited_value = inherited_policies_.at(feature);
 
-  // 9.9.2: If policy’s inherited policy for feature is Disabled, return
+  // 9.8.2: If policy’s inherited policy for feature is Disabled, return
   // "Disabled".
   if (!inherited_value) {
     return false;
   }
 
-  // 9.9.3: If feature is present in policy’s declared policy:
+  // 9.8.3: If feature is present in policy’s declared policy:
   //    1. If the allowlist for feature in policy’s declared policy matches
   //       origin, then return "Enabled".
   //    2. Otherwise return "Disabled".
@@ -443,14 +444,14 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   const PermissionsPolicyFeatureDefault default_policy =
       feature_list_->at(feature);
 
-  // 9.9.4: If feature’s default allowlist is *, return "Enabled".
+  // 9.8.4: If feature’s default allowlist is *, return "Enabled".
   if (default_policy == PermissionsPolicyFeatureDefault::EnableForAll) {
     return true;
   }
 
-  // 9.9.5: If feature’s default allowlist is 'self', and origin is same origin
+  // 9.8.5: If feature’s default allowlist is 'self', and origin is same origin
   // with document’s origin, return "Enabled".
-  // 9.9.6: Return "Disabled".
+  // 9.8.6: Return "Disabled".
   DCHECK_EQ(default_policy, PermissionsPolicyFeatureDefault::EnableForSelf);
   return origin_.IsSameOriginWith(origin);
 }
