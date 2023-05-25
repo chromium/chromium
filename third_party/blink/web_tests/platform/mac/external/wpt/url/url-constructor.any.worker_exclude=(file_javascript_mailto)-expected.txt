@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 670 tests; 490 PASS, 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 671 tests; 491 PASS, 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -633,6 +633,7 @@ FAIL Parsing: <non-special://[:80/> without base assert_throws_js: function "fun
           new URL(expected.input, base);
         }" did not throw
 PASS Parsing: <blob:https://example.com:443/> without base
+PASS Parsing: <blob:http://example.org:88/> without base
 PASS Parsing: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> without base
 PASS Parsing: <blob:> without base
 PASS Parsing: <blob:blob:> without base

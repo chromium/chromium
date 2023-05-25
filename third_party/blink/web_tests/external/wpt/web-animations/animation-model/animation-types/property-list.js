@@ -1269,6 +1269,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
     ]
   },
+  'text-autospace': {
+    // https://drafts.csswg.org/css-text-4/#text-spacing-property
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'no-autospace' ] ] }
+    ]
+  },
   'text-decoration-color': {
     // https://drafts.csswg.org/css-text-decor-3/#propdef-text-decoration-color
     types: [ 'color' ]
@@ -1332,6 +1338,12 @@ const gCSSProperties2 = {
       element.style.color = 'green';
       return element;
     }
+  },
+  'text-spacing-trim': {
+    // https://svgwg.org/svg2-draft/painting.html#TextRenderingProperty
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'space-all' ] ] }
+    ]
   },
   'text-transform': {
     // https://drafts.csswg.org/css-text-3/#propdef-text-transform
@@ -1415,6 +1427,12 @@ const gCSSProperties2 = {
     // https://drafts.csswg.org/css-text-4/#propdef-white-space
     types: [
       { type: 'discrete', options: [ [ 'pre', 'nowrap' ] ] }
+    ]
+  },
+  'white-space-collapse': {
+    // https://drafts.csswg.org/css-text-4/#propdef-white-space-collapse
+    types: [
+      { type: 'discrete', options: [ [ 'collapse', 'preserve' ] ] }
     ]
   },
   'width': {

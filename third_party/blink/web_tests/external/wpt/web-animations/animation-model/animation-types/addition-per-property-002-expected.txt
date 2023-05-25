@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 284 tests; 275 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 287 tests; 278 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAddition function
 PASS isolation: "isolate" onto "auto"
@@ -269,6 +269,9 @@ PASS visibility: onto "hidden"
 PASS white-space (type: discrete) has testAddition function
 PASS white-space: "nowrap" onto "pre"
 PASS white-space: "pre" onto "nowrap"
+PASS white-space-collapse (type: discrete) has testAddition function
+PASS white-space-collapse: "preserve" onto "collapse"
+PASS white-space-collapse: "collapse" onto "preserve"
 PASS word-break (type: discrete) has testAddition function
 PASS word-break: "break-all" onto "keep-all"
 PASS word-break: "keep-all" onto "break-all"

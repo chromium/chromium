@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 350 tests; 339 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 354 tests; 343 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -337,6 +337,10 @@ PASS white-space (type: discrete) has testInterpolation function
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with linear easing
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with effect easing
 PASS white-space uses discrete animation when animating between "pre" and "nowrap" with keyframe easing
+PASS white-space-collapse (type: discrete) has testInterpolation function
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with linear easing
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with effect easing
+PASS white-space-collapse uses discrete animation when animating between "collapse" and "preserve" with keyframe easing
 PASS word-break (type: discrete) has testInterpolation function
 PASS word-break uses discrete animation when animating between "keep-all" and "break-all" with linear easing
 PASS word-break uses discrete animation when animating between "keep-all" and "break-all" with effect easing

@@ -7756,6 +7756,21 @@
     "hash": ""
   },
   {
+    "input": "blob:http://example.org:88/",
+    "base": null,
+    "href": "blob:http://example.org:88/",
+    "origin": "http://example.org:88",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "http://example.org:88/",
+    "search": "",
+    "hash": ""
+  },
+  {
     "input": "blob:d3958f5c-0777-0845-9dcf-2cb28783acaf",
     "base": null,
     "href": "blob:d3958f5c-0777-0845-9dcf-2cb28783acaf",
