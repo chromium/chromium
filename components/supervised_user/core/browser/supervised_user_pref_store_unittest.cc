@@ -7,16 +7,13 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/history/core/common/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "extensions/buildflags/buildflags.h"
@@ -94,33 +91,9 @@ void SupervisedUserPrefStoreTest::TearDown() {
   service_.Shutdown();
 }
 
-TEST_F(SupervisedUserPrefStoreTest,
-       ConfigureSettingsWithHistoryDeletionAllowed) {
-  SupervisedUserPrefStoreFixture fixture(&service_);
-  EXPECT_FALSE(fixture.initialization_completed());
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      supervised_user::kAllowHistoryDeletionForChildAccounts);
-
-  pref_store_->SetInitializationCompleted();
-  service_.SetActive(true);
-
-  // kAllowDeletingBrowserHistory is based on the state of the feature
-  // supervised_user::kAllowHistoryDeletionForChildAccounts.
-  // This is enabled in scope.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kAllowDeletingBrowserHistory),
-              Optional(true));
-}
-
 TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   SupervisedUserPrefStoreFixture fixture(&service_);
   EXPECT_FALSE(fixture.initialization_completed());
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      supervised_user::kAllowHistoryDeletionForChildAccounts);
 
   // Prefs should not change yet when the service is ready, but not
   // activated yet.
@@ -129,13 +102,6 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   service_.SetActive(true);
-
-  // kAllowDeletingBrowserHistory is based on the state of the feature
-  // supervised_user::kAllowHistoryDeletionForChildAccounts.
-  // This is disabled in scope.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  prefs::kAllowDeletingBrowserHistory),
-              Optional(false));
 
   // kIncognitoModeAvailability must be disabled for all supervised users.
   EXPECT_THAT(

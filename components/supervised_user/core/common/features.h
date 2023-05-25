@@ -16,7 +16,6 @@ BASE_DECLARE_FEATURE(kLocalWebApprovals);
 extern const char kLocalWebApprovalsPreferredButtonLocal[];
 extern const char kLocalWebApprovalsPreferredButtonRemote[];
 
-BASE_DECLARE_FEATURE(kAllowHistoryDeletionForChildAccounts);
 BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 
 // Flags related to supervision features on Desktop and iOS platforms.

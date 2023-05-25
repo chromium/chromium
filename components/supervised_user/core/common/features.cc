@@ -47,13 +47,6 @@ constexpr base::FeatureParam<std::string> kLocalWebApprovalsPreferredButton{
     &kLocalWebApprovals, "preferred_button",
     kLocalWebApprovalsPreferredButtonLocal};
 
-// Enables child accounts (i.e. Unicorn accounts) to clear their browsing
-// history data from Settings.
-// TODO(b/251192695): Clean up feature flag.
-BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
-             "AllowHistoryDeletionForChildAccounts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the proto api for ClassifyURL calls.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
