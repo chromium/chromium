@@ -2681,11 +2681,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-iph",
-    "owners": [ "peilinwang@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-isolated-sandboxed-iframes",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     "expiry_milestone": 122
