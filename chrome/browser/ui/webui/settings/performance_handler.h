@@ -27,6 +27,9 @@ class PerformanceHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
+  friend class PerformanceHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(PerformanceHandlerTest, GetCurrentOpenSites);
+
   base::ScopedObservation<
       performance_manager::user_tuning::UserPerformanceTuningManager,
       performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
@@ -34,6 +37,12 @@ class PerformanceHandler : public SettingsPageUIHandler,
 
   // UserPerformanceTuningManager::Observer:
   void OnDeviceHasBatteryChanged(bool device_has_battery) override;
+
+  /**
+   * Returns a list of currently opened tabs' urls in order of most recently used.
+   */
+  base::Value GetCurrentOpenSites();
+  void HandleGetCurrentOpenSites(const base::Value::List& args);
 
   /**
    * This function is called from the frontend in order to get the initial
