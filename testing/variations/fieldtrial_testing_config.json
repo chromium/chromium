@@ -3589,21 +3589,6 @@
             ]
         }
     ],
-    "CrOSClipboardHistoryReorderExperiment": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClipboardHistoryReorder"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAec": [
         {
             "platforms": [

@@ -856,24 +856,13 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     data_to_paste = std::make_unique<ui::ClipboardData>(item.data());
   }
 
-  // Pausing clipboard history while manipulating the clipboard prevents the
-  // paste item from being added to clipboard history. In cases where we
-  // actually want the paste item to end up at the top of history, we accomplish
-  // that by specifying that reorders on paste can go through. Plain text pastes
-  // can cause reorders, but only in the buffer restoration step, as the plain
-  // text data that reaches clipboard history cannot reliably identify the item
-  // that should be reordered. In all cases, reorders should only be allowed
-  // when the experimental behavior is enabled.
-  using PauseBehavior = clipboard_history_util::PauseBehavior;
-  auto pause_behavior =
-      !paste_plain_text && features::IsClipboardHistoryReorderEnabled()
-          ? PauseBehavior::kAllowReorderOnPaste
-          : PauseBehavior::kDefault;
+  // Pause changes to clipboard history while manipulating the clipboard.
   std::unique_ptr<ui::ClipboardData> replaced_data;
   // If necessary, replace the clipboard's current data before issuing a paste.
   if (data_to_paste) {
-    ScopedClipboardHistoryPauseImpl scoped_pause(clipboard_history_.get(),
-                                                 pause_behavior);
+    ScopedClipboardHistoryPauseImpl scoped_pause(
+        clipboard_history_.get(),
+        clipboard_history_util::PauseBehavior::kDefault);
     replaced_data =
         GetClipboard()->WriteClipboardData(std::move(data_to_paste));
   }
@@ -922,45 +911,15 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     observer.OnClipboardHistoryPasted();
   }
 
-  // If the clipboard was not changed or we intend for clipboard history to
-  // remain reordered after the paste, then we are done modifying the clipboard
-  // buffer.
-  if (!replaced_data || pause_behavior == PauseBehavior::kAllowReorderOnPaste)
+  // If the clipboard was not changed--i.e., we pasted the full data on the
+  // clipboard--then we are done modifying the clipboard buffer.
+  if (!replaced_data) {
     return;
+  }
 
   // `currently_pasting_` only needs to be set when clipboard history and the
   // clipboard buffer are not in a consistent state for subsequent pastes.
   currently_pasting_ = true;
-
-  // We only reach this point if the clipboard needs to be overwritten again,
-  // either because we issued a plain text paste or because we pasted a
-  // clipboard history item whose data was not originally on the clipboard and
-  // reorder behavior is disabled. To know what data should go on the clipboard
-  // and how that update should affect clipboard history, we check which of
-  // three possible states currently applies:
-  //
-  //   1. the buffer is populated with a plain text version of the clipboard's
-  //      original data, so the original data should be restored with clipboard
-  //      history paused,
-  //   2. the buffer is populated with a plain text version of a different
-  //      clipboard history item's data and reorder behavior is enabled, so the
-  //      pasted item's full data should replace the clipboard data while
-  //      signaling a reorder to clipboard history, or
-  //   3. the buffer is populated with a different clipboard history item's full
-  //      data and reorder behavior is disabled, so the clipboard's original
-  //      data should be restored with clipboard history paused.
-  //
-  // Note that the buffer cannot hold a different clipboard history item's full
-  // data with reorder behavior enabled, because in that case we would have
-  // already allowed the clipboard history modification to go through as a
-  // reorder during the pre-paste clipboard overwrite.
-  pause_behavior = features::IsClipboardHistoryReorderEnabled() &&
-                           item.data() != *replaced_data
-                       ? PauseBehavior::kAllowReorderOnPaste
-                       : PauseBehavior::kDefault;
-  auto data_to_restore = pause_behavior == PauseBehavior::kAllowReorderOnPaste
-                             ? std::make_unique<ui::ClipboardData>(item.data())
-                             : std::move(replaced_data);
 
   // Replace the clipboard data. Some apps take a long time to receive the paste
   // event, and some apps will read from the clipboard multiple times per paste.
@@ -969,24 +928,20 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
       FROM_HERE,
       base::BindOnce(
           [](const base::WeakPtr<ClipboardHistoryControllerImpl>& weak_ptr,
-             std::unique_ptr<ui::ClipboardData> data_to_restore,
-             PauseBehavior pause_behavior) {
+             std::unique_ptr<ui::ClipboardData> data_to_restore) {
             std::unique_ptr<ScopedClipboardHistoryPauseImpl> scoped_pause;
             if (weak_ptr) {
               weak_ptr->currently_pasting_ = false;
               // When restoring the original clipboard content, pause clipboard
               // history to avoid committing data already at the top of the
-              // clipboard history list. When restoring an item not originally
-              // at the top of the clipboard history list, do not pause history
-              // entirely, but do pause metrics so that the reorder is not
-              // erroneously interpreted as a copy event.
+              // clipboard history list.
               scoped_pause = std::make_unique<ScopedClipboardHistoryPauseImpl>(
-                  weak_ptr->clipboard_history_.get(), pause_behavior);
+                  weak_ptr->clipboard_history_.get(),
+                  clipboard_history_util::PauseBehavior::kDefault);
             }
             GetClipboard()->WriteClipboardData(std::move(data_to_restore));
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(data_to_restore),
-          pause_behavior),
+          weak_ptr_factory_.GetWeakPtr(), std::move(replaced_data)),
       buffer_restoration_delay_for_test_.value_or(base::Milliseconds(200)));
 }
 

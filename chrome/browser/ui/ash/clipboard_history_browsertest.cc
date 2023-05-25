@@ -211,9 +211,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ClipboardHistoryBrowserTest() {
     login_mixin_.AppendRegularUsers(1);
     account_id1_ = login_mixin_.users()[0].account_id;
-    std::vector<base::test::FeatureRef> disabled_features = {
-        ash::features::kClipboardHistoryReorder};
-    feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
   }
 
   ~ClipboardHistoryBrowserTest() override = default;
@@ -352,9 +349,6 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the clipboard history menu response to mouse and arrow key inputs.
@@ -715,6 +709,67 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, ReorderOnCopy) {
+  // Confirm initial state.
+  const auto& clipboard_history_items = GetClipboardItems();
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(clipboard_history_items.empty());
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  const auto* const clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+
+  // Write some data to the clipboard.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("A", "<span>A</span>");
+  }
+  ui::ClipboardData clipboard_data_a(*clipboard->GetClipboardData(&data_dst));
+  ASSERT_EQ(clipboard_history_items.size(), 1u);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  // Write different data to the clipboard.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("B", "<span>B</span>");
+  }
+  ui::ClipboardData clipboard_data_b(*clipboard->GetClipboardData(&data_dst));
+  ASSERT_EQ(clipboard_history_items.size(), 2u);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_b);
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
+                                    /*count=*/0);
+
+  // Write the original data to the clipboard again. Instead of creating a new
+  // clipboard history item, this should bump the original item to the top slot.
+  {
+    // Start listening for changes to the item list. We must wait for the item
+    // list to update before checking verifying the clipboard history state.
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    SetClipboardTextAndHtml("A", "<span>A</span>");
+  }
+  ASSERT_EQ(clipboard_history_items.size(), 2u);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  histogram_tester.ExpectBucketCount(
+      "Ash.ClipboardHistory.ReorderType",
+      /*sample=*/ash::clipboard_history_util::ReorderType::kOnCopy,
+      /*expected_count=*/1);
+
+  // Verify that after the original data is written to the clipboard again, the
+  // corresponding clipboard history item's data is updated to have the same
+  // sequence number as the new clipboard.
+  EXPECT_EQ(clipboard_history_items.front().data().sequence_number_token(),
+            clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_NE(clipboard_history_items.front().data().sequence_number_token(),
+            clipboard_data_a.sequence_number_token());
+}
+
 class ClipboardHistoryPasteTypeBrowserTest
     : public ClipboardHistoryBrowserTest {
  public:
@@ -994,189 +1049,6 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest, PasteCommand) {
   SetClipboardTextAndHtml("A", "<span>A</span>");
   web_contents()->Paste();
   WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
-}
-
-class ClipboardHistoryReorderBrowserTest
-    : public ClipboardHistoryPasteTypeBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<bool /* clipboard_history_reorder_enabled */,
-                     bool /* paste_plain_text */>> {
- public:
-  ClipboardHistoryReorderBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
-    (ClipboardHistoryReorderEnabled() ? enabled_features : disabled_features)
-        .push_back(ash::features::kClipboardHistoryReorder);
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-  ~ClipboardHistoryReorderBrowserTest() override = default;
-
- protected:
-  bool ClipboardHistoryReorderEnabled() { return std::get<0>(GetParam()); }
-  bool PastePlainText() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ClipboardHistoryReorderBrowserTest,
-    ::testing::Combine(
-        /*clipboard_history_reorder_enabled=*/::testing::Bool(),
-        /*paste_plain_text=*/::testing::Bool()));
-
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
-  // Confirm initial state.
-  const auto& clipboard_history_items = GetClipboardItems();
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(clipboard_history_items.empty());
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
-                                    /*count=*/0);
-
-  const auto* const clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-
-  // Write some data to the clipboard.
-  {
-    // Start listening for changes to the item list. We must wait for the item
-    // list to update before checking verifying the clipboard history state.
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    SetClipboardTextAndHtml("A", "<span>A</span>");
-  }
-  ui::ClipboardData clipboard_data_a(*clipboard->GetClipboardData(&data_dst));
-  ASSERT_EQ(clipboard_history_items.size(), 1u);
-  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
-                                    /*count=*/0);
-
-  // Write different data to the clipboard.
-  {
-    // Start listening for changes to the item list. We must wait for the item
-    // list to update before checking verifying the clipboard history state.
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    SetClipboardTextAndHtml("B", "<span>B</span>");
-  }
-  ui::ClipboardData clipboard_data_b(*clipboard->GetClipboardData(&data_dst));
-  ASSERT_EQ(clipboard_history_items.size(), 2u);
-  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_b);
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
-                                    /*count=*/0);
-
-  // Write the original data to the clipboard again. Instead of creating a new
-  // clipboard history item, this should bump the original item to the top slot.
-  {
-    // Start listening for changes to the item list. We must wait for the item
-    // list to update before checking verifying the clipboard history state.
-    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
-    SetClipboardTextAndHtml("A", "<span>A</span>");
-  }
-  ASSERT_EQ(clipboard_history_items.size(), 2u);
-  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ReorderType",
-      /*sample=*/ash::clipboard_history_util::ReorderType::kOnCopy,
-      /*expected_count=*/1);
-
-  // Verify that after the original data is written to the clipboard again, the
-  // corresponding clipboard history item's data is updated to have the same
-  // sequence number as the new clipboard.
-  EXPECT_EQ(clipboard_history_items.front().data().sequence_number_token(),
-            clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste));
-  EXPECT_NE(clipboard_history_items.front().data().sequence_number_token(),
-            clipboard_data_a.sequence_number_token());
-}
-
-// Disabled due to flakiness: crbug.com/1385806
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, DISABLED_OnPaste) {
-  // Confirm initial state.
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
-                                    /*count=*/0);
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
-                                    /*count=*/0);
-
-  // Write some things to the clipboard. Pasting may result in temporary
-  // modification of the clipboard buffer. Cache the clipboard data for each
-  // item so state can be verified later.
-  const auto* const clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-  SetClipboardTextAndHtml("A", "<span>A</span>");
-  ui::ClipboardData clipboard_data_a(*clipboard->GetClipboardData(&data_dst));
-  SetClipboardTextAndHtml("B", "<span>B</span>");
-  ui::ClipboardData clipboard_data_b(*clipboard->GetClipboardData(&data_dst));
-
-  // Open clipboard history and paste the first history item in rich text. This
-  // predictable paste helps us verify that nothing is emitted to the
-  // `Ash.ClipboardHistory.ConsecutivePastes` histogram if a reordering paste
-  // happens next.
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  WaitForWebContentsPaste("B", /*paste_plain_text=*/false);
-
-  // Wait for clipboard history metrics to update with the paste's success.
-  WaitForOperationConfirmed(/*success_expected=*/true);
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
-                                    /*count=*/0);
-
-  // Wait for the clipboard buffer to be restored before performing another
-  // paste.
-  ClipboardDataWaiter().WaitFor(&clipboard_data_b);
-  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
-                                    /*count=*/0);
-
-  // Open clipboard history and paste the last history item.
-  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  PressAndRelease(ui::KeyboardCode::VKEY_DOWN);
-  PressAndRelease(ui::KeyboardCode::VKEY_RETURN,
-                  PastePlainText() ? ui::EF_SHIFT_DOWN : ui::EF_NONE);
-  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-
-  const auto* const expected_clipboard_data =
-      ClipboardHistoryReorderEnabled() ? &clipboard_data_a : &clipboard_data_b;
-  {
-    // If the paste will reorder clipboard history, start listening for changes
-    // to the item list. Ultimately, we must wait for the item list to update
-    // before checking whether the reorder was successful. This is only strictly
-    // necessary if the paste is also plain text, because in that scenario,
-    // clipboard history is reordered in a task posted after the buffer is
-    // restored.
-    std::unique_ptr<ScopedClipboardHistoryListUpdateWaiter> scoped_waiter;
-    if (ClipboardHistoryReorderEnabled()) {
-      scoped_waiter =
-          std::make_unique<ScopedClipboardHistoryListUpdateWaiter>();
-    }
-
-    WaitForWebContentsPaste("A", PastePlainText());
-
-    // Wait for clipboard history metrics to update with the paste's success.
-    WaitForOperationConfirmed(/*success_expected=*/true);
-    histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
-                                      /*count=*/0);
-
-    // Wait for the clipboard buffer to be restored before verifying results. We
-    // expect the buffer to contain the last pasted item's data if clipboard
-    // history reordering is enabled, or the buffer's original data if not.
-    // Because the waiter times out if it expects the wrong clipboard data, a
-    // successful wait verifies that the clipboard correctly reflects the top
-    // item of the clipboard history item list.
-    ClipboardDataWaiter().WaitFor(expected_clipboard_data);
-  }
-  histogram_tester.ExpectBucketCount(
-      "Ash.ClipboardHistory.ReorderType",
-      /*sample=*/ash::clipboard_history_util::ReorderType::kOnPaste,
-      /*expected_count=*/ClipboardHistoryReorderEnabled() ? 1 : 0);
-
-  const auto& clipboard_history_items = GetClipboardItems();
-  ASSERT_EQ(clipboard_history_items.size(), 2u);
-  EXPECT_EQ(clipboard_history_items.front().data(), *expected_clipboard_data);
-
-  SetClipboardTextAndHtml("C", "<span>C</span>");
-  histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.ConsecutivePastes",
-                                     /*sample=*/2, /*expected_count=*/1);
 }
 
 // Verify clipboard history's features in the multiprofile environment.

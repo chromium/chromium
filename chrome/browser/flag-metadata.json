@@ -1090,11 +1090,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "clipboard-history-reorder",
-    "owners": ["ckincaid@google.com", "multipaste@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "clipboard-unsanitized-content",
     "owners": [
       "ansollan@microsoft.com",

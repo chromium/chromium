@@ -350,12 +350,6 @@ BASE_FEATURE(kClipboardHistoryLongpress,
              "ClipboardHistoryLongpress",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, pasting a clipboard history item will cause that item to move to
-// the top of the history list.
-BASE_FEATURE(kClipboardHistoryReorder,
-             "ClipboardHistoryReorder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled and account falls under the new deal, will be allowed to toggle
 // auto updates.
 BASE_FEATURE(kConsumerAutoUpdateToggleAllowed,
@@ -2654,10 +2648,6 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
 
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
-}
-
-bool IsClipboardHistoryReorderEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {
