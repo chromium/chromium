@@ -2058,6 +2058,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // collection. This might be due a UIKit/SwiftUI interaction bug, as this is
   // not necessary for `InactiveTabsPreambleHeader` below for example.
   gHeader.parent = self;
+  [self.view addSubview:gHeader];
 
   CGSize size =
       [gHeader systemLayoutSizeFittingSize:targetSize
