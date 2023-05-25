@@ -69,6 +69,13 @@ namespace {
 const char kDNSCanaryCheckAddress[] = "http://testdnscanarycheck.com";
 const char kTLSCanaryCheckAddress[] = "http://testtlscanarycheck.com";
 
+PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
+  return static_cast<PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
+
 class TestPrefetchOriginProber : public PrefetchOriginProber {
  public:
   TestPrefetchOriginProber(BrowserContext* browser_context,
@@ -368,7 +375,9 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
 
   void ExpectCorrectUkmLogs(const GURL& expected_url,
                             bool is_accurate_trigger,
-                            PreloadingTriggeringOutcome expected_outcome) {
+                            PreloadingTriggeringOutcome expected_outcome,
+                            PreloadingFailureReason expected_failure_reason =
+                                PreloadingFailureReason::kUnspecified) {
     MockNavigationHandle mock_handle;
     mock_handle.set_is_in_primary_main_frame(true);
     mock_handle.set_is_same_document(false);
@@ -390,7 +399,7 @@ class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
     const auto expected_attempts = {attempt_entry_builder()->BuildEntry(
         mock_handle.GetNextPageUkmSourceId(), PreloadingType::kPrefetch,
         PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        expected_outcome, PreloadingFailureReason::kUnspecified,
+        expected_outcome, expected_failure_reason,
         /*accurate=*/is_accurate_trigger,
         /*ready_time=*/base::ScopedMockElapsedTimersForTest::kMockElapsedTime)};
 
@@ -857,7 +866,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
   ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
                        /*is_accurate_trigger=*/false,
-                       PreloadingTriggeringOutcome::kReady);
+                       PreloadingTriggeringOutcome::kFailure,
+                       ToPreloadingFailureReason(
+                           PrefetchStatus::kPrefetchNotUsedCookiesChanged));
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {

@@ -210,6 +210,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       // TODO(adithyas): This would report 'eviction' as a failure even though
       // the initial prefetch succeeded, consider introducing a different
       // PreloadingTriggerOutcome for eviction.
@@ -242,7 +243,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchIneligibleRetryAfter:
       case PrefetchStatus::kPrefetchProxyNotAvailable:
       case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
-      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       case PrefetchStatus::kPrefetchIsStale:
       case PrefetchStatus::kPrefetchNotUsedProbeFailed:
       case PrefetchStatus::

@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/prefetch_metrics.h"
@@ -203,9 +204,17 @@ void OnGotPrefetchToServe(
 #endif
 
   if (!prefetch_container ||
-      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
-      prefetch_container->HaveDefaultContextCookiesChanged(
+      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
+    std::move(get_prefetch_callback).Run(nullptr);
+    return;
+  }
+
+  if (prefetch_container->HaveDefaultContextCookiesChanged(
           tentative_resource_request.url)) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+    prefetch_container->UpdateServingPageMetrics();
+
     std::move(get_prefetch_callback).Run(nullptr);
     return;
   }

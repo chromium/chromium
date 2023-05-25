@@ -1247,6 +1247,10 @@ void PrefetchService::PrepareToServe(
   bool block_until_head = prefetch_container->ShouldBlockUntilHeadReceived();
 
   if (prefetch_container->HaveDefaultContextCookiesChanged(url)) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+    prefetch_container->UpdateServingPageMetrics();
+
     DVLOG(1) << *prefetch_container
              << ": didn't promote to ready (cookies changed)";
     return;
@@ -1527,12 +1531,20 @@ void PrefetchService::ReturnPrefetchToServe(
   }
 
   if (!prefetch_container ||
-      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
-      prefetch_container->HaveDefaultContextCookiesChanged(
-          prefetch_container->GetURL())) {
+      !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
     if (prefetch_container) {
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
     }
+    std::move(on_prefetch_to_serve_ready).Run(nullptr);
+    return;
+  }
+
+  if (prefetch_container->HaveDefaultContextCookiesChanged(
+          prefetch_container->GetURL())) {
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
+    prefetch_container->UpdateServingPageMetrics();
+    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }
