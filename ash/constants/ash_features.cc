@@ -3088,7 +3088,9 @@ bool IsGameDashboardEnabled() {
   if (!base::FeatureList::IsEnabled(kGameDashboard)) {
     return false;
   }
-
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return true;
+  }
   // Only allow the dashboard on test images until further in development.
   std::string track;
   return base::SysInfo::GetLsbReleaseValue(kChromeOSReleaseTrack, &track) &&

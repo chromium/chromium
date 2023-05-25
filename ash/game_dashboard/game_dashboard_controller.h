@@ -5,16 +5,18 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTROLLER_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTROLLER_H_
 
-#include <memory>
+#include <map>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_observer.h"
+#include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace aura {
 class Window;
@@ -36,6 +38,13 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Returns the singleton instance owned by `Shell`.
   static GameDashboardController* Get();
 
+  // Checks whether the `window` is a game.
+  static bool IsGameWindow(aura::Window* window);
+
+  // Returns a pointer to the `GameDashboardContext` if the given `window` is a
+  // game window, otherwise nullptr.
+  GameDashboardContext* GetGameDashboardContext(aura::Window* window) const;
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 
@@ -43,6 +52,10 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
   void OnWindowDestroying(aura::Window* window) override;
 
   // CaptureModeObserver:
@@ -57,6 +70,7 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   enum class WindowGameState { kGame, kNotGame, kNotYetKnown };
 
   friend class GameDashboardControllerTest;
+  friend class GameDashboardTestBase;
 
   // Checks to see if the given window is a game. If there's not enough
   // information, then returns `kNotYetKnown`, otherwise returns `kGame` or
@@ -66,6 +80,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Updates the window observation, depending on whether the given window is a
   // game or not.
   void RefreshWindowTracking(aura::Window* window);
+
+  std::map<aura::Window*, std::unique_ptr<GameDashboardContext>>
+      game_window_contexts_;
 
   // The delegate responsible for communicating with between Ash and the Game
   // Dashboard service in the browser.

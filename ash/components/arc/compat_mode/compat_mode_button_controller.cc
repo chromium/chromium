@@ -12,6 +12,7 @@
 #include "ash/components/arc/compat_mode/resize_util.h"
 #include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/window_properties.h"
@@ -63,6 +64,9 @@ void CompatModeButtonController::Update(
     aura::Window* window) {
   DCHECK(ash::IsArcWindow(window));
 
+  if (ash::GameDashboardController::IsGameWindow(window)) {
+    return;
+  }
   const auto app_id = GetAppId(window);
   if (!app_id)
     return;

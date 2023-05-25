@@ -144,11 +144,6 @@ bool CanFloatWindow(aura::Window* window) {
                                             : CanFloatWindowInClamshell(window);
 }
 
-bool IsGameWindow(aura::Window* window) {
-  DCHECK(window);
-  return window->GetProperty(kIsGameKey);
-}
-
 bool ApplyDynamicColorToWindowFrameHeader(aura::Window* window) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const int app_type = window->GetProperty(aura::client::kAppType);
