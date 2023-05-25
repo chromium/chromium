@@ -35,7 +35,8 @@ class VIEWS_EXPORT InkDrop {
 
   // TODO(pbos): Make sure what's installed here implements InkDrop so that can
   // be used as type instead of InkDropHost.
-  static void Install(View* host, std::unique_ptr<InkDropHost> ink_drop);
+  static InkDropHost* Install(View* host,
+                              std::unique_ptr<InkDropHost> ink_drop);
 
   // Removes the InkDrop from `host`.
   static void Remove(View* host);

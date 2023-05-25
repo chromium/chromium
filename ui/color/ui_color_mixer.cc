@@ -267,11 +267,12 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorTextfieldForegroundDisabled};
   mixer[kColorTextfieldForegroundPlaceholderInvalid] = {
       kColorTextfieldForegroundPlaceholder};
+  mixer[kColorTextfieldHover] = {SK_ColorTRANSPARENT};
+  mixer[kColorTextfieldOutline] = {kColorFocusableBorderUnfocused};
+  mixer[kColorTextfieldOutlineDisabled] = {kColorFocusableBorderUnfocused};
+  mixer[kColorTextfieldOutlineInvalid] = {kColorAlertHighSeverity};
   mixer[kColorTextfieldSelectionBackground] = {kColorTextSelectionBackground};
   mixer[kColorTextfieldSelectionForeground] = {kColorTextSelectionForeground};
-  mixer[kColorTextfieldOutline] = {kColorFocusableBorderUnfocused};
-  mixer[kColorTextfieldDisabledOutline] = {kColorFocusableBorderUnfocused};
-  mixer[kColorTextfieldInvalidOutline] = {kColorAlertHighSeverity};
   mixer[kColorThrobber] =
       PickGoogleColor(kColorAccent, kColorDialogBackground,
                       color_utils::kMinimumVisibleContrastRatio);
