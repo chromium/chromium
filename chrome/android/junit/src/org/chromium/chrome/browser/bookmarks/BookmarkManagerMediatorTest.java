@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -105,6 +106,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -336,7 +338,7 @@ public class BookmarkManagerMediatorTest {
         });
     }
 
-    void finishLoading() {
+    private void finishLoading() {
         when(mBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
         verify(mBookmarkModel, atLeast(0))
                 .finishLoadingBookmarkModel(mFinishLoadingBookmarkModelCaptor.capture());
@@ -346,9 +348,18 @@ public class BookmarkManagerMediatorTest {
         }
     }
 
-    void verifyBookmarkListMenuItem(ListItem item, @StringRes int titleId, boolean enabled) {
+    private void verifyBookmarkListMenuItem(
+            ListItem item, @StringRes int titleId, boolean enabled) {
         assertEquals(item.model.get(ListMenuItemProperties.TITLE_ID), titleId);
         assertEquals(item.model.get(ListMenuItemProperties.ENABLED), enabled);
+    }
+
+    private void verifyOrderedViewTypes(List<Integer> orderedViewTypes) {
+        assertEquals(orderedViewTypes.size(), mModelList.size());
+        for (int i = 0; i < orderedViewTypes.size(); ++i) {
+            assertEquals("ViewType did not match at index " + i, orderedViewTypes.get(i).intValue(),
+                    mModelList.get(i).type);
+        }
     }
 
     @Test
@@ -950,5 +961,23 @@ public class BookmarkManagerMediatorTest {
 
         assertEquals(
                 0, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testPromoHeader() {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
+        mMediator.getPromoHeaderManager().syncStateChanged();
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX, ViewType.PERSONALIZED_SYNC_PROMO,
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        mMediator.getPromoHeaderManager().syncStateChanged();
+
+        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
     }
 }

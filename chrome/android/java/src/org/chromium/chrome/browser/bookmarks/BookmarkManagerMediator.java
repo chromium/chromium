@@ -69,12 +69,15 @@ import org.chromium.url.GURL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.function.Predicate;
 
 /** Responsible for BookmarkManager business logic. */
 // TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
 class BookmarkManagerMediator
         implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final String EMPTY_QUERY = null;
+    private static final int PROMO_MAX_INDEX = 1;
+    private static final int SEARCH_BOX_MAX_INDEX = 0;
 
     private static boolean sPreventLoadingForTesting;
 
@@ -236,10 +239,8 @@ class BookmarkManagerMediator
         public void onSearchStateSet() {
             clearHighlight();
             mDragReorderableRecyclerViewAdapter.disableDrag();
-            // Headers should not appear in Search mode.
-            // Don't need to notify because we need to redraw everything in the next step.
-            updateHeader();
-            removeSectionHeaders();
+            // Promo and headers should not appear in search mode.
+            removePromoAndSectionHeaders();
         }
     };
 
@@ -332,9 +333,6 @@ class BookmarkManagerMediator
     private String mInitialUrl;
     private boolean mFaviconsNeedRefresh;
     private BasicNativePage mNativePage;
-    // There can only be one promo header at a time. This takes on one of the values:
-    // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
-    private @ViewType int mPromoHeaderType = ViewType.INVALID;
     private String mSearchText;
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
@@ -815,25 +813,21 @@ class BookmarkManagerMediator
     private void setBookmarks(List<BookmarkListEntry> bookmarkListEntryList) {
         clearHighlight();
 
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            // TODO(https://crbug.com/1439583): Do this in a way that doesn't get overridden by
-            // the promo header.
-            updateOrAdd(0, buildSearchBoxRow());
-        }
-
-        // Restore the header, if it exists, then update it.
-        if (hasPromoHeader()) {
-            updateOrAdd(0, buildPersonalizedPromoListItem());
-        }
-        updateHeader();
-
         // This method is called due to unknown model changes, and we're basically rebuilding every
         // row. However we need to avoid doing this in a way that'll cause flicker. So we replace
         // items in place so that the recycler view doesn't see everything being removed and added
         // back, but instead it sees items being changed.
-        // TODO(https://crbug.com/1413463): Rework promo/header methods to simplify initial index.
-        int index =
-                hasPromoHeader() || BookmarkFeatures.isAndroidImprovedBookmarksEnabled() ? 1 : 0;
+        int index = 0;
+
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            updateOrAdd(index++, buildSearchBoxRow());
+        }
+
+        // Restore the header, if it exists, then update it.
+        final @ViewType int targetPromoHeaderType = calculatePromoHeaderType();
+        if (targetPromoHeaderType != ViewType.INVALID) {
+            updateOrAdd(index++, buildPersonalizedPromoListItem(targetPromoHeaderType));
+        }
 
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
@@ -904,49 +898,83 @@ class BookmarkManagerMediator
         notifyUi(mStateStack.peek());
     }
 
-    /**
-     * Updates mPromoHeaderType. Makes sure that the 0th index of getElements() is consistent with
-     * the promo header. This 0th index is null iff there is a promo header.
-     */
-    private void updateHeader() {
-        boolean wasShowingPromo = hasPromoHeader();
-
-        int currentUiState = getCurrentUiMode();
-        if (currentUiState == BookmarkUiMode.LOADING) {
-            return;
-        } else if (currentUiState == BookmarkUiMode.SEARCHING) {
-            mPromoHeaderType = ViewType.INVALID;
-        } else {
-            switch (mPromoHeaderManager.getPromoState()) {
-                case SyncPromoState.NO_PROMO:
-                    mPromoHeaderType = ViewType.INVALID;
-                    break;
-                case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
-                    mPromoHeaderType = ViewType.PERSONALIZED_SIGNIN_PROMO;
-                    break;
-                case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
-                    mPromoHeaderType = ViewType.PERSONALIZED_SYNC_PROMO;
-                    break;
-                case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
-                    mPromoHeaderType = ViewType.SYNC_PROMO;
-                    break;
-                default:
-                    assert false : "Unexpected value for promo state!";
-            }
+    private @ViewType int calculatePromoHeaderType() {
+        final @BookmarkUiMode int currentUiState = getCurrentUiMode();
+        if (currentUiState != BookmarkUiMode.FOLDER) {
+            return ViewType.INVALID;
         }
 
-        boolean willShowPromo = hasPromoHeader();
-        if (!wasShowingPromo && willShowPromo) {
-            mModelList.add(0, buildPersonalizedPromoListItem());
-        } else if (wasShowingPromo && !willShowPromo) {
-            mModelList.removeAt(0);
+        final @SyncPromoState int promoState = mPromoHeaderManager.getPromoState();
+        switch (promoState) {
+            case SyncPromoState.NO_PROMO:
+                return ViewType.INVALID;
+            case SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE:
+                return ViewType.PERSONALIZED_SIGNIN_PROMO;
+            case SyncPromoState.PROMO_FOR_SIGNED_IN_STATE:
+                return ViewType.PERSONALIZED_SYNC_PROMO;
+            case SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE:
+                return ViewType.SYNC_PROMO;
+            default:
+                assert false : "Unexpected value for promo state!";
+                return ViewType.INVALID;
         }
     }
 
-    /** Removes all section headers from the current list. */
-    private void removeSectionHeaders() {
+    /**
+     * Removes, adds, or updates the promo row, depending on the previous state and desired state.
+     * Note that this method effectively duplicates the logic in {@link this#setBookmarks} that
+     * understands the order of the promo header and the search row.
+     */
+    private void updateHeader() {
+        final @ViewType int targetPromoHeaderType = calculatePromoHeaderType();
+        int currentPromoIndex = getCurrentPromoHeaderIndex();
+
+        if (targetPromoHeaderType == ViewType.INVALID) {
+            if (currentPromoIndex >= 0) {
+                mModelList.removeAt(currentPromoIndex);
+            }
+        } else {
+            ListItem promoListItem = buildPersonalizedPromoListItem(targetPromoHeaderType);
+            if (currentPromoIndex >= 0) {
+                mModelList.update(currentPromoIndex, promoListItem);
+            } else {
+                boolean hasSearchRow = getCurrentSearchBoxIndex() >= 0;
+                int targetPromoIndex = hasSearchRow ? 1 : 0;
+                mModelList.add(targetPromoIndex, promoListItem);
+            }
+        }
+    }
+
+    private int getCurrentPromoHeaderIndex() {
+        return searchForFirstIndexOfType(/*endIndex=*/PROMO_MAX_INDEX, this::isPromoType);
+    }
+
+    private int getCurrentSearchBoxIndex() {
+        return searchForFirstIndexOfType(
+                /*endIndex=*/SEARCH_BOX_MAX_INDEX, (type) -> type == ViewType.SEARCH_BOX);
+    }
+
+    /** Returns the first index that matches up until endIndex, or -1 if no match is found. */
+    private int searchForFirstIndexOfType(int endIndex, Predicate<Integer> typePredicate) {
+        endIndex = Math.min(endIndex, mModelList.size() - 1);
+        for (int i = 0; i <= endIndex; ++i) {
+            if (typePredicate.test(mModelList.get(i).type)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean isPromoType(@ViewType int viewType) {
+        return viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
+                || viewType == ViewType.PERSONALIZED_SYNC_PROMO || viewType == ViewType.SYNC_PROMO;
+    }
+
+    /** Removes all promo and section headers from the current list. */
+    private void removePromoAndSectionHeaders() {
         for (int i = mModelList.size() - 1; i >= 0; i--) {
-            if (mModelList.get(i).type == ViewType.SECTION_HEADER) {
+            final @ViewType int viewType = mModelList.get(i).type;
+            if (viewType == ViewType.SECTION_HEADER || isPromoType(viewType)) {
                 mModelList.removeAt(i);
             }
         }
@@ -963,10 +991,6 @@ class BookmarkManagerMediator
             endIndex--;
         }
         return endIndex;
-    }
-
-    private boolean hasPromoHeader() {
-        return mPromoHeaderType != ViewType.INVALID;
     }
 
     /**
@@ -992,9 +1016,9 @@ class BookmarkManagerMediator
         return mModelList.size();
     }
 
-    private ListItem buildPersonalizedPromoListItem() {
+    private ListItem buildPersonalizedPromoListItem(@ViewType int promoHeaderType) {
         BookmarkListEntry bookmarkListEntry =
-                BookmarkListEntry.createSyncPromoHeader(mPromoHeaderType);
+                BookmarkListEntry.createSyncPromoHeader(promoHeaderType);
         PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mPromoHeaderManager);
