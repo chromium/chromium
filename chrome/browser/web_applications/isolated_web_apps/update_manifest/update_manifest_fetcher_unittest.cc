@@ -56,7 +56,8 @@ class UpdateManifestFetcherTest : public ::testing::Test {
     AddJsonResponse(kValidManifestUrl, R"(
       {
         "versions": [
-          { "src": "https://example.com/bundle.swbn", "version": "1" }
+          { "src": "https://other.com/bundle.swbn", "version": "1.2.3" },
+          { "src": "/foo/bundle.swbn", "version": "3.2.1" }
         ]
       }
     )");
@@ -105,8 +106,12 @@ TEST_F(UpdateManifestFetcherTest, FetchesValidManifest) {
   ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(
       update_manifest->versions(),
-      ElementsAre(UpdateManifest::VersionEntry{
-          GURL("https://example.com/bundle.swbn"), base::Version("1")}));
+      ElementsAre(
+          UpdateManifest::VersionEntry{GURL("https://other.com/bundle.swbn"),
+                                       base::Version("1.2.3")},
+          UpdateManifest::VersionEntry{
+              GURL("https://example.com/foo/bundle.swbn"),
+              base::Version("3.2.1")}));
 }
 
 TEST_F(UpdateManifestFetcherTest, FailsWhenManifestHasNoVersions) {

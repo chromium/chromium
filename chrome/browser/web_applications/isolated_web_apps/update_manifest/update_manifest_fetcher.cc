@@ -124,14 +124,16 @@ void UpdateManifestFetcher::OnUpdateManifestParsed(
     const absl::optional<std::string>& error) {
   if (!result.has_value()) {
     if (error.has_value()) {
-      LOG(ERROR) << *error;
+      LOG(ERROR) << "Unable to parse IWA Update Manifest JSON for URL " << url_
+                 << ". Error: was" << *error;
     }
     std::move(fetch_callback_).Run(base::unexpected(Error::kInvalidJson));
     return;
   }
 
   base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
-      update_manifest = UpdateManifest::CreateFromJson(std::move(*result));
+      update_manifest =
+          UpdateManifest::CreateFromJson(std::move(*result), url_);
 
   std::move(fetch_callback_)
       .Run(update_manifest.transform_error(

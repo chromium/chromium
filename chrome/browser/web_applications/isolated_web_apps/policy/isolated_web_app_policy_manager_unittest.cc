@@ -58,9 +58,10 @@ constexpr char kUpdateManifestValue2[] = R"(
 constexpr char kUpdateManifestValue3[] =
     "This update manifest should return error 404";
 constexpr char kUpdateManifestValue4[] = R"(This is not JSON)";
+// This manifest contains an invalid `src` URL.
 constexpr char kUpdateManifestValue5[] = R"(
     {"versions":
-    [{"version": "1.0.0", "src": "Ooops! Wrong Web Bundle URL!"}]})";
+    [{"version": "1.0.0", "src": "chrome-extension://app5.wbn"}]})";
 constexpr char kUpdateManifestValue6[] = R"(
     {"versions":
     [{"version": "1.0.0", "src": "https://example.com/app6.swbn"}]})";

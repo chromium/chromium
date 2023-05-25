@@ -14,7 +14,8 @@ namespace web_app {
 
 // static
 base::expected<UpdateManifest, UpdateManifest::JsonFormatError>
-UpdateManifest::CreateFromJson(const base::Value& json) {
+UpdateManifest::CreateFromJson(const base::Value& json,
+                               const GURL& update_manifest_url) {
   if (!json.is_dict()) {
     return base::unexpected(JsonFormatError::kRootNotADictionary);
   }
@@ -46,7 +47,7 @@ UpdateManifest::CreateFromJson(const base::Value& json) {
       continue;
     }
 
-    GURL src(*src_string);
+    GURL src = update_manifest_url.Resolve(*src_string);
     if (!src.is_valid()) {
       continue;
     }

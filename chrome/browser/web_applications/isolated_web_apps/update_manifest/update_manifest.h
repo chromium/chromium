@@ -36,8 +36,11 @@ class UpdateManifest {
   //
   // Note that at least one version entry is required; otherwise the Update
   // Manifest is treated as invalid.
+  //
+  // `update_manifest_url` is used to resolve relative `src` URLs in `versions`.
   static base::expected<UpdateManifest, JsonFormatError> CreateFromJson(
-      const base::Value& json);
+      const base::Value& json,
+      const GURL& update_manifest_url);
 
   UpdateManifest(const UpdateManifest& other);
   UpdateManifest& operator=(const UpdateManifest& other);
