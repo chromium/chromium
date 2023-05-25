@@ -68,14 +68,14 @@ BASE_FEATURE(kDefaultBrowserVideoPromo,
 
 BASE_FEATURE(kIOSCustomBrowserEditMenu,
              "IOSCustomBrowserEditMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
     "IOSEditMenuPartialTranslateNoIncognitoParam";
 
 BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPartialTranslateEnabled() {
   if (@available(iOS 16, *)) {
@@ -90,7 +90,7 @@ bool ShouldShowPartialTranslateInIncognito() {
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
       kIOSEditMenuPartialTranslate,
-      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
+      kIOSEditMenuPartialTranslateNoIncognitoParam, true);
 }
 
 const char kIOSEditMenuSearchWithTitleParamTitle[] =
