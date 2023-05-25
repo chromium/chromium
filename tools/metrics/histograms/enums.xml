@@ -50748,13 +50748,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="15" label="Power on recovery failed"/>
 </enum>
 
-<enum name="HrefTranslatePrefsFilterStatus">
-  <int value="0" label="Not in blocklists"/>
-  <int value="1" label="Language in blocklist"/>
-  <int value="2" label="Site in blocklist"/>
-  <int value="3" label="Both language and site in blocklist"/>
-</enum>
-
 <enum name="HrefTranslateStatus">
   <int value="0" label="Auto translated"/>
   <int value="1" label="Auto translated using a different target language"/>

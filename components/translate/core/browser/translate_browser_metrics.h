@@ -70,17 +70,6 @@ enum class HrefTranslateStatus {
   kMaxValue = kNoUiShownNotAutoTranslated
 };
 
-enum class HrefTranslatePrefsFilterStatus {
-  kNotInBlocklists,
-  kLanguageInBlocklist,
-  kSiteInBlocklist,
-  kBothLanguageAndSiteInBlocklist,
-
-  // Insert new items here. Keep in sync with HrefTranslatePrefsFilterStatus in
-  // enums.xml when adding values.
-  kMaxValue = kBothLanguageAndSiteInBlocklist
-};
-
 enum class TargetLanguageOrigin {
   kRecentTarget,
   kLanguageModel,
@@ -136,12 +125,6 @@ void ReportTranslateTargetLanguage(base::StringPiece language);
 // Called when Chrome Translate is initiated, the navigation is from Google, and
 // a href translate target is present.
 void ReportTranslateHrefHintStatus(HrefTranslateStatus status);
-
-// Called when Chrome Translate is initiated, the navigation is from Google, and
-// a href translate target is present. Records the status of any user prefs
-// filtering.
-void ReportTranslateHrefHintPrefsFilterStatus(
-    HrefTranslatePrefsFilterStatus status);
 
 }  // namespace TranslateBrowserMetrics
 
