@@ -58,7 +58,7 @@ class BookmarkModel;
 
 // Clears all the bookmarks in the Spotlight index then index the bookmarks in
 // the model.
-- (void)clearAndReindexModelWithCompletionBlock:(void (^)(NSError* error))block;
+- (void)clearAndReindexModel;
 
 @end
 

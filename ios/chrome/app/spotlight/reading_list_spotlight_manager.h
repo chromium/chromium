@@ -38,8 +38,7 @@ class ReadingListModel;
 
 /// Immediately clears and reindexes the reading list items in Spotlight. Calls
 /// `completionHandler` when done.
-- (void)clearAndReindexReadingListWithCompletionBlock:
-    (void (^)(NSError* error))completionHandler;
+- (void)clearAndReindexReadingList;
 
 @end
 

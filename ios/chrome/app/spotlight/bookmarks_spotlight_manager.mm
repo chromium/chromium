@@ -16,6 +16,7 @@
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
+#import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 
@@ -321,26 +322,16 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   return [spotlightItems allValues];
 }
 
-- (void)clearAndReindexModelWithCompletionBlock:
-    (void (^)(NSError* error))completionHandler {
+- (void)clearAndReindexModel {
   __weak BookmarksSpotlightManager* weakSelf = self;
   [self cancelAllLargeIconPendingTasks];
   [self clearAllSpotlightItems:^(NSError* error) {
     if (error) {
-      if (completionHandler) {
-        completionHandler(error);
-      }
+      [SpotlightLogger logSpotlightError:error];
       return;
     }
     [weakSelf completedClearAllSpotlightItems];
-    if (completionHandler) {
-      completionHandler(nil);
-    }
   }];
-}
-
-- (void)clearAndReindexModel {
-  [self clearAndReindexModelWithCompletionBlock:nil];
 }
 
 - (void)completedClearAllSpotlightItems {

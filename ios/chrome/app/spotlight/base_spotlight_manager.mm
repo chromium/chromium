@@ -285,8 +285,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                            defaultTitle:title];
 
   if ([spotlightItems count]) {
-    [self.spotlightInterface indexSearchableItems:spotlightItems
-                                completionHandler:nil];
+    [self.spotlightInterface indexSearchableItems:spotlightItems];
   }
 }
 

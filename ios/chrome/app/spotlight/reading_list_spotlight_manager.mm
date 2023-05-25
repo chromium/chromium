@@ -85,31 +85,27 @@
   return [super spotlightIDForURL:URL title:@""];
 }
 
-- (void)clearAndReindexReadingListWithCompletionBlock:
-    (void (^)(NSError* error))completionHandler {
+- (void)clearAndReindexReadingList {
   if (!self.model || !self.model->loaded()) {
-    completionHandler(
-        [ReadingListSpotlightManager modelNotReadyOrShutDownError]);
+    [SpotlightLogger logSpotlightError:[ReadingListSpotlightManager
+                                           modelNotReadyOrShutDownError]];
     return;
   }
 
   __weak ReadingListSpotlightManager* weakSelf = self;
   [self clearAllSpotlightItems:^(NSError* error) {
     if (error) {
-      if (completionHandler) {
-        completionHandler(error);
-      }
+      [SpotlightLogger logSpotlightError:error];
       return;
     }
-    [weakSelf indexAllReadingListItemsWithCompletionBlock:completionHandler];
+    [weakSelf indexAllReadingListItems];
   }];
 }
 
-- (void)indexAllReadingListItemsWithCompletionBlock:
-    (void (^)(NSError* error))completionHandler {
+- (void)indexAllReadingListItems {
   if (!self.model || !self.model->loaded()) {
-    completionHandler(
-        [ReadingListSpotlightManager modelNotReadyOrShutDownError]);
+    [SpotlightLogger logSpotlightError:[ReadingListSpotlightManager
+                                           modelNotReadyOrShutDownError]];
     return;
   }
 
@@ -119,10 +115,6 @@
     DCHECK(entry);
     NSString* title = base::SysUTF8ToNSString(entry->Title());
     [self refreshItemsWithURL:entry->URL() title:title];
-  }
-
-  if (completionHandler) {
-    completionHandler(nil);
   }
 }
 
@@ -139,7 +131,7 @@
 #pragma mark - ReadingListModelBridgeObserver
 
 - (void)readingListModelLoaded:(const ReadingListModel*)model {
-  [self clearAndReindexReadingListWithCompletionBlock:nil];
+  [self clearAndReindexReadingList];
 }
 
 - (void)readingListModelDidApplyChanges:(const ReadingListModel*)model {
