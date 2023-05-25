@@ -6,7 +6,7 @@
 #define CC_PAINT_SCOPED_RASTER_FLAGS_H_
 
 #include "base/containers/stack_container.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
@@ -59,11 +59,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     if (decode_failed_)
       return nullptr;
 
-    if (modified_flags_.has_value()) {
-      return &*modified_flags_;
-    }
-
-    return original_flags_;
+    return modified_flags_ ? &*modified_flags_ : original_flags_;
   }
 
  private:
@@ -79,7 +75,9 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     return &*modified_flags_;
   }
 
-  raw_ptr<const PaintFlags> original_flags_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #union
+  RAW_PTR_EXCLUSION const PaintFlags* original_flags_;
   absl::optional<PaintFlags> modified_flags_;
   absl::optional<DecodeStashingImageProvider> decode_stashing_image_provider_;
   bool decode_failed_ = false;
