@@ -61,6 +61,15 @@ class ClusterMenuElement extends ClusterMenuElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('allowDeletingHistory'),
       },
+
+      /**
+       * Whether the cluster is in the side panel.
+       */
+      inSidePanel_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('inSidePanel'),
+        reflectToAttribute: true,
+      },
     };
   }
 
