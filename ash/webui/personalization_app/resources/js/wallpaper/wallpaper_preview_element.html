@@ -19,6 +19,8 @@
     display: flex;
     flex-flow: row nowrap;
     grid-area: label;
+    /* Avoid undefined behavior before the app UI is fully rendered.*/
+    height: 44px;
     justify-content: space-between;
     margin-top: 12px;
   }
