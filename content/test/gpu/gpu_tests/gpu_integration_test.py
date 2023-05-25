@@ -113,7 +113,8 @@ class GpuIntegrationTest(
         return False
     return name not in self._GetSerialTests()
 
-  def _SuiteSupportsParallelTests(self) -> bool:  # pylint: disable=no-self-use
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
     """Returns whether the suite in general supports parallel tests."""
     return False
 
@@ -179,6 +180,14 @@ class GpuIntegrationTest(
     default_args = [
         '--disable-metal-test-shaders',
     ]
+    if cls._SuiteSupportsParallelTests():
+      # When running tests in parallel, windows can be treated as occluded if a
+      # newly opened window fully covers a previous one, which can cause issues
+      # in a few tests. This is practically only an issue on Windows since
+      # Linux/Mac stagger new windows, but pass in on all platforms since it
+      # could technically be hit on any platform.
+      default_args.append('--disable-backgrounding-occluded-windows')
+
     return default_args + additional_args
 
   @classmethod

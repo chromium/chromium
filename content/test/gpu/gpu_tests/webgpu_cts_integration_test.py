@@ -107,7 +107,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def Name(cls) -> str:
     return 'webgpu_cts'
 
-  def _SuiteSupportsParallelTests(self) -> bool:
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
     return True
 
   def _GetSerialGlobs(self) -> Set[str]:
@@ -234,21 +235,16 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         cls.child.expectations.tags)
 
   @classmethod
-  def SetUpProcess(cls) -> None:
-    super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+    """Adds default arguments to |additional_args|.
 
-    cls.websocket_server = websocket_server.WebsocketServer()
-    cls.websocket_server.StartServer()
-    browser_args = [
+    See the parent class' method documentation for additional information.
+    """
+    browser_args = super().GenerateBrowserArgs(additional_args)
+    browser_args.extend([
         '--enable-dawn-features=allow_unsafe_apis',
-        # When running tests in parallel, windows can be treated as occluded if
-        # a newly opened window fully covers a previous one, which can cause
-        # issues in a few tests. This is practically only an issue on Windows
-        # since Linux/Mac stagger new windows, but pass in on all platforms
-        # since it could technically be hit on any platform.
-        '--disable-backgrounding-occluded-windows',
-    ] + cba.ENABLE_WEBGPU_FOR_TESTING
-
+    ])
+    browser_args.extend(cba.ENABLE_WEBGPU_FOR_TESTING)
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
     if cls._use_webgpu_power_preference:
@@ -259,7 +255,16 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         browser_args.append('--enable-dawn-backend-validation=partial')
       else:
         browser_args.append('--enable-dawn-backend-validation')
-    cls.CustomizeBrowserArgs(browser_args)
+    return browser_args
+
+  @classmethod
+  def SetUpProcess(cls) -> None:
+    super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
+
+    cls.websocket_server = websocket_server.WebsocketServer()
+    cls.websocket_server.StartServer()
+
+    cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     # pylint:disable=protected-access
     cls._build_dir = cls.browser._browser_backend.build_dir
