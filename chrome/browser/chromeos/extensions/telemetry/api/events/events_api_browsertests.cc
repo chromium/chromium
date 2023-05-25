@@ -84,6 +84,28 @@ class TelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
+// Checks that the correct events are available. This checks all released events
+// that are not behind a feature flag.
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckCorrectEventsAvailable) {
+  constexpr char kEnabledEvents[] =
+      "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent']";
+
+  CreateExtensionAndRunServiceWorker(base::StringPrintf(R"(
+    chrome.test.runTests([
+      function checkSupportedEvents() {
+        const methods = Object.getOwnPropertyNames(chrome.os.events)
+            .filter(item =>
+               typeof chrome.os.events[item].addListener === 'function');
+
+        chrome.test.assertEq(methods.sort(), %s.sort());
+        chrome.test.succeed();
+      }
+    ]);
+    )",
+                                                        kEnabledEvents));
+}
+
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        IsEventSupported_Error) {
   auto exception = crosapi::TelemetryExtensionException::New();
