@@ -8,7 +8,6 @@
 
 #include "printing/backend/print_backend.h"
 
-#include "base/values.h"
 #include "printing/mojom/print.mojom.h"
 
 namespace printing {
@@ -55,7 +54,6 @@ class DummyPrintBackend : public PrintBackend {
 
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::Value::Dict* print_backend_settings,
     const std::string& /*locale*/) {
   return base::MakeRefCounted<DummyPrintBackend>();
 }

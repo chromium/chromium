@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -325,7 +324,6 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
   // Provide the actual backend for CreateInstance().
   static scoped_refptr<PrintBackend> CreateInstanceImpl(
-      const base::Value::Dict* print_backend_settings,
       const std::string& locale);
 };
 

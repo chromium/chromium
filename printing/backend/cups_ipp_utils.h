@@ -9,15 +9,12 @@
 
 #include <memory>
 
-#include "base/values.h"
-
 namespace printing {
 
 class CupsConnection;
 
-// Creates a CUPS connection using `print_backend_settings`.
-std::unique_ptr<CupsConnection> CreateConnection(
-    const base::Value::Dict* print_backend_settings);
+// Creates a CUPS connection.
+std::unique_ptr<CupsConnection> CreateConnection();
 
 }  // namespace printing
 

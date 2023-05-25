@@ -7,10 +7,7 @@
 
 #include "base/component_export.h"
 
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSBlocking[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSEncryption[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSEnterprisePrinter[];
-COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSPrintServerURL[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDriverInfoTagName[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDriverNameTagName[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kLocationTagName[];

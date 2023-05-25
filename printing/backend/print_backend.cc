@@ -213,10 +213,8 @@ PrintBackend::~PrintBackend() = default;
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstance(
     const std::string& locale) {
-  return g_print_backend_for_test
-             ? g_print_backend_for_test
-             : PrintBackend::CreateInstanceImpl(
-                   /*print_backend_settings=*/nullptr, locale);
+  return g_print_backend_for_test ? g_print_backend_for_test
+                                  : PrintBackend::CreateInstanceImpl(locale);
 }
 
 // static
