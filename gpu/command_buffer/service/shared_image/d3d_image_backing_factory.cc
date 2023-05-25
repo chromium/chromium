@@ -33,6 +33,10 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return DXGI_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return DXGI_FORMAT_B8G8R8X8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return DXGI_FORMAT_R8G8B8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kR_8) {
     return DXGI_FORMAT_R8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
@@ -45,7 +49,7 @@ DXGI_FORMAT GetDXGIFormatForCreateTexture(viz::SharedImageFormat format) {
     return DXGI_FORMAT_NV12;
   }
 
-  NOTREACHED();
+  NOTREACHED() << "Unsupported format: " << format.ToString();
   return DXGI_FORMAT_UNKNOWN;
 }
 
@@ -160,13 +164,24 @@ D3DImageBackingFactory::SwapChainBackings::operator=(
 // static
 bool D3DImageBackingFactory::IsD3DSharedImageSupported(
     const GpuPreferences& gpu_preferences) {
-  // Only supported for passthrough command decoder and Skia-GL.
-  const bool using_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                                 gl::PassthroughCommandDecoderSupported();
-  const bool is_skia_gl = gpu_preferences.gr_context_type == GrContextType::kGL;
+  // Only supported for passthrough command decoder.
+  if (!gpu_preferences.use_passthrough_cmd_decoder ||
+      !gl::PassthroughCommandDecoderSupported()) {
+    return false;
+  }
+
   // D3D11 device will be null if ANGLE is using the D3D9 backend.
-  const bool using_d3d11 = gl::QueryD3D11DeviceObjectFromANGLE() != nullptr;
-  return using_passthrough && is_skia_gl && using_d3d11;
+  if (!gl::QueryD3D11DeviceObjectFromANGLE()) {
+    return false;
+  }
+
+  // Only supported for Skia GL or Skia GraphiteDawn
+  if (gpu_preferences.gr_context_type != GrContextType::kGL &&
+      gpu_preferences.gr_context_type != GrContextType::kGraphiteDawn) {
+    return false;
+  }
+
+  return true;
 }
 
 // static
