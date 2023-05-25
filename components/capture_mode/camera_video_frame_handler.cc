@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/capture_mode/camera_video_frame_handler.h"
+#include "components/capture_mode/camera_video_frame_handler.h"
 
-#include <iostream>
-
-#include "ash/capture_mode/capture_mode_camera_controller.h"
-#include "ash/capture_mode/capture_mode_controller.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -28,14 +24,13 @@
 #include "media/base/video_types.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
-#include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
-namespace ash {
+namespace capture_mode {
 
 namespace {
 
@@ -79,10 +74,6 @@ gfx::BufferUsage GetBufferUsage() {
 gfx::BufferFormat GetBufferFormat() {
   return g_force_use_gpu_memory_buffer_for_test ? kGpuMemoryBufferFormatForTest
                                                 : kGpuMemoryBufferFormat;
-}
-
-ui::ContextFactory* GetContextFactory() {
-  return aura::Env::GetInstance()->context_factory();
 }
 
 bool IsGpuBufferTypeSupported(gfx::GpuMemoryBufferType type) {
@@ -172,8 +163,9 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
       video_capture::mojom::ReadyFrameInBufferPtr buffer) override {
     const size_t mapping_size = media::VideoFrame::AllocationSize(
         buffer->frame_info->pixel_format, buffer->frame_info->coded_size);
-    if (!MaybeUpdateMapping(mapping_size))
+    if (!MaybeUpdateMapping(mapping_size)) {
       return {};
+    }
 
     auto& frame_info = buffer->frame_info;
     auto frame = media::VideoFrame::WrapExternalData(
@@ -216,15 +208,15 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
 class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
                                     public viz::ContextLostObserver {
  public:
-  explicit GpuMemoryBufferHandleHolder(
-      media::mojom::VideoBufferHandlePtr buffer_handle)
+  GpuMemoryBufferHandleHolder(media::mojom::VideoBufferHandlePtr buffer_handle,
+                              ui::ContextFactory* context_factory)
       : gpu_memory_buffer_handle_(
             std::move(buffer_handle->get_gpu_memory_buffer_handle())),
         buffer_planes_(CreateGpuBufferPlanes()),
+        context_factory_(context_factory),
         client_native_pixmap_factory_(
             ui::CreateClientNativePixmapFactoryOzone()),
-        context_provider_(
-            GetContextFactory()->SharedMainThreadContextProvider()),
+        context_provider_(context_factory_->SharedMainThreadContextProvider()),
         buffer_texture_target_(CalculateBufferTextureTarget(
             context_provider_->ContextCapabilities())) {
     DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
@@ -238,8 +230,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       delete;
 
   ~GpuMemoryBufferHandleHolder() override {
-    if (!context_provider_)
+    if (!context_provider_) {
       return;
+    }
 
     context_provider_->RemoveObserver(this);
 
@@ -248,8 +241,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(shared_image_interface);
 
     for (const auto& mb : mailboxes_) {
-      if (mb.IsZero() || !mb.IsSharedImage())
+      if (mb.IsZero() || !mb.IsSharedImage()) {
         continue;
+      }
       shared_image_interface->DestroySharedImage(release_sync_token_, mb);
     }
   }
@@ -278,11 +272,12 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 
     // Clear the mailboxes so that we can recreate the shared images.
     should_create_shared_images_ = true;
-    for (auto& mb : mailboxes_)
+    for (auto& mb : mailboxes_) {
       mb.SetZero();
+    }
     release_sync_token_ = gpu::SyncToken();
 
-    context_provider_ = GetContextFactory()->SharedMainThreadContextProvider();
+    context_provider_ = context_factory_->SharedMainThreadContextProvider();
     if (context_provider_) {
       context_provider_->AddObserver(this);
       buffer_texture_target_ = CalculateBufferTextureTarget(
@@ -323,8 +318,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       const media::mojom::VideoFrameInfoPtr& frame_info) {
     DCHECK(context_provider_);
 
-    if (!should_create_shared_images_)
+    if (!should_create_shared_images_) {
       return true;
+    }
 
     // We clone our handle `gpu_memory_buffer_handle_` and use the cloned handle
     // to create a new GpuMemoryBuffer which will be used to create the shared
@@ -344,7 +340,7 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(shared_image_interface);
 
     gpu::GpuMemoryBufferManager* gmb_manager =
-        GetContextFactory()->GetGpuMemoryBufferManager();
+        context_factory_->GetGpuMemoryBufferManager();
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
       mailboxes_[plane] = shared_image_interface->CreateSharedImage(
           gmb.get(), gmb_manager, buffer_planes_[plane],
@@ -422,6 +418,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
   // `mailboxes_`.
   const std::vector<gfx::BufferPlane> buffer_planes_;
 
+  const raw_ptr<ui::ContextFactory> context_factory_;
+
   // Used to create a GPU memory buffer from its handle.
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 
@@ -457,15 +455,16 @@ BufferHandleHolder::~BufferHandleHolder() = default;
 
 // static
 std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
-    media::mojom::VideoBufferHandlePtr buffer_handle) {
+    media::mojom::VideoBufferHandlePtr buffer_handle,
+    ui::ContextFactory* context_factory) {
   if (buffer_handle->is_unsafe_shmem_region()) {
     return std::make_unique<SharedMemoryBufferHandleHolder>(
         std::move(buffer_handle));
   }
 
   DCHECK(buffer_handle->is_gpu_memory_buffer_handle());
-  return std::make_unique<GpuMemoryBufferHandleHolder>(
-      std::move(buffer_handle));
+  return std::make_unique<GpuMemoryBufferHandleHolder>(std::move(buffer_handle),
+                                                       context_factory);
 }
 
 // -----------------------------------------------------------------------------
@@ -473,9 +472,11 @@ std::unique_ptr<BufferHandleHolder> BufferHandleHolder::Create(
 
 CameraVideoFrameHandler::CameraVideoFrameHandler(
     Delegate* delegate,
+    ui::ContextFactory* context_factory,
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
     const media::VideoCaptureFormat& capture_format)
     : delegate_(delegate),
+      context_factory_(context_factory),
       camera_video_source_remote_(std::move(camera_video_source)) {
   DCHECK(delegate_);
   DCHECK(camera_video_source_remote_);
@@ -521,7 +522,8 @@ void CameraVideoFrameHandler::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
   const auto pair = buffer_map_.emplace(
-      buffer_id, BufferHandleHolder::Create(std::move(buffer_handle)));
+      buffer_id, BufferHandleHolder::Create(std::move(buffer_handle),
+                                            context_factory_.get()));
   DCHECK(pair.second);
 }
 
@@ -570,8 +572,9 @@ void CameraVideoFrameHandler::OnBufferRetired(int buffer_id) {
 
 void CameraVideoFrameHandler::OnError(media::VideoCaptureError error) {
   LOG(ERROR) << "Recieved error: " << static_cast<int>(error);
-  if (IsFatalError(error))
+  if (IsFatalError(error)) {
     OnFatalErrorOrDisconnection();
+  }
 }
 
 void CameraVideoFrameHandler::OnFrameDropped(
@@ -612,10 +615,8 @@ void CameraVideoFrameHandler::OnFatalErrorOrDisconnection() {
   camera_video_stream_subsciption_remote_.reset();
   video_frame_access_handler_remote_.reset();
 
-  CaptureModeController::Get()->camera_controller()->OnFrameHandlerFatalError();
-  // `this` will be deleted soon after the above call. "Soon" here because the
-  // `camera_preview_widget_` which indirectly owns `this` is destroyed
-  // asynchronously when `Close()` is called on it.
+  delegate_->OnFatalErrorOrDisconnection();
+  // Caution as the delegate may choose to delete `this` after the above call.
 }
 
-}  // namespace ash
+}  // namespace capture_mode

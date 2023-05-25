@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_
-#define ASH_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_
+#ifndef COMPONENTS_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_
+#define COMPONENTS_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/capture_mode/capture_mode_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,7 +23,11 @@ namespace media {
 class VideoFrame;
 }  // namespace media
 
-namespace ash {
+namespace ui {
+class ContextFactory;
+}  // namespace ui
+
+namespace capture_mode {
 
 // Defines an interface for an object that can hold and own a video buffer
 // handle, and able to extract a `VideoFrame` from the buffer when the frame
@@ -39,7 +43,8 @@ class BufferHandleHolder {
   // matches the buffer type of the given `buffer_handle`.
   // We only support the `kGpuMemoryBuffer` and `kSharedMemory` buffer types.
   static std::unique_ptr<BufferHandleHolder> Create(
-      media::mojom::VideoBufferHandlePtr buffer_handle);
+      media::mojom::VideoBufferHandlePtr buffer_handle,
+      ui::ContextFactory* context_factory);
 
   // Extracts and returns the ready video frame in the given `buffer`.
   virtual scoped_refptr<media::VideoFrame> OnFrameReadyInBuffer(
@@ -54,7 +59,7 @@ class BufferHandleHolder {
 // Defines an object that will subscribe to a camera device, whose remote video
 // source is the given `camera_video_source`. It will handle the reception of
 // the video frames from that device and provide them to its `Delegate`.
-class ASH_EXPORT CameraVideoFrameHandler
+class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
     : public video_capture::mojom::VideoFrameHandler {
  public:
   // Defines an interface for a delegate of this class, which will be provided
@@ -64,6 +69,10 @@ class ASH_EXPORT CameraVideoFrameHandler
     // Will be called on the UI thread whenever a video `frame` is received from
     // the camera device.
     virtual void OnCameraVideoFrame(scoped_refptr<media::VideoFrame> frame) = 0;
+
+    // Called when the handler received a fatal error in `OnError()` or the mojo
+    // remote to the `VideoSource` gets disconnected.
+    virtual void OnFatalErrorOrDisconnection() = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -75,6 +84,7 @@ class ASH_EXPORT CameraVideoFrameHandler
   // `delegate`.
   CameraVideoFrameHandler(
       Delegate* delegate,
+      ui::ContextFactory* context_factory,
       mojo::Remote<video_capture::mojom::VideoSource> camera_video_source,
       const media::VideoCaptureFormat& capture_format);
   CameraVideoFrameHandler(const CameraVideoFrameHandler&) = delete;
@@ -121,7 +131,9 @@ class ASH_EXPORT CameraVideoFrameHandler
   // `VideoSource` gets disconnected.
   void OnFatalErrorOrDisconnection();
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
+
+  const raw_ptr<ui::ContextFactory> context_factory_;
 
   mojo::Receiver<video_capture::mojom::VideoFrameHandler>
       video_frame_handler_receiver_{this};
@@ -151,6 +163,6 @@ class ASH_EXPORT CameraVideoFrameHandler
   base::WeakPtrFactory<CameraVideoFrameHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace capture_mode
 
-#endif  // ASH_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_
+#endif  // COMPONENTS_CAPTURE_MODE_CAMERA_VIDEO_FRAME_HANDLER_H_

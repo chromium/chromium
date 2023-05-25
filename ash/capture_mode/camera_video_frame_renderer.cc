@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "base/check.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -38,6 +40,7 @@ CameraVideoFrameRenderer::CameraVideoFrameRenderer(
     bool should_flip_frames_horizontally)
     : host_window_(/*delegate=*/nullptr),
       video_frame_handler_(/*delegate=*/this,
+                           GetContextFactory(),
                            std::move(camera_video_source),
                            capture_format),
       context_provider_(GetContextFactory()->SharedMainThreadContextProvider()),
@@ -83,6 +86,13 @@ void CameraVideoFrameRenderer::OnCameraVideoFrame(
   DCHECK(video_resource_updater_);
 
   current_video_frame_ = std::move(frame);
+}
+
+void CameraVideoFrameRenderer::OnFatalErrorOrDisconnection() {
+  CaptureModeController::Get()->camera_controller()->OnFrameHandlerFatalError();
+  // `this` will be deleted soon after the above call. "Soon" here because the
+  // `camera_preview_widget_` which indirectly owns `this` is destroyed
+  // asynchronously when `Close()` is called on it.
 }
 
 void CameraVideoFrameRenderer::OnBeginFrameSourcePausedChanged(bool paused) {}
