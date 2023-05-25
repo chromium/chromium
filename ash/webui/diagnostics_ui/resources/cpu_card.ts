@@ -18,9 +18,10 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cpu_card.html.js';
+import {convertKibToMib} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-import {CpuUsage, CpuUsageObserverReceiver, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import {CpuUsage, CpuUsageObserverReceiver, MemoryUsage, MemoryUsageObserverReceiver, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 /**
@@ -78,13 +79,16 @@ export class CpuCardElement extends CpuCardElementBase {
   private routines: RoutineType[];
   private cpuUsage: CpuUsage;
   private cpuChipInfo: string;
+  private memoryUsage: MemoryUsage;
   private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
   private cpuUsageObserverReceiver: CpuUsageObserverReceiver|null = null;
+  private memoryUsageObserverReceiver: MemoryUsageObserverReceiver|null = null;
 
   constructor() {
     super();
     this.observeCpuUsage();
+    this.observeMemoryUsage();
     this.fetchSystemInfo();
   }
 
@@ -94,6 +98,24 @@ export class CpuCardElement extends CpuCardElementBase {
     if (this.cpuUsageObserverReceiver) {
       this.cpuUsageObserverReceiver.$.close();
     }
+
+    if (this.memoryUsageObserverReceiver) {
+      this.memoryUsageObserverReceiver.$.close();
+    }
+  }
+
+  private observeMemoryUsage(): void {
+    this.memoryUsageObserverReceiver = new MemoryUsageObserverReceiver(this);
+
+    this.systemDataProvider.observeMemoryUsage(
+        this.memoryUsageObserverReceiver.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * Implements MemoryUsageObserver.onMemoryUsageUpdated()
+   */
+  onMemoryUsageUpdated(memoryUsage: MemoryUsage): void {
+    this.memoryUsage = memoryUsage;
   }
 
   /** @private */
@@ -154,6 +176,12 @@ export class CpuCardElement extends CpuCardElementBase {
   protected getEstimateRuntimeInMinutes(): number {
     // Each routine runs for a minute
     return this.routines.length;
+  }
+
+  protected getRunTestsAdditionalMessage(): string {
+    return convertKibToMib(this.memoryUsage.availableMemoryKib) >= 625 ?
+        '' :
+        loadTimeData.getString('notEnoughAvailableMemoryCpuMessage');
   }
 }
 

@@ -1018,6 +1018,7 @@
         <message name="IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY" desc="The message shown when the amount of available memory on a device is less than 500 MB  and the memory test can not be run.">
           You need at least 500 MB free to run a Memory test. To free up space, go to Settings > Storage management.
         </message>
+        <message name="IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY_CPU" desc="The message shown when the amount of available memory on a device is less than 625 MB and the cpu test can not be run." translateable="false">You need at least 625 MB of available memory to run the CPU test. To free up memory, close tabs and apps.</message>
         <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL" desc="The label for a battery's health.">
           Battery health
         </message>
