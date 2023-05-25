@@ -1463,6 +1463,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebApkSpecifics& proto) {
   VISIT(theme_color);
   VISIT(scope);
   VISIT_REP(icon_infos);
+  VISIT(last_used_time_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WebAppIconInfo& proto) {
