@@ -6,5 +6,6 @@
 history_clusters_v2_web_component_files = [
   "modules/history_clusters_v2/module.ts",
   "modules/history_clusters_v2/module_header.ts",
+  "modules/history_clusters_v2/suggest_tile.ts",
   "modules/history_clusters_v2/visit_tile.ts",
 ]

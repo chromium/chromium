@@ -1,0 +1,68 @@
+<style include="history-clusters-shared-style">
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  :host-context(.focus-outline-visible) :focus,
+  :focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  .related-search {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+  }
+
+  .title {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: var(--ntp-module-text-size);
+    margin: auto 0;
+  }
+
+  .icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 20px;
+    background-color: var(--color-new-tab-page-primary-foreground);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    height: 20px;
+    margin: auto 16px;
+    width: 20px;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) a:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    /* Set outline since background isn't visible in hcm. */
+    a {
+      outline: var(--cr-border-hcm);
+    }
+
+    /* Set magnifying class color for hcm. Otherwise, it isn't visible. */
+    .icon {
+      background-color: LinkText;
+    }
+  }
+</style>
+<a class="related-search" part="related-search"
+    href="[[computeSearchUrl_(relatedSearch.query)]]"
+    aria-label$="[[i18n('modulesJourneysSearchSuggAcc',
+        relatedSearch.query)]]">
+  <div class="icon"
+       style="-webkit-mask-image:
+       url(//resources/images/icon_search.svg);">
+  </div>
+  <div class="title truncate">[[relatedSearch.query]]</div>
+</a>
