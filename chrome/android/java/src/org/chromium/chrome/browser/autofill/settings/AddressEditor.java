@@ -231,8 +231,7 @@ public class AddressEditor {
         // Phone number is present for all countries.
         mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
                 mContext.getString(R.string.autofill_profile_editor_phone_number), mPhoneNumbers,
-                mPhoneFormatter, mPhoneValidator, null /* valueIconGenerator */,
-                /* requiredErrorMessage */ null,
+                mPhoneFormatter, mPhoneValidator, /* requiredErrorMessage */ null,
                 mContext.getString(R.string.payments_phone_invalid_validation_message),
                 EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
 
@@ -240,7 +239,7 @@ public class AddressEditor {
         mEmailField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
                 mContext.getString(R.string.autofill_profile_editor_email_address),
                 null /* suggestions */, null /* formatter */, null /* validator */,
-                null /* valueIconGenerator */, null /* requiredErrorMessage */,
+                null /* requiredErrorMessage */,
                 mContext.getString(R.string.payments_email_invalid_validation_message),
                 EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
 

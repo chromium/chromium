@@ -24,7 +24,6 @@ import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -52,8 +51,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private ImageView mActionIcon;
-    private ImageView mValueIcon;
-    private int mValueIconId;
     private boolean mHasFocusedAtLeastOnce;
 
     public EditorTextField(Context context, final EditorFieldModel fieldModel,
@@ -104,11 +101,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             }
         });
 
-        if (fieldModel.getValueIconGenerator() != null) {
-            mValueIcon = (ImageView) mIconsLayer.findViewById(R.id.value_icon);
-            mValueIcon.setVisibility(VISIBLE);
-        }
-
         mInput.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -143,7 +135,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             public void afterTextChanged(Editable s) {
                 fieldModel.setValue(s.toString());
                 updateDisplayedError(false);
-                updateFieldValueIcon(false);
                 if (sObserverForTest != null) {
                     sObserverForTest.onEditorTextUpdate();
                 }
@@ -275,13 +266,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
         }
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-
-        if (hasWindowFocus) updateFieldValueIcon(true);
-    }
-
     /** @return The EditorFieldModel that the TextView represents. */
     public EditorFieldModel getFieldModel() {
         return mEditorFieldModel;
@@ -318,20 +302,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     @Override
     public void update() {
         mInput.setText(mEditorFieldModel.getValue());
-    }
-
-    private void updateFieldValueIcon(boolean force) {
-        if (mValueIcon == null) return;
-
-        int iconId = mEditorFieldModel.getValueIconGenerator().getIconResourceId(mInput.getText());
-        if (mValueIconId == iconId && !force) return;
-        mValueIconId = iconId;
-        if (mValueIconId == 0) {
-            mValueIcon.setVisibility(GONE);
-        } else {
-            mValueIcon.setImageDrawable(AppCompatResources.getDrawable(getContext(), mValueIconId));
-            mValueIcon.setVisibility(VISIBLE);
-        }
     }
 
     @VisibleForTesting

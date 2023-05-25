@@ -248,8 +248,7 @@ public class AddressEditor
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message);
             mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
                     mContext.getString(R.string.autofill_profile_editor_phone_number),
-                    mPhoneNumbers, mPhoneFormatter, mPhoneValidator, null /* valueIconGenerator */,
-                    requiredErrorMessage,
+                    mPhoneNumbers, mPhoneFormatter, mPhoneValidator, requiredErrorMessage,
                     mContext.getString(R.string.payments_phone_invalid_validation_message),
                     EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
         }

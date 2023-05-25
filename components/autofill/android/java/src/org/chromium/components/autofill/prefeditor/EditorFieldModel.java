@@ -46,18 +46,6 @@ public class EditorFieldModel {
     }
 
     /**
-     * The interface to be implemented by the field value icon generator.
-     */
-    public interface EditorValueIconGenerator {
-        /**
-         * Called to get the field value icon resource Id.
-         * @param value The value of the field.
-         * @return The resouce Id of the value icon, 0 indicates no icon.
-         */
-        int getIconResourceId(@Nullable CharSequence value);
-    }
-
-    /**
      * A convenience class for displaying keyed values in a dropdown.
      */
     public static class DropdownKeyValue extends Pair<String, CharSequence> {
@@ -142,8 +130,6 @@ public class EditorFieldModel {
     private TextWatcher mFormatter;
     @Nullable
     private EditorFieldValidator mValidator;
-    @Nullable
-    private EditorValueIconGenerator mValueIconGenerator;
     @Nullable
     private CharSequence mRequiredErrorMessage;
     @Nullable
@@ -240,17 +226,15 @@ public class EditorFieldModel {
      */
     public static EditorFieldModel createTextInput(int inputTypeHint, CharSequence label,
             @Nullable Set<CharSequence> suggestions, @Nullable TextWatcher formatter,
-            @Nullable EditorFieldValidator validator,
-            @Nullable EditorValueIconGenerator valueIconGenerator,
-            @Nullable CharSequence requiredErrorMessage, @Nullable CharSequence invalidErrorMessage,
-            int lengthCounterLimit, @Nullable CharSequence value) {
+            @Nullable EditorFieldValidator validator, @Nullable CharSequence requiredErrorMessage,
+            @Nullable CharSequence invalidErrorMessage, int lengthCounterLimit,
+            @Nullable CharSequence value) {
         assert label != null;
         EditorFieldModel result = new EditorFieldModel(inputTypeHint);
         assert result.isTextField();
         result.mSuggestions = suggestions == null ? null : new ArrayList<CharSequence>(suggestions);
         result.mFormatter = formatter;
         result.mValidator = validator;
-        result.mValueIconGenerator = valueIconGenerator;
         result.mInvalidErrorMessage = invalidErrorMessage;
         result.mRequiredErrorMessage = requiredErrorMessage;
         result.mLabel = label;
@@ -269,12 +253,6 @@ public class EditorFieldModel {
     public TextWatcher getFormatter() {
         assert isTextField();
         return mFormatter;
-    }
-
-    /** @return The value icon generator or null if not exist. */
-    public EditorValueIconGenerator getValueIconGenerator() {
-        assert isTextField();
-        return mValueIconGenerator;
     }
 
     /** @return Whether the input is a text field. */
