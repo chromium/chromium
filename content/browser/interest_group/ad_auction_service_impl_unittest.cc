@@ -6669,8 +6669,7 @@ function reportResult() {
       blink::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
       std::vector<blink::OriginWithPossibleWildcards>{
-          blink::OriginWithPossibleWildcards(kOriginA,
-                                             /*has_subdomain_wildcard=*/false)},
+          blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
       /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
@@ -6884,9 +6883,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6912,12 +6909,8 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false),
-            blink::OriginWithPossibleWildcards(
-                kOriginC,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -6977,9 +6970,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
@@ -7005,12 +6996,8 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector<blink::OriginWithPossibleWildcards>{
-            blink::OriginWithPossibleWildcards(
-                kOriginA,
-                /*has_subdomain_wildcard=*/false),
-            blink::OriginWithPossibleWildcards(
-                kOriginC,
-                /*has_subdomain_wildcard=*/false)},
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
+            blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
         /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);

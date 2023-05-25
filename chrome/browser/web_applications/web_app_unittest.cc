@@ -378,12 +378,15 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
-       {{url::Origin::Create(GURL("https://example.com")),
-         /*has_subdomain_wildcard=*/false},
-        {url::Origin::Create(GURL("https://example.net")),
-         /*has_subdomain_wildcard=*/true},
-        {url::Origin::Create(GURL("https://*.example.net")),
-         /*has_subdomain_wildcard=*/false}},
+       {blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.com")),
+            /*has_subdomain_wildcard=*/false),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://example.net")),
+            /*has_subdomain_wildcard=*/true),
+        blink::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL("https://*.example.net")),
+            /*has_subdomain_wildcard=*/false)},
        /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},

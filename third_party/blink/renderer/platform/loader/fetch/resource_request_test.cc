@@ -425,22 +425,19 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
 
     std::unique_ptr<PermissionsPolicy> policy =
         CreateFromParentPolicy(nullptr, origin_a);
-    policy->SetHeaderPolicy({{{mojom::blink::PermissionsPolicyFeature::
-                                   kBrowsingTopics, /*allowed_origins=*/
-                               {blink::OriginWithPossibleWildcards(
-                                   origin_b,
-                                   /*has_subdomain_wildcard=*/false)},
-                               /*self_if_matches=*/absl::nullopt,
-                               /*matches_all_origins=*/false,
-                               /*matches_opaque_src=*/false},
-                              {mojom::blink::PermissionsPolicyFeature::
-                                   kSharedStorage, /*allowed_origins=*/
-                               {blink::OriginWithPossibleWildcards(
-                                   origin_b,
-                                   /*has_subdomain_wildcard=*/false)},
-                               /*self_if_matches=*/absl::nullopt,
-                               /*matches_all_origins=*/false,
-                               /*matches_opaque_src=*/false}}});
+    policy->SetHeaderPolicy(
+        {{{mojom::blink::PermissionsPolicyFeature::
+               kBrowsingTopics, /*allowed_origins=*/
+           {blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           /*self_if_matches=*/absl::nullopt,
+           /*matches_all_origins=*/false,
+           /*matches_opaque_src=*/false},
+          {mojom::blink::PermissionsPolicyFeature::
+               kSharedStorage, /*allowed_origins=*/
+           {blink::OriginWithPossibleWildcards::FromOrigin(origin_b)},
+           /*self_if_matches=*/absl::nullopt,
+           /*matches_all_origins=*/false,
+           /*matches_opaque_src=*/false}}});
 
     EXPECT_FALSE(policy->IsFeatureEnabledForOrigin(
         mojom::blink::PermissionsPolicyFeature::kBrowsingTopics, origin_a));

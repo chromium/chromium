@@ -36,16 +36,16 @@ TEST(ParsedPermissionsPolicyDeclarationTest, Contains) {
   // Origin mismatch.
   ParsedPermissionsPolicyDeclaration mismatch_decl;
   mismatch_decl.allowed_origins.emplace_back(
-      url::Origin::Create(GURL("https://example2.test/")),
-      /*has_subdomain_wildcard=*/false);
+      OriginWithPossibleWildcards::FromOrigin(
+          url::Origin::Create(GURL("https://example2.test/"))));
   EXPECT_FALSE(mismatch_decl.Contains(kTestOrigin));
   EXPECT_FALSE(mismatch_decl.Contains(kOpaqueOrigin));
 
   // Origin match.
   ParsedPermissionsPolicyDeclaration match_decl;
   match_decl.allowed_origins.emplace_back(
-      url::Origin::Create(GURL("https://example.test/")),
-      /*has_subdomain_wildcard=*/false);
+      OriginWithPossibleWildcards::FromOrigin(
+          url::Origin::Create(GURL("https://example.test/"))));
   EXPECT_TRUE(match_decl.Contains(kTestOrigin));
   EXPECT_FALSE(match_decl.Contains(kOpaqueOrigin));
 

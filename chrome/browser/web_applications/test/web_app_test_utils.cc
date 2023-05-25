@@ -210,8 +210,7 @@ blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
       const auto origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
       permissions_policy[i].allowed_origins.emplace_back(
-          origin,
-          /*has_subdomain_wildcard=*/false);
+          blink::OriginWithPossibleWildcards::FromOrigin(origin));
     }
   }
   return permissions_policy;

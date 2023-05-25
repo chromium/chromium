@@ -88,8 +88,9 @@ class RenderFrameHostPermissionsPolicyTest
     blink::ParsedPermissionsPolicy result(1);
     result[0].feature = feature;
     for (auto const& origin : origins) {
-      result[0].allowed_origins.emplace_back(url::Origin::Create(GURL(origin)),
-                                             /*has_subdomain_wildcard=*/false);
+      result[0].allowed_origins.emplace_back(
+          blink::OriginWithPossibleWildcards::FromOrigin(
+              url::Origin::Create(GURL(origin))));
     }
     return result;
   }

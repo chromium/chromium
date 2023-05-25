@@ -255,8 +255,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     default_allowlist.AddAll();
   } else if (default_policy == PermissionsPolicyFeatureDefault::EnableForSelf) {
     default_allowlist.Add(
-        blink::OriginWithPossibleWildcards(origin_,
-                                           /*has_subdomain_wildcard=*/false));
+        blink::OriginWithPossibleWildcards::FromOrigin(origin_));
   }
 
   return default_allowlist;

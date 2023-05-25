@@ -89,9 +89,10 @@ TEST(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
                       false, "Different IPv6, no wildcard")};
   for (const auto& value : values) {
     SCOPED_TRACE(std::get<4>(value));
-    EXPECT_EQ(std::get<3>(value), OriginWithPossibleWildcards(
-                                      std::get<1>(value), std::get<2>(value))
-                                      .DoesMatchOrigin(std::get<0>(value)));
+    EXPECT_EQ(std::get<3>(value),
+              OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+                  std::get<1>(value), std::get<2>(value))
+                  .DoesMatchOrigin(std::get<0>(value)));
   }
 }
 
@@ -254,15 +255,17 @@ TEST(OriginWithPossibleWildcardsTest, Parse) {
     SCOPED_TRACE(std::get<6>(value));
     if (strlen(std::get<2>(value))) {
       EXPECT_EQ(std::get<2>(value),
-                origin_with_possible_wildcards->csp_source.scheme);
+                origin_with_possible_wildcards->CSPSourceForTest().scheme);
       EXPECT_EQ(std::get<3>(value),
-                origin_with_possible_wildcards->csp_source.host);
+                origin_with_possible_wildcards->CSPSourceForTest().host);
       EXPECT_EQ(std::get<4>(value),
-                origin_with_possible_wildcards->csp_source.port);
-      EXPECT_EQ("", origin_with_possible_wildcards->csp_source.path);
-      EXPECT_EQ(std::get<5>(value),
-                origin_with_possible_wildcards->csp_source.is_host_wildcard);
-      EXPECT_FALSE(origin_with_possible_wildcards->csp_source.is_port_wildcard);
+                origin_with_possible_wildcards->CSPSourceForTest().port);
+      EXPECT_EQ("", origin_with_possible_wildcards->CSPSourceForTest().path);
+      EXPECT_EQ(
+          std::get<5>(value),
+          origin_with_possible_wildcards->CSPSourceForTest().is_host_wildcard);
+      EXPECT_FALSE(
+          origin_with_possible_wildcards->CSPSourceForTest().is_port_wildcard);
     } else {
       EXPECT_FALSE(origin_with_possible_wildcards);
     }
@@ -282,8 +285,9 @@ TEST(OriginWithPossibleWildcardsTest, Serialize) {
                       "Origin with non-registerable subdomain wildcard"),
   };
   for (const auto& value : values) {
-    const auto& origin_with_possible_wildcards = OriginWithPossibleWildcards(
-        url::Origin::Create(GURL(std::get<0>(value))), std::get<1>(value));
+    const auto& origin_with_possible_wildcards =
+        OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL(std::get<0>(value))), std::get<1>(value));
     SCOPED_TRACE(std::get<3>(value));
     EXPECT_EQ(std::get<2>(value), origin_with_possible_wildcards.Serialize());
   }
@@ -315,8 +319,9 @@ TEST(OriginWithPossibleWildcardsTest, Mojom) {
   };
   for (const auto& value : values) {
     SCOPED_TRACE(std::get<2>(value));
-    const auto& original = OriginWithPossibleWildcards(
-        url::Origin::Create(GURL(std::get<0>(value))), std::get<1>(value));
+    const auto& original =
+        OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            url::Origin::Create(GURL(std::get<0>(value))), std::get<1>(value));
     OriginWithPossibleWildcards copy;
     EXPECT_NE(original, copy);
     EXPECT_TRUE(
@@ -327,12 +332,15 @@ TEST(OriginWithPossibleWildcardsTest, Mojom) {
 }
 
 TEST(OriginWithPossibleWildcardsTest, DefaultPorts) {
-  OriginWithPossibleWildcards a(url::Origin::Create(GURL("https://google.com")),
-                                false);
-  OriginWithPossibleWildcards b(
-      url::Origin::Create(GURL("https://google.com:443")), false);
-  OriginWithPossibleWildcards c(url::Origin::Create(GURL("https://google.com")),
-                                true);
+  OriginWithPossibleWildcards a =
+      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+          url::Origin::Create(GURL("https://google.com")), false);
+  OriginWithPossibleWildcards b =
+      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+          url::Origin::Create(GURL("https://google.com:443")), false);
+  OriginWithPossibleWildcards c =
+      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+          url::Origin::Create(GURL("https://google.com")), true);
   OriginWithPossibleWildcards d = c;
   EXPECT_EQ(a, b);
   EXPECT_NE(a, c);
@@ -344,8 +352,12 @@ TEST(OriginWithPossibleWildcardsTest, DefaultPorts) {
 }
 
 TEST(OriginWithPossibleWildcardsTest, Opaque) {
-  EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), true));
-  EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), false));
+  EXPECT_DCHECK_DEATH(
+      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(url::Origin(),
+                                                                 true));
+  EXPECT_DCHECK_DEATH(
+      OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(url::Origin(),
+                                                                 false));
   OriginWithPossibleWildcards original;
   OriginWithPossibleWildcards copy;
   EXPECT_FALSE(

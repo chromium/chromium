@@ -382,8 +382,9 @@ CreateParsedPermissionsPolicyDeclaration(
   declaration.matches_opaque_src = match_all_origins;
 
   for (const auto& origin : origins)
-    declaration.allowed_origins.emplace_back(url::Origin::Create(origin),
-                                             /*has_subdomain_wildcard=*/false);
+    declaration.allowed_origins.emplace_back(
+        blink::OriginWithPossibleWildcards::FromOrigin(
+            url::Origin::Create(origin)));
 
   std::sort(declaration.allowed_origins.begin(),
             declaration.allowed_origins.end());

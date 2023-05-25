@@ -117,18 +117,17 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
         NavigationSimulator::CreateBrowserInitiated(url, web_contents());
 
     blink::ParsedPermissionsPolicy policy;
-    policy.emplace_back(blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
-                        /*allowed_origins=*/
-                        std::vector<blink::OriginWithPossibleWildcards>{
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://google.com")),
-                                /*has_subdomain_wildcard=*/false),
-                            blink::OriginWithPossibleWildcards(
-                                url::Origin::Create(GURL("https://foo1.com")),
-                                /*has_subdomain_wildcard=*/false)},
-                        /*self_if_matches=*/absl::nullopt,
-                        /*matches_all_origins=*/false,
-                        /*matches_opaque_src=*/false);
+    policy.emplace_back(
+        blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+        /*allowed_origins=*/
+        std::vector<blink::OriginWithPossibleWildcards>{
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://google.com"))),
+            blink::OriginWithPossibleWildcards::FromOrigin(
+                url::Origin::Create(GURL("https://foo1.com")))},
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false);
 
     simulator->SetPermissionsPolicyHeader(std::move(policy));
 

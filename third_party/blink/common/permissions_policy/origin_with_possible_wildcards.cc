@@ -45,6 +45,20 @@ OriginWithPossibleWildcards& OriginWithPossibleWildcards::operator=(
 OriginWithPossibleWildcards::~OriginWithPossibleWildcards() = default;
 
 // static
+OriginWithPossibleWildcards OriginWithPossibleWildcards::FromOrigin(
+    const url::Origin& origin) {
+  return OriginWithPossibleWildcards(origin, /*has_subdomain_wildcard=*/false);
+}
+
+// static
+OriginWithPossibleWildcards
+OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+    const url::Origin& origin,
+    bool has_subdomain_wildcard) {
+  return OriginWithPossibleWildcards(origin, has_subdomain_wildcard);
+}
+
+// static
 absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
     const std::string& allowlist_entry,
     const NodeType type) {

@@ -70,9 +70,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
     std::set<blink::OriginWithPossibleWildcards> origin_set(
         allow_list.AllowedOrigins().begin(), allow_list.AllowedOrigins().end());
     for (const auto& origin : pair.second) {
-      origin_set.insert(
-          blink::OriginWithPossibleWildcards(origin,
-                                             /*has_subdomain_wildcard=*/false));
+      origin_set.insert(blink::OriginWithPossibleWildcards::FromOrigin(origin));
     }
     auto declaration = ParsedPermissionsPolicyDeclaration(
         policy_name,
