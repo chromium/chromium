@@ -936,10 +936,10 @@ void SpdyStream::SaveResponseHeaders(
 
   // Reject pushed stream with unsupported status code regardless of whether
   // delegate is already attached or not.
+  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
+  // already rejected.
   if (type_ == SPDY_PUSH_STREAM &&
       (status / 100 != 2 && status / 100 != 3 && status != 416)) {
-    SpdySession::RecordSpdyPushedStreamFateHistogram(
-        SpdyPushedStreamFate::kUnsupportedStatusCode);
     session_->ResetStream(stream_id_, ERR_HTTP2_CLIENT_REFUSED_STREAM,
                           "Unsupported status code for pushed stream.");
     return;
@@ -950,6 +950,8 @@ void SpdyStream::SaveResponseHeaders(
   if (!delegate_)
     return;
 
+  // TODO(https://crbug.com/1426477): Remove this code, since pushed streams are
+  // already rejected.
   if (type_ == SPDY_PUSH_STREAM) {
     // OnPushPromiseHeadersReceived() must have been called before
     // OnHeadersReceived().

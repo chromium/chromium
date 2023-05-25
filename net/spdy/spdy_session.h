@@ -192,35 +192,6 @@ SpdyProtocolErrorDetails NET_EXPORT_PRIVATE
 MapRstStreamStatusToProtocolError(spdy::SpdyErrorCode error_code);
 spdy::SpdyErrorCode NET_EXPORT_PRIVATE MapNetErrorToGoAwayStatus(Error err);
 
-// There is an enum of the same name in tools/metrics/histograms/enums.xml.
-// Be sure to add new values there also.
-// TODO(https://crbug.com/1426477): Remove.
-enum class SpdyPushedStreamFate {
-  kTooManyPushedStreams = 0,
-  kTimeout = 1,
-  kPromisedStreamIdParityError = 2,
-  kAssociatedStreamIdParityError = 3,
-  kStreamIdOutOfOrder = 4,
-  kGoingAway = 5,
-  kInvalidUrl = 6,
-  kInactiveAssociatedStream = 7,
-  kNonHttpSchemeFromTrustedProxy = 8,
-  kNonHttpsPushedScheme = 9,
-  kNonHttpsAssociatedScheme = 10,
-  kCertificateMismatch = 11,
-  kDuplicateUrl = 12,
-  kClientRequestNotRange = 13,
-  kPushedRequestNotRange = 14,
-  kRangeMismatch = 15,
-  kVaryMismatch = 16,
-  kAcceptedNoVary = 17,
-  kAcceptedMatchingVary = 18,
-  kPushDisabled = 19,
-  kAlreadyInCache = 20,
-  kUnsupportedStatusCode = 21,
-  kMaxValue = kUnsupportedStatusCode
-};
-
 // If these compile asserts fail then SpdyProtocolErrorDetails needs
 // to be updated with new values, as do the mapping functions above.
 static_assert(28 == http2::Http2DecoderAdapter::LAST_ERROR,
@@ -672,9 +643,6 @@ class NET_EXPORT SpdySession
   // Whether connection status monitoring is active or not.
   bool IsBrokenConnectionDetectionEnabled() const;
 
-  // TODO(https://crbug.com/1426477): Remove.
-  static void RecordSpdyPushedStreamFateHistogram(SpdyPushedStreamFate value);
-
  private:
   friend class test::SpdyStreamTest;
   friend class base::RefCounted<SpdySession>;
@@ -906,9 +874,6 @@ class NET_EXPORT SpdySession
 
   void RecordHistograms();
   void RecordProtocolErrorHistogram(SpdyProtocolErrorDetails details);
-  // TODO(https://crbug.com/1426477): Remove.
-  static void RecordPushedStreamVaryResponseHeaderHistogram(
-      const spdy::Http2HeaderBlock& headers);
 
   // DCHECKs that |availability_state_| >= STATE_GOING_AWAY, that
   // there are no pending stream creation requests, and that there are

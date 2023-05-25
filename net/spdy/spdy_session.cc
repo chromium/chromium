@@ -102,28 +102,6 @@ const uint32_t kDefaultInitialEnablePush = 1;
 const uint32_t kDefaultInitialInitialWindowSize = 65535;
 const uint32_t kDefaultInitialMaxFrameSize = 16384;
 
-// Values of Vary response header on pushed streams.  This is logged to
-// Net.PushedStreamVaryResponseHeader, entries must not be changed.
-// TODO(https://crbug.com/1426477): Remove.
-enum PushedStreamVaryResponseHeaderValues {
-  // There is no Vary header.
-  kNoVaryHeader = 0,
-  // The value of Vary is empty.
-  kVaryIsEmpty = 1,
-  // The value of Vary is "*".
-  kVaryIsStar = 2,
-  // The value of Vary is "accept-encoding" (case insensitive).
-  kVaryIsAcceptEncoding = 3,
-  // The value of Vary contains "accept-encoding" (case insensitive) and some
-  // other field names as well.
-  kVaryHasAcceptEncoding = 4,
-  // The value of Vary does not contain "accept-encoding", is not empty, and is
-  // not "*".
-  kVaryHasNoAcceptEncoding = 5,
-  // The number of entries above.
-  kNumberOfVaryEntries = 6
-};
-
 // These values are persisted to logs. Entries should not be renumbered, and
 // numeric values should never be reused.
 enum class SpdyAcceptChEntries {
@@ -133,37 +111,6 @@ enum class SpdyAcceptChEntries {
   kBothValidAndInvalidEntries = 3,
   kMaxValue = kBothValidAndInvalidEntries,
 };
-
-// String literals for parsing the Vary header in a pushed response.
-// TODO(https://crbug.com/1426477): Remove.
-const char kVary[] = "vary";
-const char kStar[] = "*";
-const char kAcceptEncoding[] = "accept-encoding";
-
-// TODO(https://crbug.com/1426477): Remove.
-enum PushedStreamVaryResponseHeaderValues ParseVaryInPushedResponse(
-    const spdy::Http2HeaderBlock& headers) {
-  spdy::Http2HeaderBlock::iterator it = headers.find(kVary);
-  if (it == headers.end())
-    return kNoVaryHeader;
-  base::StringPiece value = it->second;
-  if (value.empty())
-    return kVaryIsEmpty;
-  if (value == kStar)
-    return kVaryIsStar;
-  std::string lowercase_value = base::ToLowerASCII(value);
-  if (lowercase_value == kAcceptEncoding)
-    return kVaryIsAcceptEncoding;
-  // Both comma and newline delimiters occur in the wild.
-  for (const auto& substr :
-       SplitString(lowercase_value, ",\n", base::TRIM_WHITESPACE,
-                   base::SPLIT_WANT_NONEMPTY)) {
-    if (substr == kAcceptEncoding)
-      return kVaryHasAcceptEncoding;
-  }
-
-  return kVaryHasNoAcceptEncoding;
-}
 
 // A SpdyBufferProducer implementation that creates an HTTP/2 frame by adding
 // stream ID to greased frame parameters.
@@ -1034,7 +981,6 @@ void SpdySession::CancelPush(const GURL& url) {
     return;
 
   DCHECK(IsStreamActive(stream_id));
-  RecordSpdyPushedStreamFateHistogram(SpdyPushedStreamFate::kAlreadyInCache);
   ResetStream(stream_id, ERR_ABORTED, "Cancelled push stream.");
 }
 
@@ -1771,12 +1717,6 @@ bool SpdySession::IsBrokenConnectionDetectionEnabled() const {
   return heartbeat_timer_.IsRunning();
 }
 
-// static
-void SpdySession::RecordSpdyPushedStreamFateHistogram(
-    SpdyPushedStreamFate value) {
-  UMA_HISTOGRAM_ENUMERATION("Net.SpdyPushedStreamFate", value);
-}
-
 void SpdySession::InitializeInternal(SpdySessionPool* pool) {
   CHECK(!in_io_loop_);
   DCHECK_EQ(availability_state_, STATE_AVAILABLE);
@@ -1967,8 +1907,6 @@ void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
   // TODO(bnc): Send pushed stream cancellation with higher priority to avoid
   // wasting bandwidth.
   const RequestPriority request_priority = IDLE;
-
-  RecordSpdyPushedStreamFateHistogram(SpdyPushedStreamFate::kPushDisabled);
   EnqueueResetStreamFrame(stream_id, request_priority,
                           spdy::ERROR_CODE_REFUSED_STREAM, "Push is disabled.");
 }
@@ -2812,14 +2750,6 @@ void SpdySession::RecordProtocolErrorHistogram(
   }
 }
 
-// static
-void SpdySession::RecordPushedStreamVaryResponseHeaderHistogram(
-    const spdy::Http2HeaderBlock& headers) {
-  UMA_HISTOGRAM_ENUMERATION("Net.PushedStreamVaryResponseHeader",
-                            ParseVaryInPushedResponse(headers),
-                            kNumberOfVaryEntries);
-}
-
 void SpdySession::DcheckGoingAway() const {
 #if DCHECK_IS_ON()
   DCHECK_GE(availability_state_, STATE_GOING_AWAY);
@@ -3268,18 +3198,14 @@ void SpdySession::OnHeaders(spdy::SpdyStreamId stream_id,
   SpdyStream* stream = it->second;
   CHECK_EQ(stream->stream_id(), stream_id);
 
-  if (stream->type() == SPDY_PUSH_STREAM)
-    RecordPushedStreamVaryResponseHeaderHistogram(headers);
-
   stream->AddRawReceivedBytes(last_compressed_frame_len_);
   last_compressed_frame_len_ = 0;
 
   if (it->second->IsReservedRemote()) {
     DCHECK_EQ(SPDY_PUSH_STREAM, stream->type());
+    // TODO(https://crbug.com/1426477): Reset stream unconditionally.
     if (max_concurrent_pushed_streams_ &&
         num_active_pushed_streams_ >= max_concurrent_pushed_streams_) {
-      RecordSpdyPushedStreamFateHistogram(
-          SpdyPushedStreamFate::kTooManyPushedStreams);
       ResetStream(stream_id, ERR_HTTP2_CLIENT_REFUSED_STREAM,
                   "Stream concurrency limit reached.");
       return;
