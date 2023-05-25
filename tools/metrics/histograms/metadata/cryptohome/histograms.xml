@@ -667,16 +667,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.TimeSessionUnlock" units="ms"
-    expires_after="2023-06-04">
-  <owner>hardikgoyal@google.com</owner>
-  <owner>betuls@google.com</owner>
-  <summary>
-    The amount of time (ms) for Chrome OS cryptohome daemon to verify the user's
-    password during an unlock operation.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.TimeToAuthSessionRemoveAuthFactorUSS" units="ms"
     expires_after="2023-11-01">
   <owner>thomascedeno@google.com</owner>
@@ -767,16 +757,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted home
     directory.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToMountGuestAsync" units="ms"
-    expires_after="2021-01-01">
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The amount of time (ms) for Chrome OS cryptohome to mount the encrypted
-    guest home directory asynchronously.
   </summary>
 </histogram>
 
@@ -972,13 +952,10 @@ chromium-metrics-reviews@google.com.
   <token key="AuthSessionFunction">
     <variant name="TimeToAuthSessionAddAuthFactorUSS"/>
     <variant name="TimeToAuthSessionAddAuthFactorVK"/>
-    <variant name="TimetoAuthSessionAddCredentials"/>
-    <variant name="TimeToAuthSessionAuthenticate"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionAuthenticateAuthFactorVK"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorUSS"/>
     <variant name="TimeToAuthSessionUpdateAuthFactorVK"/>
-    <variant name="TimeToAuthSessionUpdateCredentials"/>
   </token>
   <token key="AuthBlockType">
     <variant name="ChallengeCredential"/>
