@@ -1930,6 +1930,41 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceAcceleratorDoesNotExist) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kNotFound, result->result);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, ReplaceAcceleratorBadModifiers) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  const ui::Accelerator old_accelerator(ui::VKEY_J, ui::EF_CONTROL_DOWN);
+  const ui::Accelerator new_accelerator(ui::VKEY_M, ui::EF_SHIFT_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kShiftOnlyNotAllowed,
+            result->result);
+
+  const ui::Accelerator new_accelerator2(ui::VKEY_M, ui::EF_NONE);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .ReplaceAccelerator(mojom::AcceleratorSource::kAsh,
+                              AcceleratorAction::kToggleMirrorMode,
+                              old_accelerator, new_accelerator2, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kMissingModifier, result->result);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, AddThenReplaceAccelerator) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);

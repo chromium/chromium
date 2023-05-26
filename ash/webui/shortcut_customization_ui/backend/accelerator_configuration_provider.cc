@@ -569,12 +569,15 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+  absl::optional<AcceleratorConfigResult> error_result =
       ValidateSourceAndAction(source, action_id,
                               ash_accelerator_configuration_);
+  if (!error_result.has_value()) {
+    error_result = ValidateAccelerator(new_accelerator);
+  }
 
-  if (validated_source_action_result.has_value()) {
-    result_data->result = *validated_source_action_result;
+  if (error_result.has_value()) {
+    result_data->result = *error_result;
     std::move(callback).Run(std::move(result_data));
     return;
   }
