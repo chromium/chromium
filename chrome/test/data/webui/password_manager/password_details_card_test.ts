@@ -44,8 +44,12 @@ suite('PasswordDetailsCardTest', function() {
   });
 
   test('Content displayed properly', async function() {
-    const password = createPasswordEntry(
-        {url: 'test.com', username: 'vik', password: 'password69'});
+    const password = createPasswordEntry({
+      url: 'test.com',
+      username: 'vik',
+      password: 'password69',
+      note: 'note',
+    });
 
     const card = await createCardElement(password);
 
@@ -53,9 +57,7 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.password, card.$.passwordValue.value);
     assertEquals('password', card.$.passwordValue.type);
     assertTrue(isVisible(card.$.noteValue));
-    assertEquals(
-        loadTimeData.getString('emptyNote'),
-        card.$.noteValue.textContent!.trim());
+    assertEquals(password.note, card.$.noteValue.note);
     assertTrue(isVisible(card.$.copyUsernameButton));
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
@@ -218,45 +220,6 @@ suite('PasswordDetailsCardTest', function() {
     const params = await passwordManager.whenCalled('removeSavedPassword');
     assertEquals(params.id, password.id);
     assertEquals(params.fromStores, password.storedIn);
-  });
-
-  test('short note is shown fully', async function() {
-    const password = createPasswordEntry({
-      id: 1,
-      url: 'test.com',
-      username: 'vik',
-      note: 'This is just a short note. It is cold out there.',
-    });
-
-    const card = await createCardElement(password);
-
-    assertEquals(password.note, card.$.noteValue.textContent!.trim());
-    assertTrue(card.$.showMore.hidden);
-  });
-
-  test('long note is shown fully', async function() {
-    const password = createPasswordEntry({
-      id: 1,
-      url: 'test.com',
-      username: 'vik',
-      note:
-          'It is a long established fact that a reader will be distracted by ' +
-          'the readable content of a page when looking at its layout. The ' +
-          'point of using Lorem Ipsum is that it has a more-or-less normal ' +
-          'distribution of letters, as opposed to using \'Content here, ' +
-          'content here\', making it look like readable English.',
-    });
-
-    const card = await createCardElement(password);
-
-    assertEquals(password.note, card.$.noteValue.textContent!.trim());
-    assertTrue(card.$.noteValue.hasAttribute('limit-note'));
-    assertFalse(card.$.showMore.hidden);
-
-    // Open note fully
-    card.$.showMore.click();
-    assertFalse(card.$.noteValue.hasAttribute('limit-note'));
-    await passwordManager.whenCalled('extendAuthValidity');
   });
 
   [chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,

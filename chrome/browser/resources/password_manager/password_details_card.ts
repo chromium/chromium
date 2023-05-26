@@ -20,6 +20,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CredentialNoteElement} from './credential_note.js';
 import {getTemplate} from './password_details_card.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
@@ -41,8 +42,8 @@ export interface PasswordDetailsCardElement {
     deleteButton: CrButtonElement,
     domainLabel: HTMLElement,
     editButton: CrButtonElement,
-    noteValue: HTMLElement,
     passwordValue: CrInputElement,
+    noteValue: CredentialNoteElement,
     showMore: HTMLAnchorElement,
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,
@@ -67,8 +68,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       password: Object,
       toastMessage_: String,
 
-      showNoteFully_: Boolean,
-
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
 
@@ -83,20 +82,9 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
   private toastMessage_: string;
-  private noteRows_: number;
-  private showNoteFully_: boolean;
   private showEditPasswordDialog_: boolean;
   private showDeletePasswordDialog_: boolean;
   private enableSendPasswords_: boolean;
-
-  override connectedCallback() {
-    super.connectedCallback();
-    if (this.isFederated_()) {
-      return;
-    }
-    // Set default value here so listeners can be updated properly.
-    this.showNoteFully_ = false;
-  }
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -182,21 +170,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private onDeletePasswordDialogClosed_() {
     this.showDeletePasswordDialog_ = false;
-    this.extendAuthValidity_();
-  }
-
-  private getNoteValue_(): string {
-    return !this.password.note ? this.i18n('emptyNote') : this.password.note!;
-  }
-
-  private isNoteFullyVisible_(): boolean {
-    return this.showNoteFully_ ||
-        this.$.noteValue.scrollHeight === this.$.noteValue.offsetHeight;
-  }
-
-  private onshowMoreClick_(e: Event) {
-    e.preventDefault();
-    this.showNoteFully_ = true;
     this.extendAuthValidity_();
   }
 
