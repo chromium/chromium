@@ -539,13 +539,13 @@ void EventTarget::AddedEventListener(
     }
   }
 
-  if (RuntimeEnabledFeatures::MutationEventsEnabled() &&
-      (!document || ContextFeatures::MutationEventsEnabled(document))) {
-    WebFeature mutation_event_feature;
-    Document::ListenerType listener_type;
-    if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
-                                           listener_type)) {
-      if (ExecutionContext* context = GetExecutionContext()) {
+  WebFeature mutation_event_feature;
+  Document::ListenerType listener_type;
+  if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
+                                         listener_type)) {
+    if (ExecutionContext* context = GetExecutionContext()) {
+      if (RuntimeEnabledFeatures::MutationEventsEnabled() &&
+          (!document || ContextFeatures::MutationEventsEnabled(document))) {
         String message_text = String::Format(
             "Listener added for a synchronous '%s' DOM Mutation Event. "
             "This event type is deprecated "
@@ -562,6 +562,16 @@ void EventTarget::AddedEventListener(
             mojom::blink::ConsoleMessageSource::kDeprecation,
             mojom::blink::ConsoleMessageLevel::kWarning, message_text));
         Deprecation::CountDeprecation(context, mutation_event_feature);
+      } else {
+        String message_text = String::Format(
+            "Listener added for a '%s' DOM Mutation Event. This event type has "
+            "been deprecated and removed, and will no longer be fired. See "
+            "https://chromestatus.com/feature/5083947249172480 for more "
+            "detail.",
+            event_type.GetString().Utf8().c_str());
+        context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kDeprecation,
+            mojom::blink::ConsoleMessageLevel::kWarning, message_text));
       }
     }
   }
