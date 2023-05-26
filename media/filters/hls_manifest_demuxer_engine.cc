@@ -184,7 +184,7 @@ bool HlsManifestDemuxerEngine::IsSeekable() {
   // determine how to surface an error in the case where they report liveness
   // differently.
   for (auto& rendition : renditions_) {
-    if (!rendition->DurationOrLive().has_value()) {
+    if (!rendition->GetDuration().has_value()) {
       return false;
     }
   }
@@ -450,7 +450,7 @@ void HlsManifestDemuxerEngine::OnPlaylistContainerDetermined(
   auto rendition = std::move(m_rendition).value();
 
   if (parse_info.role == kPrimary) {
-    auto duration_or_live = rendition->DurationOrLive();
+    auto duration_or_live = rendition->GetDuration();
     if (duration_or_live.has_value()) {
       host_->SetDuration(duration_or_live->InSecondsF());
     }
