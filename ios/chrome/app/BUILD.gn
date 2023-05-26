@@ -434,7 +434,6 @@ source_set("app_internal") {
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/component_updater",
-    "//components/component_updater:crl_set_remover",
     "//components/component_updater/installer_policies",
     "//components/crash/core/common",
     "//components/download/public/background_service:public",

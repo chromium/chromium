@@ -45,15 +45,6 @@ static_library("component_updater") {
   ]
 }
 
-static_library("crl_set_remover") {
-  sources = [
-    "crl_set_remover.cc",
-    "crl_set_remover.h",
-  ]
-
-  deps = [ "//base" ]
-}
-
 static_library("test_support") {
   testonly = true
   sources = [

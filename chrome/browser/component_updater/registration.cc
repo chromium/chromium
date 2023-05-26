@@ -35,7 +35,6 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/component_updater/crl_set_remover.h"
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #include "components/component_updater/installer_policies/masked_domain_list_component_installer.h"
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
@@ -143,10 +142,6 @@ void RegisterComponentsForUpdate() {
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
-    // The CRLSet component previously resided in a different location: delete
-    // the old file.
-    component_updater::DeleteLegacyCRLSet(path);
-
     component_updater::DeleteUrlParamFilter(path);
 
     // Clean up any remaining desktop sharing hub state.
