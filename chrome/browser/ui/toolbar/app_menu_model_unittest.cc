@@ -42,10 +42,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/user_manager/fake_user_manager.h"
 
-using ash::standalone_browser::BrowserSupport;
 #endif
 
 namespace {
@@ -217,7 +215,6 @@ TEST_F(AppMenuModelTest, Basics) {
       {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
        ash::features::kLacrosOnly},
       {});
-  auto set_lacros_enabled = BrowserSupport::SetLacrosEnabledForTest(true);
 #endif
 
   FakeIconDelegate fake_delegate;

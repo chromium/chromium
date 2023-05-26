@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -54,7 +55,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
@@ -76,7 +76,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using ash::standalone_browser::BrowserSupport;
 using extensions::Extension;
 
 namespace ash {
@@ -1483,8 +1482,10 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   StartupAppLauncherUsingLacrosTest()
       : fake_user_manager_(new FakeChromeUserManager()),
         scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kChromeKioskEnableLacros);
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ::features::kChromeKioskEnableLacros},
+        {});
   }
 
   void SetUp() override {
@@ -1592,10 +1593,6 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   std::unique_ptr<KioskAppManager> kiosk_app_manager_;
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 
-  base::AutoReset<bool> set_lacros_enabled_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
-  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
-      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 };

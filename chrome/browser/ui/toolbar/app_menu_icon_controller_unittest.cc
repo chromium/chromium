@@ -26,13 +26,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 
-using ash::standalone_browser::BrowserSupport;
 #endif
 
 namespace {
@@ -168,7 +166,6 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
       {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
        ash::features::kLacrosOnly},
       {});
-  auto set_lacros_enabled = BrowserSupport::SetLacrosEnabledForTest(true);
 #endif
 
   ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;

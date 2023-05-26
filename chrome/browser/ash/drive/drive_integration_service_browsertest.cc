@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -16,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_pref_names.h"
@@ -625,14 +624,16 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
 class DriveIntegrationServiceBrowserTestLacros
     : public DriveIntegrationServiceBrowserTestBase {
  protected:
+  DriveIntegrationServiceBrowserTestLacros() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
+  }
+
   // browser() does not exist in Lacros, so get the profile from ProfileManager.
   Profile* profile() { return ProfileManager::GetPrimaryUserProfile(); }
 
  private:
-  base::AutoReset<bool> set_lacros_enabled_ =
-      ash::standalone_browser::BrowserSupport::SetLacrosEnabledForTest(true);
-  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
-      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockDriveFsNativeMessageHostBridge

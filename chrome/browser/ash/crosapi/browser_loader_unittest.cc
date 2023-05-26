@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -121,10 +120,6 @@ class BrowserLoaderTest : public testing::Test {
 
  protected:
   std::unique_ptr<BrowserLoader> browser_loader_;
-
- private:
-  base::AutoReset<bool> set_lacros_enabled_ =
-      BrowserSupport::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(BrowserLoaderTest, OnLoadVersionSelectionNeitherIsAvailable) {
