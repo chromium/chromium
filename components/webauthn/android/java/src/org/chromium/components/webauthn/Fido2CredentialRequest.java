@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -69,8 +70,9 @@ import java.util.List;
 public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static final String TAG = "Fido2Request";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
-    private static final String GPM_COMPONENT_NAME = "com.google.android.gms/com.google.android.gms"
-            + ".auth.api.credentials.credman.service.PasswordAndPasskeyService";
+    private static final ComponentName GPM_COMPONENT_NAME =
+            ComponentName.createRelative("com.google.android.gms",
+                    ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -781,8 +783,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         displayInfoBundle.putCharSequence(CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
                 Base64.encodeToString(
                         options.user.id, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP));
-        displayInfoBundle.putString(
-                CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER", GPM_COMPONENT_NAME);
+        displayInfoBundle.putString(CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER",
+                GPM_COMPONENT_NAME.flattenToString());
 
         requestBundle.putBundle(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
@@ -1134,9 +1136,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         // Build the GetCredentialRequest:
         final Class<?> getCredentialRequestBuilderClass = credManGetRequestBuilderClass();
+        Bundle getCredentialRequestBundle = new Bundle();
+        getCredentialRequestBundle.putParcelable(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_UI_BRANDING_COMPONENT_NAME",
+                GPM_COMPONENT_NAME);
         final Object getCredentialRequestBuilderObject =
                 getCredentialRequestBuilderClass.getConstructor(Bundle.class)
-                        .newInstance(new Bundle());
+                        .newInstance(getCredentialRequestBundle);
         getCredentialRequestBuilderClass
                 .getMethod("addCredentialOption", credentialOption.getClass())
                 .invoke(getCredentialRequestBuilderObject, credentialOption);
