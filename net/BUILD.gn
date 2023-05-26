@@ -1731,6 +1731,10 @@ source_set("net_public_deps") {
     "//third_party/boringssl",
     "//url",
   ]
+
+  if (chrome_root_store_supported) {
+    public_deps += [ "//net/cert:root_store_proto_lite" ]
+  }
 }
 
 if (is_android) {
