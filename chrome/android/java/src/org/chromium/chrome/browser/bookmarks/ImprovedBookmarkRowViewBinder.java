@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.Start
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binds model properties to view methods for ImprovedBookmarkRow.  */
+/** Binds model properties to view methods for ImprovedBookmarkRow. */
 class ImprovedBookmarkRowViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         ImprovedBookmarkRow row = (ImprovedBookmarkRow) view;
