@@ -163,7 +163,8 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
                             == Configuration.ORIENTATION_LANDSCAPE
                     ? mTileViewLandscapeEdgePaddingTablet
                     : mTileViewPortraitEdgePaddingTablet;
-            horizontalSpacing = (availableWidth - gridStart * 2) / (numColumns - 1);
+            horizontalSpacing =
+                    (float) (availableWidth - gridStart * 2) / Math.max(1, numColumns - 1);
         } else {
             // Identically sized spacers are added both between and around the tiles.
             int spacerCount = numColumns + 1;
