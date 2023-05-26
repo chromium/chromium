@@ -78,7 +78,7 @@ class CORE_EXPORT AbstractPropertySetCSSStyleDeclaration
                                      unsigned index) final;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
-                           const String& value,
+                           StringView value,
                            bool important,
                            SecureContextMode,
                            ExceptionState&) final;

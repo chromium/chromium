@@ -235,7 +235,7 @@ DISABLE_CFI_PERF
 void AbstractPropertySetCSSStyleDeclaration::SetPropertyInternal(
     CSSPropertyID unresolved_property,
     const String& custom_property_name,
-    const String& value,
+    StringView value,
     bool important,
     SecureContextMode secure_context_mode,
     ExceptionState&) {

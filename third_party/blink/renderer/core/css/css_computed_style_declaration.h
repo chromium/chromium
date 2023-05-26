@@ -123,7 +123,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
                                      unsigned index) override;
   void SetPropertyInternal(CSSPropertyID,
                            const String& custom_property_name,
-                           const String& value,
+                           StringView value,
                            bool important,
                            SecureContextMode,
                            ExceptionState&) override;
