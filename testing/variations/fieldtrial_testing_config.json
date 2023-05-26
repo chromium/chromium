@@ -8719,6 +8719,7 @@
                     },
                     "enable_features": [
                         "JourneysOnDeviceClusteringContentClustering",
+                        "NtpChromeCartInHistoryClusterModule",
                         "NtpHistoryClustersModule",
                         "NtpHistoryClustersModuleCategories",
                         "NtpModulesHeaderIcon",
