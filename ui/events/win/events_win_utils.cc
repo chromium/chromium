@@ -391,12 +391,6 @@ gfx::Vector2d GetMouseWheelOffsetFromMSG(const CHROME_MSG& native_event) {
   return gfx::Vector2d(GET_WHEEL_DELTA_WPARAM(native_event.wParam), 0);
 }
 
-CHROME_MSG CopyMSGEvent(const CHROME_MSG& event) {
-  return event;
-}
-
-void ReleaseCopiedMSGEvent(const CHROME_MSG& event) {}
-
 void ClearTouchIdIfReleasedFromMSG(const CHROME_MSG& xev) {
   NOTIMPLEMENTED();
 }
