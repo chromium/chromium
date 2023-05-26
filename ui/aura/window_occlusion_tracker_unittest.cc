@@ -59,11 +59,12 @@ class MockWindowDelegate : public test::ColorTestWindowDelegate {
   }
 
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
     SCOPED_TRACE(window_->GetName());
     ASSERT_TRUE(window_);
-    EXPECT_NE(occlusion_state, Window::OcclusionState::UNKNOWN);
-    EXPECT_EQ(occlusion_state, expected_occlusion_state_);
+    EXPECT_NE(new_occlusion_state, Window::OcclusionState::UNKNOWN);
+    EXPECT_EQ(new_occlusion_state, expected_occlusion_state_);
     EXPECT_EQ(window_->occluded_region_in_root(), expected_occluded_region_);
     expected_occlusion_state_ = Window::OcclusionState::UNKNOWN;
     expected_occluded_region_ = SkRegion();
@@ -1582,10 +1583,13 @@ class WindowDelegateHidingWindowIfOccluded : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
-    if (occlusion_state == Window::OcclusionState::HIDDEN)
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
+    if (new_occlusion_state == Window::OcclusionState::HIDDEN) {
       other_window_->Hide();
+    }
   }
 
  private:
@@ -1609,8 +1613,10 @@ class WindowDelegateWithQueuedExpectation : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
     if (queued_expected_occlusion_state_ != Window::OcclusionState::UNKNOWN) {
       set_expectation(queued_expected_occlusion_state_,
                       queued_expected_occluded_region_);
@@ -1676,9 +1682,11 @@ class WindowDelegateDeletingWindow : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
-    if (occlusion_state == Window::OcclusionState::OCCLUDED) {
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
+    if (new_occlusion_state == Window::OcclusionState::OCCLUDED) {
       delete other_window_;
       other_window_ = nullptr;
     }
@@ -1749,8 +1757,10 @@ class WindowDelegateChangingWindowVisibility : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
     if (!window_to_update_)
       return;
 
@@ -1942,8 +1952,10 @@ class WindowDelegateHidingWindow : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
     if (!window_to_update_)
       return;
 
@@ -1974,8 +1986,10 @@ class WindowDelegateAddingAndHidingChild : public MockWindowDelegate {
 
   // MockWindowDelegate:
   void OnWindowOcclusionChanged(
-      Window::OcclusionState occlusion_state) override {
-    MockWindowDelegate::OnWindowOcclusionChanged(occlusion_state);
+      Window::OcclusionState old_occlusion_state,
+      Window::OcclusionState new_occlusion_state) override {
+    MockWindowDelegate::OnWindowOcclusionChanged(old_occlusion_state,
+                                                 new_occlusion_state);
     if (queued_expected_occlusion_state_ != Window::OcclusionState::UNKNOWN) {
       set_expectation(queued_expected_occlusion_state_,
                       queued_expected_occluded_region_);
