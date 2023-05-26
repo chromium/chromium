@@ -62,12 +62,6 @@ TEST_F(EnumSetTest, ConstexprsAreValid) {
       TestEnumSet::FromEnumBitmask(1 << static_cast<uint64_t>(TestEnum::TEST_2))
           .Has(TestEnum::TEST_2),
       "Expected TestEnumSet() to be integral constant expression");
-  static_assert(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_1) == 1,
-      "Expected single_val_bitstring() to be integral constant expression");
-  static_assert(
-      TestEnumSet::bitstring({TestEnum::TEST_1, TestEnum::TEST_2}) == 3,
-      "Expected bitstring() to be integral constant expression");
 }
 
 TEST_F(EnumSetTest, DefaultConstructor) {
@@ -472,15 +466,6 @@ TEST_F(EnumSetTest, OneEnumValue) {
   EXPECT_EQ(1u, TestEnumOneSet::kValueCount);
 }
 
-TEST_F(EnumSetDeathTest, SingleValBitstringCrashesOnOutOfRange) {
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_BELOW_MIN));
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS));
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS));
-}
-
 TEST_F(EnumSetTest, SparseEnum) {
   enum class TestEnumSparse {
     TEST_1 = 1,
@@ -523,16 +508,13 @@ TEST_F(EnumSetTest, SparseEnumSmall) {
   EXPECT_EQ(TestEnumSparseSet::All().Size(), 60u);
 }
 
-TEST_F(EnumSetTest, SingleValBitstringCrashesOnOutOfRange) {
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_BELOW_MIN));
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS));
-  EXPECT_CHECK_DEATH(
-      TestEnumSet::single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS));
+TEST_F(EnumSetDeathTest, CrashesOnOutOfRange) {
+  EXPECT_CHECK_DEATH(TestEnumSet({TestEnum::TEST_BELOW_MIN}));
+  EXPECT_CHECK_DEATH(TestEnumSet({TestEnum::TEST_6_OUT_OF_BOUNDS}));
+  EXPECT_CHECK_DEATH(TestEnumSet({TestEnum::TEST_7_OUT_OF_BOUNDS}));
 }
 
-TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithNegatives) {
+TEST_F(EnumSetDeathTest, EnumWithNegatives) {
   enum class TestEnumNeg {
     TEST_BELOW_MIN = -3,
     TEST_A = -2,
@@ -549,17 +531,16 @@ TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithNegatives) {
       EnumSet<TestEnumNeg, TestEnumNeg::TEST_MIN, TestEnumNeg::TEST_MAX>;
 
   // Should crash because TEST_BELOW_MIN is not in range.
-  EXPECT_CHECK_DEATH(
-      TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(TestEnumWithNegSet({TestEnumNeg::TEST_BELOW_MIN}));
   // TEST_D is in range, but note that TEST_MIN is negative. This should work.
-  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_D),
-            1u << 3);
+  EXPECT_TRUE(
+      TestEnumWithNegSet({TestEnumNeg::TEST_D}).Has(TestEnumNeg::TEST_D));
   // Even though TEST_A is negative, it is in range, so this should work.
-  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_A),
-            1u << 0);
+  EXPECT_TRUE(
+      TestEnumWithNegSet({TestEnumNeg::TEST_A}).Has(TestEnumNeg::TEST_A));
 }
 
-TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithOnlyNegatives) {
+TEST_F(EnumSetDeathTest, EnumWithOnlyNegatives) {
   enum class TestEnumNeg {
     TEST_BELOW_MIN = -10,
     TEST_A = -9,
@@ -575,14 +556,13 @@ TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithOnlyNegatives) {
       EnumSet<TestEnumNeg, TestEnumNeg::TEST_MIN, TestEnumNeg::TEST_MAX>;
 
   // Should crash because TEST_BELOW_MIN is not in range.
-  EXPECT_CHECK_DEATH(
-      TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_BELOW_MIN));
-  // TEST_D is in range, but note that TEST_MIN is negative. This should work.
-  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_D),
-            1u << 3);
-  // Even though TEST_A is negative, it is in range, so this should work.
-  EXPECT_EQ(TestEnumWithNegSet::single_val_bitstring(TestEnumNeg::TEST_A),
-            1u << 0);
+  EXPECT_CHECK_DEATH(TestEnumWithNegSet({TestEnumNeg::TEST_BELOW_MIN}));
+  // TEST_A, TEST_D are in range, but note that TEST_MIN and values are
+  // negative. This should work.
+  EXPECT_TRUE(
+      TestEnumWithNegSet({TestEnumNeg::TEST_A}).Has(TestEnumNeg::TEST_A));
+  EXPECT_TRUE(
+      TestEnumWithNegSet({TestEnumNeg::TEST_D}).Has(TestEnumNeg::TEST_D));
 }
 
 TEST_F(EnumSetDeathTest, VariadicConstructorCrashesOnOutOfRange) {

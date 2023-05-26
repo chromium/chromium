@@ -159,23 +159,6 @@ class EnumSet {
 
   ~EnumSet() = default;
 
-  static constexpr uint64_t single_val_bitstring(E val) {
-    const uint64_t bitstring = 1;
-    const size_t shift_amount = ToIndex(val);
-    CHECK_LT(shift_amount, sizeof(bitstring) * 8);
-    return bitstring << shift_amount;
-  }
-
-  // TODO(crbug/1444105): This should be private (not needed externally and
-  // dangerous to use).
-  static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
-    uint64_t result = 0;
-    for (E value : values) {
-      result |= single_val_bitstring(value);
-    }
-    return result;
-  }
-
   constexpr EnumSet(std::initializer_list<E> values)
       : EnumSet(EnumBitSet(bitstring(values))) {}
 
@@ -315,6 +298,21 @@ class EnumSet {
                                                              EnumSet set2);
   friend EnumSet Difference<E, MinEnumValue, MaxEnumValue>(EnumSet set1,
                                                            EnumSet set2);
+
+  static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
+    uint64_t result = 0;
+    for (E value : values) {
+      result |= single_val_bitstring(value);
+    }
+    return result;
+  }
+
+  static constexpr uint64_t single_val_bitstring(E val) {
+    const uint64_t bitstring = 1;
+    const size_t shift_amount = ToIndex(val);
+    CHECK_LT(shift_amount, sizeof(bitstring) * 8);
+    return bitstring << shift_amount;
+  }
 
   // A bitset can't be constexpr constructed if it has size > 64, since the
   // constexpr constructor uses a uint64_t. If your EnumSet has > 64 values, you
