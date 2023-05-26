@@ -35,7 +35,9 @@ if (!is_android) {
   in_process_fuzzer("html_in_process_fuzzer") {
     sources = [ "html_in_process_fuzzer.cc" ]
   }
-  in_process_fuzzer("kombucha_in_process_fuzzer") {
+  in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
     sources = [ "kombucha_in_process_fuzzer.cc" ]
+
+    proto_source = "kombucha_in_process_fuzzer.proto"
   }
 }

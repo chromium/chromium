@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # This template allows creation of a fuzzer which has access to all the
 # functionality of a browser_test, including a full GUI instance of Chromium.
@@ -23,6 +24,120 @@ template("in_process_fuzzer") {
                                "deps",
                                "exclude_main",
                              ])
+      exclude_main = true
+    }
+  } else {
+    # noop if the fuzzer harness always provides its own main
+    not_needed(invoker, "*")
+
+    group(target_name) {
+    }
+  }
+}
+
+# This template is a proto-based version of the in_process_fuzzer template.
+#
+# This rule copies the proto-relevant bits from the mojolpm_fuzzer_test
+# template (//mojo/public/tools/fuzzers/mojolpm.gni)
+#
+# Parameters:
+#   sources
+#       List of source .cc files to compile.
+#
+#   deps
+#       List of dependencies to compile this target.
+#
+#   proto_source
+#       Single source .proto file defining the structure of a testcase.
+#
+#   proto_deps
+#       List of additional dependencies for compiling proto_source.
+#
+#   testcase_proto_kind (optional, required if seed_corpus_sources provided)
+#       Name of proto message type representing a testcase.
+#
+#   seed_corpus_sources (optional)
+#       List of source .textproto files used to build a seed corpus.
+
+template("in_process_proto_fuzzer") {
+  if (fuzzing_engine_supports_custom_main) {
+    assert(defined(invoker.sources) && defined(invoker.proto_source),
+           "\"sources\" and \"proto_source\" must be defined for $target_name")
+
+    assert(
+        !defined(invoker.seed_corpus_sources) ||
+            defined(invoker.testcase_proto_kind),
+        "\"testcase_proto_kind\" must be defined for $target_name since \"seed_corpus_sources\" is defined.")
+
+    proto_target_name = "${target_name}_proto"
+
+    proto_library(proto_target_name) {
+      # Work relative to src (//) instead of (by default) the BUILD file.
+      proto_in_dir = "//"
+
+      sources = [ invoker.proto_source ]
+      generate_python = false
+
+      proto_deps = []
+
+      import_dirs = [ root_gen_dir ]
+
+      link_deps = []
+
+      if (defined(invoker.proto_deps)) {
+        proto_deps += invoker.proto_deps
+        link_deps += invoker.proto_deps
+      }
+
+      testonly = true
+    }
+
+    if (defined(invoker.seed_corpus_sources)) {
+      protoc_convert_target_name = "${target_name}_protoc_convert"
+      seed_corpus_path = "${target_gen_dir}/${target_name}_seed_corpus"
+
+      protoc_convert(protoc_convert_target_name) {
+        sources = invoker.seed_corpus_sources
+
+        inputs = [ invoker.proto_source ]
+
+        output_pattern = "${seed_corpus_path}/{{source_name_part}}.binarypb"
+
+        args = [
+          "--encode=${invoker.testcase_proto_kind}",
+          "-I",
+          rebase_path(root_gen_dir),
+          "-I",
+          rebase_path("//"),
+          rebase_path(inputs[0]),
+        ]
+
+        deps = []
+
+        if (defined(invoker.proto_deps)) {
+          deps += invoker.proto_deps
+        }
+
+        testonly = true
+      }
+    }
+
+    fuzzer_test(target_name) {
+      sources = invoker.sources
+      deps = [
+        ":${proto_target_name}",
+        "//chrome/test/fuzzing:in_process_fuzzer_runner",
+        "//third_party/libprotobuf-mutator",
+      ]
+
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+
+      if (defined(invoker.seed_corpus_sources)) {
+        seed_corpus = seed_corpus_path
+        seed_corpus_deps = [ ":${protoc_convert_target_name}" ]
+      }
       exclude_main = true
     }
   } else {
