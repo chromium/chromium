@@ -793,6 +793,22 @@
             ]
         }
     ],
+    "ArcVmmSwap": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcVmmSwapPolicy"
+                    ],
+                    "min_os_version": "15474.2.0"
+                }
+            ]
+        }
+    ],
     "AssistMultiWord": [
         {
             "platforms": [
