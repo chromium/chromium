@@ -86,8 +86,15 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVisualSampleEntryBoxWriter,
                              mp4::writable_boxes::VisualSampleEntry);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
                              mp4::writable_boxes::AVCDecoderConfiguration);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAudioSampleEntryBoxWriter,
+                             mp4::writable_boxes::AudioSampleEntry);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieElementaryStreamDescriptorBoxWriter,
+                             mp4::writable_boxes::ElementaryStreamDescriptor);
 #endif
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MoviePixelAspectRatioBoxBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBitRateBoxWriter,
+                             mp4::writable_boxes::BitRate);
+
 }  // namespace media
 
 #endif  // MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_

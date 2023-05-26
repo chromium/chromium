@@ -40,7 +40,34 @@ struct MEDIA_EXPORT PixelAspectRatioBox : Box {
   // We use default value of 1 for both of these values.
 };
 
+// Bit Rate Box (`btrt`) box.
+struct MEDIA_EXPORT BitRate : Box {
+  uint32_t max_bit_rate;
+  uint32_t avg_bit_rate;
+};
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Elementary Stream Descriptor (`esds`) box.
+struct MEDIA_EXPORT ElementaryStreamDescriptor : FullBox {
+  ElementaryStreamDescriptor();
+  ~ElementaryStreamDescriptor();
+  ElementaryStreamDescriptor(const ElementaryStreamDescriptor&);
+  ElementaryStreamDescriptor& operator=(const ElementaryStreamDescriptor&);
+
+  // ES descriptor 14496-1
+  // DecoderConfigDescriptor (14496-1).
+  // AAC AudioSpecificConfig (14496-3).
+  std::vector<uint8_t> aac_codec_description;
+};
+
+// MP4A Audio Sample Entry (`mp4a`) box.
+struct MEDIA_EXPORT AudioSampleEntry : Box {
+  uint32_t sample_rate;  // AudioSampleEntry.
+
+  ElementaryStreamDescriptor elementary_stream_descriptor;
+  BitRate bit_rate;
+};
+
 // AVC DecoderConfiguration Record (`avcc`) box.
 struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
   // Refer AVCDecoderConfigurationRecord of box_definitions.h
@@ -76,6 +103,7 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   absl::optional<VisualSampleEntry> visual_sample_entry;
+  absl::optional<AudioSampleEntry> audio_sample_entry;
 #endif
 };
 

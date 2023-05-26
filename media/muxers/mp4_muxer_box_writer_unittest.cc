@@ -13,10 +13,13 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/subsample_entry.h"
+#include "media/formats/mp2t/es_parser_adts.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
+#include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/writable_box_definitions.h"
+#include "media/formats/mpeg/adts_stream_parser.h"
 #include "media/muxers/mp4_box_writer.h"
 #include "media/muxers/mp4_movie_box_writer.h"
 #include "media/muxers/mp4_muxer_context.h"
@@ -621,6 +624,88 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
   EXPECT_EQ(0u, avc_config_reader.sps_ext_list.size());
 }
 
+TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
+  // Tests `avc1` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::SampleDescription sample_description;
+
+  mp4::writable_boxes::AudioSampleEntry audio_sample_entry;
+  constexpr uint32_t kSampleRate = 48000u;
+  audio_sample_entry.sample_rate = kSampleRate;
+
+  mp4::writable_boxes::ElementaryStreamDescriptor esds;
+  constexpr uint32_t kBitRate = 341000u;
+  constexpr int32_t kSampleFrequency = 48000;
+
+  esds.aac_codec_description.push_back(0x11);
+  esds.aac_codec_description.push_back(0x90);
+  audio_sample_entry.elementary_stream_descriptor = std::move(esds);
+
+  mp4::writable_boxes::BitRate bit_rate;
+  bit_rate.max_bit_rate = kBitRate;
+  bit_rate.avg_bit_rate = kBitRate;
+  audio_sample_entry.bit_rate = std::move(bit_rate);
+
+  sample_description.audio_sample_entry = std::move(audio_sample_entry);
+
+  Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::SampleDescription reader_sample_description;
+  reader_sample_description.type = mp4::kAudio;
+
+  EXPECT_TRUE(box_reader->ReadChild(&reader_sample_description));
+  EXPECT_EQ(1u, reader_sample_description.audio_entries.size());
+
+  const auto& audio_sample = reader_sample_description.audio_entries[0];
+  EXPECT_EQ(1, audio_sample.data_reference_index);
+  EXPECT_EQ(2, audio_sample.channelcount);
+  EXPECT_EQ(16, audio_sample.samplesize);
+  EXPECT_EQ(kSampleRate, audio_sample.samplerate);
+
+  const mp4::ElementaryStreamDescriptor& esds_reader = audio_sample.esds;
+  EXPECT_EQ(mp4::kISO_14496_3, esds_reader.object_type);
+
+  const mp4::AAC& aac = esds_reader.aac;
+
+  AudioCodecProfile profile = aac.GetProfile();
+  EXPECT_EQ(AudioCodecProfile::kUnknown, profile);
+
+  int aac_frequency = aac.GetOutputSamplesPerSecond(false);
+  EXPECT_EQ(kSampleFrequency, aac_frequency);
+
+  ChannelLayout channel_layout = aac.GetChannelLayout(false);
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
+
+  std::vector<uint8_t> buffer;
+  int adts_header_size;
+  EXPECT_TRUE(aac.ConvertEsdsToADTS(&buffer, &adts_header_size));
+
+  ADTSStreamParser adts_parser;
+
+  int frame_size = 0, sample_rate = 0, sample_count = 0;
+  ChannelLayout adts_channel_layout;
+  bool metadata_frame;
+  EXPECT_NE(adts_parser.ParseFrameHeader(
+                buffer.data(), adts_header_size, &frame_size, &sample_rate,
+                &adts_channel_layout, &sample_count, &metadata_frame, nullptr),
+            -1);
+  EXPECT_EQ(adts_header_size, frame_size);
+  EXPECT_EQ(kSampleFrequency, sample_rate);
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, adts_channel_layout);
+  EXPECT_EQ(1024, sample_count);
+  EXPECT_FALSE(metadata_frame);
+}
 #endif
 
 }  // namespace media

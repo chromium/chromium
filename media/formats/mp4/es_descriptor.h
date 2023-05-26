@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -43,6 +44,9 @@ class MEDIA_EXPORT ESDescriptor {
  public:
   // Utility function to check if the given object type is AAC.
   static bool IsAAC(uint8_t object_type);
+
+  static std::vector<uint8_t> CreateEsds(
+      const std::vector<uint8_t>& aac_extra_data);
 
   ESDescriptor();
   ~ESDescriptor();

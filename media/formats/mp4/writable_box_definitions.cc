@@ -26,4 +26,13 @@ SampleDescription::SampleDescription(const SampleDescription&) = default;
 SampleDescription& SampleDescription::operator=(const SampleDescription&) =
     default;
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+ElementaryStreamDescriptor::ElementaryStreamDescriptor() = default;
+ElementaryStreamDescriptor::~ElementaryStreamDescriptor() = default;
+ElementaryStreamDescriptor::ElementaryStreamDescriptor(
+    const ElementaryStreamDescriptor&) = default;
+ElementaryStreamDescriptor& ElementaryStreamDescriptor::operator=(
+    const ElementaryStreamDescriptor&) = default;
+#endif
+
 }  // namespace media::mp4::writable_boxes

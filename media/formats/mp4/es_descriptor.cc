@@ -33,9 +33,73 @@ namespace media {
 
 namespace mp4 {
 
+namespace {
+
+// Descriptors use a variable length size entry. We've fixed the size to
+// 4 bytes to make inline construction simple. The lowest 7 bits encode
+// the actual value, an MSB==1 indicates there's another byte to decode,
+// and an MSB==0 indicates there are no more bytes to decode.
+void EncodeDescriptorSize(size_t size, uint8_t* output) {
+  DCHECK_LT(size, (1u << (4u * 7u)));
+  for (int i = 3; i > 0; i--) {
+    output[3 - i] = (size >> (7 * i)) | 0x80;
+  }
+  output[3] = size & 0x7F;
+}
+
+}  // namespace
+
 // static
 bool ESDescriptor::IsAAC(uint8_t object_type) {
   return object_type == kISO_14496_3 || object_type == kISO_13818_7_AAC_LC;
+}
+
+// static
+std::vector<uint8_t> ESDescriptor::CreateEsds(
+    const std::vector<uint8_t>& aac_extra_data) {
+#pragma pack(push, 1)
+  struct Descriptor {
+    uint8_t tag;
+    uint8_t size[4];  // Note: Size is variable length, with a 1 in the MSB
+                      // signaling another byte remains. Clamping to 4 here
+                      // just makes it easier to construct the ESDS in place.
+  };
+  struct DecoderConfigDescriptor : Descriptor {
+    uint8_t aot;
+    uint8_t flags;
+    uint8_t unused[11];
+    Descriptor extra_data;
+  };
+  struct EsDescriptor : Descriptor {
+    uint16_t id;
+    uint8_t flags;
+    DecoderConfigDescriptor decoder_config;
+  };
+#pragma pack(pop)
+
+  std::vector<uint8_t> esds_data(sizeof(EsDescriptor) + aac_extra_data.size());
+  auto* esds = reinterpret_cast<EsDescriptor*>(esds_data.data());
+
+  esds->tag = kESDescrTag;
+  EncodeDescriptorSize(
+      sizeof(EsDescriptor) - sizeof(Descriptor) + aac_extra_data.size(),
+      esds->size);
+
+  esds->decoder_config.tag = kDecoderConfigDescrTag;
+  EncodeDescriptorSize(sizeof(DecoderConfigDescriptor) - sizeof(Descriptor) +
+                           aac_extra_data.size(),
+                       esds->decoder_config.size);
+  esds->decoder_config.aot = kISO_14496_3;  // AAC.
+  esds->decoder_config.flags = 0x15;        // AudioStream
+
+  esds->decoder_config.extra_data.tag = kDecoderSpecificInfoTag;
+  EncodeDescriptorSize(aac_extra_data.size(),
+                       esds->decoder_config.extra_data.size);
+
+  base::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(EsDescriptor));
+
+  DCHECK(ESDescriptor().Parse(esds_data));
+  return esds_data;
 }
 
 ESDescriptor::ESDescriptor()

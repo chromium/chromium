@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "media/formats/mp4/es_descriptor.h"
 #include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/mp4_type_conversion.h"
@@ -588,8 +589,12 @@ Mp4MovieSampleDescriptionBoxWriter::Mp4MovieSampleDescriptionBoxWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (box_.visual_sample_entry.has_value()) {
+    CHECK(!box_.audio_sample_entry.has_value());
     AddChildBox(std::make_unique<Mp4MovieVisualSampleEntryBoxWriter>(
         context, box_.visual_sample_entry.value()));
+  } else if (box_.audio_sample_entry.has_value()) {
+    AddChildBox(std::make_unique<Mp4MovieAudioSampleEntryBoxWriter>(
+        context, box_.audio_sample_entry.value()));
   }
 #endif
 }
@@ -688,6 +693,75 @@ void Mp4MovieAVCDecoderConfigurationBoxWriter::Write(BoxByteStream& writer) {
   writer.EndBox();
 }
 
+// Mp4MovieAudioSampleEntryBoxWriter (`mp4a`) class.
+Mp4MovieAudioSampleEntryBoxWriter::Mp4MovieAudioSampleEntryBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::AudioSampleEntry& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AddChildBox(std::make_unique<Mp4MovieElementaryStreamDescriptorBoxWriter>(
+      context, box_.elementary_stream_descriptor));
+  AddChildBox(
+      std::make_unique<Mp4MovieBitRateBoxWriter>(context, box_.bit_rate));
+}
+
+Mp4MovieAudioSampleEntryBoxWriter::~Mp4MovieAudioSampleEntryBoxWriter() =
+    default;
+
+void Mp4MovieAudioSampleEntryBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_MP4A);
+
+  constexpr size_t kAudioSampleEntryReservedSize = 6u;
+  for (size_t i = 0; i < kAudioSampleEntryReservedSize; ++i) {
+    writer.WriteU8(0);
+  }
+
+  writer.WriteU16(1);  // data_reference_index in `dref` box, 1 is start index.
+  writer.WriteU32(0);  // reserved1[0]
+  writer.WriteU32(0);  // reserved1[1]
+
+  // TODO: Probably you'll need to plumb the actual channel count at some point.
+  // Since we may be recording mono or multi-channel sources.
+  writer.WriteU16(2);   // channel count. 2 (Stereo).
+  writer.WriteU16(16);  // sample size.
+  writer.WriteU16(0);   // predefined.
+  writer.WriteU16(0);   // reserved.
+
+  WriteLowHigh(writer, box_.sample_rate);
+
+  WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4MovieElementaryStreamDescriptorBoxWriter (`esds`) class.
+Mp4MovieElementaryStreamDescriptorBoxWriter::
+    Mp4MovieElementaryStreamDescriptorBoxWriter(
+        const Mp4MuxerContext& context,
+        const mp4::writable_boxes::ElementaryStreamDescriptor& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieElementaryStreamDescriptorBoxWriter::
+    ~Mp4MovieElementaryStreamDescriptorBoxWriter() = default;
+
+void Mp4MovieElementaryStreamDescriptorBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_ESDS);
+
+  std::vector<uint8_t> esds =
+      mp4::ESDescriptor::CreateEsds(box_.aac_codec_description);
+  writer.WriteBytes(esds.data(), esds.size());
+
+  writer.EndBox();
+}
+
+#endif
+
 // Mp4MoviePixelAspectRatioBoxBoxWriter (`pasp`) class.
 Mp4MoviePixelAspectRatioBoxBoxWriter::Mp4MoviePixelAspectRatioBoxBoxWriter(
     const Mp4MuxerContext& context)
@@ -708,6 +782,30 @@ void Mp4MoviePixelAspectRatioBoxBoxWriter::Write(BoxByteStream& writer) {
 
   writer.EndBox();
 }
-#endif
+
+// Mp4MovieBitRateBoxWriter (`btrt`) class.
+Mp4MovieBitRateBoxWriter::Mp4MovieBitRateBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::BitRate& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieBitRateBoxWriter::~Mp4MovieBitRateBoxWriter() = default;
+
+void Mp4MovieBitRateBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_BTRT);
+
+  // bufferSizeDB, 0 for unknown so that decoder will decide with its own
+  // algorithm.
+  writer.WriteU32(0);
+
+  writer.WriteU32(box_.max_bit_rate);
+  writer.WriteU32(box_.avg_bit_rate);
+
+  writer.EndBox();
+}
 
 }  // namespace media
