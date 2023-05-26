@@ -485,10 +485,6 @@ class UserSessionManager
       InputEventsBlocker* input_events_blocker,
       const locale_util::LanguageSwitchResult& result);
 
-  // Returns `true` if policy mandates that all mounts on device should
-  // be ephemeral.
-  bool IsEphemeralMountForced();
-
   // Callback invoked when `token_handle_util_` has finished.
   void OnTokenHandleObtained(const AccountId& account_id, bool success);
 

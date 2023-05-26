@@ -2425,14 +2425,6 @@ void UserSessionManager::InjectAuthenticatorBuilder(
   authenticator_.reset();
 }
 
-bool UserSessionManager::IsEphemeralMountForced() {
-  bool ephemeral_users_enabled = false;
-  auto* cros_settings = CrosSettings::Get();
-  cros_settings->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
-                            &ephemeral_users_enabled);
-  return ephemeral_users_enabled;
-}
-
 void UserSessionManager::OnTokenHandleObtained(const AccountId& account_id,
                                                bool success) {
   if (!success)
@@ -2447,7 +2439,7 @@ bool UserSessionManager::TokenHandlesEnabled() {
   auto* cros_settings = CrosSettings::Get();
   cros_settings->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                             &show_names_on_signin);
-  return show_names_on_signin && !IsEphemeralMountForced();
+  return show_names_on_signin;
 }
 
 void UserSessionManager::Shutdown() {
