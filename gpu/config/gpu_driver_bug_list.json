@@ -3354,7 +3354,8 @@
         "dg1",
         "alderlake",
         "alchemist",
-        "raptorlake"
+        "raptorlake",
+        "meteorlake"
       ],
       "features": [
         "force_rgb10a2_overlay_support_flags"
@@ -3514,7 +3515,8 @@
         "dg1",
         "alderlake",
         "alchemist",
-        "raptorlake"
+        "raptorlake",
+        "meteorlake"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"

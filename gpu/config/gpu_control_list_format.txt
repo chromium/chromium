@@ -80,7 +80,7 @@
 //     "apollolake", "skylake", "geminilake", "kabylake", "amberlake",
 //     "coffeelake", "whiskeylake", "cometlake", "cannonlake", "icelake",
 //     "elkhartlake", "jasperlake", "tigerlake", "rocketlake", "DG1",
-//     "alderlake", "alchemist", "raptorlake".
+//     "alderlake", "alchemist", "raptorlake", "meteorlake".
 // 30. "hardware_overlay" is either "supported" or "unsupported". Currently it
 //     only applies on Windows where hardware overlays may be supported on
 //     certain Intel GPUs. By default it's "dont_care" and there is no need to
