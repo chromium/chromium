@@ -2919,4 +2919,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             this.changed = changed;
         }
     }
+
+    @Override
+    protected int getAutomotiveToolbarImplementation() {
+        return AutomotiveToolbarImplementation.WITH_ACTION_BAR;
+    }
 }
