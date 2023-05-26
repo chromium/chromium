@@ -1786,14 +1786,14 @@ TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
        .value = "Mr",
        .status = VerificationStatus::kObserved},
       {.type = NAME_FIRST,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kParsed},
       {.type = NAME_MIDDLE,
        .value = "",
        .status = VerificationStatus::kNoStatus},
       {.type = NAME_LAST,
        .value = "Ruiz y Picasso",
-       .status = VerificationStatus::kFormatted},
+       .status = VerificationStatus::kParsed},
       {.type = NAME_LAST_FIRST,
        .value = "Ruiz",
        .status = VerificationStatus::kObserved},
@@ -1841,6 +1841,52 @@ TEST(AutofillStructuredAddressAddressComponent,
   SetTestValues(&address, test_values);
   address.CompleteFullTree();
   VerifyTestValues(&address, expectation);
+}
+
+TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
+  NameFullWithPrefix name;
+
+  AddressComponentTestValues name_filled_values = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved}};
+
+  AddressComponentTestValues expectation = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kParsed},
+  };
+
+  SetTestValues(&name, name_filled_values);
+  name.CompleteFullTree();
+  VerifyTestValues(&name, expectation);
 }
 
 }  // namespace autofill
