@@ -114,7 +114,7 @@ class CONTENT_EXPORT JankMonitorImpl : public content::JankMonitor,
 
   // Sends out notifications.
   void OnJankStarted(const void* opaque_identifier);
-  void OnJankStopped(const void* opaque_identifier);
+  void OnJankStopped(MayBeDangling<const void> opaque_identifier);
 
   // Call in DidRunTaskOrEvent() to for notification of jank stops.
   void NotifyJankStopIfNecessary(const void* opaque_identifier);
