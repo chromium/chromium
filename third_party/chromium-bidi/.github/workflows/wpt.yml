@@ -62,7 +62,7 @@ jobs:
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
-    if: ${{ github.event.inputs.auto-commit == 'true' }}
+    if: ${{ always() && github.event.inputs.auto-commit == 'true' }}
     runs-on: ubuntu-latest
     # Give GITHUB_TOKEN write permission to commit and push.
     # Needed by stefanzweifel/git-auto-commit-action@v4.
