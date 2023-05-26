@@ -48,3 +48,11 @@ export function getChromeFlag(flag: Flag): boolean {
 export function getIsTestImage(): boolean {
   return window.loadTimeData.getBoolean('is_test_image');
 }
+
+
+/**
+ * Returns the browser version string.
+ */
+export function getBrowserVersion(): string {
+  return window.loadTimeData.getString('browser_version');
+}

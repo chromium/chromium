@@ -102,6 +102,7 @@ function toGA4Dimensions(dimensions: Map<number, unknown>) {
     const key = MetricDimension[enumKey].toLowerCase();
     ga4Dimensions[key] = String(value);
   }
+  ga4Dimensions['browser_version'] = loadTimeData.getBrowserVersion();
   return ga4Dimensions;
 }
 
