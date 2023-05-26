@@ -27,18 +27,16 @@ UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
   CHECK(!connect_called_);
-  if (connect_using_network_ != handles::kInvalidNetworkHandle) {
+  if (connect_using_network_ != handles::kInvalidNetworkHandle)
     return ConnectUsingNetwork(connect_using_network_, address);
-  }
 
   connect_called_ = true;
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
   }
-  if (rv != OK) {
+  if (rv != OK)
     return rv;
-  }
   return socket_.Connect(address);
 }
 
@@ -46,9 +44,8 @@ int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
                                          const IPEndPoint& address) {
   CHECK(!connect_called_);
   connect_called_ = true;
-  if (!NetworkChangeNotifier::AreNetworkHandlesSupported()) {
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
-  }
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
@@ -57,9 +54,8 @@ int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
     return rv;
   }
   rv = socket_.BindToNetwork(network);
-  if (rv != OK) {
+  if (rv != OK)
     return rv;
-  }
   network_ = network;
   return socket_.Connect(address);
 }
@@ -67,16 +63,14 @@ int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
 int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   CHECK(!connect_called_);
   connect_called_ = true;
-  if (!NetworkChangeNotifier::AreNetworkHandlesSupported()) {
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
-  }
   int rv = OK;
   if (!adopted_opened_socket_) {
     rv = socket_.Open(address.GetFamily());
   }
-  if (rv != OK) {
+  if (rv != OK)
     return rv;
-  }
   // Calling connect() will bind a socket to the default network, however there
   // is no way to determine what network the socket got bound to.  The
   // alternative is to query what the default network is and bind the socket to
@@ -87,20 +81,17 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   handles::NetworkHandle network;
   for (int attempt = 0; attempt < 2; attempt++) {
     network = NetworkChangeNotifier::GetDefaultNetwork();
-    if (network == handles::kInvalidNetworkHandle) {
+    if (network == handles::kInvalidNetworkHandle)
       return ERR_INTERNET_DISCONNECTED;
-    }
     rv = socket_.BindToNetwork(network);
     // |network| may have disconnected between the call to GetDefaultNetwork()
     // and the call to BindToNetwork(). Loop only if this is the case (|rv| will
     // be ERR_NETWORK_CHANGED).
-    if (rv != ERR_NETWORK_CHANGED) {
+    if (rv != ERR_NETWORK_CHANGED)
       break;
-    }
   }
-  if (rv != OK) {
+  if (rv != OK)
     return rv;
-  }
   network_ = network;
   return socket_.Connect(address);
 }
@@ -209,12 +200,6 @@ int UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
     adopted_opened_socket_ = true;
   }
   return rv;
-}
-
-void UDPClientSocket::SetDontClose(bool dont_close) {
-#if BUILDFLAG(IS_POSIX)
-  socket_.SetDontClose(dont_close);
-#endif
 }
 
 }  // namespace net

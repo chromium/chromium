@@ -78,7 +78,6 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
 
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
-  void SetDontClose(bool dont_close) override;
 
   // Takes ownership of an opened but unconnected and unbound `socket`. This
   // method must be called after UseNonBlockingIO, otherwise the adopted socket
