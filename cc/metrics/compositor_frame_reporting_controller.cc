@@ -431,11 +431,6 @@ void CompositorFrameReportingController::TrackSwapTiming(
         latest_swap_times_.back() < details.swap_timings.swap_start)
       latest_swap_times_.push(details.swap_timings.swap_start);
   }
-
-  // Making sure the queue would not keep growing in size.
-  if (latest_swap_times_.size() > 10) {
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 void CompositorFrameReportingController::ReportMultipleSwaps(
