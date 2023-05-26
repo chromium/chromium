@@ -8,6 +8,10 @@ declare_args() {
   # Compile time flag for Bound Session Credentials.
   # Warning: The feature is still under development.
   enable_bound_session_credentials = is_linux
+
+  # Compile time flag for Waffle.
+  # Warning: The feature is still under development. See b/280753754.
+  enable_waffle_desktop = false
 }
 
 # Dice is supported on the platform (but not necessarily enabled).

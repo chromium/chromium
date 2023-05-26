@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/common/buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
@@ -471,6 +472,11 @@ extern const char kChromeUILinuxProxyConfigHost[];
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
 extern const char kChromeUISandboxHost[];
+#endif
+
+#if BUILDFLAG(ENABLE_WAFFLE_DESKTOP)
+extern const char kChromeUIWaffleURL[];
+extern const char kChromeUIWaffleHost[];
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

@@ -370,6 +370,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [3660],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/waffle/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [3670],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/welcome/resources.grd": {
     "META": {"sizes": {"includes": [60]}},
     "includes": [3680],

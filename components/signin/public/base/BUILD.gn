@@ -16,6 +16,7 @@ buildflag_header("signin_buildflags") {
     "ENABLE_DICE_SUPPORT=$enable_dice_support",
     "ENABLE_MIRROR=$enable_mirror",
     "ENABLE_BOUND_SESSION_CREDENTIALS=$enable_bound_session_credentials",
+    "ENABLE_WAFFLE_DESKTOP=$enable_waffle_desktop",
   ]
 }
 

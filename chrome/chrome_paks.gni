@@ -8,6 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//headless/headless.gni")
 import("//pdf/features.gni")
@@ -443,6 +444,11 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/signin/profile_picker:resources",
         "//chrome/browser/resources/welcome:resources",
       ]
+    }
+
+    if (enable_waffle_desktop) {
+      sources += [ "$root_gen_dir/chrome/waffle_resources.pak" ]
+      deps += [ "//chrome/browser/resources/waffle:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_fuchsia) {

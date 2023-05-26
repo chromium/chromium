@@ -817,6 +817,17 @@ static_library("ui") {
       "//components/device_signals/core/browser",
     ]
   }
+
+  if (enable_waffle_desktop) {
+    deps += [ "//chrome/browser/ui/webui/waffle:mojo_bindings" ]
+    sources += [
+      "webui/waffle/waffle_handler.cc",
+      "webui/waffle/waffle_handler.h",
+      "webui/waffle/waffle_ui.cc",
+      "webui/waffle/waffle_ui.h",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chromeos/components/kiosk",
