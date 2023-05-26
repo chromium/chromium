@@ -17,8 +17,7 @@
 
 TEST(JavaScriptDialogManager, NoDialog) {
   StubDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   std::string message("HI");
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
   ASSERT_FALSE(manager.IsDialogOpen());
@@ -28,8 +27,7 @@ TEST(JavaScriptDialogManager, NoDialog) {
 
 TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
   RecorderDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "prompt");
@@ -47,8 +45,7 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
   RecorderDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "prompt");
@@ -63,8 +60,7 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
   RecorderDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");
@@ -127,8 +123,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
 TEST(JavaScriptDialogManager, OneDialog) {
   FakeDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");
@@ -156,8 +151,7 @@ TEST(JavaScriptDialogManager, OneDialog) {
 
 TEST(JavaScriptDialogManager, TwoDialogs) {
   FakeDevToolsClient client;
-  BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "1");
   params.Set("type", "confirm");
@@ -196,7 +190,7 @@ TEST(JavaScriptDialogManager, TwoDialogs) {
 TEST(JavaScriptDialogManager, OneDialogManualClose) {
   StubDevToolsClient client;
   BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client, &browser_info);
+  JavaScriptDialogManager manager(&client);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");

@@ -672,10 +672,8 @@ ChromeImpl::ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
                        absl::optional<MobileDevice> mobile_device,
-                       SyncWebSocketFactory socket_factory,
                        std::string page_load_strategy)
     : mobile_device_(std::move(mobile_device)),
-      socket_factory_(std::move(socket_factory)),
       devtools_http_client_(std::move(http_client)),
       devtools_websocket_client_(std::move(websocket_client)),
       devtools_event_listeners_(std::move(devtools_event_listeners)),

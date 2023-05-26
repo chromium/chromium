@@ -23,7 +23,6 @@ class ChromeReplayImpl : public ChromeDesktopImpl {
                    std::vector<std::unique_ptr<DevToolsEventListener>>
                        devtools_event_listeners,
                    absl::optional<MobileDevice> mobile_device,
-                   SyncWebSocketFactory socket_factory,
                    std::string page_load_strategy,
                    base::Process process,
                    const base::CommandLine& command,

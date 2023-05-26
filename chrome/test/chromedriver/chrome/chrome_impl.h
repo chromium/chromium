@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
-#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
 class DevToolsClient;
 class DevToolsClientImpl;
@@ -65,7 +64,6 @@ class ChromeImpl : public Chrome {
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
              absl::optional<MobileDevice> mobile_device,
-             SyncWebSocketFactory socket_factory,
              std::string page_load_strategy);
 
   virtual Status QuitImpl() = 0;
@@ -93,7 +91,6 @@ class ChromeImpl : public Chrome {
 
   bool quit_ = false;
   absl::optional<MobileDevice> mobile_device_;
-  SyncWebSocketFactory socket_factory_;
   std::unique_ptr<DevToolsHttpClient> devtools_http_client_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;
 

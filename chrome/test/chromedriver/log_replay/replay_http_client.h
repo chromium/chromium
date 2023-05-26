@@ -14,11 +14,9 @@
 #include "chrome/test/chromedriver/log_replay/devtools_log_reader.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class URLLoaderFactory;
-}
-}  // namespace network
+}  // namespace network::mojom
 
 // Subclass of DevToolsHttpClient that redirects communication
 // that would happen with Chrome to a DevToolsLogReader (i.e. a ChromeDriver

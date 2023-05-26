@@ -22,7 +22,6 @@ class ChromeAndroidImpl : public ChromeImpl {
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
                     absl::optional<MobileDevice> mobile_device,
-                    SyncWebSocketFactory socket_factory,
                     std::string page_load_strategy,
                     std::unique_ptr<Device> device);
   ~ChromeAndroidImpl() override;

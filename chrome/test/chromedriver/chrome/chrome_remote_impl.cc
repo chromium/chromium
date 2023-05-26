@@ -17,13 +17,11 @@ ChromeRemoteImpl::ChromeRemoteImpl(
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
     absl::optional<MobileDevice> mobile_device,
-    SyncWebSocketFactory socket_factory,
     std::string page_load_strategy)
     : ChromeImpl(std::move(http_client),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
                  std::move(mobile_device),
-                 std::move(socket_factory),
                  page_load_strategy) {}
 
 ChromeRemoteImpl::~ChromeRemoteImpl() = default;

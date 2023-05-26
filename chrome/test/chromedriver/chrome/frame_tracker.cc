@@ -7,14 +7,11 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
-FrameTracker::FrameTracker(DevToolsClient* client,
-                           WebView* web_view,
-                           const BrowserInfo* browser_info)
+FrameTracker::FrameTracker(DevToolsClient* client, WebView* web_view)
     : web_view_(web_view) {
   client->AddListener(this);
 }

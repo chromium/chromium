@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
-#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
