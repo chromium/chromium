@@ -11,9 +11,28 @@
 #error "This file requires ARC support."
 #endif
 
-DefaultInfobarBannerInteractionHandler::DefaultInfobarBannerInteractionHandler()
+DefaultInfobarBannerInteractionHandler::DefaultInfobarBannerInteractionHandler(
+    InfobarType infobar_type)
     : InfobarBannerInteractionHandler(
-          DefaultInfobarOverlayRequestConfig::RequestSupport()) {}
+          DefaultInfobarOverlayRequestConfig::RequestSupport()),
+      infobar_type_(infobar_type) {}
 
 DefaultInfobarBannerInteractionHandler::
     ~DefaultInfobarBannerInteractionHandler() = default;
+
+void DefaultInfobarBannerInteractionHandler::ShowModalButtonTapped(
+    InfoBarIOS* infobar,
+    web::WebState* web_state) {
+  if (infobar->infobar_type() != infobar_type_) {
+    return;
+  }
+  InfobarBannerInteractionHandler::ShowModalButtonTapped(infobar, web_state);
+}
+
+void DefaultInfobarBannerInteractionHandler::BannerDismissedByUser(
+    InfoBarIOS* infobar) {
+  if (infobar->infobar_type() != infobar_type_) {
+    return;
+  }
+  InfobarBannerInteractionHandler::BannerDismissedByUser(infobar);
+}

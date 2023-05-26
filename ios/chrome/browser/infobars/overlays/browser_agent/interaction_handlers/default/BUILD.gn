@@ -11,6 +11,7 @@ source_set("default") {
   deps = [
     "//base",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common",
     "//ios/chrome/browser/overlays/public/default",
   ]

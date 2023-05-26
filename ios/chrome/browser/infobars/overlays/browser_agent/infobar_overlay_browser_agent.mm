@@ -49,7 +49,8 @@ void InfobarOverlayBrowserAgent::
     AddDefaultInfobarInteractionHandlerForInfobarType(
         InfobarType infobar_type) {
   AddInfobarInteractionHandler(std::make_unique<InfobarInteractionHandler>(
-      infobar_type, std::make_unique<DefaultInfobarBannerInteractionHandler>(),
+      infobar_type,
+      std::make_unique<DefaultInfobarBannerInteractionHandler>(infobar_type),
       /*modal_handler=*/nullptr));
 }
 
