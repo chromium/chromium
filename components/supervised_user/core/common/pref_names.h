@@ -9,6 +9,8 @@
 
 namespace prefs {
 
+extern const char kChildAccountStatusKnown[];
+
 extern const char kSupervisedUserCustodianEmail[];
 extern const char kSupervisedUserCustodianName[];
 extern const char kSupervisedUserCustodianObfuscatedGaiaId[];

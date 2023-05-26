@@ -24,7 +24,6 @@
 namespace prefs {
 
 // Profile prefs. Please add Local State prefs below instead.
-extern const char kChildAccountStatusKnown[];
 extern const char kPreinstalledApps[];
 extern const char kSafeBrowsingForTrustedSourcesEnabled[];
 extern const char kDisableScreenshots[];

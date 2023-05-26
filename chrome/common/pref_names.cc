@@ -21,10 +21,6 @@ namespace prefs {
 // *************** PROFILE PREFS ***************
 // These are attached to the user profile
 
-// A bool pref that keeps whether the child status for this profile was already
-// successfully checked via ChildAccountService.
-const char kChildAccountStatusKnown[] = "child_account_status_known";
-
 // A string property indicating whether default apps should be installed
 // in this profile.  Use the value "install" to enable defaults apps, or
 // "noinstall" to disable them.  This property is usually set in the

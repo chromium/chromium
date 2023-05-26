@@ -6,6 +6,10 @@
 
 namespace prefs {
 
+// A bool pref that keeps whether the child status for this profile was already
+// successfully checked via ChildAccountService.
+const char kChildAccountStatusKnown[] = "child_account_status_known";
+
 // Stores the email address associated with the google account of the custodian
 // of the supervised user, set when the supervised user is created.
 const char kSupervisedUserCustodianEmail[] = "profile.managed.custodian_email";
