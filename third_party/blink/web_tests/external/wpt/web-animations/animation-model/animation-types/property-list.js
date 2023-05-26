@@ -1172,6 +1172,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scrollbar-gutter': {
+    // https://drafts.csswg.org/css-overflow/#propdef-scrollbar-gutter
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'stable' ], [ 'auto', 'stable both-edges' ], [ 'stable', 'stable both-edges' ] ] }
+    ]
+  },
   'scrollbar-width': {
     // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
     types: [

@@ -15,5 +15,7 @@ PASS Property overflow-y has initial value visible
 PASS Property overflow-y does not inherit
 PASS Property text-overflow has initial value clip
 PASS Property text-overflow does not inherit
+PASS Property scrollbar-gutter has initial value auto
+PASS Property scrollbar-gutter does not inherit
 Harness: the test ran to completion.
 

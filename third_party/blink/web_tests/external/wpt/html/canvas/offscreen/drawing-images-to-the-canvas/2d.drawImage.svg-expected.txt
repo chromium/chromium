@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL drawImage() of an SVG image promise_test: Unhandled rejection with value: object "InvalidStateError: The source image could not be decoded."
+Harness: the test ran to completion.
+

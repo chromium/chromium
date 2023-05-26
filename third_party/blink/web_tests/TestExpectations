@@ -2875,6 +2875,7 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]

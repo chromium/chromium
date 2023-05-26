@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 354 tests; 343 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 364 tests; 353 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -161,6 +161,16 @@ PASS scroll-behavior (type: discrete) has testInterpolation function
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with linear easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with effect easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with keyframe easing
+PASS scrollbar-gutter (type: discrete) has testInterpolation function
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable" with keyframe easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "auto" and "stable both-edges" with keyframe easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with linear easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with effect easing
+PASS scrollbar-gutter uses discrete animation when animating between "stable" and "stable both-edges" with keyframe easing
 PASS scrollbar-width (type: discrete) has testInterpolation function
 PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with linear easing
 PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with effect easing
