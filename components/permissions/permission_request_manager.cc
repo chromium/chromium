@@ -20,6 +20,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -39,6 +40,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition_utils.h"
+#include "ui/events/event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -661,6 +664,21 @@ void PermissionRequestManager::Ignore() {
 
   NotifyRequestDecided(PermissionAction::IGNORED);
   FinalizeCurrentRequests(PermissionAction::IGNORED);
+}
+
+void PermissionRequestManager::OpenHelpCenterLink(const ui::Event& event) {
+  CHECK_GT(requests_.size(), 0u);
+  switch (requests_[0]->request_type()) {
+    case permissions::RequestType::kStorageAccess:
+      GetAssociatedWebContents()->OpenURL(content::OpenURLParams(
+          GURL(permissions::kEmbeddedContentHelpCenterURL), content::Referrer(),
+          ui::DispositionFromEventFlags(
+              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 void PermissionRequestManager::PreIgnoreQuietPrompt() {

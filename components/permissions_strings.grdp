@@ -116,7 +116,7 @@
     Create a 3D map of your surroundings and track camera position
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_PROMPT_TITLE" translateable="false" desc="The label that is used to introduce storage access permission request to the user in a popup.">
-    <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> wants to verify who you are before displaying content on <ph name="TOP_LEVEL_URL">$2<ex>content_domain.site</ex></ph>
+    Allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use info they've saved about you to display content?
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site needs access to its data while it is embedded into another site. Follows a prompt: 'This site would like to:'">
     Access cookies and site data.
@@ -127,7 +127,10 @@ Do you want to allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use co
 This will otherwise be blocked by your privacy settings. This will allow the content you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to track your activity.
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION" translateable="false" desc="Explanation of the permission request shown if the user is visiting a site needs access to its data while it is embedded into another site.">
-    Allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to access info they've saved about you? Access lasts for 30 days. See settings to turn Embedded content on or off.
+    <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> will know that you visited <ph name="TOP_LEVEL_URL">$2<ex>content_domain.site</ex></ph>. <ph name="HELP_CENTER_LINK">$3<ex>More about embedded content</ex></ph>.
+  </message>
+  <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_LINK" translateable="false" desc="Text that links to help center article about storage access and embedded content.">
+  More about embedded content
   </message>
   <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to manage windows. Follows a prompt: 'This site would like to:'">
     Manage windows on all your displays

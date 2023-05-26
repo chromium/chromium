@@ -16,6 +16,10 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace permissions {
 enum class PermissionPromptDisposition;
 
@@ -63,6 +67,8 @@ class PermissionPrompt {
     virtual void Deny() = 0;
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
+
+    virtual void OpenHelpCenterLink(const ui::Event& event) = 0;
 
     // This method preemptively ignores a permission request but does not
     // finalize a permission prompt. That is needed in case a permission prompt
