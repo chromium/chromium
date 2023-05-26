@@ -6491,7 +6491,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url);
 
@@ -6525,7 +6525,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url);
 
@@ -6643,7 +6643,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url);
 
@@ -6672,7 +6672,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: -1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: -1n, value: 2});
     )",
                          &out_script_url);
 
@@ -6722,8 +6722,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
     )",
                          &out_script_url);
 
@@ -6770,7 +6770,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url, /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
@@ -6818,7 +6818,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url, /*expected_total_host_count=*/1u,
                          /*keep_alive_after_operation=*/true,
@@ -6871,7 +6871,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   GURL out_script_url;
   ExecuteScriptInWorklet(
       shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
       &out_script_url, /*expected_total_host_count=*/1u,
       /*keep_alive_after_operation=*/true,
@@ -6908,7 +6908,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   std::string out_error;
   ExecuteScriptInWorklet(
       shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
       &out_script_url, /*expected_total_host_count=*/1u,
       /*keep_alive_after_operation=*/true,
@@ -6949,7 +6949,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   GURL out_script_url;
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
     )",
                          &out_script_url);
 

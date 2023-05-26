@@ -2849,40 +2849,40 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
 TEST_F(SharedStoragePrivateAggregationTest, BasicTest) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
+      "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
       /*expected_bucket=*/1, /*expected_value=*/2);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, ZeroBucket) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 0n, value: 2});",
+      "privateAggregation.contributeToHistogram({bucket: 0n, value: 2});",
       /*expected_bucket=*/0, /*expected_value=*/2);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, ZeroValue) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 0});",
+      "privateAggregation.contributeToHistogram({bucket: 1n, value: 0});",
       /*expected_bucket=*/1, /*expected_value=*/0);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, LargeBucket) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 18446744073709551616n, "
-      "value: 2});",
+      "privateAggregation.contributeToHistogram("
+      "{bucket: 18446744073709551616n, value: 2});",
       /*expected_bucket=*/absl::MakeUint128(/*high=*/1, /*low=*/0),
       /*expected_value=*/2);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, MaxBucket) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: "
-      "340282366920938463463374607431768211455n, value: 2});",
+      "privateAggregation.contributeToHistogram("
+      "{bucket: 340282366920938463463374607431768211455n, value: 2});",
       /*expected_bucket=*/absl::Uint128Max(), /*expected_value=*/2);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, NonIntegerValue) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2.3});",
+      "privateAggregation.contributeToHistogram({bucket: 1n, value: 2.3});",
       /*expected_bucket=*/1, /*expected_value=*/2);
 }
 
@@ -2891,7 +2891,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
   private_aggregation_permissions_policy_allowed_ = false;
 
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
+      "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
       /*expect_use_counter=*/true);
 
   EXPECT_THAT(error_str, testing::HasSubstr(
@@ -2901,7 +2901,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
 TEST_F(SharedStoragePrivateAggregationTest, TooLargeBucket_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: "
+      "privateAggregation.contributeToHistogram({bucket: "
       "340282366920938463463374607431768211456n, value: 2});",
       /*expect_use_counter=*/true);
 
@@ -2913,8 +2913,7 @@ TEST_F(SharedStoragePrivateAggregationTest, TooLargeBucket_Rejected) {
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeBucket_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: "
-      "-1n, value: 2});",
+      "privateAggregation.contributeToHistogram({bucket: -1n, value: 2});",
       /*expect_use_counter=*/true);
 
   EXPECT_THAT(
@@ -2925,7 +2924,7 @@ TEST_F(SharedStoragePrivateAggregationTest, NegativeBucket_Rejected) {
 
 TEST_F(SharedStoragePrivateAggregationTest, NonBigIntBucket_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
+      "privateAggregation.contributeToHistogram({bucket: 1, value: 2});",
       /*expect_use_counter=*/false);
 
   EXPECT_THAT(error_str,
@@ -2934,7 +2933,7 @@ TEST_F(SharedStoragePrivateAggregationTest, NonBigIntBucket_Rejected) {
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeValue_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: -1});",
+      "privateAggregation.contributeToHistogram({bucket: 1n, value: -1});",
       /*expect_use_counter=*/true);
 
   EXPECT_THAT(error_str,
@@ -2968,7 +2967,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
         } catch (e) {
           error = e;
         }
-        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
         throw error;
       )",
       /*expected_bucket=*/1,
@@ -2989,7 +2988,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
       class SendHistogramReport {
         async run() {
-          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+          privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
         }
       }
 
@@ -3034,8 +3033,8 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
       class TestClass {
         async run() {
           privateAggregation.enableDebugMode({debug_key: 1234n});
-          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-          privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+          privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+          privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
         }
       }
 
@@ -3074,7 +3073,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
       class TestClass {
         async run() {
-          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+          privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
           await new Promise(() => {});
         }
       }

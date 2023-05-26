@@ -192,13 +192,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // OnNavigateToWinningAdCallback().
   //
   // `private_aggregation_requests_reserved` Requests made to the Private
-  //  Aggregation API, either sendHistogram(), or reportContributionForEvent()
+  //  Aggregation API, either sendHistogram(), or contributeToHistogramOnEvent()
   //  with reserved event type. Keyed by reporting origin of the associated
   //  requests.
   //
   // `private_aggregation_requests_non_reserved` Requests made to the Private
-  //  Aggregation API reportContributionForEvent() with non-reserved event type
-  //  like "click". Keyed by event type of the associated requests.
+  //  Aggregation API contributeToHistogramOnEvent() with non-reserved event
+  //  type like "click". Keyed by event type of the associated requests.
   InterestGroupAuctionReporter(
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,

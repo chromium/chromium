@@ -77,7 +77,7 @@ struct AggregatableReportForEventContribution {
   string event_type;
 };
 
-// `histogram_contribution` for sendHistogramReport(), and
+// `histogram_contribution` for contributeToHistogram(), and
 // `for_event_contribution` for reportPrivateAggregationEvent().
 union AggregatableReportContribution {
   blink.mojom.AggregatableReportHistogramContribution histogram_contribution;
@@ -85,7 +85,7 @@ union AggregatableReportContribution {
 };
 
 // Represents a request made to Private Aggregation API. It can be either
-// sendHistogramReport() or reportPrivateAggregationEvent(), depending on the
+// contributeToHistogram() or reportPrivateAggregationEvent(), depending on the
 // type of contribution.
 struct PrivateAggregationRequest {
   AggregatableReportContribution contribution;

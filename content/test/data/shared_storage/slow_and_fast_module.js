@@ -4,17 +4,17 @@
 
 class SlowOperation {
   async run(data) {
-    privateAggregation.sendHistogramReport({ bucket: 1n, value: 1 });
+    privateAggregation.contributeToHistogram({ bucket: 1n, value: 1 });
     for (let i = 0; i < 100; i++) {
       await sharedStorage.get('example-key')
     }
-    privateAggregation.sendHistogramReport({ bucket: 2n, value: 1 });
+    privateAggregation.contributeToHistogram({ bucket: 2n, value: 1 });
   }
 }
 
 class FastOperation {
   async run(data) {
-    privateAggregation.sendHistogramReport({ bucket: 3n, value: 1 });
+    privateAggregation.contributeToHistogram({ bucket: 3n, value: 1 });
   }
 }
 

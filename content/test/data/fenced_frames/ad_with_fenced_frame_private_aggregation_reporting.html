@@ -5,7 +5,7 @@ RunAdAuctionWithWinnerRegisterPrivateAggregationBuyer) that require private
 aggregation reporting. As soon as the page loads, it sends a private aggregation
 event using the PA `reportEvent` path. This file should used as the url loaded
 into a fenced frame, and the `bidding_logic.js` file should include a call to
-privateAggregation.reportContributionForEvent('auctionwinner', {...}). -->
+privateAggregation.contributeToHistogramOnEvent('auctionwinner', {...}). -->
 <body>
 <script>
     window.fence.reportEvent('auctionwinner');

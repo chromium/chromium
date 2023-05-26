@@ -24,11 +24,11 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
     v8::Local<v8::BigInt> bigint,
     std::string* error_out);
 
-// Parses arguments provided to `sendHistogramReport()` and returns the
+// Parses arguments provided to `contributeToHistogram()` and returns the
 // corresponding contribution. In case of an error, throws an exception and
 // returns `nullptr`.
 blink::mojom::AggregatableReportHistogramContributionPtr
-ParseSendHistogramReportArguments(
+ParseContributeToHistogramArguments(
     const gin::Arguments& args,
     bool private_aggregation_permissions_policy_allowed);
 

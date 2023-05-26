@@ -9,7 +9,7 @@
   [
     CallWith=ScriptState,
     RaisesException
-  ] void sendHistogramReport(PrivateAggregationHistogramContribution contribution);
+  ] void contributeToHistogram(PrivateAggregationHistogramContribution contribution);
 
   [
     CallWith=ScriptState,
