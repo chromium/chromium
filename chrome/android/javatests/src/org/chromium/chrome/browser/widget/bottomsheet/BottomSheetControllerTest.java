@@ -18,7 +18,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -26,15 +25,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -48,12 +43,10 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -261,34 +254,10 @@ public class BottomSheetControllerTest {
                 mSheetController.getSheetState());
     }
 
-    // TODO(https://crbug.com/1434474): Remove this test (and flag) once it is safe.
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
-    @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
-    @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
-    public void testSheetPeekAfterTabSwitcher() throws Exception {
-        requestContentInSheet(mLowPriorityContent, true);
-        enterAndExitTabSwitcher();
-        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
-        assertEquals("The bottom sheet is showing incorrect content.", mLowPriorityContent,
-                mSheetController.getCurrentSheetContent());
-
-        // TODO(https://crbug.com/1434471): Finish activity early. During teardown
-        // BOTTOM_SHEET_GTS_SUPPORT may revert to enabled before the activity is finished. If this
-        // happens it is possible that BottomSheetManager's StartSurface StateObserver will trigger
-        // an assert to check that the flag is disabled during shutdown.
-        ApplicationTestUtils.finishActivity(mActivity);
-        mActivity = null;
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"BottomSheetController"})
-    @Features.EnableFeatures(
-            {ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT, ChromeFeatureList.START_SURFACE_REFACTOR})
-    public void
-    testSheetGoneAfterTabSwitcher_withStartSurfaceRefactor() throws TimeoutException {
+    public void testSheetGoneAfterTabSwitcher() throws TimeoutException {
         requestContentInSheet(mLowPriorityContent, true);
         enterAndExitTabSwitcher();
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
@@ -299,67 +268,7 @@ public class BottomSheetControllerTest {
     @Test
     @MediumTest
     @Feature({"BottomSheetController"})
-    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
-    @Features.EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
-    public void testSheetGoneAfterTabSwitcher_withoutStartSurfaceRefactor()
-            throws TimeoutException {
-        requestContentInSheet(mLowPriorityContent, true);
-        enterAndExitTabSwitcher();
-        BottomSheetTestSupport.waitForState(mSheetController, SheetState.HIDDEN);
-        assertNull("The bottom sheet is unexpectedly showing content.",
-                mSheetController.getCurrentSheetContent());
-    }
-
-    // TODO(https://crbug.com/1434474): Remove this test (and flag) once it is safe.
-    @Test
-    @MediumTest
-    @Feature({"BottomSheetController"})
-    @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
-    @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
-    public void testSheetHiddenAfterTabSwitcher() throws Exception {
-        // Open a second tab.
-        Tab tab1 = mActivity.getActivityTab();
-        openNewTabInForeground();
-        Tab tab2 = mActivity.getActivityTab();
-
-        requestContentInSheet(mLowPriorityContent, true);
-
-        // Enter the tab switcher and select a different tab.
-        setTabSwitcherState(true);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
-                    mSheetController.getSheetState());
-            assertEquals("The bottom sheet contains the incorrect content.", mLowPriorityContent,
-                    mSheetController.getCurrentSheetContent());
-            mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER, false);
-        });
-
-        setTabSwitcherState(false);
-
-        BottomSheetTestSupport.waitForContentChange(mSheetController, null);
-        assertEquals("The bottom sheet still should be hidden.", SheetState.HIDDEN,
-                mSheetController.getSheetState());
-        assertNull("The bottom sheet is unexpectedly has content.",
-                mSheetController.getCurrentSheetContent());
-
-        // TODO(https://crbug.com/1434471): Finish activity early. During teardown
-        // BOTTOM_SHEET_GTS_SUPPORT may revert to enabled before the activity is finished. If this
-        // happens it is possible that BottomSheetManager's StartSurface StateObserver will trigger
-        // an assert to check that the flag is disabled during shutdown.
-        ApplicationTestUtils.finishActivity(mActivity);
-        mActivity = null;
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"BottomSheetController"})
-    @Features.EnableFeatures(
-            {ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT, ChromeFeatureList.START_SURFACE_REFACTOR})
-    public void
-    testSheetGoneAfterTransitioningToAndFromSwitcher_withStartSurfaceRefactor()
-            throws TimeoutException {
+    public void testSheetGoneAfterTransitioningToAndFromSwitcher() throws TimeoutException {
         // Open a second tab.
         Tab tab1 = mActivity.getActivityTab();
         openNewTabInForeground();
@@ -373,61 +282,6 @@ public class BottomSheetControllerTest {
 
         // Enter the tab switcher.
         setTabSwitcherState(true);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals("The tab bottom sheet should be hidden.", SheetState.HIDDEN,
-                    mSheetController.getSheetState());
-            assertNull("The bottom sheet is unexpectedly showing content.",
-                    mSheetController.getCurrentSheetContent());
-        });
-
-        // Show a sheet in the tab switcher.
-        requestContentInSheet(mHighPriorityContent, true);
-        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals("The GTS bottom sheet should be visible.", SheetState.PEEK,
-                    mSheetController.getSheetState());
-            assertEquals("The GTS bottom sheet contains the incorrect content.",
-                    mHighPriorityContent, mSheetController.getCurrentSheetContent());
-            mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER, false);
-        });
-
-        // Exit tab switcher.
-        setTabSwitcherState(false);
-
-        BottomSheetTestSupport.waitForContentChange(mSheetController, null);
-        assertEquals("The GTS bottom sheet should be hidden.", SheetState.HIDDEN,
-                mSheetController.getSheetState());
-        assertNull("The bottom sheet is unexpectedly showing content.",
-                mSheetController.getCurrentSheetContent());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"BottomSheetController"})
-    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
-    @Features.EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
-    public void testSheetGoneAfterTransitioningToAndFromSwitcher_withoutStartSurfaceRefactor()
-            throws TimeoutException {
-        // Open a second tab.
-        Tab tab1 = mActivity.getActivityTab();
-        openNewTabInForeground();
-        Tab tab2 = mActivity.getActivityTab();
-
-        requestContentInSheet(mLowPriorityContent, true);
-        assertEquals("The tab bottom sheet should be visible.", SheetState.PEEK,
-                mSheetController.getSheetState());
-        assertEquals("The tab bottom sheet contains the incorrect content.", mLowPriorityContent,
-                mSheetController.getCurrentSheetContent());
-
-        // Enter the tab switcher.
-        setTabSwitcherState(true);
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> Criteria.checkThat(mActivity.getStartSurface().getStartSurfaceState(),
-                                Matchers.is(StartSurfaceState.SHOWN_TABSWITCHER)));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals("The tab bottom sheet should be hidden.", SheetState.HIDDEN,

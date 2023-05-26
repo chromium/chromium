@@ -169,7 +169,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorAndroid,
     &kBackgroundThreadPool,
     &kBaselineGM3SurfaceColors,
-    &kBottomSheetGtsSupport,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
@@ -474,13 +473,6 @@ BASE_FEATURE(kBackgroundThreadPool,
 BASE_FEATURE(kBaselineGM3SurfaceColors,
              "BaselineGM3SurfaceColors",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Used as a killswitch rather than a rollout control as the feature this
-// depends on runs on startup and this flag needs to be cached as it is used
-// pre-native.
-BASE_FEATURE(kBottomSheetGtsSupport,
-             "BottomSheetGtsSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used in downstream code.
 BASE_FEATURE(kCastDeviceFilter,

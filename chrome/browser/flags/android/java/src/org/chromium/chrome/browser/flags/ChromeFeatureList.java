@@ -148,7 +148,6 @@ public abstract class ChromeFeatureList {
             "BackGestureRefactorActivityAndroid";
     public static final String BASELINE_GM3_SURFACE_COLORS = "BaselineGM3SurfaceColors";
     public static final String BOOKMARKS_REFRESH = "BookmarksRefresh";
-    public static final String BOTTOM_SHEET_GTS_SUPPORT = "BottomSheetGtsSupport";
     public static final String CACHE_DEPRECATED_SYSTEM_LOCATION_SETTING =
             "CacheDeprecatedSystemLocationSetting";
     public static final String CAF_MRP_DEFERRED_DISCOVERY = "CafMRPDeferredDiscovery";
@@ -487,8 +486,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(BACK_GESTURE_REFACTOR, false);
     public static final CachedFlag sBaselineGm3SurfaceColors =
             new CachedFlag(BASELINE_GM3_SURFACE_COLORS, false);
-    public static final CachedFlag sBottomSheetGtsSupport =
-            new CachedFlag(BOTTOM_SHEET_GTS_SUPPORT, true);
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBottomBarSwipeUpGesture =
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);
@@ -604,7 +601,6 @@ public abstract class ChromeFeatureList {
         sBackGestureRefactorActivityAndroid,
         sBackGestureRefactorAndroid,
         sBaselineGm3SurfaceColors,
-        sBottomSheetGtsSupport,
         sCctAutoTranslate,
         sCctBottomBarSwipeUpGesture,
         sCctBrandTransparency,
