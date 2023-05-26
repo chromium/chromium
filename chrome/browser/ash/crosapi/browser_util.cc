@@ -170,12 +170,10 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
   }
 }
 
-// Gets called from IsLacrosAllowedToBeEnabled with primary user or from
-// IsLacrosEnabledForMigration with the user that the
-// IsLacrosEnabledForMigration was passed.
-bool IsLacrosAllowedToBeEnabledWithUser(
-    const User* user,
-    LacrosAvailability launch_availability) {
+// Returns whether or not lacros is allowed for the Primary user,
+// with given LacrosAvailability policy.
+bool IsLacrosAllowedInternal(const User* user,
+                             LacrosAvailability lacros_availability) {
   if (!user) {
     // User is not available. Practically, this is accidentally happening
     // if related function is called before session, or in testing.
@@ -188,18 +186,15 @@ bool IsLacrosAllowedToBeEnabledWithUser(
     return false;
   }
 
-  switch (launch_availability) {
-    case LacrosAvailability::kUserChoice:
-      break;
+  switch (lacros_availability) {
     case LacrosAvailability::kLacrosDisallowed:
       return false;
+    case LacrosAvailability::kUserChoice:
     case LacrosAvailability::kSideBySide:
     case LacrosAvailability::kLacrosPrimary:
     case LacrosAvailability::kLacrosOnly:
       return true;
   }
-
-  return true;
 }
 
 // Called from `IsDataWipeRequired()` or `IsDataWipeRequiredForTesting()`.
@@ -360,13 +355,15 @@ base::FilePath GetUserDataDir() {
 }
 
 bool IsLacrosAllowedToBeEnabled() {
-  return IsLacrosAllowedToBeEnabledWithUser(GetPrimaryUser(),
-                                            GetCachedLacrosAvailability());
+  return IsLacrosAllowedInternal(GetPrimaryUser(),
+                                 GetCachedLacrosAvailability());
 }
 
 bool IsLacrosEnabled() {
-  if (!IsLacrosAllowedToBeEnabled())
+  if (!IsLacrosAllowedInternal(GetPrimaryUser(),
+                               GetCachedLacrosAvailability())) {
     return false;
+  }
 
   // If profile migration is enabled, the completion of it is necessary for
   // Lacros to be enabled.
@@ -401,8 +398,9 @@ bool IsLacrosEnabledForMigration(const User* user,
   LacrosAvailability lacros_availability =
       GetLacrosAvailability(user, policy_init_state);
 
-  if (!IsLacrosAllowedToBeEnabledWithUser(user, lacros_availability))
+  if (!IsLacrosAllowedInternal(user, lacros_availability)) {
     return false;
+  }
 
   switch (lacros_availability) {
     case LacrosAvailability::kUserChoice:
@@ -559,8 +557,9 @@ bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
   LacrosAvailability lacros_availability =
       GetLacrosAvailability(user, policy_init_state);
 
-  if (!IsLacrosPrimaryBrowserAllowedForMigration(user, lacros_availability))
+  if (!IsLacrosAllowedInternal(user, lacros_availability)) {
     return false;
+  }
 
   switch (lacros_availability) {
     case LacrosAvailability::kUserChoice:
@@ -589,45 +588,14 @@ LacrosMode GetLacrosMode() {
 }
 
 bool IsLacrosPrimaryBrowserAllowed() {
-  // Note that if you are updating this function, please also update the
-  // *ForMigration variant to keep the logics consistent.
-  if (!IsLacrosAllowedToBeEnabled())
-    return false;
-
-  switch (GetCachedLacrosAvailability()) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kLacrosPrimary:
-    case LacrosAvailability::kLacrosOnly:
-      // Forcibly allow to use Lacros as a Primary respecting the policy.
-      return true;
-    default:
-      // Fallback others.
-      break;
-  }
-
-  return true;
+  return IsLacrosAllowedInternal(GetPrimaryUser(),
+                                 GetCachedLacrosAvailability());
 }
 
 bool IsLacrosPrimaryBrowserAllowedForMigration(
     const user_manager::User* user,
     LacrosAvailability lacros_availability) {
-  if (!IsLacrosAllowedToBeEnabledWithUser(user, lacros_availability))
-    return false;
-
-  switch (lacros_availability) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kLacrosPrimary:
-    case LacrosAvailability::kLacrosOnly:
-      // Forcibly allow to use Lacros as a Primary respecting the policy.
-      return true;
-    default:
-      // Fallback others.
-      break;
-  }
-
-  return true;
+  return IsLacrosAllowedInternal(user, lacros_availability);
 }
 
 bool IsLacrosPrimaryFlagAllowed() {
@@ -636,23 +604,8 @@ bool IsLacrosPrimaryFlagAllowed() {
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
-  if (!IsLacrosAllowedToBeEnabled())
-    return false;
-
-  switch (GetCachedLacrosAvailability()) {
-    case LacrosAvailability::kLacrosDisallowed:
-      return false;
-    case LacrosAvailability::kLacrosOnly:
-      // Forcibly allow to use Lacros as a Primary respecting the policy.
-      return true;
-    case LacrosAvailability::kUserChoice:
-    case LacrosAvailability::kSideBySide:
-    case LacrosAvailability::kLacrosPrimary:
-      // Fallback others.
-      break;
-  }
-
-  return true;
+  return IsLacrosAllowedInternal(GetPrimaryUser(),
+                                 GetCachedLacrosAvailability());
 }
 
 bool IsLacrosOnlyFlagAllowed() {
