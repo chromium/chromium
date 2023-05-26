@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -249,11 +248,8 @@ ServiceWorkerDatabase::Status ParseId(const std::string& serialized,
                                       int64_t* out) {
   DCHECK(out);
   int64_t id;
-  if (!base::StringToInt64(serialized, &id) || id < 0) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!base::StringToInt64(serialized, &id) || id < 0)
     return ServiceWorkerDatabase::Status::kErrorCorrupted;
-  }
   *out = id;
   return ServiceWorkerDatabase::Status::kOk;
 }
@@ -266,15 +262,12 @@ ServiceWorkerDatabase::Status LevelDBStatusToServiceWorkerDBStatus(
     return ServiceWorkerDatabase::Status::kErrorNotFound;
   else if (status.IsIOError())
     return ServiceWorkerDatabase::Status::kErrorIOError;
-  else if (status.IsCorruption()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  else if (status.IsCorruption())
     return ServiceWorkerDatabase::Status::kErrorCorrupted;
-  } else if (status.IsNotSupportedError()) {
+  else if (status.IsNotSupportedError())
     return ServiceWorkerDatabase::Status::kErrorNotSupported;
-  } else {
+  else
     return ServiceWorkerDatabase::Status::kErrorFailed;
-  }
 }
 
 int64_t AccumulateResourceSizeInBytes(
@@ -402,9 +395,6 @@ ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
       absl::optional<blink::StorageKey> key =
           blink::StorageKey::Deserialize(key_str);
       if (!key) {
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         status = Status::kErrorCorrupted;
         keys->clear();
         break;
@@ -638,11 +628,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
     return status;
 
   // ResourceRecord must contain the ServiceWorker's main script.
-  if (resources->empty()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (resources->empty())
     return Status::kErrorCorrupted;
-  }
 
   return Status::kOk;
 }
@@ -676,8 +663,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
   absl::optional<blink::StorageKey> parsed =
       blink::StorageKey::Deserialize(value);
   if (!parsed) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;
@@ -929,8 +914,6 @@ ServiceWorkerDatabase::UpdateResourceSha256Checksums(
   std::set<int64_t> updated_resource_ids;
   for (const auto& resource : resources) {
     if (!updated_resource_ids.insert(resource->resource_id).second) {
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       // The database wrongly contains the same resource id.
       return Status::kErrorCorrupted;
     }
@@ -1354,9 +1337,6 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
           std::string(1, service_worker_internals::kKeySeparator),
           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       if (parts.size() != 2) {
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         status = Status::kErrorCorrupted;
         user_data->clear();
         break;
@@ -1424,11 +1404,8 @@ ServiceWorkerDatabase::DeleteUserDataForAllRegistrationsByKeyPrefix(
         user_data_name_with_id,
         std::string(1, service_worker_internals::kKeySeparator),
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (parts.size() != 2) {
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
+    if (parts.size() != 2)
       return Status::kErrorCorrupted;
-    }
 
     int64_t registration_id;
     status = ParseId(parts[1], &registration_id);
@@ -1739,11 +1716,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerRegistrationData data;
-  if (!data.ParseFromString(serialized)) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!data.ParseFromString(serialized))
     return Status::kErrorCorrupted;
-  }
 
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
@@ -1754,8 +1728,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     DLOG(ERROR) << "Scope URL '" << data.scope_url() << "' and/or script url '"
                 << data.script_url() << "' and/or the storage key's origin '"
                 << key.origin() << "' are invalid or have mismatching origins.";
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -1766,8 +1738,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     DLOG(ERROR) << "Registration id " << data.registration_id()
                 << " and/or version id " << data.version_id()
                 << " is higher than the next available id.";
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -1789,16 +1759,12 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       DLOG(ERROR)
           << "has_fetch_handler must be true if fetch_handler_skippable_type"
           << " is set.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     if (!ServiceWorkerRegistrationData_FetchHandlerSkippableType_IsValid(
             data.fetch_handler_skippable_type())) {
       DLOG(ERROR) << "Fetch handler type '"
                   << data.fetch_handler_skippable_type() << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.fetch_handler_skippable_type()) {
@@ -1851,8 +1817,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     auto value = data.script_type();
     if (!ServiceWorkerRegistrationData_ServiceWorkerScriptType_IsValid(value)) {
       DLOG(ERROR) << "Worker script type '" << value << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     (*out)->script_type = static_cast<blink::mojom::ScriptType>(value);
@@ -1868,8 +1832,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     if (!ServiceWorkerRegistrationData_ServiceWorkerUpdateViaCacheType_IsValid(
             value)) {
       DLOG(ERROR) << "Update via cache mode '" << value << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     (*out)->update_via_cache =
@@ -1886,8 +1848,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
       DLOG(ERROR)
           << "Cross origin embedder policy in policy container policies '"
           << data.cross_origin_embedder_policy_value() << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.cross_origin_embedder_policy_value()) {
@@ -1946,8 +1906,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             data.ancestor_frame_type())) {
       DLOG(ERROR) << "Ancestor frame type '" << data.ancestor_frame_type()
                   << "' is not valid.";
-      // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-      base::debug::DumpWithoutCrashing();
       return Status::kErrorCorrupted;
     }
     switch (data.ancestor_frame_type()) {
@@ -1973,9 +1931,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               policies.referrer_policy())) {
         DLOG(ERROR) << "Referrer policy in policy container policies '"
                     << policies.referrer_policy() << "' is not valid.";
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         return Status::kErrorCorrupted;
       }
       (*out)->policy_container_policies->referrer_policy =
@@ -1992,9 +1947,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               policies.ip_address_space())) {
         DLOG(ERROR) << "IP address space in policy container policies '"
                     << policies.ip_address_space() << "' is not valid.";
-        // TODO(crbug.com/1423325): remove the code when the reason is
-        // clarified.
-        base::debug::DumpWithoutCrashing();
         return Status::kErrorCorrupted;
       }
       (*out)->policy_container_policies->ip_address_space =
@@ -2227,8 +2179,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(
   // |resources| should contain the main script.
   if (!has_main_resource) {
     resources->clear();
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
   }
 
@@ -2242,24 +2192,16 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerResourceRecord record;
-  if (!record.ParseFromString(serialized)) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!record.ParseFromString(serialized))
     return Status::kErrorCorrupted;
-  }
 
   GURL url(record.url());
-  if (!url.is_valid()) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
+  if (!url.is_valid())
     return Status::kErrorCorrupted;
-  }
 
   if (record.resource_id() >= next_avail_resource_id_) {
     // The stored resource should not have a higher resource id than the next
     // available resource id.
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
 
@@ -2484,8 +2426,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadDatabaseVersion(
   if (!base::StringToInt64(value, db_version) ||
       *db_version < kFirstValidVersion ||
       service_worker_internals::kCurrentSchemaVersion < *db_version) {
-    // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    base::debug::DumpWithoutCrashing();
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;
