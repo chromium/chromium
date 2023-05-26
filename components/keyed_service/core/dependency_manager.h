@@ -50,7 +50,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // appropriate `EnsureBrowserContextKeyedServiceFactoriesBuilt()` function.
   // `registration_function_name` param is used to display the right
   // registration method in the error message.
-  void DoNotAllowKeyedServiceFactoryRegistration(
+  void DisallowKeyedServiceFactoryRegistration(
       const std::string& registration_function_name_error_message);
 
  protected:
@@ -134,7 +134,7 @@ class KEYED_SERVICE_EXPORT DependencyManager {
 #if DCHECK_IS_ON()
   bool context_services_created_ = false;
 #endif
-  bool do_not_allow_factory_registration_ = false;
+  bool disallow_factory_registration_ = false;
   std::string registration_function_name_error_message_;
 };
 

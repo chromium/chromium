@@ -188,7 +188,6 @@
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -1049,12 +1048,4 @@ void ChromeBrowserMainExtraPartsProfiles::
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {
   EnsureBrowserContextKeyedServiceFactoriesBuilt();
-
-  // From this point, do not allow KeyedServiceFactories to be registered, all
-  // factories should be registered in the above call to
-  // `EnsureBrowserContextKeyedServiceFactoriesBuilt()`.
-  BrowserContextDependencyManager::GetInstance()
-      ->DoNotAllowKeyedServiceFactoryRegistration(
-          "ChromeBrowserMainExtraPartsProfiles::"
-          "EnsureBrowserContextKeyedServiceFactoriesBuilt()");
 }

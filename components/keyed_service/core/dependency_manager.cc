@@ -44,7 +44,7 @@ void DependencyManager::AddComponent(KeyedServiceBaseFactory* component) {
          "Ensure.*KeyedServiceFactoriesBuilt().";
 #endif  // DCHECK_IS_ON()
 
-  if (do_not_allow_factory_registration_) {
+  if (disallow_factory_registration_) {
     LOG(WARNING)
         << "Trying to register KeyedService Factory: `" << component->name()
         << "` after the call to the main registration function `"
@@ -227,9 +227,9 @@ DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {
   return dependency_graph_;
 }
 
-void DependencyManager::DoNotAllowKeyedServiceFactoryRegistration(
+void DependencyManager::DisallowKeyedServiceFactoryRegistration(
     const std::string& registration_function_name_error_message) {
-  do_not_allow_factory_registration_ = true;
+  disallow_factory_registration_ = true;
   registration_function_name_error_message_ =
       registration_function_name_error_message;
 }
