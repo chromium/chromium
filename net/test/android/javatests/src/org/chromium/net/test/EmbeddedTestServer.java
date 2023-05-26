@@ -18,6 +18,8 @@ import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
@@ -523,6 +525,33 @@ public class EmbeddedTestServer {
             }
         } catch (RemoteException e) {
             throw new EmbeddedTestServerFailure("Failed to get root cert's path", e);
+        }
+    }
+
+    public static ClassHook getPreClassHook() {
+        return (targetContext, testClass) -> EmbeddedTestServer.setUpClass(testClass);
+    }
+
+    private static boolean sTestRootInitDone;
+
+    public static void setUpClass(Class<?> clazz) {
+        if (sTestRootInitDone) {
+            return;
+        }
+
+        // Always try to add the testing HTTPS root to the cert verifier. We do this here because we
+        // need this to happen before the native code loads the user-added roots, and this is the
+        // safest place to put it.
+        try {
+            // Use the same PEM file as net/test/embedded_test_server/embedded_test_server.cc.
+            String rootCertPemPath =
+                    UrlUtils.getIsolatedTestFilePath("net/data/ssl/certificates/root_ca_cert.pem");
+            byte[] rootCertBytesDer = CertTestUtil.pemToDer(rootCertPemPath);
+            X509Util.setTestRootCertificateForBuiltin(rootCertBytesDer);
+            sTestRootInitDone = true;
+        } catch (Exception e) {
+            throw new EmbeddedTestServer.EmbeddedTestServerFailure(
+                    "Failed to install root certificate.", e);
         }
     }
 }
