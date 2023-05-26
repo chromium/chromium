@@ -290,7 +290,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   // Only for non-custom properties.
   SetResult ParseAndSetProperty(
       CSSPropertyID unresolved_property,
-      StringView value,
+      const String& value,
       bool important,
       SecureContextMode,
       StyleSheetContents* context_style_sheet = nullptr);
@@ -300,7 +300,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   // custom properties can never be shorthands.) If the value is empty,
   // the property is removed.
   SetResult ParseAndSetCustomProperty(const AtomicString& custom_property_name,
-                                      StringView value,
+                                      const String& value,
                                       bool important,
                                       SecureContextMode,
                                       StyleSheetContents* context_style_sheet,

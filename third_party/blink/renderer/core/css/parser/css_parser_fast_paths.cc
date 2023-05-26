@@ -127,7 +127,7 @@ static inline bool ParseSimpleLength(const LChar* characters,
 }
 
 static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
-                                        StringView string,
+                                        const String& string,
                                         CSSParserMode css_parser_mode) {
   DCHECK(!string.empty());
   bool accepts_negative_numbers = false;
@@ -892,7 +892,7 @@ static bool FastParseColorInternal(Color& color,
 // `kKeyword` is returned. If the string identifies a color, then `out_color`
 // is set and `kColor` is returned.
 static ParseColorResult ParseColor(CSSPropertyID property_id,
-                                   StringView string,
+                                   const String& string,
                                    CSSParserMode parser_mode,
                                    Color& out_color,
                                    CSSValueID& out_color_keyword) {
@@ -1576,7 +1576,7 @@ static inline CSSValue* ParseCSSWideKeywordValue(const LChar* ptr,
 }
 
 static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
-                                   StringView string,
+                                   const String& string,
                                    CSSParserMode parser_mode) {
   DCHECK(!string.empty());
 
@@ -1866,7 +1866,7 @@ static bool TransformCanLikelyUseFastPath(const CharType* chars,
 }
 
 static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
-                                      StringView string) {
+                                      const String& string) {
   DCHECK(!string.empty());
 
   if (property_id != CSSPropertyID::kTransform) {
@@ -1900,7 +1900,7 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
 }
 
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
-                                              StringView string,
+                                              const String& string,
                                               CSSParserMode parser_mode) {
   if (!string.Is8Bit()) {
     // If we have non-ASCII characters, we can never match any of the

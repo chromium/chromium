@@ -395,7 +395,7 @@ bool CSSPropertyValueSet::IsPropertyImplicit(CSSPropertyID property_id) const {
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::ParseAndSetProperty(
     CSSPropertyID unresolved_property,
-    StringView value,
+    const String& value,
     bool important,
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet) {
@@ -420,7 +420,7 @@ MutableCSSPropertyValueSet::ParseAndSetProperty(
 MutableCSSPropertyValueSet::SetResult
 MutableCSSPropertyValueSet::ParseAndSetCustomProperty(
     const AtomicString& custom_property_name,
-    StringView value,
+    const String& value,
     bool important,
     SecureContextMode secure_context_mode,
     StyleSheetContents* context_style_sheet,

@@ -70,13 +70,13 @@ class CORE_EXPORT CSSParser {
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,
-      StringView value,
+      const String&,
       bool important,
       const ExecutionContext* execution_context = nullptr);
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,
-      StringView value,
+      const String&,
       bool important,
       SecureContextMode,
       StyleSheetContents*,
@@ -85,7 +85,7 @@ class CORE_EXPORT CSSParser {
   static MutableCSSPropertyValueSet::SetResult ParseValueForCustomProperty(
       MutableCSSPropertyValueSet*,
       const AtomicString& property_name,
-      StringView value,
+      const String& value,
       bool important,
       SecureContextMode,
       StyleSheetContents*,
@@ -143,7 +143,7 @@ class CORE_EXPORT CSSParser {
   static MutableCSSPropertyValueSet::SetResult ParseValue(
       MutableCSSPropertyValueSet*,
       CSSPropertyID unresolved_property,
-      StringView,
+      const String&,
       bool important,
       const CSSParserContext*);
 };

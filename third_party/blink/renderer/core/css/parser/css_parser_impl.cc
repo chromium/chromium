@@ -153,7 +153,7 @@ CSSParserImpl::CSSParserImpl(const CSSParserContext* context,
 MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
     MutableCSSPropertyValueSet* declaration,
     CSSPropertyID unresolved_property,
-    StringView string,
+    const String& string,
     bool important,
     const CSSParserContext* context) {
   STACK_UNINITIALIZED CSSParserImpl parser(context);
@@ -172,7 +172,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
 MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseVariableValue(
     MutableCSSPropertyValueSet* declaration,
     const AtomicString& property_name,
-    StringView value,
+    const String& value,
     bool important,
     const CSSParserContext* context,
     bool is_animation_tainted) {

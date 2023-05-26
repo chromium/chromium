@@ -556,7 +556,7 @@ String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
 void CSSComputedStyleDeclaration::SetPropertyInternal(
     CSSPropertyID id,
     const String&,
-    StringView,
+    const String&,
     bool,
     SecureContextMode,
     ExceptionState& exception_state) {
