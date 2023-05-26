@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">이 확장 프로그램은 사이트에서 내 데이터를 읽고 변경할 수 있습니다. 사용자는 확장 프로그램에서 액세스할 수 있는 사이트를 제어할 수 있습니다.</translation>
 <translation id="1007057452468855774">Google Play 스토어 사용 설정</translation>
 <translation id="1008186147501209563">북마크 내보내기</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />에서는 내가 로그인한 방식을 기억하고 가능한 경우 자동으로 로그인합니다. 이 기능이 사용 중지되어 있는 경우 매번 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{데이터 보호를 위해 2개월 동안 방문하지 않은 사이트에서 권한이 삭제되었습니다.}other{데이터 보호를 위해 2개월 동안 방문하지 않은 사이트에서 권한이 삭제되었습니다.}}</translation>
 <translation id="1009663062402466586">게임 컨트롤 사용 가능</translation>
@@ -228,6 +229,7 @@
 <translation id="1181366777303791449">(도메인: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" />)</translation>
 <translation id="1183237619868651138">로컬 캐시에 <ph name="EXTERNAL_CRX_FILE" />을(를) 설치할 수 없습니다.</translation>
 <translation id="1185924365081634987"><ph name="GUEST_SIGNIN_LINK_START" />게스트로 로그인<ph name="GUEST_SIGNIN_LINK_END" />하여 네트워크 오류를 수정할 수도 있습니다.</translation>
+<translation id="1187692277738768150">이 비밀번호를 사용 및 저장하면 다음과 같은 이점이 있습니다.</translation>
 <translation id="1187722533808055681">유휴 상태 해제</translation>
 <translation id="1188807932851744811">로그가 업로드되지 않았습니다.</translation>
 <translation id="1190086046506744802">매우 넓음</translation>
@@ -243,6 +245,7 @@
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197185198920566650">비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="1197199342062592414">시작하기</translation>
 <translation id="11978075283960463">앱에 저장된 데이터: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">비활성화</translation>
@@ -1479,6 +1482,7 @@
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2242687258748107519">파일 정보</translation>
+<translation id="2243452222143104807">비활성 탭</translation>
 <translation id="2245603955208828424">화살표 키를 사용하여 글자 단위로 항목을 이동하세요</translation>
 <translation id="2246129643805925002">최신 기능과 보안 개선사항을 제공하기 위해 <ph name="DEVICE_TYPE" /> 업데이트는 백그라운드에서 자동으로 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
 <translation id="2246549592927364792">Google에서 이미지 설명을 가져올까요?</translation>
@@ -1509,6 +1513,7 @@
 고객센터<ph name="END_LINK" />를 확인하세요.</translation>
 <translation id="2266957463645820432">USB를 통한 IPP(IPPUSB)</translation>
 <translation id="2268130516524549846">블루투스를 사용 안 함</translation>
+<translation id="2269895253281481171">비밀번호가 위험에 노출되면 알림이 전송됩니다.</translation>
 <translation id="2270450558902169558">도메인 <ph name="DOMAIN" />에 있는 모든 기기와 데이터 교환</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />설치를 진행하면 <ph name="BEGIN_BOLD" />하드 드라이브 전체가 삭제됩니다<ph name="END_BOLD" />. 데이터가 백업되었는지 확인하세요.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />설치가 시작되면 취소할 수 없습니다.<ph name="END_PARAGRAPH2" /></translation>
@@ -1941,6 +1946,7 @@
 <translation id="2616008379779647117">자막 언어</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
 <translation id="2618797463720777311">Nearby Share 설정</translation>
+<translation id="261953424982546039">Chrome 실험실(&amp;L)...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="2620245777360407679">현재 핫스팟에 연결된 기기</translation>
 <translation id="2620436844016719705">시스템</translation>
@@ -3839,6 +3845,7 @@
 <translation id="429234155571566255">최근에 본 이 레시피</translation>
 <translation id="4295072614469448764">단말기에서 앱을 사용할 수 있습니다. 런처에 아이콘이 있을 수도 있습니다.</translation>
 <translation id="4295979599050707005">웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 계정(<ph name="USER_EMAIL" />)을 사용하도록 확인하려면 다시 로그인하세요. 계정을 삭제할 수도 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" />에서 설치 및 스트리밍된 애플리케이션</translation>
 <translation id="4297219207642690536">다시 시작 및 재설정</translation>
 <translation id="4297813521149011456">화면 회전</translation>
 <translation id="4299022904780065004">새 시크릿 창(&amp;I)</translation>
@@ -3872,6 +3879,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> 제거 중...</translation>
 <translation id="4326146840124313313">Chrome의 가장 강력한 보안 기능은 위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="4326484226728068206"><ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 장바구니에 있는 상품 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
+<translation id="4328507707463585900">탭의 메모리 사용량: <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">얼음물</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
@@ -5476,6 +5484,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="5780973441651030252">프로세스 우선순위</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />님의 계정에 동기화</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />에 명령어 보내기</translation>
+<translation id="5782040878821624922">모든 기기에서 사용할 수 있습니다.</translation>
 <translation id="5782227691023083829">번역 중...</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5785583009707899920">Chrome 파일 유틸리티</translation>
@@ -6174,6 +6183,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6384275966486438344">다음으로 검색 설정 변경: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{이름이 지정되지 않은 그룹 - 탭 1개}other{이름이 지정되지 않은 그룹 - 탭 #개}}</translation>
 <translation id="6385149369087767061">인터넷에 연결한 후 다시 시도해 주세요</translation>
+<translation id="6385382178401976503">카드: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">경고 - 자세한 로깅이 사용 설정되었으며 아래의 로그에 URL 또는 기타 민감한 정보가 포함될 수 있습니다. 정보를 제출해도 되는지 검토하고 확인하시기 바랍니다.</translation>
 <translation id="6387674443318562538">수직 분할</translation>
 <translation id="6388429472088318283">언어 검색</translation>
@@ -7418,6 +7428,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">배터린 잔량이 부족하여(<ph name="BATTERY_PERCENT" />%) 업데이트할 수 없음</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> 외 <ph name="COUNT" />개 자동으로 차단됨</translation>
+<translation id="7477599578899108080">메모리 사용량 많음: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">이 페이지의 QR 코드 생성</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7478069565037869084">넓음</translation>
@@ -8152,6 +8163,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8086610718778464681">Linux 앱 및 파일을 백업할 수 없음</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{암호화된 파일입니다. 소유자에게 복호화를 요청하세요.}other{일부 파일이 암호화되어 있습니다. 소유자에게 복호화를 요청하세요.}}</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8089547136368562137">Google 최고의 보안 기술로 보호됩니다.</translation>
 <translation id="8090234456044969073">가장 자주 방문한 웹사이트 목록 보기</translation>
 <translation id="8090513782447872344">언제든 돌아와서 다시 살펴볼 수 있습니다</translation>
 <translation id="809312780580957751">기기에 Steam을 설치할 수 없음</translation>
@@ -8185,6 +8197,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8113476325385351118">이 사이트의 MIDI 기기 전체 제어 계속 차단</translation>
 <translation id="8115139559594092084">내 Google Drive의 파일</translation>
 <translation id="8116972784401310538">북마크 관리자(&amp;B)</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />에서는 내가 로그인한 방식을 기억하고 가능한 경우 자동으로 로그인합니다. 이 기능이 사용 중지되어 있는 경우 매번 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="8118362518458010043">Chrome에서 사용 중지했습니다. 이 확장 프로그램은 안전하지 않을 수 있습니다.</translation>
 <translation id="8118488170956489476">조직에서 <ph name="BEGIN_LINK" />관리하는 브라우저<ph name="END_LINK" />입니다.</translation>
 <translation id="8118515372935001629">화면 새로고침 빈도</translation>
@@ -8937,6 +8950,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
 <translation id="8773280816776735812">IBAN 값 표시</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
+<translation id="8774286683882091094">탭을 비활성화할 경우 절약 가능한 메모리: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>
@@ -9213,6 +9227,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9013037634206938463">Linux를 설치하려면 <ph name="INSTALL_SIZE" />의 여유 공간이 있어야 합니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="9014206344398081366">ChromeVox 가이드</translation>
 <translation id="901668144954885282">Google Drive에 백업</translation>
+<translation id="90181708067259747">만료일: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">설치 완료</translation>
 <translation id="9019062154811256702">자동 완성 설정을 읽고 변경하기</translation>
 <translation id="9019894137004772119">위치를 사용합니다. 위치 정보 액세스 권한이 있는 앱 및 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서 주기적으로 위치 데이터를 수집하고 데이터를 익명으로 사용하여 위치 정확성과 위치 기반 서비스를 개선할 수 있습니다.</translation>

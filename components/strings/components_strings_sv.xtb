@@ -211,6 +211,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1442987760062738829">Hålslag</translation>
 <translation id="1446396933673057385">Källkontroll</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Inställningarna som din förälder har valt skyddar dig online</translation>
 <translation id="1453974140256777690">Text som du klistrar in eller bifogar skickas till Google Cloud eller tredje parter för analys. Den kan till exempel genomsökas efter känsliga uppgifter.</translation>
 <translation id="1455413310270022028">Suddgummi</translation>
 <translation id="1459693405370120464">Väder</translation>
@@ -268,6 +269,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1569487616857761740">Ange sista giltighetsdatum</translation>
 <translation id="1569694109004336106">Google Chrome försöker aktivera Windows Hello för att fylla i lösenord.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> tum</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Ett fel uppstod när webbsidan skulle visas.</translation>
 <translation id="1584492003828271317">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, föreslagna annonser på webbplatser, dina cookieinställningar och om webbplatsen du besöker anpassar annonser</translation>
@@ -1268,6 +1270,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="410148943680000050">Desktop Publishing</translation>
 <translation id="4103249731201008433">Enhetens serienummer är ogiltigt</translation>
 <translation id="4106133539597032659">Knappen Skapa webbplats: tryck på Retur om du snabbt vill skapa en ny webbplats i Google Sites</translation>
+<translation id="4106887816571530227">Inbäddat innehåll är inte tillåtet</translation>
 <translation id="4110652170750985508">Granska betalningen</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
@@ -1605,6 +1608,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4876305945144899064">Inget användarnamn</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Inga}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Sök på <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">Vill du tillåta inbäddat innehåll?</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
 <translation id="4880827082731008257">Sök i historiken</translation>
 <translation id="4881695831933465202">Öppna</translation>
@@ -1802,6 +1806,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5314967030527622926">Broschyrenhet</translation>
 <translation id="5316812925700871227">Rotera moturs</translation>
 <translation id="5317780077021120954">Spara</translation>
+<translation id="5323043727018853753">Inbäddat innehåll är tillåtet</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> av <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Din webbläsare är inte hanterad</translation>
 <translation id="5332219387342487447">Fraktmetod</translation>
@@ -2179,6 +2184,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6306713302480826305">Adressen raderas från den här enheten och dina andra inloggade enheter</translation>
 <translation id="6312113039770857350">Webbsidan är inte tillgänglig</translation>
 <translation id="6316226860534107313">Vespor och mopeder</translation>
+<translation id="6316723751983724988">Nyhet: Family Link-inställningar för Chrome gäller här</translation>
 <translation id="63172326633386613">Hantera tillgänglighetsinställningar</translation>
 <translation id="6319249456820053699">Kameror och videokameror</translation>
 <translation id="6321917430147971392">Kontrollera DNS-inställningarna</translation>
@@ -2730,6 +2736,7 @@ Mer information.
 <translation id="7598391785903975535">Mindre än <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan för närvarande inte hantera förfrågan.</translation>
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">Du ansluter vanligtvis till den här webbplatsen på ett säkert sätt, men den här gången kunde inte Chrome använda en säker anslutning. Det kan hända att en angripare försöker avlyssna eller ändra din nätverksanslutning. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Värdet är utanför intervallet <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Upphör: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
@@ -2830,6 +2837,7 @@ Mer information.
 <translation id="7822320754433038727">Jakt och skytte</translation>
 <translation id="782886543891417279">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker dess inloggningssida.</translation>
 <translation id="7840103971441592723">Skärmbild/skärminspelning har startats</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Senare kan en webbplats du besöker fråga efter dina ämnen i Chrome för att anpassa vilka annonser som visas. Chrome delar upp till tre ämnen, samtidigt som din webbhistorik och identitet skyddas.</translation>
@@ -2974,6 +2982,7 @@ Mer information.
 <translation id="8217748145574471584">Personal/bemanning</translation>
 <translation id="8218327578424803826">Tilldelad plats:</translation>
 <translation id="8228419419708659934">Dubbelsidig vy</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> vill ha åtkomst till en enhet i nätverket:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sportspel</translation>

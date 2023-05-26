@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Radne površine</translation>
 <translation id="1018219910092211213">Nije moguće razriješiti DNS</translation>
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1020274983236703756">Ekskluzivni materijali za <ph name="PRODUCT_NAME" /> su sada dostupni</translation>
 <translation id="1022433422498218992">Opće kontrole</translation>
 <translation id="1022628058306505708">Protok zemlje</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (Broj niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Traženje skenera</translation>
 <translation id="3226657629376379887">Raspored menija radnji</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
+<translation id="3248223063252096240">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Nije uspjelo – poklopac je otvoren</translation>
 <translation id="3275729367986477355">Slika avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi fajl}one{Uredi fajlove}few{Uredi fajlove}other{Uredi fajlove}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Uključivanje/isključivanje Ekrana privatnosti</translation>
 <translation id="3639846061339007994">gornjem</translation>
 <translation id="3651050199673793219">Odaberite jedinicu temperature</translation>
+<translation id="3663574643422533538">Odaberite ekskluzivne ilustracije za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Test: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2 i WPA3</translation>
 <translation id="4110686435123617899">Odaberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB dodirna podloga</translation>
+<translation id="4113067922640381334">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tamni način rada</translation>
 <translation id="4130035430755296270">Postavite i zadržite pokazivač miša iznad za više opcija rasporeda</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>
 <translation id="8593058461203131755">pauziranje medija</translation>
 <translation id="8620617069779373398">Status rominga</translation>
+<translation id="8626489604350149811">Više radnji za aplikaciju <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svijetloljubičasto</translation>
 <translation id="8651481478098336970">prigušivanje zvuka</translation>
 <translation id="8655295600908251630">Kanal</translation>

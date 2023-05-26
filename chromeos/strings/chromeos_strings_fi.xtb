@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Työpöydät</translation>
 <translation id="1018219910092211213">DNS:ää ei voi selvittää</translation>
 <translation id="1018656279737460067">Peruutettu</translation>
+<translation id="1020274983236703756">Eksklusiivista sisältöä nyt saatavilla: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Yleiset asetukset</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Haetaan skannereita</translation>
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
+<translation id="3248223063252096240">Vain <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Epäonnistui – Luukku auki</translation>
 <translation id="3275729367986477355">Avatar-kuva</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muokkaa tiedostoa}other{Muokkaa tiedostoja}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3639846061339007994">yläreuna</translation>
 <translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
+<translation id="3663574643422533538">Valitse eksklusiivisia taideteoksia: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Testi: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3708186454126126312">Aiemmin yhdistetyt</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Valitse albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
+<translation id="4113067922640381334">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tumma tila</translation>
 <translation id="4130035430755296270">Pidä osoitin paikallaan, niin näet lisää asetteluvaihtoehtoja</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8593058461203131755">keskeytä media</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>
 <translation id="8651481478098336970">Mykistä äänenvoimakkuus.</translation>
 <translation id="8655295600908251630">Kanava</translation>

@@ -6087,6 +6087,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6343003829431264373">Orri bikoitiak bakarrik</translation>
 <translation id="6344170822609224263">Atzitu sareko konexioen zerrenda</translation>
 <translation id="6344576354370880196">Gordetako inprimagailuak</translation>
+<translation id="6344608411615208519">Zure gurasoak <ph name="BEGIN_LINK" />kudeatzen du arakatzailea<ph name="END_LINK" /></translation>
 <translation id="6345418402353744910"><ph name="PROXY" /> proxyra konektatzeko, zure erabiltzaile-izena eta pasahitza behar dira, administratzaileak zure sarea konfiguratu ahal izateko</translation>
 <translation id="6345878117466430440">Markatu irakurritako gisa</translation>
 <translation id="6347010704471250799">Erakutsi jakinarazpena</translation>
@@ -7610,6 +7611,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7684212569183643648">Administratzaileak instalatu du</translation>
 <translation id="7684559058815332124">Joan saioa hasteko atari gatibuaren orrira</translation>
 <translation id="7684718995427157417">Zeure aplikazioak sortu eta probatzeko, gaitu Android Debug Bridge (ADB). Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
+<translation id="7684913007876670600">Orri honen ikuspegi sinplifikatu bat erakusteko, ireki alboko panela eta hautatu Irakurtzeko modua</translation>
 <translation id="7685049629764448582">JavaScript memoria</translation>
 <translation id="7685087414635069102">PINa behar da</translation>
 <translation id="7686086654630106285">Webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>

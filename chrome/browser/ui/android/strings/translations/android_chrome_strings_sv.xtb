@@ -426,6 +426,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
+<translation id="3305130791745726624">Skicka till enheter</translation>
 <translation id="3305795716056605962">Översätt sidor via knappen Fler alternativ</translation>
 <translation id="3319664549618064419">Byt till webbplatsen för datorn för att få en bättre översikt över webbplatsen</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
@@ -1175,6 +1176,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7304072650267745798">En liknande inställning kan finnas på Android-enheten. Om den här inställningen är aktiverad i Chrome och på Android-enheten kan ett företag mäta hur effektiv en annons är på alla webbplatser du besöker och i appar som du använder.</translation>
 <translation id="7304873321153398381">Offline. Chrome kan inte kontrollera dina lösenord.</translation>
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
+<translation id="7324354302972299151">Skicka en Do Not Track-begäran</translation>
 <translation id="7332075081379534664">Inloggningen lyckades</translation>
 <translation id="7333232495927792353">Synkronisera om du vill få det mest relevanta innehållet från Google</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>

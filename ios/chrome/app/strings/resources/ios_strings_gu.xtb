@@ -755,6 +755,7 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> વડે શોધો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
 <translation id="5965679971710331625">તમે સાઇન ઇન છો</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 બુકમાર્ક ડિલીટ કર્યું}one{{count} બુકમાર્ક ડિલીટ કર્યું}other{{count} બુકમાર્ક ડિલીટ કર્યા}}</translation>
 <translation id="5979837087407522202">પાસવર્ડ શોધો</translation>
 <translation id="5981230843984570095">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>
 <translation id="5982717868370722439">અસ્તિત્વમાંના ડેટાને <ph name="USER_EMAIL" /> માં ઉમેરો.</translation>
@@ -1002,6 +1003,7 @@
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7446583256109515732">ટૅબ અનપિન કર્યું</translation>
+<translation id="7451023311965289370">{count,plural, =1{બુકમાર્ક "{title}" પર સાચવ્યું}one{બુકમાર્ક "{title}" પર સાચવ્યું}other{બુકમાર્ક "{title}" પર સાચવ્યા}}</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
 <translation id="7459628154744868585">વધારેલું સંરક્ષણ ચાલુ છે</translation>
 <translation id="746684838091935575">3. Chrome પસંદ કરો</translation>

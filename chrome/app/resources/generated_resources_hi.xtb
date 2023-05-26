@@ -297,6 +297,7 @@
 <translation id="124116460088058876">ज़्यादा भाषाएं</translation>
 <translation id="1241381048229838873">सभी बुकमार्क दिखाएं</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> आपकी सेटिंग को रीसेट करना चाहता है.</translation>
+<translation id="1243002225871118300">डिसप्ले और टेक्स्ट का साइज़ बदलना</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
 <translation id="1243436884219965846">पासवर्ड की समीक्षा करें</translation>
 <translation id="1244265436519979884">फ़िलहाल, Linux की बहाल करने की प्रक्रिया जारी है</translation>
@@ -663,6 +664,7 @@
 <translation id="1567993339577891801">JavaScript पैनल</translation>
 <translation id="1569466257325986920">अगली बार जब आपका Google खाते का पासवर्ड बदलेगा, तो Google खाते में साइन इन करने पर आपका स्थानीय डेटा अपने-आप वापस आ जाएगा</translation>
 <translation id="1570604804919108255">सूचनाएं अनम्यूट करें</translation>
+<translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' बुकमार्क फ़ोल्डर बनाया गया.</translation>
 <translation id="1571304935088121812">उपयोगकर्ता नाम की कॉपी करें</translation>
 <translation id="1571738973904005196">टैब देखें: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (मेहमान)</translation>
@@ -710,6 +712,7 @@
 <translation id="1604774728851271529">Linux को अपग्रेड करने के लिए, इंटरनेट से कनेक्ट होना ज़रूरी है. इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
 <translation id="1605744057217831567">सभी साइटों का डेटा और अनुमतियां देखें</translation>
 <translation id="1606077700029460857">माउस की सेटिंग बदलें</translation>
+<translation id="1606307079840340755">आपका पासपॉइंट देने वाली कंपनी को सिर्फ़ इस डिवाइस से हटाया जाएगा. अपनी सदस्यता में बदलाव करने के लिए, सदस्यता देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="1606566847233779212">क्या उन खास साइटों को हटाना है जिन्हें आपने जोड़ा था?</translation>
 <translation id="1607139524282324606">प्रविष्टि हटाएं</translation>
 <translation id="1607499585984539560">उपयोगकर्ता, एंटरप्राइज़ डोमेन के साथ जुड़ा हुआ नहीं है</translation>
@@ -1587,6 +1590,7 @@
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% हो गया</translation>
 <translation id="2318143611928805047">कागज़ का आकार</translation>
 <translation id="2318817390901984578">Android ऐप्लिकेशन का इस्तेमाल करने के लिए, अपना <ph name="DEVICE_TYPE" /> चार्ज करें और अपडेट करें.</translation>
+<translation id="2319072477089403627">आपके Android फ़ोन से कनेक्ट किया जा रहा है...</translation>
 <translation id="2319459402137712349">कीबोर्ड खोलने के लिए कोई टेक्स्ट फ़ील्ड चुनें. आपके पास स्क्रीन पर सबसे नीचे कीबोर्ड आइकॉन को चुनने का विकल्प भी मौजूद होता है.</translation>
 <translation id="2319993584768066746">साइन-इन स्क्रीन पर दी गई फ़ोटो</translation>
 <translation id="2322193970951063277">हेडर और फ़ुटर</translation>
@@ -2172,6 +2176,7 @@
 <translation id="2806372837663997957">आप जिस डिवाइस के साथ फ़ाइल को शेयर करना चाहते हैं उसने इस फ़ाइल को अस्वीकार कर दिया है</translation>
 <translation id="2806891468525657116">शॉर्टकट पहले से मौजूद है</translation>
 <translation id="2807517655263062534">आपकी डाउनलोड की गई फ़ाइलें यहां दिखाई देती हैं</translation>
+<translation id="2808714658215073920">वाई-फ़ाई से कनेक्ट हो रहा है...</translation>
 <translation id="2809586584051668049">और <ph name="NUMBER_ADDITIONAL_DISABLED" /> और</translation>
 <translation id="2811205483104563968">खाते</translation>
 <translation id="2811564570599779918">स्पैम और धोखाधड़ी को कम करना</translation>
@@ -2677,6 +2682,7 @@
 <translation id="3280243678470289153">Chrome में बने रहें</translation>
 <translation id="328119399589609861">इस सेटिंग से माइक्रोफ़ोन, कैमरा वगैरह पर डिवाइस के ऐक्सेस को कंट्रोल किया जा सकता है</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> के साथ टैब शेयर किया जा रहा है</translation>
+<translation id="3283148363895519428">सेटअप जारी रखने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपका फ़ोन आस-पास हो और ब्लूटूथ चालू हो.</translation>
 <translation id="3284050785966252943">ऑटोमैटिक भरने की सुविधा के मेटाडेटा की झलक</translation>
 <translation id="3285322247471302225">नया &amp;टैब</translation>
 <translation id="3285500645985761267">मिलती-जुलती साइटों को ग्रुप में आपकी गतिविधि देखने की अनुमति दें</translation>
@@ -2884,6 +2890,13 @@
 <translation id="346298925039590474">यह मोबाइल नेटवर्क, इस डिवाइस को इस्तेमाल करने वाले सभी उपयोगकर्ताओं के लिए उपलब्ध रहेगा</translation>
 <translation id="3464145797867108663">वर्क प्रोफ़ाइल जोड़ें</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> वगैरह के लिए छूट पाएं</translation>
+<translation id="3466476162566821406">कोड की पुष्टि करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.
+    <ph name="BR" />
+    <ph name="BR" />
+    अपने फ़ोन का इस्तेमाल करके, <ph name="DEVICE_TYPE" /> में अपने वाई-फ़ाई और Google खाते की जानकारी जोड़ी जा सकती है.
+    <ph name="BR" />
+    <ph name="BR" />
+    आस-पास मौजूद डिवाइसों को <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के तौर पर दिखता है...</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फ़ोन</translation>
 <translation id="3469583217479686109">कोई खास हिस्सा चुनने का टूल</translation>
@@ -3398,6 +3411,7 @@
 <translation id="3902789559055749153"><ph name="APP_NAME" /> के लिए पासकी सेट करने का तरीका चुनें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
+<translation id="3905218345729976782">Android फ़ोन की मदद से वाई-फ़ाई से कनेक्ट करें</translation>
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
 <translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
 <translation id="3908501907586732282">एक्‍सटेंशन चालू करें</translation>
@@ -3904,6 +3918,7 @@
 <translation id="436926121798828366"><ph name="SETTINGS_LINK" /> में जाकर, इसे कभी भी बदला जा सकता है</translation>
 <translation id="4369735607080757018">विज्ञापनों की परफ़ॉर्मेंस मापने के लिए साइटों के बीच सीमित डेटा शेयर किया जाता है. जैसे, किसी दिन के किस समय आपको विज्ञापन दिखाया गया</translation>
 <translation id="4370975561335139969">  डाले गए ईमेल और पासवर्ड का मिलान नहीं हो रहा</translation>
+<translation id="4373418556073552953">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="4374805630006466253">किसी दूसरे फ़ोन या टैबलेट का इस्तेमाल करें</translation>
 <translation id="4374831787438678295">Linux इंस्टॉलर</translation>
 <translation id="4375035964737468845">डाउनलोड की गई फ़ाइलें खोलें</translation>
@@ -4358,6 +4373,7 @@
 <translation id="4768332406694066911">आपके पास इन संगठनों के प्रमाणपत्र हैं जो आपकी पहचान करते हैं</translation>
 <translation id="4770119228883592393">अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + डाउन ऐरो बटन दबाएं</translation>
 <translation id="4773112038801431077">Linux को अपग्रेड करें</translation>
+<translation id="4774456473286455263">अपने Android फ़ोन से सेट अप करें</translation>
 <translation id="477647109558161443">एक डेस्कटॉप शॉर्टकट बनाएं</translation>
 <translation id="4776594120007763294">आप बाद में पढ़ने के लिए पेज जोड़ सकते हैं. इसके लिए, बटन पर क्लिक करें</translation>
 <translation id="4777458362738635055">इस डिवाइस के अन्य उपयोगकर्ता यह नेटवर्क इस्तेमाल कर सकते हैं</translation>
@@ -4682,6 +4698,7 @@
 <translation id="5067867186035333991">अगर <ph name="HOST" /> आपका कैमरा एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="5068553687099139861">पासवर्ड दिखाना</translation>
 <translation id="5068919226082848014">पिज़्ज़ा</translation>
+<translation id="506934332411950286">आपके Android फ़ोन से, वाई-फ़ाई के क्रेडेंशियल ट्रांसफ़र किए जा रहे हैं</translation>
 <translation id="5070710277167211639">नेविगेशन को एचटीटीपीएस पर अपग्रेड करें. ऐसा करने से, आपको उन साइटों को लोड करने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं</translation>
 <translation id="5070773577685395116">क्या आपको सूचना नहीं मिली?</translation>
 <translation id="5071295820492622726">हाल ही में किए गए डाउनलोड पर वापस जाएं</translation>
@@ -4846,6 +4863,7 @@
 <translation id="5213114823401215820">बंद किया गया ग्रुप फिर से खोलें</translation>
 <translation id="5213481667492808996">आपकी '<ph name="NAME" />' डेटा सेवा इस्तेमाल किए जाने के लिए तैयार है</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिंग दिखाएं</translation>
+<translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' बुकमार्क बनाया गया.</translation>
 <translation id="5215502535566372932">देश चुनें</translation>
 <translation id="5222403284441421673">डाउनलोड हो रही असुरक्षित फ़ाइल ब्लॉक की गई</translation>
 <translation id="5222676887888702881">साइन आउट करें</translation>
@@ -4867,6 +4885,7 @@
 <translation id="5236374273162681467">अपने सभी डिवाइसों पर आसानी से इस्तेमाल करने के लिए, आप उन्हें अपने Google खाते में ले जा सकते हैं</translation>
 <translation id="523862956770478816">साइट के लिए अनुमतियां</translation>
 <translation id="5239752869099890912">इस साइट पर इन एक्सटेंशन के लिए, अपनी अपडेट की गई सेटिंग लागू करने के लिए, पेज को फिर से लोड करें</translation>
+<translation id="5240931875940563122">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" को चालू करें?</translation>
 <translation id="5243522832766285132">कृपया कुछ देर बाद कोशिश करें</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> से कोऑर्डिनेट हो रहा है</translation>
@@ -5175,6 +5194,7 @@
 <translation id="5511379779384092781">बहुत कम</translation>
 <translation id="5511823366942919280">क्या आप वाकई इस डिवाइस को "Shark" के रूप में सेट करना चाहते हैं?</translation>
 <translation id="5512739112435045339">अपने डिवाइस में जगह खाली करें. इसके बाद, दोबारा डाउनलोड करने की कोशिश करें</translation>
+<translation id="5513807280330619196">Calculator</translation>
 <translation id="5514315914873062345">टैब</translation>
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
@@ -5394,6 +5414,7 @@
 <translation id="571222594670061844">साइटें, पहचान करने वाली सेवाओं से जुड़े, साइन इन करने के अनुरोध दिखा सकती हैं</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> से कनेक्ट किया गया</translation>
 <translation id="5713960379473463904">स्पेस इनपुट स्टाइल</translation>
+<translation id="5715254110426566593">Steam जल्द ही Chromebook पर उपलब्ध होगा. Steam उपलब्ध है या नहीं, यह जानने के लिए अपडेट देखें.</translation>
 <translation id="5715711091495208045">प्‍लग इन ब्रोकर: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">आपको इन पासवर्ड को अभी बदलना चाहिए</translation>
 <translation id="5719854774000914513">साइटें, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती हैं</translation>
@@ -5569,6 +5590,13 @@
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
 <translation id="5867841422488265304">कुछ खोजें या वेब पता टाइप करें</translation>
+<translation id="5867855474018538405">क्यूआर कोड को स्कैन करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपके फ़ोन का ब्लूटूथ और वाई-फ़ाई चालू हो.
+    <ph name="BR" />
+    <ph name="BR" />
+    अपने फ़ोन का इस्तेमाल करके, <ph name="DEVICE_TYPE" /> में अपने वाई-फ़ाई और Google खाते की जानकारी जोड़ी जा सकती है.
+    <ph name="BR" />
+    <ph name="BR" />
+    आस-पास मौजूद डिवाइसों को <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के तौर पर दिखता है...</translation>
 <translation id="5868434909835797817">आपके डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="5869029295770560994">ठीक है, समझ लिया</translation>
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
@@ -5666,6 +5694,7 @@
 <translation id="5949544233750246342">फ़ाइल को पार्स नहीं किया जा सका</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फ़ॉन्ट इस्तेमाल करना चाहता है</translation>
 <translation id="5951624318208955736">मॉनिटर</translation>
+<translation id="595262438437661818">इस साइट के लिए, कोई भी एक्सटेंशन ऐक्सेस करने की ज़रूरत नहीं है</translation>
 <translation id="5953211687820750364">इस सूची में मौजूद यूआरएल पर <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           और <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> नीतियां लागू होती हैं</translation>
 <translation id="5955282598396714173">आपके पासवर्ड की समय-सीमा खत्म हो गई है. इसे बदलने के लिए कृपया साइन आउट करके फिर से साइन इन करें.</translation>
@@ -5774,6 +5803,8 @@
 <translation id="6052488962264772833">कास्ट करना शुरू करने के लिए, ऐक्सेस कोड टाइप करें</translation>
 <translation id="6052976518993719690">SSL सत्यापन प्रधिकरण</translation>
 <translation id="6053401458108962351">ब्राउज़िंग डेटा &amp;साफ़ करें...</translation>
+<translation id="6053717018321787060">आपका Google खाता वही खाता है जिसका इस्तेमाल आपने Gmail, YouTube, Chrome, और Google के अन्य प्रॉडक्ट के लिए किया है.
+    अपने सभी बुकमार्क, फ़ाइलों वगैरह को आसानी से ऐक्सेस करने के लिए, अपने खाते का इस्तेमाल करें. अगर आपके पास Google खाता नहीं है, तो अगली स्क्रीन पर जाकर खाता बनाया जा सकता है.</translation>
 <translation id="6054284857788651331">हाल ही में बंद हुआ टैब ग्रुप</translation>
 <translation id="6054961935262556546">'किसको दिखे' सेटिंग बदलें</translation>
 <translation id="6055171183283175969">आपने जो पासवर्ड डाला है वह गलत है.</translation>
@@ -6113,6 +6144,7 @@
 <translation id="634887995541211148">अपने डिवाइस पर Bruschetta चलाएं.</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
 <translation id="6354918092619878358">SECG अंडाकार वक्र secp256r1 (अर्थात ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355395056805388423">Google खाते की जानकारी ट्रांसफ़र की जा रही है...</translation>
 <translation id="635609604405270300">डिवाइस चालू रखें</translation>
 <translation id="63566973648609420">आपके सुरक्षित किए गए डेटा को सिर्फ़ वही व्यक्ति पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. लंबा पासवर्ड Google को नहीं भेजा जाता है. Google इसे सेव भी नहीं करता है. अगर आप अपना लंबा पासवर्ड भूल जाते हैं या यह सेटिंग बदलना चाहते हैं, तो आपको <ph name="BEGIN_LINK" />सिंक रीसेट करना होगा<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">कुछ सहायता लिंक <ph name="APP_NAME" /> या  <ph name="APP_NAME_2" /> में अब भी खुलेंगे.</translation>
@@ -7029,6 +7061,7 @@
 <translation id="7159953856712257647">डिफ़ॉल्ट रूप से इंस्टॉल किया गया</translation>
 <translation id="7160182524506337403">अब आपके पास अपने फ़ोन की सूचनाएं देखने का विकल्प है</translation>
 <translation id="7163202347044721291">ऐक्टिवेशन कोड की पुष्टि की जा रही है...</translation>
+<translation id="7165263843655074092">आपको इस डिवाइस पर मानक सुरक्षा दी जा रही है</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" चेक किए गए स्‍थानों में चित्रों, वीडियो, और ध्‍वनि फ़ाइलों को पढ़ सकता है.</translation>
 <translation id="7166815366658507447">हॉटस्पॉट चालू है</translation>
 <translation id="7167327771183668296">अपने-आप क्लिक होने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
@@ -7100,6 +7133,7 @@
 <translation id="7228523857728654909">स्क्रीन लॉक और साइन इन करें</translation>
 <translation id="7228854227189381547">भाषा न बदलें</translation>
 <translation id="7230222852462421043">&amp;विंडो को पहले जैसा करना</translation>
+<translation id="7230881857327093958">ये बदलाव, सेटअप करने के बाद लागू होंगे</translation>
 <translation id="7231260028442989757">फ़ोन पर मिलने वाली सूचनाओं को देखें, उन्हें खारिज करें, और उनका जवाब दें</translation>
 <translation id="7232750842195536390">नाम नहीं बदला जा सका</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
@@ -7706,6 +7740,7 @@
 <translation id="7744192722284567281">यह पासवर्ड आपके हैक हो चुके डेटा में शामिल है</translation>
 <translation id="7744649840067671761">असाइनमेंट को शुरू करने के लिए, किसी नए स्विच या कीबोर्ड की किसी कुंजी को दबाएं.
 असाइनमेंट को हटाने के लिए, असाइन किए गए स्विच या कुंजी को दबाएं.</translation>
+<translation id="7746045113967198252">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को बड़ा या छोटा करता है. इसे बाद में, सेटिंग &gt; डिवाइस &gt; डिसप्ले पर भी देखा जा सकता है.</translation>
 <translation id="7746739418892731373">आपको Google Photos की लाइब्रेरी में मौजूद फ़ोटो और वीडियो के हाइलाइट दिखाए जा रहे हैं. <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> पर जाकर यह कंट्रोल किया जा सकता है कि हाइलाइट में क्या दिखे और क्या नहीं.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7759,6 +7794,10 @@
 <translation id="7784796923038949829">साइट का डेटा पढ़ा या बदला नहीं जा सकता</translation>
 <translation id="778480864305029524">इंस्टैंट टेदरिंग का इस्तेमाल करने के लिए, Google Play सेवाओं के लिए सूचनाएं चालू करें.</translation>
 <translation id="7785471469930192436">अगर लागू हो, तो अपना खोज इतिहास मिटाने के लिए, अपने सर्च इंजन के निर्देश देखें.</translation>
+<translation id="7786663536153819505">क्यूआर कोड को स्कैन करने के लिए, अपने फ़ोन पर दिए गए निर्देशों का पालन करें. पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू हो.
+    <ph name="BR" />
+    <ph name="BR" />
+    आस-पास मौजूद डिवाइसों को <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> के तौर पर दिखता है...</translation>
 <translation id="7786889348652477777">और ऐप्लिकेशन रीलोड करें</translation>
 <translation id="7787308148023287649">किसी दूसरी स्क्रीन पर दिखाएं</translation>
 <translation id="7788298548579301890">आपके कंप्‍यूटर पर किसी दूसरे प्रोग्राम ने ऐसा ऐप्लिकेशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.
@@ -7777,6 +7816,7 @@
 <translation id="7800518121066352902">घड़ी की &amp;विपरीत दिशा में घुमाएं</translation>
 <translation id="7801679634091975683">आप यहां जो भी बदलाव करते हैं वे सिर्फ़ Lacros Chrome ब्राउज़र पर लागू होते हैं. अपने Chrome ब्राउज़र की सेटिंग में बदलाव करने के लिए, Chrome ब्राउज़र खोलें और सेटिंग पर जाएं.</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
+<translation id="7803657407897251194">अपने Android डिवाइस की मदद से सेटअप जारी रखने के लिए, अपने <ph name="DEVICE_TYPE" /> को नेटवर्क से कनेक्ट करें</translation>
 <translation id="7804072833593604762">टैब बंद है</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7805906048382884326">सलाह बंद करें</translation>
@@ -8223,6 +8263,7 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> पर जाएं</translation>
 <translation id="8184318863960255706">ज़्यादा जानकारी</translation>
 <translation id="8184472985242519288">एक जैसा</translation>
+<translation id="8186047833733689201">उच्चारण के चिह्न वाला मेन्यू खुला है. नेविगेट करने के लिए, लेफ़्ट, राइट या नंबर बटन दबाएं और उच्चारण के चिह्न डालने के लिए, Enter दबाएं.</translation>
 <translation id="8186609076106987817">सर्वर को फ़ाइल नहीं मिल सकी.</translation>
 <translation id="8188389033983459049">अपनी डिवाइस सेटिंग जांचें और जारी रखने के लिए उसे चालू करें</translation>
 <translation id="8188742492803591566">स्क्रीन को कास्ट करने के लिए, Chromecast या टीवी पर दिख रहा ऐक्सेस कोड डालें.</translation>
@@ -8399,6 +8440,7 @@
 <translation id="8336739000755212683">डिवाइस खाते की इमेज बदलें</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{इस डिवाइस की पहचान को 1 घंटे के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}one{इस डिवाइस की पहचान को {HOURS} घंटे के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}other{इस डिवाइस की पहचान को {HOURS} घंटे के लिए सेव किया जाएगा और इस दौरान, इसे बिना कोड के कनेक्ट किया जा सकता है. इसे आपका एडमिन सेट करता है.}}</translation>
 <translation id="8338952601723052325">डेवलपर वेबसाइट</translation>
+<translation id="8339288417038613756">डिसप्ले और टेक्स्ट का साइज़</translation>
 <translation id="833986336429795709">यह लिंक खोलने के लिए कोई ऐप्लिकेशन चुनें</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{उस <ph name="BEGIN_BOLD" />1 साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}one{उस <ph name="BEGIN_BOLD" />{NUM_SITES} साइट<ph name="END_BOLD" /> की समीक्षा करें जिसने हाल ही में कई सूचनाएं भेजी हैं}other{उन <ph name="BEGIN_BOLD" />{NUM_SITES} साइटों<ph name="END_BOLD" /> की समीक्षा करें जिन्होंने हाल ही में कई सूचनाएं भेजी हैं}}</translation>
@@ -8530,6 +8572,7 @@
 <translation id="8449036207308062757">जगह प्रबंधित करें</translation>
 <translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
 <translation id="8451512073679317615">assistant</translation>
+<translation id="8452105022015742247">आपके Android फ़ोन से Google खाते की जानकारी ट्रांसफ़र की जा रही है</translation>
 <translation id="845702320058262034">कनेक्ट नहीं किया जा सकता. देखें कि आपके फ़ोन का ब्लूटूथ चालू है या नहीं.</translation>
 <translation id="8457251154056341970">आपको दोबारा इस पेज पर <ph name="MODULE_NAME" /> नहीं दिखेंगे</translation>
 <translation id="8457451314607652708">बुकमार्क आयात करें</translation>

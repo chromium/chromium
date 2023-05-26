@@ -315,6 +315,9 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2975121486251958312">Solo está disponible el modo Incógnito</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Agregar forma de pago…</translation>
+<translation id="2988274366244053197">No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.
+
+Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Abrir en una nueva pestaña</translation>
 <translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
@@ -381,6 +384,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3471148582064653480">Sincroniza tus contraseñas, historial y más.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{en {COUNT} sitio o app}other{en {COUNT} sitios o apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accede a tus contraseñas en otras apps.</translation>
 <translation id="3478058380795961209">Mes vencimiento</translation>
 <translation id="3482959374254649722">Sincronizando las pestañas...</translation>
 <translation id="3484946776651937681">Abrir en Descargas</translation>
@@ -652,6 +656,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás realizando un seguimiento de este producto.</translation>
+<translation id="5325595483440111327">Consulta el historial de navegación.</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
 <translation id="536067926684072644">Ver Favoritos</translation>
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>

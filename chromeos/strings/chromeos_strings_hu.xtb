@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Íróasztalok</translation>
 <translation id="1018219910092211213">A DNS nem oldható fel</translation>
 <translation id="1018656279737460067">Megszakítva</translation>
+<translation id="1020274983236703756">Exkluzív <ph name="PRODUCT_NAME" />-elemek váltak hozzáférhetővé</translation>
 <translation id="1022433422498218992">Általános vezérlők</translation>
 <translation id="1022628058306505708">A Föld mozgása</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> exkluzív</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Az Adatvédelmi képernyő kapcsolója</translation>
 <translation id="3639846061339007994">felső</translation>
 <translation id="3651050199673793219">Hőmérséklet mértékegységének kiválasztása</translation>
+<translation id="3663574643422533538">Exkluzív <ph name="PRODUCT_NAME" />-műalkotás kiválasztása</translation>
 <translation id="3689839747745352263">Teszt: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Betöltés...</translation>
 <translation id="3708186454126126312">Korábban csatlakoztatva</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
+<translation id="4113067922640381334">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> férhet hozzá</translation>
 <translation id="4117637339509843559">Sötét mód</translation>
 <translation id="4130035430755296270">További elrendezési lehetőségekért mozgassa tovább az egérmutatót</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Nincs inicializálva</translation>
 <translation id="8593058461203131755">médiatartalom szüneteltetése</translation>
 <translation id="8620617069779373398">Roaming állapota</translation>
+<translation id="8626489604350149811">További műveletek a következőhöz: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Világoslila</translation>
 <translation id="8651481478098336970">némítás</translation>
 <translation id="8655295600908251630">Csatorna</translation>

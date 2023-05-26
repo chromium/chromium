@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Tovuti ya Google</translation>
 <translation id="1853795129690976061">Umeshiriki folda hii na Linux</translation>
 <translation id="1864756863218646478">Faili haikupatikana.</translation>
+<translation id="1877377730633446520">Faili hii itatumia takribani <ph name="REQUIRED_SPACE" />. Kwa sasa una <ph name="FREE_SPACE" /> za nafasi ya hifadhi.</translation>
 <translation id="1884013283844450420">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Unganisha</translation>
 <translation id="1920670151694390848">Unukuzi wa mfumo wa kuandika Kimalayalamu</translation>
 <translation id="1920798810075583923">Tikitimaji</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Panua vidirisha vya maoni ya faili</translation>
 <translation id="1995337122023280937">Nenda mahali faili ilipo</translation>
 <translation id="2001796770603320721">Dhibiti katika Hifadhi ya Google</translation>
+<translation id="2004942826429452291">Faili zitahifadhiwa katika hifadhi ya wingu pamoja na kwenye Chromebook hii.</translation>
 <translation id="2009067268969781306">Hatua ya kubadilisha muundo wa hifadhi itafuta data yote iliyomo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="2025955442973426285">Kitigrinya</translation>
 <translation id="2037845485764049925">Kirusi</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Mipangilio ya kifaa</translation>
 <translation id="2084809735218147718">Mtu anayesema asante kwa lugha ya ishara</translation>
 <translation id="2088690981887365033">Mtandao wa VPN</translation>
+<translation id="2089751716171649322">Fikia faili kwenye Hifadhi yako ya Google kwa urahisi ukiwa nje ya mtandao</translation>
 <translation id="2111134541987263231">Washa <ph name="BEGIN_BOLD" />Ruhusu katika Hali fiche<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Vipengee <ph name="NUMBER_OF_ITEMS" /> vitafutwa na hutaweza kuvirejesha.</translation>
 <translation id="2122305276694332719">Hatua ya kuunganisha kiotomatiki kwenye mtandao uliofichwa huruhusu watu wengine kuona kifaa chako na baadhi ya mipangilio ya mtandao, na hali hii haipendekezwi.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Si sasa</translation>
 <translation id="3486821258960016770">Kimongolia</translation>
 <translation id="3495304270784461826">Hitilafu <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Faili zako za Hifadhi ya Google zinapatikana ukiwa nje ya mtandao</translation>
 <translation id="3509680540198371098">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Maelezo</translation>
 <translation id="3511705761158917664">Inajitayarisha kusawazisha vipengee <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="3522708245912499433">Kireno</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Chagua zote</translation>
 <translation id="5500122897333236901">Kiaislandi</translation>
 <translation id="5508696409934741614">Nukta</translation>
+<translation id="5519161320735100193">Mipangilio ya Hifadhi ya Google</translation>
 <translation id="5522908512596376669">Umebadilisha orodha ya faili kuwa mwonekano wa orodha.</translation>
 <translation id="5524517123096967210">Faili isingeweza kusomwa.</translation>
 <translation id="5533102081734025921">Picha ya <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7806708061868529807">Kiebrania</translation>
 <translation id="78104721049218340">Kithai kwenye kibodi ya Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009">TB <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7831491651892296503">Hitilafu imetokea wakati wa kuweka mipangilio ya mtandao</translation>
 <translation id="7839804798877833423">Kupata faili hizi kutatumia takribani  <ph name="FILE_SIZE" /> za data ya simu ya mkononi.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Kikatakana</translation>
 <translation id="7908793776359722643">Hatua ya kuweka upya muundo wa sehemu itafuta data yote iliyohifadhiwa kwenye sehemu hiyo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Faili zako katika Hifadhi yangu zitasawazishwa kwenye Chromebook yako kiotomatiki ili uweze kuzifikia bila muunganisho wa intanenti.</translation>
 <translation id="7925247922861151263">Ukaguzi wa AAA umeshindikana</translation>
 <translation id="7925686952655276919">Usitumie data ya simu kwa ulinganishaji</translation>
 <translation id="7928710562641958568">Ondoa kifaa</translation>
+<translation id="7933875256234974853">Inajitayarisha kusawazisha faili za Hifadhi...</translation>
 <translation id="7943385054491506837">Colemak ya Marekani</translation>
 <translation id="7953739707111622108">Kifaa hiki hakiwezi kufunguliwa kwa sababu mfumo wake wa faili haukutambuliwa.</translation>
 <translation id="7969525169268594403">Kislovenia</translation>
 <translation id="7972920761225148017">Kifaransa (Uswizi)</translation>
 <translation id="7973962044839454485">Uthibitishaji wa PPP ulishindwa kutokana na jina la mtumiaji na nenosiri lisilo sahihi</translation>
 <translation id="7980421588063892270">Kiingereza (Marekani) kwenye kibodi ya Colemak</translation>
+<translation id="7985008041109611710">Inasawazisha faili <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Hakuna mtandao</translation>
 <translation id="8008366997883261463">Mbwa</translation>
 <translation id="8028993641010258682">Ukubwa</translation>
@@ -1036,6 +1045,7 @@
 <translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219908252191632183">Mandhari ya mwezi mwandamo</translation>
+<translation id="937795003075802289">Inasawazisha faili 1</translation>
 <translation id="938470336146445890">Tafadhali sakinisha cheti cha mtumiaji.</translation>
 <translation id="939736085109172342">Folda mpya</translation>
 <translation id="943972244133411984">Ilibadilishwa na</translation>

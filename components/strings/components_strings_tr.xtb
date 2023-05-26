@@ -1132,6 +1132,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3740319564441798148">Uzun mesafe otobüs ve demiryolu ulaşımı</translation>
 <translation id="3743765582345153106">Otomatik doldurmayı kullanırken her zaman doğrula</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
+<translation id="3744212718085287312">Bir dahaki sefere sanal kartla daha güvenli hale getirilsin mi?</translation>
 <translation id="3744286742364977428">İndirdiğiniz dosyalar analiz amacıyla Google Cloud ve üçüncü taraflara gönderilir. Örneğin, dosyalarınızın hassas veriler veya kötü amaçlı yazılım içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak bu dosyalar saklanabilir.</translation>
 <translation id="3744899669254331632">Web sitesi Chromium'un işleyemediği karışık kimlik bilgileri gönderdiğinden <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici türdendir, dolayısıyla bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> sitesine saldıranlar sizi yanıltarak yazılım yüklemek veya kişisel bilgilerinizi (örneğin, şifreler, telefon numaraları veya kredi kartları) ifşa etmek gibi tehlikeli bir şey yapmanızı sağlayabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>

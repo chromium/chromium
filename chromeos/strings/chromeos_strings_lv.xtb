@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Darbvietas</translation>
 <translation id="1018219910092211213">Nevar atrast DNS.</translation>
 <translation id="1018656279737460067">Atcelts</translation>
+<translation id="1020274983236703756">Tagad ir pieejami ekskluzīvi <ph name="PRODUCT_NAME" /> līdzekļi</translation>
 <translation id="1022433422498218992">Vispārīgas vadīklas</translation>
 <translation id="1022628058306505708">Zemes plūsma</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Notiek skeneru meklēšana…</translation>
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
+<translation id="3248223063252096240">Tikai <ph name="PRODUCT_NAME" /> datoriem</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
 <translation id="3275729367986477355">Iemiesojuma attēls</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediģēt failu}zero{Rediģēt failus}one{Rediģēt failus}other{Rediģēt failus}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Konfidencialitātes ekrāna slēdzis</translation>
 <translation id="3639846061339007994">augšpusē</translation>
 <translation id="3651050199673793219">Atlasīt temperatūras mērvienību</translation>
+<translation id="3663574643422533538">Atlasīt ekskluzīvu <ph name="PRODUCT_NAME" /> mākslas darbu</translation>
 <translation id="3689839747745352263">Pārbaude: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="3708186454126126312">Ierīces, ar kurām iepriekš tika izveidots savienojums</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Atlasīt albumu <ph name="TITLE" />: <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB skārienpaliktnis</translation>
+<translation id="4113067922640381334">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
 <translation id="4117637339509843559">Tumšais režīms</translation>
 <translation id="4130035430755296270">Lai skatītu citas izkārtojuma iespējas, turpiniet turēt kursoru turpat</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>
 <translation id="8593058461203131755">apturēt multivides satura atskaņošanu</translation>
 <translation id="8620617069779373398">Viesabonēšanas statuss</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />: citas darbības</translation>
 <translation id="86356131183441916">Gaiši violeta</translation>
 <translation id="8651481478098336970">izslēgt skaņu</translation>
 <translation id="8655295600908251630">Kanāls</translation>

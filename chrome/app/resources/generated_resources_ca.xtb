@@ -6119,6 +6119,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6343003829431264373">Només pàgines parells</translation>
 <translation id="6344170822609224263">Accedir a la llista de connexions de xarxa</translation>
 <translation id="6344576354370880196">Impressores desades</translation>
+<translation id="6344608411615208519">El teu pare o mare <ph name="BEGIN_LINK" />gestiona el navegador<ph name="END_LINK" /></translation>
 <translation id="6345418402353744910">El servidor intermediari <ph name="PROXY" /> requereix el teu nom d'usuari i la teva contrasenya perquè l'administrador pugui configurar la xarxa</translation>
 <translation id="6345878117466430440">Marca com a llegit</translation>
 <translation id="6347010704471250799">Mostra una notificació</translation>
@@ -7646,6 +7647,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7684212569183643648">Extensió instal·lada per l'administrador</translation>
 <translation id="7684559058815332124">Accedeix a la pàgina d'inici de sessió del portal captiu</translation>
 <translation id="7684718995427157417">Per crear aplicacions i provar-les, activa Android Debug Bridge (ADB). Tingues en compte que aquesta acció permet instal·lar aplicacions d'Android que Google no ha verificat. Per desactivar ADB, hauràs de restablir la configuració de fàbrica del dispositiu.</translation>
+<translation id="7684913007876670600">Per mostrar una visualització simplificada d'aquesta pàgina, obre el tauler lateral i selecciona el mode de lectura</translation>
 <translation id="7685049629764448582">Memòria de JavaScript </translation>
 <translation id="7685087414635069102">PIN obligatori</translation>
 <translation id="7686086654630106285">Més informació sobre els anuncis suggerits per llocs web</translation>

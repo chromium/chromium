@@ -142,6 +142,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1750259112639922169">Grŵp tabiau - <ph name="TAB_COUNT" /> o dabiau</translation>
 <translation id="17513872634828108">Tabiau agored</translation>
 <translation id="1754404134430936718">Copïwyd y Testun</translation>
+<translation id="1757620656501361327">Diweddariad Rheolwr Cyfrineiriau Google</translation>
 <translation id="1778457539567749232">Marcio ei fod heb ei ddarllen</translation>
 <translation id="1779766957982586368">Cau'r ffenestr</translation>
 <translation id="1791662854739702043">Wedi gosod</translation>
@@ -754,6 +755,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="504456571576643789">Pethau i'w hystyried</translation>
 <translation id="5054455334322721892">Gall <ph name="BEGIN_LINK1" />mathau eraill o weithgarwch<ph name="END_LINK1" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
 <translation id="506254248375231072">Dim tabiau</translation>
+<translation id="5062960805900435602">Mae'r diweddariad am gyfuno cyfrinair ar gau</translation>
 <translation id="5091199029769593641">Yn fuan, byddwch yn gweld straeon o <ph name="SITE_NAME" /> pan fyddwch yn agor tab newydd. Mae gwefannau rydych yn eu dilyn yn cael eu cadw yn eich cyfrif Google. Gallwch eu rheoli yn y gosodiadau Discover.</translation>
 <translation id="5091249083535528968">Data defnydd estynedig</translation>
 <translation id="509429900233858213">Bu gwall.</translation>
@@ -803,6 +805,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5361107212971249203">testun</translation>
 <translation id="5368227114232678694">I bori'n breifat ar y ddyfais hon, rhowch gynnig ar Anhysbys</translation>
 <translation id="5375577065097716013">Chwilio â Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Cyfrinair cryf wedi'i awgrymu. Mae'r bysellfwrdd wedi'i guddio.</translation>
 <translation id="5401851137404501592">I barhau, bydd <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> yn rhannu eich enw, eich e-bost, eich cyfeiriad, a'ch llun proffil gyda'r wefan.</translation>
 <translation id="5409881200985013443">Cyflwyno <ph name="ONE_TIME_CODE" /> ar <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Wrthi'n gwirio…</translation>
@@ -1161,6 +1164,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7217781228893594884">Bydd tabiau anhysbys yn cael eu cloi pan fyddwch yn gadael Chrome</translation>
 <translation id="7222235798733126207">Rhannu cyfyngedig rhwng gwefannau</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad ar y gweill}zero{Mae # lawrlwythiad ar y gweill}two{Mae # lawrlwythiad ar y gweill}few{Mae # lawrlwythiad ar y gweill}many{Mae # lawrlwythiad ar y gweill}other{Mae # lawrlwythiad ar y gweill}}</translation>
+<translation id="72415438529550637">Mae'r awgrym cyfrinair ar gau.</translation>
 <translation id="7242755609445462077">Amlygu sydd wedi'i arddullio <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Gwnewch yn siŵr bod cysoni yn <ph name="TARGET_DEVICE_NAME" /> wedi'i droi ymlaen yn Chrome.</translation>
 <translation id="7252076891734325316">Rhowch eich ffôn yn agos at y cyfrifiadur</translation>

@@ -426,6 +426,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
 <translation id="3293181007446299124">Din browserhistorik holdes privat på din enhed, og rapporter sendes med forsinkelse for at beskytte din identitet</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
+<translation id="3305130791745726624">Send til enheder</translation>
 <translation id="3305795716056605962">Oversæt sider via knappen Flere valgmuligheder</translation>
 <translation id="3319664549618064419">Skift til computerwebsite for at få en bedre visning af dette website</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
@@ -1174,6 +1175,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7304072650267745798">Din Android-enhed har muligvis en lignende indstilling. Hvis denne indstilling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
 <translation id="7304873321153398381">Offline. Chrome kan ikke tjekke dine adgangskoder.</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
+<translation id="7324354302972299151">Send en "Do Not Track"-anmodning</translation>
 <translation id="7332075081379534664">Login blev fuldført</translation>
 <translation id="7333232495927792353">Synkroniser data for at få det mest relevante indhold fra Google</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>

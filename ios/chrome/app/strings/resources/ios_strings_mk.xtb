@@ -750,6 +750,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
 <translation id="5965679971710331625">Најавени сте</translation>
+<translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5979837087407522202">Пребарајте лозинки</translation>
 <translation id="5981230843984570095">Затвори ги сите неактивни картички</translation>
 <translation id="5982717868370722439">Додајте ги постоечките податоци во <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +998,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7435356471928173109">Исклучено од администраторот</translation>
 <translation id="7438481509621345350">Сега ќе гледате стории од <ph name="CHANNEL_NAME" /> при отворање нова картичка.</translation>
 <translation id="7446583256109515732">Картичката е откачена</translation>
+<translation id="7451023311965289370">{count,plural, =1{Обележувачот е зачуван во „{title}“}one{Обележувачите се зачувани во „{title}“}other{Обележувачите се зачувани во „{title}“}}</translation>
 <translation id="7454057999980797137">Држава/Земја</translation>
 <translation id="7459628154744868585">Вклучена е „Подобрената заштита“</translation>
 <translation id="746684838091935575">3. Изберете Chrome</translation>

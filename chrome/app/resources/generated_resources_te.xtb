@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">సైట్‌లలోని మీ డేటాను ఈ ఎక్స్‌టెన్షన్ చదవగలదు, అలాగే మార్చగలదు. ఏయే సైట్‌లను ఎక్స్‌టెన్షన్ యాక్సెస్ చేయవచ్చన్నది మీరు నియంత్రించవచ్చు.</translation>
 <translation id="1007057452468855774">Google Play Storeను ఆన్ చేయండి</translation>
 <translation id="1008186147501209563">బుక్‌మార్క్‌లను ఎగుమతి చేయండి</translation>
+<translation id="1008261151167010035">మీరు ఎలా సైన్ ఇన్ చేశారు అనే దానిని <ph name="BRAND" /> గుర్తుంచుకొని, వీలయినప్పుడు ఆటోమేటిక్‌గా మిమ్మల్ని సైన్ ఇన్ చేస్తుంది. ఇది ఆఫ్‌లో ఉన్నప్పుడు, ప్రతిసారి ధృవీకరించమని మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="1008557486741366299">ఇప్పుడు కాదు</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{మీ డేటాను సురక్షితంగా ఉంచడానికి, 2 నెలలుగా మీరు ఉపయోగించని సైట్ నుండి అనుమతులు తీసివేయబడ్డాయి}other{మీ డేటాను సురక్షితంగా ఉంచడానికి, 2 నెలలుగా మీరు ఉపయోగించని సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి}}</translation>
 <translation id="1009663062402466586">గేమ్ కంట్రోల్స్ ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
@@ -228,6 +229,7 @@
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />‌లో</translation>
 <translation id="1183237619868651138">స్థానిక కాష్‌లో <ph name="EXTERNAL_CRX_FILE" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1185924365081634987">మీరు ఈ నెట్‌వర్క్ ఎర్ర‌ర్‌ను పరిష్కరించడానికి <ph name="GUEST_SIGNIN_LINK_START" />అతిథిగా బ్రౌజ్ చేయడాన్ని<ph name="GUEST_SIGNIN_LINK_END" /> కూడా ప్రయత్నించవచ్చు.</translation>
+<translation id="1187692277738768150">మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించి, సేవ్ చేసినప్పుడు:</translation>
 <translation id="1187722533808055681">ఇన్‌యాక్టివ్‌ మేల్కొలుపులు</translation>
 <translation id="1188807932851744811">లాగ్ అప్‌లోడ్ కాలేదు.</translation>
 <translation id="1190086046506744802">లైన్‌ల మధ్య చాలా దూరం ఉంది</translation>
@@ -243,6 +245,7 @@
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
 <translation id="1195558154361252544">మీరు అనుమతించినవి మినహా, ఇతర అన్ని సైట్‌లకు నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1197088940767939838">నారింజ రంగు</translation>
+<translation id="1197185198920566650">ఇది <ph name="EMAIL" /> కోసం <ph name="GOOGLE_PASSWORD_MANAGER" />‌కు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1197199342062592414">ప్రారంభించండి</translation>
 <translation id="11978075283960463">యాప్‌లో డేటా స్టోర్ చేయబడింది: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">డీయాక్టివేట్ చేయండి</translation>
@@ -1476,6 +1479,7 @@
 <translation id="2241053333139545397">అనేక వెబ్‌సైట్‌ల్లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="2241634353105152135">ఒకసారి మాత్రమే</translation>
 <translation id="2242687258748107519">ఫైల్ సమాచారం</translation>
+<translation id="2243452222143104807">ఇన్‌యాక్టివ్ ట్యాబ్</translation>
 <translation id="2245603955208828424">బాణం కీలను ఉపయోగించి ఐటెమ్‌ల ఒక్కొక్క అక్షరానికి వెళ్లండి</translation>
 <translation id="2246129643805925002">మీకు తాజా ఫీచర్‌లు, భద్రతా మెరుగుదలలను అందించడానికి మీ <ph name="DEVICE_TYPE" /> బ్యాక్‌గ్రౌండ్‌లో ఆటోమేటిక్‌గా అప్‌డేట్ అవుతుంది. మీరు సెట్టింగ్‌లలో అప్‌డేట్ ప్రాధాన్యతలను రివ్యూ చేయవచ్చు.</translation>
 <translation id="2246549592927364792">Google నుండి చిత్ర వివరణలను పొందాలా?</translation>
@@ -1506,6 +1510,7 @@
     సహాయ కేంద్రం<ph name="END_LINK" />ను సందర్శించండి.</translation>
 <translation id="2266957463645820432">USB ద్వారా IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">బ్లూటూత్‌ నిలిపివేయబడింది</translation>
+<translation id="2269895253281481171">ఇది ఎప్పుడైనా రిస్క్‌లో ఉంటే మీకు తెలియజేయబడుతుంది</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> డొమైన్‌లో ఏ పరికరంతోనైనా డేటాను ఇచ్చిపుచ్చుకోవడానికి అనుమతి</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />ఇన్‌స్టాలేషన్ అనేది <ph name="BEGIN_BOLD" />మీ మొత్తం హార్డ్ డ్రైవ్‌ను ఫ్యాక్టరీ రీసెట్ చేస్తుంది<ph name="END_BOLD" />. మీ డేటా బ్యాకప్ చేయబడిందని నిర్ధారించుకోండి.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ఇన్‌స్టాలేషన్ ప్రారంభం అయిన తర్వాత దాన్ని రద్దు చేయలేరు.<ph name="END_PARAGRAPH2" /></translation>
@@ -1937,6 +1942,7 @@
 <translation id="2616008379779647117">క్యాప్షన్ భాష</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
 <translation id="2618797463720777311">సమీప షేరింగ్‌ను సెటప్ చేయండి</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" />ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2620245777360407679">ప్రస్తుతానికి హాట్‌స్పాట్‌కు కనెక్ట్ అయి ఉన్న పరికరాలు</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
@@ -3837,6 +3843,7 @@
 <translation id="429234155571566255">ఇటీవల చూసిన ఈ రెసిపీలు</translation>
 <translation id="4295072614469448764">మీ టెర్మినల్‌లో యాప్ అందుబాటులో ఉంది. మీ లాంచర్‌లో కూడా ఒక చిహ్నం ఉండవచ్చు.</translation>
 <translation id="4295979599050707005">మీ <ph name="USER_EMAIL" /> ఖాతాను వెబ్‌సైట్‌లు, యాప్‌లు, Chromeలోని ఎక్స్‌టెన్షన్‌లు, Google Playలతో ఉపయోగించగలుగుతారని నిర్ధారించుకోవడానికి మళ్లీ సైన్ ఇన్ చేయండి. అలాగే, ఈ ఖాతాను మీరు వద్దనుకుంటే తీసివేయవచ్చు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" /> నుండి అప్లికేషన్‌లను ఇన్‌స్టాల్ చేసి, స్ట్రీమ్ చేయడం జరిగింది</translation>
 <translation id="4297219207642690536">మళ్లీ ప్రారంభించి, రీసెట్ చేయండి</translation>
 <translation id="4297813521149011456">డిస్‌ప్లే రొటేషన్</translation>
 <translation id="4299022904780065004">కొత్త &amp;అజ్ఞాత విండో</translation>
@@ -3870,6 +3877,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" />ని అన్ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="4326146840124313313">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, వాటితోపాటు ఎక్స్‌టెన్షన్‌ల నుండి మిమ్మల్ని రక్షించడానికి Chrome అందించే బలమైన సెక్యూరిటీ మరెన్నో చేస్తుంది</translation>
 <translation id="4326484226728068206"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />‌లోని మీ కార్ట్‌లోని <ph name="DISCOUNT_TEXT" /> గల ఐటెమ్‌లను, <ph name="RELATIVE_TIME" /> చూడటం జరిగింది</translation>
+<translation id="4328507707463585900">ఈ ట్యాబ్ <ph name="MEMORY_USAGE" /> మెమరీని ఉపయోగిస్తోంది</translation>
 <translation id="4330191372652740264">చల్లటి నీరు</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" />ని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="4332976768901252016">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయండి</translation>
@@ -5474,6 +5482,7 @@
 <translation id="5780973441651030252">ప్రాసెస్ ప్రాధాన్యత</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />గా సింక్ చేయి</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />కి ఆదేశాలను పంపించండి</translation>
+<translation id="5782040878821624922">ఇది ఏ పరికరంలో అయినా అందుబాటులో ఉంటుంది</translation>
 <translation id="5782227691023083829">అనువదిస్తోంది...</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
 <translation id="5785583009707899920">Chrome ఫైల్ వినియోగాలు</translation>
@@ -6172,6 +6181,7 @@
 <translation id="6384275966486438344">మీ శోధన సెట్టింగ్‌లను దీనికి మార్చండి: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{పేరు లేని గ్రూప్ - 1 ట్యాబ్}other{పేరు లేని గ్రూప్ - # ట్యాబ్‌లు}}</translation>
 <translation id="6385149369087767061">ఇంటర్నెట్‌కు కనెక్ట్ చేసి, మళ్లీ ట్రై చేయండి</translation>
+<translation id="6385382178401976503">కార్డ్: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">హెచ్చరిక - వివరణాత్మక లాగింగ్ ఎనేబుల్ చేయబడింది; ఈ కిందన పేర్కొన్న లాగ్‌లు, URLలను లేదా ఇతర గోప్యమైన సమాచారాన్ని కలిగి ఉండవచ్చు. దయచేసి ఈ సమాచారాన్ని రివ్యూ చేసి, దీన్ని సమర్పించడంలో మీకు ఎటువంటి అభ్యంతరం లేదని నిర్ధారించుకోండి.</translation>
 <translation id="6387674443318562538">నిలువుగా విభజించు</translation>
 <translation id="6388429472088318283">భాషలను వెతకండి</translation>
@@ -7417,6 +7427,7 @@
 <translation id="7475671414023905704">Netscape తప్పిపోయిన పాస్‌వర్డ్ URL</translation>
 <translation id="7476454130948140105">అప్‌డేట్ చేయడానికి తగినంత బ్యాటరీ ఛార్జింగ్ లేదు (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" />, మరో <ph name="COUNT" /> ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="7477599578899108080">అధిక మెమరీని వినియోగించింది: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">ఈ పేజీ కోసం QR కోడ్‌ను క్రియేట్ చేయండి</translation>
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
 <translation id="7478069565037869084">అక్షరాల మధ్య దూరం ఉంది</translation>
@@ -8146,6 +8157,7 @@
 <translation id="8086610718778464681">Linux యాప్‌లు, ఫైల్స్‌ను బ్యాకప్ చేయడం సాధ్యం కాదు</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ఈ ఫైల్ ఎన్‌క్రిప్ట్ చేయబడింది. డీక్రిప్ట్ చేయమని ఫైల్ యజమానిని అడగండి.}other{ఈ ఫైల్స్‌లో కొన్ని ఎన్‌క్రిప్ట్ చేయబడ్డాయి. డీక్రిప్ట్ చేయమని వాటి యజమానిని అడగండి.}}</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
+<translation id="8089547136368562137">Googleలోని అత్యుత్తమ టెక్నాలజీలు దీనిని సురక్షితంగా ఉంచుతాయి</translation>
 <translation id="8090234456044969073">మీరు అత్యంత తరచుగా సందర్శించిన వెబ్‌సైట్‌ల లిస్ట్‌ను చదవడానికి అనుమతి</translation>
 <translation id="8090513782447872344">మళ్లీ చూడటానికి మీరు ఎప్పుడైనా తిరిగి రావచ్చు</translation>
 <translation id="809312780580957751">ఈ పరికరంలో Steamను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</translation>
@@ -8179,6 +8191,7 @@
 <translation id="8113476325385351118">MIDI డివైజ్‌లపై పూర్తి కంట్రోల్ లేకుండా ఈ సైట్‌ను బ్లాక్ చేయడం కొనసాగించండి</translation>
 <translation id="8115139559594092084">మీ Google Drive నుండి</translation>
 <translation id="8116972784401310538">&amp;బుక్‌మార్క్ నిర్వాహకుడు</translation>
+<translation id="8118276691321086429">మీరు ఎలా సైన్ ఇన్ చేశారు అనే దానిని <ph name="PASSWORD_MANAGER_BRAND" /> గుర్తుంచుకొని, వీలయినప్పుడు ఆటోమేటిక్‌గా మిమ్మల్ని సైన్ ఇన్ చేస్తుంది. ఇది ఆఫ్‌లో ఉన్నప్పుడు, ప్రతిసారి ధృవీకరించమని మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="8118362518458010043">Chrome నిలిపివేసింది. ఈ ఎక్స్‌టెన్షన్‌ సురక్షితం కాకపోవచ్చు.</translation>
 <translation id="8118488170956489476">మీ సంస్థ మీ <ph name="BEGIN_LINK" />బ్రౌజర్‌ని నిర్వహిస్తోంది<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">డిస్‌ప్లే రిఫ్రెష్ రేటు</translation>
@@ -8894,7 +8907,7 @@
 <translation id="8737914367566358838">పేజీని అనువదించడానికి భాషను ఎంచుకోండి</translation>
 <translation id="8740247629089392745">మీరు ఈ Chromebookను <ph name="SUPERVISED_USER_NAME" />కు ఇవ్వవచ్చు. సెటప్ దాదాపు పూర్తయింది, మరిన్ని విషయాలను తెలుసుకునే సమయం ఆసన్నమైంది.</translation>
 <translation id="8740672167979365981">ChromeOS Flex అప్‌డేట్ అవసరం</translation>
-<translation id="8741944563400125534">స్విచ్ యాక్సెస్ సెటప్ గైడ్</translation>
+<translation id="8741944563400125534">Switch Access సెటప్ గైడ్</translation>
 <translation id="8742395827132970586">ఇన్ స్టాల్ విఫలమైంది, క్లీన్ చేస్తోంది</translation>
 <translation id="8742998548129056176">మీ పరికరం గురించి, మీరు దానిని ఉపయోగించే పద్ధతి గురించి (బ్యాటరీ స్థాయి, సిస్టమ్, యాప్‌ల యాక్టివిటీ, ఎర్రర్‌ల లాంటివి) తెలియజేసే సాధారణ సమాచారం. Androidను మెరుగుపరచడం కోసం ఈ డేటా ఉపయోగించబడుతుంది. కొంత ఏకీకృత సమాచారం- Google యాప్‌లు, Android డెవలపర్‌ల వంటి భాగస్వాముల యాప్‌లను, ప్రోడక్టులను మెరుగుపరచడంలో సహాయపడుతుంది.</translation>
 <translation id="8744641000906923997">రోమాజీ</translation>
@@ -8931,6 +8944,7 @@
 <translation id="8771300903067484968">ప్రారంభ పేజీ నేపథ్యం అన్నది డిఫాల్ట్ బ్యాక్‌గ్రౌండ్‌కు రీసెట్ చేయబడింది.</translation>
 <translation id="8773280816776735812">IBAN విలువను చూపండి</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> సేవ్ చేయండి</translation>
+<translation id="8774286683882091094">ఇన్‌యాక్టివ్ ట్యాబ్ ఆదా చేసిన మెమరీ: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">పునరుద్ధరణను నిర్ధారించండి</translation>
 <translation id="8774934320277480003">ఎగువ అంచు</translation>
 <translation id="8775144690796719618">URL చెల్లదు</translation>
@@ -9207,6 +9221,7 @@
 <translation id="9013037634206938463">Linuxను ఇన్‌స్టాల్ చేయడానికి <ph name="INSTALL_SIZE" /> స్పేస్ అవసరం. ఖాళీ స్పేస్‌ను పెంచడానికి, మీ పరికరం నుండి ఫైల్స్‌ను తొలగించండి.</translation>
 <translation id="9014206344398081366">ChromeVox ట్యుటోరియల్</translation>
 <translation id="901668144954885282">Google Driveకు బ్యాకప్ చేయండి</translation>
+<translation id="90181708067259747">గడువు ముగింపు తేదీ: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ఇన్‌స్టాలేషన్ పూర్తయింది</translation>
 <translation id="9019062154811256702">స్వీయ పూరింపు సెట్టింగ్‌లను చదవడానికి మరియు మార్చడానికి అనుమతి</translation>
 <translation id="9019894137004772119">లొకేషన్‌ను ఉపయోగించండి. మీ పరికరం లొకేషన్‌ను ఉపయోగించడానికి లొకేషన్ అనుమతిని కలిగిన యాప్‌లు, సర్వీస్‌లను అనుమతించండి. కాలానుగుణంగా లొకేషన్ డేటాను Google సేకరించవచ్చు. లొకేషన్ ఖచ్చితత్వాన్ని, లొకేషన్ ఆధారిత సర్వీస్‌లను మెరుగుపరచడానికి ఈ డేటాను అనామక మార్గంలో ఉపయోగించవచ్చు.</translation>

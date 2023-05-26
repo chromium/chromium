@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google'i sait</translation>
 <translation id="1853795129690976061">Seda kausta jagatakse Linuxiga</translation>
 <translation id="1864756863218646478">Faili ei leitud.</translation>
+<translation id="1877377730633446520">See kasutab umbes <ph name="REQUIRED_SPACE" />. Teil on praegu saadaval <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, ühenda</translation>
 <translation id="1920670151694390848">malajalami, transliteratsioon</translation>
 <translation id="1920798810075583923">Arbuus</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Laienda failide tagasisidepaneele</translation>
 <translation id="1995337122023280937">Ava faili asukoht</translation>
 <translation id="2001796770603320721">Halda Drive'is</translation>
+<translation id="2004942826429452291">Failid salvestatakse pilve ja sellesse Chromebooki.</translation>
 <translation id="2009067268969781306">Ketta vormindamisel kustutatakse kõik sellel olevad andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2037845485764049925">vene</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Seadme seaded</translation>
 <translation id="2084809735218147718">Tänamisviibe</translation>
 <translation id="2088690981887365033">VPN-võrk</translation>
+<translation id="2089751716171649322">Kui olete võrguühenduseta, pääsete hõlpsalt juurde oma Google Drive'i failidele</translation>
 <translation id="2111134541987263231">Lülitage sisse valik <ph name="BEGIN_BOLD" />Luba inkognito režiimis<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> üksust kustutatakse ja te ei saa neid taastada.</translation>
 <translation id="2122305276694332719">Automaatne ühendamine peidetud võrguga võimaldab teistel näha teie seadet ja teatud võrguseadeid, seepärast ei soovita me seda kasutada.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3486821258960016770">mongoli</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> viga.</translation>
+<translation id="3501954296166022751">Teie Google Drive'i failid on võrguühenduseta saadaval</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> üksuse sünkroonimise ettevalmistamine...</translation>
 <translation id="3522708245912499433">Portugali keel</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5500122897333236901">islandi keel</translation>
 <translation id="5508696409934741614">Punktid</translation>
+<translation id="5519161320735100193">Google Drive'i seaded</translation>
 <translation id="5522908512596376669">Faililoendi jaoks aktiveeriti loendikuva.</translation>
 <translation id="5524517123096967210">Faili ei saa lugeda.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-pilt</translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7806708061868529807">heebrea</translation>
 <translation id="78104721049218340">tai, Kedmanee klaviatuuriga</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Viga võrgu seadistamisel</translation>
 <translation id="7839804798877833423">Failide toomine kasutab umbes <ph name="FILE_SIZE" /> mobiilsideandmeid.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Partitsiooni vormindamisel kustutatakse kõik sellesse salvestatud andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Teie failid jaotises Minu ketas sünkroonitakse automaatselt teie Chromebookiga, nii et pääsete neile juurde ilma internetiühenduseta.</translation>
 <translation id="7925247922861151263">AAA kontrollimine nurjus</translation>
 <translation id="7925686952655276919">Ära kasuta sünkroonimiseks mobiilset andmesidet</translation>
 <translation id="7928710562641958568">Seadme väljutamine</translation>
+<translation id="7933875256234974853">Ettevalmistus Drive'i failide sünkroonimiseks ...</translation>
 <translation id="7943385054491506837">USA Colemak</translation>
 <translation id="7953739707111622108">Seadet ei saa avada, sest selle failisüsteemi ei tuntud ära.</translation>
 <translation id="7969525169268594403">sloveeni keel</translation>
 <translation id="7972920761225148017">prantsuse (Šveits)</translation>
 <translation id="7973962044839454485">PPP autentimine ebaõnnestus vale kasutajanime või parooli tõttu</translation>
 <translation id="7980421588063892270">inglise (USA), Colemaki klaviatuuriga</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> faili sünkroonimine</translation>
 <translation id="8000066093800657092">Võrku pole</translation>
 <translation id="8008366997883261463">Jack Russelli terjer</translation>
 <translation id="8028993641010258682">Suurus</translation>
@@ -1036,6 +1045,7 @@
 <translation id="9213073329713032541">Installimise alustamine õnnestus.</translation>
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="9219908252191632183">Kuu</translation>
+<translation id="937795003075802289">1 faili sünkroonimine</translation>
 <translation id="938470336146445890">Installige kasutaja sertifikaat.</translation>
 <translation id="939736085109172342">Uus kaust</translation>
 <translation id="943972244133411984">Muutja:</translation>

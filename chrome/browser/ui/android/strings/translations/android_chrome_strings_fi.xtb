@@ -426,6 +426,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3290249595466894471">Lähettää myös pienen näytteen sivuista, latauksista, laajennustoiminnasta ja järjestelmätiedoista auttaakseen löytämään uusia uhkia</translation>
 <translation id="3293181007446299124">Selaushistoriasi pysyy yksityisenä laitteellasi. Raportit lähetetään viiveellä henkilöllisyytesi suojaamiseksi.</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
+<translation id="3305130791745726624">Lähetä laitteisiin</translation>
 <translation id="3305795716056605962">Käännä sivuja Lisäasetukset-painikkeen kautta</translation>
 <translation id="3319664549618064419">Vaihda tietokoneversioon, jotta sivusto toimii paremmin</translation>
 <translation id="3334729583274622784">Vaihdetaanko tiedostotunniste?</translation>
@@ -1174,6 +1175,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7304072650267745798">Android-laitteellasi voi olla vastaava asetus. Jos asetus on päällä Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
 <translation id="7304873321153398381">Offline-tilassa. Chrome ei voi tarkistaa salasanojasi.</translation>
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
+<translation id="7324354302972299151">Lähetä Do Not Track ‐pyyntö</translation>
 <translation id="7332075081379534664">Sisäänkirjautuminen onnistui</translation>
 <translation id="7333232495927792353">Synkronoi saadaksesi osuvinta sisältöä Googlelta</translation>
 <translation id="7339898014177206373">Uusi ikkuna</translation>

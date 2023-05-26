@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Sitio de Google</translation>
 <translation id="1853795129690976061">Esta carpeta se comparte con Linux</translation>
 <translation id="1864756863218646478">No se ha podido encontrar el archivo.</translation>
+<translation id="1877377730633446520">Se requieren unos <ph name="REQUIRED_SPACE" /> de espacio disponible. Actualmente tienes <ph name="FREE_SPACE" /> de espacio disponible.</translation>
 <translation id="1884013283844450420">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
 <translation id="1920670151694390848">Malayalam (transliteración)</translation>
 <translation id="1920798810075583923">Sandía</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Ampliar paneles de comentarios de archivos</translation>
 <translation id="1995337122023280937">Ir a la ubicación del archivo</translation>
 <translation id="2001796770603320721">Gestionar en Drive</translation>
+<translation id="2004942826429452291">Los archivos se almacenarán en la nube y en este Chromebook.</translation>
 <translation id="2009067268969781306">Al formatear una unidad, se eliminarán todos los datos almacenados. Esta acción no se puede deshacer.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
 <translation id="2037845485764049925">Ruso</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Configuración del dispositivo</translation>
 <translation id="2084809735218147718">"Gracias" en lengua de signos</translation>
 <translation id="2088690981887365033">Red VPN</translation>
+<translation id="2089751716171649322">Accede fácilmente a tus archivos de Google Drive cuando no tengas conexión a Internet</translation>
 <translation id="2111134541987263231">Activa la opción <ph name="BEGIN_BOLD" />Permitir en incógnito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementos se eliminarán y no podrás restaurarlos.</translation>
 <translation id="2122305276694332719">Conectarse automáticamente a una red oculta permite que otros usuarios vean tu dispositivo y parte de tu configuración de red, por lo que no es recomendable.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
+<translation id="3501954296166022751">Tus archivos de Google Drive están disponibles sin conexión a Internet</translation>
 <translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3511705761158917664">Preparando la sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5500122897333236901">Islandés</translation>
 <translation id="5508696409934741614">Puntos</translation>
+<translation id="5519161320735100193">Ajustes de Google Drive</translation>
 <translation id="5522908512596376669">La lista de archivos ha cambiado a la vista de lista.</translation>
 <translation id="5524517123096967210">No se ha podido leer el archivo.</translation>
 <translation id="5533102081734025921">Imagen <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7806708061868529807">Hebreo</translation>
 <translation id="78104721049218340">Tailandés con teclado Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">No se ha podido configurar la red</translation>
 <translation id="7839804798877833423">Para recuperar estos archivos se utilizarán aproximadamente <ph name="FILE_SIZE" /> de datos móviles.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Al formatear una partición, se borrarán todos los datos almacenados en ella. Esta acción no se puede deshacer.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="7925247922861151263">Error de comprobación de AAA</translation>
 <translation id="7925686952655276919">No utilizar datos móviles para la sincronización</translation>
 <translation id="7928710562641958568">Expulsar dispositivo</translation>
+<translation id="7933875256234974853">Preparando sincronización de archivos de Drive…</translation>
 <translation id="7943385054491506837">Estados Unidos (Colemak)</translation>
 <translation id="7953739707111622108">No se puede leer este dispositivo porque no se reconoce su sistema de archivos.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francés (Suiza)</translation>
 <translation id="7973962044839454485">Se ha producido un error en la autenticación de PPP porque la contraseña o el nombre de usuario son incorrectos</translation>
 <translation id="7980421588063892270">Inglés (EE. UU.) con teclado Colemak</translation>
+<translation id="7985008041109611710">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> archivos</translation>
 <translation id="8000066093800657092">Ninguna red</translation>
 <translation id="8008366997883261463">Terrier Jack Russell</translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -1036,6 +1045,7 @@
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">Sincronizando 1 archivo</translation>
 <translation id="938470336146445890">Instala un certificado de usuario.</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="943972244133411984">Modificado por</translation>

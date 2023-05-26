@@ -142,7 +142,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="1750259112639922169">Grupa kartica – <ph name="TAB_COUNT" /> kart.</translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="1754404134430936718">Tekst je kopiran</translation>
-<translation id="1757620656501361327">Ažuriranje Google upravitelja zaporki</translation>
+<translation id="1757620656501361327">Ažuriranje Google upravitelja lozinki</translation>
 <translation id="1778457539567749232">Označi kao nepročitano</translation>
 <translation id="1779766957982586368">Zatvori prozor</translation>
 <translation id="1791662854739702043">Instalirano</translation>
@@ -427,6 +427,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3290249595466894471">Također šalje mali uzorak stranica, preuzimanja, aktivnosti ekstenzija i informacija o sistemu radi lakšeg otkrivanja novih prijetnji</translation>
 <translation id="3293181007446299124">Vaša historija pregledanja se privatno pohranjuje na vašem uređaju, a izvještaji se šalju s kašnjenjem radi zaštite vašeg identiteta</translation>
 <translation id="3303414029551471755">Nastaviti s preuzimanjem sadržaja?</translation>
+<translation id="3305130791745726624">Pošalji na uređaje</translation>
 <translation id="3305795716056605962">Prevedite stranice putem dugmeta Više opcija</translation>
 <translation id="3319664549618064419">Prebacite na web lokaciju za računar za bolji prikaz ove web lokacije</translation>
 <translation id="3334729583274622784">Promijeniti ekstenziju fajla?</translation>
@@ -754,7 +755,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="504456571576643789">Stvari za razmatranje</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Ostali oblici aktivnosti<ph name="END_LINK1" /> se mogu pohranjivati na vaš Google račun kada ste prijavljeni. Možete ih izbrisati bilo kada.</translation>
 <translation id="506254248375231072">Nema kartica</translation>
-<translation id="5062960805900435602">Zatvoreno je ažuriranje o spajanju zaporki</translation>
+<translation id="5062960805900435602">Obavještenje o spajanju lozinki je zatvoreno</translation>
 <translation id="5091199029769593641">Uskoro ćete vidjeti priče s web lokacije <ph name="SITE_NAME" /> kada otvorite novu karticu. Web lokacije koje pratite se pohranjuju na vaš Google račun. Njima možete upravljati u postavkama Discovera.</translation>
 <translation id="5091249083535528968">Prošireni podaci o korištenju</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
@@ -804,7 +805,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5361107212971249203">tekst</translation>
 <translation id="5368227114232678694">Da privatno pregledate na ovom uređaju, isprobajte anonimni način rada</translation>
 <translation id="5375577065097716013">Pretraži sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="539881862970320163">Predložena je snažna zaporka. Tipkovnica je skrivena.</translation>
+<translation id="539881862970320163">Jaka lozinka je predložena. Tastatura je sakrivena.</translation>
 <translation id="5401851137404501592">Da nastavite, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će dijeliti vaše ime i prezime, adresu e-pošte, adresu i sliku profila s ovom web lokacijom.</translation>
 <translation id="5409881200985013443">Poslati <ph name="ONE_TIME_CODE" /> na uređaj <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Potvrđivanje…</translation>
@@ -1163,7 +1164,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7217781228893594884">Anonimne kartice će se zaključati kada napustite Chrome</translation>
 <translation id="7222235798733126207">Ograničeno dijeljenje između web lokacija</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Čeka se 1 preuzimanje}one{Čeka se # preuzimanje}few{Čekaju se # preuzimanja}other{Čeka se # preuzimanja}}</translation>
-<translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
+<translation id="72415438529550637">Prijedlog lozinke je zatvoren</translation>
 <translation id="7242755609445462077">Stilizirani istaknuti tekst <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Provjerite je li na uređaju <ph name="TARGET_DEVICE_NAME" /> uključena sinhronizacija u Chromeu</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računara</translation>
@@ -1178,6 +1179,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7304072650267745798">Android uređaj može sadržavati sličnu postavku. Ako je ta postavka uključena u Chromeu i na Android uređaju, kompanija će možda moći izmjeriti učinkovitost oglasa na web lokacijama koje posjećujete i u aplikacijama koje koristite.</translation>
 <translation id="7304873321153398381">Van mreže. Chrome ne može provjeriti vaše lozinke.</translation>
 <translation id="7313188324932846546">Dodirnite da postavite sinhronizaciju</translation>
+<translation id="7324354302972299151">Pošalji zahtjev za "Do Not Track"</translation>
 <translation id="7332075081379534664">Prijava je uspjela</translation>
 <translation id="7333232495927792353">Sinhronizirajte da preuzmete najrelevantniji sadržaj s Googlea</translation>
 <translation id="7339898014177206373">Novi prozor</translation>

@@ -1134,6 +1134,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3740319564441798148">Autobusos i trens de llarga distància</translation>
 <translation id="3743765582345153106">Verifica sempre quan s'utilitzi Emplenament automàtic</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
+<translation id="3744212718085287312">Vols augmentar la seguretat amb una targeta virtual la pròxima vegada?</translation>
 <translation id="3744286742364977428">Els fitxers que baixes s'envien a Google Cloud o a tercers perquè s'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles o programari maliciós i que s'emmagatzemin d'acord amb les polítiques de l'empresa.</translation>
 <translation id="3744899669254331632">En aquest moments no podeu visitar la pàgina <ph name="SITE" /> perquè el lloc web ha enviat credencials aleatòries que Chromium no pot processar. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
 <translation id="3748148204939282805">Els atacants del lloc web <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>

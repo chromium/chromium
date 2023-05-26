@@ -142,6 +142,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1750259112639922169">Nhóm thẻ – <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1754404134430936718">Đã sao chép văn bản</translation>
+<translation id="1757620656501361327">Thông tin cập nhật về Trình quản lý mật khẩu của Google</translation>
 <translation id="1778457539567749232">Đánh dấu là chưa đọc</translation>
 <translation id="1779766957982586368">Đóng cửa sổ</translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
@@ -754,6 +755,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="504456571576643789">Những yếu tố cần xem xét</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Các hình thức hoạt động khác<ph name="END_LINK1" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
 <translation id="506254248375231072">Không có thẻ nào</translation>
+<translation id="5062960805900435602">Thông tin cập nhật về việc hợp nhất mật khẩu đã đóng</translation>
 <translation id="5091199029769593641">Bạn sẽ sớm thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
 <translation id="5091249083535528968">Dữ liệu sử dụng mở rộng</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
@@ -803,6 +805,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5361107212971249203">văn bản</translation>
 <translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Đề xuất sử dụng mật khẩu mạnh. Bàn phím đang ẩn.</translation>
 <translation id="5401851137404501592">Để tiếp tục, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sẽ chia sẻ tên, địa chỉ email và ảnh hồ sơ của bạn với trang web này.</translation>
 <translation id="5409881200985013443">Gửi <ph name="ONE_TIME_CODE" /> trên <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
@@ -1161,6 +1164,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
 <translation id="7222235798733126207">Giới hạn hoạt động chia sẻ giữa các trang</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
+<translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7242755609445462077">Nội dung nổi bật được cách điệu <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> đã bật tính năng đồng bộ hóa trên Chrome</translation>
 <translation id="7252076891734325316">Để điện thoại của bạn gần máy tính</translation>

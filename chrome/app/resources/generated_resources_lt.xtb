@@ -6150,6 +6150,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="6343003829431264373">Tik lyginiai puslapiai</translation>
 <translation id="6344170822609224263">Pasiekti tinklo ryšių sąrašą</translation>
 <translation id="6344576354370880196">Išsaugoti spausdintuvai</translation>
+<translation id="6344608411615208519">Jūsų <ph name="BEGIN_LINK" />naršyklę tvarko<ph name="END_LINK" /> vienas iš jūsų tėvų</translation>
 <translation id="6345418402353744910">Reikia nurodyti tarpinio serverio „<ph name="PROXY" />“ naudotojo vardą ir slaptažodį, kad administratorius galėtų sukonfigūruoti tinklą</translation>
 <translation id="6345878117466430440">Žymėti kaip skaitytą</translation>
 <translation id="6347010704471250799">Pranešimo rodymas</translation>
@@ -7685,6 +7686,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7684212569183643648">Įdiegė jūsų administratorius</translation>
 <translation id="7684559058815332124">Apsilankyti fiksuotojo portalo prisijungimo puslapyje</translation>
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
+<translation id="7684913007876670600">Jei norite, kad būtų rodomas supaprastintas šio puslapio rodinys, atidarykite šoninį skydelį ir pasirinkite skaitymo režimą</translation>
 <translation id="7685049629764448582">„JavaScript“ atmintis</translation>
 <translation id="7685087414635069102">Reikia PIN kodo</translation>
 <translation id="7686086654630106285">Daugiau apie svetainių siūlomus skelbimus</translation>

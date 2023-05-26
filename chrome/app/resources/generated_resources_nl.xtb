@@ -6115,6 +6115,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6343003829431264373">Alleen even pagina's</translation>
 <translation id="6344170822609224263">Toegang tot lijst met netwerkverbindingen</translation>
 <translation id="6344576354370880196">Opgeslagen printers</translation>
+<translation id="6344608411615208519">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door je ouder</translation>
 <translation id="6345418402353744910">Je gebruikersnaam en wachtwoord zijn vereist voor de proxy <ph name="PROXY" /> zodat de beheerder je netwerk kan configureren</translation>
 <translation id="6345878117466430440">Markeren als gelezen</translation>
 <translation id="6347010704471250799">Melding bekijken</translation>
@@ -7640,6 +7641,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7684212569183643648">Geïnstalleerd door je beheerder</translation>
 <translation id="7684559058815332124">Captive portal-loginpagina bezoeken</translation>
 <translation id="7684718995427157417">Zet Android Debug Bridge (ADB) aan om je apps te maken en te testen. Let op: Met deze actie sta je toe dat Android-apps worden geïnstalleerd die niet door Google zijn geverifieerd. Als je deze functie wilt uitzetten, moeten de fabrieksinstellingen van je apparaat worden hersteld.</translation>
+<translation id="7684913007876670600">Als je een vereenvoudigde weergave van deze pagina wilt tonen, open je het zijvenster en selecteer je de leesmodus</translation>
 <translation id="7685049629764448582">JavaScript-geheugen</translation>
 <translation id="7685087414635069102">Pincode vereist</translation>
 <translation id="7686086654630106285">Meer informatie over door de site voorgestelde advertenties</translation>

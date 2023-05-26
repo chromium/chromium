@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">ట్యాబ్ గ్రూప్ - <ph name="TAB_COUNT" /> ట్యాబ్‌లు</translation>
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="1754404134430936718">టెక్స్ట్ కాపీ అయింది</translation>
+<translation id="1757620656501361327">Google Password Manager అప్‌డేట్</translation>
 <translation id="1778457539567749232">చదవనిదిగా మార్క్ చేస్తుంది</translation>
 <translation id="1779766957982586368">విండోను మూసివేస్తుంది</translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="5054455334322721892">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK1" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="506254248375231072">ట్యాబ్‌లు ఏవీ లేవు</translation>
+<translation id="5062960805900435602">పాస్‌వర్డ్ విలీనానికి సంబంధించిన అప్‌డేట్ మూసివేయబడింది</translation>
 <translation id="5091199029769593641">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="SITE_NAME" /> నుండి కథనాలను చూస్తారు. మీరు ఫాలో అయ్యే సైట్‌లు మీ Google ఖాతాలో సేవ్ చేయబడతాయి. మీరు వాటిని Discover సెట్టింగ్‌లలో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="5091249083535528968">పొడిగించిన డేటా వినియోగం</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">టెక్స్ట్</translation>
 <translation id="5368227114232678694">ఈ పరికరంలో ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, అజ్ఞాత మోడ్‌ను ట్రై చేయండి</translation>
 <translation id="5375577065097716013">Google Lens ఇమేజ్ సెర్చ్ <ph name="BEGIN_NEW" />న్యూ<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించడం జరిగింది. కీబోర్డ్ దాచబడింది.</translation>
 <translation id="5401851137404501592">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />లో <ph name="ONE_TIME_CODE" />ను సమర్పించాలా?</translation>
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">మీరు Chrome నుండి నిష్క్రమించినప్పుడు అజ్ఞాత ట్యాబ్‌లు లాక్ అవుతాయి</translation>
 <translation id="7222235798733126207">సైట్‌ల మధ్య పరిమిత షేరింగ్</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
+<translation id="72415438529550637">పాస్‌వర్డ్ సూచన మూసివేయబడింది.</translation>
 <translation id="7242755609445462077">శైలీకరించిన హైలైట్ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeలో <ph name="TARGET_DEVICE_NAME" />కు సింక్ ఆన్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7252076891734325316">మీ ఫోన్‌ను కంప్యూటర్‌కు దగ్గరగా ఉంచండి</translation>

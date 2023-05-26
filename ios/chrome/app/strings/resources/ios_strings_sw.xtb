@@ -315,6 +315,9 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2975121486251958312">Ni Hali Fiche tu Inayopatikana</translation>
 <translation id="2982481275546140226">Futa Data</translation>
 <translation id="298306318844797842">Weka Njia ya Kulipa...</translation>
+<translation id="2988274366244053197">Njia za kulipa na anwani kutoka Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kutoka Chrome haitasawazishwa.
+
+Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Fungua katika Kichupo Kipya</translation>
 <translation id="3020183492814296499">Njia za mkato</translation>
 <translation id="3037605927509011580">Lo!</translation>
@@ -381,6 +384,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3471148582064653480">Sawazisha nenosiri lako, historia na zaidi.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{katika tovuti au programu {COUNT}}other{katika tovuti au programu {COUNT}}}</translation>
 <translation id="3474624961160222204">Endelea ukitumia <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Fikia manenosiri yako kwenye programu zingine.</translation>
 <translation id="3478058380795961209">Mwezi wa Muda wa Matumizi Kuisha</translation>
 <translation id="3482959374254649722">Inasawazisha vichupo vyako...</translation>
 <translation id="3484946776651937681">Fungua katika Folda ya Vipakuliwa</translation>
@@ -652,6 +656,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318298563956633672">Tayari unafuatilia bidhaa hii.</translation>
+<translation id="5325595483440111327">Angalia historia ya kuvinjari.</translation>
 <translation id="5339316356165661760">Washa Kipengele cha Kusawazisha</translation>
 <translation id="536067926684072644">Onyesha Alamisho</translation>
 <translation id="5360976571138293719">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>

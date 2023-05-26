@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">पंच</translation>
 <translation id="1446396933673057385">अचूकतेची तपासणी</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">तुमच्या पालकांनी निवडलेल्या सेटिंग्ज आता तुम्हाला ऑनलाइन आणखी सुरक्षित ठेवत आहेत</translation>
 <translation id="1453974140256777690">तुम्ही पेस्ट किंवा अटॅच केलेला मजकूर विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवला जातो. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो.</translation>
 <translation id="1455413310270022028">खोडरबर</translation>
 <translation id="1459693405370120464">हवामान</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">एक्स्पायरीची तारीख एंटर करा</translation>
 <translation id="1569694109004336106">Google Chrome पासवर्ड भरण्यासाठी Windows Hello सुरू करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> इं</translation>
+<translation id="1576277203042721907">खरेदीशी संबंधित इनसाइट</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">हे वेबपेज प्रदर्शित करताना काहीतरी चूक झाली.</translation>
 <translation id="1584492003828271317">तुम्ही ब्राउझ करत असताना, तुम्ही पाहत असलेली जाहिरात पर्सनलाइझ केलेली आहे की नाही ते हे सेटिंग, साइटने सुचवलेल्या जाहिराती, तुमची कुकी सेटिंग्ज आणि तुम्ही पाहत असलेली साइट जाहिराती पर्सनलाइझ करते की नाही त्यावर अवलंबून असते</translation>
@@ -1267,6 +1269,7 @@
 <translation id="410148943680000050">डेस्‍कटॉप प्रकाशन</translation>
 <translation id="4103249731201008433">डिव्हाइस सिरीयल क्रमांक चुकीचा आहे</translation>
 <translation id="4106133539597032659">साइट तयार करा बटण, Google Sites मध्ये नवीन साइट झटपट तयार करण्यासाठी एंटर प्रेस करा</translation>
+<translation id="4106887816571530227">एंबेड केलेल्या आशयाला अनुमती नाही</translation>
 <translation id="4110652170750985508">तुमचे पेमेंट पुन्हा एकदा तपासा</translation>
 <translation id="4111546256784973544">पेंटबॉल</translation>
 <translation id="4112140312785995938">मागे शोधा</translation>
@@ -1604,6 +1607,7 @@
 <translation id="4876305945144899064">वापरकर्ता नाव नाही</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{काहीही नाही}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> शोधा</translation>
+<translation id="4877521229462766300">एंबेड केलेल्या आशयाला अनुमती द्यायची आहे का?</translation>
 <translation id="4879491255372875719">आपोआप (डीफॉल्ट)</translation>
 <translation id="4880827082731008257">शोध इतिहास</translation>
 <translation id="4881695831933465202">उघडा</translation>
@@ -1801,6 +1805,7 @@
 <translation id="5314967030527622926">बुकलेट मेकर</translation>
 <translation id="5316812925700871227">घड्याळाच्या विरुद्ध दिशेने फिरवा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
+<translation id="5323043727018853753">एंबेड केलेल्या आशायाला अनुमती आहे</translation>
 <translation id="5323105697514565458"><ph name="NUM_MATCHES" /> पैकी <ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">तुमचे ब्राउझर व्यवस्थापित केलेले नाही</translation>
 <translation id="5332219387342487447">पाठविण्‍याची पद्धत</translation>
@@ -2179,6 +2184,7 @@
 <translation id="6306713302480826305">या आणि तुम्ही साइन इन केलेल्या इतर डिव्हाइसवरून हा पत्ता हटवला जाईल</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नाही</translation>
 <translation id="6316226860534107313">स्कूटर आणि मोपेड</translation>
+<translation id="6316723751983724988">नवीन: Family Link च्या Chrome साठीच्या निवडी येथे लागू होतात</translation>
 <translation id="63172326633386613">अ‍ॅक्सेसिबिलिटी सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6319249456820053699">कॅमेरा आणि कॅमकॉर्डर</translation>
 <translation id="6321917430147971392">आपल्या DNS सेटिंग्ज तपासा</translation>
@@ -2730,6 +2736,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> पेक्षा कमी</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> सध्या ही विनंती हाताळण्यात अक्षम आहे.</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
+<translation id="7601297359530599375">तुम्ही सामान्यपणे या साइटशी सुरक्षितपणे कनेक्ट करता, पण Chrome ला यावेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये सुधारणा करण्याचा प्रयत्न करत असू शकतो. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">मूल्य <ph name="VALUE" /> श्रेणीच्या बाहेर आहे.</translation>
 <translation id="7613889955535752492">कालबाह्य: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पाहाण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -2830,6 +2837,7 @@
 <translation id="7822320754433038727">शिकार आणि नेमबाजी</translation>
 <translation id="782886543891417279">तुम्ही वापरत असलेल्या (<ph name="WIFI_NAME" />) वाय-फाय च्या लॉग इन पेजला तुम्हाला भेट देण्याची आवश्यकता असू शकते.</translation>
 <translation id="7840103971441592723">स्क्रीन कॅप्चर सुरू झाले आहे</translation>
+<translation id="784137052867620416">खरेदीशी संबंधित इनसाइट</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">त्यानंतर, तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यासाठी तुम्ही भेट देता ती साइट Chrome कडे तुमचे विषय मागू शकते. तुमचा ब्राउझिंग इतिहास आणि ओळख संरक्षित करत, Chrome कमाल तीन विषय शेअर करते.</translation>
@@ -2974,6 +2982,7 @@
 <translation id="8217748145574471584">मानव संसाधने</translation>
 <translation id="8218327578424803826">नियुक्त केलेले स्थान:</translation>
 <translation id="8228419419708659934">दोन पेज दृश्य</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> ला तुमच्या नेटवर्कवरील डिव्हाइस अ‍ॅक्सेस करायचे आहे:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> मिमी</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">क्रीडाविषयक गेम</translation>

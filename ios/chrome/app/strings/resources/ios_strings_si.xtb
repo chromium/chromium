@@ -755,6 +755,7 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> සමග සොයන්න</translation>
 <translation id="5963939892571022323">උද්දීපනයට සබැඳියක් තැනිය නොහැකිය.</translation>
 <translation id="5965679971710331625">ඔබ පුරා ඇත</translation>
+<translation id="5971872012779224351">{count,plural, =1{පිටුසන් 1ක් මකන ලදි}one{පිටුසන් {count}ක් මකන ලදි}other{පිටුසන් {count}ක් මකන ලදි}}</translation>
 <translation id="5979837087407522202">මුරපද සොයන්න</translation>
 <translation id="5981230843984570095">අක්‍රිය සියල්ල වසන්න</translation>
 <translation id="5982717868370722439"><ph name="USER_EMAIL" /> වෙත පවතින දත්ත එක් කරන්න.</translation>
@@ -1002,6 +1003,7 @@
 <translation id="7435356471928173109">ඔබේ පරිපාලක විසින් ක්‍රියාවිරහිත කරන ලදි</translation>
 <translation id="7438481509621345350">ඔබ දැන් නව ටැබයක් විවෘත කරන විට <ph name="CHANNEL_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත.</translation>
 <translation id="7446583256109515732">පටිත්ත ගලවන ලදි</translation>
+<translation id="7451023311965289370">{count,plural, =1{"{title}" වෙත පිටුසන සුරැකිණි}one{"{title}" වෙත පිටුසන් සුරැකිණි}other{"{title}" වෙත පිටුසන් සුරැකිණි}}</translation>
 <translation id="7454057999980797137">රාජ්‍යය / ජනපදය</translation>
 <translation id="7459628154744868585">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාත්මකයි</translation>
 <translation id="746684838091935575">3. Chrome තෝරන්න</translation>

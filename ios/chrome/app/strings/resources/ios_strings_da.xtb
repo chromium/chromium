@@ -315,6 +315,9 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2975121486251958312">Kun inkognitotilstand er tilgængelig</translation>
 <translation id="2982481275546140226">Ryd data</translation>
 <translation id="298306318844797842">Tilføj betalingsmetode...</translation>
+<translation id="2988274366244053197">Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
+
+Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Åbn på ny fane</translation>
 <translation id="3020183492814296499">Genveje</translation>
 <translation id="3037605927509011580">Øv, surt!</translation>
@@ -381,6 +384,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3471148582064653480">Synkroniser dine adgangskoder, din historik og meget mere.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{til {COUNT} website eller app}one{til {COUNT} website og app}other{til {COUNT} websites og apps}}</translation>
 <translation id="3474624961160222204">Fortsæt som <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Få adgang til dine adgangskoder i andre apps.</translation>
 <translation id="3478058380795961209">Udløbsmåned:</translation>
 <translation id="3482959374254649722">Synkroniserer dine faner...</translation>
 <translation id="3484946776651937681">Åbn i Downloads</translation>
@@ -652,6 +656,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5318298563956633672">Du holder allerede øje med dette produkt.</translation>
+<translation id="5325595483440111327">Se browserhistorik.</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="536067926684072644">Vis bogmærker</translation>
 <translation id="5360976571138293719">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -750,6 +755,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
 <translation id="5965679971710331625">Du er logget ind</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
 <translation id="5981230843984570095">Luk alle inaktive faner</translation>
 <translation id="5982717868370722439">Føj eksisterende data til <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7435356471928173109">Deaktiveret af din administrator</translation>
 <translation id="7438481509621345350">Du får nu vist historier fra <ph name="CHANNEL_NAME" />, når du åbner en ny fane.</translation>
 <translation id="7446583256109515732">Fanen er frigjort</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bogmærket er gemt under "{title}"}one{Bogmærket er gemt under "{title}"}other{Bogmærkerne er gemt under "{title}"}}</translation>
 <translation id="7454057999980797137">Delstat/amt</translation>
 <translation id="7459628154744868585">Forbedret beskyttelse er aktiveret</translation>
 <translation id="746684838091935575">3. Vælg Chrome</translation>

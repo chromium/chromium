@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">डीएनएस की समस्या को ठीक नहीं किया जा सकता</translation>
 <translation id="1018656279737460067">रद्द</translation>
+<translation id="1020274983236703756">खास <ph name="PRODUCT_NAME" /> ऐसेट अब उपलब्ध हैं</translation>
 <translation id="1022433422498218992">सामान्य कंट्रोल</translation>
 <translation id="1022628058306505708">अर्थ फ़्लो</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3226657629376379887">लेआउट ऐक्शन मेन्यू</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> के लिए खास</translation>
 <translation id="3268178239013324452">प्रिंट नहीं हो पाया - प्रिंटर का दरवाज़ा खुला है</translation>
 <translation id="3275729367986477355">अवतार इमेज की सेटिंग पर जाएं</translation>
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">निजता स्क्रीन टॉगल करने वाला बटन</translation>
 <translation id="3639846061339007994">सबसे ऊपर</translation>
 <translation id="3651050199673793219">तापमान की इकाई चुनें</translation>
+<translation id="3663574643422533538">खास <ph name="PRODUCT_NAME" /> आर्टवर्क चुनें</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
 <translation id="3708186454126126312">पहले कनेक्ट किए गए डिवाइस</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">एल्बम चुनें <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">यूएसबी टचपैड</translation>
+<translation id="4113067922640381334">अब आपके पास नए <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> का ऐक्सेस है</translation>
 <translation id="4117637339509843559">गहरे रंग वाला मोड</translation>
 <translation id="4130035430755296270">लेआउट के ज़्यादा विकल्प देखने के लिए कर्सर घुमाते रहें</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
 <translation id="8593058461203131755">मीडिया रोकें</translation>
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="86356131183441916">हल्का बैंगनी</translation>
 <translation id="8651481478098336970">आवाज़ बंद करें</translation>
 <translation id="8655295600908251630">चैनल</translation>

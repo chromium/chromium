@@ -142,6 +142,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1750259112639922169">Tab group – <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1754404134430936718">Text copied</translation>
+<translation id="1757620656501361327">Google Password Manager update</translation>
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1779766957982586368">Close window</translation>
 <translation id="1791662854739702043">Installed</translation>
@@ -754,6 +755,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="504456571576643789">Things to consider</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Other forms of activity<ph name="END_LINK1" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="506254248375231072">No tabs</translation>
+<translation id="5062960805900435602">Update about password merge is closed</translation>
 <translation id="5091199029769593641">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. The sites that you follow are saved in your Google Account. You can manage them in Discover settings.</translation>
 <translation id="5091249083535528968">Extended usage data</translation>
 <translation id="509429900233858213">An error occurred.</translation>
@@ -803,6 +805,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5361107212971249203">text</translation>
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Strong password suggested. Keyboard hidden.</translation>
 <translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
@@ -1161,6 +1164,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
 <translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
+<translation id="72415438529550637">Password suggestion is closed.</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>
