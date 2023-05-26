@@ -233,11 +233,16 @@ class Generator(CppGenerator):
         "is_array_kind": mojom.IsArrayKind,
         "is_bool_kind": mojom.IsBoolKind,
         "is_default_constructible": self._IsDefaultConstructible,
+        "is_value_kind": mojom.IsValueKind,
         "is_enum_kind": mojom.IsEnumKind,
         "is_double_kind": mojom.IsDoubleKind,
         "is_float_kind": mojom.IsFloatKind,
         "is_integral_kind": mojom.IsIntegralKind,
         "is_interface_kind": mojom.IsInterfaceKind,
+        "is_nullable_value_kind_packed_field":
+        pack.IsNullableValueKindPackedField,
+        "is_primary_nullable_value_kind_packed_field":
+        pack.IsPrimaryNullableValueKindPackedField,
         "is_receiver_kind": self._IsReceiverKind,
         "is_pending_associated_receiver_kind":
         mojom.IsPendingAssociatedReceiverKind,
@@ -461,6 +466,8 @@ class Generator(CppGenerator):
     if mojom.IsMapKind(kind):
       return False
     if mojom.IsStringKind(kind):
+      return False
+    if mojom.IsValueKind(kind):
       return False
     return True
 

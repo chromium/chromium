@@ -1742,6 +1742,10 @@ def IsEnumKind(kind):
   return isinstance(kind, Enum)
 
 
+def IsValueKind(kind):
+  return isinstance(kind, ValueKind)
+
+
 def IsReferenceKind(kind):
   return isinstance(kind, ReferenceKind)
 
