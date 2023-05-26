@@ -92,10 +92,25 @@ constexpr auto kLacrosSelectionPolicyMap =
         {"rootfs", LacrosSelectionPolicy::kRootfs},
     });
 
+// Returns primary user's User instance.
+const user_manager::User* GetPrimaryUser() {
+  // TODO(crbug.com/1185813): TaskManagerImplTest is not ready to run with
+  // Lacros enabled.
+  // UserManager is not initialized for unit tests by default, unless a fake
+  // user manager is constructed.
+  if (!UserManager::IsInitialized()) {
+    return nullptr;
+  }
+
+  // GetPrimaryUser works only after user session is started.
+  // May return nullptr, if this is called beforehand.
+  return UserManager::Get()->GetPrimaryUser();
+}
+
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
-bool IsUserTypeAllowed(const User* user) {
-  switch (user->GetType()) {
+bool IsUserTypeAllowed(const User& user) {
+  switch (user.GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
     // Note: Lacros will not be enabled for Guest users unless LacrosSupport
@@ -161,7 +176,15 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
 bool IsLacrosAllowedToBeEnabledWithUser(
     const User* user,
     LacrosAvailability launch_availability) {
-  if (!IsUserTypeAllowed(user)) {
+  if (!user) {
+    // User is not available. Practically, this is accidentally happening
+    // if related function is called before session, or in testing.
+    // TODO(crbug.com/1408962): We should limit this at least only for
+    // testing.
+    return false;
+  }
+
+  if (!IsUserTypeAllowed(*user)) {
     return false;
   }
 
@@ -337,21 +360,7 @@ base::FilePath GetUserDataDir() {
 }
 
 bool IsLacrosAllowedToBeEnabled() {
-  // TODO(crbug.com/1185813): TaskManagerImplTest is not ready to run with
-  // Lacros enabled.
-  // UserManager is not initialized for unit tests by default, unless a fake
-  // user manager is constructed.
-  if (!UserManager::IsInitialized()) {
-    return false;
-  }
-
-  // GetPrimaryUser works only after user session is started.
-  const User* user = UserManager::Get()->GetPrimaryUser();
-  if (!user) {
-    return false;
-  }
-
-  return IsLacrosAllowedToBeEnabledWithUser(user,
+  return IsLacrosAllowedToBeEnabledWithUser(GetPrimaryUser(),
                                             GetCachedLacrosAvailability());
 }
 
@@ -410,18 +419,8 @@ bool IsLacrosEnabledForMigration(const User* user,
 }
 
 bool IsProfileMigrationEnabled() {
-  const UserManager* user_manager = UserManager::Get();
-  if (!user_manager) {
-    return false;
-  }
-
-  const User* user = user_manager->GetPrimaryUser();
-  if (!user) {
-    return false;
-  }
-
   return IsProfileMigrationEnabledWithUserAndPolicyInitState(
-      user, PolicyInitState::kAfterInit);
+      GetPrimaryUser(), PolicyInitState::kAfterInit);
 }
 
 bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
@@ -808,14 +807,11 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
     return;
   }
 
-  UserManager* user_manager = UserManager::Get();
-  const user_manager::User* user = user_manager->GetPrimaryUser();
-
   const base::Value* value =
       map.GetValue(policy::key::kLacrosAvailability, base::Value::Type::STRING);
   g_lacros_availability_cache =
       ash::standalone_browser::DetermineLacrosAvailabilityFromPolicyValue(
-          user, value ? value->GetString() : base::StringPiece());
+          GetPrimaryUser(), value ? value->GetString() : base::StringPiece());
 }
 
 void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
