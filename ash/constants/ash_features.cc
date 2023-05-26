@@ -1654,7 +1654,7 @@ BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables lazy loading in OOBE's WebUI by prioritizing the first screen.n.
 BASE_FEATURE(kOobeLazyLoading,
              "OobeLazyLoading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables OOBE Simon features.
 BASE_FEATURE(kFeatureManagementOobeSimon,

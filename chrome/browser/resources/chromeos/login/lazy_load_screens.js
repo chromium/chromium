@@ -14,7 +14,10 @@ const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
 const flowSpecificScreensList = isOobeFlow ? oobeScreensList : loginScreensList;
 const lazyLoadingEnabled = loadTimeData.getBoolean('isOobeLazyLoadingEnabled');
 
-if (lazyLoadingEnabled) {
+// Right now we have only one priority screen and it is WelcomeScreen, that
+// means that there is no effect from async loading of screens on the login
+// page.
+if (lazyLoadingEnabled && isOobeFlow) {
   addScreensAsync();
 } else {
   addScreensSynchronously();
