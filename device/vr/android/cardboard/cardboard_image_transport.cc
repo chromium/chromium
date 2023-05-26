@@ -40,8 +40,11 @@ CardboardImageTransport::~CardboardImageTransport() = default;
 void CardboardImageTransport::DoRuntimeInitialization() {
   // TODO(https://crbug.com/1429088): Move this into helper classes rather than
   // directly using the cardboard types here.
+  CardboardOpenGlEsDistortionRendererConfig config = {
+      CardboardSupportedOpenGlEsTextureType::kGlTextureExternalOes,
+  };
   renderer_ = internal::ScopedCardboardObject<CardboardDistortionRenderer*>(
-      CardboardOpenGlEs2DistortionRenderer_create());
+      CardboardOpenGlEs2DistortionRenderer_create(&config));
 
   surface_size_ = {0, 0};
 
