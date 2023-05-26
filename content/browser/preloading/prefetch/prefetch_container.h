@@ -171,7 +171,7 @@ class CONTENT_EXPORT PrefetchContainer {
   PrefetchNetworkContext* GetOrCreateNetworkContextForURL(
       const GURL& url,
       PrefetchService* prefetch_service);
-  PrefetchNetworkContext* GetNetworkContextForURL(const GURL& url) const;
+  PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
 
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();

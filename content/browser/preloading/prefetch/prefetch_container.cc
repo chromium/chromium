@@ -425,13 +425,12 @@ PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContextForURL(
   return network_context_itr->second.get();
 }
 
-PrefetchNetworkContext* PrefetchContainer::GetNetworkContextForURL(
-    const GURL& url) const {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  CHECK(this_prefetch);
+PrefetchNetworkContext* PrefetchContainer::GetCurrentNetworkContextToServe()
+    const {
+  const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToServe();
 
   const auto& network_context_itr = network_contexts_.find(
-      this_prefetch->is_isolated_network_context_required_);
+      this_prefetch.is_isolated_network_context_required_);
   if (network_context_itr == network_contexts_.end()) {
     // Not set in unit tests.
     return nullptr;

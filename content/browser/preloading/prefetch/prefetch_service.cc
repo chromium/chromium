@@ -1301,8 +1301,7 @@ void PrefetchService::CopyIsolatedCookies(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK(prefetch_container);
 
-  if (!prefetch_container->GetNetworkContextForURL(
-          prefetch_container->GetCurrentURLToServe())) {
+  if (!prefetch_container->GetCurrentNetworkContextToServe()) {
     // Not set in unit tests.
     return;
   }
@@ -1316,8 +1315,7 @@ void PrefetchService::CopyIsolatedCookies(
 
   prefetch_container->OnIsolatedCookieCopyStart();
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  prefetch_container
-      ->GetNetworkContextForURL(prefetch_container->GetCurrentURLToServe())
+  prefetch_container->GetCurrentNetworkContextToServe()
       ->GetCookieManager()
       ->GetCookieList(
           prefetch_container->GetCurrentURLToServe(), options,
