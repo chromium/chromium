@@ -358,6 +358,69 @@ FindAndEditSubMenuModel::FindAndEditSubMenuModel(
                                      kDefaultIconSize));
 }
 
+class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  SaveAndShareSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                           Browser* browser);
+  SaveAndShareSubMenuModel(const SaveAndShareSubMenuModel&) = delete;
+  SaveAndShareSubMenuModel& operator=(const SaveAndShareSubMenuModel&) = delete;
+  ~SaveAndShareSubMenuModel() override = default;
+};
+
+SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate,
+    Browser* browser)
+    : SimpleMenuModel(delegate) {
+  AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_SAVE));
+  AddItemWithStringIdAndIcon(
+      IDC_SAVE_PAGE, IDS_SAVE_PAGE,
+      ui::ImageModel::FromVectorIcon(kFileSaveChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  if (std::u16string install_item = GetInstallPWALabel(browser);
+      !install_item.empty()) {
+    AddItemWithIcon(
+        IDC_INSTALL_PWA, install_item,
+        ui::ImageModel::FromVectorIcon(kInstallDesktopChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  } else if (std::u16string open_item = GetOpenPWALabel(browser);
+             !open_item.empty()) {
+    AddItemWithIcon(
+        IDC_OPEN_IN_PWA_WINDOW, open_item,
+        ui::ImageModel::FromVectorIcon(kDesktopWindowsChromeRefreshIcon,
+                                       ui::kColorMenuIcon, kDefaultIconSize));
+  }
+  AddItemWithStringIdAndIcon(
+      IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE,
+      ui::ImageModel::FromVectorIcon(kDriveShortcutChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  if (!sharing_hub::SharingIsDisabledByPolicy(browser->profile()) ||
+      media_router::MediaRouterEnabled(browser->profile())) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddTitle(l10n_util::GetStringUTF16(IDS_SAVE_AND_SHARE_MENU_SHARE));
+    if (!sharing_hub::SharingIsDisabledByPolicy(browser->profile())) {
+      AddItemWithStringIdAndIcon(
+          IDC_COPY_URL, IDS_APP_MENU_COPY_LINK,
+          ui::ImageModel::FromVectorIcon(kLinkChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+      AddItemWithStringIdAndIcon(
+          IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
+          ui::ImageModel::FromVectorIcon(kDevicesChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+      AddItemWithStringIdAndIcon(
+          IDC_QRCODE_GENERATOR, IDS_APP_MENU_CREATE_QR_CODE,
+          ui::ImageModel::FromVectorIcon(kQrCodeChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
+    if (media_router::MediaRouterEnabled(browser->profile())) {
+      AddItemWithStringIdAndIcon(
+          IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+          ui::ImageModel::FromVectorIcon(kCastChromeRefreshIcon,
+                                         ui::kColorMenuIcon, kDefaultIconSize));
+    }
+  }
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -705,11 +768,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             dom_distiller::UMAHelper::ReaderModeEntryPoint::kMenuOption);
       }
       break;
-    case IDC_SAVE_PAGE:
-      if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SavePage", delta);
-      LogMenuAction(MENU_ACTION_SAVE_PAGE);
-      break;
     case IDC_FIND:
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Find", delta);
@@ -729,12 +787,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_TRANSLATE_PAGE);
       break;
 
-    case IDC_ROUTE_MEDIA:
-      if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cast", delta);
-      LogMenuAction(MENU_ACTION_CAST);
-      break;
-
     // Edit menu.
     case IDC_CUT:
       if (!uma_action_recorded_)
@@ -752,6 +804,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_PASTE);
       break;
 
+    // Save and share menu.
+    case IDC_SAVE_PAGE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SavePage", delta);
+      }
+      LogMenuAction(MENU_ACTION_SAVE_PAGE);
+      break;
     case IDC_INSTALL_PWA:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.InstallPwa", delta);
@@ -765,8 +824,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_OPEN_IN_PWA_WINDOW);
       break;
-
-    // Tools menu.
     case IDC_CREATE_SHORTCUT:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CreateHostedApp",
@@ -774,6 +831,34 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_CREATE_HOSTED_APP);
       break;
+    case IDC_COPY_URL:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CopyUrl", delta);
+      }
+      LogMenuAction(MENU_ACTION_COPY_URL);
+      break;
+    case IDC_SEND_TAB_TO_SELF:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.SendToDevices",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_SEND_TO_DEVICES);
+      break;
+    case IDC_QRCODE_GENERATOR:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CreateQrCode",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_CREATE_QR_CODE);
+      break;
+    case IDC_ROUTE_MEDIA:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Cast", delta);
+      }
+      LogMenuAction(MENU_ACTION_CAST);
+      break;
+
+    // Tools menu.
     case IDC_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ManageExtensions",
@@ -941,11 +1026,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       break;
 
     // Hosted App menu.
-    case IDC_COPY_URL:
-      if (!uma_action_recorded_)
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.CopyUrl", delta);
-      LogMenuAction(MENU_ACTION_COPY_URL);
-      break;
     case IDC_OPEN_IN_CHROME:
       if (!uma_action_recorded_) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenInChrome",
@@ -1157,9 +1237,6 @@ void AppMenuModel::Build() {
 
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
-  if (media_router::MediaRouterEnabled(browser()->profile()))
-    AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
-
   if (features::IsChromeRefresh2023()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (companion::IsCompanionFeatureEnabled()) {
@@ -1175,22 +1252,24 @@ void AppMenuModel::Build() {
     sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
                            sub_menus_.back().get());
-  } else {
-    AddItemWithStringId(IDC_FIND, IDS_FIND);
-  }
 
-  if (std::u16string install_item = GetInstallPWALabel(browser_);
-      !install_item.empty()) {
-    AddItem(IDC_INSTALL_PWA, install_item);
-    if (features::IsChromeRefresh2023()) {
-      SetCommandIcon(this, IDC_INSTALL_PWA, kInstallDesktopChromeRefreshIcon);
+    sub_menus_.push_back(
+        std::make_unique<SaveAndShareSubMenuModel>(this, browser_));
+    AddSubMenuWithStringId(IDC_SAVE_AND_SHARE_MENU, IDS_SAVE_AND_SHARE_MENU,
+                           sub_menus_.back().get());
+  } else {
+    if (media_router::MediaRouterEnabled(browser()->profile())) {
+      AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
     }
-  } else if (std::u16string open_item = GetOpenPWALabel(browser_);
-             !open_item.empty()) {
-    AddItem(IDC_OPEN_IN_PWA_WINDOW, open_item);
-    if (features::IsChromeRefresh2023()) {
-      SetCommandIcon(this, IDC_OPEN_IN_PWA_WINDOW,
-                     kDesktopWindowsChromeRefreshIcon);
+
+    AddItemWithStringId(IDC_FIND, IDS_FIND);
+
+    if (std::u16string install_item = GetInstallPWALabel(browser_);
+        !install_item.empty()) {
+      AddItem(IDC_INSTALL_PWA, install_item);
+    } else if (std::u16string open_item = GetOpenPWALabel(browser_);
+               !open_item.empty()) {
+      AddItem(IDC_OPEN_IN_PWA_WINDOW, open_item);
     }
   }
 
@@ -1301,8 +1380,8 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
     SetCommandIcon(this, IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
-    SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastChromeRefreshIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
+    SetCommandIcon(this, IDC_SAVE_AND_SHARE_MENU, kFileSaveChromeRefreshIcon);
     SetCommandIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
                    kKeyChromeRefreshIcon);
     SetCommandIcon(this, IDC_MORE_TOOLS_MENU, kMoreToolsMenuIcon);

@@ -1186,6 +1186,15 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment methods
           </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU" desc="The text label of the Save and share sub menu item">
+            &amp;Save and share
+          </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU_SAVE" desc="The text label of the Save section of the Save and share sub menu">
+            Save
+          </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU_SHARE" desc="The text label of the Share section of the Save and share sub menu">
+            Share
+          </message>
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
             Save page &amp;as...
           </message>
@@ -1280,6 +1289,15 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment Methods
+          </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU" desc="In Title Case: The text label of the Save and share sub menu item">
+            &amp;Save and Share
+          </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU_SAVE" desc="In Title Case: The text label of the Save section of the Save and share sub menu">
+            Save
+          </message>
+          <message name="IDS_SAVE_AND_SHARE_MENU_SHARE" desc="In Title Case: The text label of the Share section of the Save and share sub menu">
+            Share
           </message>
           <message name="IDS_SAVE_PAGE" desc="In Title Case: The text label of the Save Page As menu item">
             Save Page &amp;As...
@@ -9552,6 +9570,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_APP_MENU_NEW_WEB_PAGE" desc="The new webpage menu in application windows">
           Open browser window
         </message>
+        <message name="IDS_APP_MENU_COPY_LINK" desc="The text label for the Copy link item in the app menu">
+          Copy &amp;link
+        </message>
+        <message name="IDS_APP_MENU_CREATE_QR_CODE" desc="The text label for the Create QR Code item in the app menu">
+          Create &amp;QR Code
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_APP_MENU_RELOAD" desc="In Title Case: The reload menu in application windows">
@@ -9559,6 +9583,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_APP_MENU_NEW_WEB_PAGE" desc="In Title Case: The new webpage menu in application windows">
           Open Browser Window
+        </message>
+        <message name="IDS_APP_MENU_COPY_LINK" desc="In Title Case: The text label for the Copy link item in the app menu">
+          Copy &amp;Link
+        </message>
+        <message name="IDS_APP_MENU_CREATE_QR_CODE" desc="In Title Case: The text label for the Create QR Code item in the app menu">
+          Create &amp;QR Code
         </message>
       </if>
       <message name="IDS_APP_MENU_BUTTON_UPDATE" desc="Short label next to app-menu button when an update is available.">
@@ -10042,7 +10072,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SHARING_HUB_SCREENSHOT_LABEL" desc="The text label for the screenshot button in the Sharing Hub dialog and app menu.">
         Screenshot
       </message>
-      <message name="IDS_SHARING_HUB_COPY_LINK_LABEL" desc="The text label for the copy link button in the Sharing Hub dialog and app menu.">
+      <message name="IDS_SHARING_HUB_COPY_LINK_LABEL" desc="The text label for the copy link button in the Sharing Hub dialog.">
         Copy link
       </message>
       <message name="IDS_SHARING_HUB_SAVE_PAGE_LABEL" desc="The text label for the save page button in the Sharing Hub dialog and app menu.">

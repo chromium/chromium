@@ -91,6 +91,7 @@ void AppMenuBrowserTest::ShowUi(const std::string& name) {
         {"reading_list", IDC_READING_LIST_MENU},  // Inside the bookmarks menu.
         {"extensions", IDC_EXTENSIONS_SUBMENU},
         {"find_and_edit", IDC_FIND_AND_EDIT_MENU},
+        {"save_and_share", IDC_SAVE_AND_SHARE_MENU},
   });
   const auto* const id_entry = kSubmenus.find(name);
   if (id_entry == kSubmenus.end()) {
@@ -249,6 +250,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_extensions) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_find_and_edit) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTestRefreshOnly, InvokeUi_save_and_share) {
   ShowAndVerifyUi();
 }
 

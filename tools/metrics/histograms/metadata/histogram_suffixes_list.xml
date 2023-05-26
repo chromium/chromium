@@ -5916,6 +5916,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Copy" label=""/>
   <suffix name="CopyUrl" label=""/>
   <suffix name="CreateHostedApp" label=""/>
+  <suffix name="CreateQrCode" label=""/>
   <suffix name="Cut" label=""/>
   <suffix name="DevTools" label=""/>
   <suffix name="DevToolsConsole" label=""/>
@@ -5943,6 +5944,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="RequestTabletSite" label=""/>
   <suffix name="RestoreTab" label=""/>
   <suffix name="SavePage" label=""/>
+  <suffix name="SendToDevices" label=""/>
   <suffix name="Settings" label=""/>
   <suffix name="ShowBookmarkBar" label=""/>
   <suffix name="ShowBookmarkMgr" label=""/>

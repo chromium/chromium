@@ -160,6 +160,9 @@
 // Find/Edit sub menu
 #define IDC_FIND_AND_EDIT_MENU          37200
 
+// Save/Share sub menu
+#define IDC_SAVE_AND_SHARE_MENU         37300
+
 // Zoom
 #define IDC_ZOOM_MENU                   38000
 #define IDC_ZOOM_PLUS                   38001
