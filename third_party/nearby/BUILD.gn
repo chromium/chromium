@@ -789,10 +789,7 @@ source_set("presence") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [
-    "src/presence/presence_client.cc",
-    "src/presence/presence_service.cc",
-  ]
+  sources = [ "src/presence/presence_service.cc" ]
   public = [
     "src/presence/presence_client.h",
     "src/presence/presence_service.h",
