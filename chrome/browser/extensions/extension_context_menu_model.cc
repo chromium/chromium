@@ -597,7 +597,6 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    bool add_separator_for_permissions_page = true;
     // User site setting takes preference over extension settings. Therefore, we
     // only show the page access submenu with change extension settings options
     // if the site settings is set to "customize by extension". Otherwise, shows
@@ -654,16 +653,9 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
         AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
                                IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS,
                                page_access_submenu_.get());
-
-        // Permissions page entry should be in the same section (no separator)
-        // when the site permissions submenu is present.
-        add_separator_for_permissions_page = false;
         break;
     }
 
-    if (add_separator_for_permissions_page) {
-      AddSeparator(ui::NORMAL_SEPARATOR);
-    }
     AddItemWithStringId(
         PAGE_ACCESS_PERMISSIONS_PAGE,
         IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
