@@ -158,6 +158,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
@@ -613,6 +614,9 @@ void InjectBrowserInitParams(
 
   params->enable_clipboard_history_refresh =
       chromeos::features::IsClipboardHistoryRefreshEnabled();
+
+  params->is_variable_refresh_rate_enabled =
+      ::features::IsVariableRefreshRateEnabled();
 }
 
 template <typename BrowserParams>

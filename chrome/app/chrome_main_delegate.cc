@@ -217,6 +217,7 @@
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/scoped_add_feature_flags.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
@@ -230,6 +231,7 @@
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #include "media/base/media_switches.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #endif
 
@@ -841,6 +843,12 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     if (init_params->EnableCpuMappableNativeGpuMemoryBuffers()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           switches::kEnableNativeGpuMemoryBuffers);
+    }
+
+    if (init_params->IsVariableRefreshRateEnabled()) {
+      base::ScopedAddFeatureFlags add_feature_flags(
+          base::CommandLine::ForCurrentProcess());
+      add_feature_flags.EnableIfNotSet(::features::kEnableVariableRefreshRate);
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
