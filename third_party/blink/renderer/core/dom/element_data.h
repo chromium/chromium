@@ -89,15 +89,24 @@ class ElementData : public GarbageCollected<ElementData> {
   void Trace(Visitor*) const;
 
  protected:
+  static constexpr size_t kShareableArraySizeBits = 27;
+
   using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
   using IsUniqueFlag =
       BitField::DefineFirstValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
-  using ArraySize = IsUniqueFlag::
-      DefineNextValue<uint32_t, 28, WTF::BitFieldValueConstness::kConst>;
-  using PresentationAttributeStyleIsDirty = ArraySize::DefineNextValue<bool, 1>;
+  // This is used solely by ShareableElementData. It gives the number of
+  // elements in the array.
+  using ShareableArraySize =
+      IsUniqueFlag::DefineNextValue<uint32_t,
+                                    kShareableArraySizeBits,
+                                    WTF::BitFieldValueConstness::kConst>;
+  using PresentationAttributeStyleIsDirty =
+      ShareableArraySize::DefineNextValue<bool, 1>;
   using StyleAttributeIsDirty =
       PresentationAttributeStyleIsDirty::DefineNextValue<bool, 1>;
   using SvgAttributesAreDirty = StyleAttributeIsDirty::DefineNextValue<bool, 1>;
+  // Used by ShareableElementData. Tracks if the `class` needs to be calculated.
+  using ClassIsDirty = SvgAttributesAreDirty::DefineNextValue<bool, 1>;
 
   ElementData();
   explicit ElementData(unsigned array_size);
@@ -112,6 +121,7 @@ class ElementData : public GarbageCollected<ElementData> {
   bool svg_attributes_are_dirty() const {
     return bit_field_.get<SvgAttributesAreDirty>();
   }
+  bool class_is_dirty() const { return bit_field_.get<ClassIsDirty>(); }
 
   // Following 3 fields are meant to be mutable and can change even when const.
   void SetPresentationAttributeStyleIsDirty(
@@ -127,6 +137,9 @@ class ElementData : public GarbageCollected<ElementData> {
   void SetSvgAttributesAreDirty(bool svg_attributes_are_dirty) const {
     const_cast<BitField*>(&bit_field_)
         ->set<SvgAttributesAreDirty>(svg_attributes_are_dirty);
+  }
+  void SetClassIsDirty(bool value) const {
+    const_cast<BitField*>(&bit_field_)->set<ClassIsDirty>(value);
   }
 
   BitField bit_field_;
@@ -159,6 +172,9 @@ class ElementData : public GarbageCollected<ElementData> {
 // duplicate sets of attributes (ex. the same classes).
 class ShareableElementData final : public ElementData {
  public:
+  // Maximum number of attributes this can hold.
+  static constexpr size_t kMaxNumberOfAttributes = 2 ^ kShareableArraySizeBits;
+
   static ShareableElementData* CreateWithAttributes(
       const Vector<Attribute, kAttributePrealloc>&);
 
@@ -201,7 +217,8 @@ class UniqueElementData final : public ElementData {
 
   UniqueElementData();
   explicit UniqueElementData(const ShareableElementData&);
-  explicit UniqueElementData(const UniqueElementData&);
+  UniqueElementData(const UniqueElementData&);
+  explicit UniqueElementData(const Vector<Attribute, kAttributePrealloc>&);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
@@ -234,7 +251,8 @@ inline AttributeCollection ElementData::Attributes() const {
 }
 
 inline AttributeCollection ShareableElementData::Attributes() const {
-  return AttributeCollection(attribute_array_, bit_field_.get<ArraySize>());
+  return AttributeCollection(attribute_array_,
+                             bit_field_.get<ShareableArraySize>());
 }
 
 inline AttributeCollection UniqueElementData::Attributes() const {

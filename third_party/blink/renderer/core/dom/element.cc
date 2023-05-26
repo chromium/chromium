@@ -2450,6 +2450,17 @@ static inline ClassStringContent ClassStringHasClassName(
 
 void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
   DCHECK(HasElementData());
+  if (!element_data_->IsUnique()) {
+    ShareableElementData* shareable_element_data =
+        To<ShareableElementData>(element_data_.Get());
+    if (!shareable_element_data->class_is_dirty() && !InActiveDocument()) {
+      // `element_data` is shared, class related state is up to date, and
+      // this is not in the active document. No additional processing is
+      // necessary (because ClassChangedForElement() does nothing if not
+      // in an active document).
+      return;
+    }
+  }
   ClassStringContent class_string_content_type =
       ClassStringHasClassName(new_class_string);
   const bool should_fold_case = GetDocument().InQuirksMode();
@@ -2467,6 +2478,9 @@ void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
     } else {
       GetElementData()->ClearClass();
     }
+  }
+  if (!element_data_->IsUnique()) {
+    To<ShareableElementData>(element_data_.Get())->SetClassIsDirty(false);
   }
 }
 
@@ -2530,14 +2544,14 @@ void Element::ParserSetAttributes(
   DCHECK(!element_data_);
 
   if (!attribute_vector.empty()) {
-    if (GetDocument().GetElementDataCache()) {
-      element_data_ =
-          GetDocument()
-              .GetElementDataCache()
-              ->CachedShareableElementDataWithAttributes(attribute_vector);
-    } else {
+    if (auto* cache = GetDocument().GetElementDataCache()) {
+      element_data_ = cache->ElementDataWithAttributes(attribute_vector);
+    } else if (attribute_vector.size() <=
+               ShareableElementData::kMaxNumberOfAttributes) {
       element_data_ =
           ShareableElementData::CreateWithAttributes(attribute_vector);
+    } else {
+      element_data_ = MakeGarbageCollected<UniqueElementData>(attribute_vector);
     }
   }
 
