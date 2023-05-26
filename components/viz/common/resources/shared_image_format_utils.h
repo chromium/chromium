@@ -37,6 +37,11 @@ SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
 VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
     SharedImageFormat format);
 
+// Returns the BufferFormat corresponding to `format`, which must be a
+// single-planar format.
+VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat
+SinglePlaneSharedImageFormatToBufferFormat(SharedImageFormat format);
+
 VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
 GetSharedImageFormat(gfx::BufferFormat format);
 

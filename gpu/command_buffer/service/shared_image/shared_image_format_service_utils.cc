@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 
 namespace gpu {
@@ -23,7 +24,7 @@ int BitsPerPixel(viz::SharedImageFormat format) {
 
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return viz::BufferFormat(format.resource_format());
+    return viz::SinglePlaneSharedImageFormatToBufferFormat(format);
   }
 
   if (format == viz::MultiPlaneFormat::kYV12) {

@@ -177,6 +177,12 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
          format == MultiPlaneFormat::kP010;
 }
 
+gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
+    SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+  return BufferFormat(format.resource_format());
+}
+
 SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRA_8888:
