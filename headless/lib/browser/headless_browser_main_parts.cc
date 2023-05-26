@@ -11,12 +11,12 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/headless/clipboard/headless_clipboard.h"
+#include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 #include "content/public/common/result_codes.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_devtools.h"
 #include "headless/lib/browser/headless_screen.h"
-#include "headless/lib/browser/headless_select_file_dialog_factory.h"
 #include "headless/public/switches.h"
 
 #if defined(HEADLESS_USE_PREFS)
