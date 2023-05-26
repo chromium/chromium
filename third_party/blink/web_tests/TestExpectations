@@ -6735,7 +6735,7 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] virtual/schemeful-same-site/external/wpt/cookies/attributes/domain.sub.html [ Failure ]
 [ Debug Mac12 ] virtual/shared-storage-fenced-frame-mparch-selecturl-limit/wpt_internal/shared_storage_selecturl_limit/run-url-selection-operation-limit-multiple-origins.https.html [ Failure ]
 [ Debug Mac12 ] virtual/shared-storage-fenced-frame-mparch/wpt_internal/shared_storage/embedder-context.https.html [ Failure ]
-[ Debug Mac12 ] virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF.html [ Failure ]
+crbug.com/1446992 [ Mac ] virtual/threaded/external/wpt/requestidlecallback/deadline-max-rAF.html [ Failure ]
 [ Debug Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Failure ]
 [ Debug Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/delay-load-event-2.html [ Failure ]
 [ Debug Mac12 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
