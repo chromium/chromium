@@ -51,6 +51,22 @@ public final class FakeAndroidCredentialManager {
     }
 
     /**
+     * Fake implementation of CredentialManager.prepareGetCredential().
+     */
+    public void prepareGetCredential(FakeAndroidCredManGetRequest request,
+            CancellationSignal cancellationSignal, Executor executor,
+            OutcomeReceiver<FakeAndroidCredManPrepareGetCredentialResponse,
+                    FakeAndroidCredManException> callback) {
+        mGetRequest = request;
+
+        if (mErrorResponse != null) {
+            callback.onError(mErrorResponse);
+            return;
+        }
+        callback.onResult(new FakeAndroidCredManPrepareGetCredentialResponse());
+    }
+
+    /**
      * Returns the received Create Request for inspection by tests.
      */
     public FakeAndroidCredManCreateRequest getCreateRequest() {

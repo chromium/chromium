@@ -30,6 +30,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.components.webauthn.WebAuthnBrowserBridge;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
@@ -42,12 +43,59 @@ import org.chromium.url.Origin;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class Fido2CredentialRequestRobolectricTest {
+    private static class MockBrowserBridge extends WebAuthnBrowserBridge {
+        private int mOnCredManConditionalRequestPendingCallCount;
+        private int mCleanupRequestCallCount;
+        private int mOnCredManClosedCallCount;
+        private Runnable mCredManGetAssertionRunnable;
+
+        void reset() {
+            mOnCredManConditionalRequestPendingCallCount = 0;
+            mCleanupRequestCallCount = 0;
+            mOnCredManClosedCallCount = 0;
+            mCredManGetAssertionRunnable = null;
+        }
+
+        @Override
+        public void onCredManConditionalRequestPending(
+                RenderFrameHost frameHost, boolean hasResults, Runnable fullAssertion) {
+            mOnCredManConditionalRequestPendingCallCount += 1;
+            mCredManGetAssertionRunnable = fullAssertion;
+        }
+
+        @Override
+        public void cleanupRequest(RenderFrameHost frameHost) {
+            mCleanupRequestCallCount += 1;
+        }
+
+        @Override
+        public void onCredManUiClosed(RenderFrameHost frameHost, boolean success) {
+            mOnCredManClosedCallCount += 1;
+        }
+
+        int getOnCredManConditionalRequestPendingCallCount() {
+            return mOnCredManConditionalRequestPendingCallCount;
+        }
+
+        int getCleanupRequestCallCount() {
+            return mCleanupRequestCallCount;
+        }
+
+        Runnable getCredManGetAssertionRunnable() {
+            return mCredManGetAssertionRunnable;
+        }
+        int getOnCredManClosedCallCount() {
+            return mOnCredManClosedCallCount;
+        }
+    }
+
     private FakeAndroidCredentialManager mCredentialManager;
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private Origin mOrigin;
+    private MockBrowserBridge mMockBrowserBridge;
 
     @Mock
     private RenderFrameHost mFrameHost;
@@ -111,6 +159,10 @@ public class Fido2CredentialRequestRobolectricTest {
                 FakeAndroidCredManCreateRequest.Builder.class,
                 FakeAndroidCredManGetRequest.Builder.class,
                 FakeAndroidCredentialOption.Builder.class);
+
+        mMockBrowserBridge = new MockBrowserBridge();
+        mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
+        mMockBrowserBridge.reset();
     }
 
     @Test
@@ -190,6 +242,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 "{serialized_get_request}");
         Assert.assertFalse(option.isSystemProviderRequired());
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
     }
 
     @Test
@@ -199,13 +252,14 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
-                "android.credentials.CreateCredentialException.TYPE_USER_CANCELED", "Message"));
+                "android.credentials.GetCredentialException.TYPE_USER_CANCELED", "Message"));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
     }
 
     @Test
@@ -215,12 +269,99 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
-                "android.credentials.CreateCredentialException.TYPE_UNKNOWN", "Message"));
+                "android.credentials.GetCredentialException.TYPE_UNKNOWN", "Message"));
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         Assert.assertEquals(
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testConditionalGetAssertion_credManEnabledSuccess_success() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        Assert.assertNotNull(credManRequest);
+        Assert.assertEquals(
+                credManRequest.getOrigin(), Fido2CredentialRequest.convertOriginToString(mOrigin));
+        FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
+        Assert.assertNotNull(option);
+        Assert.assertEquals(option.getType(), "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        Assert.assertEquals(option.getCredentialRetrievalData().getString(
+                                    "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
+                "{serialized_get_request}");
+        Assert.assertFalse(option.isSystemProviderRequired());
+        Assert.assertEquals(mCallback.getStatus(), null);
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManConditionalRequestPendingCallCount(), 1);
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testConditionalGetAssertion_credManEnabledUnknownError_unknownError() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        mRequestOptions.isConditional = true;
+        mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
+                "android.credentials.GetCredentialException.TYPE_UNKNOWN", "Message"));
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        Assert.assertEquals(
+                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+    }
+
+    @Test
+    @SmallTest
+    public void testConditionalGetAssertion_credManEnabledRpCancelWhileIdle_notAllowedError() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        mRequest.cancelConditionalGetAssertion(mFrameHost);
+        Assert.assertEquals(
+                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.ABORT_ERROR));
+        Assert.assertEquals(mMockBrowserBridge.getCleanupRequestCallCount(), 1);
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+    }
+
+    @Test
+    @SmallTest
+    public void
+    testConditionalGetAssertion_credManEnabledUserCancelWhileIdle_DoesNotCancelConditionalRequest() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
+                "android.credentials.GetCredentialException.TYPE_USER_CANCELED", "Message"));
+
+        mMockBrowserBridge.getCredManGetAssertionRunnable().run();
+
+        Assert.assertEquals(mCallback.getStatus(), null);
+        Assert.assertEquals(mMockBrowserBridge.getCleanupRequestCallCount(), 0);
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 1);
     }
 }

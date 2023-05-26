@@ -332,6 +332,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManException.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManGetRequest.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManGetResponse.java",
+  "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredManPrepareGetCredentialResponse.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredential.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredentialManager.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidCredentialOption.java",
