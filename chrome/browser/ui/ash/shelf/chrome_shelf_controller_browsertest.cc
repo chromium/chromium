@@ -32,6 +32,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -637,10 +638,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, UnpinRunning) {
 
 class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
  protected:
-  UnpinnedBrowserShortcutTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary}, {});
-  }
+  UnpinnedBrowserShortcutTest() = default;
   UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
   UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
       delete;
@@ -662,7 +660,8 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
   raw_ptr<ChromeShelfController, ExperimentalAsh> controller_ = nullptr;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
+      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
 };
 
 IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
