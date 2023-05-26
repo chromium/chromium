@@ -43,7 +43,8 @@ struct CONTENT_EXPORT MainFunctionParams {
   MainFunctionParams(MainFunctionParams&&);
   MainFunctionParams& operator=(MainFunctionParams&&);
 
-  raw_ptr<const base::CommandLine> command_line;
+  // TODO(crbug.com/1449286): detect under BRP.
+  raw_ptr<const base::CommandLine, DanglingUntriaged> command_line;
 
 #if BUILDFLAG(IS_WIN)
   raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
