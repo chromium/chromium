@@ -37,6 +37,8 @@
 #include <unistd.h>
 #endif
 
+#include "base/record_replay.h"
+
 namespace base {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -356,7 +358,10 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
 #endif
 
   return thread_type == ThreadType::kRealtimeAudio &&
-         pthread_setschedparam(pthread_self(), SCHED_RR, &kRealTimePrio) == 0;
+         recordreplay::RecordReplayValue(
+             "[RUN-1967] pthread_setschedparam",
+             (uintptr_t)pthread_setschedparam(pthread_self(), SCHED_RR, &kRealTimePrio)
+         ) == 0;
 #else
   return false;
 #endif
