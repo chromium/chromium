@@ -3,6 +3,7 @@
     "Cast Linux": "Ubuntu-22.04",
     "Cast Linux Debug": "Ubuntu-22.04",
     "Linux Builder": "Ubuntu-22.04",
+    "Linux Builder (Wayland)": "Ubuntu-22.04",
     "android-build-perf-developer": "Ubuntu-22.04",
     "build-perf-android": "Ubuntu-22.04",
     "build-perf-android-siso": "Ubuntu-22.04",
