@@ -351,8 +351,7 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 // We will run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
 const std::vector<base::test::FeatureRef> kTestFeatures = {
-    features::kNearbySharingSelfShareAutoAccept,
-    features::kNearbySharingSelfShareUI};
+    features::kNearbySharingSelfShare};
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2324,7 +2323,7 @@ TEST_P(NearbySharingServiceImplTest,
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -2342,7 +2341,7 @@ TEST_P(NearbySharingServiceImplTest, ScreenLocksDuringAdvertising) {
   EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
 
   session_controller_->SetScreenLocked(true);
-  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   } else {
     EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
@@ -5255,8 +5254,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   ASSERT_TRUE(share_target.has_value());
   EXPECT_EQ(kDeviceName, share_target->device_name);
   EXPECT_EQ(kDeviceType, share_target->type);
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingSelfShareAutoAccept)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     EXPECT_EQ(certificate_proto.for_self_share(), share_target->for_self_share);
   }
 
@@ -5286,8 +5284,7 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
       SetUpIncomingConnection(callback, /*for_self_share=*/true);
 
   // If Self Share is not enabled, we should just time out.
-  if (!base::FeatureList::IsEnabled(
-          features::kNearbySharingSelfShareAutoAccept)) {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     base::RunLoop run_loop;
     EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
         .WillOnce(testing::Invoke(

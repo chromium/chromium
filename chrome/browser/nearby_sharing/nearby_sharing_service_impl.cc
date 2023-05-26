@@ -1955,7 +1955,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   }
 
   // Do not advertise on lock screen unless Self Share is enabled.
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI)) {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     if (is_screen_locked_) {
       StopAdvertising();
       NS_LOG(VERBOSE) << __func__
@@ -3688,8 +3688,7 @@ void NearbySharingServiceImpl::OnStorageCheckCompleted(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingSelfShareAutoAccept)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     // Auto-accept self shares when not in high-visibility mode.
     if (share_target.for_self_share && !IsInHighVisibility()) {
       NS_LOG(INFO) << __func__ << ": Auto-accepting self share.";
@@ -3826,8 +3825,7 @@ absl::optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
   target.device_name = std::move(*device_name);
   target.is_incoming = is_incoming;
   target.device_id = GetDeviceId(endpoint_id, certificate);
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingSelfShareAutoAccept)) {
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     target.for_self_share = certificate && certificate->for_self_share();
   }
 

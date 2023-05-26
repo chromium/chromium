@@ -3550,11 +3550,8 @@ extern const char kMultiZoneRgbKeyboardDescription[];
 extern const char kMultilingualTypingName[];
 extern const char kMultilingualTypingDescription[];
 
-extern const char kNearbySharingSelfShareAutoAcceptName[];
-extern const char kNearbySharingSelfShareAutoAcceptDescription[];
-
-extern const char kNearbySharingSelfShareUIName[];
-extern const char kNearbySharingSelfShareUIDescription[];
+extern const char kNearbySharingSelfShareName[];
+extern const char kNearbySharingSelfShareDescription[];
 
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];

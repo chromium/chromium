@@ -119,7 +119,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "isSelfShareEnabled",
-      base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI));
+      base::FeatureList::IsEnabled(features::kNearbySharingSelfShare));
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;

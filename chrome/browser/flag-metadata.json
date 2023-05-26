@@ -5154,15 +5154,9 @@
     "owners": ["qpubert@google.com", "djean@google.com"],
     "expiry_milestone": 115
   },
-  {
-    "name": "nearby-sharing-self-share-auto-accept",
-    "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "nearby-sharing-self-share-ui",
-    "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 125
+  {"name": "nearby-sharing-self-share",
+   "owners": ["brandosocarras@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com"],
+   "expiry_milestone": 125
   },
   {
     "name": "network-service-in-process",

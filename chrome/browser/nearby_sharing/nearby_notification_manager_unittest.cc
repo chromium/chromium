@@ -152,21 +152,14 @@ std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
 
 class NearbyNotificationManagerTestBase : public testing::Test {
  public:
-  explicit NearbyNotificationManagerTestBase(
-      std::tuple<bool, bool> feature_list) {
+  explicit NearbyNotificationManagerTestBase(std::tuple<bool> feature_list) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     is_self_share_enabled_ = std::get<0>(feature_list);
-    is_self_share_auto_accept_enabled_ = std::get<1>(feature_list);
     if (is_self_share_enabled_) {
-      enabled_features.push_back(features::kNearbySharingSelfShareUI);
+      enabled_features.push_back(features::kNearbySharingSelfShare);
     } else {
-      disabled_features.push_back(features::kNearbySharingSelfShareUI);
-    }
-    if (is_self_share_auto_accept_enabled_) {
-      enabled_features.push_back(features::kNearbySharingSelfShareAutoAccept);
-    } else {
-      disabled_features.push_back(features::kNearbySharingSelfShareAutoAccept);
+      disabled_features.push_back(features::kNearbySharingSelfShare);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterNearbySharingPrefs(pref_service_.registry());
@@ -285,14 +278,13 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   raw_ptr<MockSettingsOpener, ExperimentalAsh> settings_opener_;
   bool is_self_share_enabled_ = false;
-  bool is_self_share_auto_accept_enabled_ = false;
 };
 
 // We parameterize these tests to run them with Self Share and Nearby Share
 // Visibility Reminder enabled and disabled.
 class NearbyNotificationManagerTest
     : public NearbyNotificationManagerTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool>> {
  public:
   NearbyNotificationManagerTest()
       : NearbyNotificationManagerTestBase(/*feature_list=*/GetParam()) {}
@@ -407,7 +399,7 @@ class NearbyNotificationManagerAttachmentsTest
  public:
   NearbyNotificationManagerAttachmentsTest()
       : NearbyNotificationManagerTestBase(
-            /*feature_list=*/std::get<2>(GetParam())) {}
+            /*feature_list=*/std::get<1>(GetParam())) {}
 };
 
 // Boolean parameter is |with_token| and the tuple parameter is featuree list
@@ -420,7 +412,7 @@ class NearbyNotificationManagerConnectionRequestTest
  public:
   NearbyNotificationManagerConnectionRequestTest()
       : NearbyNotificationManagerTestBase(
-            /*feature_list=*/std::get<1>(GetParam())) {}
+            /*feature_list=*/std::get<0>(GetParam())) {}
 };
 
 std::u16string FormatNotificationTitle(
@@ -1923,13 +1915,13 @@ TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
   manager()->OnTransferUpdate(share_target, transfer_metadata);
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
-  if (is_self_share_auto_accept_enabled_) {
-    ASSERT_EQ(0u, notifications.size());
+  if (is_self_share_enabled_) {
+      ASSERT_EQ(0u, notifications.size());
   } else {
-    ASSERT_EQ(1u, notifications.size());
+      ASSERT_EQ(1u, notifications.size());
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerTest,
                          NearbyNotificationManagerTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool()));
