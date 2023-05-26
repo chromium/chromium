@@ -96,8 +96,9 @@ struct PackSpecPair {
 
   // Allows PackSpecPair to be used as a key in STL containers, like flat_map.
   bool operator<(const PackSpecPair& other) const {
-    if (feature_id == other.feature_id)
+    if (feature_id == other.feature_id) {
       return locale < other.locale;
+    }
 
     return feature_id < other.feature_id;
   }

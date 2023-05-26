@@ -362,16 +362,18 @@ void LanguagePackManager::RemoveObserver(Observer* const observer) {
 void LanguagePackManager::NotifyPackStateChanged(
     const dlcservice::DlcState& dlc_state) {
   PackResult result = ConvertDlcStateToPackResult(dlc_state);
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnPackStateChanged(result);
+  }
 }
 
 void LanguagePackManager::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
   // As of now, we only have Handwriting as a client.
   // We will check the full list once we have more than one DLC.
-  if (dlc_state.id() != kHandwritingFeatureId)
+  if (dlc_state.id() != kHandwritingFeatureId) {
     return;
+  }
 
   NotifyPackStateChanged(dlc_state);
 }
