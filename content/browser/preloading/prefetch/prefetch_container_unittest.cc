@@ -612,7 +612,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
       prefetch_document_manager->GetWeakPtr());
 
   // Mark initial prefetch as eligible
-  prefetch_container.OnEligibilityCheckComplete(kTestUrl1, true, absl::nullopt);
+  prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
 
   EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
                 .prefetch_eligible_count,
@@ -620,7 +620,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
 
   // Add a redirect, register a callback for it, and then mark it as eligible.
   prefetch_container.AddRedirectHop(kTestUrl2);
-  prefetch_container.OnEligibilityCheckComplete(kTestUrl2, true, absl::nullopt);
+  prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
 
   // Referring page metrics is only incremented for the original prefetch URL
   // and not any redirects.
@@ -649,7 +649,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
       prefetch_document_manager->GetWeakPtr());
 
   // Mark initial prefetch as eligible
-  prefetch_container.OnEligibilityCheckComplete(kTestUrl1, true, absl::nullopt);
+  prefetch_container.OnEligibilityCheckComplete(true, absl::nullopt);
 
   EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
                 .prefetch_eligible_count,
@@ -658,7 +658,7 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
   // Add a redirect, register a callback for it, and then mark it as ineligible.
   prefetch_container.AddRedirectHop(kTestUrl2);
   prefetch_container.OnEligibilityCheckComplete(
-      kTestUrl2, false, PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
+      false, PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
 
   // Ineligible redirects are treated as failed prefetches, and not ineligible
   // prefetches.

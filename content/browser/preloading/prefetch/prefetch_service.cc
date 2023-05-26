@@ -635,9 +635,9 @@ void PrefetchService::OnGotEligibilityResult(
   // failure.
   prefetch_container->SetIsDecoy(is_decoy);
   if (is_decoy) {
-    prefetch_container->OnEligibilityCheckComplete(url, true, absl::nullopt);
+    prefetch_container->OnEligibilityCheckComplete(true, absl::nullopt);
   } else {
-    prefetch_container->OnEligibilityCheckComplete(url, eligible, status);
+    prefetch_container->OnEligibilityCheckComplete(eligible, status);
   }
 
   if (!eligible && !is_decoy) {
@@ -695,9 +695,9 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
 
   // Inform the prefetch container of the result of the eligibility check
   if (prefetch_container->IsDecoy()) {
-    prefetch_container->OnEligibilityCheckComplete(url, true, absl::nullopt);
+    prefetch_container->OnEligibilityCheckComplete(true, absl::nullopt);
   } else {
-    prefetch_container->OnEligibilityCheckComplete(url, eligible, status);
+    prefetch_container->OnEligibilityCheckComplete(eligible, status);
     if (eligible &&
         prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
       prefetch_container->RegisterCookieListener(

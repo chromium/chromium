@@ -450,14 +450,12 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
 }
 
 void PrefetchContainer::OnEligibilityCheckComplete(
-    const GURL& url,
     bool is_eligible,
     absl::optional<PrefetchStatus> status) {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-  this_prefetch->is_eligible_ = is_eligible;
+  SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
+  this_prefetch.is_eligible_ = is_eligible;
 
-  if (url == prefetch_url_ && redirect_chain_.size() == 1) {
+  if (redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
     // prefetched.
     if (!is_eligible) {

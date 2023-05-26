@@ -123,8 +123,7 @@ class CONTENT_EXPORT PrefetchContainer {
   std::unique_ptr<ProxyLookupClientImpl> ReleaseProxyLookupClient();
 
   // Whether or not the prefetch was determined to be eligibile.
-  void OnEligibilityCheckComplete(const GURL& url,
-                                  bool is_eligible,
+  void OnEligibilityCheckComplete(bool is_eligible,
                                   absl::optional<PrefetchStatus> status);
   bool IsInitialPrefetchEligible() const;
 
