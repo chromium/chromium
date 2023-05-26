@@ -241,15 +241,6 @@ void AbortSignal::RemoveAlgorithm(AlgorithmHandle* handle) {
   abort_algorithms_.erase(handle);
 }
 
-void AbortSignal::SignalAbort(ScriptState* script_state) {
-  v8::Local<v8::Value> dom_exception = V8ThrowDOMException::CreateOrEmpty(
-      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
-      "signal is aborted without reason");
-  CHECK(!dom_exception.IsEmpty());
-  ScriptValue reason(script_state->GetIsolate(), dom_exception);
-  SignalAbort(script_state, reason);
-}
-
 void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   DCHECK(!reason.IsEmpty());
   if (aborted())

@@ -126,7 +126,6 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
   // https://dom.spec.whatwg.org/#abortsignal-add. Run all algorithms that were
   // added by AddAlgorithm(), in order of addition, then fire an "abort"
   // event. Does nothing if called more than once.
-  void SignalAbort(ScriptState*);
   void SignalAbort(ScriptState*, ScriptValue reason);
 
   // The "follow" algorithm from the standard:

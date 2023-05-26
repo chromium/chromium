@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
+#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
@@ -672,12 +673,13 @@ TEST_F(BodyStreamBufferTest, AbortSignalMakesAborted) {
   // This BytesConsumer is not drainable.
   BytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
       scope.GetDocument().GetTaskRunner(TaskType::kNetworking));
-  auto* signal = MakeGarbageCollected<AbortSignal>(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetExecutionContext());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
-      scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
+      scope.GetScriptState(), src, controller->signal(),
+      /*cached_metadata_handler=*/nullptr);
 
   EXPECT_FALSE(buffer->IsAborted());
-  signal->SignalAbort(scope.GetScriptState());
+  controller->abort(scope.GetScriptState());
   EXPECT_TRUE(buffer->IsAborted());
 }
 
@@ -704,12 +706,13 @@ TEST_F(BodyStreamBufferTest,
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* signal = MakeGarbageCollected<AbortSignal>(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetExecutionContext());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
-      scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
+      scope.GetScriptState(), src, controller->signal(),
+      /*cached_metadata_handler=*/nullptr);
 
   checkpoint.Call(1);
-  signal->SignalAbort(scope.GetScriptState());
+  controller->abort(scope.GetScriptState());
 
   checkpoint.Call(2);
   buffer->StartLoading(loader, client, ASSERT_NO_EXCEPTION);
@@ -738,15 +741,16 @@ TEST_F(BodyStreamBufferTest, AbortAfterStartLoadingCallsDataLoaderClientAbort) {
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* signal = MakeGarbageCollected<AbortSignal>(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetExecutionContext());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
-      scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
+      scope.GetScriptState(), src, controller->signal(),
+      /*cached_metadata_handler=*/nullptr);
 
   checkpoint.Call(1);
   buffer->StartLoading(loader, client, ASSERT_NO_EXCEPTION);
 
   checkpoint.Call(2);
-  signal->SignalAbort(scope.GetScriptState());
+  controller->abort(scope.GetScriptState());
 
   checkpoint.Call(3);
 }
@@ -773,16 +777,17 @@ TEST_F(BodyStreamBufferTest,
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* signal = MakeGarbageCollected<AbortSignal>(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetExecutionContext());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
-      scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
+      scope.GetScriptState(), src, controller->signal(),
+      /*cached_metadata_handler=*/nullptr);
 
   checkpoint.Call(1);
   buffer->StartLoading(loader, client, ASSERT_NO_EXCEPTION);
   test::RunPendingTasks();
 
   checkpoint.Call(2);
-  signal->SignalAbort(scope.GetScriptState());
+  controller->abort(scope.GetScriptState());
 
   checkpoint.Call(3);
 }
