@@ -119,8 +119,8 @@ class _TargetHost(object):
         # the host.
 
         self._host_port_pair = run_ffx_command(
-            ('target', 'get-ssh-address'),
-            self._target_id,
+            cmd=('target', 'get-ssh-address'),
+            target_id=self._target_id,
             capture_output=True).stdout.strip()
         self._proxy = self._port_forward_list(ports_to_forward)
 

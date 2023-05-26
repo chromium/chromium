@@ -45,8 +45,8 @@ def _get_system_info(target: Optional[str],
         except (subprocess.CalledProcessError, common.StateTransitionError):
             logging.warning('Could not boot device. Assuming in ZEDBOOT')
             return ('', '')
-        wait_cmd = common.run_ffx_command(('target', 'wait', '-t', '180'),
-                                          target,
+        wait_cmd = common.run_ffx_command(cmd=('target', 'wait', '-t', '180'),
+                                          target_id=target,
                                           check=False)
         if wait_cmd.returncode != 0:
             return ('', '')
@@ -98,10 +98,10 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         # where large files can take longer to transfer.
         configs.append('fastboot.flash.timeout_rate=1')
 
-    common.run_ffx_command(
-        ('target', 'flash', manifest, '--no-bootloader-reboot'),
-        target_id=target_id,
-        configs=configs)
+    common.run_ffx_command(cmd=('target', 'flash', manifest,
+                                '--no-bootloader-reboot'),
+                           target_id=target_id,
+                           configs=configs)
 
 
 def flash(system_image_dir: str,
@@ -116,7 +116,7 @@ def flash(system_image_dir: str,
             boot_device(target, BootMode.BOOTLOADER, serial_num)
             for _ in range(10):
                 time.sleep(10)
-                if common.run_ffx_command(('target', 'list', serial_num),
+                if common.run_ffx_command(cmd=('target', 'list', serial_num),
                                           check=False).returncode == 0:
                     break
             _run_flash_command(system_image_dir, serial_num)

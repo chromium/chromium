@@ -74,10 +74,10 @@ class TestUpdateProductBundles(unittest.TestCase):
     update_product_bundles.remove_repositories(['foo', 'bar', 'fizz', 'buzz'])
 
     ffx_mock.assert_has_calls([
-        mock.call(('repository', 'remove', 'foo'), check=True),
-        mock.call(('repository', 'remove', 'bar'), check=True),
-        mock.call(('repository', 'remove', 'fizz'), check=True),
-        mock.call(('repository', 'remove', 'buzz'), check=True),
+        mock.call(cmd=('repository', 'remove', 'foo'), check=True),
+        mock.call(cmd=('repository', 'remove', 'bar'), check=True),
+        mock.call(cmd=('repository', 'remove', 'fizz'), check=True),
+        mock.call(cmd=('repository', 'remove', 'buzz'), check=True),
     ])
 
   @mock.patch('os.path.exists')
@@ -110,18 +110,19 @@ class TestUpdateProductBundles(unittest.TestCase):
       }])
 
       self._ffx_mock.assert_has_calls([
-          mock.call(('--machine', 'json', 'repository', 'list'),
+          mock.call(cmd=('--machine', 'json', 'repository', 'list'),
                     capture_output=True,
                     check=True),
-          mock.call(('repository', 'remove', 'workstation-eng.chromebook-x64'),
+          mock.call(cmd=('repository', 'remove',
+                         'workstation-eng.chromebook-x64'),
                     check=True)
       ])
 
   def testRemoveProductBundle(self):
     update_product_bundles.remove_product_bundle('some-bundle-foo-bar')
 
-    self._ffx_mock.assert_called_once_with(
-        ('product-bundle', 'remove', '-f', 'some-bundle-foo-bar'))
+    self._ffx_mock.assert_called_once_with(cmd=('product-bundle', 'remove',
+                                                '-f', 'some-bundle-foo-bar'))
 
   def _InitFFXRunWithProductBundleList(self, sdk_version='10.20221114.2.1'):
     self._ffx_mock.return_value.stdout = f"""
@@ -203,8 +204,8 @@ class TestUpdateProductBundles(unittest.TestCase):
     self.assertEqual(update_product_bundles.get_product_bundles(),
                      ['workstation_eng.chromebook-x64'])
     self._ffx_mock.assert_has_calls([
-        mock.call(('product-bundle', 'remove', '-f', 'terminal.qemu-x64')),
-        mock.call(('product-bundle', 'remove', '-f', 'core.x64-dfv2')),
+        mock.call(cmd=('product-bundle', 'remove', '-f', 'terminal.qemu-x64')),
+        mock.call(cmd=('product-bundle', 'remove', '-f', 'core.x64-dfv2')),
     ],
                                     any_order=True)
 
@@ -220,9 +221,9 @@ class TestUpdateProductBundles(unittest.TestCase):
 
     mock_sequence.assert_has_calls([
         mock.call.update_repo_list(),
-        mock.call.run_ffx_command(
-            ('product-bundle', 'get', 'some-bundle', '--force-repo'),
-            configs=None)
+        mock.call.run_ffx_command(cmd=('product-bundle', 'get', 'some-bundle',
+                                       '--force-repo'),
+                                  configs=None)
     ])
 
   @mock.patch('common.run_ffx_command')
@@ -244,8 +245,8 @@ class TestUpdateProductBundles(unittest.TestCase):
         },
     ]
     update_product_bundles.keep_product_bundles_by_sdk_version('buzz')
-    mock_ffx.assert_called_once_with(
-        ('product-bundle', 'remove', '-f', 'some-url-to-remove-has-foo'))
+    mock_ffx.assert_called_once_with(cmd=('product-bundle', 'remove', '-f',
+                                          'some-url-to-remove-has-foo'))
 
   @mock.patch('update_product_bundles.get_repositories')
   def testGetCurrentSignatureReturnsNoneIfNoProductBundles(

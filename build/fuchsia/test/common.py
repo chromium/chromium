@@ -103,7 +103,7 @@ def get_target_state(target_id: Optional[str],
     """
     for i in range(num_attempts):
         targets = json.loads(
-            run_ffx_command(('target', 'list'),
+            run_ffx_command(cmd=('target', 'list'),
                             check=True,
                             capture_output=True,
                             json_out=True).stdout.strip())
@@ -167,7 +167,7 @@ def _get_daemon_status():
       NotRunning to indicate if the daemon is running.
     """
     status = json.loads(
-        run_ffx_command(('daemon', 'socket'),
+        run_ffx_command(cmd=('daemon', 'socket'),
                         check=True,
                         capture_output=True,
                         json_out=True,
@@ -227,7 +227,7 @@ def _run_repair_command(output):
     args = match.groups()[0].split()
 
     try:
-        run_ffx_command(args, suppress_repair=True)
+        run_ffx_command(cmd=args, suppress_repair=True)
         # Need the daemon to be up at the end of this.
         _wait_for_daemon(start=True)
     except subprocess.CalledProcessError:
@@ -249,22 +249,20 @@ def start_ffx_daemon():
     daemon by explicitly calling stop daemon first.
     """
     assert not _is_daemon_running(), "Call stop_ffx_daemon first."
-    run_ffx_command(('doctor', '--restart-daemon'), check=False)
+    run_ffx_command(cmd=('doctor', '--restart-daemon'), check=False)
     _wait_for_daemon(start=True)
 
 
 def stop_ffx_daemon():
     """Stops the ffx daemon"""
-    run_ffx_command(('daemon', 'stop'))
+    run_ffx_command(cmd=('daemon', 'stop'))
     _wait_for_daemon(start=False)
 
 
-def run_ffx_command(cmd: Iterable[str],
-                    target_id: Optional[str] = None,
+def run_ffx_command(suppress_repair: bool = False,
                     check: bool = True,
-                    suppress_repair: bool = False,
-                    configs: Optional[List[str]] = None,
-                    json_out: bool = False,
+                    capture_output: Optional[bool] = None,
+                    timeout: Optional[int] = None,
                     **kwargs) -> subprocess.CompletedProcess:
     """Runs `ffx` with the given arguments, waiting for it to exit.
 
@@ -274,21 +272,83 @@ def run_ffx_command(cmd: Iterable[str],
     original command is retried. This behavior can be suppressed via the
     `suppress_repair` argument.
 
+    **
+    Except for `suppress_repair`, the arguments below are named after
+    |subprocess.run| arguments. They are overloaded to avoid them from being
+    forwarded to |subprocess.Popen|.
+    **
+    See run_continuous_ffx_command for additional arguments.
     Args:
-        cmd: A sequence of arguments to ffx.
-        target_id: Whether to execute the command for a specific target. The
-            target_id could be in the form of a nodename or an address.
-        check: If True, CalledProcessError is raised if ffx returns a non-zero
-            exit code.
         suppress_repair: If True, do not attempt to find and run a repair
             command.
-        configs: A list of configs to be applied to the current command.
-        json_out: Have command output returned as JSON. Must be parsed by
-            caller.
+        check: If True, CalledProcessError is raised if ffx returns a non-zero
+            exit code.
+        capture_output: Whether to capture both stdout/stderr.
+        timeout: Optional timeout (in seconds). Throws TimeoutError if process
+            does not complete in timeout period.
     Returns:
         A CompletedProcess instance
     Raises:
         CalledProcessError if |check| is true.
+    """
+    # Always capture output when:
+    # - Repair does not need to be suppressed
+    # - capture_output is Truthy
+    if capture_output or not suppress_repair:
+        kwargs['stdout'] = subprocess.PIPE
+        kwargs['stderr'] = subprocess.STDOUT
+    proc = None
+    try:
+        proc = run_continuous_ffx_command(**kwargs)
+        stdout, stderr = proc.communicate(input=kwargs.get('stdin'),
+                                          timeout=timeout)
+        completed_proc = subprocess.CompletedProcess(
+            args=proc.args,
+            returncode=proc.returncode,
+            stdout=stdout,
+            stderr=stderr)
+        if check:
+            completed_proc.check_returncode()
+        return completed_proc
+    except subprocess.CalledProcessError as cpe:
+        if proc is None:
+            raise
+        logging.error('%s %s failed with returncode %s.',
+                      os.path.relpath(_FFX_TOOL),
+                      subprocess.list2cmdline(proc.args[1:]), cpe.returncode)
+        if cpe.output:
+            logging.error('stdout of the command: %s', cpe.output)
+        if suppress_repair or (cpe.output
+                               and not _run_repair_command(cpe.output)):
+            raise
+
+    # If the original command failed but a repair command was found and
+    # succeeded, try one more time with the original command.
+    return run_ffx_command(suppress_repair=True,
+                           check=check,
+                           capture_output=capture_output,
+                           timeout=timeout,
+                           **kwargs)
+
+
+def run_continuous_ffx_command(cmd: Iterable[str],
+                               target_id: Optional[str] = None,
+                               configs: Optional[List[str]] = None,
+                               json_out: bool = False,
+                               encoding: Optional[str] = 'utf-8',
+                               **kwargs) -> subprocess.Popen:
+    """Runs `ffx` with the given arguments, returning immediately.
+
+    Args:
+        cmd: A sequence of arguments to ffx.
+        target_id: Whether to execute the command for a specific target. The
+            target_id could be in the form of a nodename or an address.
+        configs: A list of configs to be applied to the current command.
+        json_out: Have command output returned as JSON. Must be parsed by
+            caller.
+        encoding: Optional, desired encoding for output/stderr pipes.
+    Returns:
+        A subprocess.Popen instance
     """
 
     ffx_cmd = [_FFX_TOOL]
@@ -304,47 +364,7 @@ def run_ffx_command(cmd: Iterable[str],
     if _FFX_ISOLATE_DIR:
         env['FFX_ISOLATE_DIR'] = _FFX_ISOLATE_DIR
 
-    try:
-        if not suppress_repair:
-            # If we want to repair, we need to capture output in STDOUT and
-            # STDERR. This could conflict with expectations of the caller.
-            output_captured = kwargs.get('capture_output') or (
-                kwargs.get('stdout') and kwargs.get('stderr'))
-            if not output_captured:
-                # Force output to combine into STDOUT.
-                kwargs['stdout'] = subprocess.PIPE
-                kwargs['stderr'] = subprocess.STDOUT
-        return subprocess.run(ffx_cmd,
-                              check=check,
-                              encoding='utf-8',
-                              env=env,
-                              **kwargs)
-    except subprocess.CalledProcessError as cpe:
-        logging.error('%s %s failed with returncode %s.',
-                      os.path.relpath(_FFX_TOOL),
-                      subprocess.list2cmdline(ffx_cmd[1:]), cpe.returncode)
-        if cpe.output:
-            logging.error('stdout of the command: %s', cpe.output)
-        if suppress_repair or (cpe.output
-                               and not _run_repair_command(cpe.output)):
-            raise
-
-    # If the original command failed but a repair command was found and
-    # succeeded, try one more time with the original command.
-    return run_ffx_command(cmd, target_id, check, True, configs, json_out,
-                           **kwargs)
-
-
-def run_continuous_ffx_command(cmd: Iterable[str],
-                               target_id: Optional[str] = None,
-                               encoding: Optional[str] = 'utf-8',
-                               **kwargs) -> subprocess.Popen:
-    """Runs an ffx command asynchronously."""
-    ffx_cmd = [_FFX_TOOL]
-    if target_id:
-        ffx_cmd.extend(('--target', target_id))
-    ffx_cmd.extend(cmd)
-    return subprocess.Popen(ffx_cmd, encoding=encoding, **kwargs)
+    return subprocess.Popen(ffx_cmd, encoding=encoding, env=env, **kwargs)
 
 
 def read_package_paths(out_dir: str, pkg_name: str) -> List[str]:
@@ -430,8 +450,8 @@ def retry_command(cmd: List[str], retries: int = 2,
 
 def get_ssh_address(target_id: Optional[str]) -> str:
     """Determines SSH address for given target."""
-    return run_ffx_command(('target', 'get-ssh-address'),
-                           target_id,
+    return run_ffx_command(cmd=('target', 'get-ssh-address'),
+                           target_id=target_id,
                            capture_output=True).stdout.strip()
 
 
@@ -485,7 +505,7 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
         Tuple of strings, containing {product, version number), or a pair of
         empty strings to indicate an error.
     """
-    info_cmd = run_ffx_command(('target', 'show', '--json'),
+    info_cmd = run_ffx_command(cmd=('target', 'show', '--json'),
                                target_id=target,
                                capture_output=True,
                                check=False)
@@ -597,14 +617,14 @@ def _boot_device_ffx(target_id: Optional[str], serial_num: Optional[str],
 
     logging.debug('FFX reboot with command [%s]', ' '.join(cmd))
     if current_state == TargetState.FASTBOOT:
-        run_ffx_command(cmd,
+        run_ffx_command(cmd=cmd,
                         target_id=serial_num,
-                        configs = ['product.reboot.use_dm=true'],
+                        configs=['product.reboot.use_dm=true'],
                         check=False)
     else:
-        run_ffx_command(cmd,
+        run_ffx_command(cmd=cmd,
                         target_id=target_id,
-                        configs = ['product.reboot.use_dm=true'],
+                        configs=['product.reboot.use_dm=true'],
                         check=False)
 
 

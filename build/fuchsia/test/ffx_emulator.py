@@ -46,8 +46,8 @@ class FfxEmulator(AbstractContextManager):
 
         # Set the download path parallel to Fuchsia SDK directory
         # permanently so that scripts can always find the product bundles.
-        run_ffx_command(('config', 'set', 'pbms.storage.path',
-                         os.path.join(SDK_ROOT, os.pardir, 'images')))
+        run_ffx_command(cmd=('config', 'set', 'pbms.storage.path',
+                             os.path.join(SDK_ROOT, os.pardir, 'images')))
 
     def _everlasting(self) -> bool:
         return self._node_name == 'fuchsia-everlasting-emulator'
@@ -122,10 +122,10 @@ class FfxEmulator(AbstractContextManager):
                 if i > 0:
                     logging.warning(
                         'Emulator failed to start.')
-                run_ffx_command(emu_command, timeout=100, configs=configs)
+                run_ffx_command(cmd=emu_command, timeout=100, configs=configs)
                 break
             except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
-                run_ffx_command(('emu', 'stop'))
+                run_ffx_command(cmd=('emu', 'stop'))
 
     def _shutdown_emulator(self) -> None:
         """Shutdown the emulator."""
@@ -133,7 +133,7 @@ class FfxEmulator(AbstractContextManager):
         logging.info('Stopping the emulator %s', self._node_name)
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
-        run_ffx_command(('emu', 'stop', self._node_name), check=False)
+        run_ffx_command(cmd=('emu', 'stop', self._node_name), check=False)
 
     def __enter__(self) -> str:
         """Start the emulator if necessary.

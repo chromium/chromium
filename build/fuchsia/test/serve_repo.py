@@ -19,11 +19,12 @@ def _stop_serving(repo_name: str, target: Optional[str]) -> None:
     """Stop serving a repository."""
 
     # Attempt to clean up.
-    run_ffx_command(['target', 'repository', 'deregister', '-r', repo_name],
-                    target,
-                    check=False)
-    run_ffx_command(['repository', 'remove', repo_name], check=False)
-    run_ffx_command(['repository', 'server', 'stop'], check=False)
+    run_ffx_command(
+        cmd=['target', 'repository', 'deregister', '-r', repo_name],
+        target_id=target,
+        check=False)
+    run_ffx_command(cmd=['repository', 'remove', repo_name], check=False)
+    run_ffx_command(cmd=['repository', 'server', 'stop'], check=False)
 
 
 def _start_serving(repo_dir: str, repo_name: str,
@@ -36,14 +37,16 @@ def _start_serving(repo_dir: str, repo_name: str,
         target: Fuchsia device the repository is served to.
     """
 
-    run_ffx_command(('config', 'set', 'repository.server.mode', '\"ffx\"'))
+    run_ffx_command(cmd=('config', 'set', 'repository.server.mode', '\"ffx\"'))
 
-    run_ffx_command(['repository', 'server', 'start'])
-    run_ffx_command(['repository', 'add-from-pm', repo_dir, '-r', repo_name])
-    run_ffx_command([
+    run_ffx_command(cmd=['repository', 'server', 'start'])
+    run_ffx_command(
+        cmd=['repository', 'add-from-pm', repo_dir, '-r', repo_name])
+    run_ffx_command(cmd=[
         'target', 'repository', 'register', '-r', repo_name, '--alias',
         REPO_ALIAS
-    ], target)
+    ],
+                    target_id=target)
 
 
 def register_serve_args(arg_parser: argparse.ArgumentParser) -> None:
