@@ -6,6 +6,7 @@
 
 import argparse
 import logging
+import os
 import sys
 import tempfile
 
@@ -47,6 +48,7 @@ def _get_test_runner(runner_args: argparse.Namespace,
     return create_executable_test_runner(runner_args, test_args)
 
 
+# pylint: disable=too-many-statements
 def main():
     """E2E method for installing packages and running a test."""
     # Always add time stamps to the logs.
@@ -62,6 +64,9 @@ def main():
                         action='store_true',
                         default=False,
                         help='Use an existing device.')
+    parser.add_argument('--extra-path',
+                        action='append',
+                        help='Extra paths to append to the PATH environment')
 
     # Register arguments
     register_common_args(parser)
@@ -86,6 +91,9 @@ def main():
         if running_unattended():
             # Updating configurations to meet the requirement of isolate.
             stop_ffx_daemon()
+            if runner_args.extra_path:
+                os.environ['PATH'] += os.pathsep + os.pathsep.join(
+                    runner_args.extra_path)
             set_ffx_isolate_dir(
                 stack.enter_context(tempfile.TemporaryDirectory()))
             # The following configurations are persistent, they are less
