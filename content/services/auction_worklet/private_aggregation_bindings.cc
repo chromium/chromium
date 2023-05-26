@@ -326,10 +326,7 @@ void PrivateAggregationBindings::AttachToContext(
             send_histogram_report_function)
       .Check();
 
-  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get() ||
-      base::FeatureList::IsEnabled(
-          blink::features::
-              kPrivateAggregationApiFledgeExtensionsLocalTestingOverride)) {
+  if (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
     v8::Local<v8::Function> report_contribution_for_event_function =
         v8::Function::New(
             context, &PrivateAggregationBindings::ReportContributionForEvent,
