@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,6 +36,7 @@ class SuggestionLayout extends ViewGroup {
     public final @Px int mCompactContentHeightPx;
     private final @Px int mActionButtonWidthPx;
     private final @Px int mContentPaddingPx;
+    private final @NonNull RoundedCornerOutlineProvider mOutlineProvider;
 
     /**
      * SuggestionLayout's LayoutParams.
@@ -155,6 +157,15 @@ class SuggestionLayout extends ViewGroup {
 
         mContentPaddingPx =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
+
+        mOutlineProvider = new RoundedCornerOutlineProvider(getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_bg_round_corner_radius));
+        setOutlineProvider(mOutlineProvider);
+    }
+
+    public void setRoundingEdges(boolean roundTopEdge, boolean roundBottomEdge) {
+        mOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
+        setClipToOutline(roundTopEdge || roundBottomEdge);
     }
 
     @Override

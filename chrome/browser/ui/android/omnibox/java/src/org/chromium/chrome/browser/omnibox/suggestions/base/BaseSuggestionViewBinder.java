@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -103,7 +102,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateColorScheme(model, view);
         } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
                 || DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            roundSuggestionViewCorners(model, view);
+            view.setRoundingEdges(model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED),
+                    model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey
                 || DropdownCommonProperties.BOTTOM_MARGIN == propertyKey) {
             updateMargin(model, view);
@@ -352,43 +352,6 @@ public final class BaseSuggestionViewBinder<T extends View>
                     .setMargins(sSideSpacing, topSpacing, sSideSpacing, bottomSpacing);
         }
         view.setLayoutParams(layoutParams);
-    }
-
-    /**
-     * Round top/bottom suggestion view corners to mark suggestions that begin or end section -- or
-     * are standalone suggestions.
-     *
-     * The rounding mechanism utilizes OutlineProviders to guarantee that focus and selection won't
-     * leak outside of the rounded edges.
-     *
-     * @param model A property model, defining which corners (specifically: corners along which
-     *         edge) should be rounded,
-     * @param view The view that should receive rounding.
-     */
-    private static void roundSuggestionViewCorners(PropertyModel model, View view) {
-        var roundTopEdge = model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED);
-        var roundBottomEdge = model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED);
-
-        if (!roundTopEdge && !roundBottomEdge) {
-            // Note: Suggestion views are re-used. Make sure we don't carry over rounding from
-            // previous model.
-            view.setClipToOutline(false);
-            return;
-        }
-
-        // TODO(crbug.com/1418077): This should be part of BaseSuggestionView.
-        // Move this once we reconcile Pedals with Base.
-        var outlineProvider = view.getOutlineProvider();
-        if (!(outlineProvider instanceof RoundedCornerOutlineProvider)) {
-            outlineProvider =
-                    new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
-                            R.dimen.omnibox_suggestion_bg_round_corner_radius));
-            view.setOutlineProvider(outlineProvider);
-        }
-        RoundedCornerOutlineProvider roundedCornerOutlineProvider =
-                (RoundedCornerOutlineProvider) outlineProvider;
-        roundedCornerOutlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
-        view.setClipToOutline(true);
     }
 
     @VisibleForTesting
