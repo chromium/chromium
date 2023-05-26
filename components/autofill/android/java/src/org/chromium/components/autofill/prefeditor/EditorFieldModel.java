@@ -92,21 +92,12 @@ public class EditorFieldModel {
     /** Indicates an alpha-numeric value, e.g., postal code or sorting code. */
     public static final int INPUT_TYPE_HINT_ALPHA_NUMERIC = 6;
 
-    /** Indicates a numeric field. */
-    public static final int INPUT_TYPE_HINT_NUMERIC = 7;
-
-    /** Indicates a password input. */
-    public static final int INPUT_TYPE_HINT_PASSWORD = 8;
-
-    /** Indicates a numeric pin input. */
-    public static final int INPUT_TYPE_HINT_NUMERIC_PIN = 9;
-
-    private static final int INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE = 10;
+    private static final int INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE = 8;
 
     /** Indicates a dropdown. */
-    public static final int INPUT_TYPE_HINT_DROPDOWN = 11;
+    public static final int INPUT_TYPE_HINT_DROPDOWN = 9;
 
-    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 12;
+    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 10;
 
     /* Indicates that the length counter is disabled. */
     public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
