@@ -750,6 +750,7 @@
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />ৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="5963939892571022323">হাইলাইটৰ লিংক এটা সৃষ্টি কৰিব নোৱাৰি।</translation>
 <translation id="5965679971710331625">আপুনি ছাইন ইন কৰিলে</translation>
+<translation id="5971872012779224351">{count,plural, =1{১ টা বুকমাৰ্ক মচা হ’ল}one{{count} টা বুকমাৰ্ক মচা হ’ল}other{{count} টা বুকমাৰ্ক মচা হ’ল}}</translation>
 <translation id="5979837087407522202">পাছৱর্ডসমূহ সন্ধান কৰক</translation>
 <translation id="5981230843984570095">নিষ্ক্ৰিয় হৈ থকা আটাইবোৰ বন্ধ কৰক</translation>
 <translation id="5982717868370722439">ইতিমধ্যে থকা ডেটাখিনি <ph name="USER_EMAIL" />ত যোগ কৰক।</translation>
@@ -997,6 +998,7 @@
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="7446583256109515732">টেবটো আনপিন কৰা হ’ল</translation>
+<translation id="7451023311965289370">{count,plural, =1{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}one{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}other{বুকমাৰ্ক "{title}"ত ছেভ কৰা হৈছে}}</translation>
 <translation id="7454057999980797137">ৰাজ্য / দেশ</translation>
 <translation id="7459628154744868585">বৰ্ধিত সুৰক্ষা অন কৰা আছে</translation>
 <translation id="746684838091935575">৩) Chrome বাছনি কৰক</translation>

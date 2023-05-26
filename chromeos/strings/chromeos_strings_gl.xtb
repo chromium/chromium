@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Escritorios</translation>
 <translation id="1018219910092211213">Non se puido resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelados</translation>
+<translation id="1020274983236703756">Xa están dispoñibles os recursos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Controis xerais</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3226657629376379887">Menú de accións de deseño</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
+<translation id="3248223063252096240">Exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Produciuse un erro: a tapa da impresora está aberta</translation>
 <translation id="3275729367986477355">Imaxe de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
 <translation id="3639846061339007994">parte superior</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
+<translation id="3663574643422533538">Seleccionar o material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">Panel táctil con conexión por USB</translation>
+<translation id="4113067922640381334">Xa tes acceso aos novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Pasa o cursor por enriba para ver máis opcións de deseño</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Non iniciada</translation>
 <translation id="8593058461203131755">pór en pausa o contido multimedia</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
+<translation id="8626489604350149811">Máis accións para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lila</translation>
 <translation id="8651481478098336970">silencia</translation>
 <translation id="8655295600908251630">Canle</translation>

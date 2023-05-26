@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
 <translation id="1111021433905331574">Изменить цвет подсветки клавиатуры можно в разделе "Настройки" &gt; "<ph name="APP_TITLE" />".</translation>
+<translation id="1117719261843403176">Включить или отключить мобильный интернет. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Автоматически скрывать панель запуска</translation>
 <translation id="1142002900084379065">Недавние фотографии</translation>
 <translation id="1148499908455722006">Открыть диалоговое окно с информацией об аккаунте <ph name="USER_NAME" /></translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
+<translation id="1311294419381837540">Идет трансляция вкладки. Этот процесс можно в любое время приостановить или завершить.</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="132346741904777634">Окно предварительного просмотра камеры привязано к левому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1340378040547539434">Уменьшить масштаб страницы</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
+<translation id="1344141078024003905">Идет трансляция экрана. Ее можно в любое время приостановить или завершить.</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1360220746312242196">Перейти к предыдущему результату поиска по странице</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Открыть доступ к геоданным</translation>
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>
+<translation id="183465528887726323">Чтобы использовать устройство как точку доступа, подключитесь к мобильному интернету.</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1862380676329487333">Обновить и выйти</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">Приложение использует ваш микрофон</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
 <translation id="2282073721614284166">Открыть ссылку в этой вкладке</translation>
+<translation id="2284237890386182187">Точка доступа работает. Подключенных устройств нет.</translation>
 <translation id="2292698582925480719">Масштаб экрана</translation>
 <translation id="229397294990920565">Отключение мобильного Интернета…</translation>
 <translation id="2295777434187870477">Микрофон включен. Нажмите, чтобы отключить его.</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360398059912971776">батарея</translation>
+<translation id="2361210043495191221">Включить или отключить Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не удалось войти в аккаунт на устройстве Chromebook.</translation>
 <translation id="2367972762794486313">Показать сервисы</translation>
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
+<translation id="2382875860893882175">Трансляция приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
 <translation id="240006516586367791">Управление медиаконтентом</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495">Отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Открепить окна</translation>
+<translation id="2528111225373402384">Настройки точки доступа</translation>
 <translation id="2530896289327917474">Включить или отключить режим активного курсора</translation>
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3400357268283240774">Дополнительные настройки</translation>
 <translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
+<translation id="3408735331120433841">Идет трансляция экрана.</translation>
 <translation id="3409584356742878290">Показать или скрыть инспектор инструментов разработчика</translation>
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
 <translation id="3413817803639110246">Уведомлений нет.</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">Открыть ссылку в новой вкладке, но не переходить на нее</translation>
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
+<translation id="3539957339480430241">Точка доступа устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
 <translation id="3546121235777416274">Переключиться на окно "Картинка в картинке"</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">В качестве дополнительной меры безопасности введите пароль.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
+<translation id="4049230407053723315">Быстрые настройки</translation>
 <translation id="4057003836560082631">Вкладка <ph name="INDEX" /> из <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
 <translation id="4066027111132117168">Включен, <ph name="REMAINING_TIME" /></translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">Настройки VPN</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установленное приложение, приостановлено</translation>
+<translation id="4231053948789591973">Трансляция экрана приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="423685346499232137">В настоящий момент нельзя копировать или вставлять содержимое.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 важное уведомление}one{# важное уведомление}few{# важных уведомления}many{# важных уведомлений}other{# важного уведомления}}</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451374464530248585">Функция сочетания клавиш Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши Page Down, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз.</translation>
+<translation id="4453876312474547652">Чтобы открыть историю буфера обмена, нажмите и удерживайте клавиши Ctrl + V. Если вы не хотите использовать это сочетание клавиш, отключите экспериментальный параметр #clipboard-history-longpress на странице chrome://flags (os://flags для Lacros).</translation>
 <translation id="4455051983450390249">Просмотр уведомлений с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="445864333228800152">Добрый вечер!</translation>
 <translation id="4458688154122353284">Остановить запись с экрана</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">Google Ассистент в демонстрационном сеансе недоступен</translation>
 <translation id="4789348252524569426">Невозможно установить файлы для распознавания речи. Обновите операционную систему и перезапустите устройство, затем повторите попытку.</translation>
 <translation id="478959186716341421">Трансляция...</translation>
+<translation id="4798622944000246716">В вашей мобильной сети использовать телефон в качестве точки доступа нельзя</translation>
 <translation id="479989351350248267">поиск</translation>
 <translation id="4804818685124855865">Отключиться</translation>
 <translation id="4814539958450445987">Экран входа</translation>
@@ -1199,6 +1213,7 @@
 <translation id="6453179446719226835">Язык изменен</translation>
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">изображения</translation>
+<translation id="6469104339369989396">Включить или отключить точку доступа</translation>
 <translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
 <translation id="6483727822843292440">Показать окна, начиная с наименее используемого</translation>
@@ -1811,6 +1826,7 @@
 <translation id="954052413789300507">Недостаточно свободного места для скачивания файла <ph name="FILENAME" />. Освободите пространство.</translation>
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>
+<translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

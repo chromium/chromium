@@ -426,6 +426,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3290249595466894471">Tamén envía unha pequena mostra da información do sistema, da actividade das extensións, das páxinas e das descargas para axudar a descubrir novas ameazas</translation>
 <translation id="3293181007446299124">O teu historial de navegación mantense privado no dispositivo e os informes envíanse con atraso para protexer a túa identidade</translation>
 <translation id="3303414029551471755">Queres continuar coa descarga do contido?</translation>
+<translation id="3305130791745726624">Enviar aos dispositivos</translation>
 <translation id="3305795716056605962">Traduce páxinas desde o botón Máis opcións</translation>
 <translation id="3319664549618064419">Se queres gozar dunha mellor visualización, cambia ao sitio para ordenadores</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
@@ -1174,6 +1175,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7304072650267745798">Talvez o teu dispositivo Android inclúa unha opción de configuración similar. Se esta opción está activada en Chrome e no teu dispositivo Android, é posible que unha empresa poida medir a eficacia dos anuncios nos sitios web que visites e nas aplicacións que uses.</translation>
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
+<translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
 <translation id="7332075081379534664">Iniciouse sesión</translation>
 <translation id="7333232495927792353">Sincroniza os datos para desfrutar do contido máis relevante de Google</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
@@ -1360,6 +1362,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8209050860603202033">Abrir imaxe</translation>
+<translation id="8210770465353466621">Aquí atoparás as túas pestanas</translation>
 <translation id="8215740705341534369">Panel lateral</translation>
 <translation id="8218622182176210845">Xestiona a túa conta</translation>
 <translation id="8221401890884589479">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>

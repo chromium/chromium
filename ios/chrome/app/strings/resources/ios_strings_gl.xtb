@@ -315,6 +315,9 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2975121486251958312">Só está dispoñible o modo de incógnito</translation>
 <translation id="2982481275546140226">Borrar datos</translation>
 <translation id="298306318844797842">Engadir método de pago…</translation>
+<translation id="2988274366244053197">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.
+
+Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Abrir nunha pestana nova</translation>
 <translation id="3020183492814296499">Atallos</translation>
 <translation id="3037605927509011580">Vaia!</translation>
@@ -381,6 +384,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3471148582064653480">Sincroniza os teus contrasinais, historial e moito máis.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{de {COUNT} sitio ou aplicación}other{de {COUNT} sitios ou aplicacións}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accede aos teus contrasinais noutras aplicacións.</translation>
 <translation id="3478058380795961209">Mes caducidade</translation>
 <translation id="3482959374254649722">Sincronizando as túas pestanas…</translation>
 <translation id="3484946776651937681">Abrir en Descargas</translation>
@@ -652,6 +656,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318298563956633672">Xa estás facendo un seguimento deste produto.</translation>
+<translation id="5325595483440111327">Consulta o historial de navegación.</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver máis opcións relacionadas coa configuración da privacidade, seguranza e recompilación de datos, consulta <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" />.</translation>
@@ -750,6 +755,7 @@ Só poderán ler os teus datos encriptados as persoas que teñan a túa frase de
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="5965679971710331625">Iniciaches sesión</translation>
+<translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>
 <translation id="5981230843984570095">Pechar todas as pestanas inactivas</translation>
 <translation id="5982717868370722439">Engade os datos existentes a <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7438481509621345350">Agora mostraránseche historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="7446583256109515732">Deixouse de fixar a pestana</translation>
+<translation id="7451023311965289370">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse os marcadores en {title}}}</translation>
 <translation id="7454057999980797137">Estado/provin.</translation>
 <translation id="7459628154744868585">A protección mellorada está activada</translation>
 <translation id="746684838091935575">3. Selecciona Chrome</translation>

@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Skrifborð</translation>
 <translation id="1018219910092211213">Ekki er hægt að leysa úr DNS</translation>
 <translation id="1018656279737460067">Hætt við</translation>
+<translation id="1020274983236703756">Sérstakar <ph name="PRODUCT_NAME" />-eignir eru nú í boði</translation>
 <translation id="1022433422498218992">Almennar stýringar</translation>
 <translation id="1022628058306505708">Jarðarflæði</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Leitar að skönnum</translation>
 <translation id="3226657629376379887">Aðgerðavalmynd uppsetningar</translation>
 <translation id="3246869037381808805">Prentverk sem eru meira en 1 dags gömul verða fjarlægð</translation>
+<translation id="3248223063252096240">Sérstaklega fyrir <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Mistókst – hlíf er opin</translation>
 <translation id="3275729367986477355">Notandamynd</translation>
 <translation id="3283504360622356314">{0,plural, =1{Breyta skrá}one{Breyta skrám}other{Breyta skrám}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3639846061339007994">efst</translation>
 <translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
+<translation id="3663574643422533538">Velja sérstök <ph name="PRODUCT_NAME" />-listaverk</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Velja albúm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-snertiflötur</translation>
+<translation id="4113067922640381334">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Dökk stilling</translation>
 <translation id="4130035430755296270">Haltu bendlinum lengur yfir til að sjá fleiri valkosti fyrir uppsetningu</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Ekki frumstillt</translation>
 <translation id="8593058461203131755">gera hlé á efni</translation>
 <translation id="8620617069779373398">Reikistaða</translation>
+<translation id="8626489604350149811">Fleiri aðgerðir fyrir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljósfjólublár</translation>
 <translation id="8651481478098336970">hljóð af</translation>
 <translation id="8655295600908251630">Rás</translation>

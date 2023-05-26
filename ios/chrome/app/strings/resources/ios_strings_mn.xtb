@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">Зөвхөн Нууцлалын горим боломжтой байна</translation>
 <translation id="2982481275546140226">Өгөгдлийг устгах</translation>
 <translation id="298306318844797842">Төлбөрийн хэрэгсэл нэмэх...</translation>
+<translation id="2988274366244053197">Google Pay-н төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
+
+Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Шинэ цонхонд нээ</translation>
 <translation id="3020183492814296499">Товчлол</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">Нууц үг, түүх болон бусад зүйлээ синк хийнэ үү.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} сайт эсвэл аппад}other{{COUNT} сайт эсвэл аппад}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" />-р үргэлжлүүлэх</translation>
+<translation id="3476450923187944815">Бусад аппад нууц үгнүүддээ хандаарай.</translation>
 <translation id="3478058380795961209">Дуусах сар:</translation>
 <translation id="3482959374254649722">Таны цонхыг синхрончилж байна...</translation>
 <translation id="3484946776651937681">Татаж авсан файлын фолдерт нээх</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318298563956633672">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна.</translation>
+<translation id="5325595483440111327">Хөтчийн түүхийг харна уу.</translation>
 <translation id="5339316356165661760">Синк хийхийг асаах</translation>
 <translation id="536067926684072644">Хавчуурга харуулах</translation>
 <translation id="5360976571138293719">Нууцлал, аюулгүй байдал болон өгөгдлийн цуглуулгатай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдээс<ph name="END_LINK" /> харна уу.</translation>

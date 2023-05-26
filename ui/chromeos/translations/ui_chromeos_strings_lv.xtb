@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google vietne</translation>
 <translation id="1853795129690976061">Šī mape ir kopīgota ar Linux</translation>
 <translation id="1864756863218646478">Failu nevarēja atrast.</translation>
+<translation id="1877377730633446520">Nepieciešamā vieta: apm. <ph name="REQUIRED_SPACE" />. Pašlaik pieejamā vieta: <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, savienojums</translation>
 <translation id="1920670151694390848">Malajalu, transliterācija</translation>
 <translation id="1920798810075583923">Arbūzs</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Notiek failu atsauksmju paneļu izvēršana</translation>
 <translation id="1995337122023280937">Pāriet uz faila atrašanās vietu</translation>
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
+<translation id="2004942826429452291">Faili tiks glabāti mākonī un šajā Chromebook datorā.</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2037845485764049925">Krievu</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Ierīces iestatījumi</translation>
 <translation id="2084809735218147718">Persona zīmju valodā rāda: “Paldies!”</translation>
 <translation id="2088690981887365033">VPN tīkls</translation>
+<translation id="2089751716171649322">Ērta piekļuve Google diska failiem bezsaistē</translation>
 <translation id="2111134541987263231">Ieslēdziet iestatījumu <ph name="BEGIN_BOLD" />Atļaut inkognito režīmā<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Tiks dzēsti <ph name="NUMBER_OF_ITEMS" /> faili, un jūs vairs nevarēsiet tos atjaunot.</translation>
 <translation id="2122305276694332719">Automātiska pieslēgšanās paslēptam tīklam ļauj citiem redzēt jūsu ierīci un dažus tīkla iestatījumus, taču tas nav ieteicams.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kļūdas.</translation>
+<translation id="3501954296166022751">Jūsu Google diska faili ir pieejami bezsaistē</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums:<ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="3511705761158917664">Notiek gatavošanās <ph name="NUMBER_OF_ITEMS" /> faila(-u) sinhronizēšanai…</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5500122897333236901">Īslandiešu valoda</translation>
 <translation id="5508696409934741614">Punkti</translation>
+<translation id="5519161320735100193">Google diska iestatījumi</translation>
 <translation id="5522908512596376669">Failu saraksts ir mainīts uz saraksta skatu.</translation>
 <translation id="5524517123096967210">Failu nevarēja nolasīt.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> attēls</translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7806708061868529807">Ivrits</translation>
 <translation id="78104721049218340">Taju, ar Kedmanee tastatūru</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Tīkla konfigurācijas kļūda</translation>
 <translation id="7839804798877833423">Izgūstot šos failus, tiks izmantoti aptuveni <ph name="FILE_SIZE" /> mobilo datu.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatējot nodalījumu, tiks izdzēsti visi tajā glabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Jūsu mapē Mans disks esošie faili tiks automātiski sinhronizēti ar jūsu Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma.</translation>
 <translation id="7925247922861151263">AAA pārbaude neizdevās</translation>
 <translation id="7925686952655276919">Nelietot mobilos datus sinhronizācijai</translation>
 <translation id="7928710562641958568">Ierīces atvienošana</translation>
+<translation id="7933875256234974853">Notiek gatavošanās Diska failu sinhronizēšanai…</translation>
 <translation id="7943385054491506837">ASV Colemak</translation>
 <translation id="7953739707111622108">Šo ierīci nevar atvērt, jo tās failu sistēma netika atpazīta.</translation>
 <translation id="7969525169268594403">Slovēņu valoda</translation>
 <translation id="7972920761225148017">Franču (Šveice)</translation>
 <translation id="7973962044839454485">PSP autentifikācija neizdevās nepareiza lietotājvārda un paroles dēļ.</translation>
 <translation id="7980421588063892270">Angļu (ASV), ar Colemak tastatūru</translation>
+<translation id="7985008041109611710">Notiek failu (<ph name="NUMBER_OF_FILES_SYNCING" />) sinhronizēšana</translation>
 <translation id="8000066093800657092">Nav tīkla</translation>
 <translation id="8008366997883261463">Džeka Rasela terjers</translation>
 <translation id="8028993641010258682">Izmērs</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Instalēšana sekmīgi sākta.</translation>
 <translation id="9219103736887031265">Attēli</translation>
 <translation id="9219908252191632183">Mēness</translation>
+<translation id="937795003075802289">Notiek 1 faila sinhronizēšana</translation>
 <translation id="938470336146445890">Instalējiet lietotāja sertifikātu.</translation>
 <translation id="939736085109172342">Jauna mape</translation>
 <translation id="943972244133411984">Pārveidoja</translation>

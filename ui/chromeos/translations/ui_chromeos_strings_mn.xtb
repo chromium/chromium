@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google сайт</translation>
 <translation id="1853795129690976061">Энэ фолдерыг Linux-тай хуваалцсан байна</translation>
 <translation id="1864756863218646478">Файл олдсонгүй.</translation>
+<translation id="1877377730633446520">Энэ нь ойролцоогоор <ph name="REQUIRED_SPACE" />-г ашиглана. Танд одоогоор <ph name="FREE_SPACE" /> боломжтой байна.</translation>
 <translation id="1884013283844450420">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, холбогдох</translation>
 <translation id="1920670151694390848">Малайлам галиг</translation>
 <translation id="1920798810075583923">Тарвас</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
+<translation id="2004942826429452291">Файлуудыг үүлэнд болон энэ Chromebook-д хадгална.</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Орос</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Төхөөрөмжийн тохиргоонууд</translation>
 <translation id="2084809735218147718">Баярлалаа гэж дохионы хэлээр хэлж байна</translation>
 <translation id="2088690981887365033">VPN сүлжээ</translation>
+<translation id="2089751716171649322">Та офлайн үедээ Google Драйвын файлууддаа хялбархан хандаарай</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Нууцлалтай горимд зөвшөөрөхийг<ph name="END_BOLD" /> асаана уу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="2122305276694332719">Нуусан сүлжээнд автоматаар холбогдсоноор бусдад таны төхөөрөмж болон зарим сүлжээний тохиргоог харахыг зөвшөөрөх бөгөөд үүнийг зөвлөдөггүй.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Одоо биш</translation>
 <translation id="3486821258960016770">Монгол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
+<translation id="3501954296166022751">Таны Google Драйвын файлууд офлайнд боломжтой</translation>
 <translation id="3509680540198371098">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> зүйлийг синк хийхээр бэлтгэж байна...</translation>
 <translation id="3522708245912499433">Португал</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="5500122897333236901">Исланд</translation>
 <translation id="5508696409934741614">Цэг</translation>
+<translation id="5519161320735100193">Google Драйвын тохиргоо</translation>
 <translation id="5522908512596376669">Файлын жагсаалтыг жагсаалтаар харах горимд шилжүүлэв.</translation>
 <translation id="5524517123096967210">Файлыг уншиж чадсангүй.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> зураг</translation>
@@ -862,6 +867,7 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7806708061868529807">Еврей</translation>
 <translation id="78104721049218340">Кедмани гартай тай</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
 <translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
@@ -874,15 +880,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Хуваарилалтыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Таны Миний драйвын файлуудыг Chromebook-тэй тань автоматаар синк хийх бөгөөд ингэснээр та тэдгээрт интернэт холболтгүйгээр хандах боломжтой.</translation>
 <translation id="7925247922861151263">AAA шалгалт амжилтгүй боллоо</translation>
 <translation id="7925686952655276919">Синхрончилоход үүрэн холбооны датаг бүү ашигла</translation>
 <translation id="7928710562641958568">Төхөөрөмжийг гаргах</translation>
+<translation id="7933875256234974853">Драйвын файлуудыг синк хийхээр бэлтгэж байна...</translation>
 <translation id="7943385054491506837">АНУ-ын Colemak</translation>
 <translation id="7953739707111622108">Энэ төхөөрөмжийн файлын системийг таньж чадаагүй учраас нээж болохгүй  байна.</translation>
 <translation id="7969525169268594403">Словени</translation>
 <translation id="7972920761225148017">Франц (Швейцар)</translation>
 <translation id="7973962044839454485">Хэрэглэгчийн нэр эсвэл нууц үг буруу орсноос PPP баталгаажуулалт амжилтгүй боллоо.</translation>
 <translation id="7980421588063892270">Colemak гартай англи (АНУ)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файлыг синк хийж байна</translation>
 <translation id="8000066093800657092">Ямар ч сүлжээ алга байна</translation>
 <translation id="8008366997883261463">Жак Рассел Терриер</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
@@ -1037,6 +1046,7 @@
 <translation id="9213073329713032541">Суулгалтыг амжилттай эхлүүллээ.</translation>
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="9219908252191632183">Сарны гадарга</translation>
+<translation id="937795003075802289">1 файлыг синк хийж байна</translation>
 <translation id="938470336146445890">Хэрэглэгчийн сертификат суулгана уу.</translation>
 <translation id="939736085109172342">Шинэ хавтас</translation>
 <translation id="943972244133411984">Өөрчилсөн</translation>

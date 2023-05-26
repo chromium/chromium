@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
 <translation id="1022433422498218992">साधारण नियंत्रणे</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> विशेष</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
 <translation id="3275729367986477355">अवतार इमेज</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल संपादित करा}other{फाइल संपादित करा}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
 <translation id="3639846061339007994">सर्वात वरती</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> विशेष आर्टवर्क निवडा</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3708186454126126312">यापूर्वी कनेक्ट केलेली</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
 <translation id="4111761024568264522">USB टचपॅड</translation>
+<translation id="4113067922640381334">तुम्हाला आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="4117637339509843559">गडद मोड</translation>
 <translation id="4130035430755296270">आणखी लेआउट पर्यायांसाठी फिरवत रहा</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>
 <translation id="8593058461203131755">मीडिया थांबवा</translation>
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
 <translation id="86356131183441916">फिकट जांभळा</translation>
 <translation id="8651481478098336970">आवाज म्यूट करा</translation>
 <translation id="8655295600908251630">खाडी</translation>

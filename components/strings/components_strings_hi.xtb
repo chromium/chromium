@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">पंच</translation>
 <translation id="1446396933673057385">विश्वसनीयता के लिए दी गई सलाह की जांच करना</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">आपके माता-पिता ने जो सेटिंग चुनी हैं वे अब आपको ऑनलाइन सुरक्षित रखने में मदद कर रही हैं</translation>
 <translation id="1453974140256777690">आप जो लेख चिपकाते हैं या अटैच करते हैं उसे विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजा जाता है. उदाहरण के लिए, इसे संवेदनशील डेटा की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="1455413310270022028">इरेज़र</translation>
 <translation id="1459693405370120464">मौसम</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">खत्म होने की तारीख डालें</translation>
 <translation id="1569694109004336106">Google Chrome, पासवर्ड भरने के लिए Windows Hello को चालू करने की कोशिश कर रहा है.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> इंच</translation>
+<translation id="1576277203042721907">खरीदारी के बारे में अहम जानकारी</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
 <translation id="1584492003828271317">ब्राउज़ करते समय दिखने वाला विज्ञापन आपकी पसंद के मुताबिक है या नहीं, यह इस सेटिंग, साइट के सुझाए गए विज्ञापनों, और आपकी कुकी सेटिंग के आधार पर तय होता है. इनके अलावा, यह इस बात पर भी निर्भर करता है कि आप जिस साइट पर हैं उस पर दिलचस्पी के मुताबिक विज्ञापन दिखाने की सुविधा है या नहीं</translation>
@@ -1269,6 +1271,7 @@
 <translation id="410148943680000050">डेस्कटॉप पब्लिशिंग</translation>
 <translation id="4103249731201008433">डिवाइस की क्रम संख्या गलत है</translation>
 <translation id="4106133539597032659">साइट बनाने के लिए बटन, Google Sites में जल्दी से नई साइट बनाने के लिए Enter दबाएं</translation>
+<translation id="4106887816571530227">एम्बेड किया गया कॉन्टेंट ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="4110652170750985508">अपना भुगतान देखें</translation>
 <translation id="4111546256784973544">पेंटबॉल</translation>
 <translation id="4112140312785995938">पीछे जाएं</translation>
@@ -1606,6 +1609,7 @@
 <translation id="4876305945144899064">कोई उपयोगकर्ता नाम नहीं</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{कोई नहीं}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> खोज</translation>
+<translation id="4877521229462766300">एम्बेड किया गया कॉन्टेंट ऐक्सेस करने की अनुमति दें?</translation>
 <translation id="4879491255372875719">अपने आप (डिफ़ॉल्ट)</translation>
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881695831933465202">खोलें</translation>
@@ -1803,6 +1807,7 @@
 <translation id="5314967030527622926">बुकलेट मेकर</translation>
 <translation id="5316812925700871227">घड़ी की विपरीत दिशा में घुमाएं</translation>
 <translation id="5317780077021120954">सेव करें</translation>
+<translation id="5323043727018853753">एम्बेड किया गया कॉन्टेंट ऐक्सेस करने की अनुमति है</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> में से <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">आपका ब्राउज़र प्रबंधित नहीं है</translation>
 <translation id="5332219387342487447">शिपिंग का तरीका</translation>
@@ -2181,6 +2186,7 @@
 <translation id="6306713302480826305">इस डिवाइस और आपके साइन इन किए हुए अन्य डिवाइसों से यह पता मिटा दिया जाएगा</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नहीं है</translation>
 <translation id="6316226860534107313">स्कूटर और मोपेड</translation>
+<translation id="6316723751983724988">नई सुविधा: Chrome के लिए Family Link के विकल्प यहां लागू होते हैं</translation>
 <translation id="63172326633386613">सुलभता सेटिंग मैनेज करें</translation>
 <translation id="6319249456820053699">कैमरा और कैमकॉर्डर</translation>
 <translation id="6321917430147971392">अपनी DNS सेटिंग जांचे</translation>
@@ -2732,6 +2738,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> से कम</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> फ़िलहाल इस अनुरोध का प्रबंधन नहीं कर सकता है.</translation>
 <translation id="7600965453749440009">कभी भी <ph name="LANGUAGE" /> का अनुवाद न करें</translation>
+<translation id="7601297359530599375">आम तौर पर, इस साइट से सुरक्षित तरीके से कनेक्ट किया जाता है. हालांकि, इस बार Chrome को साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर आपके इंटरनेट पर छिपकर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391"><ph name="VALUE" /> मान सीमा से बाहर है.</translation>
 <translation id="7613889955535752492">समय-सीमा खत्म: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग में अपने पासवर्ड देखने और उन्हें प्रबंधित करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -2832,6 +2839,7 @@
 <translation id="7822320754433038727">शिकार और निशानेबाज़ी</translation>
 <translation id="782886543891417279">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं (<ph name="WIFI_NAME" />) आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
 <translation id="7840103971441592723">स्क्रीन कैप्चर करने की सुविधा चालू हो गई है</translation>
+<translation id="784137052867620416">खरीदारी के बारे में अहम जानकारी</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कोई नहीं}=1{एक ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />)}=2{दो ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ऐप्लिकेशन (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Chrome जब आपकी पसंद को सेव कर लेता है, तब किसी साइट को विज़िट करने पर वह साइट, Chrome से आपकी पसंद के विषयों की जानकारी मांग सकती है. वह ऐसा इसलिए करती है, ताकि आपको आपकी पसंद के हिसाब से विज्ञापन दिखा सके. Chrome तीन विषयों की जानकारी शेयर करता है. ऐसा, वह आपके ब्राउज़िंग इतिहास और पहचान को सुरक्षित रखते हुए करता है.</translation>
@@ -2977,6 +2985,7 @@
 <translation id="8217748145574471584">मानव संसाधन</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
 <translation id="8228419419708659934">दो पेजों वाला व्यू</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" />, आपके नेटवर्क पर मौजूद किसी डिवाइस को ऐक्सेस करना चाहता है:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> मि॰मी॰</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">स्पोर्ट्स गेम</translation>

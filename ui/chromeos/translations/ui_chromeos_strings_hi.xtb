@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google साइट</translation>
 <translation id="1853795129690976061">यह फ़ोल्डर, Linux के साथ शेयर किया गया है</translation>
 <translation id="1864756863218646478">फ़ाइल नहीं मिल सकी.</translation>
+<translation id="1877377730633446520">यह तकरीबन <ph name="REQUIRED_SPACE" /> स्टोरेज का इस्तेमाल करेगा. फ़िलहाल, आपके पास <ph name="FREE_SPACE" /> स्टोरेज उपलब्ध है.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, कनेक्ट करें</translation>
 <translation id="1920670151694390848">मलयालम ट्रांसलिट्रेशन</translation>
 <translation id="1920798810075583923">तरबूज़</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">फ़ाइल के लिए सुझाव पैनल को बड़ा करें</translation>
 <translation id="1995337122023280937">फ़ाइल की जगह पर जाएं</translation>
 <translation id="2001796770603320721">डिस्क में प्रबंधित करें</translation>
+<translation id="2004942826429452291">फ़ाइलों को क्लाउड पर और इस Chromebook में सेव किया जाएगा.</translation>
 <translation id="2009067268969781306">किसी डिस्क को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. यह कार्रवाई वापस नहीं ली जा सकती.</translation>
 <translation id="2025955442973426285">टिगरिन्या</translation>
 <translation id="2037845485764049925">रशियन</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">डिवाइस की सेटिंग</translation>
 <translation id="2084809735218147718">जेस्चर से धन्यवाद बोलता हुआ व्यक्ति</translation>
 <translation id="2088690981887365033">वीपीएन नेटवर्क</translation>
+<translation id="2089751716171649322">ऑफ़लाइन रहने पर भी, Google Drive में मौजूद फ़ाइलों को आसानी से ऐक्सेस करें</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोड में एक्सटेंशन इस्तेमाल करने की अनुमति दें<ph name="END_BOLD" /> को चालू करें</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटा दिए जाएंगे और इन्हें वापस नहीं लाया जा सकेगा.</translation>
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> त्रुटियां.</translation>
+<translation id="3501954296166022751">Google Drive पर मौजूद आपकी फ़ाइलें ऑफ़लाइन उपलब्ध हैं</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> आइटम को सिंक किया जा रहा है...</translation>
 <translation id="3522708245912499433">पुर्तगाली</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5500122897333236901">आइसलैंडिक</translation>
 <translation id="5508696409934741614">बिंदु</translation>
+<translation id="5519161320735100193">Google Drive की सेटिंग</translation>
 <translation id="5522908512596376669">फ़ाइल की सूची को अब सूची की तरह दिखाया जा रहा है.</translation>
 <translation id="5524517123096967210">फ़ाइल को पढ़ा नहीं जा सका.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7806708061868529807">हिब्रू</translation>
 <translation id="78104721049218340">केडमानी कीबोर्ड के साथ थाई</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> टीबी</translation>
 <translation id="7831491651892296503">नेटवर्क कॉन्फ़िगर करने में गड़बड़ी</translation>
 <translation id="7839804798877833423">इन फ़ाइलों को लाने में मोबाइल डेटा का करीब <ph name="FILE_SIZE" /> उपयोग होगा.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">काताकाना</translation>
 <translation id="7908793776359722643">किसी पार्टीशन को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">'मेरी ड्राइव' में मौजूद फ़ाइलें, आपके Chromebook से अपने-आप सिंक हो जाएंगी. इससे उन्हें बिना इंटरनेट कनेक्शन के ऐक्सेस किया जा सकता है.</translation>
 <translation id="7925247922861151263">AAA जाँच पूरा नहीं हो सका</translation>
 <translation id="7925686952655276919">समन्‍वयन के लिए मोबाइल डेटा का उपयोग न करें</translation>
 <translation id="7928710562641958568">डिवाइस निकालें</translation>
+<translation id="7933875256234974853">Drive की फ़ाइलें सिंक होने के लिए तैयार की जा रही हैं...</translation>
 <translation id="7943385054491506837">यूएस कोलमैक</translation>
 <translation id="7953739707111622108">यह डिवाइस खोला नहीं जा सकता क्‍योंकि इसका फ़ाइलसिस्‍टम पहचाना नहीं गया था.</translation>
 <translation id="7969525169268594403">स्लोवेनियाई</translation>
 <translation id="7972920761225148017">फ़्रेंच (स्विट्ज़रलैंड)</translation>
 <translation id="7973962044839454485">किसी गलत उपयोगकर्ता नाम या पासवर्ड के कारण PPP प्रमाणीकरण विफल रहा</translation>
 <translation id="7980421588063892270">कोलमैक कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> फ़ाइलें सिंक की जा रही हैं</translation>
 <translation id="8000066093800657092">नेटवर्क नहीं है</translation>
 <translation id="8008366997883261463">श्वान</translation>
 <translation id="8028993641010258682">आकार</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>
+<translation id="937795003075802289">1 फ़ाइल सिंक की जा रही है</translation>
 <translation id="938470336146445890">कृपया कोई 'उपयोगकर्ता प्रमाणपत्र' इंस्टॉल करें.</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="943972244133411984">बदलाव करने वाले</translation>

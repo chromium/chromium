@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Дэлгэц</translation>
 <translation id="1018219910092211213">DNS-г шийдвэрлэх боломжгүй</translation>
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
+<translation id="1020274983236703756">Одоо <ph name="PRODUCT_NAME" />-н онцгой өмчүүд боломжтой</translation>
 <translation id="1022433422498218992">Ерөнхий тохиргоо</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" />-н онцгой</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
 <translation id="3275729367986477355">Аватар зураг</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="3639846061339007994">дээд</translation>
 <translation id="3651050199673793219">Температурын нэгжийг сонгоно уу</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" />-н онцгой постерыг сонгоно уу</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> цомгийг <ph name="DESC" /> сонгох</translation>
 <translation id="4111761024568264522">USB мэдрэгч самбар</translation>
+<translation id="4113067922640381334">Та одоо шинэ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />дэлгэцийн зургуудад<ph name="END_LINK_WALLPAPER_SUBPAGE" /> хандах эрхтэй</translation>
 <translation id="4117637339509843559">Бараан горим</translation>
 <translation id="4130035430755296270">Бүдүүвчийн илүү олон сонголтыг харахын тулд үргэлжлүүлэн зөөгөөрэй</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>
 <translation id="8593058461203131755">медиаг түр зогсоох</translation>
 <translation id="8620617069779373398">Роумингийн төлөв</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />-н бусад үйлдэл</translation>
 <translation id="86356131183441916">Цайвар нил ягаан</translation>
 <translation id="8651481478098336970">дууг хаах</translation>
 <translation id="8655295600908251630">Суваг</translation>

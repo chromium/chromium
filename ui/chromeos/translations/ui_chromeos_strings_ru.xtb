@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Сайт Google</translation>
 <translation id="1853795129690976061">Доступ к этой папке предоставлен Linux.</translation>
 <translation id="1864756863218646478">Не удалось найти файл.</translation>
+<translation id="1877377730633446520">Для этого потребуется <ph name="REQUIRED_SPACE" /> свободного места. Сейчас на вашем диске доступно <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", подключение</translation>
 <translation id="1920670151694390848">Малаялам, транслитерация</translation>
 <translation id="1920798810075583923">Арбуз</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
+<translation id="2004942826429452291">Файлы будут храниться в облаке и на этом устройстве Chromebook.</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Русский</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Настройки устройства</translation>
 <translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
+<translation id="2089751716171649322">Работайте с файлами Google Диска даже без подключения к интернету</translation>
 <translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некоторые объекты (<ph name="NUMBER_OF_ITEMS" />) будут удалены, и вы не сможете их восстановить.</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Не сейчас</translation>
 <translation id="3486821258960016770">Монгольский</translation>
 <translation id="3495304270784461826">Ошибок: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Файлы на Google Диске доступны без подключения к интернету.</translation>
 <translation id="3509680540198371098">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3511705761158917664">Подготовка к синхронизации файлов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальский</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Выделить все</translation>
 <translation id="5500122897333236901">Исландский</translation>
 <translation id="5508696409934741614">Точки</translation>
+<translation id="5519161320735100193">Настройки Google Диска</translation>
 <translation id="5522908512596376669">Файлы отображаются в виде списка.</translation>
 <translation id="5524517123096967210">Не удалось прочитать файл.</translation>
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7806708061868529807">Иврит</translation>
 <translation id="78104721049218340">Тайский, раскладка Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним без подключения к интернету.</translation>
 <translation id="7925247922861151263">Сбой при проверке AAA</translation>
 <translation id="7925686952655276919">Не используйте синхронизацию данных с мобильных устройств</translation>
 <translation id="7928710562641958568">Извлечь устройство</translation>
+<translation id="7933875256234974853">Подготовка к синхронизации файлов Google Диска…</translation>
 <translation id="7943385054491506837">США (Colemak)</translation>
 <translation id="7953739707111622108">Невозможно получить доступ к устройству, так как его файловая система не опознана.</translation>
 <translation id="7969525169268594403">Словенский</translation>
 <translation id="7972920761225148017">Французский (Швейцария)</translation>
 <translation id="7973962044839454485">Не удалось выполнить аутентификацию PPP: неверное имя пользователя или пароль</translation>
 <translation id="7980421588063892270">Английский (США), раскладка Colemak</translation>
+<translation id="7985008041109611710">Синхронизация файлов (<ph name="NUMBER_OF_FILES_SYNCING" />)…</translation>
 <translation id="8000066093800657092">Нет сети</translation>
 <translation id="8008366997883261463">Собака</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Установка началась.</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219908252191632183">Луна</translation>
+<translation id="937795003075802289">Синхронизация одного файла…</translation>
 <translation id="938470336146445890">Установите сертификат пользователя.</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="943972244133411984">Кем изменено</translation>

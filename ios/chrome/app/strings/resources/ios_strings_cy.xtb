@@ -925,6 +925,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
 <translation id="6822587385560699678">Pan fydd ymlaen, caiff cyfrineiriau eu cadw yn <ph name="ACCOUNT" />. Pan fydd wedi'i ddiffodd, dim ond ar y ddyfais hon y caiff cyfrineiriau eu cadw.</translation>
 <translation id="6831043979455480757">Cyfieithu</translation>
+<translation id="6839843088069935119">{count,plural, =1{Mae nod tudalen wedi'i gadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}zero{Mae nodau tudalen wedi'u cadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}two{Mae nodau tudalen wedi'u cadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}few{Mae nodau tudalen wedi'u cadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}many{Mae nodau tudalen wedi'u cadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}other{Mae nodau tudalen wedi'u cadw i ‘{title}'. Dim ond i'r ddyfais hon y caiff ei gadw.}}</translation>
 <translation id="6842136130964845393">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich cyfrineiriau, cadarnhewch mai chi sydd yno</translation>
 <translation id="6851516051005285358">Gofyn am Wefan Bwrdd Gwaith</translation>
 <translation id="6852222216891664518">Cau Tab wedi'i Binio</translation>

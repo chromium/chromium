@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Рабочие столы</translation>
 <translation id="1018219910092211213">Не удается выполнить DNS-преобразование.</translation>
 <translation id="1018656279737460067">Отменено</translation>
+<translation id="1020274983236703756">Эксклюзивный контент для <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Общие настройки</translation>
 <translation id="1022628058306505708">Движения земли</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
+<translation id="3248223063252096240">Только для <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3275729367986477355">Аватар</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}many{Редактировать файлы}other{Редактировать файлы}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3639846061339007994">сверху</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
+<translation id="3663574643422533538">Выбрать эксклюзивное видео для <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
 <translation id="370665806235115550">Загрузка...</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорная панель USB</translation>
+<translation id="4113067922640381334">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
 <translation id="4117637339509843559">Тёмная тема</translation>
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Без инициализации</translation>
 <translation id="8593058461203131755">приостановить воспроизведение</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
+<translation id="8626489604350149811">Другие действия для точки доступа <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светло-фиолетовый</translation>
 <translation id="8651481478098336970">отключить звук</translation>
 <translation id="8655295600908251630">Канал</translation>
