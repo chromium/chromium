@@ -226,7 +226,7 @@ constexpr base::StringPiece kIBANsTable = "ibans";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
-// kValue = "value"
+constexpr base::StringPiece kValueEncrypted = "value_encrypted";
 // kNickname = "nickname"
 
 constexpr base::StringPiece kServerAddressesTable = "server_addresses";
@@ -625,7 +625,7 @@ void BindIBANToStatement(const IBAN& iban,
   s->BindInt64(index++, iban.use_count());
   s->BindInt64(index++, iban.use_date().ToTimeT());
 
-  s->BindString16(index++, iban.value());
+  BindEncryptedValueToColumn(s, index++, iban.value(), encryptor);
   s->BindString16(index++, iban.nickname());
 }
 
@@ -702,7 +702,7 @@ std::unique_ptr<IBAN> IBANFromStatement(
   iban->set_use_count(s.ColumnInt64(index++));
   iban->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
 
-  iban->SetRawInfo(IBAN_VALUE, s.ColumnString16(index++));
+  iban->SetRawInfo(IBAN_VALUE, UnencryptValueFromColumn(s, index++, encryptor));
   iban->set_nickname(s.ColumnString16(index++));
   return iban;
 }
@@ -1171,6 +1171,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 114:
       *update_compatible_version = true;
       return MigrateToVersion114DropLegacyAddressTables();
+    case 115:
+      *update_compatible_version = true;
+      return MigrateToVersion115EncryptIbanValue();
   }
   return true;
 }
@@ -1814,7 +1817,7 @@ void AutofillTable::SetServerProfiles(
 bool AutofillTable::AddIBAN(const IBAN& iban) {
   sql::Statement s;
   InsertBuilder(db_, s, kIBANsTable,
-                {kGuid, kUseCount, kUseDate, kValue, kNickname});
+                {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname});
   BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
   if (!s.Run())
     return false;
@@ -1837,7 +1840,8 @@ bool AutofillTable::UpdateIBAN(const IBAN& iban) {
 
   sql::Statement s;
   UpdateBuilder(db_, s, kIBANsTable,
-                {kGuid, kUseCount, kUseDate, kValue, kNickname}, "guid=?1");
+                {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
+                "guid=?1");
   BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
 
   bool result = s.Run();
@@ -1854,7 +1858,7 @@ std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
   sql::Statement s;
   SelectBuilder(db_, s, kIBANsTable,
-                {kGuid, kUseCount, kUseDate, kValue, kNickname},
+                {kGuid, kUseCount, kUseDate, kValueEncrypted, kNickname},
                 "WHERE guid = ?");
   s.BindString(0, guid);
 
@@ -3311,6 +3315,44 @@ bool AutofillTable::MigrateToVersion114DropLegacyAddressTables() {
   return success && transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
+  // Encrypt all existing IBAN values and rename the column name from `value` to
+  // `value_encrypted` by the following steps:
+  // 1. Read all existing guid and value data from `ibans`, encrypt all values,
+  //    and rewrite to `ibans`.
+  // 2. Rename `value` column to `value_encrypted` for `ibans` table.
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+  sql::Statement s;
+  SelectBuilder(db_, s, kIBANsTable, {kGuid, kValue});
+  std::vector<std::pair<std::string, std::u16string>> iban_guid_to_value_pairs;
+  while (s.Step()) {
+    iban_guid_to_value_pairs.emplace_back(s.ColumnString(0),
+                                          s.ColumnString16(1));
+  }
+  if (!s.Succeeded()) {
+    return false;
+  }
+
+  for (const auto& [guid, value] : iban_guid_to_value_pairs) {
+    UpdateBuilder(db_, s, kIBANsTable, {kGuid, kValue}, "guid=?1");
+    int index = 0;
+    s.BindString(index++, guid);
+    BindEncryptedValueToColumn(&s, index++, value, *autofill_table_encryptor_);
+    if (!s.Run()) {
+      return false;
+    }
+  }
+
+  return db_->Execute(
+             base::StrCat({"ALTER TABLE ", kIBANsTable, " RENAME COLUMN ",
+                           kValue, " TO ", kValueEncrypted})
+                 .c_str()) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3584,7 +3626,7 @@ bool AutofillTable::InitIBANsTable() {
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-                                 {kValue, "VARCHAR"},
+                                 {kValueEncrypted, "VARCHAR"},
                                  {kNickname, "VARCHAR"}});
 }
 

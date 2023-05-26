@@ -345,7 +345,8 @@ class VirtualCardUsageData;
 //                      a form.
 //   use_date           The date this IBAN was last used to fill a form,
 //                      in time_t.
-//   value              Actual value of the IBAN (the bank account number).
+//   value_encrypted    Actual value of the IBAN (the bank account number),
+//                      encrypted.
 //   nickname           A nickname for the IBAN, entered by the user.
 //
 //
@@ -827,6 +828,7 @@ class AutofillTable : public WebDatabaseTable,
   // affected.
   bool MigrateToVersion113MigrateLocalAddressProfilesToNewTable();
   bool MigrateToVersion114DropLegacyAddressTables();
+  bool MigrateToVersion115EncryptIbanValue();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

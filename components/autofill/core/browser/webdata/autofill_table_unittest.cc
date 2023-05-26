@@ -1053,13 +1053,13 @@ TEST_F(AutofillTableTest, IBAN) {
 
   EXPECT_TRUE(table_->AddIBAN(iban));
 
-  // Get the inserted Iban.
+  // Get the inserted IBAN.
   std::unique_ptr<IBAN> db_iban = table_->GetIBAN(iban.guid());
   ASSERT_TRUE(db_iban);
   EXPECT_EQ(guid, db_iban->guid());
   sql::Statement s_work(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid, use_count, use_date, "
-      "value, nickname FROM ibans WHERE guid = ?"));
+      "value_encrypted, nickname FROM ibans WHERE guid = ?"));
   s_work.BindString(0, iban.guid());
   ASSERT_TRUE(s_work.is_valid());
   ASSERT_TRUE(s_work.Step());
@@ -1080,7 +1080,7 @@ TEST_F(AutofillTableTest, IBAN) {
   EXPECT_EQ(another_guid, db_iban->guid());
   sql::Statement s_target(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid, use_count, use_date, "
-      "value, nickname FROM ibans WHERE guid = ?"));
+      "value_encrypted, nickname FROM ibans WHERE guid = ?"));
   s_target.BindString(0, another_iban.guid());
   ASSERT_TRUE(s_target.is_valid());
   ASSERT_TRUE(s_target.Step());
@@ -1095,7 +1095,7 @@ TEST_F(AutofillTableTest, IBAN) {
   EXPECT_EQ(another_guid, db_iban->guid());
   sql::Statement s_target_updated(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT guid, use_count, use_date, "
-      "value, nickname FROM ibans WHERE guid = ?"));
+      "value_encrypted, nickname FROM ibans WHERE guid = ?"));
   s_target_updated.BindString(0, another_iban.guid());
   ASSERT_TRUE(s_target_updated.is_valid());
   ASSERT_TRUE(s_target_updated.Step());
