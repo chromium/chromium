@@ -19,12 +19,14 @@ int GetLayoutConstant(LayoutConstant constant) {
   switch (constant) {
     case APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE:
       return 24;
-    case BOOKMARK_BAR_HEIGHT:
+    case BOOKMARK_BAR_HEIGHT: {
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
-      static constexpr int kBookmarkBarAttachedVerticalMargin = 4;
+      const int bookmark_bar_attached_vertical_margin =
+          features::IsChromeRefresh2023() ? 6 : 4;
       return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
-             kBookmarkBarAttachedVerticalMargin;
+             bookmark_bar_attached_vertical_margin;
+    }
     case BOOKMARK_BAR_BUTTON_HEIGHT:
       return touch_ui ? 36 : 28;
     case WEB_APP_MENU_BUTTON_SIZE:
