@@ -309,12 +309,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       disabled_features.push_back(features::kAppCollectionFolderRefresh);
     }
 
-    if (enable_shelf_party_) {
-      enabled_features.push_back(features::kShelfParty);
-    } else {
-      disabled_features.push_back(features::kShelfParty);
-    }
-
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
 
@@ -750,8 +744,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   bool use_drag_drop_refactor_ = false;
   // True if the folder icon refresh feature is enabled.
   bool folder_icon_refresh_ = false;
-  // True shelf part feature is enabled.
-  bool enable_shelf_party_ = true;
 
   std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
 
@@ -865,20 +857,6 @@ class AppsGridViewDragLegacyTest : public AppsGridViewDragTestBase,
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragLegacyTest, testing::Bool());
-
-class AppsGridViewDragWithShelfPartyTest : public AppsGridViewDragLegacyTest {
- public:
-  AppsGridViewDragWithShelfPartyTest() { enable_shelf_party_ = true; }
-  AppsGridViewDragWithShelfPartyTest(
-      const AppsGridViewDragWithShelfPartyTest&) = delete;
-  AppsGridViewDragWithShelfPartyTest& operator=(
-      const AppsGridViewDragWithShelfPartyTest&) = delete;
-  ~AppsGridViewDragWithShelfPartyTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppsGridViewDragWithShelfPartyTest,
-                         testing::Bool());
 
 // Test suite for clamshell mode, parameterized by RTL.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
@@ -4697,39 +4675,6 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
   UpdateDisplay("1024x768");
   EXPECT_FALSE(ShelfModel::Get()->IsAppPinned("Item 1"));
   EXPECT_TRUE(ShelfModel::Get()->items().empty());
-}
-
-TEST_P(AppsGridViewDragWithShelfPartyTest, DragAndPinItemToEmptyShelf) {
-  GetTestModel()->PopulateApps(2);
-  UpdateLayout();
-
-  ShelfModel::Get()->ToggleShelfParty();
-
-  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
-
-  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
-                                     apps_grid_view_);
-
-  MaybeCheckHaptickEventsCount(1);
-
-  // Verify that item drag has started.
-  ASSERT_TRUE(apps_grid_view_->drag_item());
-  ASSERT_TRUE(apps_grid_view_->IsDragging());
-  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
-
-  // Shelf should start handling the drag if it moves within its bounds.
-  auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
-  UpdateDragInScreen(AppsGridView::MOUSE,
-                     shelf_view->GetBoundsInScreen().left_center());
-  ASSERT_TRUE(apps_grid_view_->FireDragToShelfTimerForTest());
-
-  EXPECT_EQ("Item 1", shelf_view->drag_and_drop_shelf_id().app_id);
-
-  // Releasing drag over shelf should pin the dragged app.
-  EndDrag();
-  EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 1"));
-  EXPECT_EQ("Item 1", ShelfModel::Get()->items()[0].id.app_id);
-  MaybeCheckHaptickEventsCount(1);
 }
 
 TEST_P(AppsGridViewDragTest, MousePointerIsGrabbingDuringDrag) {
