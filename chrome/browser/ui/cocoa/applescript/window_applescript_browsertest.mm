@@ -43,9 +43,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithNoProfile) {
 
 // Create a window with a particular profile.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithProfile) {
-  AppController* appController =
-      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
-  Profile* lastProfile = appController.lastProfile;
+  Profile* lastProfile = AppController.sharedController.lastProfile;
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithProfile:lastProfile];
   EXPECT_TRUE(window);
@@ -125,12 +123,10 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTabAtPosition) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertAndDeleteTabs) {
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithBrowser:browser()];
-  base::scoped_nsobject<TabAppleScript> aTab;
   NSUInteger count;
   for (NSUInteger i = 0; i < 5; ++i) {
     for (NSUInteger j = 0; j < 3; ++j) {
-      aTab.reset([[TabAppleScript alloc] init]);
-      [window insertInTabs:aTab];
+      [window insertInTabs:[[TabAppleScript alloc] init]];
     }
     count = 3 * i + 4;
     EXPECT_EQ(window.tabs.count, count);
@@ -160,8 +156,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, NSWindowTest) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTab) {
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithBrowser:browser()];
-  TabAppleScript* aTab = [[TabAppleScript alloc] init];
-  [window insertInTabs:aTab];
+  [window insertInTabs:[[TabAppleScript alloc] init]];
   [window setActiveTabIndex:@2];
   EXPECT_EQ(2, window.activeTabIndex.intValue);
   TabAppleScript* tab2 = window.tabs[1];

@@ -77,9 +77,7 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
-  AppController* controller =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  return ![controller keyWindowIsModal];
+  return ![AppController.sharedController keyWindowIsModal];
 }
 
 // Open the URL of the given history item in the current tab.

@@ -374,9 +374,8 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
   }
 
   // Set the icon of the group to the group color circle.
-  AppController* controller =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  const auto& color_provider = [controller lastActiveColorProvider];
+  const auto& color_provider =
+      [AppController.sharedController lastActiveColorProvider];
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(

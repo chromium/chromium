@@ -85,7 +85,7 @@ class AppControllerTest : public PlatformTest {
 
 class AppControllerKeyEquivalentTest : public PlatformTest {
  protected:
-  AppControllerKeyEquivalentTest() {}
+  AppControllerKeyEquivalentTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -99,15 +99,15 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
             [AppController class], [AppControllerKeyEquivalentTestHelper class],
             @selector(windowHasBrowserTabs:));
 
-    appController_.reset([[AppController alloc] init]);
+    appController_ = AppController.sharedController;
 
     closeWindowMenuItem_.reset([[NSMenuItem alloc] initWithTitle:@""
-                                                          action:0
+                                                          action:nullptr
                                                    keyEquivalent:@""]);
     [appController_ setCloseWindowMenuItemForTesting:closeWindowMenuItem_];
 
     closeTabMenuItem_.reset([[NSMenuItem alloc] initWithTitle:@""
-                                                       action:0
+                                                       action:nullptr
                                                 keyEquivalent:@""]);
     [appController_ setCloseTabMenuItemForTesting:closeTabMenuItem_];
   }
@@ -151,16 +151,16 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler>
       nsAppTargetForActionSwizzler_;
   std::unique_ptr<base::mac::ScopedObjCClassSwizzler> appControllerSwizzler_;
-  base::scoped_nsobject<AppController> appController_;
+  AppController* appController_;
   base::scoped_nsobject<NSMenuItem> closeWindowMenuItem_;
   base::scoped_nsobject<NSMenuItem> closeTabMenuItem_;
 };
 
 TEST_F(AppControllerTest, DockMenuProfileNotLoaded) {
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  NSMenu* menu = [ac applicationDockMenu:NSApp];
+  AppController* app_controller = AppController.sharedController;
+  NSMenu* menu = [app_controller applicationDockMenu:NSApp];
   // Incognito item is hidden when the profile is not loaded.
-  EXPECT_EQ(nil, [ac lastProfileIfLoaded]);
+  EXPECT_EQ(nil, [app_controller lastProfileIfLoaded]);
   EXPECT_EQ(-1, [menu indexOfItemWithTag:IDC_NEW_INCOGNITO_WINDOW]);
 }
 
@@ -169,19 +169,19 @@ TEST_F(AppControllerTest, DockMenu) {
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_->GetPath().BaseName().MaybeAsASCII());
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  NSMenu* menu = [ac applicationDockMenu:NSApp];
+  AppController* app_controller = AppController.sharedController;
+  NSMenu* menu = [app_controller applicationDockMenu:NSApp];
   NSMenuItem* item;
 
   EXPECT_TRUE(menu);
   EXPECT_NE(-1, [menu indexOfItemWithTag:IDC_NEW_WINDOW]);
 
   // Incognito item is shown when the profile is loaded.
-  EXPECT_EQ(profile_, [ac lastProfileIfLoaded]);
+  EXPECT_EQ(profile_, [app_controller lastProfileIfLoaded]);
   EXPECT_NE(-1, [menu indexOfItemWithTag:IDC_NEW_INCOGNITO_WINDOW]);
 
   for (item in [menu itemArray]) {
-    EXPECT_EQ(ac.get(), [item target]);
+    EXPECT_EQ(app_controller, [item target]);
     EXPECT_EQ(@selector(commandFromDock:), [item action]);
   }
 }
@@ -198,7 +198,7 @@ TEST_F(AppControllerTest, LastProfileIfLoaded) {
   local_state->SetString(prefs::kProfileLastUsed,
                          dest_path1.BaseName().MaybeAsASCII());
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
+  AppController* app_controller = AppController.sharedController;
 
   // Delete the active profile.
   profile_manager_.profile_manager()
@@ -209,7 +209,7 @@ TEST_F(AppControllerTest, LastProfileIfLoaded) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(dest_path2, [ac lastProfileIfLoaded]->GetPath());
+  EXPECT_EQ(dest_path2, app_controller.lastProfileIfLoaded->GetPath());
 }
 
 // Tests key equivalents for Close Window when target is a child window (like a
@@ -302,8 +302,6 @@ class AppControllerSafeProfileTest : public AppControllerTest {
  protected:
   AppControllerSafeProfileTest() = default;
   ~AppControllerSafeProfileTest() override = default;
-
-  void TearDown() override { [NSApp setDelegate:nil]; }
 };
 
 // Tests that RunInLastProfileSafely() works with an already-loaded
@@ -313,9 +311,8 @@ TEST_F(AppControllerSafeProfileTest, LastProfileLoaded) {
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_->GetPath().BaseName().MaybeAsASCII());
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  [NSApp setDelegate:ac];
-  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
 
   base::RunLoop run_loop;
   app_controller_mac::RunInLastProfileSafely(
@@ -333,9 +330,8 @@ TEST_F(AppControllerSafeProfileTest, LastProfileNotLoaded) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed, "New Profile 2");
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  [NSApp setDelegate:ac];
-  ASSERT_EQ(nil, [ac lastProfileIfLoaded]);
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(nil, app_controller.lastProfileIfLoaded);
 
   base::RunLoop run_loop;
   app_controller_mac::RunInLastProfileSafely(
@@ -356,9 +352,8 @@ TEST_F(AppControllerSafeProfileTest, SpecificProfileLoaded) {
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_->GetPath().BaseName().MaybeAsASCII());
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  [NSApp setDelegate:ac];
-  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
 
   TestingProfile* profile2 =
       profile_manager_.CreateTestingProfile("New Profile 2");
@@ -383,9 +378,8 @@ TEST_F(AppControllerSafeProfileTest, SpecificProfileNotLoaded) {
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_->GetPath().BaseName().MaybeAsASCII());
 
-  base::scoped_nsobject<AppController> ac([[AppController alloc] init]);
-  [NSApp setDelegate:ac];
-  ASSERT_EQ(profile_, [ac lastProfileIfLoaded]);
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
 
   base::RunLoop run_loop;
   app_controller_mac::RunInProfileSafely(

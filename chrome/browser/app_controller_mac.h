@@ -61,7 +61,7 @@ class ColorProvider;
   // build the user-data specific main menu items.
   raw_ptr<Profile, DanglingUntriaged> _lastProfile;
 
-  // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
+  // The ProfileObserver observes the ProfileAttributesStorage and gets notified
   // when a profile has been deleted.
   std::unique_ptr<AppControllerProfileObserver>
       _profileAttributesStorageObserver;
@@ -100,7 +100,7 @@ class ColorProvider;
   BOOL _startupComplete;
 
   // Outlets for the close tab/window menu items so that we can adjust the
-  // commmand-key equivalent depending on the kind of window and how many
+  // command-key equivalent depending on the kind of window and how many
   // tabs it has.
   NSMenuItem* _closeTabMenuItem;
   NSMenuItem* _closeWindowMenuItem;
@@ -136,6 +136,10 @@ class ColorProvider;
   // The color provider associated with the last active browser view.
   raw_ptr<const ui::ColorProvider, DanglingUntriaged> _lastActiveColorProvider;
 }
+// The app-wide singleton AppController. Guaranteed to be the delegate of NSApp
+// inside of Chromium (not inside of app shims; see AppShimDelegate). Guaranteed
+// to not be nil.
+@property(readonly, nonatomic, class) AppController* sharedController;
 
 @property(readonly, nonatomic) BOOL startupComplete;
 @property(readonly, nonatomic) Profile* lastProfileIfLoaded;
@@ -144,6 +148,11 @@ class ColorProvider;
 // TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
 // |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
+
+// Do not create new instances of AppController; use the `sharedController`
+// property so that the invariants of there always being exactly one
+// AppController and that that instance is the NSApp delegate always hold true.
+- (instancetype)init NS_UNAVAILABLE;
 
 // This method is called very early in application startup after the main menu
 // has been created.

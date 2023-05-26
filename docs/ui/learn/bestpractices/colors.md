@@ -172,7 +172,7 @@ explicit CollapsibleListView(ui::TableModel* model) {
 void CollapsibleListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  const SkColor icon_color = 
+  const SkColor icon_color =
       color_provider->GetColor(ui::kColorIcon);
   const SkColor disabled_icon_color =
       color_provider->GetColor(ui::kColorIconDisabled);
@@ -656,9 +656,7 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
 ...
 
   // Set the icon of the group to the group color circle.
-  AppController* controller =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  const auto& theme = [controller lastActiveThemeProvider];
+  const auto& theme = [AppController.sharedController lastActiveThemeProvider];
   const int color_id =
       GetTabGroupContextMenuColorIdDeprecated(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(

@@ -83,10 +83,7 @@ using bookmarks::BookmarkModel;
 }
 
 - (BookmarkFolderAppleScript*)otherBookmarks {
-  AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
-
-  Profile* lastProfile = appDelegate.lastProfile;
+  Profile* lastProfile = AppController.sharedController.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
@@ -107,10 +104,7 @@ using bookmarks::BookmarkModel;
 }
 
 - (BookmarkFolderAppleScript*)bookmarksBar {
-  AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
-
-  Profile* lastProfile = appDelegate.lastProfile;
+  Profile* lastProfile = AppController.sharedController.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
