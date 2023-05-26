@@ -958,7 +958,18 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
     base::OnceClosure callback) {
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          // TODO(crbug.com/1446693): Replace this lambda with
+          // `OnClearDataComplete()` so that observers are notified and the
+          // task-runner priority is restored.
+          base::BindOnce(
+              [](base::WeakPtr<AttributionManagerImpl> manager) {
+                if (manager) {
+                  manager->NotifySourcesChanged();
+                  manager->NotifyReportsChanged();
+                }
+              },
+              weak_factory_.GetWeakPtr())));
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
