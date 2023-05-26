@@ -442,6 +442,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                     "If enabled, allows navigations to be queued when there is "
                             + "an existing pending commit navigation in progress."),
+            Flag.baseFeature("NetworkServiceCookiesHighPriorityTaskRunner"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
