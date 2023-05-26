@@ -177,6 +177,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   absl::optional<bool> has_clear_lead_;
 
+  bool switched_clear_to_encrypted_ = false;
+
   // The buffer returned by the demuxer that needs to be decrypted.
   scoped_refptr<media::DecoderBuffer> pending_buffer_to_decrypt_;
 

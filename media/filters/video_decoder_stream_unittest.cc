@@ -141,6 +141,8 @@ class VideoDecoderStreamTest
     EXPECT_MEDIA_LOG(HasSubstr("audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("clear to encrypted buffers"))
+        .Times(AnyNumber());
   }
 
   VideoDecoderStreamTest(const VideoDecoderStreamTest&) = delete;
