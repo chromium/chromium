@@ -132,7 +132,7 @@
 
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
-      "IOS.DefaultBrowserFullscreen.PromoMoreInfoTapped"));
+      "IOS.DefaultBrowserFullscreenPromo.MoreInfoTapped"));
   [self recordDefaultBrowserPromoShown];
   NSString* message = GetDefaultBrowserLearnMoreText();
   self.learnMoreViewController =
