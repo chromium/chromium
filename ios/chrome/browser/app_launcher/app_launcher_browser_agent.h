@@ -33,7 +33,8 @@ class AppLauncherBrowserAgent
     // AppLauncherTabHelperDelegate:
     void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
                                const GURL& url,
-                               bool link_transition) override;
+                               bool link_transition,
+                               base::OnceClosure completion) override;
     void ShowRepeatedAppLaunchAlert(
         AppLauncherTabHelper* tab_helper,
         base::OnceCallback<void(bool)> completion) override;

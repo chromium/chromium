@@ -20,7 +20,8 @@ class AppLauncherTabHelperDelegate {
   // confirming via dialog).
   virtual void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
                                      const GURL& url,
-                                     bool link_transition) = 0;
+                                     bool link_transition,
+                                     base::OnceClosure completion) = 0;
 
   // Alerts the user that there have been repeated attempts to launch
   // the application. `completion` is called with the user's response on whether

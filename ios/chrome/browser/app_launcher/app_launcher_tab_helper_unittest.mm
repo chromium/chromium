@@ -51,9 +51,11 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
   // AppLauncherTabHelperDelegate:
   void LaunchAppForTabHelper(AppLauncherTabHelper* tab_helper,
                              const GURL& url,
-                             bool link_transition) override {
+                             bool link_transition,
+                             base::OnceClosure completion) override {
     ++app_launch_count_;
     last_launched_app_url_ = url;
+    std::move(completion).Run();
   }
   void ShowRepeatedAppLaunchAlert(
       AppLauncherTabHelper* tab_helper,
