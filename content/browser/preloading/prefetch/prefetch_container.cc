@@ -495,13 +495,6 @@ void PrefetchContainer::AddRedirectHop(const GURL& url) {
       std::make_unique<SinglePrefetch>(url, referring_site_));
 }
 
-absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
-    const GURL& url) {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-  return this_prefetch->is_eligible_;
-}
-
 void PrefetchContainer::RegisterCookieListener(
     network::mojom::CookieManager* cookie_manager) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
@@ -807,21 +800,6 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   }
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-}
-
-PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
-    const GURL& url) const {
-  // TODO(https://crbug.com/1444568): Handle the case where the given URL
-  // matches multiple entries in |redirect_chain_|.
-  for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
-       itr++) {
-    GURL single_prefetch_url = (*itr)->url_;
-    if (IsMatchingURL(single_prefetch_url, url)) {
-      return itr->get();
-    }
-  }
-  NOTREACHED();
-  return nullptr;
 }
 
 bool PrefetchContainer::IsMatchingURL(const GURL& internal_url,

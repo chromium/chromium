@@ -132,11 +132,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Adds a the new URL to |redirect_chain_|.
   void AddRedirectHop(const GURL& url);
 
-  // Gets the result of the eligibility check for the given URL. The URL must be
-  // in |redirect_chain_|. A value of absl::nullopt indicates that the
-  // eligibility check is still in progress.
-  absl::optional<bool> GetEligibilityResultForRedirect(const GURL& url);
-
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
   GURL GetMatchingURLFromRedirectChain() const;
@@ -369,9 +364,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns the `SinglePrefetch` to be served next. This is the element in
   // |redirect_chain_| at index |index_redirect_chain_to_serve_|.
   const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
-
-  // Helper function to get the |SinglePrefetch| for the given URL.
-  SinglePrefetch* GetSinglePrefetch(const GURL& url) const;
 
   // Helper function to match URLs either directly or using
   // |no_vary_search_helper_|.
