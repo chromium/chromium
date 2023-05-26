@@ -2624,8 +2624,9 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   return false;
 }
 
-bool ComputedStyle::IsInTopLayer(const Element& element) const {
-  return element.IsInTopLayer() && Overlay() == EOverlay::kAuto;
+bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
+  return (element.IsInTopLayer() && Overlay() == EOverlay::kAuto) ||
+         StyleType() == kPseudoIdBackdrop;
 }
 
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {

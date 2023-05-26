@@ -3149,7 +3149,7 @@ bool Element::SkipStyleRecalcForContainer(
   // preceding sibling of the originating element's box which means we will not
   // reach the box for ::backdrop during layout. Don't skip style recalc for
   // children of containers in the top layer for this reason.
-  if (style.IsInTopLayer(*this)) {
+  if (style.IsRenderedInTopLayer(*this)) {
     return false;
   }
 
@@ -6327,7 +6327,7 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   // force-updating style on the locked subtree and reach this node. Note that
   // we already detached layout when this element was added to the top layer, so
   // we simply maintain the fact that it doesn't have a layout object/subtree.
-  if (style.IsInTopLayer(*this) &&
+  if (style.IsRenderedInTopLayer(*this) &&
       DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
     return false;
   }

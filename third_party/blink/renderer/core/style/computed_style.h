@@ -2487,9 +2487,10 @@ class ComputedStyle : public ComputedStyleBase,
     return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
   }
 
-  // Returns true if the element is a top layer candidate whose overlay property
-  // computes to 'auto'.
-  bool IsInTopLayer(const Element& element) const;
+  // Returns true if the element is rendered in the top layer. That is the case
+  // when the overlay property computes to 'auto', or when the element is a
+  // ::backdrop pseudo.
+  bool IsRenderedInTopLayer(const Element& element) const;
 
   // Load the images of CSS properties that were deferred by LazyLoad.
   void LoadDeferredImages(Document&) const;

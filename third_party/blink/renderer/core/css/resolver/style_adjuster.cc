@@ -825,8 +825,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
 
     if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-      if ((element && element->IsInTopLayer()) ||
-          builder.StyleType() == kPseudoIdBackdrop) {
+      if (element && element->IsInTopLayer()) {
         builder.SetOverlay(EOverlay::kAuto);
       }
     }
@@ -838,6 +837,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // be left alone because the fullscreen.css doesn't apply any style to
     // them.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
+        builder.StyleType() == kPseudoIdBackdrop ||
         builder.StyleType() == kPseudoIdViewTransition) {
       if (builder.GetPosition() == EPosition::kStatic ||
           builder.GetPosition() == EPosition::kRelative) {
@@ -915,6 +915,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   }
 
   if (builder.Overlay() == EOverlay::kAuto ||
+      builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition) {
     builder.SetForcesStackingContext(true);
   }

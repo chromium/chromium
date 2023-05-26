@@ -759,7 +759,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     if (Element* element = DynamicTo<Element>(GetNode())) {
       return StyleRef().StyleType() == kPseudoIdViewTransition ||
-             StyleRef().IsInTopLayer(*element);
+             StyleRef().IsRenderedInTopLayer(*element);
     }
     return false;
   }
