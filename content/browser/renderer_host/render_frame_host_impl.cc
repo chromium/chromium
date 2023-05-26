@@ -141,7 +141,6 @@
 #include "content/browser/usb/web_usb_service_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
-#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
@@ -3823,16 +3822,8 @@ void RenderFrameHostImpl::DidNavigate(
     SetNotInitialEmptyDocument();
   }
 
-  // For uuid-in-package: resources served from WebBundles, use the Bundle's
-  // origin.
-  url::Origin origin =
-      (params.url.SchemeIs(url::kUuidInPackageScheme) &&
-       navigation_request->GetWebBundleURL().is_valid())
-          ? url::Origin::Create(navigation_request->GetWebBundleURL())
-          : GetLastCommittedOrigin();
-
   isolation_info_ = ComputeIsolationInfoInternal(
-      origin, isolation_info_.request_type(),
+      GetLastCommittedOrigin(), isolation_info_.request_type(),
       navigation_request->is_credentialless(),
       navigation_request->ComputeFencedFrameNonce());
 
@@ -8615,15 +8606,6 @@ void RenderFrameHostImpl::BeginNavigation(
     }
   }
 
-  // Only uuid-in-package: URL are allowed for navigation to a resource in
-  // Subresource WebBundles.
-  if (begin_params->web_bundle_token &&
-      !validated_common_params->url.SchemeIs(url::kUuidInPackageScheme)) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
-    return;
-  }
-
   if (begin_params->is_fullscreen_requested) {
     // Fullscreen requests on navigation are only allowed from initial empty
     // documents that are the outermost main frame. The initiator must also have
@@ -9693,15 +9675,6 @@ void RenderFrameHostImpl::CommitNavigation(
 
   const bool is_first_navigation = !has_committed_any_navigation_;
   has_committed_any_navigation_ = true;
-
-  if (!is_same_document) {
-    // Reset |subresource_web_bundle_navigation_info_| to the new one
-    // if this is NOT for same-document navigation. For same-document
-    // navigation, |navigation_request| doesn't have bundle information so
-    // existing one should be kept around.
-    subresource_web_bundle_navigation_info_ =
-        navigation_request->GetSubresourceWebBundleNavigationInfo();
-  }
 
   UpdatePermissionsForNavigation(navigation_request);
 
@@ -11771,17 +11744,6 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
         GetReportingSource(), isolation_info.network_anonymization_key());
   }
 
-  std::unique_ptr<SubresourceWebBundleNavigationInfo>
-      subresource_web_bundle_navigation_info;
-  if (is_same_document && subresource_web_bundle_navigation_info_) {
-    // Propagate |subresource_web_bundle_navigation_info_| to NavigationRequest
-    // for same-document navigation. This will be passed to
-    // FrameNavigationEntry, and will be used for subsequent history
-    // navigations.
-    subresource_web_bundle_navigation_info =
-        subresource_web_bundle_navigation_info_->Clone();
-  }
-
   std::string method = "GET";
   if (is_same_document && !is_same_document_history_api_navigation) {
     // Preserve the HTTP method used by the last navigation if this is a
@@ -11805,8 +11767,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
       this, is_same_document, url, origin, initiator_base_url, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
       has_user_gesture, is_overriding_user_agent, redirects,
-      original_request_url, std::move(coep_reporter),
-      std::move(subresource_web_bundle_navigation_info), http_status_code);
+      original_request_url, std::move(coep_reporter), http_status_code);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {

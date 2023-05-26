@@ -6893,7 +6893,6 @@ data/web_bundle/empty_page.html
 data/web_bundle/foo_base_url_bundle_b2.wbn
 data/web_bundle/foo_primary_url_bundle_b2.wbn
 data/web_bundle/foo_url.har
-data/web_bundle/frame_parent.html
 data/web_bundle/generate-test-wbns.sh
 data/web_bundle/invalid_web_bundle.html
 data/web_bundle/invalid_web_bundle.wbn

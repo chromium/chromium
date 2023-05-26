@@ -2037,16 +2037,8 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // as needed. For non-opaque origins, this creates a standard tuple
     // origin, but for opaque origins, it creates an origin with the
     // initiator origin as the precursor.
-    scoped_refptr<const SecurityOrigin> precursor = requestor_origin_;
-    // For uuid-in-package: resources served from WebBundles, use the Bundle's
-    // origin as the precursor.
-    if (url_.ProtocolIs("uuid-in-package") &&
-        response_.WebBundleURL().IsValid()) {
-      precursor = SecurityOrigin::Create(response_.WebBundleURL());
-      origin_calculation_debug_info_ =
-          origin_calculation_debug_info_ + "_web_bundle";
-    }
-    origin = SecurityOrigin::CreateWithReferenceOrigin(url_, precursor.get());
+    origin = SecurityOrigin::CreateWithReferenceOrigin(url_,
+                                                       requestor_origin_.get());
   }
 
   if ((policy_container_->GetPolicies().sandbox_flags &

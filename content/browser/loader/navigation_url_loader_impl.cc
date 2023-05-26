@@ -264,13 +264,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.common_params->referrer->policy);
   new_request->headers.AddHeadersFromString(request_info.begin_params->headers);
   new_request->cors_exempt_headers = request_info.cors_exempt_headers;
-  if (request_info.begin_params->web_bundle_token) {
-    DCHECK(frame_tree_node->parent());
-    int render_process_id = frame_tree_node->parent()->GetProcess()->GetID();
-    new_request->web_bundle_token_params =
-        request_info.begin_params->web_bundle_token;
-    new_request->web_bundle_token_params->render_process_id = render_process_id;
-  }
   new_request->devtools_accepted_stream_types =
       request_info.devtools_accepted_stream_types;
   // For ResourceType purposes, fenced frames are considered a kSubFrame.
@@ -733,11 +726,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
   // further refactor the factory getters to avoid this.
   scoped_refptr<network::SharedURLLoaderFactory> factory;
 
-  const bool should_be_handled_by_network_service =
-      network::IsURLHandledByNetworkService(resource_request_->url) ||
-      resource_request_->web_bundle_token_params.has_value();
-
-  if (!should_be_handled_by_network_service) {
+  if (!network::IsURLHandledByNetworkService(resource_request_->url)) {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;

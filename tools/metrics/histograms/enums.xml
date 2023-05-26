@@ -41931,7 +41931,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3919" label="ARIAVirtualcontentAttribute"/>
   <int value="3920" label="AccessibilityTouchPassthroughSet"/>
   <int value="3921" label="TextFragmentBlockedByForceLoadAtTop"/>
-  <int value="3922" label="UrnDocumentAccessedCookies"/>
+  <int value="3922" label="OBSOLETE_UrnDocumentAccessedCookies"/>
   <int value="3923" label="FontFaceAscentOverride"/>
   <int value="3924" label="FontFaceDescentOverride"/>
   <int value="3925" label="FontFaceLineGapOverride"/>
@@ -42418,7 +42418,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4384" label="ElementTogglePopover"/>
   <int value="4385" label="OBSOLETE_LayoutMediaInlineChildren"/>
   <int value="4386" label="ReduceAcceptLanguage"/>
-  <int value="4387" label="UuidInPackageUrlNavigation"/>
+  <int value="4387" label="OBSOLETE_UuidInPackageUrlNavigation"/>
   <int value="4388" label="CSSValueAppearanceMediaSliderRendered"/>
   <int value="4389" label="CSSValueAppearanceMediaSliderThumbRendered"/>
   <int value="4390" label="CSSValueAppearanceMediaVolumeSliderRendered"/>

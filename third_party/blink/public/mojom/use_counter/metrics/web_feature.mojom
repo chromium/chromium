@@ -3227,7 +3227,7 @@ enum WebFeature {
   kARIAVirtualcontentAttribute = 3919,
   kAccessibilityTouchPassthroughSet = 3920,
   kTextFragmentBlockedByForceLoadAtTop = 3921,
-  kUrnDocumentAccessedCookies = 3922,
+  kOBSOLETE_UrnDocumentAccessedCookies = 3922,
   kFontFaceAscentOverride = 3923,
   kFontFaceDescentOverride = 3924,
   kFontFaceLineGapOverride = 3925,
@@ -3724,7 +3724,7 @@ enum WebFeature {
   kReduceAcceptLanguage = 4386,
   // The items above roughly this point are available in the M109 branch.
 
-  kUuidInPackageUrlNavigation = 4387,
+  kOBSOLETE_UuidInPackageUrlNavigation = 4387,
   kCSSValueAppearanceMediaSliderRendered = 4388,
   kCSSValueAppearanceMediaSliderThumbRendered = 4389,
   kCSSValueAppearanceMediaVolumeSliderRendered = 4390,

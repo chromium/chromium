@@ -92,7 +92,6 @@ class PrerenderHostRegistry;
 class RenderFrameHostCSPContext;
 class ServiceWorkerMainResourceHandle;
 class SubframeHistoryNavigationThrottle;
-class SubresourceWebBundleNavigationInfo;
 
 // The primary implementation of NavigationHandle.
 //
@@ -295,8 +294,6 @@ class CONTENT_EXPORT NavigationRequest
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-      std::unique_ptr<SubresourceWebBundleNavigationInfo>
-          subresource_web_bundle_navigation_info,
       int http_response_code);
 
   static NavigationRequest* From(NavigationHandle* handle);
@@ -931,14 +928,6 @@ class CONTENT_EXPORT NavigationRequest
   // Whether this navigation request waits for the result of beforeunload before
   // proceeding.
   bool IsWaitingForBeforeUnload();
-
-  // If the response is loaded from a WebBundle, returns the URL of the
-  // WebBundle. Otherwise, returns an empty URL.
-  GURL GetWebBundleURL();
-  // Creates a SubresourceWebBundleNavigationInfo if the response is loaded from
-  // a WebBundle.
-  std::unique_ptr<SubresourceWebBundleNavigationInfo>
-  GetSubresourceWebBundleNavigationInfo();
 
   // Returns the original request url:
   // - If this navigation resulted in an error page, this will return the URL

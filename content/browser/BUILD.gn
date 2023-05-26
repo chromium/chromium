@@ -2250,8 +2250,6 @@ source_set("browser") {
     "web_package/signed_exchange_signature_verifier.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
-    "web_package/subresource_web_bundle_navigation_info.cc",
-    "web_package/subresource_web_bundle_navigation_info.h",
     "web_ui_browser_interface_broker_registry.cc",
     "webauth/client_data_json.cc",
     "webauth/client_data_json.h",

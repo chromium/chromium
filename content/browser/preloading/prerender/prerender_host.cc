@@ -723,13 +723,6 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kTrustTokenParams;
   }
 
-  // Web bundle token cannot be set due because it is only set for child
-  // frame navigations.
-  CHECK(!begin_params_->web_bundle_token);
-  if (potential_activation.web_bundle_token) {
-    return ActivationNavigationParamsMatch::kWebBundleToken;
-  }
-
   // Don't require equality for request_context_type because link clicks
   // (HYPERLINK) should be allowed for activation, whereas prerender always has
   // type LOCATION.

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 namespace content {
@@ -32,8 +31,6 @@ FrameNavigationEntry::FrameNavigationEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<SubresourceWebBundleNavigationInfo>
-        subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
     bool protect_url_in_navigation_api)
     : frame_unique_name_(frame_unique_name),
@@ -53,8 +50,6 @@ FrameNavigationEntry::FrameNavigationEntry(
       method_(method),
       post_id_(post_id),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
-      subresource_web_bundle_navigation_info_(
-          std::move(subresource_web_bundle_navigation_info)),
       policy_container_policies_(std::move(policy_container_policies)),
       protect_url_in_navigation_api_(protect_url_in_navigation_api) {}
 
@@ -70,7 +65,6 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       committed_origin_, referrer_, initiator_origin_, initiator_base_url_,
       redirect_chain_, page_state_, method_, post_id_,
       nullptr /* blob_url_loader_factory */,
-      nullptr /* subresource_web_bundle_navigation_info */,
       policy_container_policies_ ? policy_container_policies_->ClonePtr()
                                  : nullptr,
       protect_url_in_navigation_api_);
@@ -97,8 +91,6 @@ void FrameNavigationEntry::UpdateEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<SubresourceWebBundleNavigationInfo>
-        subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
     bool protect_url_in_navigation_api) {
   frame_unique_name_ = frame_unique_name;
@@ -117,8 +109,6 @@ void FrameNavigationEntry::UpdateEntry(
   method_ = method;
   post_id_ = post_id;
   blob_url_loader_factory_ = std::move(blob_url_loader_factory);
-  subresource_web_bundle_navigation_info_ =
-      std::move(subresource_web_bundle_navigation_info);
   policy_container_policies_ = std::move(policy_container_policies);
   protect_url_in_navigation_api_ = protect_url_in_navigation_api;
 }
@@ -181,11 +171,6 @@ scoped_refptr<network::ResourceRequestBody> FrameNavigationEntry::GetPostData(
       exploded_state.top.http_body.http_content_type.value_or(
           std::u16string()));
   return exploded_state.top.http_body.request_body;
-}
-
-SubresourceWebBundleNavigationInfo*
-FrameNavigationEntry::subresource_web_bundle_navigation_info() const {
-  return subresource_web_bundle_navigation_info_.get();
 }
 
 }  // namespace content

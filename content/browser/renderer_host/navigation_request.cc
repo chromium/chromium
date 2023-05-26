@@ -92,7 +92,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
-#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/debug_utils.h"
@@ -821,17 +820,6 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
     return std::make_pair(parent->GetLastCommittedOrigin(), "about_srcdoc");
   }
 
-  // Uuid-in-package: subframes from WebBundles have opaque origins derived from
-  // the Bundle's origin.
-  if (common_params.url.SchemeIs(url::kUuidInPackageScheme) &&
-      navigation_request->GetWebBundleURL().is_valid()) {
-    return std::make_pair(
-        url::Origin::Resolve(
-            common_params.url,
-            url::Origin::Create(navigation_request->GetWebBundleURL())),
-        "web_bundle");
-  }
-
   // In cases not covered above, URLLoaderFactory should be associated with the
   // origin of |common_params.url| and/or |common_params.initiator_origin|.
   return std::make_pair(
@@ -1183,16 +1171,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
-  absl::optional<network::ResourceRequest::WebBundleTokenParams>
-      web_bundle_token_params;
-  if (frame_entry && frame_entry->subresource_web_bundle_navigation_info()) {
-    auto* bundle_info = frame_entry->subresource_web_bundle_navigation_info();
-    web_bundle_token_params =
-        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
-            bundle_info->bundle_url(), bundle_info->token(),
-            bundle_info->render_process_id()));
-  }
-
   auto navigation_params = blink::mojom::BeginNavigationParams::New(
       initiator_frame_token, extra_headers, net::LOAD_NORMAL,
       false /* skip_service_worker */,
@@ -1206,9 +1184,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
-      std::move(web_bundle_token_params), initiator_activation_and_ad_status,
-      is_container_initiated, false /* is_fullscreen_requested */,
-      false /* has_storage_access */);
+      initiator_activation_and_ad_status, is_container_initiated,
+      false /* is_fullscreen_requested */, false /* has_storage_access */);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -1432,8 +1409,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-    std::unique_ptr<SubresourceWebBundleNavigationInfo>
-        subresource_web_bundle_navigation_info,
     int http_response_code) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateForSynchronousRendererCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
@@ -1570,13 +1545,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
           navigation_request->commit_params_->storage_key);
-  if (subresource_web_bundle_navigation_info) {
-    navigation_request->begin_params_->web_bundle_token =
-        absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
-            subresource_web_bundle_navigation_info->bundle_url(),
-            subresource_web_bundle_navigation_info->token(),
-            subresource_web_bundle_navigation_info->render_process_id()));
-  }
   navigation_request->render_frame_host_ = render_frame_host->GetSafeRef();
   navigation_request->coep_reporter_ = std::move(coep_reporter);
   navigation_request->isolation_info_for_subresources_ =
@@ -3841,14 +3809,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         parent->GetSiteInstance()->GetStoragePartitionConfig());
   }
 
-  if (GetWebBundleURL().is_valid()) {
-    // Web Bundle navigations should use the origin of the bundle rather than
-    // the target URL.
-    //
-    // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
-    url_info_init.WithOrigin(
-        url::Origin::Resolve(GetURL(), url::Origin::Create(GetWebBundleURL())));
-  } else if (IsLoadDataWithBaseURL()) {
+  if (IsLoadDataWithBaseURL()) {
     // LoadDataWithBaseURL() navigations also need to explicitly set the origin
     // to the origin of the base URL.  This ensures that the process for this
     // navigation will eventually be locked to the right origin (i.e., origin of
@@ -3982,22 +3943,6 @@ const GURL& NavigationRequest::GetOriginalRequestURL() {
   // if we decide to do a reload with the original URL.
   DCHECK(!redirect_chain_.empty());
   return redirect_chain_[0];
-}
-
-GURL NavigationRequest::GetWebBundleURL() {
-  if (!begin_params_->web_bundle_token)
-    return GURL();
-  return begin_params_->web_bundle_token->bundle_url;
-}
-
-std::unique_ptr<SubresourceWebBundleNavigationInfo>
-NavigationRequest::GetSubresourceWebBundleNavigationInfo() {
-  if (!begin_params_->web_bundle_token)
-    return nullptr;
-  return std::make_unique<SubresourceWebBundleNavigationInfo>(
-      begin_params_->web_bundle_token->bundle_url,
-      begin_params_->web_bundle_token->token,
-      begin_params_->web_bundle_token->render_process_id);
 }
 
 void NavigationRequest::OnResponseStarted(
@@ -4478,9 +4423,6 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
           frame_entry->redirect_chain(), frame_entry->page_state(),
           frame_entry->method(), frame_entry->post_id(),
           frame_entry->blob_url_loader_factory(),
-          frame_entry->subresource_web_bundle_navigation_info()
-              ? frame_entry->subresource_web_bundle_navigation_info()->Clone()
-              : nullptr,
           frame_entry->policy_container_policies()
               ? frame_entry->policy_container_policies()->ClonePtr()
               : nullptr);
@@ -5649,13 +5591,7 @@ void NavigationRequest::CommitNavigation() {
 
   AddOldPageInfoToCommitParamsIfNeeded();
 
-  // For uuid-in-package: resources served from WebBundles, use the Bundle's
-  // origin.
-  url::Origin origin =
-      (common_params_->url.SchemeIs(url::kUuidInPackageScheme) &&
-       GetWebBundleURL().is_valid())
-          ? url::Origin::Create(GetWebBundleURL())
-          : GetOriginToCommit().value();
+  url::Origin origin = GetOriginToCommit().value();
   // TODO(crbug.com/979296): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   isolation_info_for_subresources_ =
@@ -6163,11 +6099,6 @@ bool NavigationRequest::IsAllowedByCSPDirective(
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kHttpScheme);
     url = common_params_->url.ReplaceComponents(replacements);
-  } else if (common_params_->url.SchemeIs(url::kUuidInPackageScheme) &&
-             begin_params_->web_bundle_token.has_value()) {
-    // When navigating to a uuid-in-package: resource in a web bundle, we check
-    // the bundle URL instead of the uuid-in-package: URL.
-    url = begin_params_->web_bundle_token->bundle_url;
   } else {
     url = common_params_->url;
   }

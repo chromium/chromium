@@ -22,9 +22,6 @@ specific_include_rules = {
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
   ],
 
-  "content_script_apitest.cc": [
-    "+components/web_package",
-  ],
   "extension_protocols_unittest\.cc": [
     "+services/network/test",
   ],

@@ -1505,7 +1505,6 @@ test("content_browsertests") {
     "../browser/site_per_process_sad_frame_browsertest.cc",
     "../browser/site_per_process_scroll_browsertest.cc",
     "../browser/site_per_process_unload_browsertest.cc",
-    "../browser/site_per_process_web_bundle_browsertest.cc",
     "../browser/sms/sms_browsertest.cc",
     "../browser/snapshot_browsertest.cc",
     "../browser/storage_partition_impl_browsertest.cc",

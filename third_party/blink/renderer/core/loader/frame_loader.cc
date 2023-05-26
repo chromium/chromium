@@ -831,21 +831,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           ? CSPDisposition::DO_NOT_CHECK
           : CSPDisposition::CHECK;
 
-  // If this is a subframe load to a uuid-in-package: URL, allow loading from a
-  // Web Bundle attached to the parent document.
-  if (url.Protocol() == "uuid-in-package") {
-    auto* parent_local_frame = DynamicTo<LocalFrame>(frame_->Tree().Parent());
-    if (parent_local_frame &&
-        parent_local_frame->DomWindow() == origin_window &&
-        origin_window->Fetcher()) {
-      origin_window->Fetcher()->AttachWebBundleTokenIfNeeded(resource_request);
-      // Report to the UseCounter of the parent frame (i.e. the frame that
-      // loaded a WebBundle).
-      origin_window->CountUse(
-          mojom::blink::WebFeature::kUuidInPackageUrlNavigation);
-    }
-  }
-
   // Warn if the resource URL's hostname contains IDNA deviation characters.
   // Only warn if the resource URL's origin is different than its requestor
   // (we don't want to warn for <img src="faß.de/image.img"> on faß.de).
