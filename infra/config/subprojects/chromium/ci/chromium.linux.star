@@ -135,7 +135,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    os = os.LINUX_BIONIC,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
