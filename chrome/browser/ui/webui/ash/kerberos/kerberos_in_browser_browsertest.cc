@@ -103,7 +103,9 @@ IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest, CancelButton) {
   EXPECT_FALSE(IsSettingsWindowOpened());
 }
 
-IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest, SettingsButton) {
+// TODO(crbug.com/1449222) Fix flaky test.
+IN_PROC_BROWSER_TEST_F(KerberosInBrowserDialogButtonTest,
+                       DISABLED_SettingsButton) {
   ash::KerberosInBrowserDialog::Show();
   EXPECT_TRUE(ash::KerberosInBrowserDialog::IsShown());
   EXPECT_FALSE(IsSettingsWindowOpened());
