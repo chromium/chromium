@@ -24,18 +24,32 @@ namespace internal {
 
 const char kHistogramPrefixMultiTabLoading[] =
     "PageLoad.Clients.MultiTabLoading.";
+const char kHistogramPrefixMultiTabLoading1OrMore[] =
+    "PageLoad.Clients.MultiTabLoading.1OrMore.";
 const char kHistogramPrefixMultiTabLoading2OrMore[] =
     "PageLoad.Clients.MultiTabLoading.2OrMore.";
 const char kHistogramPrefixMultiTabLoading5OrMore[] =
     "PageLoad.Clients.MultiTabLoading.5OrMore.";
+const char kHistogramPrefixMultiTabLoading0[] =
+    "PageLoad.Clients.MultiTabLoading.With_0_OtherLoading.";
+const char kHistogramPrefixMultiTabLoading1[] =
+    "PageLoad.Clients.MultiTabLoading.With_1_OtherLoading.";
+const char kHistogramPrefixMultiTabLoading2[] =
+    "PageLoad.Clients.MultiTabLoading.With_2_OtherLoading.";
+const char kHistogramPrefixMultiTabLoading3[] =
+    "PageLoad.Clients.MultiTabLoading.With_3_OtherLoading.";
+const char kHistogramPrefixMultiTabLoading4[] =
+    "PageLoad.Clients.MultiTabLoading.With_4_OtherLoading.";
+const char kHistogramPrefixMultiTabLoading5[] =
+    "PageLoad.Clients.MultiTabLoading.With_5_OtherLoading.";
 
 }  // namespace internal
 
 MultiTabLoadingPageLoadMetricsObserver::
-    MultiTabLoadingPageLoadMetricsObserver() {}
+    MultiTabLoadingPageLoadMetricsObserver() = default;
 
 MultiTabLoadingPageLoadMetricsObserver::
-    ~MultiTabLoadingPageLoadMetricsObserver() {}
+    ~MultiTabLoadingPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 MultiTabLoadingPageLoadMetricsObserver::OnStart(
@@ -44,8 +58,7 @@ MultiTabLoadingPageLoadMetricsObserver::OnStart(
     bool started_in_foreground) {
   num_loading_tabs_when_started_ =
       NumberOfTabsWithInflightLoad(navigation_handle);
-  return num_loading_tabs_when_started_ > 0 ? CONTINUE_OBSERVING
-                                            : STOP_OBSERVING;
+  return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -64,24 +77,28 @@ MultiTabLoadingPageLoadMetricsObserver::OnPrerenderStart(
   return STOP_OBSERVING;
 }
 
-#define RECORD_HISTOGRAMS(suffix, sample)                                      \
-  do {                                                                         \
-    base::TimeDelta sample_value(sample);                                      \
-    PAGE_LOAD_HISTOGRAM(                                                       \
-        std::string(internal::kHistogramPrefixMultiTabLoading).append(suffix), \
-        sample_value);                                                         \
-    if (num_loading_tabs_when_started_ >= 2) {                                 \
-      PAGE_LOAD_HISTOGRAM(                                                     \
-          std::string(internal::kHistogramPrefixMultiTabLoading2OrMore)        \
-              .append(suffix),                                                 \
-          sample_value);                                                       \
-    }                                                                          \
-    if (num_loading_tabs_when_started_ >= 5) {                                 \
-      PAGE_LOAD_HISTOGRAM(                                                     \
-          std::string(internal::kHistogramPrefixMultiTabLoading5OrMore)        \
-              .append(suffix),                                                 \
-          sample_value);                                                       \
-    }                                                                          \
+#define RECORD_HISTOGRAM(condition, name)                                   \
+  if (condition) {                                                          \
+    PAGE_LOAD_HISTOGRAM(                                                    \
+        std::string(internal::kHistogramPrefix##name).append(suffix_value), \
+        sample_value);                                                      \
+  }
+
+#define RECORD_HISTOGRAMS(suffix, sample)            \
+  do {                                               \
+    int n = num_loading_tabs_when_started_;          \
+    const char* suffix_value = suffix;               \
+    base::TimeDelta sample_value(sample);            \
+    RECORD_HISTOGRAM(n >= 1, MultiTabLoading)        \
+    RECORD_HISTOGRAM(n >= 1, MultiTabLoading1OrMore) \
+    RECORD_HISTOGRAM(n >= 2, MultiTabLoading2OrMore) \
+    RECORD_HISTOGRAM(n >= 5, MultiTabLoading5OrMore) \
+    RECORD_HISTOGRAM(n == 0, MultiTabLoading0)       \
+    RECORD_HISTOGRAM(n == 1, MultiTabLoading1)       \
+    RECORD_HISTOGRAM(n == 2, MultiTabLoading2)       \
+    RECORD_HISTOGRAM(n == 3, MultiTabLoading3)       \
+    RECORD_HISTOGRAM(n == 4, MultiTabLoading4)       \
+    RECORD_HISTOGRAM(n == 5, MultiTabLoading5)       \
   } while (false)
 
 void MultiTabLoadingPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
@@ -135,6 +152,34 @@ void MultiTabLoadingPageLoadMetricsObserver::OnLoadEventStart(
   } else {
     RECORD_HISTOGRAMS(internal::kHistogramLoadEventFiredBackgroundSuffix,
                       timing.document_timing->load_event_start.value());
+  }
+}
+
+void MultiTabLoadingPageLoadMetricsObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordTimingHistograms();
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+MultiTabLoadingPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // This follows UmaPageLoadMetricsObserver.
+  if (GetDelegate().DidCommit()) {
+    RecordTimingHistograms();
+  }
+  return STOP_OBSERVING;
+}
+
+void MultiTabLoadingPageLoadMetricsObserver::RecordTimingHistograms() {
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetDelegate()
+          .GetLargestContentfulPaintHandler()
+          .MergeMainFrameAndSubframes();
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    RECORD_HISTOGRAMS(internal::kHistogramLargestContentfulPaintSuffix,
+                      largest_contentful_paint.Time().value());
   }
 }
 

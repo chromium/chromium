@@ -894,6 +894,69 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.MultiTabLoading{OtherLoadingCount}.{Timing}{Background}"
+    units="ms" expires_after="2023-11-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>{Timing} {OtherLoadingCount} {Background}</summary>
+  <token key="OtherLoadingCount">
+    <variant name=""
+        summary="Only recorded when there were 1 or more other loading tabs
+                 (the same as '1OrMore')."/>
+    <variant name=".1OrMore"
+        summary="Only recorded when there were 1 or more other loading tabs."/>
+    <variant name=".2OrMore"
+        summary="Only recorded when there were 2 or more other loading tabs."/>
+    <variant name=".5OrMore"
+        summary="Only recorded when there were 5 or more other loading tabs."/>
+    <variant name=".With_0_OtherLoading"
+        summary="Only recorded when there was no other loading tab."/>
+    <variant name=".With_1_OtherLoading"
+        summary="Only recorded when there was 1 other loading tab."/>
+    <variant name=".With_2_OtherLoading"
+        summary="Only recorded when there were 2 other loading tabs."/>
+    <variant name=".With_3_OtherLoading"
+        summary="Only recorded when there were 3 other loading tabs."/>
+    <variant name=".With_4_OtherLoading"
+        summary="Only recorded when there were 4 other loading tabs."/>
+    <variant name=".With_5_OtherLoading"
+        summary="Only recorded when there were 5 other loading tabs."/>
+  </token>
+  <token key="Timing">
+    <variant name="DocumentTiming.NavigationToDOMContentLoadedEventFired"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the DOMContentLoaded event is fired, for main
+                 frame documents."/>
+    <variant name="DocumentTiming.NavigationToLoadEventFired"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the load event is fired, for main frame
+                 documents."/>
+    <variant name="Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
+        summary="Measures the time from navigation start to first meaningful
+                 paint."/>
+    <variant name="PaintTiming.ForegroundToFirstContentfulPaint"
+        summary="Measures the time from a background tab being switched to
+                 the foreground to the time the first contentful paint is
+                 performed, for main frame documents."/>
+    <variant name="PaintTiming.NavigationToFirstContentfulPaint"
+        summary="Measures the time from navigation start to first contentful
+                 paint."/>
+    <variant name="PaintTiming.NavigationToLargestContentfulPaint"
+        summary="Measures the time from navigation timing's navigation start
+                 to the time the largest content (text or image) is first
+                 painted, across all frames. Excludes any content painted
+                 after user input. Includes content that has been removed
+                 from the page."/>
+  </token>
+  <token key="Background">
+    <variant name="" summary=""/>
+    <variant name=".Background"
+        summary="The page was backgrounded at least once from navigation
+                 start to this event."/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
     units="ms" expires_after="2023-09-03">
   <owner>ksakamoto@chromium.org</owner>
