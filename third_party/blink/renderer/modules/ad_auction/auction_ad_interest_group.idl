@@ -50,7 +50,7 @@ dictionary AuctionAdInterestGroup {
   USVString updateUrl;
   // TODO(https://crbug.com/1420080): Remove this deprecated field, in favor of
   // `updateUrl` above.
-  [DeprecateAs=InterestGroupDailyUpdateUrl] USVString dailyUpdateUrl;
+  [DeprecateAs=DeprecatedInterestGroupDailyUpdateUrl] USVString dailyUpdateUrl;
   USVString trustedBiddingSignalsURL;
 
   [ImplementedAs=trustedBiddingSignalsUrlDeprecated]
