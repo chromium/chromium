@@ -35,4 +35,17 @@ TODO
 TODO
 
 ### Hermes Profile Client
-TODO
+The [`HermesProfileClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_profile_client.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+class provides an interface for interacting with the to Hermes profile objects.
+This client can be used to:
+* Rename profile name
+* Enable and disable a carrier profile
+* Get properties for a profile entry
+* Listen for profile property changes
+
+For detailed documentation on the Hermes EUICC DBus API, please refer to
+[org.chromium.Hermes.Profile.xml](https://source.corp.google.com/h/chromium/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Profile.xml;drc=938e77682349e4678ecc532c57fc1178a4c47978).
+
+The [`HermesProfileClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_profile_client.h;l=27-40;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
+allows you to add fake profile entries for ChromeOS unit testing purposes.
+This interface is implemented in the [`FakeHermesProfileClient`](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:chromeos/ash/components/dbus/hermes/fake_hermes_profile_client.h;l=19;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda).
