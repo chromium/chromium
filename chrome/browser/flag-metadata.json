@@ -3286,7 +3286,7 @@
   {
     "name": "enable-tab-audio-muting",
     "owners": [ "evliu@google.com", "chrome-media-ux@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "enable-tab-engagement-reporting",
