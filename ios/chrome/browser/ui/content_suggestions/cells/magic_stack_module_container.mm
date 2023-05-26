@@ -136,10 +136,30 @@ const int kModuleWidthRegular = 382;
 }
 
 - (CGSize)intrinsicContentSize {
+  // When the Most Visited Tiles module is not in the Magic Stack in a wider
+  // screen, the module is wider to match the wider Magic Stack ScrollView.
+  if (_type == ContentSuggestionsModuleType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack() &&
+      self.traitCollection.horizontalSizeClass ==
+          UIUserInterfaceSizeClassRegular) {
+    return CGSizeMake(kMagicStackWideWidth, self.bounds.size.height);
+  }
   return CGSizeMake(
       [MagicStackModuleContainer
           moduleWidthForHorizontalTraitCollection:self.traitCollection],
       self.bounds.size.height);
+}
+
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.horizontalSizeClass !=
+          self.traitCollection.horizontalSizeClass &&
+      _type == ContentSuggestionsModuleType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    _contentViewWidthAnchor.constant = [self contentViewWidth];
+  }
 }
 
 #pragma mark - Helpers
@@ -147,9 +167,7 @@ const int kModuleWidthRegular = 382;
 // Returns the expected width of the contentView subview.
 - (CGFloat)contentViewWidth {
   NSDirectionalEdgeInsets insets = [self contentMargins];
-  return [MagicStackModuleContainer
-             moduleWidthForHorizontalTraitCollection:self.traitCollection] -
-         insets.leading - insets.trailing;
+  return [self intrinsicContentSize].width - insets.leading - insets.trailing;
 }
 
 @end

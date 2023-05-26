@@ -698,8 +698,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass) {
-    _magicStackScrollViewWidthAnchor.constant = [MagicStackModuleContainer
-        moduleWidthForHorizontalTraitCollection:self.traitCollection];
+    if (self.traitCollection.horizontalSizeClass ==
+        UIUserInterfaceSizeClassRegular) {
+      _magicStackScrollView.clipsToBounds = YES;
+      _magicStackScrollViewWidthAnchor.constant = kMagicStackWideWidth;
+    } else {
+      _magicStackScrollView.clipsToBounds = NO;
+      _magicStackScrollViewWidthAnchor.constant = [MagicStackModuleContainer
+          moduleWidthForHorizontalTraitCollection:self.traitCollection];
+    }
   }
 }
 
@@ -822,11 +829,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)createMagicStack {
-  CGFloat width = [MagicStackModuleContainer
-      moduleWidthForHorizontalTraitCollection:self.traitCollection];
   _magicStackScrollView = [[UIScrollView alloc] init];
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
-  _magicStackScrollView.clipsToBounds = NO;
+  _magicStackScrollView.clipsToBounds =
+      self.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular;
   _magicStackScrollView.delegate = self;
   _magicStackScrollView.accessibilityIdentifier =
       kMagicStackScrollViewAccessibilityIdentifier;
@@ -904,6 +911,14 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   // Define width of ScrollView. Instrinsic content height of the
   // StackView within the ScrollView will define the height of the
   // ScrollView.
+  CGFloat width = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  // Magic Stack has a wider width for wider screens so that clipToBounds can be
+  // YES with a peeking module still visible.
+  if (self.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular) {
+    width = kMagicStackWideWidth;
+  }
   _magicStackScrollViewWidthAnchor =
       [_magicStackScrollView.widthAnchor constraintEqualToConstant:width];
   [NSLayoutConstraint activateConstraints:@[
