@@ -109,8 +109,8 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_EQ(prefetch_container.GetPrefetchType(),
             PrefetchType(/*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager));
-  EXPECT_TRUE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://test.com")));
+  EXPECT_TRUE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
             std::make_pair(GlobalRenderFrameHostId(1234, 5678),
@@ -820,37 +820,36 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
 
+  EXPECT_FALSE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+
   prefetch_container.AddRedirectHop(GURL("https://test.com/redirect"));
+
+  EXPECT_FALSE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container
+                   .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
+
   prefetch_container.AddRedirectHop(GURL("https://m.test.com/redirect"));
+
+  EXPECT_FALSE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container
+                   .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
+
   prefetch_container.AddRedirectHop(GURL("https://other.com/redirect1"));
+
+  EXPECT_TRUE(
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_FALSE(prefetch_container
+                   .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
+
   prefetch_container.AddRedirectHop(GURL("https://other.com/redirect2"));
 
-  EXPECT_FALSE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://test.com/prefetch")));
-
-  EXPECT_FALSE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://test.com/redirect")));
-  EXPECT_FALSE(
-      prefetch_container.IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-          GURL("https://test.com/redirect")));
-
-  EXPECT_FALSE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://m.test.com/redirect")));
-  EXPECT_FALSE(
-      prefetch_container.IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-          GURL("https://m.test.com/redirect")));
-
-  EXPECT_TRUE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://other.com/redirect1")));
-  EXPECT_FALSE(
-      prefetch_container.IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-          GURL("https://other.com/redirect1")));
-
-  EXPECT_TRUE(prefetch_container.IsIsolatedNetworkContextRequiredForURL(
-      GURL("https://other.com/redirect2")));
   EXPECT_TRUE(
-      prefetch_container.IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-          GURL("https://other.com/redirect2")));
+      prefetch_container.IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+  EXPECT_TRUE(prefetch_container
+                  .IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 }
 
 TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {

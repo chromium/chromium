@@ -175,8 +175,8 @@ class TestPrefetchService : public PrefetchService {
 
   void CopyIsolatedCookies(
       base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    if (!prefetch_container->IsIsolatedNetworkContextRequiredForURL(
-            prefetch_container->GetCurrentURLToServe())) {
+    if (!prefetch_container
+             ->IsIsolatedNetworkContextRequiredForCurrentServe()) {
       return;
     }
 

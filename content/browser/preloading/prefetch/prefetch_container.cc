@@ -401,11 +401,11 @@ PrefetchContainer::ReleaseProxyLookupClient() {
   return std::move(proxy_lookup_client_);
 }
 
-PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContextForURL(
-    const GURL& url,
+PrefetchNetworkContext*
+PrefetchContainer::GetOrCreateNetworkContextForCurrentPrefetch(
     PrefetchService* prefetch_service) {
   bool is_isolated_network_context_required =
-      IsIsolatedNetworkContextRequiredForURL(url);
+      IsIsolatedNetworkContextRequiredForCurrentPrefetch();
 
   auto network_context_itr =
       network_contexts_.find(is_isolated_network_context_required);
@@ -830,24 +830,6 @@ PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
   return nullptr;
 }
 
-PrefetchContainer::SinglePrefetch* PrefetchContainer::GetPreviousSinglePrefetch(
-    const GURL& url) const {
-  // TODO(https://crbug.com/1444568): Handle the case where the given URL
-  // matches multiple entries in |redirect_chain_|.
-  for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
-       itr++) {
-    GURL single_prefetch_url = (*itr)->url_;
-    if (IsMatchingURL(single_prefetch_url, url)) {
-      // Once the SinglePrefetch that matches the given URL is found, then
-      // increment the reverse iterator to get the previous one.
-      itr++;
-      return itr != redirect_chain_.rend() ? itr->get() : nullptr;
-    }
-  }
-  NOTREACHED();
-  return nullptr;
-}
-
 bool PrefetchContainer::IsMatchingURL(const GURL& internal_url,
                                       const GURL& external_url) const {
   // Check if the URLs match directly.
@@ -899,18 +881,23 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
-bool PrefetchContainer::IsIsolatedNetworkContextRequiredForURL(
-    const GURL& url) const {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  CHECK(this_prefetch);
-  return this_prefetch->is_isolated_network_context_required_;
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForCurrentPrefetch()
+    const {
+  const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
+  return this_prefetch.is_isolated_network_context_required_;
 }
 
-bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-    const GURL& url) const {
-  SinglePrefetch* previous_prefetch = GetPreviousSinglePrefetch(url);
-  CHECK(previous_prefetch);
-  return previous_prefetch->is_isolated_network_context_required_;
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop()
+    const {
+  const SinglePrefetch& previous_prefetch =
+      GetPreviousSinglePrefetchToPrefetch();
+  return previous_prefetch.is_isolated_network_context_required_;
+}
+
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForCurrentServe()
+    const {
+  const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToServe();
+  return this_prefetch.is_isolated_network_context_required_;
 }
 
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {

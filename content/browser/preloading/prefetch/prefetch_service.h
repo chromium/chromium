@@ -236,9 +236,8 @@ class CONTENT_EXPORT PrefetchService {
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      const GURL& url);
+  network::mojom::URLLoaderFactory* GetURLLoaderFactoryForCurrentPrefetch(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Called when the request for |prefetch_container| is redirected.
   void OnPrefetchRedirect(base::WeakPtr<PrefetchContainer> prefetch_container,

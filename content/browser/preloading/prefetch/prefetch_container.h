@@ -82,14 +82,16 @@ class CONTENT_EXPORT PrefetchContainer {
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
-  // Whether or not an isolated network context is required to fetch the given
-  // url.
-  bool IsIsolatedNetworkContextRequiredForURL(const GURL& url) const;
+  // Whether or not an isolated network context is required to the next
+  // prefetch.
+  bool IsIsolatedNetworkContextRequiredForCurrentPrefetch() const;
 
   // Whether or not an isolated network context is required for the previous
   // redirect hop of the given url.
-  bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
-      const GURL& url) const;
+  bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop() const;
+
+  // Whether or not an isolated network context is required to serve.
+  bool IsIsolatedNetworkContextRequiredForCurrentServe() const;
 
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
@@ -165,10 +167,8 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnInterceptorCheckCookieCopy();
   void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
-  // The network context used to make network requests for the given URL within
-  // this prefetch.
-  PrefetchNetworkContext* GetOrCreateNetworkContextForURL(
-      const GURL& url,
+  // The network context used to make network requests for the next prefetch.
+  PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch(
       PrefetchService* prefetch_service);
   PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
 
@@ -369,10 +369,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Helper function to get the |SinglePrefetch| for the given URL.
   SinglePrefetch* GetSinglePrefetch(const GURL& url) const;
-
-  // Helper function go get the |SinglePrefetch| that preceded the given URL.
-  // If called on the original URL of the prefetch, then nullptr is returned.
-  SinglePrefetch* GetPreviousSinglePrefetch(const GURL& url) const;
 
   // Helper function to match URLs either directly or using
   // |no_vary_search_helper_|.
