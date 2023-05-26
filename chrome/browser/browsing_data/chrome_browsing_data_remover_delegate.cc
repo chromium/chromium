@@ -143,7 +143,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/customtabs/chrome_origin_verifier.h"
-#include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/feed/feed_service_factory.h"
@@ -566,17 +565,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
     device_event_log::Clear(delete_begin_, delete_end_);
-
-#if BUILDFLAG(IS_ANDROID)
-    explore_sites::ExploreSitesService* explore_sites_service =
-        explore_sites::ExploreSitesServiceFactory::GetForBrowserContext(
-            profile_);
-    if (explore_sites_service) {
-      explore_sites_service->ClearActivities(
-          delete_begin_, delete_end_,
-          CreateTaskCompletionClosure(TracingDataType::kExploreSites));
-    }
-#endif
 
     CreateCrashUploadList()->Clear(delete_begin_, delete_end_);
 

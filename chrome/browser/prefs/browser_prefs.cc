@@ -235,7 +235,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
-#include "chrome/browser/android/explore_sites/history_statistics_reporter.h"
 #include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
@@ -813,6 +812,8 @@ const char kVideoTutorialsPreferredLocaleKey[] =
     "video_tutorials.perferred_locale";
 const char kVideoTutorialsLastUpdatedTimeKey[] =
     "video_tutorials.last_updated_time";
+const char kWeeklyStatsReportingTimestamp[] =
+    "explore_sites.weekly_stats_reporting_timestamp";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 05/2023
@@ -958,6 +959,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kScreenAIScheduledDeletionTimePrefName,
                              base::Time());
 #endif
+
+// Deprecated 05/2023
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterTimePref(kWeeklyStatsReportingTimestamp, base::Time());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1584,7 +1590,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   content_creation::prefs::RegisterProfilePrefs(registry);
-  explore_sites::HistoryStatisticsReporter::RegisterPrefs(registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);
   NotificationChannelsProviderAndroid::RegisterProfilePrefs(registry);
@@ -1972,6 +1977,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 // Added 05/2023.
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   local_state->ClearPref(kScreenAIScheduledDeletionTimePrefName);
+#endif
+
+// Added 05/2023
+#if BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(kWeeklyStatsReportingTimestamp);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
