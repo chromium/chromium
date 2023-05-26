@@ -252,13 +252,15 @@ class TaskEnvironment {
   // possible.
   void RunUntilIdle();
 
-  // Only valid for instances using TimeSource::MOCK_TIME. Fast-forwards
+  // Only valid for instances using |TimeSource::MOCK_TIME|. Fast-forwards
   // virtual time by |delta|, causing all tasks on the main thread and thread
-  // pool with a remaining delay less than or equal to |delta| to be executed in
-  // their natural order before this returns. |delta| must be non-negative. Upon
-  // returning from this method, NowTicks() will be >= the initial |NowTicks() +
-  // delta|. It is guaranteed to be == iff tasks executed in this
-  // FastForwardBy() didn't result in nested calls to time-advancing-methods.
+  // pool with a remaining delay less than or equal to |delta| to be executed
+  // in their natural order before this method returns. Undelayed tasks are just
+  // delayed tasks with a delay of 0, so they are also executed. |delta| must be
+  // non-negative. Upon returning from this method, NowTicks() will be >= the
+  // initial |NowTicks() + delta|. It is guaranteed to be == iff tasks executed
+  // in this FastForwardBy() didn't result in nested calls to
+  // time-advancing-methods.
   void FastForwardBy(TimeDelta delta);
 
   // Similar to `FastForwardBy` but doesn't advance `base::LiveTicks`, behaving
