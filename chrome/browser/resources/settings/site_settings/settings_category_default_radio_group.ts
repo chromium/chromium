@@ -152,6 +152,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.NOTIFICATIONS:
       case ContentSettingsTypes.SERIAL_PORTS:
+      case ContentSettingsTypes.STORAGE_ACCESS:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
       case ContentSettingsTypes.WINDOW_MANAGEMENT:

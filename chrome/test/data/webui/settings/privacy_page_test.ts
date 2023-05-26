@@ -46,6 +46,7 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_SENSORS,
   routes.SITE_SETTINGS_SERIAL_PORTS,
   routes.SITE_SETTINGS_SOUND,
+  routes.SITE_SETTINGS_STORAGE_ACCESS,
   routes.SITE_SETTINGS_USB_DEVICES,
   routes.SITE_SETTINGS_VR,
 

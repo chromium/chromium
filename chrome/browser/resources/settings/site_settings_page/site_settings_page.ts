@@ -134,17 +134,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       otherLabel: 'cookiePageClearOnExit',
     },
     {
-      // TODO(b/276716832): Change route to the new Storage Access page.
-      route: routes.SITE_SETTINGS,
-      id: Id.STORAGE_ACCESS,
-      label: 'siteSettingsStorageAccess',
-      icon: 'settings:cookie',
-      enabledLabel: 'storageAccessAllowed',
-      disabledLabel: 'storageAccessBlocked',
-      shouldShow: () =>
-          loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
-    },
-    {
       route: routes.SITE_SETTINGS_LOCATION,
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
@@ -314,6 +303,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'settings:volume-up',
       enabledLabel: 'siteSettingsSoundAllowed',
       disabledLabel: 'siteSettingsSoundBlocked',
+    },
+    {
+      route: routes.SITE_SETTINGS_STORAGE_ACCESS,
+      id: Id.STORAGE_ACCESS,
+      label: 'siteSettingsStorageAccess',
+      // TODO(b/276716832): Change icon to the final SAA.
+      icon: 'settings:cookie',
+      enabledLabel: 'storageAccessAllowed',
+      disabledLabel: 'storageAccessBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
     },
     {
       route: routes.SITE_SETTINGS_USB_DEVICES,

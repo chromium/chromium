@@ -608,6 +608,7 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
     return {
       enabled: [
         'privacy_sandbox::kPrivacySandboxSettings4',
+        'permissions::features::kPermissionStorageAccessAPI',
       ],
     };
   }

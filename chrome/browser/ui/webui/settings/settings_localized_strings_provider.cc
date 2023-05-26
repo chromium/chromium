@@ -3281,6 +3281,7 @@ void AddStorageAccessStrings(content::WebUIDataSource* html_source) {
       {"siteSettingsStorageAccess", IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS},
       {"siteSettingsStorageAccessMidSentence",
        IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
+      {"storageAccessDescription", IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION},
       {"storageAccessAllowed", IDS_SETTINGS_STORAGE_ACCESS_ALLOWED},
       {"storageAccessBlocked", IDS_SETTINGS_STORAGE_ACCESS_BLOCKED},
   };
