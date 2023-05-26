@@ -3136,9 +3136,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setSpacedFreeSpace") {
-    absl::optional<int> free_space = value.FindInt("freeSpace");
-    ASSERT_TRUE(free_space.has_value());
-    ash::FakeSpacedClient::Get()->set_free_disk_space(free_space.value());
+    const std::string* space = value.FindString("freeSpace");
+    ASSERT_TRUE(space) << "No freeSpace supplied";
+    int64_t free_space;
+    ASSERT_TRUE(base::StringToInt64(*space, &free_space))
+        << "Couldn't convert string to int64";
+    ash::FakeSpacedClient::Get()->set_free_disk_space(free_space);
     return;
   }
 

@@ -1311,9 +1311,9 @@ testcase.drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled = async () => {
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
   // pinning preference
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Wait for both the pinned toggle and the pinned command to become hidden and
@@ -1347,9 +1347,9 @@ testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="A"]:not(.pinned)');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
-  // pinning preference
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
+  // pinning preference.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
 
   // Wait for the folder to show up as pinned (the underlying folder will not
@@ -1400,7 +1400,7 @@ testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
       RootPath.DRIVE, [], [ENTRIES.hello, ENTRIES.sharedWithMeDirectory]);
 
   // Enable the bulk pinning preference first.
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForBulkPinningStage('Syncing');
 
@@ -1467,9 +1467,9 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 
-  // Mock the free space returned by spaced to be 1 GB and enable the bulk
+  // Mock the free space returned by spaced to be 4 GB and enable the bulk
   // pinning preference.
-  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForBulkPinningStage('Syncing');
 

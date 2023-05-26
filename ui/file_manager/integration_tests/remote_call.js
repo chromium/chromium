@@ -1149,4 +1149,14 @@ export class RemoteCallFilesApp extends RemoteCall {
     await this.waitAndClickElement(
         appId, '#move-to-trash-button:not([hidden]):not([disabled])');
   }
+
+  /**
+   * Fakes the response from spaced when it retrieves the free space.
+   * @param {bigint} freeSpace
+   */
+  async setSpacedFreeSpace(freeSpace) {
+    console.log(freeSpace);
+    await sendTestMessage(
+        {name: 'setSpacedFreeSpace', freeSpace: String(freeSpace)});
+  }
 }

@@ -272,7 +272,7 @@ Progress& Progress::operator=(const Progress&) = default;
 
 bool Progress::HasEnoughFreeSpace() const {
   // The free space should not go below this limit.
-  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+  const int64_t margin = int64_t(2) << 30;
   const bool enough = required_space + margin <= free_space;
   LOG_IF(ERROR, !enough) << "Not enough space: Free space "
                          << HumanReadableSize(free_space)
