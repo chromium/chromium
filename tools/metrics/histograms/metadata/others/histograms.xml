@@ -4420,12 +4420,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataPack.Load" enum="DataPackLoadErrors" expires_after="M87">
-  <owner>grt@chromium.org</owner>
-  <owner>sky@chromium.org</owner>
-  <summary>Errors when trying to load DataPack files.</summary>
-</histogram>
-
 <histogram name="DataSaver.BlockingReadOSSettingCall" units="ms"
     expires_after="2022-05-19">
   <obsolete>

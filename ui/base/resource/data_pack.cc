@@ -20,7 +20,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/sys_byteorder.h"
@@ -42,31 +41,6 @@ static const size_t kHeaderLengthV4 = 2 * sizeof(uint32_t) + sizeof(uint8_t);
 // uint16(resource_count), uint16(alias_count)
 static const size_t kHeaderLengthV5 =
     sizeof(uint32_t) + sizeof(uint8_t) * 4 + sizeof(uint16_t) * 2;
-
-// We're crashing when trying to load a pak file on Windows.  Add some error
-// codes for logging.
-// http://crbug.com/58056
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with "DataPackLoadErrors"
-// in src/tools/metrics/histograms/enums.xml.
-enum LoadErrors {
-  INIT_FAILED_OBSOLETE = 1,
-  BAD_VERSION,
-  INDEX_TRUNCATED,
-  ENTRY_NOT_FOUND,
-  HEADER_TRUNCATED,
-  WRONG_ENCODING,
-  INIT_FAILED_FROM_FILE,
-  UNZIP_FAILED,
-  OPEN_FAILED,
-  MAP_FAILED,
-
-  LOAD_ERRORS_COUNT,
-};
-
-void LogDataPackError(LoadErrors error) {
-  UMA_HISTOGRAM_ENUMERATION("DataPack.Load", error, LOAD_ERRORS_COUNT);
-}
 
 // Prints the given resource id the first time it's loaded if Chrome has been
 // started with --print-resource-ids. This output is then used to generate a
@@ -223,12 +197,10 @@ std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
   if (!data_file.IsValid()) {
     DLOG(ERROR) << "Failed to open datapack with base::File::Error "
                 << data_file.error_details();
-    LogDataPackError(OPEN_FAILED);
     return nullptr;
   }
   if (!mmap->Initialize(std::move(data_file))) {
     DLOG(ERROR) << "Failed to mmap datapack";
-    LogDataPackError(MAP_FAILED);
     return nullptr;
   }
   if (MmapHasGzipHeader(mmap.get())) {
@@ -237,7 +209,6 @@ std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
     std::string data;
     if (!compression::GzipUncompress(compressed, &data)) {
       LOG(ERROR) << "Failed to unzip compressed datapack: " << path;
-      LogDataPackError(UNZIP_FAILED);
       return nullptr;
     }
     return std::make_unique<StringDataSource>(std::move(data));
@@ -265,7 +236,6 @@ bool DataPack::LoadFromFileRegion(
       std::make_unique<base::MemoryMappedFile>();
   if (!mmap->Initialize(std::move(file), region)) {
     DLOG(ERROR) << "Failed to mmap datapack";
-    LogDataPackError(INIT_FAILED_FROM_FILE);
     mmap.reset();
     return false;
   }
@@ -291,7 +261,6 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
                << " bytes, expected longer than "
                << margin_to_skip + resource_table_size + alias_table_size
                << " bytes.";
-    LogDataPackError(INDEX_TRUNCATED);
     return false;
   }
 
@@ -305,7 +274,6 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     if (resource_table_[i].file_offset > data_length) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Entry #" << i << " past end.";
-      LogDataPackError(ENTRY_NOT_FOUND);
       return false;
     }
   }
@@ -315,7 +283,6 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
     if (alias_table_[i].entry_index >= resource_count_) {
       LOG(ERROR) << "Data pack file corruption: "
                  << "Alias #" << i << " past end.";
-      LogDataPackError(ENTRY_NOT_FOUND);
       return false;
     }
   }
@@ -334,7 +301,6 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
       version == kFileFormatV4 ? kHeaderLengthV4 : kHeaderLengthV5;
   if (version == 0 || data_length < header_length) {
     DLOG(ERROR) << "Data pack file corruption: incomplete file header.";
-    LogDataPackError(HEADER_TRUNCATED);
     return false;
   }
 
@@ -351,7 +317,6 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
   } else {
     LOG(ERROR) << "Bad data pack version: got " << version << ", expected "
                << kFileFormatV4 << " or " << kFileFormatV5;
-    LogDataPackError(BAD_VERSION);
     return false;
   }
 
@@ -359,7 +324,6 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
       text_encoding_type_ != BINARY) {
     LOG(ERROR) << "Bad data pack text encoding: got " << text_encoding_type_
                << ", expected between " << BINARY << " and " << UTF16;
-    LogDataPackError(WRONG_ENCODING);
     return false;
   }
 
