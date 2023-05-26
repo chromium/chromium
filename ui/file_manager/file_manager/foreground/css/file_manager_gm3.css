@@ -1436,6 +1436,7 @@ body.files-ng #default-tasks-list {
 }
 
 #default-tasks-list li {
+  border-radius: 8px;
   height: 40px;
   line-height: 40px;
 }
