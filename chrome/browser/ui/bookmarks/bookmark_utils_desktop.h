@@ -65,18 +65,6 @@ void OpenAllIfAllowed(Browser* browser,
                       WindowOpenDisposition initial_disposition,
                       bool add_to_group);
 
-// Opens all the bookmarks in |nodes| that are of type url and all the child
-// bookmarks that are of type url for folders in |nodes|. |initial_disposition|
-// dictates how the first URL is opened, all subsequent URLs are opened as
-// background tabs.
-//
-// This does not prompt the user. It will open an arbitrary number of
-// bookmarks immediately.
-void OpenAllNow(Browser* browser,
-                const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                WindowOpenDisposition initial_disposition,
-                content::BrowserContext* browser_context);
-
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs
 // can be opened in incognito mode, which may affect the count.

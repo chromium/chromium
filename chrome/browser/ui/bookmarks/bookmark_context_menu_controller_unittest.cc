@@ -109,17 +109,6 @@ TEST_F(BookmarkContextMenuControllerTest, DeleteURL) {
   ASSERT_FALSE(model_->IsBookmarked(url));
 }
 
-// Tests open all on a folder with a couple of bookmarks.
-TEST_F(BookmarkContextMenuControllerTest, OpenAll) {
-  const BookmarkNode* folder = model_->bookmark_bar_node()->children()[1].get();
-  chrome::OpenAllNow(nullptr, {folder},
-                     WindowOpenDisposition::NEW_FOREGROUND_TAB, nullptr);
-
-  // Should have navigated to F1's child, but not F11's child.
-  ASSERT_EQ(1u, wrapper_.urls().size());
-  ASSERT_TRUE(folder->children()[0]->url() == wrapper_.urls()[0]);
-}
-
 // Tests the enabled state of the menus when supplied an empty vector.
 TEST_F(BookmarkContextMenuControllerTest, EmptyNodes) {
   BookmarkContextMenuController controller(

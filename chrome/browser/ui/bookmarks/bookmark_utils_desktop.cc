@@ -319,22 +319,6 @@ void OpenAllIfAllowed(Browser* browser,
                                   : absl::nullopt));
 }
 
-void OpenAllNow(Browser* browser,
-                const std::vector<const BookmarkNode*>& nodes,
-                WindowOpenDisposition initial_disposition,
-                content::BrowserContext* browser_context) {
-  // Opens all |nodes| of type URL and any children of |nodes| that are of type
-  // URL. |navigator| is the PageNavigator used to open URLs. After the first
-  // url is opened |navigator| is set to the PageNavigator of the last active
-  // tab. This is done to handle a window disposition of new window, in which
-  // case we want subsequent tabs to open in that window.
-  OpenAllHelper(browser,
-                GetURLsToOpen(nodes, browser_context,
-                              initial_disposition ==
-                                  WindowOpenDisposition::OFF_THE_RECORD),
-                initial_disposition);
-}
-
 int OpenCount(gfx::NativeWindow parent,
               const std::vector<const bookmarks::BookmarkNode*>& nodes,
               content::BrowserContext* incognito_context) {
