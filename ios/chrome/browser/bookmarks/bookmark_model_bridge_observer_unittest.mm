@@ -113,15 +113,16 @@ using BookmarkModelBridgeObserverTest = BookmarkIOSUnitTestSupport;
 TEST_F(BookmarkModelBridgeObserverTest,
        NotifyBookmarkNodeChildrenChangedDespiteSelfDestruction) {
   @autoreleasepool {
-    const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
+    const BookmarkNode* mobile_node =
+        local_or_syncable_bookmark_model_->mobile_node();
     const BookmarkNode* folder = AddFolder(mobile_node, u"title");
 
     TestBookmarkModelBridgeOwner* owner = [[TestBookmarkModelBridgeOwner alloc]
-        initWithModel:profile_bookmark_model_
+        initWithModel:local_or_syncable_bookmark_model_
              observer:[[TestBookmarkModelBridgeObserver alloc] init]];
 
     // Deleting the folder should not cause a crash.
-    profile_bookmark_model_->Remove(
+    local_or_syncable_bookmark_model_->Remove(
         folder, bookmarks::metrics::BookmarkEditSource::kOther);
 
     EXPECT_TRUE([owner bookmarkNodeDeletedCalled]);

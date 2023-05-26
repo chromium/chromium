@@ -49,10 +49,11 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
 
-  profile_bookmark_model_ =
+  local_or_syncable_bookmark_model_ =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  bookmarks::test::WaitForBookmarkModelToLoad(profile_bookmark_model_);
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      local_or_syncable_bookmark_model_);
   account_bookmark_model_ =
       ios::AccountBookmarkModelFactory::GetForBrowserState(
           chrome_browser_state_.get());
@@ -92,8 +93,8 @@ void BookmarkIOSUnitTestSupport::ChangeTitle(const std::u16string& title,
 
 bookmarks::BookmarkModel* BookmarkIOSUnitTestSupport::GetBookmarkModelForNode(
     const BookmarkNode* node) {
-  if (node->HasAncestor(profile_bookmark_model_->root_node())) {
-    return profile_bookmark_model_;
+  if (node->HasAncestor(local_or_syncable_bookmark_model_->root_node())) {
+    return local_or_syncable_bookmark_model_;
   }
   DCHECK(account_bookmark_model_ &&
          node->HasAncestor(account_bookmark_model_->root_node()));

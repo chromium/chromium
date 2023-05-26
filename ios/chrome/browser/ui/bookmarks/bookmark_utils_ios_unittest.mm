@@ -70,7 +70,8 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
     to_move.insert(f2b);
     to_move.insert(f2);
 
-    bookmark_utils_ios::MoveBookmarks(to_move, profile_bookmark_model_,
+    bookmark_utils_ios::MoveBookmarks(to_move,
+                                      local_or_syncable_bookmark_model_,
                                       account_bookmark_model_, f1);
     EXPECT_THAT(GetBookmarkTitles(parent_folder->children()),
                 ::testing::UnorderedElementsAre(u"f1", u"b"));
@@ -83,7 +84,8 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
 };
 
 TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
-  const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobile_node =
+      local_or_syncable_bookmark_model_->mobile_node();
   std::u16string title = u"title";
   const BookmarkNode* node = AddBookmark(mobile_node, title);
 
@@ -91,19 +93,20 @@ TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
   // This call is a no-op, , so `CreateOrUpdateBookmark` should return `false`.
   EXPECT_FALSE(bookmark_utils_ios::CreateOrUpdateBookmark(
       node, base::SysUTF16ToNSString(title), url_copy, mobile_node,
-      profile_bookmark_model_, account_bookmark_model_));
+      local_or_syncable_bookmark_model_, account_bookmark_model_));
   EXPECT_EQ(node->GetTitle(), title);
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
-  const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobile_node =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* node = AddBookmark(mobile_node, u"a");
   const BookmarkNode* folder = AddFolder(mobile_node, u"f1");
 
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
   EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
-      node, new_title, new_url, folder, profile_bookmark_model_,
+      node, new_title, new_url, folder, local_or_syncable_bookmark_model_,
       account_bookmark_model_));
 
   ASSERT_THAT(mobile_node->children(),
@@ -121,7 +124,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
     GTEST_SKIP() << "Need account storage to move bookmarks between storages";
   }
   const BookmarkNode* local_or_syncable_mobile_node =
-      profile_bookmark_model_->mobile_node();
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* node = AddBookmark(local_or_syncable_mobile_node, u"a");
   const BookmarkNode* account_mobile_node =
       account_bookmark_model_->mobile_node();
@@ -129,8 +132,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
   NSString* new_title = @"b";
   GURL new_url("http://example.com");
   EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
-      node, new_title, new_url, account_mobile_node, profile_bookmark_model_,
-      account_bookmark_model_));
+      node, new_title, new_url, account_mobile_node,
+      local_or_syncable_bookmark_model_, account_bookmark_model_));
 
   EXPECT_THAT(local_or_syncable_mobile_node->children(), testing::IsEmpty());
   ASSERT_THAT(account_mobile_node->children(), testing::SizeIs(1));
@@ -140,7 +143,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobileNode =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, u"a");
   const BookmarkNode* b = AddBookmark(mobileNode, u"b");
@@ -157,7 +161,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   toDelete.insert(f2b);
   toDelete.insert(f2);
 
-  bookmark_utils_ios::DeleteBookmarks(toDelete, profile_bookmark_model_);
+  bookmark_utils_ios::DeleteBookmarks(toDelete,
+                                      local_or_syncable_bookmark_model_);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();
@@ -170,7 +175,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
 
 TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesInLocalOrSyncableModel) {
   const BookmarkNode* local_or_syncable_mobile_node =
-      profile_bookmark_model_->mobile_node();
+      local_or_syncable_bookmark_model_->mobile_node();
   ASSERT_NO_FATAL_FAILURE(TestMovingBookmarks(local_or_syncable_mobile_node));
 }
 
@@ -188,7 +193,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
     GTEST_SKIP() << "Need account storage to move bookmarks between storages";
   }
   const BookmarkNode* local_or_syncable_mobile_node =
-      profile_bookmark_model_->mobile_node();
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(local_or_syncable_mobile_node, u"f1");
   AddBookmark(local_or_syncable_mobile_node, u"a");
   const BookmarkNode* b = AddBookmark(local_or_syncable_mobile_node, u"b");
@@ -207,7 +212,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
   to_move.insert(b);    // Cross-storage move, the parent is not moved.
   to_move.insert(c);    // Same-storage move.
 
-  bookmark_utils_ios::MoveBookmarks(to_move, profile_bookmark_model_,
+  bookmark_utils_ios::MoveBookmarks(to_move, local_or_syncable_bookmark_model_,
                                     account_bookmark_model_, f2);
 
   EXPECT_THAT(GetBookmarkTitles(local_or_syncable_mobile_node->children()),
@@ -227,10 +232,11 @@ TEST_P(BookmarkIOSUtilsUnitTest, MoveNodesBetweenModels) {
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobileNode =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");
-  NSArray<NSNumber*>* path =
-      bookmark_utils_ios::CreateBookmarkPath(profile_bookmark_model_, f1->id());
+  NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
+      local_or_syncable_bookmark_model_, f1->id());
   NSMutableArray<NSNumber*>* expectedPath = [NSMutableArray array];
   [expectedPath addObject:@0];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
@@ -239,13 +245,14 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
-  NSArray<NSNumber*>* path =
-      bookmark_utils_ios::CreateBookmarkPath(profile_bookmark_model_, 999);
+  NSArray<NSNumber*>* path = bookmark_utils_ios::CreateBookmarkPath(
+      local_or_syncable_bookmark_model_, 999);
   EXPECT_TRUE(path == nil);
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobileNode =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* music = AddFolder(mobileNode, u"music");
 
   const BookmarkNode* pop = AddFolder(music, u"pop");
@@ -265,7 +272,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   const BookmarkNode* camel = AddFolder(animals, u"camel");
   AddFolder(camel, u"al paca");
 
-  AddFolder(profile_bookmark_model_->other_node(), u"buildings");
+  AddFolder(local_or_syncable_bookmark_model_->other_node(), u"buildings");
 
   std::set<const BookmarkNode*> obstructions;
   // Editing a folder and a bookmark.
@@ -273,8 +280,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   obstructions.insert(lindsey);
 
   bookmark_utils_ios::NodeVector result =
-      bookmark_utils_ios::VisibleNonDescendantNodes(obstructions,
-                                                    profile_bookmark_model_);
+      bookmark_utils_ios::VisibleNonDescendantNodes(
+          obstructions, local_or_syncable_bookmark_model_);
   ASSERT_EQ(13u, result.size());
 
   EXPECT_EQ(result[0]->GetTitle(), u"Mobile Bookmarks");
@@ -300,7 +307,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
 
   // Empty vs vector with one element: [] - [1].
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobileNode =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
   EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
@@ -368,7 +376,8 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
             bookmark_utils_ios::MissingNodesIndices(vector1, vector2).size());
 
   // [] - [1].
-  const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* mobileNode =
+      local_or_syncable_bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, u"1");
   vector2.push_back(bookmark1);
   std::vector<bookmark_utils_ios::NodeVector::size_type> missingNodesIndices =
@@ -458,29 +467,29 @@ TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedNoMatches) {
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   if (IsAccountStorageEnabled()) {
     AddBookmark(account_bookmark_model_->mobile_node(), u"b",
                 GURL("http://example.com/b"));
   }
 
-  EXPECT_FALSE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/c"),
-                                                profile_bookmark_model_,
-                                                account_bookmark_model_));
+  EXPECT_FALSE(bookmark_utils_ios::IsBookmarked(
+      GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedLocalMatch) {
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   if (IsAccountStorageEnabled()) {
     AddBookmark(account_bookmark_model_->mobile_node(), u"b",
                 GURL("http://example.com/b"));
   }
 
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/a"),
-                                               profile_bookmark_model_,
-                                               account_bookmark_model_));
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
+      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedAccountMatch) {
@@ -488,14 +497,14 @@ TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedAccountMatch) {
     GTEST_SKIP() << "Need account storage to test matches in that storage";
   }
 
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   AddBookmark(account_bookmark_model_->mobile_node(), u"b",
               GURL("http://example.com/b"));
 
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/b"),
-                                               profile_bookmark_model_,
-                                               account_bookmark_model_));
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
+      GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedBothStoragesMatch) {
@@ -503,18 +512,18 @@ TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedBothStoragesMatch) {
     GTEST_SKIP() << "Need account storage to test matches in both storages";
   }
 
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   AddBookmark(account_bookmark_model_->mobile_node(), u"b",
               GURL("http://example.com/a"));
 
-  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/a"),
-                                               profile_bookmark_model_,
-                                               account_bookmark_model_));
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(
+      GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
+      account_bookmark_model_));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   if (IsAccountStorageEnabled()) {
     AddBookmark(account_bookmark_model_->mobile_node(), u"b",
@@ -523,14 +532,14 @@ TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
 
   const BookmarkNode* result =
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/c"), profile_bookmark_model_,
+          GURL("http://example.com/c"), local_or_syncable_bookmark_model_,
           account_bookmark_model_);
   EXPECT_EQ(result, nullptr);
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingLocalBookmark) {
   const BookmarkNode* local_bookmark =
-      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+      AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
                   GURL("http://example.com/a"));
   if (IsAccountStorageEnabled()) {
     AddBookmark(account_bookmark_model_->mobile_node(), u"b",
@@ -539,7 +548,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingLocalBookmark) {
 
   const BookmarkNode* result =
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), profile_bookmark_model_,
+          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
           account_bookmark_model_);
   EXPECT_EQ(result, local_bookmark);
 }
@@ -549,7 +558,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingAccountBookmark) {
     GTEST_SKIP() << "Need account storage to test matches in that storage";
   }
 
-  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+  AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));
   const BookmarkNode* account_bookmark =
       AddBookmark(account_bookmark_model_->mobile_node(), u"b",
@@ -557,7 +566,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingAccountBookmark) {
 
   const BookmarkNode* result =
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/b"), profile_bookmark_model_,
+          GURL("http://example.com/b"), local_or_syncable_bookmark_model_,
           account_bookmark_model_);
   EXPECT_EQ(result, account_bookmark);
 }
@@ -569,7 +578,7 @@ TEST_P(BookmarkIOSUtilsUnitTest,
   }
 
   const BookmarkNode* local_bookmark =
-      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+      AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
                   GURL("http://example.com/a"));
   const BookmarkNode* account_bookmark =
       AddBookmark(account_bookmark_model_->mobile_node(), u"b",
@@ -581,12 +590,12 @@ TEST_P(BookmarkIOSUtilsUnitTest,
   // Simulate local bookmark being added after the account one.
   base::Time added_time_local_bookmark =
       added_time_account_bookmark + base::Seconds(1);
-  profile_bookmark_model_->SetDateAdded(local_bookmark,
-                                        added_time_local_bookmark);
+  local_or_syncable_bookmark_model_->SetDateAdded(local_bookmark,
+                                                  added_time_local_bookmark);
 
   const BookmarkNode* result =
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), profile_bookmark_model_,
+          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
           account_bookmark_model_);
   // Local bookmark is more recent, so it should be returned.
   EXPECT_EQ(result, local_bookmark);
@@ -599,15 +608,15 @@ TEST_P(BookmarkIOSUtilsUnitTest,
   }
 
   const BookmarkNode* local_bookmark =
-      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+      AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"a",
                   GURL("http://example.com/a"));
   const BookmarkNode* account_bookmark =
       AddBookmark(account_bookmark_model_->mobile_node(), u"b",
                   GURL("http://example.com/a"));
 
   base::Time added_time_local_bookmark = base::Time::Now();
-  profile_bookmark_model_->SetDateAdded(local_bookmark,
-                                        added_time_local_bookmark);
+  local_or_syncable_bookmark_model_->SetDateAdded(local_bookmark,
+                                                  added_time_local_bookmark);
   // Simulate account bookmark being added after the local one.
   base::Time added_time_account_bookmark =
       added_time_local_bookmark + base::Seconds(1);
@@ -616,7 +625,7 @@ TEST_P(BookmarkIOSUtilsUnitTest,
 
   const BookmarkNode* result =
       bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
-          GURL("http://example.com/a"), profile_bookmark_model_,
+          GURL("http://example.com/a"), local_or_syncable_bookmark_model_,
           account_bookmark_model_);
   // Account bookmark is more recent, so it should be returned.
   EXPECT_EQ(result, account_bookmark);
