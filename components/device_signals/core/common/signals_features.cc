@@ -51,7 +51,7 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
 // This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
 // be enabled
 BASE_FEATURE(kDeviceSignalsConsentDialog,
-             "kDeviceSignalsConsentDialog",
+             "DeviceSignalsConsentDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsConsentDialogEnabled() {
