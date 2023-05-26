@@ -44,7 +44,7 @@ grep +++ tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
 
 ```sh
 # Omit is_official_build=true if developing locally.
-gn gen out/caspian --args='is_official_build=true treat_warnings_as_errors=false fatal_linker_warnings=false chrome_pgo_phase=0'
+gn gen out/caspian --args='is_official_build=true treat_warnings_as_errors=false fatal_linker_warnings=false chrome_pgo_phase=0 enable_rust=false'
 # Build and copy into static/ directory:
 ( cd out/caspian; autoninja caspian_web && cp wasm/caspian_web.* ../../tools/binary_size/libsupersize/viewer/static/ )
 ```
