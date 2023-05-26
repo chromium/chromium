@@ -123,7 +123,7 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
 //      sort | uniq > ~/scratch/git-paths
     // TODO(crbug.com/1447924): remove buildtools path
     "buildtools/clang_format/script/",
-    "third_party/clang_format/script/",
+    "third_party/clang-format/script/",
     "chrome/app/theme/default_100_percent/google_chrome/",
     "chrome/app/theme/default_200_percent/google_chrome/",
     "chrome/app/theme/google_chrome/",

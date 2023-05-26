@@ -234,7 +234,7 @@ and hence is not useful on third_party projects that use another style.
 
     ```shell
     cd /path/to/chromium/src
-    cp third_party/clang_format/script/clang-format-sublime.py ~/.config/sublime-text-3/Packages/User/
+    cp third_party/clang-format/script/clang-format-sublime.py ~/.config/sublime-text-3/Packages/User/
     ```
 
 1. This installs a plugin that defines the command "clang\_format". You can add

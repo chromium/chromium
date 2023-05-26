@@ -7,7 +7,7 @@
 " current line.)
 
 let s:script = expand('<sfile>:p:h') .
-  \'/../../third_party/clang_format/script/clang-format.py'
+  \'/../../third_party/clang-format/script/clang-format.py'
 let s:shortcut = has('mac') ? "<D-I>" : "<C-I>"
 let s:pyf = has("python3") ? ":py3f" : ":pyf"
 
