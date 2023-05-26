@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
 <translation id="1111021433905331574">آپ ترتیبات میں اپنے کی بورڈ کی بیک لائٹ کا رنگ تبدیل کر سکتے ہیں &gt; <ph name="APP_TITLE" /></translation>
+<translation id="1117719261843403176">موبائل ڈیٹا کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
 <translation id="1142002900084379065">حالیہ تصاویر</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> کیلئے معلومات کا ڈائلاگ کھولیں</translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">مقفل اسکرین کی اطلاع کی ترتیبات تبدیل کریں</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">تجویز کردہ ایپس</translation>
+<translation id="1311294419381837540">آپ ایک ٹیب کاسٹ کر رہے ہیں۔ آپ کسی بھی وقت کاسٹنگ کو موقوف یا اسے بند کر سکتے ہیں۔</translation>
 <translation id="1312604459020188865">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ہمیشہ شیلف دکھائیں</translation>
 <translation id="132346741904777634">کیمرا اوپری بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> منسلک ہے</translation>
 <translation id="1340378040547539434">صفحہ پر زوم آؤٹ کریں</translation>
 <translation id="1341651618736211726">اوورفلو</translation>
+<translation id="1344141078024003905">آپ اپنی اسکرین کو کاسٹ کر رہے ہیں۔ آپ کسی بھی وقت اپنی اسکرین کی کاسٹنگ کو موقوف یا بند کر سکتے ہیں۔</translation>
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1351937230027495976">مینیو کو سکیڑیں</translation>
 <translation id="1360220746312242196">صفحہ تلاش کرتے وقت، تلاش کے لیے پچھلی مماثلت پر جائیں</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> سے پن کو ختم کر دیا گیا</translation>
+<translation id="183465528887726323">ہاٹ اسپاٹ کا استعمال کرنے کیلئے موبائل ڈیٹا سے منسلک کریں</translation>
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
 <translation id="1862380676329487333">اپ ڈیٹ کریں اور سائن آؤٹ کریں</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">ایک ایپلیکیشن آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2282073721614284166">ٹیب میں لنک کھولیں</translation>
+<translation id="2284237890386182187">آن، کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="2292698582925480719">ڈسپلے اسکیل</translation>
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830"><ph name="NAME" /> کو فعال کیا جا رہا ہے</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2360398059912971776">بیٹری</translation>
+<translation id="2361210043495191221">‏Wi-Fi کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
 <translation id="2367186422933365202">‏اپنے Chromebook میں سائن ان نہیں کر سکتے</translation>
 <translation id="2367972762794486313">ایپس دکھائیں</translation>
 <translation id="2369165858548251131">چینی میں "ہیلو"</translation>
+<translation id="2382875860893882175">فی الحال کاسٹنگ موقوف ہے۔ آپ کسی بھی وقت کاسٹنگ دوبارہ شروع کر سکتے یا کاسٹنگ کو بند سکتے ہیں۔</translation>
 <translation id="2386292613071805067">صفحہ پر ہر چیز کو منتخب کریں</translation>
 <translation id="2397416548179033562">‏Chrome مینیو دکھائیں</translation>
 <translation id="240006516586367791">میڈیا کنٹرولز</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495">اسٹاپ <ph name="CAPTURE_MEDIUM" />۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">ونڈوز غیر مقفل کریں</translation>
+<translation id="2528111225373402384">ہاٹ اسپاٹ کی ترتیبات</translation>
 <translation id="2530896289327917474">کیرٹ براؤزنگ کو آن یا آف کریں</translation>
 <translation id="2531025035050312891">آلہ سست</translation>
 <translation id="254900897760075745">منتخب کردہ مواد کو کلپ بورڈ میں کاپی کریں</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">اضافی ترتیبات</translation>
 <translation id="3405101454990027959">مائیکروفون تک رسائی آن کریں</translation>
+<translation id="3408735331120433841">فی الحال آپ اپنی اسکرین کو کاسٹ کر رہے ہیں۔</translation>
 <translation id="3409584356742878290">ڈویلپر ٹولز انسپکٹر دکھائیں یا چھپائیں</translation>
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">نئے ٹیب میں لنک کھولیں اور موجودہ ٹیب میں رہیں</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> آلات سے منسلک ہیں</translation>
 <translation id="3533126039236445965">شیلف میں ایپس</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ</translation>
 <translation id="3542066395059568317">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے دائیں طرف کلک کر سکتے ہیں۔</translation>
 <translation id="3546121235777416274">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
 <translation id="3552189655002856821">‏Wi-Fi آف ہے</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">مزید سیکیورٹی کیلئے پاس ورڈ درکار ہے</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">آپ اپنی اسکرین کا اشتراک کر رہے ہیں</translation>
+<translation id="4049230407053723315">فوری ترتیبات</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> میں سے <ph name="INDEX" /> براؤزر ٹیب۔ <ph name="SITE_TITLE" />، <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ایک ایپ کیلئے آف ہے}other{# ایپس کیلئے آف ہے}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />، آن</translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">‏VPN کی ترتیبات</translation>
 <translation id="4217571870635786043">املاء</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، انسٹال کردہ ایپ، موقوف ہے</translation>
+<translation id="4231053948789591973">فی الحال کاسٹنگ موقوف ہے۔ آپ کسی بھی وقت اپنی اسکرین کو دوبارہ کاسٹ کرنا شروع کر سکتے یا اسے کاسٹ کرنا بند سکتے ہیں۔</translation>
 <translation id="423685346499232137">اس وقت مواد کو کاپی یا پیسٹ نہیں کیا جا سکتا</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">مجموعی جائزہ کی وضع</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
 <translation id="4451374464530248585">‏Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Page Down کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'نیچے تیر کا نشان' کو دبائیں۔</translation>
+<translation id="4453876312474547652">‏Ctrl + V کو دبا کر اور اسے ہولڈ کر کے رکھنے پر، آپ کو کلپ بورڈ دکھائی دے گا۔ آپ chrome://flags (os://flags، اگر آپ Lacros استعمال کر رہے ہیں) میں ‎#clipboard-history-longpress پرچم کو غیر فعال کر کے اس شارٹ کٹ کو آف کر سکتے ہیں۔</translation>
 <translation id="4455051983450390249">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی اطلاعات دیکھیں</translation>
 <translation id="445864333228800152">شام بخیر،</translation>
 <translation id="4458688154122353284">اسکرین ریکارڈنگ روکیں</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">‏ڈیمو سیشن میں Google اسسٹنٹ دستیاب نہیں ہے۔</translation>
 <translation id="4789348252524569426">اسپیچ فائلز کو انسٹال نہیں کیا جا سکتا۔ آپ کے آلے کو اپ ڈیٹ کرنے کی ضرورت ہے۔ اپنا آلہ ری سٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="478959186716341421">کاسٹ کیا جا رہا ہے</translation>
+<translation id="4798622944000246716">آپ کا موبائل نیٹ ورک ہاٹ اسپاٹ کا تعاون نہیں کرتا ہے</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
 <translation id="4804818685124855865">منقطع کریں</translation>
 <translation id="4814539958450445987">لاگ ان اسکرین</translation>
@@ -1199,6 +1213,7 @@
 <translation id="6453179446719226835">زبان تبدیل ہو گئی ہے</translation>
 <translation id="6459472438155181876">اسکرین کو <ph name="DISPLAY_NAME" /> میں پھیلایا جا رہا ہے</translation>
 <translation id="6464094930452079790">تصاویر</translation>
+<translation id="6469104339369989396">ہاٹ اسپاٹ کو ٹوگل کریں</translation>
 <translation id="6477681113376365978">فائل ڈاؤن لوڈ نہیں کر سکتے</translation>
 <translation id="6482559668224714696">پوری اسکرین مکبّر</translation>
 <translation id="6483727822843292440">سب سے کم استعمال شدہ ونڈو سے ایک ونڈو سے دوسری ونڈو پر جائیں</translation>
@@ -1808,6 +1823,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> کے لیے کافی جگہ نہیں ہے۔ جگہ خالی کریں۔</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> کے <ph name="RESULT_COUNT" /> نتائج دکھائے جا رہے ہیں</translation>
 <translation id="98120814841227350">دستاویز کے آخر میں جائیں</translation>
+<translation id="987589956647469042">موبائل ڈیٹا آن ہے</translation>
 <translation id="989374776391122812">کیمرا اور آڈیو کنٹرولز</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ونڈو بند ہے۔</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>

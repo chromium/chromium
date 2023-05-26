@@ -142,6 +142,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1750259112639922169">Grupo de guias: <ph name="TAB_COUNT" /> guias</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
+<translation id="1757620656501361327">Atualização do Gerenciador de senhas do Google</translation>
 <translation id="1778457539567749232">Marcar como não lida</translation>
 <translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1791662854739702043">Instalado</translation>
@@ -426,6 +427,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
 <translation id="3293181007446299124">A privacidade do seu histórico de navegação é mantida no dispositivo, e os relatórios são enviados com um atraso para proteger sua identidade</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
+<translation id="3305130791745726624">Enviar para dispositivos</translation>
 <translation id="3305795716056605962">Traduzir páginas com o botão "Mais opções"</translation>
 <translation id="3319664549618064419">Acesse o site para computador para ter uma visão melhor dele</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
@@ -754,6 +756,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="504456571576643789">Considerações</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Outras formas de atividade<ph name="END_LINK1" /> podem ser salvas na sua conta quando ela está conectada. É possível excluí-las a qualquer momento.</translation>
 <translation id="506254248375231072">Nenhuma guia</translation>
+<translation id="5062960805900435602">A informação sobre a fusão de senhas está fechada</translation>
 <translation id="5091199029769593641">Em breve, você verá stories de <ph name="SITE_NAME" /> quando abrir uma nova guia. Os sites que você segue são armazenados na sua Conta do Google. Você pode gerenciá-los nas configurações do Discover.</translation>
 <translation id="5091249083535528968">Dados de uso estendidos</translation>
 <translation id="509429900233858213">Ocorreu um erro.</translation>
@@ -803,6 +806,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5361107212971249203">o texto</translation>
 <translation id="5368227114232678694">Para navegar com privacidade no dispositivo, use a navegação anônima</translation>
 <translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Senha forte sugerida. Teclado oculto.</translation>
 <translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site.</translation>
 <translation id="5409881200985013443">Enviar <ph name="ONE_TIME_CODE" /> no <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
@@ -1161,6 +1165,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7217781228893594884">As guias anônimas vão ser bloqueadas quando você sair do Chrome</translation>
 <translation id="7222235798733126207">Compartilhamento entre sites limitado</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pendente}one{# download pendente}other{# downloads pendentes}}</translation>
+<translation id="72415438529550637">A sugestão de senha está fechada.</translation>
 <translation id="7242755609445462077">Destaque estilizado de <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Verifique se a sincronização do <ph name="TARGET_DEVICE_NAME" /> está ativada no Chrome</translation>
 <translation id="7252076891734325316">Aproxime o smartphone do computador</translation>
@@ -1175,6 +1180,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7304072650267745798">Seu dispositivo Android pode incluir uma configuração semelhante. Se ela estiver ativada no Chrome e no dispositivo, uma empresa poderá medir a eficácia de um anúncio nos sites que você acessa e nos apps que usa.</translation>
 <translation id="7304873321153398381">Off-line. Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7313188324932846546">Toque para configurar sincronização</translation>
+<translation id="7324354302972299151">Enviar uma solicitação "Do Not Track"</translation>
 <translation id="7332075081379534664">Login concluído</translation>
 <translation id="7333232495927792353">Sincronize para acessar no Google o que importa para você</translation>
 <translation id="7339898014177206373">Nova janela</translation>

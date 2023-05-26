@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">ใช้ได้เฉพาะโหมดไม่ระบุตัวตน</translation>
 <translation id="2982481275546140226">ล้างข้อมูล</translation>
 <translation id="298306318844797842">เพิ่มวิธีการชำระเงิน...</translation>
+<translation id="2988274366244053197">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
+
+เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ล้างข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="2989805286512600854">เปิดในแท็บใหม่</translation>
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3037605927509011580">แย่จัง!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{สำหรับเว็บไซต์หรือแอป {COUNT} รายการ}other{สําหรับเว็บไซต์และแอป {COUNT} รายการ}}</translation>
 <translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
+<translation id="3476450923187944815">เข้าถึงรหัสผ่านของคุณในแอปอื่นๆ</translation>
 <translation id="3478058380795961209">เดือนที่หมดอายุ</translation>
 <translation id="3482959374254649722">กำลังซิงค์แท็บ...</translation>
 <translation id="3484946776651937681">เปิดใน "ดาวน์โหลด"</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318298563956633672">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว</translation>
+<translation id="5325595483440111327">ดูประวัติการท่องเว็บ</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5360976571138293719">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /></translation>

@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">DNS sa nedá preložiť</translation>
 <translation id="1018656279737460067">Zrušené</translation>
+<translation id="1020274983236703756">K dispozícii sú exkluzívne podklady pre zariadenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Všeobecné ovládanie</translation>
 <translation id="1022628058306505708">Tok zeme</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Hľadajú sa skenery</translation>
 <translation id="3226657629376379887">Ponuka akcií rozloženia</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
+<translation id="3248223063252096240">Exkluzívne pre zariadenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Nepodarilo sa – dvierka sú otvorené</translation>
 <translation id="3275729367986477355">Obrázok avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upraviť súbor}few{Upraviť súbory}many{Upraviť súbory}other{Upraviť súbory}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Prepínanie zámky na ochranu súkromia</translation>
 <translation id="3639846061339007994">hornej</translation>
 <translation id="3651050199673793219">Výber jednotky teploty</translation>
+<translation id="3663574643422533538">Vyberte exkluzívne video t pre zariadenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Teraz máte prístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
 <translation id="4130035430755296270">Ďalšie možnosti rozloženia zobrazíte umiestnením kurzora na príslušné miesto</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Nespustené</translation>
 <translation id="8593058461203131755">pozastavenie médií</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
+<translation id="8626489604350149811">Ďalšie akcie pre aplikáciu <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlopurpurová</translation>
 <translation id="8651481478098336970">stlmenie hlasitosti</translation>
 <translation id="8655295600908251630">Kanál</translation>

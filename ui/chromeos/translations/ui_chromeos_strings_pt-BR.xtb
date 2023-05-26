@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1853795129690976061">Esta pasta está sendo compartilhada com o Linux</translation>
 <translation id="1864756863218646478">O arquivo não foi encontrado.</translation>
+<translation id="1877377730633446520">Isso vai usar cerca de <ph name="REQUIRED_SPACE" />. No momento, o espaço restante é de <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
 <translation id="1920670151694390848">Malaiala (transliteração)</translation>
 <translation id="1920798810075583923">Melancia</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Expandir painéis de feedback de arquivos</translation>
 <translation id="1995337122023280937">Acessar local do arquivo</translation>
 <translation id="2001796770603320721">Gerenciar no Drive</translation>
+<translation id="2004942826429452291">Os arquivos serão armazenados na nuvem e neste Chromebook.</translation>
 <translation id="2009067268969781306">A formatação de uma unidade excluirá todos os dados armazenados nela. Esta ação não pode ser desfeita.</translation>
 <translation id="2025955442973426285">Tigrínia</translation>
 <translation id="2037845485764049925">Russo</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Configurações do dispositivo</translation>
 <translation id="2084809735218147718">"Obrigado" na língua de sinais</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
+<translation id="2089751716171649322">Acesse seus arquivos do Google Drive de forma simples quando estiver off-line</translation>
 <translation id="2111134541987263231">Ative a opção <ph name="BEGIN_BOLD" />Permitir na navegação anônima<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> itens vão ser excluídos e não poderão ser restaurados.</translation>
 <translation id="2122305276694332719">A conexão automática a uma rede oculta não é recomendada porque permite que outras pessoas vejam seu dispositivo e algumas configurações de rede.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Não agora</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
+<translation id="3501954296166022751">Seus arquivos do Google Drive estão disponíveis off-line</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3511705761158917664">Preparando para sincronizar <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="3522708245912499433">Português</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5500122897333236901">Islandês</translation>
 <translation id="5508696409934741614">Pontos</translation>
+<translation id="5519161320735100193">Configurações do Google Drive</translation>
 <translation id="5522908512596376669">A lista de arquivos foi alterada para a visualização em lista.</translation>
 <translation id="5524517123096967210">Não foi possível ler o arquivo.</translation>
 <translation id="5533102081734025921">Imagem <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebraico</translation>
 <translation id="78104721049218340">Tailandês com teclado kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Erro ao configurar a rede</translation>
 <translation id="7839804798877833423">A busca destes arquivos usará aproximadamente <ph name="FILE_SIZE" /> de dados móveis.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatar uma partição excluirá todos os dados armazenados nela. Essa ação não pode ser desfeita.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Seus arquivos em "Meu Drive" serão sincronizados automaticamente com o Chromebook para que possam ser acessados sem uma conexão de Internet.</translation>
 <translation id="7925247922861151263">Falha ao verificar AAA</translation>
 <translation id="7925686952655276919">Não usar dados móveis na sincronização</translation>
 <translation id="7928710562641958568">Ejetar dispositivo</translation>
+<translation id="7933875256234974853">Preparando para sincronizar os arquivos do Drive…</translation>
 <translation id="7943385054491506837">Colemak EUA</translation>
 <translation id="7953739707111622108">Este dispositivo não pode ser aberto porque seu sistema de arquivos não foi reconhecido.</translation>
 <translation id="7969525169268594403">Esloveno</translation>
 <translation id="7972920761225148017">Francês (Suíça)</translation>
 <translation id="7973962044839454485">Falha da autenticação PPC devido a senha ou nome de usuário incorreto</translation>
 <translation id="7980421588063892270">Inglês (EUA) com teclado Colemak</translation>
+<translation id="7985008041109611710">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> arquivos</translation>
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Tamanho</translation>
@@ -1003,6 +1012,7 @@
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8949925099261528566">Conectada, sem Internet</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
+<translation id="8971742885766657349">Sincronizando (<ph name="PERCENT" />%)</translation>
 <translation id="8997962250644902079">Chinês (tradicional, pinyin)</translation>
 <translation id="8998871447376656508">Não há espaço livre suficiente no seu Google Drive para concluir o upload.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
@@ -1036,6 +1046,7 @@
 <translation id="9213073329713032541">Instalação iniciada.</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">Sincronizando 1 arquivo</translation>
 <translation id="938470336146445890">Instale um certificado do usuário.</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="943972244133411984">Modificado por</translation>

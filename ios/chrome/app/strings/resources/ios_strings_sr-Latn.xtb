@@ -755,6 +755,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="595769230373966252">Pretražite pomoću: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">A link to the highlight can not be created (Pravljenje linka do istaknutog teksta nije uspelo).</translation>
 <translation id="5965679971710331625">Prijavljeni ste</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 obeleživač je izbrisan}one{{count} obeleživač je izbrisan}few{{count} obeleživača su izbrisana}other{{count} obeleživača je izbrisano}}</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivne</translation>
 <translation id="5982717868370722439">Dodajte postojeće podatke na <ph name="USER_EMAIL" />.</translation>
@@ -924,6 +925,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="681368974849482173">Stavka je napravljena</translation>
 <translation id="6822587385560699678">Kada je uključeno, lozinke se čuvaju na nalogu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se čuvaju samo na ovom uređaju.</translation>
 <translation id="6831043979455480757">Prevedi</translation>
+<translation id="6839843088069935119">{count,plural, =1{Obeleživač je sačuvan u {title}-u. Čuva se samo na ovom uređaju.}one{Obeleživači su sačuvani u {title}-u. Čuvaju se samo na ovom uređaju.}few{Obeleživači su sačuvani u {title}-u. Čuvaju se samo na ovom uređaju.}other{Obeleživači su sačuvani u {title}-u. Čuvaju se samo na ovom uređaju.}}</translation>
 <translation id="6842136130964845393">Da biste bili sigurni da uvek možete da pristupate sačuvanim lozinkama, potvrdite da ste to vi</translation>
 <translation id="6851516051005285358">Zahtevaj sajt za računar</translation>
 <translation id="6852222216891664518">Zatvori zakačenu karticu</translation>
@@ -1002,6 +1004,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7438481509621345350">Sada ćete videti priče sa <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="7446583256109515732">Kartica je otkačena</translation>
+<translation id="7451023311965289370">{count,plural, =1{Obeleživač je sačuvan u: {title}}one{Obeleživači su sačuvani u: {title}}few{Obeleživači su sačuvani u: {title}}other{Obeleživači su sačuvani u: {title}}}</translation>
 <translation id="7454057999980797137">Država/zemlja</translation>
 <translation id="7459628154744868585">Poboljšana zaštita je uključena</translation>
 <translation id="746684838091935575">3. Izaberite Chrome</translation>

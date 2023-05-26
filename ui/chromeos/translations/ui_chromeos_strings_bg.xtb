@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Сайт в Google</translation>
 <translation id="1853795129690976061">Тази папка е споделена с Linux</translation>
 <translation id="1864756863218646478">Файлът не можа да бъде намерен.</translation>
+<translation id="1877377730633446520">Това ще използва около <ph name="REQUIRED_SPACE" />. Понастоящем разполагате с(ъс) <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, свързване</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
 <translation id="1920798810075583923">Диня</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
 <translation id="2001796770603320721">Управление в Диск</translation>
+<translation id="2004942826429452291">Файловете ще се съхраняват в облака и на този Chromebook.</translation>
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
 <translation id="2037845485764049925">Руски</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Настройки на устройството</translation>
 <translation id="2084809735218147718">Благодарност</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
+<translation id="2089751716171649322">Лесен достъп до файловете ви в Google Диск, когато сте офлайн</translation>
 <translation id="2111134541987263231">Включете опцията <ph name="BEGIN_BOLD" />Да се разреши в режим „инкогнито“<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> елемента ще бъдат изтрити и няма да можете да ги възстановите.</translation>
 <translation id="2122305276694332719">Автоматичното свързване със скрита мрежа дава възможност на другите хора да виждат устройството ви и някои мрежови настройки и не се препоръчва.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">Монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
+<translation id="3501954296166022751">Файловете ви в Google Диск са налице офлайн</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> елемента се подготвят за синхронизиране...</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5500122897333236901">исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
+<translation id="5519161320735100193">Настройки за Google Диск</translation>
 <translation id="5522908512596376669">Списъкът с файлове е превключен към списъчен изглед.</translation>
 <translation id="5524517123096967210">Файлът не можа да бъде прочетен.</translation>
 <translation id="5533102081734025921">Изображение във формат <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7806708061868529807">Иврит</translation>
 <translation id="78104721049218340">Тайски с клавиатура Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Грешка при конфигурирането на мрежата</translation>
 <translation id="7839804798877833423">При извличането на тези файлове ще се използват приблизително <ph name="FILE_SIZE" /> мобилни данни.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">катакана</translation>
 <translation id="7908793776359722643">При форматирането на даден дял ще бъдат изтрити всички съхранявани в него данни. Това действие не може да бъде отменено.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Файловете в „Моят диск“ ще се синхронизират автоматично с вашия Chromebook, така че да можете да осъществявате достъп до тях без връзка с интернет.</translation>
 <translation id="7925247922861151263">Проверката за AAA не бе успешна</translation>
 <translation id="7925686952655276919">Без използване на мобилни данни за синхронизиране</translation>
 <translation id="7928710562641958568">Изваждане на устройството</translation>
+<translation id="7933875256234974853">Синхронизирането на файлове в Диск се подготвя...</translation>
 <translation id="7943385054491506837">Американска (Коулмак) клавиатура</translation>
 <translation id="7953739707111622108">Това устройство не може да бъде отворено, защото файловата му система не бе разпозната.</translation>
 <translation id="7969525169268594403">словенски</translation>
 <translation id="7972920761225148017">Френски (Швейцария)</translation>
 <translation id="7973962044839454485">Удостоверяването през PPP не бе успешно поради неправилно потребителско име или парола</translation>
 <translation id="7980421588063892270">Английски (САЩ) с клавиатура „Коулмак“</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файла се синхронизират</translation>
 <translation id="8000066093800657092">Няма мрежа</translation>
 <translation id="8008366997883261463">Джак Ръсел териер</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -1036,6 +1045,7 @@
 <translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>
+<translation id="937795003075802289">1 файл се синхронизира</translation>
 <translation id="938470336146445890">Моля, инсталирайте потребителски сертификат.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Променено от</translation>

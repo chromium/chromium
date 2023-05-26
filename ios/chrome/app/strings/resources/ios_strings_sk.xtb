@@ -315,6 +315,9 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2975121486251958312">K dispozícii je iba režim inkognito</translation>
 <translation id="2982481275546140226">Vymazať dáta</translation>
 <translation id="298306318844797842">Pridať spôsob platby…</translation>
+<translation id="2988274366244053197">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
+
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Otvoriť na novej karte</translation>
 <translation id="3020183492814296499">Skratky</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
@@ -381,6 +384,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3471148582064653480">Synchronizujte si heslá, históriu a ďalší obsah.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pre {COUNT} web alebo aplikáciu}few{pre {COUNT} weby alebo aplikácie}many{for {COUNT} sites and apps}other{pre {COUNT} webov alebo aplikácií}}</translation>
 <translation id="3474624961160222204">Pokračovať ako <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Majte prístup k svojim heslám v iných aplikáciách.</translation>
 <translation id="3478058380795961209">Mesiac vypršania platnosti</translation>
 <translation id="3482959374254649722">Synchronizujú sa záložky...</translation>
 <translation id="3484946776651937681">Otvoriť v priečinku Stiahnuté</translation>
@@ -652,6 +656,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5318298563956633672">Tento výrobok už sledujete.</translation>
+<translation id="5325595483440111327">Pozrite si históriu prehliadania.</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
 <translation id="536067926684072644">Zobraziť záložky</translation>
 <translation id="5360976571138293719">Ďalšie nastavenia týkajúce sa ochrany súkromia, zabezpečenia a zhromažďovania údajov nájdete v sekcii <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" />.</translation>
@@ -750,6 +755,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="595769230373966252">Hľadať prostredníctvom poskytovateľa <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Odkaz na zvýraznenie sa nedá vytvoriť.</translation>
 <translation id="5965679971710331625">Ste prihlásený/-á</translation>
+<translation id="5971872012779224351">{count,plural, =1{Bola odstránená 1 záložka}few{Boli odstránené {count} záložky}many{{count} bookmarks deleted}other{Bolo odstránených {count} záložiek}}</translation>
 <translation id="5979837087407522202">Vyhľadajte heslá</translation>
 <translation id="5981230843984570095">Zavrieť všetky neaktívne</translation>
 <translation id="5982717868370722439">Pridať existujúce dáta do účtu <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7435356471928173109">Vypnuté vaším správcom</translation>
 <translation id="7438481509621345350">Keď teraz otvoríte novú kartu, budú sa vám zobrazovať príbehy z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7446583256109515732">Karta bola odopnutá</translation>
+<translation id="7451023311965289370">{count,plural, =1{Záložka bola uložená do umiestnenia {title}}few{Záložky boli uložené do umiestnenia {title}}many{Záložky boli uložené do umiestnenia {title}}other{Záložky boli uložené do umiestnenia {title}}}</translation>
 <translation id="7454057999980797137">Štát/okres</translation>
 <translation id="7459628154744868585">Rozšírená ochrana je zapnutá</translation>
 <translation id="746684838091935575">3. Vyberte Chrome</translation>

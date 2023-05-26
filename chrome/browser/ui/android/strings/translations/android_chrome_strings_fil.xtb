@@ -142,6 +142,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="1750259112639922169">Grupo ng tab - <ph name="TAB_COUNT" /> (na) tab</translation>
 <translation id="17513872634828108">Mga bukas na tab</translation>
 <translation id="1754404134430936718">Kinopya ang Text</translation>
+<translation id="1757620656501361327">Update sa Google Password Manager</translation>
 <translation id="1778457539567749232">Markahan bilang hindi pa nababasa</translation>
 <translation id="1779766957982586368">Isara ang window</translation>
 <translation id="1791662854739702043">Na-install</translation>
@@ -753,6 +754,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="504456571576643789">Mga bagay na dapat isaalang-alang</translation>
 <translation id="5054455334322721892">Posibleng ma-save sa iyong Google Account ang <ph name="BEGIN_LINK1" />iba pang anyo ng aktibidad<ph name="END_LINK1" /> kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="506254248375231072">Walang tab</translation>
+<translation id="5062960805900435602">Nakasara ang update tungkol sa pag-merge ng password</translation>
 <translation id="5091199029769593641">Hindi magtatagal at makakakita ka ng mga kuwento mula sa <ph name="SITE_NAME" /> kapag nagbukas ka ng bagong tab. Mase-save sa iyong Google account ang mga site na sinusubaybayan mo. Puwede mong pamahalaan ang mga ito sa mga setting ng Discover.</translation>
 <translation id="5091249083535528968">Pinalawak na data ng paggamit</translation>
 <translation id="509429900233858213">May naganap na error.</translation>
@@ -802,6 +804,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5361107212971249203">text</translation>
 <translation id="5368227114232678694">Para mag-browse nang pribado sa device na ito, subukan ang Incognito</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Iminumungkahi ang malakas na password. Naka-hide ang keyboard.</translation>
 <translation id="5401851137404501592">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito.</translation>
 <translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
@@ -1160,6 +1163,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7217781228893594884">Ila-lock ang mga tab na incognito kapag umalis ka sa Chrome</translation>
 <translation id="7222235798733126207">Limitadong pagbabahagi sa pagitan ng mga site</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Nakabinbin ang 1 pag-download}one{Nakabinbin ang # pag-download}other{Nakabinbin ang # na pag-download}}</translation>
+<translation id="72415438529550637">Nakasara ang mungkahi sa password.</translation>
 <translation id="7242755609445462077">May istilong highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Tiyaking naka-on sa <ph name="TARGET_DEVICE_NAME" /> ang pag-sync sa Chrome</translation>
 <translation id="7252076891734325316">Ilapit ang iyong telepono sa computer</translation>

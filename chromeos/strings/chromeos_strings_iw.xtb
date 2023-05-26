@@ -752,6 +752,7 @@
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7131634559772719176">אישור ההגדרה הקבועה מראש</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
+<translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
@@ -782,6 +783,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
+<translation id="7353413232959255829">‏תוצאת חיפוש <ph name="LIST_POSITION" /> מתוך <ph name="LIST_SIZE" />:‏ <ph name="SEARCH_RESULT_TEXT" />. צריך להקיש על Enter כדי לנווט לקיצור הדרך.</translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="73631062356239394">שיתוף נתוני הניתוח</translation>
 <translation id="7375053625150546623">EAP</translation>

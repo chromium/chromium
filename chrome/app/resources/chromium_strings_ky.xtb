@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1524282610922162960">Chromium өтмөгүн бөлүшүү</translation>
 <translation id="1553461853655228091">Chromium айланаңыздын 3D картасын түзүү үчүн камераңызды колдонушу керек</translation>
+<translation id="1555506416658437797">төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү талап кылууда}=1{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү талап кылууда. Жашыруун терезеңиз кайра ачылбайт.}other{Администраторуңуз жаңыртууну колдонуу үчүн Chromium'ду кайра иштетүүнү талап кылууда. # жашыруун терезеңиз кайра ачылбайт.}}</translation>
 <translation id="1625909126243026060">Chromium'дагы негизги купуялык жана коопсуздукту көзөмөлдөө каражаттарын карап көрүңүз</translation>
 <translation id="1632539827495546968">Бул аккаунтту бир жолу гана колдонгону жатсаңыз, Chromium серепчисинен <ph name="GUEST_LINK_BEGIN" />Конок режимине<ph name="GUEST_LINK_END" /> өтүңүз. Эгер кимдир бирөөнүн аккаунтун кошкуңуз келсе, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө <ph name="LINK_BEGIN" />жаңы кишини кошуңуз<ph name="LINK_END" />.
@@ -138,6 +139,7 @@
 <translation id="4019629340646866719">ChromiumOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
 <translation id="4050175100176540509">Эң акыркы версияда коопсуздукту бекемдөө каражаттары менен жаңы мүмкүнчүлүктөр камтылган.</translation>
+<translation id="4050599136622776556">Chromium төлөм ыкмаларын түзөтүүгө аракет кылууда.</translation>
 <translation id="4148957013307229264">Орнотулууда…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chromium</translation>
 <translation id="421369550622382712">Chromium үчүн укмуш колдонмолор, оюндар, кеңейтүүлөр жана темаларды таап алыңыз.</translation>

@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google-site</translation>
 <translation id="1853795129690976061">Deze map wordt gedeeld met Linux</translation>
 <translation id="1864756863218646478">Het bestand kan niet worden gevonden.</translation>
+<translation id="1877377730633446520">Hiervoor wordt ongeveer <ph name="REQUIRED_SPACE" /> gebruikt. Je hebt op dit moment <ph name="FREE_SPACE" /> beschikbaar.</translation>
 <translation id="1884013283844450420">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, verbinden</translation>
 <translation id="1920670151694390848">Malayalam (transliteratie)</translation>
 <translation id="1920798810075583923">Watermeloen</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
 <translation id="2001796770603320721">Beheren in Drive</translation>
+<translation id="2004942826429452291">Bestanden worden opgeslagen in de cloud en op deze Chromebook.</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russisch</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Apparaatinstellingen</translation>
 <translation id="2084809735218147718">Persoon die iemand bedankt</translation>
 <translation id="2088690981887365033">VPN-netwerk</translation>
+<translation id="2089751716171649322">Krijg makkelijk toegang tot je Google Drive-bestanden als je offline bent</translation>
 <translation id="2111134541987263231">Zet <ph name="BEGIN_BOLD" />Toestaan in incognitomodus<ph name="END_BOLD" /> aan</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items worden verwijderd en je kunt ze niet herstellen.</translation>
 <translation id="2122305276694332719">Als er automatisch verbinding wordt gemaakt met een verborgen netwerk, kunnen anderen je apparaat en bepaalde netwerkinstellingen zien. Dit wordt niet aanbevolen.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="3486821258960016770">Mongools</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> fouten.</translation>
+<translation id="3501954296166022751">Je Google Drive-bestanden zijn offline beschikbaar</translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Synchronisatie van <ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="3522708245912499433">Portugees</translation>
@@ -571,6 +575,7 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5500122897333236901">IJslands</translation>
 <translation id="5508696409934741614">Stippen</translation>
+<translation id="5519161320735100193">Instellingen voor Google Drive</translation>
 <translation id="5522908512596376669">Bestandslijst is gewijzigd naar lijstweergave.</translation>
 <translation id="5524517123096967210">Het bestand kan niet worden gelezen.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
@@ -862,6 +867,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebreeuws</translation>
 <translation id="78104721049218340">Thai met Kedmanee-toetsenbord</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
@@ -874,15 +880,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Tijdens het formatteren van een partitie worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen.</translation>
 <translation id="7925247922861151263">AAA-controle mislukt</translation>
 <translation id="7925686952655276919">Geen mobiele data gebruiken voor synchronisatie</translation>
 <translation id="7928710562641958568">Apparaat uitwerpen</translation>
+<translation id="7933875256234974853">Synchronisatie van Drive-bestanden voorbereiden...</translation>
 <translation id="7943385054491506837">Amerikaans Colemak</translation>
 <translation id="7953739707111622108">Dit apparaat kan niet worden geopend omdat het bijbehorende bestandssysteem niet wordt herkend.</translation>
 <translation id="7969525169268594403">Sloveens</translation>
 <translation id="7972920761225148017">Frans (Zwitserland)</translation>
 <translation id="7973962044839454485">PPP-verificatie mislukt wegens een onjuiste gebruikersnaam of wachtwoord</translation>
 <translation id="7980421588063892270">Engels (VS) met Colemak-toetsenbord</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> bestanden synchroniseren</translation>
 <translation id="8000066093800657092">Geen netwerk</translation>
 <translation id="8008366997883261463">Jack Russell-terriër</translation>
 <translation id="8028993641010258682">Grootte</translation>
@@ -1037,6 +1046,7 @@
 <translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>
+<translation id="937795003075802289">1 bestand synchroniseren</translation>
 <translation id="938470336146445890">Installeer een gebruikerscertificaat.</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="943972244133411984">Aangepast door</translation>

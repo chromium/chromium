@@ -2595,6 +2595,7 @@ Se uma extensão especificada nesta política não estiver instalada, a navegaç
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
 <translation id="334231891933432876">Desconectar o usuário assim que a conta perder a autenticação</translation>
+<translation id="3345323903592385588">A ordem em que a configuração da VM será mostrada no instalador. Quando várias configurações de VM são especificadas, aquela com o menor valor de display_order é mostrada no início da lista. O padrão é zero.</translation>
 <translation id="3348799281602260763">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
       obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão

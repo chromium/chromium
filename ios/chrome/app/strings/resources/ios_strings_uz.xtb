@@ -755,6 +755,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> bilan qidirish</translation>
 <translation id="5963939892571022323">Belgilangan matnga havola yaratilmadi.</translation>
 <translation id="5965679971710331625">Siz o‘z hisobingizga kirgansiz</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 ta bukmark oʻchirildi}other{{count} ta bukmark oʻchirildi}}</translation>
 <translation id="5979837087407522202">Parollar ichidan qidirish</translation>
 <translation id="5981230843984570095">Barcha nofaol varaqlarni yopish</translation>
 <translation id="5982717868370722439">Mavjud ma’lumotlarni <ph name="USER_EMAIL" /> manziliga qo‘shish.</translation>
@@ -924,6 +925,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="6822587385560699678">Yoniqligida parollar <ph name="ACCOUNT" /> hisobiga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
 <translation id="6831043979455480757">Tarjima</translation>
+<translation id="6839843088069935119">{count,plural, =1{Bukmark “{title}” jildiga saqlandi. U faqat shu qurilmada saqlanadi.}other{Bukmarklar “{title}” jildiga saqlandi. Ular faqat shu qurilmada saqlanadi.}}</translation>
 <translation id="6842136130964845393">Parollarni istalgan vaqt ochish uchun shaxsingizni tasdiqlang</translation>
 <translation id="6851516051005285358">Kompyuter versiyasi</translation>
 <translation id="6852222216891664518">Qadalgan varaqni yopish</translation>
@@ -1002,6 +1004,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7435356471928173109">Administrator tomonidan faolsizlantirilgan</translation>
 <translation id="7438481509621345350">Endi yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
 <translation id="7446583256109515732">Varaq olib tashlandi</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bukmark “{title}” jildiga saqlandi}other{Bukmarklar “{title}” jildiga saqlandi}}</translation>
 <translation id="7454057999980797137">Hudud</translation>
 <translation id="7459628154744868585">Kuchaytirilgan himoya yoniq</translation>
 <translation id="746684838091935575">3. Chrome brauzerini tanlang</translation>

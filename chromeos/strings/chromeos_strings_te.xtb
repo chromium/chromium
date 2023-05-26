@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">డెస్క్‌లు</translation>
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
+<translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1022433422498218992">జనరల్ కంట్రోల్స్</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">స్కానర్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
+<translation id="3248223063252096240">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే</translation>
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="3275729367986477355">అవతార్ ఇమేజ్</translation>
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
 <translation id="3639846061339007994">ఎగువున</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" />‌కు మాత్రమే అందుబాటులో ఉండే పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> పరీక్ష</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
 <translation id="4111761024568264522">USB టచ్‌ప్యాడ్</translation>
+<translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>
 <translation id="4117637339509843559">డార్క్ మోడ్</translation>
 <translation id="4130035430755296270">మరిన్ని లేఅవుట్ ఆప్షన్‌ల కోసం మౌస్ కర్సర్‌ని ఉంచడం కొనసాగించండి</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>
 <translation id="8593058461203131755">మీడియాను పాజ్ చేస్తుంది</translation>
 <translation id="8620617069779373398">రోమింగ్ స్థితి</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="86356131183441916">లేత ఊదా రంగు</translation>
 <translation id="8651481478098336970">వాల్యూమ్‌ను మ్యూట్ చేస్తుంది</translation>
 <translation id="8655295600908251630">ఛానల్</translation>

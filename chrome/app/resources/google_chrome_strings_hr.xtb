@@ -30,6 +30,7 @@
  uparivanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
+<translation id="1555506416658437797">urediti načine plaćanja.</translation>
 <translation id="1583073672411044740">Korisnik <ph name="EXISTING_USER" /> već je prijavljen na taj profil u Chromeu. Izradit će se novi profil u Chromeu za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome upotrebljava vašu kameru.</translation>
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> opasna je, pa ju je Chrome blokirao.</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">Chrome ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
 <translation id="235650106824528204">Sve podatke iz Chromea koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
+<translation id="2399868464369312507">Google Chrome pokušava urediti načine plaćanja.</translation>
 <translation id="2401189691232800402">Sustav Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>

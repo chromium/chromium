@@ -30,6 +30,7 @@
  pareamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">A criação do ChromeOS só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Atualizar o Google Chrome</translation>
+<translation id="1555506416658437797">editar formas de pagamento.</translation>
 <translation id="1583073672411044740">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chrome. Isso criará um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">O Google Chrome está usando sua câmera.</translation>
 <translation id="1587325591171447154">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chrome.</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">O Chrome não pode verificar suas senhas. Tente mais tarde.</translation>
 <translation id="235650106824528204">Quaisquer dados do Chrome gerados quando este perfil estiver sendo usado (como a criação de favoritos, histórico, senhas e outras configurações) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2399868464369312507">O Google Chrome está tentando editar formas de pagamento.</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>

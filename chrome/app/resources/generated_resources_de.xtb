@@ -6084,6 +6084,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6343003829431264373">Nur gerade Seitenzahlen</translation>
 <translation id="6344170822609224263">Auf Liste der Netzwerkverbindungen zugreifen</translation>
 <translation id="6344576354370880196">Gespeicherte Drucker</translation>
+<translation id="6344608411615208519"><ph name="BEGIN_LINK" />Dein Browser wird von deinen Eltern verwaltet<ph name="END_LINK" /></translation>
 <translation id="6345418402353744910">Für den Proxy <ph name="PROXY" /> werden dein Nutzername und Passwort benötigt, damit der Administrator dein Netzwerk konfigurieren kann</translation>
 <translation id="6345878117466430440">Als gelesen markieren</translation>
 <translation id="6347010704471250799">Benachrichtigung einblenden</translation>
@@ -7608,6 +7609,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7684212569183643648">Von deinem Administrator installiert</translation>
 <translation id="7684559058815332124">Captive Portal-Anmeldeseite besuchen</translation>
 <translation id="7684718995427157417">Aktiviere zum Erstellen und Testen deiner Apps Android Debug Bridge (ADB). Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
+<translation id="7684913007876670600">Wenn du diese Seite in einer vereinfachten Ansicht sehen möchtest, öffne die Seitenleiste und wähle den Lesemodus aus</translation>
 <translation id="7685049629764448582">JavaScript-Speicher</translation>
 <translation id="7685087414635069102">PIN erforderlich</translation>
 <translation id="7686086654630106285">Weitere Informationen zu Werbung, die von Websites vorgeschlagen wird</translation>

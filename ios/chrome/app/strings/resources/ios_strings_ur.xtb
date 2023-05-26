@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">صرف پوشیدگی وضع دستیاب ہے</translation>
 <translation id="2982481275546140226">ڈیٹا صاف کریں</translation>
 <translation id="298306318844797842">ادائیگی کا طریقہ شامل کریں...</translation>
+<translation id="2988274366244053197">‏Google Pay سے ادائیگی کے طریقے اور پتے اینکرپٹ نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت سِنک نہیں ہوگی۔
+
+صرف پاس فریز کا حامل شخص ہی آپ کے اینکرپٹ کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="2989805286512600854">نئے ٹیب میں کھولیں</translation>
 <translation id="3020183492814296499">شارٹ کٹس</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">اپنے پاس ورڈز، سرگزشت، اور بہت کچھ کو مطابقت پذیر بنائیں۔</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} سائٹ یا ایپ کے لیے}other{{COUNT} سائٹس یا ایپس کے لیے}}</translation>
 <translation id="3474624961160222204">بطور <ph name="NAME" /> جاری رکھیں</translation>
+<translation id="3476450923187944815">دیگر ایپس پر اپنے پاس ورڈز تک رسائی حاصل کریں۔</translation>
 <translation id="3478058380795961209">میعاد کے اختتام کا مہینہ</translation>
 <translation id="3482959374254649722">آپ کے ٹیبز کی مطابقت پذیری ہو رہی ہے…</translation>
 <translation id="3484946776651937681">ڈاؤن لوڈز میں کھولیں</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318298563956633672">آپ پہلے سے ہی اس پروڈکٹ کو ٹریک کر رہے ہیں۔</translation>
+<translation id="5325595483440111327">براؤزنگ کی سرگزشت دیکھیں۔</translation>
 <translation id="5339316356165661760">مطابقت پذیری آن کریں</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
 <translation id="5360976571138293719">‏رازداری، سیکیورٹی اور ڈیٹا جمع کرنے سے متعلق مزید ترتیبات کیلئے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>

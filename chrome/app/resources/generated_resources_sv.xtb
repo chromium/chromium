@@ -6106,6 +6106,7 @@ Du kan skicka den till Google för att kontrollera om den är säker. Genomsökn
 <translation id="6343003829431264373">Endast jämna sidor</translation>
 <translation id="6344170822609224263">Få åtkomst till en lista med nätverksanslutningar</translation>
 <translation id="6344576354370880196">Sparade skrivare</translation>
+<translation id="6344608411615208519"><ph name="BEGIN_LINK" />Webbläsaren hanteras<ph name="END_LINK" /> av din förälder</translation>
 <translation id="6345418402353744910">Ditt användarnamn och lösenord krävs för proxyservern <ph name="PROXY" />, så att administratören kan konfigurera nätverket.</translation>
 <translation id="6345878117466430440">Markera som läst</translation>
 <translation id="6347010704471250799">Visa avisering</translation>
@@ -7630,6 +7631,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7684212569183643648">Har installerats av administratören</translation>
 <translation id="7684559058815332124">Besök captive-portalens inloggningssida</translation>
 <translation id="7684718995427157417">Aktivera Androids felsökningsbrygga (ADB) om du vill skapa och testa appar. Observera att den här åtgärden tillåter att Android-appar som inte har verifierats av Google installeras. Du måste återställa enheten till standardinställningarna för att inaktivera detta.</translation>
+<translation id="7684913007876670600">Om du vill visa en förenklad vy av den här sidan öppnar du sidopanelen och väljer Läsläge</translation>
 <translation id="7685049629764448582">JavaScript-minne</translation>
 <translation id="7685087414635069102">Pinkod krävs</translation>
 <translation id="7686086654630106285">Mer om föreslagna annonser på webbplatser</translation>

@@ -315,6 +315,9 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2975121486251958312">Pasiekiamas tik inkognito režimas</translation>
 <translation id="2982481275546140226">Išvalyti duomenis</translation>
 <translation id="298306318844797842">Pridėti mokėjimo metodą...</translation>
+<translation id="2988274366244053197">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+
+Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Atidaryti naujame skirtuke</translation>
 <translation id="3020183492814296499">Spartieji klavišai</translation>
 <translation id="3037605927509011580">Oi!</translation>
@@ -381,6 +384,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3471148582064653480">Sinchronizuokite slaptažodžius, istoriją ir kt.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} svetainėje ar programoje}one{{COUNT} svetainėje ar programoje}few{{COUNT} svetainėse ar programose}many{{COUNT} svetainės ar programos}other{{COUNT} svetainių ar programų}}</translation>
 <translation id="3474624961160222204">Tęsti kaip <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Pasiekite slaptažodžius kitose programose.</translation>
 <translation id="3478058380795961209">Gal. pab. mėnuo</translation>
 <translation id="3482959374254649722">Sinchronizuojami skirtukai...</translation>
 <translation id="3484946776651937681">Atidaryti „Atsisiuntimų“ aplanke</translation>
@@ -652,6 +656,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5318298563956633672">Jau stebite šį produktą.</translation>
+<translation id="5325595483440111327">Žiūrėkite naršymo istoriją.</translation>
 <translation id="5339316356165661760">Įjungti sinchronizavimą</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
 <translation id="5360976571138293719">Daugiau nustatymų, susijusių su privatumu, sauga ir duomenų rinkimu, žr. skiltyje <ph name="BEGIN_LINK" />„Google“ paslaugos“<ph name="END_LINK" />.</translation>

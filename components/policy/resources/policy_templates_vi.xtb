@@ -5632,21 +5632,6 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
 <translation id="614665605501218241">Cho phép các trang web trong danh sách gửi yêu cầu theo cách không an toàn tới các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.</translation>
 <translation id="614753473456574270">Không cho phép người dùng đặt mã PIN yếu</translation>
 <translation id="6150320133676152520">Tắt chế độ tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá</translation>
-<translation id="61518106107420459">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách những ứng dụng và tiện ích tự động cài đặt mà không cần sự can thiệp của người dùng, cũng như chỉ định những người dùng không thể gỡ cài đặt hay tắt đi. Các quyền được cấp hoàn toàn, kể cả đối với các API tiện ích enterprise.deviceAttributes và enterprise.platformKeys. (Những ứng dụng và tiện ích không buộc phải cài đặt sẽ không dùng được 2 API này.)
-
-      Khi bạn không đặt chính sách này, các ứng dụng/tiện ích sẽ không được tự động cài đặt và người dùng có thể gỡ cài đặt mọi ứng dụng/tiện ích trong <ph name="PRODUCT_NAME" />.
-
-      Chính sách này thay thế chính sách <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Nếu một ứng dụng/tiện ích buộc phải cài đặt trước đây và hiện bị xoá khỏi danh sách này, thì <ph name="PRODUCT_NAME" /> sẽ tự động gỡ cài đặt ứng dụng/tiện ích đó.
-
-      Trên các phiên bản <ph name="MS_WIN_NAME" />, những ứng dụng và tiện ích bên ngoài Cửa hàng Chrome trực tuyến chỉ có thể được buộc cài đặt nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" />` hoặc đã đăng ký `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`.
-
-      Trên các phiên bản <ph name="MAC_OS_NAME" />, những ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến chỉ có thể được buộc cài đặt nếu phiên bản đó được quản lý qua MDM, liên kết với một miền qua MCX hoặc đã đăng ký `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />`
-
-      Người dùng có thể thay đổi mã nguồn của bất cứ tiện ích nào thông qua công cụ cho nhà phát triển. Việc này có thể khiến tiện ích hoạt động không chính xác. Nếu bạn lo ngại về điều này, hãy đặt chính sách <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-      Mỗi mục trong danh sách của chính sách là một chuỗi chứa một mã tiện ích và một URL "cập nhật" (không bắt buộc) phân tách bằng dấu chấm phẩy (;). Mã tiện ích là một chuỗi gồm 32 chữ cái, chẳng hạn như trên chrome://extensions khi ở Chế độ nhà phát triển. Nếu được chỉ định, URL "cập nhật" phải trỏ đến tài liệu XML của tệp kê khai cập nhật (https://developer.chrome.com/extensions/autoupdate). Theo mặc định, URL cập nhật của Cửa hàng Chrome trực tuyến sẽ được sử dụng. URL "cập nhật" được đặt trong chính sách này chỉ dùng cho lần cài đặt ban đầu. Các lần cập nhật tiện ích tiếp theo sẽ sử dụng URL cập nhật nêu trong tệp kê khai của tiện ích.
-
-       Lưu ý: Chính sách này không áp dụng cho Chế độ ẩn danh. Tìm hiểu về việc lưu trữ các tiện ích (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="6155350825868160236">Cho phép người dùng chọn xem có sử dụng các dịch vụ web của Google để sửa lỗi chính tả hay không</translation>
 <translation id="6155936611791017817">Đặt trạng thái của con trỏ lớn mặc định trên màn hình đăng nhập</translation>
 <translation id="6157537876488211233">Danh sách quy tắc bỏ qua proxy được phân cách bằng dấu phẩy</translation>

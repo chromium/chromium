@@ -2575,6 +2575,7 @@ Se un'estensione specificata in questo criterio non viene installata, la navigaz
 <translation id="3339271789059866414">Consente di configurare la disponibilità del servizio proxy di sistema e le credenziali proxy dei servizi di sistema.
       Se il criterio non viene impostato, il servizio proxy di sistema non sarà disponibile.</translation>
 <translation id="334231891933432876">Disconnetti l'utente non appena il suo account non è più autenticato</translation>
+<translation id="3345323903592385588">L'ordine in cui la configurazione VM verrà visualizzata nel programma di installazione. Quando vengono specificate più configurazioni VM, quella con il valore display_order più basso appare in cima all'elenco. Il valore predefinito è zero.</translation>
 <translation id="3348799281602260763">Se questo criterio viene attivato, è possibile eseguire il downgrade delle connessioni peer WebRTC a versioni obsolete dei protocolli TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Se questo criterio viene disattivato o se non viene configurato, queste versioni TLS/DTLS sono disattivate.
 

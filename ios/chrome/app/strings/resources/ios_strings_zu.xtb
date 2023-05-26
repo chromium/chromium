@@ -315,6 +315,9 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="2975121486251958312">Imodi ye-Incognito kuphela Etholakalayo</translation>
 <translation id="2982481275546140226">Sula idatha</translation>
 <translation id="298306318844797842">Engeza indlela yokukhokha...</translation>
+<translation id="2988274366244053197">Izindlela zokukhokha namakheli kusuka ku-Google Pay ngeke kubethelwe. Umlando wokubhrawuza kusuka ku-Chrome ngeke kuvumelanise.
+
+Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana wokungena awuthunyelwa noma ulondolozwe i-Google. Uma ukhohlwa umushwana wakho wokungena noma ufuna ukushintsha leli sethingi, <ph name="BEGIN_LINK" />sula idatha ye-Chrome ku-akhawunti yakho<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Vula kuthebhu entsha</translation>
 <translation id="3020183492814296499">Izinqamuleli</translation>
 <translation id="3037605927509011580">Hawu, iphutha!</translation>
@@ -381,6 +384,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3471148582064653480">Vumelanisa amaphasiwedi wakho, umlando, nokuningi.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{okwesayithi noma i-app e-{COUNT}}one{okwamasayithi noma ama-app angu-{COUNT}}other{okwamasayithi noma ama-app angu-{COUNT}}}</translation>
 <translation id="3474624961160222204">Qhubeka njengo-<ph name="NAME" /></translation>
+<translation id="3476450923187944815">Finyelela amaphasiwedi akho kwamanye ama-app.</translation>
 <translation id="3478058380795961209">Inyanga yokuphelelwa yisikhathi</translation>
 <translation id="3482959374254649722">Ivumelanisa amathebhu akho...</translation>
 <translation id="3484946776651937681">Vula ekulandeni</translation>
@@ -652,6 +656,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5300589172476337783">Bonisa</translation>
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5318298563956633672">Ulandelela kakade lo mkhiqizo.</translation>
+<translation id="5325595483440111327">Buka umlando wokubhrawuza.</translation>
 <translation id="5339316356165661760">Vula ukuvumelanisa</translation>
 <translation id="536067926684072644">Bonisa Amabhukimakhi</translation>
 <translation id="5360976571138293719">Ukuze uthole amasethingi angeziwe ahlobene nobumfihlo, ukuvikeleka nokuqoqwa kwedatha, bona okuthi <ph name="BEGIN_LINK" />Amasevisi we-Google<ph name="END_LINK" />.</translation>
@@ -750,6 +755,7 @@ Kuphela othile onomushwana wokungena ongafunda idatha yakho ebethelwe. Umshwana 
 <translation id="595769230373966252">Sesha nge-<ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Isixhumanisi sokokugqamisa asikwazi ukudalwa.</translation>
 <translation id="5965679971710331625">Ungene ngemvume</translation>
+<translation id="5971872012779224351">{count,plural, =1{Ibhukhimakhi e-1 isuliwe}one{Amabhukhimakhi angu-{count} asusiwe}other{Amabhukhimakhi angu-{count} asusiwe}}</translation>
 <translation id="5979837087407522202">Sesha amaphasiwedi</translation>
 <translation id="5981230843984570095">Vala Konke Okungasebenzi</translation>
 <translation id="5982717868370722439">Engeza idatha ekhona ku-<ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7435356471928173109">Ivalwe ngumlawuli wakho</translation>
 <translation id="7438481509621345350">Manje uzobona izindaba ezivela ku-<ph name="CHANNEL_NAME" /> uma uvula ithebhu entsha.</translation>
 <translation id="7446583256109515732">Ithebhu Isuswe Ukuphinwa</translation>
+<translation id="7451023311965289370">{count,plural, =1{Ibhukhimakhi ilondolozwe ku-"{title}"}one{Ibhukhimakhi ilondolozwe ku-"{title}"}other{Ibhukhimakhi ilondolozwe ku-"{title}"}}</translation>
 <translation id="7454057999980797137">Uhulumeni / Izwe</translation>
 <translation id="7459628154744868585">Ukuvikela Okuthuthukisiwe Kuvuliwe</translation>
 <translation id="746684838091935575">3. Khetha i-Chrome</translation>

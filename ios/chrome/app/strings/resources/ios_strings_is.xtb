@@ -750,6 +750,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
 <translation id="5965679971710331625">Þú ert skráð(ur) inn</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5979837087407522202">Leita að aðgangsorðum</translation>
 <translation id="5981230843984570095">Loka öllum óvirkum</translation>
 <translation id="5982717868370722439">Bæta fyrirliggjandi gögnum við <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +998,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7435356471928173109">Kerfisstjórinn slökkti á þessu</translation>
 <translation id="7438481509621345350">Núna sérðu sögur frá <ph name="CHANNEL_NAME" /> þegar þú opnar nýjan flipa.</translation>
 <translation id="7446583256109515732">Flipi losaður</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bókamerki vistað í „{title}“}one{Bókamerki vistuð í „{title}“}other{Bókamerki vistuð í „{title}“}}</translation>
 <translation id="7454057999980797137">Ríki/sýsla</translation>
 <translation id="7459628154744868585">Kveikt er á aukinni vörn</translation>
 <translation id="746684838091935575">3. Veldu Chrome</translation>

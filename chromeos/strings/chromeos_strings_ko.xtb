@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">데스크</translation>
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
+<translation id="1020274983236703756">이제 독점 <ph name="PRODUCT_NAME" /> 애셋 사용 가능</translation>
 <translation id="1022433422498218992">일반 컨트롤</translation>
 <translation id="1022628058306505708">지구의 흐름</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
 <translation id="3275729367986477355">아바타 이미지</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3639846061339007994">상단</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 전용 포스터를 선택합니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
 <translation id="3708186454126126312">이전에 연결된 기기</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
+<translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
 <translation id="4130035430755296270">마우스를 가져가면 더 많은 레이아웃 옵션이 표시됩니다.</translation>
 <translation id="4131410914670010031">흑백</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8593058461203131755">미디어를 일시중지합니다</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />의 작업 더보기</translation>
 <translation id="86356131183441916">연한 보라색</translation>
 <translation id="8651481478098336970">음소거</translation>
 <translation id="8655295600908251630">채널</translation>

@@ -2573,6 +2573,7 @@ Als een in dit beleid opgegeven extensie niet is geïnstalleerd, wordt incognito
 <translation id="3339271789059866414">Configureert de beschikbaarheid van de systeemproxyservice en de proxygegevens voor systeemservices.
       Als het beleid niet is ingesteld, is de systeemproxyservice niet beschikbaar.</translation>
 <translation id="334231891933432876">De gebruiker uitloggen zodra de verificatie van het account is ingetrokken</translation>
+<translation id="3345323903592385588">De volgorde waarin de VM-configuratie wordt getoond in het installatieprogramma. Als je meerdere VM-configuraties opgeeft, wordt de configuratie met de kleinste display_order-waarde bovenaan de lijst weergegeven. De standaardwaarde is nul.</translation>
 <translation id="3348799281602260763">Als het beleid is toegepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
       Als dit beleid niet is toegepast of niet is ingesteld, worden deze TLS/DTLS-versies uitgezet.
 
@@ -3337,6 +3338,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
 <translation id="4053612967614057854">Schermtoetsenbord uitzetten</translation>
+<translation id="4055758693679485627">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit. De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op True. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
+
+      Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="4056910949759281379">SPDY-protocol uitzetten</translation>
 <translation id="4061107397839125009">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die geen meldingen mogen bekijken.
 
@@ -3724,6 +3730,15 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
 <translation id="4426601693403743089">Dogfood-versie van Screencast uitzetten voor gebruikers van Family Link</translation>
 <translation id="4427173305799125784">Er kunnen geen annotaties in pdf's worden gemaakt met de pdf-viewer</translation>
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
+<translation id="4434531680131327140">Hiermee geef je instellingen voor de levensduur van browsergegevens op voor <ph name="PRODUCT_NAME" />. Met dit beleid kunnen beheerders instellen (per gegevenstype) wanneer gegevens door de browser moeten worden verwijderd. Dit is handig voor klanten die met gevoelige klantgegevens werken.
+
+      De beschikbare gegevenstypen zijn <ph name="DATA_TYPE_BROWSING_HISTORY" />, <ph name="DATA_TYPE_DOWNLOAD_HISTORY" />, <ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />, <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, <ph name="DATA_TYPE_PASSWORD" />, <ph name="DATA_TYPE_AUTOFILL" />, <ph name="DATA_TYPE_SITE_SETTINGS" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" />. <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> en <ph name="DATA_TYPE_HOSTED_APP_DATA" /> worden niet ondersteund op Android.
+
+      De browser verwijdert automatisch gegevens van de geselecteerde typen die ouder zijn dan <ph name="TIME_TO_LIVE_IN_HOURS" />. De minimumwaarde die kan worden ingesteld is 1 uur.
+
+      De verwijdering van verlopen gegevens vindt plaats 15 seconden nadat de browser is gestart en daarna elke 30 minuten terwijl de browser actief is.
+
+      Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op True. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
 <translation id="4435032708588431506">QUIC toestaan</translation>
 <translation id="443665821428652897">Sitegegevens wissen als de browser wordt gesloten (verouderd)</translation>

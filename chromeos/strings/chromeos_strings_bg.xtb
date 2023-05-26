@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Работни кътове</translation>
 <translation id="1018219910092211213">Преобразуването от DNS не е възможно</translation>
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1020274983236703756">Вече са налице специални активи за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Общи контроли</translation>
 <translation id="1022628058306505708">Земята</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Търсят се скенери</translation>
 <translation id="3226657629376379887">Меню с действия за оформлението</translation>
 <translation id="3246869037381808805">Заданията за отпечатване, по-стари от 1 ден, ще бъдат премахнати</translation>
+<translation id="3248223063252096240">Специално за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Неуспешно – вратичката е отворена</translation>
 <translation id="3275729367986477355">Изображение на аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактиране на файла}other{Редактиране на файловете}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
 <translation id="3639846061339007994">горната</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
+<translation id="3663574643422533538">Изберете специални произведения за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2 + WPA3</translation>
 <translation id="4110686435123617899">Избиране на албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Сензорен панел с USB</translation>
+<translation id="4113067922640381334">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
 <translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Неинициализирана</translation>
 <translation id="8593058461203131755">поставяне на мултимедията на пауза</translation>
 <translation id="8620617069779373398">Състояние на роуминга</translation>
+<translation id="8626489604350149811">Още действия за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлолилав</translation>
 <translation id="8651481478098336970">заглушаване на звука</translation>
 <translation id="8655295600908251630">Канал</translation>

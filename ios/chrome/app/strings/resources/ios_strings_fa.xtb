@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">فقط «حالت ناشناس» دردسترس است</translation>
 <translation id="2982481275546140226">پاک کردن داده‌ها</translation>
 <translation id="298306318844797842">افزودن روش پرداخت…</translation>
+<translation id="2988274366244053197">‏روش‌های پرداخت و نشانی‌های ذخیره‌شده در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.
+
+فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google‌ ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" /> داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید<ph name="END_LINK" /></translation>
 <translation id="2989805286512600854">باز کردن در برگهٔ جدید</translation>
 <translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">گذرواژه‌ها، سابقه، و موارد دیگر را همگام‌سازی کنید.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{برای {COUNT} سایت یا برنامه}one{برای {COUNT} سایت یا برنامه}other{برای {COUNT} سایت یا برنامه}}</translation>
 <translation id="3474624961160222204">ادامه دادن به‌عنوان <ph name="NAME" /></translation>
+<translation id="3476450923187944815">در برنامه‌های دیگر به گذرواژه‌هایتان دسترسی داشته باشید.</translation>
 <translation id="3478058380795961209">ماه انقضا</translation>
 <translation id="3482959374254649722">درحال همگام‌سازی برگه‌های شما...</translation>
 <translation id="3484946776651937681">باز کردن در بارگیری‌ها</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318298563956633672">ازقبل این محصول را پیگیری می‌کنید.</translation>
+<translation id="5325595483440111327">مشاهده سابقه مرور.</translation>
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
 <translation id="536067926684072644">نمایش نشانک‌ها</translation>
 <translation id="5360976571138293719">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
@@ -750,6 +755,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="595769230373966252">جستجو با <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">نمی‌توان پیوندی به مورد برجسته ایجاد کرد.</translation>
 <translation id="5965679971710331625">در سیستم هستید</translation>
+<translation id="5971872012779224351">{count,plural, =1{یک نشانک حذف شد}one{{count} نشانک حذف شد}other{{count} نشانک حذف شد}}</translation>
 <translation id="5979837087407522202">جستجوی گذرواژه‌ها</translation>
 <translation id="5981230843984570095">بستن همه برگه‌های غیرفعال</translation>
 <translation id="5982717868370722439">افزودن داده‌های موجود به <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7438481509621345350">اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7446583256109515732">سنجاق برگه برداشته شد</translation>
+<translation id="7451023311965289370">{count,plural, =1{نشانک در «{title}» ذخیره شد}one{نشانک در «{title}» ذخیره شد}other{نشانک‌ها در «{title}» ذخیره شد}}</translation>
 <translation id="7454057999980797137">ایالت / استان</translation>
 <translation id="7459628154744868585">«محافظت بهبودیافته» روشن است</translation>
 <translation id="746684838091935575">‏۳. Chrome را انتخاب کنید</translation>

@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Lloc de Google</translation>
 <translation id="1853795129690976061">Aquesta carpeta es comparteix amb Linux</translation>
 <translation id="1864756863218646478">No s'ha pogut trobar el fitxer.</translation>
+<translation id="1877377730633446520">Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE" /> disponibles.</translation>
 <translation id="1884013283844450420">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connecta</translation>
 <translation id="1920670151694390848">Malaiàlam (transliteració)</translation>
 <translation id="1920798810075583923">Síndria</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Desplega els taulers amb informació dels fitxers</translation>
 <translation id="1995337122023280937">Ves a la ubicació del fitxer</translation>
 <translation id="2001796770603320721">Gestiona a Drive</translation>
+<translation id="2004942826429452291">Els fitxers s'emmagatzemaran al núvol i en aquest Chromebook.</translation>
 <translation id="2009067268969781306">En formatar una unitat, se'n suprimeixen totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Rus</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Configuració del dispositiu</translation>
 <translation id="2084809735218147718">Signe de gràcies</translation>
 <translation id="2088690981887365033">Xarxa VPN</translation>
+<translation id="2089751716171649322">Accedeix fàcilment als teus fitxers de Google Drive sense connexió</translation>
 <translation id="2111134541987263231">Activa l'opció <ph name="BEGIN_BOLD" />Permet en mode d'incògnit<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Se suprimiran <ph name="NUMBER_OF_ITEMS" /> elements i no els podràs restaurar.</translation>
 <translation id="2122305276694332719">La connexió automàtica a una xarxa amagada permet que altres usuaris puguin veure el teu dispositiu i algunes opcions de configuració de la xarxa. Per tant, no és recomanable.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Ara no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
+<translation id="3501954296166022751">Els fitxers de Google Drive estan disponibles sense connexió</translation>
 <translation id="3509680540198371098">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="3511705761158917664">S'està preparant per sincronitzar <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="3522708245912499433">Portuguès</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5500122897333236901">Islandès</translation>
 <translation id="5508696409934741614">Punts</translation>
+<translation id="5519161320735100193">Configuració de Google Drive</translation>
 <translation id="5522908512596376669">La llista de fitxers ha canviat a la visualització de llista.</translation>
 <translation id="5524517123096967210">El fitxer no s'ha pogut llegir.</translation>
 <translation id="5533102081734025921">Imatge <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7806708061868529807">Hebreu</translation>
 <translation id="78104721049218340">Tai amb teclat kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">S'ha produït un error en configurar la xarxa</translation>
 <translation id="7839804798877833423">Per obtenir aquests fitxers s'utilitzaran aproximadament <ph name="FILE_SIZE" /> de dades mòbils.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">En formatar una partició, se n'esborren totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Els fitxers de La meva unitat se sincronitzaran amb el Chromebook automàticament perquè hi puguis accedir sense connexió a Internet.</translation>
 <translation id="7925247922861151263">Error en la comprovació d'AAA</translation>
 <translation id="7925686952655276919">No utilitzis les dades mòbils per a la sincronització</translation>
 <translation id="7928710562641958568">Expulsa el dispositiu</translation>
+<translation id="7933875256234974853">S'està preparant la sincronització dels fitxers de Drive...</translation>
 <translation id="7943385054491506837">Colemak nord-americà</translation>
 <translation id="7953739707111622108">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no s'ha reconegut.</translation>
 <translation id="7969525169268594403">Eslovè</translation>
 <translation id="7972920761225148017">Francès (Suïssa)</translation>
 <translation id="7973962044839454485">L'autenticació de PPA ha fallat perquè el nom d'usuari o la contrasenya no eren correctes</translation>
 <translation id="7980421588063892270">Anglès (EUA) amb teclat Colemak</translation>
+<translation id="7985008041109611710">S'estan sincronitzant <ph name="NUMBER_OF_FILES_SYNCING" /> fitxers</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
 <translation id="8008366997883261463">Gos</translation>
 <translation id="8028993641010258682">Mida</translation>
@@ -1036,6 +1045,7 @@
 <translation id="9213073329713032541">La instal·lació s'ha iniciat.</translation>
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219908252191632183">Paisatge lunar</translation>
+<translation id="937795003075802289">S'està sincronitzant 1 fitxer</translation>
 <translation id="938470336146445890">Instal·leu un certificat d'usuari.</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
 <translation id="943972244133411984">Modificat per</translation>

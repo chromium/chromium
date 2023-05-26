@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Иш такталар</translation>
 <translation id="1018219910092211213">DNS чечилбей жатат</translation>
 <translation id="1018656279737460067">Жокко чыгарылды</translation>
+<translation id="1020274983236703756">Өзгөчө <ph name="PRODUCT_NAME" /> объекттери азыр жеткиликтүү</translation>
 <translation id="1022433422498218992">Жалпы башкаруу элементтери</translation>
 <translation id="1022628058306505708">Жер</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Сканерлер изделүүдө</translation>
 <translation id="3226657629376379887">Калып боюнча аракеттер менюсу</translation>
 <translation id="3246869037381808805">1 күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
+<translation id="3248223063252096240">Өзгөчө <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Басылып чыгарылган жок - Принтердин эшиги ачык</translation>
 <translation id="3275729367986477355">Аватардын сүрөтү</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды түзөтүү}other{Файлдарды түзөтүү}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Купуялык экранын өчүрүү/күйгүзүү</translation>
 <translation id="3639846061339007994">жогору жагы</translation>
 <translation id="3651050199673793219">Температураны өлчөө бирдигин тандоо</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> өзгөчө сүрөттөрүн тандаңыз</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> сыноосу</translation>
 <translation id="370665806235115550">Жүктөлүүдө…</translation>
 <translation id="3708186454126126312">Буга чейин туташкан түзмөктөр</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Альбом тандаңыз <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB сенсордук тактасы</translation>
+<translation id="4113067922640381334">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана аласыз</translation>
 <translation id="4117637339509843559">Караңгы режим</translation>
 <translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
 <translation id="4131410914670010031">Ак-кара</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Аныкталбаган</translation>
 <translation id="8593058461203131755">медианы тындыруу</translation>
 <translation id="8620617069779373398">Роуминг статусу</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> боюнча башка аракеттер</translation>
 <translation id="86356131183441916">Ачык кызгылт көгүш</translation>
 <translation id="8651481478098336970">үнүн басуу</translation>
 <translation id="8655295600908251630">Канал</translation>

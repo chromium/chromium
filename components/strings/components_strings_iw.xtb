@@ -1096,6 +1096,7 @@
 <translation id="3658742229777143148">גרסה קודמת</translation>
 <translation id="3664782872746246217">מילות מפתח:</translation>
 <translation id="3667704023705708645">הון סיכון</translation>
+<translation id="3671117652518853176">כשההגדרה מושבתת, מדי פעם עשויה להופיע בקשה לאימות מטעמי אבטחה</translation>
 <translation id="3671540257457995106">לאפשר את שינוי הגודל?</translation>
 <translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: ‏<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">גליל שלישי</translation>
@@ -1129,6 +1130,7 @@
 <translation id="3736520371357197498">אם הבנת את הסיכונים בנוגע לאבטחה שלך, באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר לא בטוח זה<ph name="END_LINK" /> לפני הסרת התוכניות המסוכנות.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="3740319564441798148">אוטובוסים ורכבות למרחקים ארוכים</translation>
+<translation id="3743765582345153106">תמיד יתבצע אימות כשיש שימוש במילוי אוטומטי</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3744212718085287312">רוצה לשפר את האבטחה ולהשתמש בכרטיס וירטואלי בפעם הבאה?</translation>
 <translation id="3744286742364977428">‏קבצים שמורידים נשלחים אל Google Cloud או אל צדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה.</translation>
@@ -1739,6 +1741,7 @@ Del</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="5172758083709347301">מכונה</translation>
 <translation id="5177076414499237632">מידע על המקור והנושא של הדף הזה</translation>
+<translation id="5179490652562926740">ההגדרות לאימות תשלומים נשמרו</translation>
 <translation id="5179510805599951267">לא ב<ph name="ORIGINAL_LANGUAGE" />? דיווח על שגיאה זו</translation>
 <translation id="518639307526414276">מזון וציוד לחיות מחמד</translation>
 <translation id="5190072300954988691">אין הרשאת גישה למצלמה ולמיקרופון</translation>
