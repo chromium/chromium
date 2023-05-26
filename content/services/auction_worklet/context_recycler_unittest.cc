@@ -1272,7 +1272,7 @@ class ContextRecyclerPrivateAggregationEnabledTest
   template <typename T>
   v8::Local<v8::Value> WrapDebugKey(T debug_key) {
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("debug_key", debug_key);
+    dict.Set("debugKey", debug_key);
     return gin::ConvertToV8(helper_->isolate(), dict);
   }
 
@@ -1671,8 +1671,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
       // Passing BigInts in directly is complicated so we construct them from
       // strings.
-      if (typeof arg.debug_key === "string") {
-        arg.debug_key = BigInt(arg.debug_key);
+      if (typeof arg.debugKey === "string") {
+        arg.debugKey = BigInt(arg.debugKey);
       }
       privateAggregation.enableDebugMode(arg);
     }
@@ -1800,7 +1800,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
-                    "debug_key must be a BigInt."));
+                    "debugKey must be a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()

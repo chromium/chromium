@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 dictionary PrivateAggregationDebugModeOptions {
-  required bigint debug_key;
+  required bigint debugKey;
 };

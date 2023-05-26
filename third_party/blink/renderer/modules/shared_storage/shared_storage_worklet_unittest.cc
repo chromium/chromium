@@ -2962,7 +2962,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
       R"(
         let error;
         try {
-          privateAggregation.enableDebugMode({debug_key: 1234n});
+          privateAggregation.enableDebugMode({debugKey: 1234n});
           privateAggregation.enableDebugMode();
         } catch (e) {
           error = e;
@@ -2994,7 +2994,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
       class EnableDebugMode {
         async run() {
-          privateAggregation.enableDebugMode({debug_key: 1234n});
+          privateAggregation.enableDebugMode({debugKey: 1234n});
         }
       }
 
@@ -3032,7 +3032,7 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
       class TestClass {
         async run() {
-          privateAggregation.enableDebugMode({debug_key: 1234n});
+          privateAggregation.enableDebugMode({debugKey: 1234n});
           privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
           privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
         }
