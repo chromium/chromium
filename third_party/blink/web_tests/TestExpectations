@@ -6831,3 +6831,6 @@ crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-selectio
 crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
+
+# Sheriff 2023-05-26
+crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frames.html [ Failure Pass ]
