@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -23,6 +24,8 @@ import org.chromium.ui.text.EmptyTextWatcher;
  * bookmarks.
  */
 public class BookmarkSearchBoxRow extends LinearLayout {
+    private Callback<String> mQueryCallback;
+
     public BookmarkSearchBoxRow(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -35,10 +38,14 @@ public class BookmarkSearchBoxRow extends LinearLayout {
         searchText.addTextChangedListener(new EmptyTextWatcher() {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // TODO(https://crbug.com/1439583): Propagate query string upward.
+                mQueryCallback.onResult(charSequence.toString());
             }
         });
         searchText.setOnEditorActionListener(this::onEditorAction);
+    }
+
+    void setQueryCallback(Callback<String> queryCallback) {
+        mQueryCallback = queryCallback;
     }
 
     private boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {

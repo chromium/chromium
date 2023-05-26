@@ -14,9 +14,11 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -98,6 +100,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -171,6 +174,8 @@ public class BookmarkManagerMediatorTest {
     private SnackbarManager mSnackbarManager;
     @Mock
     private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
+    @Mock
+    private ListObservable.ListObserver<Void> mListObserver;
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
@@ -979,5 +984,25 @@ public class BookmarkManagerMediatorTest {
 
         verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX,
                 ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox() {
+        when(mBookmarkModel.searchBookmarks(eq("3"), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verifyOrderedViewTypes(Arrays.asList(ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT));
+
+        mModelList.addObserver(mListObserver);
+        mModelList.get(0).model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK).onResult("3");
+        verifyOrderedViewTypes(
+                Arrays.asList(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT));
+        verify(mListObserver, never()).onItemRangeChanged(any(), eq(0), anyInt(), any());
+        verify(mListObserver, never()).onItemRangeRemoved(any(), eq(0), anyInt());
+        verify(mListObserver, never()).onItemRangeInserted(any(), eq(0), anyInt());
+        verify(mListObserver).onItemRangeChanged(any(), eq(1), anyInt(), any());
     }
 }

@@ -9,7 +9,12 @@ import android.view.View;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binds model properties to view methods for {@link BookmarkSearchBoxRow}.  */
+/** Binds model properties to view methods for {@link BookmarkSearchBoxRow}. */
 class BookmarkSearchBoxRowViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey key) {}
+    static void bind(PropertyModel model, View view, PropertyKey key) {
+        BookmarkSearchBoxRow row = (BookmarkSearchBoxRow) view;
+        if (key == BookmarkSearchBoxRowProperties.QUERY_CALLBACK) {
+            row.setQueryCallback(model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK));
+        }
+    }
 }

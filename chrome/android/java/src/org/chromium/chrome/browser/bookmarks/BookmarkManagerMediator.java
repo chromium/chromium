@@ -819,7 +819,11 @@ class BookmarkManagerMediator
         int index = 0;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            updateOrAdd(index++, buildSearchBoxRow());
+            // Don't replace if it already exists. The text box is stateful.
+            if (getCurrentSearchBoxIndex() < 0) {
+                updateOrAdd(index, buildSearchBoxRow());
+            }
+            index++;
         }
 
         // Restore the header, if it exists, then update it.
@@ -1025,7 +1029,12 @@ class BookmarkManagerMediator
     }
 
     private ListItem buildSearchBoxRow() {
-        PropertyModel propertyModel = new PropertyModel(BookmarkSearchBoxRowProperties.ALL_KEYS);
+        // TODO(https://crbug.com/1439583): On search, also hide back button, update title, toolbar
+        // menu buttons.
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                        .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::search)
+                        .build();
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
 
