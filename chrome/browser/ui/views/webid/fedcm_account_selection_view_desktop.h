@@ -74,6 +74,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   void SetInputEventActivationProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector>);
+  void SetIdpSigninPopupWindowForTesting(std::unique_ptr<FedCmModalDialogView>);
+
+  // AccountSelectionBubbleView::Observer:
+  content::WebContents* ShowModalDialog(const GURL& url) override;
+  void CloseModalDialog() override;
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -126,9 +131,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  content::WebContents* ShowModalDialog(const GURL& url) override;
   void OnSigninToIdP() override;
-  void CloseModalDialog() override;
 
   void ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
@@ -161,8 +164,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   std::unique_ptr<FedCmModalDialogView> idp_signin_modal_dialog_;
 
-  // Callback to show accounts dialog upon closing IDP sign-in modal dialog.
+  // If dialog has been populated with accounts as a result of the IDP sign-in
+  // flow but the IDP sign-in pop-up window has not been closed yet, we use this
+  // callback to show the accounts dialog upon closing the IDP sign-in pop-up
+  // window. This can happen when IDP sign-in status header is sent after the
+  // sign-in flow is complete but the pop-up window is not closed yet e.g. user
+  // is asked to verify phone number, change password, etc.
   base::OnceClosure show_accounts_dialog_callback_;
+
+  // If dialog has NOT been populated with accounts yet as a result of the IDP
+  // sign-in flow and the IDP sign-in pop-up window has been closed, we use this
+  // boolean to let bubble widget know it should unhide itself when the dialog
+  // is ready. This can happen when the accounts fetch has yet to finish but the
+  // pop-up window has already been closed.
+  bool should_show_bubble_widget_{false};
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

@@ -56,13 +56,11 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
   TestDelegate delegate(web_contents());
 
   std::unique_ptr<FedCmModalDialogView> popup_window =
-      FedCmModalDialogView::ShowPopupWindow(web_contents(),
-                                            GURL(u"https://example.com"));
+      std::make_unique<FedCmModalDialogView>(web_contents());
+  content::WebContents* web_contents =
+      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate.opened());
-
-  content::WebContents* popup_window_web_contents =
-      popup_window->GetWebContents();
-  ASSERT_TRUE(popup_window_web_contents);
+  ASSERT_TRUE(web_contents);
 }

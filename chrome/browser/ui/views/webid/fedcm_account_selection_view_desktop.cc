@@ -45,6 +45,7 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
+  should_show_bubble_widget_ = false;
   Close();
 
   TabStripModelObserver::StopObservingAll(this);
@@ -130,9 +131,10 @@ void FedCmAccountSelectionView::Show(
     GetBubbleView()->ShowMultiAccountPicker(idp_display_data_list_);
   }
 
-  if (create_bubble) {
+  if (create_bubble || should_show_bubble_widget_) {
     input_protector_->VisibilityChanged(true);
     bubble_widget_->Show();
+    should_show_bubble_widget_ = false;
   }
   // Else:
   // Do not force show the bubble. The bubble may be purposefully hidden if the
@@ -237,6 +239,11 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
 void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
     std::unique_ptr<views::InputEventActivationProtector> input_protector) {
   input_protector_ = std::move(input_protector);
+}
+
+void FedCmAccountSelectionView::SetIdpSigninPopupWindowForTesting(
+    std::unique_ptr<FedCmModalDialogView> idp_signin_popup_window) {
+  idp_signin_modal_dialog_ = std::move(idp_signin_popup_window);
 }
 
 views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
@@ -369,16 +376,21 @@ void FedCmAccountSelectionView::OnSigninToIdP() {
 
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     const GURL& url) {
-  idp_signin_modal_dialog_ =
-      FedCmModalDialogView::ShowPopupWindow(delegate_->GetWebContents(), url);
+  if (!idp_signin_modal_dialog_) {
+    idp_signin_modal_dialog_ =
+        std::make_unique<FedCmModalDialogView>(delegate_->GetWebContents());
+  }
+
   input_protector_->VisibilityChanged(false);
   bubble_widget_->Hide();
-  return idp_signin_modal_dialog_->GetWebContents();
+  return idp_signin_modal_dialog_->ShowPopupWindow(url);
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
   if (idp_signin_modal_dialog_) {
     idp_signin_modal_dialog_->ClosePopupWindow();
+    idp_signin_modal_dialog_.reset();
+    should_show_bubble_widget_ = true;
   }
 
   if (show_accounts_dialog_callback_) {

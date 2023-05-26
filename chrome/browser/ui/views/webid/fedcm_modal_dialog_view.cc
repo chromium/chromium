@@ -13,32 +13,12 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
-FedCmModalDialogView::FedCmModalDialogView(content::WebContents* web_contents,
-                                           const GURL& url)
+FedCmModalDialogView::FedCmModalDialogView(content::WebContents* web_contents)
     : source_window_(web_contents) {}
 
 FedCmModalDialogView::~FedCmModalDialogView() = default;
 
-// static
-std::unique_ptr<FedCmModalDialogView> FedCmModalDialogView::ShowPopupWindow(
-    content::WebContents* web_contents,
-    const GURL& url) {
-  std::unique_ptr<FedCmModalDialogView> dialog =
-      std::make_unique<FedCmModalDialogView>(web_contents, url);
-  dialog->Open(url);
-  return dialog;
-}
-
-void FedCmModalDialogView::ClosePopupWindow() {
-  popup_window_->Close();
-}
-
-content::WebContents* FedCmModalDialogView::GetWebContents() {
-  DCHECK(popup_window_);
-  return popup_window_;
-}
-
-void FedCmModalDialogView::Open(const GURL& url) {
+content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
   content::OpenURLParams params(
       url, content::Referrer(), WindowOpenDisposition::NEW_POPUP,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
@@ -54,4 +34,14 @@ void FedCmModalDialogView::Open(const GURL& url) {
   popup_window_->GetDelegate()->SetContentsBounds(
       popup_window_, gfx::Rect(x_coordinate, y_coordinate, kPopupWindowWidth,
                                kPopupWindowHeight));
+
+  return popup_window_;
+}
+
+void FedCmModalDialogView::ClosePopupWindow() {
+  if (!popup_window_) {
+    return;
+  }
+
+  popup_window_->Close();
 }

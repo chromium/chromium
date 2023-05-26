@@ -14,24 +14,17 @@
 // TODO(crbug.com/1430830): Rename modal dialog to pop-up window.
 class FedCmModalDialogView {
  public:
-  FedCmModalDialogView(content::WebContents* web_contents, const GURL& url);
+  explicit FedCmModalDialogView(content::WebContents* web_contents);
   FedCmModalDialogView(const FedCmModalDialogView&) = delete;
   FedCmModalDialogView& operator=(const FedCmModalDialogView&) = delete;
-  ~FedCmModalDialogView();
+  virtual ~FedCmModalDialogView();
 
-  // Shows a modal dialog of |url| prompted by FedCM on |web_contents|. The
-  // |url| is commonly but not limited to a URL which allows the user to sign in
-  // with an identity provider.
-  static std::unique_ptr<FedCmModalDialogView> ShowPopupWindow(
-      content::WebContents* web_contents,
-      const GURL& url);
-  void ClosePopupWindow();
-
-  content::WebContents* GetWebContents();
+  // Shows a modal dialog of |url|. The |url| is commonly but not limited to a
+  // URL which allows the user to sign in with an identity provider.
+  virtual content::WebContents* ShowPopupWindow(const GURL& url);
+  virtual void ClosePopupWindow();
 
  private:
-  void Open(const GURL& url);
-
   raw_ptr<content::WebContents> source_window_{nullptr};
   raw_ptr<content::WebContents> popup_window_{nullptr};
 
