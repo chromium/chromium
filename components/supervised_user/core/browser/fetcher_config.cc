@@ -7,14 +7,53 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace supervised_user {
 
 namespace annotations {
+
+net::NetworkTrafficAnnotationTag ClassifyUrlTag() {
+  return net::DefineNetworkTrafficAnnotation("supervised_user_classify_url",
+                                             R"(
+semantics {
+  sender: "Supervised Users"
+  description:
+    "Checks whether a given URL (or set of URLs) is considered safe by "
+    "a Google Family Link web restrictions API."
+  trigger:
+    "If the parent enabled this feature for the child account, this is "
+    "sent for every navigation."
+  data:
+    "An OAuth2 access token identifying and authenticating the "
+    "Google account, and the URL to be checked."
+  destination: GOOGLE_OWNED_SERVICE
+  internal {
+    contacts {
+      email: "chrome-kids-eng@google.com"
+    }
+  }
+  user_data {
+    type: NONE
+  }
+  last_reviewed: "2023-05-15"
+}
+policy {
+  cookies_allowed: NO
+  setting:
+    "This feature is only used in child accounts and cannot be "
+    "disabled by settings. Parent accounts can disable it in the "
+    "family dashboard."
+  policy_exception_justification:
+    "Enterprise admins don't have control over this feature "
+    "because it can't be enabled on enterprise environments."
+  })");
+}
+
 net::NetworkTrafficAnnotationTag ListFamilyMembersTag() {
   return net::DefineNetworkTrafficAnnotation(
-      "kids_chrome_management_list_family_members",
+      "supervised_user_list_family_members",
       R"(
 semantics {
   sender: "Supervised Users"
@@ -56,7 +95,9 @@ policy {
 std::string FetcherConfig::GetHttpMethod() const {
   switch (method) {
     case Method::kGet:
-      return "GET";
+      return net::HttpRequestHeaders::kGetMethod;
+    case Method::kPost:
+      return net::HttpRequestHeaders::kPostMethod;
     default:
       NOTREACHED_NORETURN();
   }

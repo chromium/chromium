@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -16,13 +17,13 @@ namespace supervised_user {
 
 namespace annotations {
 // Traffic annotations can only live in cc/mm files.
+net::NetworkTrafficAnnotationTag ClassifyUrlTag();
 net::NetworkTrafficAnnotationTag ListFamilyMembersTag();
 }  // namespace annotations
 
 // Configuration bundle for the ProtoFetcher.
 struct FetcherConfig {
-  // TODO(b/276898959): add kPost option.
-  enum class Method { kGet };
+  enum class Method { kUndefined, kGet, kPost };
 
   // Primary endpoint of the fetcher.
   base::StringPiece service_endpoint{
@@ -33,19 +34,33 @@ struct FetcherConfig {
   // examples.
   base::StringPiece service_path;
 
+  // The OAuth 2.0 permission scope to request the authorization token.
+  base::StringPiece oauth2_scope;
+
   // HTTP method used to communicate with the service.
-  Method method;
+  const Method method = Method::kUndefined;
 
   // Basename for histograms
   base::StringPiece histogram_basename;
 
-  net::NetworkTrafficAnnotationTag (*traffic_annotation)();
+  net::NetworkTrafficAnnotationTag (*const traffic_annotation)() = nullptr;
 
   std::string GetHttpMethod() const;
 };
 
+constexpr FetcherConfig kClassifyUrlConfig = {
+    .service_path = "people/me:classifyUrl",
+    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+    .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+    .method = FetcherConfig::Method::kPost,
+    .histogram_basename = "FamilyLinkUser.ClassifyUrlRequest",
+    .traffic_annotation = annotations::ClassifyUrlTag,
+};
+
 constexpr FetcherConfig kListFamilyMembersConfig{
     .service_path = "families/mine/members",
+    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+    .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
     .method = FetcherConfig::Method::kGet,
     .histogram_basename = "Signin.ListFamilyMembersRequest",
     .traffic_annotation = annotations::ListFamilyMembersTag,

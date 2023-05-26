@@ -13,7 +13,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "google_apis/gaia/gaia_constants.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
@@ -31,6 +31,7 @@ class ApiAccessTokenFetcher {
   // Non copyable.
   ApiAccessTokenFetcher() = delete;
   explicit ApiAccessTokenFetcher(signin::IdentityManager& identity_manager,
+                                 const FetcherConfig& fetcher_config,
                                  Consumer consumer);
   ApiAccessTokenFetcher(const ApiAccessTokenFetcher&) = delete;
   ApiAccessTokenFetcher& operator=(const ApiAccessTokenFetcher&) = delete;
@@ -39,7 +40,6 @@ class ApiAccessTokenFetcher {
  private:
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
-  static const OAuth2AccessTokenManager::ScopeSet& Scopes();
   Consumer consumer_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       primary_account_access_token_fetcher_;

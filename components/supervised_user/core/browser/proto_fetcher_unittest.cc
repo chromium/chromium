@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -30,6 +32,8 @@ namespace {
 
 using ::base::BindOnce;
 using ::base::Time;
+using ::kids_chrome_management::ClassifyUrlRequest;
+using ::kids_chrome_management::ClassifyUrlResponse;
 using ::kids_chrome_management::FamilyRole;
 using ::kids_chrome_management::ListFamilyMembersRequest;
 using ::kids_chrome_management::ListFamilyMembersResponse;
@@ -37,19 +41,8 @@ using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;
 using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
-using ::testing::Test;
 
-// Tests the kidsmanagement/v1 proto client.
-class ProtoFetcherTest : public Test {
- protected:
-  FetcherConfig test_fetcher_config_ =
-      FetcherTestConfigBuilder::FromConfig(kListFamilyMembersConfig)
-          .WithServiceEndpoint("http://example.com")
-          .Build();
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::TaskEnvironment task_environment_;
-  IdentityTestEnvironment identity_test_env_;
-};
+constexpr base::StringPiece kTestEndpoint = "http://example.com";
 
 template <typename Response>
 class Receiver {
@@ -72,78 +65,186 @@ class Receiver {
   base::expected<std::unique_ptr<Response>, ProtoFetcherStatus> result_;
 };
 
-TEST_F(ProtoFetcherTest, AcceptsRequests) {
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
-      "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersResponse> receiver;
-  ListFamilyMembersResponse response;
+// Go around Gtest limitation for test parametrization - create aliases for type
+// tuples
+using ClassifyUrl = std::tuple<ClassifyUrlRequest, ClassifyUrlResponse>;
+using ListFamilyMembers =
+    std::tuple<ListFamilyMembersRequest, ListFamilyMembersResponse>;
 
-  auto fetcher = FetchListFamilyMembers(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)),
-      test_fetcher_config_);
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", Time::Max());
+// Tests the kidsmanagement/v1 proto client.
+template <typename T>
+class ProtoFetcherTest : public testing::Test {
+ protected:
+  // Go around Gtest limitation for test parametrization - extract Request and
+  // Response.
+  using Request = typename std::tuple_element<0, T>::type;
+  using Response = typename std::tuple_element<1, T>::type;
 
-  TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  EXPECT_EQ(pending_request->request.url,
-            "http://example.com/families/mine/members?alt=proto");
-  EXPECT_EQ(pending_request->request.method, "GET");
+  FetcherConfig test_fetcher_config_ =
+      FetcherTestConfigBuilder::FromConfig(GetConfig())
+          .WithServiceEndpoint(kTestEndpoint)
+          .Build();
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  base::test::TaskEnvironment task_environment_;
+  IdentityTestEnvironment identity_test_env_;
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), response.SerializeAsString());
+  // Both methods are required because respective config and fetchers are not
+  // generic on purpose. The network connection is mocked and requests are only
+  // validate server side, so it doesn't make sense to send anything but default
+  // Proto.
+  FetcherConfig GetConfig() const;
+  std::unique_ptr<ProtoFetcher<Response>> GetFetcher(
+      Receiver<Response>& receiver,
+      const Request& request = Request());
+};
 
-  ASSERT_TRUE(receiver.GetResult().has_value());
+template <>
+FetcherConfig ProtoFetcherTest<ListFamilyMembers>::GetConfig() const {
+  return kListFamilyMembersConfig;
+}
+template <>
+FetcherConfig ProtoFetcherTest<ClassifyUrl>::GetConfig() const {
+  return kClassifyUrlConfig;
 }
 
-TEST_F(ProtoFetcherTest, NoAccessToken) {
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
-      "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersResponse> receiver;
-
-  auto fetcher = FetchListFamilyMembers(
+template <>
+std::unique_ptr<ProtoFetcher<ListFamilyMembersResponse>>
+ProtoFetcherTest<ListFamilyMembers>::GetFetcher(
+    Receiver<ListFamilyMembersResponse>& receiver,
+    const Request& request) {
+  return FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
       BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
-      test_fetcher_config_);
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      test_fetcher_config_);  // Unretained(.) must outlive the fetcher.
+}
 
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+template <>
+std::unique_ptr<ProtoFetcher<ClassifyUrlResponse>>
+ProtoFetcherTest<ClassifyUrl>::GetFetcher(
+    Receiver<ClassifyUrlResponse>& receiver,
+    const Request& request) {
+  return ClassifyURL(
+      *identity_test_env_.identity_manager(),
+      test_url_loader_factory_.GetSafeWeakWrapper(), request,
+      BindOnce(&Receiver<ClassifyUrlResponse>::Receive,
+               base::Unretained(&receiver)),
+      test_fetcher_config_);  // Unretained(.) must outlive the fetcher.
+}
+
+TYPED_TEST_SUITE_P(ProtoFetcherTest);
+
+TYPED_TEST_P(ProtoFetcherTest, ConfiguresEndpoint) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
+
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      this->test_url_loader_factory_.GetPendingRequest(0);
+
+  GURL expected_url =
+      GURL("http://example.com/" + std::string(this->GetConfig().service_path) +
+           "?alt=proto");
+  EXPECT_EQ(pending_request->request.url, expected_url);
+  EXPECT_EQ(pending_request->request.method, this->GetConfig().GetHttpMethod());
+}
+
+TYPED_TEST_P(ProtoFetcherTest, AddsPayload) {
+  if (this->GetConfig().method != FetcherConfig::Method::kPost) {
+    GTEST_SKIP() << "Payload not supported for "
+                 << this->GetConfig().GetHttpMethod() << " requests.";
+  }
+
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
+
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      this->test_url_loader_factory_.GetPendingRequest(0);
+
+  std::string header;
+  EXPECT_TRUE(pending_request->request.headers.GetHeader(
+      net::HttpRequestHeaders::kContentType, &header));
+  EXPECT_EQ(header, "application/x-protobuf");
+}
+
+TYPED_TEST_P(ProtoFetcherTest, AcceptsRequests) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+  Response response;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
+
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      this->test_url_loader_factory_.GetPendingRequest(0);
+
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), response.SerializeAsString());
+
+  EXPECT_TRUE(receiver.GetResult().has_value());
+}
+
+TYPED_TEST_P(ProtoFetcherTest, NoAccessToken) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+          GoogleServiceAuthError(
+              GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  EXPECT_EQ(this->test_url_loader_factory_.NumPending(), 0);
   EXPECT_EQ(receiver.GetResult().error().state(),
             ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
   EXPECT_EQ(receiver.GetResult().error().google_service_auth_error().state(),
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
-TEST_F(ProtoFetcherTest, HandlesMalformedResponse) {
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
-      "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersResponse> receiver;
+TYPED_TEST_P(ProtoFetcherTest, HandlesMalformedResponse) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
 
-  auto fetcher = FetchListFamilyMembers(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)),
-      test_fetcher_config_);
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", Time::Max());
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
 
   TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
+      this->test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(nullptr, pending_request);
-  EXPECT_EQ(pending_request->request.url,
-            "http://example.com/families/mine/members?alt=proto");
-  EXPECT_EQ(pending_request->request.method, "GET");
 
   std::string malformed_value("garbage");  // Not a valid marshaled proto.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), malformed_value);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
@@ -152,24 +253,21 @@ TEST_F(ProtoFetcherTest, HandlesMalformedResponse) {
 
 // crbug/1444165: Do not use StringPrintf with StringPiece, c-strings are
 // expected.
-TEST_F(ProtoFetcherTest, CreatesToken) {
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+TYPED_TEST_P(ProtoFetcherTest, CreatesToken) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersResponse> receiver;
 
-  auto fetcher = FetchListFamilyMembers(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)),
-      test_fetcher_config_);
-
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "token", Time::Max());
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("token",
+                                                               Time::Max());
 
   // That's enough: request is pending, so token is accepted.
   TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
+      this->test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(nullptr, pending_request);
 
   // Only check header format here.
@@ -179,29 +277,23 @@ TEST_F(ProtoFetcherTest, CreatesToken) {
   EXPECT_EQ(authorization_header, "Bearer token");
 }
 
-TEST_F(ProtoFetcherTest, HandlesServerError) {
-  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+TYPED_TEST_P(ProtoFetcherTest, HandlesServerError) {
+  using Response = typename std::tuple_element<1, TypeParam>::type;
+  Receiver<Response> receiver;
+
+  AccountInfo account = this->identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersResponse> receiver;
 
-  auto fetcher = FetchListFamilyMembers(
-      *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)),
-      test_fetcher_config_);
-
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      "access_token", Time::Max());
+  auto fetcher = this->GetFetcher(receiver);
+  this->identity_test_env_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken("access_token",
+                                                               Time::Max());
 
   TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
+      this->test_url_loader_factory_.GetPendingRequest(0);
   ASSERT_NE(nullptr, pending_request);
-  EXPECT_EQ(pending_request->request.url,
-            "http://example.com/families/mine/members?alt=proto");
-  EXPECT_EQ(pending_request->request.method, "GET");
 
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
+  this->test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), /*content=*/"",
       net::HTTP_BAD_REQUEST);
   EXPECT_FALSE(receiver.GetResult().has_value());
@@ -211,6 +303,18 @@ TEST_F(ProtoFetcherTest, HandlesServerError) {
       receiver.GetResult().error().http_status_or_net_error(),
       ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_BAD_REQUEST));
 }
+
+REGISTER_TYPED_TEST_SUITE_P(ProtoFetcherTest,
+                            ConfiguresEndpoint,
+                            AddsPayload,
+                            AcceptsRequests,
+                            NoAccessToken,
+                            HandlesMalformedResponse,
+                            CreatesToken,
+                            HandlesServerError);
+
+using Fetchers = ::testing::Types<ClassifyUrl, ListFamilyMembers>;
+INSTANTIATE_TYPED_TEST_SUITE_P(AllFetchers, ProtoFetcherTest, Fetchers);
 
 }  // namespace
 }  // namespace supervised_user

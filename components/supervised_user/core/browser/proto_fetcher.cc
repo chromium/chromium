@@ -31,6 +31,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
@@ -99,14 +100,13 @@ GURL CreateRequestUrl(const FetcherConfig& config) {
       .Resolve(base::StrCat({config.service_path, "?", kSystemParameters}));
 }
 
-// TODO(b/276898959): Support payload for POST requests.
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const signin::AccessTokenInfo access_token_info,
     const FetcherConfig& fetcher_config,
-    const GURL& url) {
+    const absl::optional<std::string>& payload) {
   std::unique_ptr<ResourceRequest> resource_request =
       std::make_unique<ResourceRequest>();
-  resource_request->url = url;
+  resource_request->url = CreateRequestUrl(fetcher_config);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(
@@ -115,6 +115,12 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        fetcher_config.traffic_annotation());
+
+  if (payload.has_value()) {
+    simple_url_loader->AttachStringForUpload(*payload,
+                                             "application/x-protobuf");
+  }
+
   simple_url_loader->SetRetryOptions(
       kNumFamilyInfoFetcherRetries,
       network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
@@ -139,7 +145,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       Callback callback)
       : payload_(request.SerializeAsString()), config_(fetcher_config) {
     access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager,
+        identity_manager, fetcher_config,
         BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
                  url_loader_factory,
                  std::move(callback)));  // Unretained(.) is safe because `this`
@@ -205,9 +211,8 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       return;
     }
 
-    // TODO(b/276898959): add optional payload for POST requests.
     simple_url_loader_ = InitializeSimpleUrlLoader(
-        access_token.value(), config_, CreateRequestUrl(config_));
+        access_token.value(), config_, GetRequestPayload());
 
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
@@ -241,11 +246,25 @@ class FetcherImpl final : public ProtoFetcher<Response> {
                             std::move(response));
   }
 
+  // Returns payload when it's eligible for the request type.
+  absl::optional<std::string> GetRequestPayload() const {
+    if (config_.method == FetcherConfig::Method::kGet) {
+      CHECK(payload_.empty()) << "Unexpected payload in GET request";
+      return absl::nullopt;
+    }
+    return payload_;
+  }
+
   std::unique_ptr<ApiAccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   const std::string payload_;
   const FetcherConfig config_;
 };
+
+using ClassifyUrlFetcher =
+    ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
+using ListFamilyMembersFetcher =
+    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
 }  // namespace
 
 // Main constructor, referenced by the rest.
@@ -367,12 +386,22 @@ const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
 }
 
 // Fetcher factories.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
-FetchListFamilyMembers(
+std::unique_ptr<ClassifyUrlFetcher> ClassifyURL(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>::Callback
-        callback,
+    const kids_chrome_management::ClassifyUrlRequest& request,
+    ClassifyUrlFetcher::Callback callback,
+    const FetcherConfig& config) {
+  return std::make_unique<
+      FetcherImpl<kids_chrome_management::ClassifyUrlResponse>>(
+      identity_manager, url_loader_factory, request, config,
+      std::move(callback));
+}
+
+std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
   return std::make_unique<
       FetcherImpl<kids_chrome_management::ListFamilyMembersResponse>>(

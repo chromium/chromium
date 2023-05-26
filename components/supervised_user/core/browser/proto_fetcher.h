@@ -142,6 +142,15 @@ FetchListFamilyMembers(
         callback,
     const FetcherConfig& config = kListFamilyMembersConfig);
 
-}  // namespace supervised_user
+// Creates a disposable instance of an access token consumer that will classify
+// the URL for supervised user.
+std::unique_ptr<ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
+ClassifyURL(signin::IdentityManager& identity_manager,
+            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+            const kids_chrome_management::ClassifyUrlRequest& request,
+            ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>::Callback
+                callback,
+            const FetcherConfig& config = kClassifyUrlConfig);
 
+}  // namespace supervised_user
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_

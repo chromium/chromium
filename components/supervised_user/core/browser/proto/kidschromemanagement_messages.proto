@@ -37,15 +37,15 @@ message RequestRestrictedUrlAccessResponse {
 }
 
 message ClassifyUrlRequest {
-  // Must be "me". Required.
-  optional string person_id = 1;
+  // Must be "me".
+  optional string person_id = 2;
 
-  // The URL to be classified. Required.
-  optional string url = 2;
+  // The URL to be classified.
+  optional string url = 3;
 
-  // Region_code is a 2-letter ISO 3166-1 code. Required.
+  // region_code is a 2-letter ISO 3166-1 code.
   // When set, uses specific logic to classify URLs for that region.
-  optional string region_code = 3;
+  optional string region_code = 4;
 }
 
 message ClassifyUrlResponse {
@@ -59,8 +59,5 @@ message ClassifyUrlResponse {
     RESTRICTED = 2;
   }
 
-  // URL classification. Required.
-  optional DisplayClassification display_classification = 1;
-
-  // Next id: 2
+  optional DisplayClassification display_classification = 2;
 }

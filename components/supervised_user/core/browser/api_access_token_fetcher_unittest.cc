@@ -14,6 +14,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,9 +33,9 @@ using ::signin::AccessTokenFetcher;
 using ::signin::AccessTokenInfo;
 using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
-using ::testing::Test;
 
-class ApiAccessTokenFetcherTest : public Test {
+class ApiAccessTokenFetcherTest
+    : public ::testing::TestWithParam<FetcherConfig> {
  protected:
   // A pinhole class that allows to verify the fetch result.
   class Receiver {
@@ -56,11 +57,12 @@ class ApiAccessTokenFetcherTest : public Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_F(ApiAccessTokenFetcherTest, ReadToken) {
+TEST_P(ApiAccessTokenFetcherTest, ReadToken) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
   ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
+                                /*fetcher_config=*/GetParam(),
                                 receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -69,11 +71,12 @@ TEST_F(ApiAccessTokenFetcherTest, ReadToken) {
   EXPECT_EQ(receiver.Get().value().token, "expected_access_token");
 }
 
-TEST_F(ApiAccessTokenFetcherTest, AuthError) {
+TEST_P(ApiAccessTokenFetcherTest, AuthError) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
   ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
+                                /*fetcher_config=*/GetParam(),
                                 receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -83,6 +86,11 @@ TEST_F(ApiAccessTokenFetcherTest, AuthError) {
   EXPECT_EQ(receiver.Get().error().state(),
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
+
+INSTANTIATE_TEST_SUITE_P(ApiAccessTokenFetcherTest,
+                         ApiAccessTokenFetcherTest,
+                         ::testing::Values(kClassifyUrlConfig,
+                                           kListFamilyMembersConfig));
 
 }  // namespace
 }  // namespace supervised_user
