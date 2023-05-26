@@ -136,14 +136,22 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce(task, task_id));
 }
 
-// NOTE: Use consistent feature flag names as in CrOS base::Feature::name
-// (instead of slightly-different bespoke names), and always wire 1:1 to CrOS
-// feature flags (instead of having any extra logic).
+// TODO(b/218815885): Use consistent feature flag names as in CrOS
+// base::Feature::name (instead of slightly-different bespoke names), and always
+// wire 1:1 to CrOS feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
-  if (strcmp(feature_name, features::kAssistEmojiEnhanced.name) == 0) {
+  // TODO(b/218815885): Replace refs of AssistiveEmojiEnhanced with
+  // AssistEmojiEnhanced in internal code for consistency.
+  // Then remove the AssistiveEmojiEnhanced check.
+  if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0 ||
+      strcmp(feature_name, features::kAssistEmojiEnhanced.name) == 0) {
     return base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
   }
-  if (strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
+  // TODO(b/218815885): Replace refs of AssistiveMultiWord with
+  // AssistMultiWord in internal code for consistency.
+  // Then remove the AssistiveMultiWord check.
+  if (strcmp(feature_name, "AssistiveMultiWord") == 0 ||
+      strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
     return base::FeatureList::IsEnabled(features::kAssistMultiWord);
   }
   if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
