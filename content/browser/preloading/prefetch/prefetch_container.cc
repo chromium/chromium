@@ -519,8 +519,7 @@ bool PrefetchContainer::HaveDefaultContextCookiesChanged() const {
 }
 
 bool PrefetchContainer::HasIsolatedCookieCopyStarted() const {
-  switch (
-      redirect_chain_[index_redirect_chain_to_serve_]->cookie_copy_status_) {
+  switch (GetCurrentSinglePrefetchToServe().cookie_copy_status_) {
     case SinglePrefetch::CookieCopyStatus::kNotStarted:
       return false;
     case SinglePrefetch::CookieCopyStatus::kInProgress:
@@ -530,8 +529,7 @@ bool PrefetchContainer::HasIsolatedCookieCopyStarted() const {
 }
 
 bool PrefetchContainer::IsIsolatedCookieCopyInProgress() const {
-  switch (
-      redirect_chain_[index_redirect_chain_to_serve_]->cookie_copy_status_) {
+  switch (GetCurrentSinglePrefetchToServe().cookie_copy_status_) {
     case SinglePrefetch::CookieCopyStatus::kNotStarted:
     case SinglePrefetch::CookieCopyStatus::kCompleted:
       return false;
@@ -547,51 +545,50 @@ void PrefetchContainer::OnIsolatedCookieCopyStart() {
   // changes from the copy.
   StopAllCookieListeners();
 
-  redirect_chain_[index_redirect_chain_to_serve_]->cookie_copy_status_ =
+  GetCurrentSinglePrefetchToServe().cookie_copy_status_ =
       SinglePrefetch::CookieCopyStatus::kInProgress;
 
-  redirect_chain_[index_redirect_chain_to_serve_]->cookie_copy_start_time_ =
+  GetCurrentSinglePrefetchToServe().cookie_copy_start_time_ =
       base::TimeTicks::Now();
 }
 
 void PrefetchContainer::OnIsolatedCookiesReadCompleteAndWriteStart() {
   DCHECK(IsIsolatedCookieCopyInProgress());
 
-  redirect_chain_[index_redirect_chain_to_serve_]
-      ->cookie_read_end_and_write_start_time_ = base::TimeTicks::Now();
+  GetCurrentSinglePrefetchToServe().cookie_read_end_and_write_start_time_ =
+      base::TimeTicks::Now();
 }
 
 void PrefetchContainer::OnIsolatedCookieCopyComplete() {
   DCHECK(IsIsolatedCookieCopyInProgress());
 
-  const auto& this_prefetch = redirect_chain_[index_redirect_chain_to_serve_];
+  const auto& this_prefetch = GetCurrentSinglePrefetchToServe();
 
-  this_prefetch->cookie_copy_status_ =
+  this_prefetch.cookie_copy_status_ =
       SinglePrefetch::CookieCopyStatus::kCompleted;
 
-  if (this_prefetch->cookie_copy_start_time_.has_value() &&
-      this_prefetch->cookie_read_end_and_write_start_time_.has_value()) {
+  if (this_prefetch.cookie_copy_start_time_.has_value() &&
+      this_prefetch.cookie_read_end_and_write_start_time_.has_value()) {
     RecordCookieCopyTimes(
-        this_prefetch->cookie_copy_start_time_.value(),
-        this_prefetch->cookie_read_end_and_write_start_time_.value(),
+        this_prefetch.cookie_copy_start_time_.value(),
+        this_prefetch.cookie_read_end_and_write_start_time_.value(),
         base::TimeTicks::Now());
   }
 
-  if (this_prefetch->on_cookie_copy_complete_callback_) {
-    std::move(this_prefetch->on_cookie_copy_complete_callback_).Run();
+  if (this_prefetch.on_cookie_copy_complete_callback_) {
+    std::move(this_prefetch.on_cookie_copy_complete_callback_).Run();
   }
 }
 
 void PrefetchContainer::OnInterceptorCheckCookieCopy() {
-  if (!redirect_chain_[index_redirect_chain_to_serve_]
-           ->cookie_copy_start_time_) {
+  if (!GetCurrentSinglePrefetchToServe().cookie_copy_start_time_) {
     return;
   }
 
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
-      base::TimeTicks::Now() - redirect_chain_[index_redirect_chain_to_serve_]
-                                   ->cookie_copy_start_time_.value(),
+      base::TimeTicks::Now() -
+          GetCurrentSinglePrefetchToServe().cookie_copy_start_time_.value(),
       base::TimeDelta(), base::Seconds(5), 50);
 }
 
@@ -599,8 +596,8 @@ void PrefetchContainer::SetOnCookieCopyCompleteCallback(
     base::OnceClosure callback) {
   DCHECK(IsIsolatedCookieCopyInProgress());
 
-  redirect_chain_[index_redirect_chain_to_serve_]
-      ->on_cookie_copy_complete_callback_ = std::move(callback);
+  GetCurrentSinglePrefetchToServe().on_cookie_copy_complete_callback_ =
+      std::move(callback);
 }
 
 void PrefetchContainer::TakeStreamingURLLoader(
@@ -739,10 +736,8 @@ bool PrefetchContainer::IsPrefetchServable(
 }
 
 bool PrefetchContainer::DoesCurrentURLToServeMatch(const GURL& url) const {
-  DCHECK(index_redirect_chain_to_serve_ >= 1 &&
-         index_redirect_chain_to_serve_ < redirect_chain_.size());
-  return IsMatchingURL(redirect_chain_[index_redirect_chain_to_serve_]->url_,
-                       url);
+  DCHECK(index_redirect_chain_to_serve_ >= 1);
+  return IsMatchingURL(GetCurrentSinglePrefetchToServe().url_, url);
 }
 
 PrefetchContainer::SinglePrefetch&
@@ -886,10 +881,9 @@ std::ostream& operator<<(std::ostream& ostream,
 PrefetchContainer::SinglePrefetch::SinglePrefetch(
     const GURL& url,
     const net::SchemefulSite& referring_site)
-    : url_(url) {
-  net::SchemefulSite this_site(url_);
-  is_isolated_network_context_required_ = referring_site != this_site;
-}
+    : url_(url),
+      is_isolated_network_context_required_(referring_site !=
+                                            net::SchemefulSite(url_)) {}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() = default;
 

@@ -307,6 +307,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Holds the state for the request for a single URL in the context of the
   // broader prefetch. A prefetch can request multiple URLs due to redirects.
+  // While prefetching, mutable references are used via
+  // `GetCurrentSinglePrefetchToPrefetch()` and non-mutable non-const members
+  // are updated.
+  // While serving, const references are used via
+  // `GetCurrentSinglePrefetchToServe()` and mutable members are updated.
   class SinglePrefetch {
    public:
     explicit SinglePrefetch(const GURL& url,
@@ -321,7 +326,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // original prefetch URL.
     const GURL url_;
 
-    bool is_isolated_network_context_required_;
+    const bool is_isolated_network_context_required_;
 
     // Whether this |url_| is eligible to be prefetched
     absl::optional<bool> is_eligible_;
@@ -338,16 +343,18 @@ class CONTENT_EXPORT PrefetchContainer {
     };
 
     // The current state of the cookie copy process for this prefetch.
-    CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNotStarted;
+    mutable CookieCopyStatus cookie_copy_status_ =
+        CookieCopyStatus::kNotStarted;
 
     // The timestamps of when the overall cookie copy process starts, and midway
     // when the cookies are read from the isolated network context and are about
     // to be written to the default network context.
-    absl::optional<base::TimeTicks> cookie_copy_start_time_;
-    absl::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
+    mutable absl::optional<base::TimeTicks> cookie_copy_start_time_;
+    mutable absl::optional<base::TimeTicks>
+        cookie_read_end_and_write_start_time_;
 
     // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
-    base::OnceClosure on_cookie_copy_complete_callback_;
+    mutable base::OnceClosure on_cookie_copy_complete_callback_;
   };
 
   // Returns the `SinglePrefetch` to be prefetched next. This is the last
