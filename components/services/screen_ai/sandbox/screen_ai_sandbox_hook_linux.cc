@@ -62,6 +62,10 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   permissions.push_back(BrokerFilePermission::ReadOnly("/proc/self/status"));
+  permissions.push_back(
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"));
+  permissions.push_back(
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/present"));
 #endif
 
   // The models are in the same folder as the library, and the library requires
