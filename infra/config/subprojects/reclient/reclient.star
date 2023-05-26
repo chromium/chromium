@@ -68,6 +68,11 @@ def fyi_reclient_staging_builder(
         # TODO(b/258210757) remove once long term breakpad plans are dertermined
         "GOMA_COMPILER_PROXY_ENABLE_CRASH_DUMP": "true",
     })
+
+    reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
+    reclient_rewrapper_env.update({
+        "RBE_exec_timeout": "15m",
+    })
     return [
         ci.builder(
             name = name,
@@ -80,6 +85,7 @@ def fyi_reclient_staging_builder(
             ),
             reclient_bootstrap_env = reclient_bootstrap_env,
             reclient_scandeps_server = True,
+            reclient_rewrapper_env = reclient_rewrapper_env,
             **kwargs
         ),
         ci.builder(
@@ -94,6 +100,7 @@ def fyi_reclient_staging_builder(
             service_account = untrusted_service_account,
             reclient_bootstrap_env = reclient_bootstrap_env,
             reclient_scandeps_server = True,
+            reclient_rewrapper_env = reclient_rewrapper_env,
             **kwargs
         ),
     ]
@@ -107,6 +114,10 @@ def fyi_reclient_test_builder(
     reclient_bootstrap_env.update({
         "RBE_fast_log_collection": "true",
     })
+    reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
+    reclient_rewrapper_env.update({
+        "RBE_exec_timeout": "15m",
+    })
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
@@ -114,6 +125,7 @@ def fyi_reclient_test_builder(
         reclient_version = "test",
         untrusted_service_account = ci.DEFAULT_SERVICE_ACCOUNT,
         reclient_bootstrap_env = reclient_bootstrap_env,
+        reclient_rewrapper_env = reclient_rewrapper_env,
         **kwargs
     )
 
