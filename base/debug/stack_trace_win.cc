@@ -399,7 +399,6 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
       (*os) << "\t" << trace_[i] << "\n";
     }
   } else {
-    (*os) << "Backtrace:\n";
     context->OutputTraceToStream(trace_, count_, os, prefix_string);
   }
 }

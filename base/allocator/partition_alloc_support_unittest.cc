@@ -381,7 +381,6 @@ TEST(PartitionAllocDanglingPtrChecks, ExtractDanglingPtrSignatureMacTaskTrace) {
 TEST(PartitionAllocDanglingPtrChecks,
      ExtractDanglingPtrSignatureWindowsStackTrace) {
   const std::string stack_trace_output =
-      "Backtrace:\r\n"
       "\tbase::F1 [0x055643C3+19] (o:\\base\\F1.cc:329)\r\n"
       "\tallocator_shim::internal::PartitionFree [0x0648F87B+5243] "
       "(o:\\path.cc:441)\r\n"
@@ -397,7 +396,6 @@ TEST(PartitionAllocDanglingPtrChecks,
      ExtractDanglingPtrSignatureWindowsTaskTrace) {
   const std::string task_trace_output =
       "Task trace:\r\n"
-      "Backtrace:\r\n"
       "\tbase::F1 [0x049068A3+813] (o:\\base\\F1.cc:207)\r\n"
       "\tbase::F2 [0x0490614C+192] (o:\\base\\F2.cc:116)\r\n";
   EXPECT_EQ("base::F1",

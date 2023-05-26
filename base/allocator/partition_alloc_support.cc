@@ -500,8 +500,6 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
       // Windows signatures
       "internal::RawPtrBackupRefImpl<0>::ReleaseInternal",
       "_free_base",
-      // Windows stack traces are prefixed with "Backtrace:"
-      "Backtrace:",
 
       // Mac signatures
       "internal::RawPtrBackupRefImpl<false>::ReleaseInternal",
