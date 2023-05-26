@@ -339,8 +339,8 @@ void DialogDelegate::DialogModelChanged() {
     observer.OnDialogChanged();
 }
 
-void DialogDelegate::TriggerInputProtection() {
-  GetDialogClientView()->TriggerInputProtection();
+void DialogDelegate::TriggerInputProtection(bool force_early) {
+  GetDialogClientView()->TriggerInputProtection(force_early);
 }
 
 void DialogDelegate::SetDefaultButton(int button) {

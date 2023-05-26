@@ -72,8 +72,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // Essentially it prevents clicks that happen within a user's double click
   // interval from when the protection is started as well as any following
   // clicks that happen in shorter succession than the user's double click
-  // interval. Refer to InputEventActivationProtector for more information.
-  void TriggerInputProtection();
+  // interval. Refer to InputEventActivationProtector for more information. If
+  // |force_early| is true, force to trigger even earlier (shortly before the
+  // this view is visible).
+  void TriggerInputProtection(bool force_early = false);
 
   void Layout() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

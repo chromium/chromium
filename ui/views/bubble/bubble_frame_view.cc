@@ -794,7 +794,7 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
 }
 
 void BubbleFrameView::UpdateInputProtectorTimeStamp() {
-  input_protector_.UpdateViewShownTimeStamp();
+  input_protector_.MaybeUpdateViewProtectedTimeStamp();
 }
 
 void BubbleFrameView::ResetViewShownTimeStampForTesting() {

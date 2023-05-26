@@ -9,9 +9,11 @@
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
+#include "base/lazy_instance.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -51,8 +53,8 @@ namespace views {
 
 namespace {
 
-static base::RepeatingCallback<void(NativeWidgetMac*)>*
-    g_init_native_widget_callback = nullptr;
+base::LazyInstance<base::RepeatingCallbackList<void(NativeWidgetMac*)>>::
+    DestructorAtExit g_init_native_widget_callbacks = LAZY_INSTANCE_INITIALIZER;
 
 uint64_t StyleMaskForParams(const Widget::InitParams& params) {
   // If the Widget is modal, it will be displayed as a sheet. This works best if
@@ -270,8 +272,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
   }
   ns_window_host_->CreateCompositor(params);
 
-  if (g_init_native_widget_callback)
-    g_init_native_widget_callback->Run(this);
+  g_init_native_widget_callbacks.Get().Notify(this);
 }
 
 void NativeWidgetMac::OnWidgetInitDone() {
@@ -900,18 +901,11 @@ base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetMac::GetWeakPtr() {
 }
 
 // static
-void NativeWidgetMac::SetInitNativeWidgetCallback(
-    base::RepeatingCallback<void(NativeWidgetMac*)> callback) {
-  DCHECK(!g_init_native_widget_callback || callback.is_null());
-  if (callback.is_null()) {
-    if (g_init_native_widget_callback) {
-      delete g_init_native_widget_callback;
-      g_init_native_widget_callback = nullptr;
-    }
-    return;
-  }
-  g_init_native_widget_callback =
-      new base::RepeatingCallback<void(NativeWidgetMac*)>(std::move(callback));
+base::CallbackListSubscription
+NativeWidgetMac::RegisterInitNativeWidgetCallback(
+    const base::RepeatingCallback<void(NativeWidgetMac*)>& callback) {
+  DCHECK(!callback.is_null());
+  return g_init_native_widget_callbacks.Get().Add(callback);
 }
 
 NativeWidgetMacNSWindow* NativeWidgetMac::CreateNSWindow(

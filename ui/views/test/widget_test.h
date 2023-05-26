@@ -74,6 +74,10 @@ class WidgetTest : public ViewsTestBase {
   explicit WidgetTest(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
+  template <typename... TaskEnvironmentTraits>
+  explicit WidgetTest(TaskEnvironmentTraits&&... traits)
+      : ViewsTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   WidgetTest(const WidgetTest&) = delete;
   WidgetTest& operator=(const WidgetTest&) = delete;
 

@@ -198,7 +198,8 @@ void ChipController::OnWidgetActivationChanged(views::Widget* widget,
     // If the widget is active and the primary window wasn't active the last
     // time activation changed, we know that the window just came to the
     // foreground and trigger input protection.
-    GetPromptBubbleView()->AsDialogDelegate()->TriggerInputProtection();
+    GetPromptBubbleView()->AsDialogDelegate()->TriggerInputProtection(
+        /*force_early*/ true);
   }
   parent_was_visible_when_activation_changed_ =
       prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();

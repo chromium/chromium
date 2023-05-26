@@ -228,7 +228,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // interval from when the protection is started as well as any following
   // clicks that happen in shorter succession than the user's double click
   // interval. Refer to InputEventActivationProtector for more information.
-  void TriggerInputProtection();
+  void TriggerInputProtection(bool force_early = false);
 
   void set_use_round_corners(bool round) { params_.round_corners = round; }
   void set_corner_radius(int corner_radius) {

@@ -296,6 +296,7 @@ component("views") {
     "window/window_button_order_provider.h",
     "window/window_resources.h",
     "window/window_shape.h",
+    "windows_stationarity_monitor.h",
     "word_lookup_client.h",
   ]
 
@@ -498,6 +499,7 @@ component("views") {
     "window/non_client_view.cc",
     "window/window_button_order_provider.cc",
     "window/window_shape.cc",
+    "windows_stationarity_monitor.cc",
   ]
 
   # Other targets in this file (e.g. tests) get access to the internal headers.
@@ -627,6 +629,7 @@ component("views") {
       "widget/native_widget_mac.h",
       "widget/widget_utils_mac.h",
       "window/native_frame_view_mac.h",
+      "windows_stationarity_monitor_mac.h",
     ]
     sources += [
       "accessibility/ax_virtual_view_mac.mm",
@@ -659,6 +662,7 @@ component("views") {
       "widget/native_widget_mac.mm",
       "widget/widget_utils_mac.mm",
       "window/native_frame_view_mac.mm",
+      "windows_stationarity_monitor_mac.mm",
     ]
     public_deps += [ "//components/remote_cocoa/common:mojo" ]
     deps += [
@@ -748,6 +752,7 @@ component("views") {
       "widget/tooltip_manager_aura.h",
       "widget/widget_aura_utils.h",
       "widget/window_reorderer.h",
+      "windows_stationarity_monitor_aura.h",
     ]
 
     sources += [
@@ -780,6 +785,7 @@ component("views") {
       "widget/native_widget_aura.cc",
       "widget/tooltip_manager_aura.cc",
       "widget/window_reorderer.cc",
+      "windows_stationarity_monitor_aura.cc",
     ]
     if (!is_chromeos_ash) {
       sources += [

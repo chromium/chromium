@@ -2425,16 +2425,15 @@ TEST_F(NativeWidgetMacTest, InitCallback) {
         *observed = native_widget;
       },
       &observed_native_widget);
-  NativeWidgetMac::SetInitNativeWidgetCallback(callback);
+  auto subscription =
+      NativeWidgetMac::RegisterInitNativeWidgetCallback(callback);
 
   Widget* widget_a = CreateTopLevelPlatformWidget();
   EXPECT_EQ(observed_native_widget, widget_a->native_widget());
   Widget* widget_b = CreateTopLevelPlatformWidget();
   EXPECT_EQ(observed_native_widget, widget_b->native_widget());
 
-  auto empty = base::RepeatingCallback<void(NativeWidgetMac*)>();
-  DCHECK(empty.is_null());
-  NativeWidgetMac::SetInitNativeWidgetCallback(empty);
+  subscription = {};
   observed_native_widget = nullptr;
   Widget* widget_c = CreateTopLevelPlatformWidget();
   // The original callback from above should no longer be firing.

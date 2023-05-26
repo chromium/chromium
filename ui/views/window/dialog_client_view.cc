@@ -244,7 +244,7 @@ void DialogClientView::OnThemeChanged() {
 }
 
 void DialogClientView::UpdateInputProtectorTimeStamp() {
-  input_protector_->UpdateViewShownTimeStamp();
+  input_protector_->MaybeUpdateViewProtectedTimeStamp();
 }
 
 void DialogClientView::ResetViewShownTimeStampForTesting() {
@@ -262,8 +262,8 @@ void DialogClientView::ChildVisibilityChanged(View* child) {
   InvalidateLayout();
 }
 
-void DialogClientView::TriggerInputProtection() {
-  input_protector_->UpdateViewShownTimeStamp();
+void DialogClientView::TriggerInputProtection(bool force_early) {
+  input_protector_->MaybeUpdateViewProtectedTimeStamp(force_early);
 }
 
 void DialogClientView::OnDialogChanged() {
