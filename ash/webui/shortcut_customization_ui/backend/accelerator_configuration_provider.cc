@@ -58,30 +58,38 @@ constexpr size_t kMaxAcceleratorsAllowed = 5;
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
-  static auto hiddenAcceleratorMap = base::NoDestructor<HiddenAcceleratorMap>(
-      {{AcceleratorAction::kToggleAppList,
-        {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::RELEASED)}},
-       {AcceleratorAction::kShowShortcutViewer,
-        {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
-                         ui::Accelerator::KeyState::PRESSED),
-         ui::Accelerator(
-             ui::VKEY_OEM_2,
-             ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-             ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kOpenGetHelp,
-        {ui::Accelerator(ui::VKEY_OEM_2,
-                         ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kToggleFullscreen,
-        {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED)}},
-       {AcceleratorAction::kSwitchToLastUsedIme,
-        {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::RELEASED)}}});
-  return *hiddenAcceleratorMap;
+  static const auto kHiddenAcceleratorMap =
+      base::NoDestructor<HiddenAcceleratorMap>({
+          {AcceleratorAction::kToggleAppList,
+           {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::PRESSED),
+            ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::RELEASED)}},
+          {AcceleratorAction::kShowShortcutViewer,
+           {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED),
+            ui::Accelerator(
+                ui::VKEY_OEM_2,
+                ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+                ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kOpenGetHelp,
+           {ui::Accelerator(ui::VKEY_OEM_2,
+                            ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kToggleFullscreen,
+           {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kSwitchToLastUsedIme,
+           {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+                            ui::Accelerator::KeyState::RELEASED)}},
+          {AcceleratorAction::kMediaPause,
+           {ui::Accelerator(ui::VKEY_PAUSE, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED)}},
+          {AcceleratorAction::kMediaPlay,
+           {ui::Accelerator(ui::VKEY_PLAY, ui::EF_NONE,
+                            ui::Accelerator::KeyState::PRESSED)}},
+      });
+  return *kHiddenAcceleratorMap;
 }
 
 constexpr int kCustomizationModifierMask =
@@ -696,7 +704,7 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
 
   // Return early if there are no alias accelerators (Because certain keys are
   // unavailable), accelerator will be suppressed/disabled and its state will be
-  // kDisabledByUnavailableKeys.
+  // `kDisabledByUnavailableKeys`.
   if (accelerator_aliases.empty()) {
     output.push_back(CreateStandardAcceleratorInfo(
         accelerator, locked, GetAcceleratorType(accelerator),

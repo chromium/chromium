@@ -113,17 +113,16 @@ export class AcceleratorSubsectionElement extends
                 .filter((accel) => {
                   // Hide accelerators that are default and disabled because the
                   // necessary keys aren't available on the keyboard.
-                  // TODO(longbowei): In the future, we might consider allowing
-                  // empty shortcuts due to kUnavailableKeys to display in the
-                  // app.
                   return !(
                       accel.type === AcceleratorType.kDefault &&
                       accel.state ===
                           AcceleratorState.kDisabledByUnavailableKeys);
                 });
-        // If there are no acceleratorInfos, skip adding the row to the display.
-        if (acceleratorInfos.length === 0) {
-          return;
+        // Do not hide empty accelerator rows if customization is enabled.
+        if (isCustomizationDisabled()) {
+          if (acceleratorInfos.length === 0) {
+            return;
+          }
         }
         const accelRowData: AcceleratorRowData = {
           layoutInfo,
