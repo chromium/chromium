@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 [
-  Exposes=Window, RuntimeEnabled = CSSInitialPseudo
+  Exposed=Window,
+  RuntimeEnabled=CSSInitialPseudo
 ] interface CSSStartingStyleRule : CSSConditionRule {
 };
