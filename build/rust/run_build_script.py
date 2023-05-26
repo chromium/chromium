@@ -106,7 +106,24 @@ def main():
     else:
       env["TARGET"] = args.target
     target_components = env["TARGET"].split("-")
-    env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
+    if len(target_components) == 2:
+      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
+      env["CARGO_CFG_TARGET_VENDOR"] = ''
+      env["CARGO_CFG_TARGET_OS"] = target_components[1]
+      env["CARGO_CFG_TARGET_ENV"] = ''
+    elif len(target_components) == 3:
+      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
+      env["CARGO_CFG_TARGET_VENDOR"] = target_components[1]
+      env["CARGO_CFG_TARGET_OS"] = target_components[2]
+      env["CARGO_CFG_TARGET_ENV"] = ''
+    elif len(target_components) == 4:
+      env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
+      env["CARGO_CFG_TARGET_VENDOR"] = target_components[1]
+      env["CARGO_CFG_TARGET_OS"] = target_components[2]
+      env["CARGO_CFG_TARGET_ENV"] = target_components[3]
+    else:
+      print(f'Invalid TARGET {env["TARGET"]}')
+      sys.exit(1)
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")

@@ -19,8 +19,6 @@ use anyhow::{bail, ensure, format_err, Context, Result};
 
 pub fn generate(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.get_flag("for-std") {
-        // This is not fully implemented. Currently, it will print data helpful
-        // for development then quit.
         generate_for_std(&args, &paths)
     } else {
         generate_for_third_party(&args, &paths)

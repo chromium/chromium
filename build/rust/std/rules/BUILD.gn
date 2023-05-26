@@ -172,6 +172,8 @@ cargo_crate("compiler_builtins") {
     "core",
     "rustc-dep-of-std",
   ]
+  build_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.91/build.rs"
+  build_sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.91/build.rs" ]
   rustflags = [ "-Zforce-unstable-if-unmarked" ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -324,14 +326,14 @@ cargo_crate("hashbrown") {
 }
 cargo_crate("libc") {
   crate_type = "rlib"
-  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.143/src/lib.rs"
+  crate_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.144/src/lib.rs"
   no_std = true
 
   # Unit tests skipped. Generate with --with-tests to include them.
   build_native_rust_unit_tests = false
-  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.143/src/lib.rs" ]
+  sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.144/src/lib.rs" ]
   edition = "2015"
-  cargo_pkg_version = "0.2.143"
+  cargo_pkg_version = "0.2.144"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
@@ -351,20 +353,9 @@ cargo_crate("libc") {
     "rustc-dep-of-std",
     "rustc-std-workspace-core",
   ]
+  build_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.144/build.rs"
+  build_sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/libc-0.2.144/build.rs" ]
   rustflags = [
-    "--cfg=libc_priv_mod_use",
-    "--cfg=libc_union",
-    "--cfg=libc_const_size_of",
-    "--cfg=libc_align",
-    "--cfg=libc_int128",
-    "--cfg=libc_core_cvoid",
-    "--cfg=libc_packedN",
-    "--cfg=libc_cfg_target_vendor",
-    "--cfg=libc_non_exhaustive",
-    "--cfg=libc_long_array",
-    "--cfg=libc_ptr_addr_of",
-    "--cfg=libc_underscore_const_names",
-    "--cfg=libc_const_extern_fn",
     "-Zlink-directives=false",
     "-Zforce-unstable-if-unmarked",
   ]
@@ -402,6 +393,8 @@ cargo_crate("memchr") {
     "core",
     "rustc-dep-of-std",
   ]
+  build_root = "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/memchr-2.5.0/build.rs"
+  build_sources = [ "//build/rust/std/fake_root/../../../../third_party/rust-toolchain/lib/rustlib/src/rust/vendor/memchr-2.5.0/build.rs" ]
   rustflags = [ "-Zforce-unstable-if-unmarked" ]
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
@@ -767,6 +760,11 @@ cargo_crate("std") {
     "profiler_builtins",
     "std_detect_dlsym_getauxval",
     "std_detect_file_io",
+  ]
+  build_root =
+      "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/build.rs"
+  build_sources = [
+    "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/build.rs",
   ]
   rustenv = [ "STD_ENV_ARCH=$rust_target_arch" ]
   rustflags = [

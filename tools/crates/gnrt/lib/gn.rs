@@ -174,17 +174,22 @@ pub fn build_rule_from_std_dep(
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
 ) -> (String, Rule) {
-    let lib_target = dep.lib_target.as_ref().expect("dependency had no lib target");
-    let crate_root_from_src = paths.to_gn_abs_path(&lib_target.root).unwrap();
-    let normalize_target_name = |package_name: &str| package_name.replace("-", "_");
-    let cargo_pkg_authors =
-        if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
-
     // Used by reference if the provided crate config is empty.
     let default_crate_config = Default::default();
     let crate_config =
         extra_config.per_crate_config.get(&*dep.package_name).unwrap_or(&default_crate_config);
     let all_config = &extra_config.all_config;
+
+    let lib_target = dep.lib_target.as_ref().expect("dependency had no lib target");
+    let crate_root_from_src = paths.to_gn_abs_path(&lib_target.root).unwrap();
+    let build_script_from_src = dep
+        .build_script
+        .as_ref()
+        .filter(|_| !crate_config.skip_build_rs)
+        .map(|p| paths.to_gn_abs_path(&p).unwrap());
+    let normalize_target_name = |package_name: &str| package_name.replace("-", "_");
+    let cargo_pkg_authors =
+        if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
 
     // Helper macro to iterate over a particular config field: first the
     // crate-specific one, then the overall one.
@@ -232,6 +237,7 @@ pub fn build_rule_from_std_dep(
         cargo_pkg_authors,
         cargo_pkg_name: dep.package_name.to_string(),
         cargo_pkg_description: dep.description.clone(),
+        build_root: build_script_from_src.as_ref().map(|p| format!("//{p}")),
         add_library_configs: Vec::new(),
         remove_library_configs: Vec::new(),
         add_executable_configs: Vec::new(),
@@ -324,7 +330,7 @@ fn make_build_file_for_chromium_dep<'a>(
         if manifest.authors.is_empty() { None } else { Some(manifest.authors.join(", ")) };
 
     // Template for all the rules in a build file. Several fields are
-    // the same for all a package's rules.
+    // the same for all of a package's rules.
     let mut rule_template = RuleConcrete {
         edition: manifest.edition.to_string(),
         cargo_pkg_version: manifest.version.to_string(),
