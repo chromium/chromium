@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -643,6 +644,7 @@ class TrayAccessibilityLoginTest : public TrayAccessibilityTest {
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityLoginTest,
                        ShowMenuWithShowOnLoginScreen) {
+  test::WaitForOobeJSReady();
   EXPECT_FALSE(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   // Confirms that the menu is visible.

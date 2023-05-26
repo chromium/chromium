@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
@@ -58,6 +59,7 @@ class GuestTosScreenTest : public OobeBaseTest {
   }
 
   void ShowGuestTosScreen() {
+    test::WaitForOobeJSReady();
     WizardController::default_controller()->AdvanceToScreen(
         GuestTosScreenView::kScreenId);
     OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
