@@ -15,7 +15,7 @@ Storage
   Session Storage
     http://127.0.0.1:8000/
   IndexedDB
-    Database1 - http://127.0.0.1:8000/
+    Database1
   Web SQL
     database-for-test
   Cookies
@@ -56,7 +56,7 @@ Storage
   Session Storage
     http://127.0.0.1:8000/
   IndexedDB
-    Database1 - http://127.0.0.1:8000/
+    Database1
   Web SQL
   Cookies
     http://127.0.0.1:8000

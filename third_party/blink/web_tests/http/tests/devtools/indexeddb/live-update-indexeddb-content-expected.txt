@@ -1,7 +1,7 @@
 Tests that the IndexedDB database content live updates.
 
 Dumping IndexedDB tree:
-    database: database1 - http://127.0.0.1:8000/
+    database: database1
         Object store: objectStore1
             Index: index1
 Object store marked needs refresh = false

@@ -2243,12 +2243,6 @@ crbug.com/808834 [ Win ] external/wpt/css/css-pseudo/first-letter-001.html [ Fai
 
 crbug.com/723741 virtual/threaded/http/tests/devtools/tracing/idle-callback.js [ Crash Failure Pass Timeout ]
 
-# Untriaged failures after https://crrev.com/c/543695/.
-# These need to be updated but appear not to be related to that change.
-crbug.com/626703 http/tests/devtools/indexeddb/database-refresh-view.js [ Failure Pass ]
-
-
-
 # Failure messages are unstable so we cannot create baselines.
 crbug.com/832071 external/wpt/service-workers/service-worker/worker-client-id.https.html [ Failure ]
 
@@ -6831,12 +6825,6 @@ crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timelin
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
 crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass ]
 crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
-
-crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass ]
-crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
-crbug.com/1448011 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 # Sheriff 2023-05-26
 crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frames.html [ Failure Pass ]
