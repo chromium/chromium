@@ -32,7 +32,6 @@
 // https://html.spec.whatwg.org/C/#the-abstractworker-abstract-interface
 
 [
-    LegacyTreatAsPartialInterface,
     Exposed=(Window,Worker)
 ] interface mixin AbstractWorker {
     attribute EventHandler onerror;
