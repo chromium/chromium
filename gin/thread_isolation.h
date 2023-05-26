@@ -19,7 +19,7 @@ namespace gin {
 // All data used for thread isolation needs to live in this struct since we need
 // to write-protect it with the same thread isolation mechanism.
 // The implementation is platform specific, e.g. using pkeys on x64.
-struct GIN_EXPORT ThreadIsolationData {
+struct GIN_EXPORT PA_THREAD_ISOLATED_ALIGN ThreadIsolationData {
   // If we're using pkeys for isolation, we need to allocate the key before
   // spawning any threads. Otherwise, the other threads will not have read
   // permissions to memory tagged with this key.
@@ -32,10 +32,6 @@ struct GIN_EXPORT ThreadIsolationData {
 
   base::NoDestructor<ThreadIsolatedAllocator> allocator;
   int pkey = -1;
-
-  // The struct needs to be aligned and padded to a page size since we need to
-  // write-protect the page.
-  char pad[PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(allocator) + sizeof(pkey))];
 };
 static_assert(PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(ThreadIsolationData)) ==
               0);

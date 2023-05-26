@@ -103,7 +103,7 @@ bool ThreadIsolationData::Initialized() const {
 }
 
 ThreadIsolationData& GetThreadIsolationData() {
-  static ThreadIsolationData thread_isolation_data PA_THREAD_ISOLATED_ALIGN;
+  static ThreadIsolationData thread_isolation_data;
   DCHECK_EQ((reinterpret_cast<size_t>(&thread_isolation_data) %
              PA_THREAD_ISOLATED_ALIGN_SZ),
             0llu);
