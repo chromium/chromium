@@ -1083,6 +1083,7 @@ TEST_F(V4LocalDatabaseManagerTest, CancelQueued) {
   EXPECT_FALSE(client1.on_check_browse_url_result_called());
   EXPECT_FALSE(client2.on_check_browse_url_result_called());
   WaitForTasksOnTaskRunner();
+  WaitForTasksOnTaskRunner();
   EXPECT_TRUE(client1.on_check_browse_url_result_called());
   EXPECT_TRUE(client2.on_check_browse_url_result_called());
 }
