@@ -86,6 +86,29 @@ TEST_F(PageTimingMetadataRecorderTest, FirstContentfulPaintUpdate) {
   EXPECT_EQ(2u, requests.size());
 }
 
+TEST_F(PageTimingMetadataRecorderTest, FirstContentfulPaintInvalidDuration) {
+  PageTimingMetadataRecorder::MonotonicTiming timing = {};
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  timing.navigation_start = base::TimeTicks::Now() - base::Milliseconds(500);
+  // Should reject period_end in the future.
+  timing.first_contentful_paint = base::TimeTicks::Now() + base::Hours(1);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(0u, requests.size());
+
+  // Should reject period_end > period_start.
+  timing.first_contentful_paint = *timing.navigation_start - base::Hours(1);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(0u, requests.size());
+
+  // Should accept period_end == period_start.
+  timing.first_contentful_paint = *timing.navigation_start;
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(1u, requests.size());
+}
+
 TEST_F(PageTimingMetadataRecorderTest, FirstInputDelayUpdate) {
   PageTimingMetadataRecorder::MonotonicTiming timing = {};
   // The PageTimingMetadataRecorder constructor is supposed to call
@@ -117,6 +140,23 @@ TEST_F(PageTimingMetadataRecorderTest, FirstInputDelayUpdate) {
   // If nothing modified, should not send any requests.
   recorder.UpdateMetadata(timing);
   EXPECT_EQ(2u, requests.size());
+}
+
+TEST_F(PageTimingMetadataRecorderTest, FirstInputDelayInvalidDuration) {
+  PageTimingMetadataRecorder::MonotonicTiming timing = {};
+  TestPageTimingMetadataRecorder recorder(timing);
+  const std::vector<MetadataTaggingRequest>& requests =
+      recorder.GetMetadataTaggingRequests();
+
+  timing.first_input_timestamp = base::TimeTicks::Now();
+  timing.first_input_delay = base::Hours(-1);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(0u, requests.size());
+
+  // Should accept period_end == period_start.
+  timing.first_input_delay = base::Milliseconds(0);
+  recorder.UpdateMetadata(timing);
+  EXPECT_EQ(1u, requests.size());
 }
 
 }  // namespace page_load_metrics

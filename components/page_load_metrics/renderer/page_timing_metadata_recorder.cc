@@ -63,7 +63,7 @@ void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
       (timing_.first_input_timestamp != first_input_timestamp ||
        timing_.first_input_delay != first_input_delay);
 
-  if (should_apply_metadata) {
+  if (should_apply_metadata && !first_input_delay->is_negative()) {
     ApplyMetadataToPastSamples(
         *first_input_timestamp, *first_input_timestamp + *first_input_delay,
         "PageLoad.InteractiveTiming.FirstInputDelay4", /* key=*/instance_id_,
