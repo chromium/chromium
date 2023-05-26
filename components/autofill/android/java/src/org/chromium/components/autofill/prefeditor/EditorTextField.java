@@ -42,6 +42,9 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     @Nullable
     private static EditorObserverForTest sObserverForTest;
 
+    @Nullable
+    private final TextWatcher mFormatter;
+
     private EditorFieldModel mEditorFieldModel;
     private OnEditorActionListener mEditorActionListener;
     private TextInputLayout mInputLayout;
@@ -165,6 +168,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             mInputLayout.setCounterMaxLength(mEditorFieldModel.getLengthCounterLimit());
         }
 
+        mFormatter = formatter;
         if (formatter != null) {
             mInput.addTextChangedListener(formatter);
             formatter.afterTextChanged(mInput.getText());
@@ -285,6 +289,12 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     @Override
     public void update() {
         mInput.setText(mEditorFieldModel.getValue());
+    }
+
+    public void removeTextChangedListeners() {
+        if (mFormatter != null) {
+            mInput.removeTextChangedListener(mFormatter);
+        }
     }
 
     @VisibleForTesting

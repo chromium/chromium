@@ -23,7 +23,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -96,8 +95,6 @@ public class EditorDialog
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
 
-    @Nullable
-    private TextWatcher mPhoneFormatter;
     private View mLayout;
     private PropertyModel mEditorModel;
     private Button mDoneButton;
@@ -105,8 +102,6 @@ public class EditorDialog
     private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
     private ViewGroup mDataView;
     private View mFooter;
-    @Nullable
-    private TextView mPhoneInput;
 
     private Animator mDialogInOutAnimator;
     @Nullable
@@ -485,9 +480,11 @@ public class EditorDialog
     }
 
     private void removeTextChangedListeners() {
-        if (mPhoneInput != null) {
-            mPhoneInput.removeTextChangedListener(mPhoneFormatter);
-            mPhoneInput = null;
+        for (EditorFieldView view : mFieldViews) {
+            if (view instanceof EditorTextField) {
+                EditorTextField textView = (EditorTextField) view;
+                textView.removeTextChangedListeners();
+            }
         }
     }
 
@@ -515,26 +512,13 @@ public class EditorDialog
 
             childView = dropdownView.getLayout();
         } else {
-            TextWatcher formatter = null;
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
-                mPhoneFormatter = fieldModel.getFormatter();
-                assert mPhoneFormatter != null;
-                formatter = mPhoneFormatter;
-            }
-
-            EditorTextField inputLayout = new EditorTextField(mActivity, fieldModel,
-                    mEditorActionListener, formatter, /* focusAndShowKeyboard= */ false,
-                    mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
+            EditorTextField inputLayout =
+                    new EditorTextField(mActivity, fieldModel, mEditorActionListener,
+                            fieldModel.getFormatter(), /* focusAndShowKeyboard= */ false,
+                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(inputLayout);
 
-            EditText input = inputLayout.getEditText();
-            mEditableTextFields.add(input);
-
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
-                assert mPhoneInput == null;
-                mPhoneInput = input;
-            }
-
+            mEditableTextFields.add(inputLayout.getEditText());
             childView = inputLayout;
         }
 
