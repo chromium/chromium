@@ -9086,7 +9086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageImageService.Backend.OptimizationGuide.Result{ClientId}"
-    enum="PageImageServiceOptimizationGuideResult" expires_after="2023-08-08">
+    enum="PageImageServiceResult" expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>Internals&gt;OptimizationGuide</component>
@@ -9096,6 +9096,20 @@ chromium-metrics-reviews@google.com.
 
     Recorded for each request to Optimization Guide, so the total count of this
     UMA should match that bucket count in PageImageService.Backend.
+  </summary>
+  <token key="ClientId" variants="PageImageServiceClientId"/>
+</histogram>
+
+<histogram name="PageImageService.Backend.Suggest.Result{ClientId}"
+    enum="PageImageServiceResult" expires_after="2023-08-08">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the result of requests to the Suggest backend.
+
+    Recorded for each request to Suggest, so the total count of this UMA should
+    match that bucket count in PageImageService.Backend.
   </summary>
   <token key="ClientId" variants="PageImageServiceClientId"/>
 </histogram>

@@ -37,6 +37,8 @@ class ImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
+  // TODO(crbug.com/1449377): Replace AutocompleteProviderClient with individual
+  // services to make the Suggest backend testable.
   ImageService(
       std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       optimization_guide::NewOptimizationGuideDecider* opt_guide,
@@ -84,7 +86,10 @@ class ImageService : public KeyedService {
 
   // Fetches an image from Suggest appropriate for `search_query` and
   // `entity_id`, returning the result asynchronously to `callback`.
-  void FetchSuggestImage(const std::u16string& search_query,
+  void FetchSuggestImage(const TemplateURL* template_url,
+                         const SearchTermsData& search_terms_data,
+                         mojom::ClientId client_id,
+                         const std::u16string& search_query,
                          const std::string& entity_id,
                          ResultCallback callback);
 

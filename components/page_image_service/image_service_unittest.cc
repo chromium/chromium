@@ -272,11 +272,11 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   // Test histograms with literal names to validate client-sliced names.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result",
-                PageImageServiceOptimizationGuideResult::kSuccess),
+                PageImageServiceResult::kSuccess),
             2);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result.Journeys",
-                PageImageServiceOptimizationGuideResult::kSuccess),
+                PageImageServiceResult::kSuccess),
             2);
 }
 

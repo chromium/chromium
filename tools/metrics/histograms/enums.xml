@@ -79322,10 +79322,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Optimization Guide"/>
 </enum>
 
-<enum name="PageImageServiceOptimizationGuideResult">
+<enum name="PageImageServiceResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Decision missing">
-    The entire Decision for Images is missing.
+  <int value="1" label="Response missing">
+    The entire response (or Decision for Optimization Guide) is missing.
   </int>
   <int value="2" label="No Image">
     No image was available for the requested Page URL.
