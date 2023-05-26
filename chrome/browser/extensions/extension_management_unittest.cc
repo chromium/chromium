@@ -1275,7 +1275,7 @@ TEST_F(ExtensionManagementServiceTest,
   // checks.
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
   SetCWSInfoService(&mock_cws_info_service);
-  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
+  EXPECT_CALL(mock_cws_info_service, GetCWSInfo).Times(0);
   // Verify that the extensions are allowed regardless of policy setting.
   SetPref(true, pref_names::kExtensionUnpublishedAvailability,
           base::Value(static_cast<int>(
@@ -1312,7 +1312,7 @@ TEST_F(ExtensionManagementServiceTest,
   // CWS publish state should not be queried when this extension is checked.
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
   SetCWSInfoService(&mock_cws_info_service);
-  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS).Times(0);
+  EXPECT_CALL(mock_cws_info_service, GetCWSInfo).Times(0);
   // Verify that the extension is allowed.
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));
@@ -1334,14 +1334,40 @@ TEST_F(ExtensionManagementServiceTest,
   // Create a test extension.
   scoped_refptr<const Extension> normal_extension =
       CreateNormalExtension(kTargetExtension);
-  // Create mock CWSInfoService to verify when IsLiveInCWS check is called.
+  // Create mock CWSInfoService to verify GetCWSInfo is called.
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service;
   SetCWSInfoService(&mock_cws_info_service);
-  EXPECT_CALL(mock_cws_info_service, IsLiveInCWS)
-      .WillOnce(testing::Return(absl::optional<bool>(true)))
-      .WillOnce(testing::Return(absl::optional<bool>(false)))
-      .WillOnce(testing::Return(absl::optional<bool>()));
+  // Set up responses to GetCWSInfo calls.
+  CWSInfoServiceInterface::CWSInfo cws_info_live = {
+      /*is_present=*/true,
+      /*is_live=*/true,
+      /*last_update_time=*/base::Time::Now(),
+      CWSInfoServiceInterface::CWSViolationType::kNone,
+      /*unpublished_long_ago=*/false,
+      /*no_privacy_practice=*/false};
+  CWSInfoServiceInterface::CWSInfo cws_info_not_live = {
+      /*is_present=*/true,
+      /*is_live=*/false,
+      /*last_update_time=*/base::Time::Now(),
+      CWSInfoServiceInterface::CWSViolationType::kNone,
+      /*unpublished_long_ago=*/false,
+      /*no_privacy_practice=*/false};
+  CWSInfoServiceInterface::CWSInfo cws_info_malware = {
+      /*is_present=*/true,
+      /*is_live=*/false,
+      /*last_update_time=*/base::Time::Now(),
+      CWSInfoServiceInterface::CWSViolationType::kMalware,
+      /*unpublished_long_ago=*/false,
+      /*no_privacy_practice=*/false};
+  EXPECT_CALL(mock_cws_info_service, GetCWSInfo)
+      .WillOnce(testing::Return(cws_info_live))
+      .WillOnce(testing::Return(cws_info_malware))
+      .WillOnce(testing::Return(cws_info_not_live))
+      .WillOnce(testing::Return(absl::nullopt));
   // Verify that the extension is allowed when it is live in CWS.
+  EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
+      normal_extension.get()));
+  // Verify that the extension is ignored, i.e. allowed, when it is malware.
   EXPECT_TRUE(extension_management_->IsAllowedByUnpublishedAvailabilityPolicy(
       normal_extension.get()));
   // Verify that the extension is disallowed when it is not live in CWS.
