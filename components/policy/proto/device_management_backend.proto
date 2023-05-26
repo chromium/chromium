@@ -93,6 +93,8 @@ message CheckUserAccountRequest {
   // Email address of a user.
   // The user may not exist in GAIA.
   optional string user_email = 1;
+  // If enrollment nudge policy is required.
+  optional bool enrollment_nudge_request = 2 [default = false];
 }
 
 // Request from device to server to register a device, user or browser.
@@ -309,6 +311,19 @@ message CheckUserAccountResponse {
 
   // The account type mapping from the specific user email.
   optional UserAccountType user_account_type = 2;
+
+  // Enum listing the possible enrollment nudge types.
+  enum EnrollmentNudgeType {
+    UNKNOWN_ENROLLMENT_NUDGE_TYPE = 0;
+    // Enrollment is not required.
+    NONE = 1;
+    // Requires the user to complete the enrollment process before they can
+    // login.
+    ENROLLMENT_REQUIRED = 2;
+  }
+
+  // Whether to nudge managed users to enroll unowned devices.
+  optional EnrollmentNudgeType enrollment_nudge_type = 3;
 }
 
 // Response from server to device register request.
