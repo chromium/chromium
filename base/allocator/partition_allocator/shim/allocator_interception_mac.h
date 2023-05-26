@@ -49,12 +49,12 @@ BASE_EXPORT void UninterceptMallocZonesForTesting();
 // zones.
 bool AreMallocZonesIntercepted();
 
-// Periodically checks for, and shims new malloc zones. Stops checking after 1
-// minute.
-BASE_EXPORT void PeriodicallyShimNewMallocZones();
+// heap_profiling::ProfilingClient needs to shim all malloc zones even ones
+// that are registered after the start-up time. ProfilingClient periodically
+// calls this API to make it sure that all malloc zones are shimmed.
+BASE_EXPORT void ShimNewMallocZones();
 
 // Exposed for testing.
-BASE_EXPORT void ShimNewMallocZones();
 BASE_EXPORT void ReplaceZoneFunctions(ChromeMallocZone* zone,
                                       const MallocZoneFunctions* functions);
 

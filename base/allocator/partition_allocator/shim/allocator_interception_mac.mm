@@ -34,9 +34,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
-#import "base/task/sequenced_task_runner.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/apple_apsl/CFBase.h"
 
@@ -547,31 +544,6 @@ void UninterceptMallocZonesForTesting() {
 
 bool AreMallocZonesIntercepted() {
   return !g_allocator_shims_failed_to_install;
-}
-
-namespace {
-
-void ShimNewMallocZonesAndReschedule(base::Time end_time,
-                                     base::TimeDelta delay) {
-  ShimNewMallocZones();
-
-  if (base::Time::Now() > end_time) {
-    return;
-  }
-
-  base::TimeDelta next_delay = delay * 2;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ShimNewMallocZonesAndReschedule, end_time, next_delay),
-      delay);
-}
-
-}  // namespace
-
-void PeriodicallyShimNewMallocZones() {
-  base::Time end_time = base::Time::Now() + base::Minutes(1);
-  base::TimeDelta initial_delay = base::Seconds(1);
-  ShimNewMallocZonesAndReschedule(end_time, initial_delay);
 }
 
 void ShimNewMallocZones() {
