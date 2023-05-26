@@ -121,6 +121,7 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     if (last_swap_state_ == state) {
       return;
     }
+    last_swap_state_ = state;
     SendSwapRequest(op, base::DoNothing());
     enabled_state_heartbeat_timer_.Reset();
     return;
