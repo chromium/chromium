@@ -14,11 +14,13 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -137,7 +139,12 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     // to avoid execution of pending posted-tasks over removed or released
     // observers.
     const size_t observer_id = ++observer_id_counter_;
+#if DCHECK_IS_ON()
+    ObserverTaskRunnerInfo task_info = {task_runner, base::debug::StackTrace(),
+                                        observer_id};
+#else
     ObserverTaskRunnerInfo task_info = {task_runner, observer_id};
+#endif
     observers_[observer] = std::move(task_info);
 
     // If this is called while a notification is being dispatched on this thread
@@ -186,7 +193,10 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   void AssertEmpty() const {
 #if DCHECK_IS_ON()
     AutoLock auto_lock(lock_);
-    DCHECK(observers_.empty());
+    bool observers_is_empty = observers_.empty();
+    DUMP_WILL_BE_CHECK(observers_is_empty)
+        << "\n"
+        << GetObserversCreationStackStringLocked();
 #endif
   }
 
@@ -262,6 +272,18 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     notification.method.Run(observer);
   }
 
+  std::string GetObserversCreationStackStringLocked() const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    std::string result;
+#if DCHECK_IS_ON()
+    for (const auto& observer : observers_) {
+      StrAppend(&result,
+                {observer.second.add_observer_stack_.ToString(), "\n"});
+    }
+#endif
+    return result;
+  }
+
   const ObserverListPolicy policy_ = ObserverListPolicy::ALL;
 
   mutable Lock lock_;
@@ -270,6 +292,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   struct ObserverTaskRunnerInfo {
     scoped_refptr<SequencedTaskRunner> task_runner;
+#if DCHECK_IS_ON()
+    base::debug::StackTrace add_observer_stack_;
+#endif
     size_t observer_id = 0;
   };
 
