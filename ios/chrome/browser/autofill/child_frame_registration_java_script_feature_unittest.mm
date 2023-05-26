@@ -36,7 +36,7 @@ class ChildFrameRegistrationJavaScriptFeatureTest : public PlatformTest {
   ChildFrameRegistrationJavaScriptFeatureTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
     feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillAcrossIframes);
+        autofill::features::kAutofillAcrossIframesIos);
 
     PlatformTest::SetUp();
 

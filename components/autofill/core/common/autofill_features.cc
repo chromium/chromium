@@ -16,6 +16,12 @@ BASE_FEATURE(kAutofillAcrossIframes,
              "AutofillAcrossIframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to flatten and fill cross-iframe forms on iOS.
+// TODO(crbug.com/1441921) Remove once launched.
+BASE_FEATURE(kAutofillAcrossIframesIos,
+             "AutofillAcrossIframesIos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, address data will be verified and autocorrected in the
 // save/update prompt before saving an address profile. Relevant only if the
 // AutofillAddressProfileSavePrompt feature is enabled.

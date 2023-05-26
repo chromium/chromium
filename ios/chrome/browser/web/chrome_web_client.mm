@@ -304,7 +304,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframes)) {
+          autofill::features::kAutofillAcrossIframesIos)) {
     features.push_back(
         autofill::ChildFrameRegistrationJavaScriptFeature::GetInstance());
   }
