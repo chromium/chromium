@@ -50,13 +50,6 @@ ModelTypeController::ModelTypeController(ModelType type)
 
 ModelTypeController::ModelTypeController(
     ModelType type,
-    std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode)
-    : ModelTypeController(type) {
-  InitModelTypeController(std::move(delegate_for_full_sync_mode), nullptr);
-}
-
-ModelTypeController::ModelTypeController(
-    ModelType type,
     std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode,
     std::unique_ptr<ModelTypeControllerDelegate> delegate_for_transport_mode)
     : ModelTypeController(type) {

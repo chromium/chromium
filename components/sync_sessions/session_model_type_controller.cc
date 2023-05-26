@@ -8,11 +8,14 @@
 
 namespace sync_sessions {
 
+// TODO(crbug.com/1448887): Create a `delegate_for_transport_mode`.
 SessionModelTypeController::SessionModelTypeController(
     syncer::SyncService* sync_service,
     PrefService* pref_service,
     std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate)
-    : ModelTypeController(syncer::SESSIONS, std::move(delegate)),
+    : ModelTypeController(syncer::SESSIONS,
+                          std::move(delegate),
+                          /*delegate_for_transport_mode=*/nullptr),
       helper_(syncer::SESSIONS, sync_service, pref_service) {}
 
 SessionModelTypeController::~SessionModelTypeController() = default;

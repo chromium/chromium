@@ -79,7 +79,8 @@ class TestModelTypeController : public ModelTypeController {
   explicit TestModelTypeController(
       std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode)
       : ModelTypeController(kTestModelType,
-                            std::move(delegate_for_full_sync_mode)) {}
+                            std::move(delegate_for_full_sync_mode),
+                            /*delegate_for_transport_mode=*/nullptr) {}
   ~TestModelTypeController() override = default;
 
   using ModelTypeController::ReportModelError;

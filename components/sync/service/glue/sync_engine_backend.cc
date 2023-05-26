@@ -178,9 +178,14 @@ void SyncEngineBackend::DoInitialize(
   authenticated_account_id_ = params.authenticated_account_info.account_id;
 
   auto nigori_processor = std::make_unique<NigoriModelTypeProcessor>();
+  // Note: NIGORI always runs in SyncMode::kFull (see
+  // `LoadAndConnectNigoriController`), so there's no need to create a
+  // `delegate_for_transport_mode`.
   nigori_controller_ = std::make_unique<ModelTypeController>(
-      NIGORI, std::make_unique<ForwardingModelTypeControllerDelegate>(
-                  nigori_processor->GetControllerDelegate().get()));
+      NIGORI,
+      std::make_unique<ForwardingModelTypeControllerDelegate>(
+          nigori_processor->GetControllerDelegate().get()),
+      /*delegate_for_transport_mode=*/nullptr);
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
