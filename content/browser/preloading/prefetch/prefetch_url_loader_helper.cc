@@ -209,8 +209,7 @@ void OnGotPrefetchToServe(
     return;
   }
 
-  if (prefetch_container->HaveDefaultContextCookiesChanged(
-          tentative_resource_request.url)) {
+  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();

@@ -272,8 +272,7 @@ class CONTENT_EXPORT PrefetchService {
   // prefetch if needed, and updates its state.
   void ReturnPrefetchToServe(
       base::WeakPtr<PrefetchContainer> prefetch_container,
-      OnPrefetchToServeReady on_prefetch_to_serve_ready,
-      const GURL& nav_url);
+      OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
   // Helper function for |GetPrefetchToServe| to wait for head of a
   // potentially matching CL in order to decide if we can use it or not for

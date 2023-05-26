@@ -192,36 +192,55 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   prefetch_container.AddRedirectHop(kTestUrl2);
   prefetch_container.AddRedirectHop(kTestUrl3);
 
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
+  // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
+  // respectively. AdvanceCurrentURLToServe() and
+  // ResetCurrentURLToServeForTesting() are used to set the current hop to check
+  // the cookies.
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 
   prefetch_container.RegisterCookieListener(kTestUrl1, cookie_manager());
   prefetch_container.RegisterCookieListener(kTestUrl2, cookie_manager());
   prefetch_container.RegisterCookieListener(kTestUrl3, cookie_manager());
 
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 
   ASSERT_TRUE(SetCookie(kTestUrl1, "test-cookie1"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie2"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 
   prefetch_container.StopAllCookieListeners();
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie3"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 }
 
 TEST_F(PrefetchContainerTest, CookieCopy) {
@@ -246,7 +265,7 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
   // Once the cookie copy process has started, we should stop the cookie
   // listener.
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
   prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
@@ -314,11 +333,16 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
   ASSERT_TRUE(SetCookie(kRedirectUrl1, "test-cookie"));
   ASSERT_TRUE(SetCookie(kRedirectUrl2, "test-cookie"));
 
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
-  EXPECT_FALSE(
-      prefetch_container.HaveDefaultContextCookiesChanged(kRedirectUrl1));
-  EXPECT_FALSE(
-      prefetch_container.HaveDefaultContextCookiesChanged(kRedirectUrl2));
+  // Check the cookies for `kTestUrl`, `kRedirectUrl1` and `kRedirectUrl2`,
+  // respectively. AdvanceCurrentURLToServe() and
+  // ResetCurrentURLToServeForTesting() are used to set the current hop to check
+  // the cookies.
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  prefetch_container.ResetCurrentURLToServeForTesting();
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
   prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
@@ -703,17 +727,11 @@ TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
   // Register Cookie listener for the prefetch URL.
   prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
 
-  // Can use either the exact URL or a matching URL based on the
-  // NoVarySearchHelper.
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(
-      GURL("https://test.com?a=2")));
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
 
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(
-      GURL("https://test.com?a=2")));
+  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
 }
 
 TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {

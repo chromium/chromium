@@ -151,7 +151,7 @@ class CONTENT_EXPORT PrefetchContainer {
   void RegisterCookieListener(const GURL& url,
                               network::mojom::CookieManager* cookie_manager);
   void StopAllCookieListeners();
-  bool HaveDefaultContextCookiesChanged(const GURL& url) const;
+  bool HaveDefaultContextCookiesChanged() const;
 
   // Before a prefetch can be served, any cookies added to the isolated network
   // context must be copied over to the default network context. These functions
@@ -235,6 +235,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // Called when one element of |redirect_chain_| is served and the next element
   // can now be served.
   void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
+
+  void ResetCurrentURLToServeForTesting() {
+    index_redirect_chain_to_serve_ = 0;
+  }
 
   // Called when |this| has received prefetched response's head.
   // Once this is called, we should be able to call GetHead() and receive a

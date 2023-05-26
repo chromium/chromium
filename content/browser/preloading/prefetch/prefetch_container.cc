@@ -520,13 +520,10 @@ void PrefetchContainer::StopAllCookieListeners() {
   }
 }
 
-bool PrefetchContainer::HaveDefaultContextCookiesChanged(
-    const GURL& url) const {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-
-  if (this_prefetch->cookie_listener_) {
-    return this_prefetch->cookie_listener_->HaveCookiesChanged();
+bool PrefetchContainer::HaveDefaultContextCookiesChanged() const {
+  const SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToServe();
+  if (this_prefetch.cookie_listener_) {
+    return this_prefetch.cookie_listener_->HaveCookiesChanged();
   }
   return false;
 }

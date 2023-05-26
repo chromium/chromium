@@ -1250,7 +1250,7 @@ void PrefetchService::PrepareToServe(
       prefetch_container->IsPrefetchServable(PrefetchCacheableDuration());
   bool block_until_head = prefetch_container->ShouldBlockUntilHeadReceived();
 
-  if (prefetch_container->HaveDefaultContextCookiesChanged(url)) {
+  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
@@ -1439,7 +1439,7 @@ void PrefetchService::GetPrefetchToServe(
              << "): PrefetchContainer is servable";
     prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
     ReturnPrefetchToServe(prefetch_container->GetWeakPtr(),
-                          std::move(on_prefetch_to_serve_ready), url);
+                          std::move(on_prefetch_to_serve_ready));
     return;
   }
 
@@ -1466,8 +1466,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
     OnPrefetchToServeReady on_prefetch_to_serve_ready) {
   const GURL& nav_url = key.second;
   if (!prefetch_container) {
-    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
-                          nav_url);
+    ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
     return;
   }
   if (nav_url == prefetch_container->GetURL()) {
@@ -1486,8 +1485,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       // to default behavior (exactly match URL - kDefaultValue)
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
-                            nav_url);
+      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
       return;
     }
     auto no_vary_search_data =
@@ -1498,8 +1496,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
                                            prefetch_container->GetURL())) {
       prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
       prefetch_container->UpdateServingPageMetrics();
-      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready),
-                            nav_url);
+      ReturnPrefetchToServe(nullptr, std::move(on_prefetch_to_serve_ready));
       return;
     }
     DVLOG(1) << "PrefetchService::WaitOnPrefetchToServeHead::"
@@ -1525,8 +1522,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
 
 void PrefetchService::ReturnPrefetchToServe(
     base::WeakPtr<PrefetchContainer> prefetch_container,
-    OnPrefetchToServeReady on_prefetch_to_serve_ready,
-    const GURL& nav_url) {
+    OnPrefetchToServeReady on_prefetch_to_serve_ready) {
   if (prefetch_container) {
     prefetch_container->UpdateServingPageMetrics();
   }
@@ -1540,8 +1536,7 @@ void PrefetchService::ReturnPrefetchToServe(
     return;
   }
 
-  if (prefetch_container->HaveDefaultContextCookiesChanged(
-          prefetch_container->GetURL())) {
+  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
