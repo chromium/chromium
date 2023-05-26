@@ -63,8 +63,6 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     /**
      * Execute an Intent associated with OmniboxActionInSuggest.
      *
-     * TODO(crbug/1418077): pass the dependencies to constructor and define method in the interface.
-     *
      * @param loadPageInCurrentTab loads the page in the current tab (if available), else new tab
      * @param startActivity starts the activity described by supplied intent
      */

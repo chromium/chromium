@@ -108,7 +108,7 @@ public class OmniboxActionInSuggestUnitTest {
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
         OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(
-                0, "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
+                0, "hint", EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE, ""));
     }
 
     /**

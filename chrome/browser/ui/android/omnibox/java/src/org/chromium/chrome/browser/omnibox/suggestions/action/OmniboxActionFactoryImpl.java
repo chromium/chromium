@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionFactory;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
@@ -16,9 +18,16 @@ import org.chromium.components.omnibox.action.OmniboxPedalId;
  */
 public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     private static OmniboxActionFactoryImpl sFactory;
+    private boolean mDialerAvailable;
 
     /** Private constructor to suppress direct instantiation of this class. */
     private OmniboxActionFactoryImpl() {}
+
+    /** Initialize the factory. Called before native code is ready. */
+    public OmniboxActionFactoryImpl setDialerAvailable(boolean dialerAvailable) {
+        mDialerAvailable = dialerAvailable;
+        return this;
+    }
 
     /**
      * Creates (if not already created) and returns the App-wide instance of the
@@ -47,19 +56,22 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     }
 
     @Override
-    public @NonNull OmniboxAction buildOmniboxPedal(
+    public @Nullable OmniboxAction buildOmniboxPedal(
             long nativeInstance, @NonNull String hint, @OmniboxPedalId int pedalId) {
         return new OmniboxPedal(nativeInstance, hint, pedalId);
     }
 
     @Override
-    public @NonNull OmniboxAction buildActionInSuggest(long nativeInstance, @NonNull String hint,
+    public @Nullable OmniboxAction buildActionInSuggest(long nativeInstance, @NonNull String hint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
+        if (actionType == EntityInfoProto.ActionInfo.ActionType.CALL_VALUE && !mDialerAvailable) {
+            return null;
+        }
         return new OmniboxActionInSuggest(nativeInstance, hint, actionType, actionUri);
     }
 
     @Override
-    public @NonNull OmniboxAction buildHistoryClustersAction(
+    public @Nullable OmniboxAction buildHistoryClustersAction(
             long nativeInstance, @NonNull String hint, @NonNull String query) {
         return new HistoryClustersAction(nativeInstance, hint, query);
     }

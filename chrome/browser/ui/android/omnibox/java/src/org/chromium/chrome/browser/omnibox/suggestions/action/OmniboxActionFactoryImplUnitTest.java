@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -22,6 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 
 /**
@@ -90,5 +92,17 @@ public class OmniboxActionFactoryImplUnitTest {
         // Checking for null in case that changes.
         assertNotNull(OmniboxActionInSuggest.from(
                 OmniboxActionFactoryImpl.get().buildActionInSuggest(0, "hint", 1, "url")));
+    }
+
+    @Test
+    public void actionInSuggest_callActionNotCreatedWhenDialerUnavailable() {
+        assertNull(OmniboxActionFactoryImpl.get().setDialerAvailable(false).buildActionInSuggest(
+                0, "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, "url"));
+    }
+
+    @Test
+    public void actionInSuggest_callActionCreatedWhenDialerAvailable() {
+        assertNotNull(OmniboxActionFactoryImpl.get().setDialerAvailable(true).buildActionInSuggest(
+                0, "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, "url"));
     }
 }
