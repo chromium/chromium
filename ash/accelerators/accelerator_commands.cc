@@ -1429,7 +1429,10 @@ void ToggleGameDashboard() {
   DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
-  // TODO(phshah): Connect to Game Dashboard.
+  if (auto* context =
+          GameDashboardController::Get()->GetGameDashboardContext(window)) {
+    context->ToggleMainMenu();
+  }
 }
 
 void ToggleHighContrast() {

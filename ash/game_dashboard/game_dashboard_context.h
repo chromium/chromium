@@ -28,6 +28,10 @@ class GameDashboardContext {
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
+  // Toggles the main menu, called only by the accelerator, or hides the menu
+  // if it is already shown.
+  void ToggleMainMenu();
+
  private:
   friend class GameDashboardContextTest;
 

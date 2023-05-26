@@ -38,6 +38,10 @@ void GameDashboardContext::OnWindowBoundsChanged() {
   UpdateMainMenuButtonWidgetBounds();
 }
 
+void GameDashboardContext::ToggleMainMenu() {
+  VLOG(2) << "ToggleMainMenu";
+}
+
 void GameDashboardContext::CreateAndAddMainMenuButtonWidget() {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
