@@ -71,15 +71,6 @@ void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
   base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
 }
 
-void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (metric_collection_paused_) {
-    return;
-  }
-}
-
 void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
