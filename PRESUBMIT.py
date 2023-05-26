@@ -990,6 +990,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'net/der/.*',
         # Needed to use APIs from the above.
         r'net/cert/.*',
+        # Needed by Caspian, which compiles to WASM.
+        r'tools/binary_size/libsupersize/viewer/caspian/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
