@@ -316,31 +316,6 @@ const gfx::FontList* RecentTabsSubMenuModel::GetLabelFontListAt(
   return nullptr;
 }
 
-int RecentTabsSubMenuModel::GetMaxWidthForItemAtIndex(size_t item_index) const {
-  const int command_id = GetCommandIdAt(item_index);
-  if (command_id == IDC_RECENT_TABS_NO_DEVICE_TABS ||
-      command_id == kRecentlyClosedHeaderCommandId ||
-      command_id == kDisabledRecentlyClosedHeaderCommandId) {
-    return -1;
-  }
-  return 320;
-}
-
-bool RecentTabsSubMenuModel::GetURLAndTitleForItemAtIndex(
-    size_t index,
-    std::string* url,
-    std::u16string* title) {
-  const int command_id = GetCommandIdAt(index);
-  if (IsTabModelCommandId(command_id)) {
-    TabNavigationItems* tab_items = GetTabVectorForCommandId(command_id);
-    const TabNavigationItem& item = (*tab_items)[command_id];
-    *url = item.url.possibly_invalid_spec();
-    *title = item.title;
-    return true;
-  }
-  return false;
-}
-
 void RecentTabsSubMenuModel::Build() {
   // The menu contains:
   // - History to open the full history tab.

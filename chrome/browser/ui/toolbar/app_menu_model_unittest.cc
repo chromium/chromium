@@ -230,9 +230,9 @@ TEST_F(AppMenuModelTest, Basics) {
 
   // Verify that the upgrade item is visible if supported.
   EXPECT_EQ(browser_defaults::kShowUpgradeMenuItem,
-            model.IsCommandIdVisible(IDC_UPGRADE_DIALOG));
+            model.GetIndexOfCommandId(IDC_UPGRADE_DIALOG).has_value());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(model.IsCommandIdVisible(IDC_LACROS_DATA_MIGRATION));
+  EXPECT_TRUE(model.GetIndexOfCommandId(IDC_LACROS_DATA_MIGRATION).has_value());
 #endif
 
   // Execute a couple of the items and make sure it gets back to our delegate.
@@ -344,7 +344,7 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
   static const std::vector<int> skip_commands = {
-      IDC_RECENT_TABS_MENU, IDC_ABOUT, IDC_PIN_TO_START_SCREEN,
+      IDC_RECENT_TABS_MENU, IDC_ABOUT,
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
   AppMenuModel model(this, browser());
   model.Init();

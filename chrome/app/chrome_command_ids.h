@@ -36,7 +36,6 @@
 // Window management commands
 #define IDC_NEW_WINDOW                  34000
 #define IDC_NEW_INCOGNITO_WINDOW        34001
-#define IDC_PIN_TO_START_SCREEN         34005
 #define IDC_CLOSE_WINDOW                34012
 #define IDC_ALWAYS_ON_TOP               34013
 #define IDC_NEW_TAB                     34014
@@ -166,7 +165,6 @@
 #define IDC_ZOOM_PLUS                   38001
 #define IDC_ZOOM_NORMAL                 38002
 #define IDC_ZOOM_MINUS                  38003
-#define IDC_ZOOM_PERCENT_DISPLAY        38004
 
 // Focus various bits of UI
 #define IDC_FOCUS_TOOLBAR               39000

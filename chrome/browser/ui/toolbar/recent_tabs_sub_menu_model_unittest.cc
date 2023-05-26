@@ -214,14 +214,6 @@ TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(2));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(3));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
-
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
 }
 
 // Test enabled "Recently closed" header with no foreign tabs.
@@ -268,16 +260,6 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
-
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }
 
 // Test recently closed groups with no foreign tabs.
@@ -337,16 +319,6 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
-
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }
 
 TEST_F(RecentTabsSubMenuModelTest,
@@ -477,17 +449,6 @@ TEST_F(RecentTabsSubMenuModelTest,
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(7));
-
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(7, &url, &title));
 }
 
 // Test disabled "Recently closed" header with multiple sessions, multiple
@@ -575,22 +536,6 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevices) {
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(10));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(11));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(12));
-
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(7, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(8, &url, &title));
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(9, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(10, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(11, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(12, &url, &title));
 }
 
 TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
@@ -629,10 +574,6 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
 
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(4));
 
-  std::string url;
-  std::u16string title;
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-
   // Enable synchronization and notify menu that synchronization was enabled.
   int previous_enable_count = model.enable_count();
   int previous_execute_count = model.execute_count();
@@ -661,9 +602,6 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
 
   EXPECT_NE(nullptr, model.GetLabelFontListAt(4));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
-
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
 
   // Make changes dynamically.
   previous_enable_count = model.enable_count();
@@ -702,10 +640,6 @@ TEST_F(RecentTabsSubMenuModelTest, OtherDevicesDynamicUpdate) {
   EXPECT_NE(nullptr, model.GetLabelFontListAt(4));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(5));
   EXPECT_EQ(nullptr, model.GetLabelFontListAt(6));
-
-  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
-  EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }
 
 TEST_F(RecentTabsSubMenuModelTest, MaxSessionsAndRecency) {
@@ -779,50 +713,4 @@ TEST_F(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
       recent_tabs_builder.GetTabTitlesSortedByRecency();
   for (int i = 0; i < 4; ++i)
     EXPECT_EQ(tab_titles[i], model.GetLabelAt(i + 5));
-}
-
-TEST_F(RecentTabsSubMenuModelTest, MaxWidth) {
-  EnableSync();
-
-  // Create 1 session with 1 window and 1 tab.
-  RecentTabsBuilderTestHelper recent_tabs_builder;
-  recent_tabs_builder.AddSession();
-  recent_tabs_builder.AddWindow(0);
-  recent_tabs_builder.AddTab(0, 0);
-  RegisterRecentTabs(&recent_tabs_builder);
-
-  // Menu index  Menu items
-  // ----------------------------------------------------------
-  // 0           History
-  // 1           <separator>
-  // 2           Recently closed header (disabled)
-  // 3           <separator>
-  // 4           <section header for 1st session>
-  // 5           <the only tab of the only window of session 1>
-
-  TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(6u, model.GetItemCount());
-  EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(2));
-  EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(3));
-  EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(4));
-  EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(5));
-}
-
-TEST_F(RecentTabsSubMenuModelTest, MaxWidthNoDevices) {
-  DisableSync();
-
-  // Expected menu:
-  // Menu index  Menu items
-  // --------------------------------------------
-  // 0           History
-  // 1           <separator>
-  // 2           Recently closed heaer (disabled)
-  // 3           <separator>
-  // 4           No tabs from other Devices
-
-  TestRecentTabsSubMenuModel model(nullptr, browser());
-  EXPECT_EQ(5u, model.GetItemCount());
-  EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(2));
-  EXPECT_NE(-1, model.GetMaxWidthForItemAtIndex(3));
-  EXPECT_EQ(-1, model.GetMaxWidthForItemAtIndex(4));
 }

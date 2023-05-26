@@ -13,11 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
@@ -26,6 +22,7 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
+class ChromeLabsModel;
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 enum AppMenuAction {
@@ -37,7 +34,6 @@ enum AppMenuAction {
   MENU_ACTION_IMPORT_SETTINGS = 5,
   MENU_ACTION_BOOKMARK_THIS_TAB = 6,
   MENU_ACTION_BOOKMARK_ALL_TABS = 7,
-  MENU_ACTION_PIN_TO_START_SCREEN = 8,
   MENU_ACTION_RESTORE_TAB = 9,
   MENU_ACTION_DISTILL_PAGE = 13,
   MENU_ACTION_SAVE_PAGE = 14,
@@ -95,20 +91,6 @@ enum class AlertMenuItem { kNone, kReopenTabs, kPerformance };
 // Function to record WrenchMenu.MenuAction histogram
 void LogWrenchMenuAction(AppMenuAction action_id);
 
-// A menu model that builds the contents of the zoom menu.
-class ZoomMenuModel : public ui::SimpleMenuModel {
- public:
-  explicit ZoomMenuModel(ui::SimpleMenuModel::Delegate* delegate);
-
-  ZoomMenuModel(const ZoomMenuModel&) = delete;
-  ZoomMenuModel& operator=(const ZoomMenuModel&) = delete;
-
-  ~ZoomMenuModel() override;
-
- private:
-  void Build();
-};
-
 class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);
@@ -124,7 +106,7 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
  private:
   void Build(Browser* browser);
 
-  std::unique_ptr<ChromeLabsModel> chrome_labs_model_ = nullptr;
+  std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
 };
 
 class ExtensionsMenuModel : public ui::SimpleMenuModel {
@@ -144,35 +126,10 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
   void Build(Browser* browser);
 };
 
-class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
- public:
-  explicit PasswordsAndAutofillSubMenuModel(
-      ui::SimpleMenuModel::Delegate* delegate);
-
-  PasswordsAndAutofillSubMenuModel(const PasswordsAndAutofillSubMenuModel&) =
-      delete;
-  PasswordsAndAutofillSubMenuModel& operator=(
-      const PasswordsAndAutofillSubMenuModel&) = delete;
-
-  ~PasswordsAndAutofillSubMenuModel() override;
-};
-
-class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
- public:
-  explicit FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
-
-  FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
-  FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
-
-  ~FindAndEditSubMenuModel() override;
-};
-
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
                      public ui::SimpleMenuModel::Delegate,
-                     public ui::ButtonMenuItemModel::Delegate,
-                     public TabStripModelObserver,
-                     public content::WebContentsObserver {
+                     public ui::ButtonMenuItemModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBookmarksMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
@@ -213,26 +170,12 @@ class AppMenuModel : public ui::SimpleMenuModel,
   bool DoesCommandIdDismissMenu(int command_id) const override;
 
   // Overridden for both ButtonMenuItemModel::Delegate and SimpleMenuModel:
-  bool IsItemForCommandIdDynamic(int command_id) const override;
-  std::u16string GetLabelForCommandId(int command_id) const override;
-  ui::ImageModel GetIconForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
-  bool IsCommandIdVisible(int command_id) const override;
   bool IsCommandIdAlerted(int command_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
-
-  // Overridden from TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
-  // content::WebContentsObserver:
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
 
   // Getters.
   Browser* browser() const { return browser_; }
@@ -240,9 +183,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   BookmarkSubMenuModel* bookmark_sub_menu_model() const {
     return bookmark_sub_menu_model_.get();
   }
-
-  // Calculates |zoom_label_| in response to a zoom change.
-  void UpdateZoomControls();
 
  protected:
   // Helper function to record the menu action in a UMA histogram.
@@ -262,8 +202,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Examples: Extension permissions and sign in errors.
   // Returns a boolean indicating whether any menu items were added.
   bool AddGlobalErrorMenuItems();
-
-  void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
   // Called when a command is selected.
   // Logs UMA metrics about which command was chosen and how long the user
@@ -289,9 +227,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   std::unique_ptr<ui::ButtonMenuItemModel> edit_menu_item_model_;
   std::unique_ptr<ui::ButtonMenuItemModel> zoom_menu_item_model_;
 
-  // Label of the zoom label in the zoom menu item.
-  std::u16string zoom_label_;
-
   // Bookmark submenu.
   std::unique_ptr<BookmarkSubMenuModel> bookmark_sub_menu_model_;
 
@@ -302,8 +237,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
 
   const raw_ptr<Browser> browser_;  // weak
   const raw_ptr<AppMenuIconController> app_menu_icon_controller_;
-
-  base::CallbackListSubscription browser_zoom_subscription_;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

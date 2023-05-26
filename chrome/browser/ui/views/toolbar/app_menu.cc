@@ -873,24 +873,13 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
 
 // AppMenu ------------------------------------------------------------------
 
-AppMenu::AppMenu(Browser* browser, int run_types)
-    : browser_(browser), run_types_(run_types) {
+AppMenu::AppMenu(Browser* browser, ui::MenuModel* model, int run_types)
+    : browser_(browser), model_(model), run_types_(run_types) {
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(browser->profile()));
   new_badge_tracker_ =
       std::make_unique<ScopedNewBadgeTracker>(browser_->profile());
-}
 
-AppMenu::~AppMenu() {
-  if (bookmark_menu_delegate_.get()) {
-    BookmarkModel* model =
-        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
-    if (model)
-      model->RemoveObserver(this);
-  }
-}
-
-void AppMenu::Init(ui::MenuModel* model) {
   DCHECK(!root_);
   root_ = new MenuItemView(this);
   root_->set_has_icons(true);  // We have checks, radios and icons, set this
@@ -904,10 +893,21 @@ void AppMenu::Init(ui::MenuModel* model) {
     // BrowserActionsContainer view.
     types |= views::MenuRunner::FOR_DROP | views::MenuRunner::NESTED_DRAG;
   }
-  if (run_types_ & views::MenuRunner::SHOULD_SHOW_MNEMONICS)
+  if (run_types_ & views::MenuRunner::SHOULD_SHOW_MNEMONICS) {
     types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
+  }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(root_, types);
+}
+
+AppMenu::~AppMenu() {
+  if (bookmark_menu_delegate_.get()) {
+    BookmarkModel* model =
+        BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+    if (model) {
+      model->RemoveObserver(this);
+    }
+  }
 }
 
 void AppMenu::RunMenu(views::MenuButtonController* host) {
@@ -1061,14 +1061,16 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return false;
   }
 
-  if (IsBookmarkCommand(command_id))
+  if (IsBookmarkCommand(command_id)) {
     return true;
+  }
 
   if (command_id == 0)
     return false;  // The root item.
 
-  if (command_id == IDC_MORE_TOOLS_MENU)
+  if (command_id == IDC_MORE_TOOLS_MENU) {
     return true;
+  }
 
   if ((base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
        features::IsChromeRefresh2023()) &&

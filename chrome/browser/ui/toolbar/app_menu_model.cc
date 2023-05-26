@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
@@ -83,9 +84,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
-#include "components/zoom/zoom_controller.h"
-#include "components/zoom/zoom_event_manager.h"
-#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
@@ -248,56 +246,117 @@ AccountInfo GetAccountInfoFromProfile(const Profile* profile) {
 class ProfileSubMenuModel : public ui::SimpleMenuModel {
  public:
   ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
-                      const Profile* profile)
-      : SimpleMenuModel(delegate) {
-    int kAvatarIconSize =
-        GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
-    avatar_image_model_ = ui::ImageModel::FromVectorIcon(
-        kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, kAvatarIconSize);
-    if (profile->IsIncognitoProfile()) {
-      avatar_image_model_ = ui::ImageModel::FromVectorIcon(
-          kIncognitoIcon, ui::kColorAvatarIconIncognito, kAvatarIconSize);
-      profile_name_ =
-          l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
-    } else if (profile->IsGuestSession()) {
-      profile_name_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
-    } else {
-      ProfileAttributesEntry* profile_attributes =
-          GetProfileAttributesFromProfile(profile);
-      // If the profile is being deleted, profile_attributes may be null.
-      if (profile_attributes) {
-        AccountInfo account_info = GetAccountInfoFromProfile(profile);
-        gfx::Image avatar_image =
-            account_info.IsEmpty()
-                ? profile_attributes->GetAvatarIcon(kAvatarIconSize)
-                : account_info.account_image;
-        // The avatar image can be empty if the account image hasn't been
-        // fetched yet, if there is no image, or in tests.
-        if (!avatar_image.IsEmpty()) {
-          avatar_image_model_ =
-              ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
-                  avatar_image, kAvatarIconSize, kAvatarIconSize,
-                  profiles::SHAPE_CIRCLE));
-        }
-        profile_name_ = profile_attributes->GetName();
-      }
-    }
-  }
-
+                      const Profile* profile);
   ProfileSubMenuModel(const ProfileSubMenuModel&) = delete;
   ProfileSubMenuModel& operator=(const ProfileSubMenuModel&) = delete;
   ~ProfileSubMenuModel() override = default;
 
-  const ui::ImageModel& GetAvatarImageModel() const {
+  const ui::ImageModel& avatar_image_model() const {
     return avatar_image_model_;
   }
 
-  const std::u16string& GetProfileName() const { return profile_name_; }
+  const std::u16string& profile_name() const { return profile_name_; }
 
  private:
   ui::ImageModel avatar_image_model_;
   std::u16string profile_name_;
 };
+
+ProfileSubMenuModel::ProfileSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate,
+    const Profile* profile)
+    : SimpleMenuModel(delegate) {
+  const int avatar_icon_size =
+      GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
+  avatar_image_model_ = ui::ImageModel::FromVectorIcon(
+      kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, avatar_icon_size);
+  if (profile->IsIncognitoProfile()) {
+    avatar_image_model_ = ui::ImageModel::FromVectorIcon(
+        kIncognitoIcon, ui::kColorAvatarIconIncognito, avatar_icon_size);
+    profile_name_ = l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
+  } else if (profile->IsGuestSession()) {
+    profile_name_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+  } else {
+    ProfileAttributesEntry* profile_attributes =
+        GetProfileAttributesFromProfile(profile);
+    // If the profile is being deleted, profile_attributes may be null.
+    if (profile_attributes) {
+      AccountInfo account_info = GetAccountInfoFromProfile(profile);
+      gfx::Image avatar_image = profiles::GetSizedAvatarIcon(
+          account_info.IsEmpty()
+              ? profile_attributes->GetAvatarIcon(avatar_icon_size)
+              : account_info.account_image,
+          avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE);
+      // The avatar image can be empty if the account image hasn't been
+      // fetched yet, if there is no image, or in tests.
+      if (!avatar_image.IsEmpty()) {
+        avatar_image_model_ =
+            ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+                avatar_image, avatar_icon_size, avatar_icon_size,
+                profiles::SHAPE_CIRCLE));
+      }
+      profile_name_ = profile_attributes->GetName();
+    }
+  }
+}
+
+class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  explicit PasswordsAndAutofillSubMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate);
+  PasswordsAndAutofillSubMenuModel(const PasswordsAndAutofillSubMenuModel&) =
+      delete;
+  PasswordsAndAutofillSubMenuModel& operator=(
+      const PasswordsAndAutofillSubMenuModel&) = delete;
+  ~PasswordsAndAutofillSubMenuModel() override = default;
+};
+
+PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate)
+    : SimpleMenuModel(delegate) {
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
+      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+      ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+      ui::ImageModel::FromVectorIcon(kLocationOnChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+}
+
+class FindAndEditSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  explicit FindAndEditSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
+  FindAndEditSubMenuModel(const FindAndEditSubMenuModel&) = delete;
+  FindAndEditSubMenuModel& operator=(const FindAndEditSubMenuModel&) = delete;
+  ~FindAndEditSubMenuModel() override = default;
+};
+
+FindAndEditSubMenuModel::FindAndEditSubMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate)
+    : SimpleMenuModel(delegate) {
+  AddItemWithStringIdAndIcon(
+      IDC_FIND, IDS_FIND,
+      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  AddSeparator(ui::NORMAL_SEPARATOR);
+  AddItemWithStringIdAndIcon(
+      IDC_CUT, IDS_CUT,
+      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_COPY, IDS_COPY,
+      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  AddItemWithStringIdAndIcon(
+      IDC_PASTE, IDS_PASTE,
+      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+}
 
 }  // namespace
 
@@ -306,22 +365,6 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel {
 void LogWrenchMenuAction(AppMenuAction action_id) {
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", action_id,
                             LIMIT_MENU_ACTION);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ZoomMenuModel
-
-ZoomMenuModel::ZoomMenuModel(ui::SimpleMenuModel::Delegate* delegate)
-    : SimpleMenuModel(delegate) {
-  Build();
-}
-
-ZoomMenuModel::~ZoomMenuModel() = default;
-
-void ZoomMenuModel::Build() {
-  AddItemWithStringId(IDC_ZOOM_PLUS, IDS_ZOOM_PLUS);
-  AddItemWithStringId(IDC_ZOOM_NORMAL, IDS_ZOOM_NORMAL);
-  AddItemWithStringId(IDC_ZOOM_MINUS, IDS_ZOOM_MINUS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -394,7 +437,6 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 void ToolsMenuModel::Build(Browser* browser) {
   if (!features::IsChromeRefresh2023()) {
     AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
-
     AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   }
   AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
@@ -492,55 +534,6 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// PasswordsAndAutofillSubMenuModel
-
-PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate)
-    : SimpleMenuModel(delegate) {
-  AddItemWithStringIdAndIcon(
-      IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
-      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-  AddItemWithStringIdAndIcon(
-      IDC_SHOW_PAYMENT_METHODS, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon,
-                                     ui::kColorMenuIcon, kDefaultIconSize));
-  AddItemWithStringIdAndIcon(
-      IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(kLocationOnChromeRefreshIcon,
-                                     ui::kColorMenuIcon, kDefaultIconSize));
-}
-
-PasswordsAndAutofillSubMenuModel::~PasswordsAndAutofillSubMenuModel() = default;
-
-////////////////////////////////////////////////////////////////////////////////
-// FindAndEditSubMenuModel
-
-FindAndEditSubMenuModel::FindAndEditSubMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate)
-    : SimpleMenuModel(delegate) {
-  AddItemWithStringIdAndIcon(
-      IDC_FIND, IDS_FIND,
-      ui::ImageModel::FromVectorIcon(kSearchMenuIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-  AddSeparator(ui::NORMAL_SEPARATOR);
-  AddItemWithStringIdAndIcon(
-      IDC_CUT, IDS_CUT,
-      ui::ImageModel::FromVectorIcon(kCutMenuIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-  AddItemWithStringIdAndIcon(
-      IDC_COPY, IDS_COPY,
-      ui::ImageModel::FromVectorIcon(kCopyMenuIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-  AddItemWithStringIdAndIcon(
-      IDC_PASTE, IDS_PASTE,
-      ui::ImageModel::FromVectorIcon(kPasteMenuIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-}
-
-FindAndEditSubMenuModel::~FindAndEditSubMenuModel() = default;
-
-////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
 
 // static
@@ -560,22 +553,10 @@ AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
   DCHECK(browser_);
 }
 
-AppMenuModel::~AppMenuModel() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-}
+AppMenuModel::~AppMenuModel() = default;
 
 void AppMenuModel::Init() {
   Build();
-
-  browser_zoom_subscription_ =
-      zoom::ZoomEventManager::GetForBrowserContext(browser_->profile())
-          ->AddZoomLevelChangedCallback(base::BindRepeating(
-              &AppMenuModel::OnZoomLevelChanged, base::Unretained(this)));
-
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  tab_strip_model->AddObserver(this);
-  Observe(tab_strip_model->GetActiveWebContents());
-  UpdateZoomControls();
 
 #if BUILDFLAG(IS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
@@ -592,68 +573,6 @@ void AppMenuModel::Init() {
 
 bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
   return command_id != IDC_ZOOM_MINUS && command_id != IDC_ZOOM_PLUS;
-}
-
-bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
-  return command_id == IDC_ZOOM_PERCENT_DISPLAY ||
-#if BUILDFLAG(IS_MAC)
-         command_id == IDC_FULLSCREEN ||
-#elif BUILDFLAG(IS_WIN)
-         command_id == IDC_PIN_TO_START_SCREEN ||
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-         command_id == IDC_LACROS_DATA_MIGRATION ||
-#endif
-         command_id == IDC_UPGRADE_DIALOG;
-}
-
-std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
-  switch (command_id) {
-    case IDC_ZOOM_PERCENT_DISPLAY:
-      return zoom_label_;
-#if BUILDFLAG(IS_MAC)
-    case IDC_FULLSCREEN: {
-      int string_id = IDS_ENTER_FULLSCREEN_MAC;  // Default to Enter.
-      // Note: On startup, |window()| may be NULL.
-      if (browser_->window() && browser_->window()->IsFullscreen())
-        string_id = IDS_EXIT_FULLSCREEN_MAC;
-      return l10n_util::GetStringUTF16(string_id);
-    }
-#elif BUILDFLAG(IS_WIN)
-    case IDC_PIN_TO_START_SCREEN: {
-      int string_id = IDS_PIN_TO_START_SCREEN;
-      // TODO(scottmg): Remove http://crbug.com/558054.
-      return l10n_util::GetStringUTF16(string_id);
-    }
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_LACROS_DATA_MIGRATION:
-      return GetLacrosDataMigrationMenuItemName();
-#endif
-    case IDC_UPGRADE_DIALOG:
-      DCHECK(browser_defaults::kShowUpgradeMenuItem);
-      return GetUpgradeDialogMenuItemName();
-    default:
-      NOTREACHED();
-      return std::u16string();
-  }
-}
-
-ui::ImageModel AppMenuModel::GetIconForCommandId(int command_id) const {
-  bool upgrade_icon_requested = false;
-  if (command_id == IDC_UPGRADE_DIALOG) {
-    DCHECK(browser_defaults::kShowUpgradeMenuItem);
-    upgrade_icon_requested = true;
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (command_id == IDC_LACROS_DATA_MIGRATION)
-    upgrade_icon_requested = true;
-#endif
-  if (upgrade_icon_requested) {
-    DCHECK(app_menu_icon_controller_);
-    return ui::ImageModel::FromVectorIcon(
-        kBrowserToolsUpdateIcon,
-        app_menu_icon_controller_->GetIconColor(absl::nullopt));
-  }
-  return ui::ImageModel();
 }
 
 void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
@@ -744,13 +663,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                    delta);
       }
       LogMenuAction(MENU_ACTION_BOOKMARK_ALL_TABS);
-      break;
-    case IDC_PIN_TO_START_SCREEN:
-      if (!uma_action_recorded_) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.PinToStartScreen",
-                                   delta);
-      }
-      LogMenuAction(MENU_ACTION_PIN_TO_START_SCREEN);
       break;
     // Extensions menu.
     case IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS:
@@ -1093,29 +1005,6 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
   }
 }
 
-bool AppMenuModel::IsCommandIdVisible(int command_id) const {
-  switch (command_id) {
-    case IDC_PIN_TO_START_SCREEN:
-      return false;
-    case IDC_UPGRADE_DIALOG: {
-      if (!browser_defaults::kShowUpgradeMenuItem || !app_menu_icon_controller_)
-        return false;
-      return app_menu_icon_controller_->GetTypeAndSeverity().type ==
-             AppMenuIconController::IconType::UPGRADE_NOTIFICATION;
-    }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_LACROS_DATA_MIGRATION: {
-      if (!app_menu_icon_controller_)
-        return false;
-      return app_menu_icon_controller_->GetTypeAndSeverity().type ==
-             AppMenuIconController::IconType::UPGRADE_NOTIFICATION;
-    }
-#endif
-    default:
-      return true;
-  }
-}
-
 bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
   if ((command_id == IDC_RECENT_TABS_MENU) ||
       (command_id == AppMenuModel::kMinRecentTabsCommandId)) {
@@ -1133,26 +1022,6 @@ bool AppMenuModel::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
   return provider_->GetAcceleratorForCommandId(command_id, accelerator);
-}
-
-void AppMenuModel::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (tab_strip_model->empty())
-    return;
-
-  if (selection.active_tab_changed()) {
-    // The user has switched between tabs and the new tab may have a different
-    // zoom setting. Or web contents for a tab has been replaced.
-    Observe(selection.new_contents);
-    UpdateZoomControls();
-  }
-}
-
-void AppMenuModel::NavigationEntryCommitted(
-    const content::LoadCommittedDetails& load_details) {
-  UpdateZoomControls();
 }
 
 void AppMenuModel::LogMenuAction(AppMenuAction action_id) {
@@ -1173,16 +1042,23 @@ void AppMenuModel::Build() {
   DCHECK_EQ(0u, GetItemCount());
 
   bool need_separator = false;
-  if (IsCommandIdVisible(IDC_UPGRADE_DIALOG)) {
-    AddItem(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName());
-    need_separator = true;
-  }
+  if (app_menu_icon_controller_ &&
+      app_menu_icon_controller_->GetTypeAndSeverity().type ==
+          AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
+    const auto update_icon = ui::ImageModel::FromVectorIcon(
+        kBrowserToolsUpdateIcon,
+        app_menu_icon_controller_->GetIconColor(absl::nullopt));
+    if (browser_defaults::kShowUpgradeMenuItem) {
+      AddItemWithIcon(IDC_UPGRADE_DIALOG, GetUpgradeDialogMenuItemName(),
+                      update_icon);
+      need_separator = true;
+    }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsCommandIdVisible(IDC_LACROS_DATA_MIGRATION)) {
-    AddItem(IDC_LACROS_DATA_MIGRATION, GetLacrosDataMigrationMenuItemName());
+    AddItemWithIcon(IDC_LACROS_DATA_MIGRATION,
+                    GetLacrosDataMigrationMenuItemName(), update_icon);
     need_separator = true;
-  }
 #endif
+  }
 
   if (AddGlobalErrorMenuItems() || need_separator)
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1209,9 +1085,9 @@ void AppMenuModel::Build() {
     auto* const profile_submenu_model =
         static_cast<ProfileSubMenuModel*>(sub_menus_.back().get());
     AddSubMenu(IDC_PROFILE_MENU_IN_APP_MENU,
-               profile_submenu_model->GetProfileName(), profile_submenu_model);
+               profile_submenu_model->profile_name(), profile_submenu_model);
     SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
-            profile_submenu_model->GetAvatarImageModel());
+            profile_submenu_model->avatar_image_model());
   }
 
   if (!browser_->profile()->IsGuestSession() &&
@@ -1469,15 +1345,6 @@ void AppMenuModel::CreateZoomMenu() {
   AddButtonItem(IDC_ZOOM_MENU, zoom_menu_item_model_.get());
 }
 
-void AppMenuModel::UpdateZoomControls() {
-  int zoom_percent = 100;  // Defaults to 100% zoom.
-  if (web_contents()) {
-    zoom_percent =
-        zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent();
-  }
-  zoom_label_ = base::FormatPercent(zoom_percent);
-}
-
 bool AppMenuModel::AddGlobalErrorMenuItems() {
   // TODO(sail): Currently we only build the app menu once per browser
   // window. This means that if a new error is added after the menu is built
@@ -1496,11 +1363,6 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
     }
   }
   return menu_items_added;
-}
-
-void AppMenuModel::OnZoomLevelChanged(
-    const content::HostZoomMap::ZoomLevelChange& change) {
-  UpdateZoomControls();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

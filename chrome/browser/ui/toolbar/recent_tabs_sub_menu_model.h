@@ -81,11 +81,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void ExecuteCommand(int command_id, int event_flags) override;
   const gfx::FontList* GetLabelFontListAt(size_t index) const override;
 
-  int GetMaxWidthForItemAtIndex(size_t item_index) const;
-  bool GetURLAndTitleForItemAtIndex(size_t index,
-                                    std::string* url,
-                                    std::u16string* title);
-
  private:
   struct TabNavigationItem;
   using TabNavigationItems = std::map<int, TabNavigationItem>;

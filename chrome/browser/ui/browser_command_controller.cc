@@ -1543,9 +1543,6 @@ void BrowserCommandController::UpdateCommandsForBookmarkEditing() {
                                         CanBookmarkCurrentTab(browser_));
   command_updater_.UpdateCommandEnabled(IDC_BOOKMARK_ALL_TABS,
                                         CanBookmarkAllTabs(browser_));
-#if BUILDFLAG(IS_WIN)
-  command_updater_.UpdateCommandEnabled(IDC_PIN_TO_START_SCREEN, true);
-#endif
 }
 
 void BrowserCommandController::UpdateCommandsForBookmarkBar() {

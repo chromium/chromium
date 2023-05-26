@@ -545,7 +545,8 @@ chromium-metrics-reviews@google.com.
       name="Autofill.SaveCreditCardPromptResult.Upload.Reshows"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AutofillSaveCreditCardPromptWithSameLastFourButDifferentExpiration"
+<histogram_suffixes
+    name="AutofillSaveCreditCardPromptWithSameLastFourButDifferentExpiration"
     separator=".">
   <suffix name="WithSameLastFourButDifferentExpiration"
       label="When the same last four but different expiration dates"/>
@@ -5937,7 +5938,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="OpenRecentTab" label=""/>
   <suffix name="PasswordManager" label=""/>
   <suffix name="Paste" label=""/>
-  <suffix name="PinToStartScreen" label=""/>
   <suffix name="Print" label=""/>
   <suffix name="ProfilingEnabled" label=""/>
   <suffix name="RequestTabletSite" label=""/>

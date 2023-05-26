@@ -1162,9 +1162,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito window
           </message>
-          <message name="IDS_PIN_TO_START_SCREEN" desc="The text label of the Pin to start screen menu item">
-            Pin this page to Start screen...
-          </message>
           <message name="IDS_EDIT2" desc="The text label before the cut/copy/paste buttons in the merged menu">
             Edit
           </message>
@@ -1259,9 +1256,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_NEW_INCOGNITO_WINDOW" desc="In Title Case: The text label of a menu item for opening a new Incognito window">
             New &amp;Incognito Window
-          </message>
-          <message name="IDS_PIN_TO_START_SCREEN" desc="In Title Case: The text label of the Pin to start screen menu item">
-            Pin this Page to Start Screen...
           </message>
           <message name="IDS_EDIT2" desc="In Title Case: The text label before the cut/copy/paste buttons in the merged menu">
             Edit
