@@ -11,7 +11,6 @@ import android.util.ArrayMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
@@ -35,7 +34,6 @@ public class ActionChipsProcessor {
 
     /** The action that was executed, or null if no action was executed by the user. */
     private @Nullable OmniboxAction mExecutedAction;
-    private int mJourneysActionShownPosition = -1;
 
     /**
      * @param context An Android context.
@@ -53,9 +51,13 @@ public class ActionChipsProcessor {
     }
 
     public void onUrlFocusChange(boolean hasFocus) {
-        if (!hasFocus) {
-            recordActionsShown();
+        if (hasFocus) {
+            return;
         }
+        mVisibleActions.forEach((OmniboxAction action, Integer position) -> {
+            action.recordActionShown(position, action == mExecutedAction);
+        });
+        mVisibleActions.clear();
     }
 
     public void onSuggestionsReceived() {
@@ -99,18 +101,7 @@ public class ActionChipsProcessor {
                             .build();
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
-
-            // TODO(crbug/1418077): Move this to appropriate implementations.
-            switch (chip.actionId) {
-                case OmniboxActionId.HISTORY_CLUSTERS:
-                    mJourneysActionShownPosition = position;
-                    break;
-
-                case OmniboxActionId.PEDAL:
-                case OmniboxActionId.ACTION_IN_SUGGEST:
-                    mVisibleActions.put(chip, position);
-                    break;
-            }
+            mVisibleActions.put(chip, position);
         }
 
         model.set(ActionChipsProperties.ACTION_CHIPS, modelList);
@@ -145,35 +136,9 @@ public class ActionChipsProcessor {
 
     /**
      * Invoke action associated with the ActionChip.
-     *
-     * TODO(crbug/1418077): Move this to appropriate implementations.
      */
     private void executeAction(@NonNull OmniboxAction action, int position) {
-        switch (action.actionId) {
-            case OmniboxActionId.HISTORY_CLUSTERS:
-                OmniboxMetrics.recordResumeJourneyClick(position);
-                break;
-
-            case OmniboxActionId.PEDAL:
-            case OmniboxActionId.ACTION_IN_SUGGEST:
-                mExecutedAction = action;
-                break;
-        }
+        mExecutedAction = action;
         mSuggestionHost.onOmniboxActionClicked(action);
-    }
-
-    /**
-     * Record the actions shown for all action types (Journeys + any pedals).
-     *
-     * TODO(crbug/1418077): Move this to appropriate implementations.
-     */
-    private void recordActionsShown() {
-        mVisibleActions.forEach((OmniboxAction action, Integer position) -> {
-            action.recordActionShown(position, action == mExecutedAction);
-        });
-
-        OmniboxMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
-
-        mJourneysActionShownPosition = -1;
     }
 }

@@ -63,9 +63,6 @@ public class OmniboxMetrics {
         int ACTIVITY_NOT_FOUND = 2;
         int COUNT = 3;
     }
-    // TODO(crbug/1418077) export this from upstream.
-    // See entity_info.proto, ActionType.
-    private static final int ACTION_TYPE_COUNT = 20;
 
     /**
      * Record how long the Suggestion List needed to layout its content and children.
