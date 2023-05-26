@@ -79,7 +79,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // to true.
   void OnConsentPrefUpdated();
 
-  std::unique_ptr<ConsentRequester> consent_requester_ = nullptr;
+  std::unique_ptr<ConsentRequester> consent_requester_;
 
   // Only set to true when a challenge response (or timeout) resumed the
   // throttled navigation.
