@@ -83,7 +83,11 @@ config("compiler") {
 
   # This is on by default in ld64 for our deployment target, but not yet
   # in ld64.lld. Force it on.
-  ldflags += [ "-Wl,-fixup_chains" ]
+  if (ios_deployment_target != "11.0" && ios_deployment_target != "12.0" &&
+      ios_deployment_target != "13.0" && ios_deployment_target != "13.4" &&
+      ios_deployment_target != "14.0") {
+    ldflags += [ "-Wl,-fixup_chains" ]
+  }
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library
