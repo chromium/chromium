@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
+#include "content/browser/renderer_host/coop_swap_result.h"
 
 namespace content {
 
@@ -35,10 +36,29 @@ class CrossOriginOpenerPolicyAccessReportManager {
   // CoopAccessMonitor. The first window is identified by |node|.
   static void InstallAccessMonitorsIfNeeded(FrameTreeNode* node);
 
-  // Generate a new, previously unused, virtualBrowsingContextId.
-  static int NextVirtualBrowsingContextGroup();
+  // Return a new virtual browsing context group ID belong to a new
+  // CoopRelatedGroup.
+  static int GetNewVirtualBrowsingContextGroup();
+
+  // Return a virtual browsing context group ID that is suitable given the
+  // information passed in. `enforce_result` and `report_only_result` indicate
+  // whether actual COOP values and report-only COOP values, respectively, need
+  // a browsing context group swap. It also accounts for swapping in the same
+  // CoopRelatedGroup or in a different one. Combined with
+  // `current_virtual_browsing_context_group`, we can decide what virtual
+  // browsing context group is suitable and return its ID.
+  static int GetVirtualBrowsingContextGroup(
+      CoopSwapResult enforce_result,
+      CoopSwapResult report_only_result,
+      int current_virtual_browsing_context_group);
 
  private:
+  // Generate a new, previously unused, virtual browsing context group ID.
+  static int NextVirtualBrowsingContextGroup();
+
+  // Generate a new, previously unused, virtual CoopRelatedGroup ID.
+  static int NextVirtualCoopRelatedGroup();
+
   // Install the CoopAccessMonitors monitoring accesses from |accessing_node|
   // toward |accessed_node|.
   void MonitorAccesses(FrameTreeNode* accessing_node,

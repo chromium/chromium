@@ -397,6 +397,9 @@ class CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+using CoopRestrictPropertiesReportingBrowserTest =
+    CoopRestrictPropertiesBrowserTest;
+
 // Certain features are only active when SiteIsolation is off or restricted.
 // This is the case for example for Default SiteInstances that are used on
 // Android to limit the number of processes. Testing these particularities of
@@ -4245,6 +4248,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NoSiteIsolationCrossOriginIsolationBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         CoopRestrictPropertiesReportingBrowserTest,
+                         kTestParams,
+                         CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, BaseCase) {
   GURL url = https_server()->GetURL("a.test", "/empty.html");
@@ -7505,6 +7512,409 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       "call.");
   EXPECT_TRUE(ExecJs(current_frame_host(), "window.popup['divID']"));
   ASSERT_TRUE(console_observer.Wait());
+}
+
+// Navigate in between two documents. Check the virtual browsing context group
+// is properly updated.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
+                       NavigationVirtualBrowsingContextGroup) {
+  const struct {
+    GURL url_a;
+    GURL url_b;
+    bool expect_different_virtual_browsing_context_group;
+  } kTestCases[] = {
+      // non-coop <-> non-coop
+      {
+          // same-origin => keep.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL("a.test", "/title2.html"),
+          false,
+      },
+      {
+          // different-origin => keep.
+          https_server()->GetURL("a.a.test", "/title1.html"),
+          https_server()->GetURL("b.a.test", "/title2.html"),
+          false,
+      },
+      {
+          // different-site => keep.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL("b.test", "/title2.html"),
+          false,
+      },
+
+      // non-coop <-> coop.
+      {
+          // same-origin => change.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-origin => change.
+          https_server()->GetURL("a.a.test", "/title1.html"),
+          https_server()->GetURL(
+              "b.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-site => change.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // coop <-> coop.
+      {
+          // same-origin => keep.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          false,
+      },
+      {
+          // different-origin => change.
+          https_server()->GetURL(
+              "a.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-site => change.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // non-coop <-> coop-ro.
+      {
+          // same-origin => change.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-origin => change.
+          https_server()->GetURL("a.a.test", "/title1.html"),
+          https_server()->GetURL(
+              "b.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-site => change.
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // coop-ro <-> coop-ro.
+      {
+          // same-origin => keep.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          false,
+      },
+      {
+          // different-origin => change.
+          https_server()->GetURL(
+              "a.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-site => keep.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // coop <-> coop-ro.
+      {
+          // same-origin => change.
+          https_server()->GetURL("a.test",
+                                 "/set-header?"
+                                 "Cross-Origin-Opener-Policy: same-origin&"
+                                 "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-origin => change.
+          https_server()->GetURL(
+              "a.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      {
+          // different-site => change
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+      // TODO(https://crbug.com/1424417): Test with COEP-RO.
+      // TODO(https://crbug.com/1424417): Test interactions with COOP: SO.
+      // TODO(https://crbug.com/1424417): Test interactions with COOP: SOAP.
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << std::endl
+                 << "url_a = " << test_case.url_a << std::endl
+                 << "url_b = " << test_case.url_b << std::endl);
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_a));
+    int group_1 = VirtualBrowsingContextGroup(web_contents());
+
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_b));
+    int group_2 = VirtualBrowsingContextGroup(web_contents());
+
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_a));
+    int group_3 = VirtualBrowsingContextGroup(web_contents());
+
+    // Note: Navigating from A to B and navigating from B to A must lead to the
+    // same decision. We check both to avoid adding all the symmetric test
+    // cases.
+    if (test_case.expect_different_virtual_browsing_context_group) {
+      EXPECT_NE(group_1, group_2);  // url_a -> url_b.
+      EXPECT_NE(group_2, group_3);  // url_a <- url_b.
+    } else {
+      EXPECT_EQ(group_1, group_2);  // url_a -> url_b.
+      EXPECT_EQ(group_2, group_3);  // url_b <- url_b.
+    }
+  }
+}
+
+// Use window.open(url). Check the virtual browsing context group of the two
+// window.
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesReportingBrowserTest,
+                       WindowOpenVirtualBrowsingContextGroup) {
+  const struct {
+    GURL url_opener;
+    GURL url_openee;
+    bool expect_different_virtual_browsing_context_group;
+  } kTestCases[] = {
+      // Open with no URL => Always keep.
+      {
+          // From non-coop.
+          https_server()->GetURL("a.test", "/title1.html"),
+          GURL(),
+          false,
+      },
+      {
+          // From coop-ro.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          GURL(),
+          false,
+      },
+      {
+          // From coop.
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          GURL(),
+          false,
+      },
+
+      // From here, we open a new window with an URL. This is equivalent to:
+      // 1. opening a new window
+      // 2. navigating the new window.
+      //
+      // (1) is tested by the 3 test cases above.
+      // (2) is tested by the test VirtualBrowsingContextGroup.
+      //
+      // Here we are only providing a few test cases to test the sequence 1 & 2.
+
+      // non-coop opens non-coop.
+      {
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL("a.test", "/title1.html"),
+          false,
+      },
+
+      // non-coop opens coop-ro.
+      {
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // non-coop opens coop.
+      {
+          https_server()->GetURL("a.test", "/title1.html"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // coop opens non-coop.
+      {
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL("a.test", "/title1.html"),
+          true,
+      },
+
+      // coop-ro opens coop-ro (same-origin).
+      {
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          false,
+      },
+
+      // coop-ro opens coop-ro (different-origin).
+      {
+          https_server()->GetURL(
+              "a.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          https_server()->GetURL(
+              "b.test",
+              "/set-header?"
+              "Cross-Origin-Opener-Policy-Report-Only: restrict-properties&"
+              "Cross-Origin-Embedder-Policy: require-corp"),
+          true,
+      },
+
+      // TODO(https://crbug.com/1101339). Test with COEP-RO.
+      // TODO(https://crbug.com/1101339). Test with COOP-RO+COOP
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << std::endl
+                 << "url_opener = " << test_case.url_opener << std::endl
+                 << "url_openee = " << test_case.url_openee << std::endl);
+
+    ASSERT_TRUE(NavigateToURL(shell(), test_case.url_opener));
+    int group_opener = VirtualBrowsingContextGroup(web_contents());
+
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(current_frame_host(),
+                       JsReplace("window.open($1)", test_case.url_openee)));
+    WebContents* popup = shell_observer.GetShell()->web_contents();
+    // The virtual browser context group will change, only after the popup has
+    // navigated.
+    WaitForLoadStop(popup);
+    int group_openee = VirtualBrowsingContextGroup(popup);
+
+    if (test_case.expect_different_virtual_browsing_context_group) {
+      EXPECT_NE(group_opener, group_openee);
+    } else {
+      EXPECT_EQ(group_opener, group_openee);
+    }
+
+    popup->Close();
+  }
 }
 
 }  // namespace content

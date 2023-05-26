@@ -19,6 +19,15 @@ namespace content {
 
 namespace {
 
+// A map of virtual browsing context groups to the coop related groups they
+// belong to. This mimics the real behavior of BrowsingInstance and
+// CoopRelatedGroup. It is useful to restrict access in a more granular manner
+// and to account for browsing context group reuse.
+std::map<int, int>& GetVirtualBrowsingContextGroupToCoopRelatedGroupMap() {
+  static auto& bcg_to_coop_group_map = *new std::map<int, int>();
+  return bcg_to_coop_group_map;
+}
+
 absl::optional<blink::FrameToken> GetFrameToken(
     FrameTreeNode* frame,
     SiteInstanceGroup* site_instance_group) {
@@ -40,6 +49,8 @@ absl::optional<blink::FrameToken> GetFrameToken(
 std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
   DCHECK(frame->IsMainFrame());
+  std::map<int, int>& bcg_to_coop_group_map =
+      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
 
@@ -47,11 +58,26 @@ std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
   for (RenderFrameHostImpl* rfh :
        frame->current_frame_host()
            ->delegate()
-           ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
+           ->GetActiveTopLevelDocumentsInCoopRelatedGroup(
                frame->current_frame_host())) {
     // Filter out windows from the same virtual browsing context group.
-    if (rfh->virtual_browsing_context_group() == virtual_browsing_context_group)
+    if (rfh->virtual_browsing_context_group() ==
+        virtual_browsing_context_group) {
       continue;
+    }
+
+    // Filter out windows from the same virtual coop related group.
+    // TODO(https://crbug.com/1424417): We should instead add access reporters
+    // for frames in different browsing context groups in the same
+    // CoopRelatedGroup, but not report their postMessage and closed accesses.
+    CHECK(bcg_to_coop_group_map.find(rfh->virtual_browsing_context_group()) !=
+          bcg_to_coop_group_map.end());
+    CHECK(bcg_to_coop_group_map.find(virtual_browsing_context_group) !=
+          bcg_to_coop_group_map.end());
+    if (bcg_to_coop_group_map[rfh->virtual_browsing_context_group()] ==
+        bcg_to_coop_group_map[virtual_browsing_context_group]) {
+      continue;
+    }
 
     out.push_back(rfh->frame_tree_node());
   }
@@ -142,7 +168,63 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
 
 // static
 int CrossOriginOpenerPolicyAccessReportManager::
+    GetNewVirtualBrowsingContextGroup() {
+  std::map<int, int>& bcg_to_coop_group_map =
+      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
+
+  // Assign the newly created virtual browsing context group to a new virtual
+  // CoopRelatedGroup.
+  int virtual_browsing_context_group_id = NextVirtualBrowsingContextGroup();
+  bcg_to_coop_group_map[virtual_browsing_context_group_id] =
+      NextVirtualCoopRelatedGroup();
+  return virtual_browsing_context_group_id;
+}
+
+// static
+int CrossOriginOpenerPolicyAccessReportManager::GetVirtualBrowsingContextGroup(
+    CoopSwapResult enforce_result,
+    CoopSwapResult report_only_result,
+    int current_virtual_browsing_context_group) {
+  // This function should only ever be called if we require a different virtual
+  // browsing context group.
+  CHECK(enforce_result != CoopSwapResult::kNoSwap ||
+        report_only_result != CoopSwapResult::kNoSwap);
+
+  int next_browsing_context_group_id = NextVirtualBrowsingContextGroup();
+  std::map<int, int>& bcg_to_coop_group_map =
+      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
+
+  // If a swap in a different CoopRelatedGroup would be required, simply create
+  // a new virtual browsing context group in a new virtual CoopRelatedGroup.
+  if (enforce_result == CoopSwapResult::kSwap ||
+      report_only_result == CoopSwapResult::kSwap) {
+    bcg_to_coop_group_map[next_browsing_context_group_id] =
+        NextVirtualCoopRelatedGroup();
+    return next_browsing_context_group_id;
+  }
+
+  // If a swap in the same CoopRelatedGroup would be required, create a new
+  // virtual browsing context group in the current virtual CoopRelatedGroup.
+  // TODO(https://crbug.com/1424417): This is not strictly correct, because
+  // browsing context groups can be reused when navigating in the same
+  // CoopRelatedGroup. Pass in the isolation information to make it as close
+  // to reality as possible.
+  int current_virtual_coop_related_group =
+      bcg_to_coop_group_map[current_virtual_browsing_context_group];
+  bcg_to_coop_group_map[next_browsing_context_group_id] =
+      current_virtual_coop_related_group;
+  return next_browsing_context_group_id;
+}
+
+// static
+int CrossOriginOpenerPolicyAccessReportManager::
     NextVirtualBrowsingContextGroup() {
+  static int id = -1;
+  return ++id;
+}
+
+// static
+int CrossOriginOpenerPolicyAccessReportManager::NextVirtualCoopRelatedGroup() {
   static int id = -1;
   return ++id;
 }
