@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -54,6 +55,12 @@ namespace reporting {
 
 BASE_FEATURE(kEnableEncryptedReportingClientForUpload,
              "EnableEncryptedReportingClientForUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(b/281905099): remove after rolling out reporting managed user events
+// from unmanaged devices
+BASE_FEATURE(kEnableReportingFromUnmanagedDevices,
+             "EnableReportingFromUnmanagedDevices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gets the size of payload as a JSON string.
@@ -196,14 +203,24 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
   core_ = nullptr;
 }
 
+// static
+// Returns true if device info should be including in the upload. Returns false
+// otherwise.
+bool DeviceInfoRequiredForUpload() {
+  return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
+         policy::IsDeviceEnterpriseManaged();
+}
+
 void ReportingServerConnector::UploadEncryptedReportInternal(
     base::Value::Dict merging_payload,
     absl::optional<base::Value::Dict> context,
     ResponseCallbackInternal callback) {
   if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
-    encrypted_reporting_client_->UploadReport(
-        std::move(merging_payload), std::move(context), client_->dm_token(),
-        client_->client_id(), std::move(callback));
+    // TODO(b/283187811): remove cloud policy client as a parameter to
+    // `UploadReport` and read device info from `merging_payload` instead.
+    encrypted_reporting_client_->UploadReport(std::move(merging_payload),
+                                              std::move(context), client_,
+                                              std::move(callback));
     return;
   }
   client_->UploadEncryptedReport(std::move(merging_payload), std::move(context),
@@ -226,23 +243,27 @@ void ReportingServerConnector::UploadEncryptedReport(
 
   // Now we are on UI task runner.
   ReportingServerConnector* const connector = GetInstance();
-  auto client_status = connector->EnsureUsableClient();
-  if (!client_status.ok()) {
-    std::move(callback).Run(client_status);
-    return;
-  }
-  if (connector->client_->dm_token().empty()) {
-    std::move(callback).Run(
-        Status(error::UNAVAILABLE, "Device DM token not set"));
-    return;
-  }
 
-  // Client is usable. Prepare context for the upload.
-  // Compose the only context elements needed by reporting server.
+  // Add context elements needed by reporting server.
   base::Value::Dict context;
   context.SetByDottedPath("browser.userAgent",
                           embedder_support::GetUserAgent());
-  context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
+
+  if (DeviceInfoRequiredForUpload()) {
+    // Initialize the cloud policy client
+    auto client_status = connector->EnsureUsableClient();
+    if (!client_status.ok()) {
+      std::move(callback).Run(client_status);
+      return;
+    }
+    if (connector->client_->dm_token().empty()) {
+      std::move(callback).Run(
+          Status(error::UNAVAILABLE, "Device DM token not set"));
+      return;
+    }
+    // TODO(b/283187811): add device info to merging_payload
+    context.SetByDottedPath("device.dmToken", connector->client_->dm_token());
+  }
 
   // Forward the `UploadEncryptedReport` to the cloud policy client.
   absl::optional<int> request_payload_size;

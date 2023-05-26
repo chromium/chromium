@@ -86,8 +86,7 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
       DMAuth auth_data,
       const std::string& server_url,
       base::Value::Dict merging_payload,
-      const std::string& dm_token,
-      const std::string& client_id,
+      CloudPolicyClient* cloud_policy_client,
       UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;
 

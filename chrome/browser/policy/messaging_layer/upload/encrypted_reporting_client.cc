@@ -44,23 +44,35 @@ EncryptedReportingClient::~EncryptedReportingClient() {
 void EncryptedReportingClient::UploadReport(
     base::Value::Dict merging_payload,
     absl::optional<base::Value::Dict> context,
-    const std::string& dm_token,
-    const std::string& client_id,
+    policy::CloudPolicyClient* cloud_policy_client,
     ResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy::DeviceManagementService* const device_management_service =
       delegate_->device_management_service();
   if (!device_management_service) {
+    LOG(ERROR) << "Device management service required, but not found";
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
+  // This is the case for uploading managed user events from an
+  // unmanaged device. The server will authenticate by looking at the user dm
+  // tokens inside the records instead of a single request-level device dm
+  // token.
+  policy::DMAuth auth_data = policy::DMAuth::NoAuth();
+
+  if (cloud_policy_client) {
+    // The device cloud policy client only exists on managed devices and is the
+    // source of the DM token. So if the device is managed, we use the device dm
+    // token as authentication.
+    auth_data = policy::DMAuth::FromDMToken(cloud_policy_client->dm_token());
+  }
+
   auto config = std::make_unique<policy::EncryptedReportingJobConfiguration>(
-      g_browser_process->shared_url_loader_factory(),
-      policy::DMAuth::FromDMToken(dm_token),
+      g_browser_process->shared_url_loader_factory(), std::move(auth_data),
       device_management_service->configuration()
           ->GetEncryptedReportingServerUrl(),
-      std::move(merging_payload), dm_token, client_id,
+      std::move(merging_payload), cloud_policy_client,
       base::BindOnce(&EncryptedReportingClient::OnReportUploadCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 

@@ -15,6 +15,8 @@
 
 namespace reporting {
 
+constexpr char kFakeDmToken[] = "FAKE_DM_TOKEN";
+
 class EncryptedReportingClient;
 
 class ReportingServerConnector::TestEnvironment {
