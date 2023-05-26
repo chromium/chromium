@@ -28,7 +28,7 @@ suite('nearby-onboarding-page', function() {
     fakeSettings.setEnabled(true);
     setNearbyShareSettingsForTesting(fakeSettings);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     element = /** @type {!NearbyOnboardingPageElement} */ (
         document.createElement('nearby-onboarding-page'));

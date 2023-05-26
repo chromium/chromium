@@ -15,7 +15,7 @@ suite('nearby-page-template', function() {
   let element;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     element = /** @type {!NearbyPageTemplateElement} */ (
         document.createElement('nearby-page-template'));

@@ -21,6 +21,7 @@ import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview,
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {ArraySelector, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -539,7 +540,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
    * can't be used directly because this isn't part of settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
    */
-  private getAriaLabelledHelpText_(): string {
+  private getAriaLabelledHelpText_(): TrustedHTML {
     const tempEl = document.createElement('div');
     const localizedString = this.i18nAdvanced('nearbyShareDiscoveryPageInfo');
     const linkUrl = this.i18n('nearbyShareLearnMoreLink');
@@ -575,7 +576,7 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
     if (anchorTags.length === 0) {
-      return localizedString.toString();
+      return localizedString;
     }
 
     assert(
@@ -586,7 +587,8 @@ export class NearbyDiscoveryPageElement extends NearbyDiscoveryPageElementBase {
     anchorTag.href = linkUrl;
     anchorTag.target = '_blank';
 
-    return tempEl.innerHTML;
+    return sanitizeInnerHtml(
+        tempEl.innerHTML, {attrs: ['id', 'aria-hidden', 'aria-labelledby']});
   }
 
   /**

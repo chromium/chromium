@@ -16,7 +16,7 @@ suite('nearby-visibility-page', function() {
   let visibility_page;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
 
     visibility_page = /** @type {!NearbyVisibilityPageElement} */ (
         document.createElement('nearby-visibility-page'));

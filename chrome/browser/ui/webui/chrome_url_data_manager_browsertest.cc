@@ -391,6 +391,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
     "chrome://multidevice-setup",
+    "chrome://nearby",
     "chrome://nearby-internals",
     "chrome://network",
     "chrome://office-fallback/",
