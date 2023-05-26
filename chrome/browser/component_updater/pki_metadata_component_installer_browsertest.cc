@@ -392,6 +392,15 @@ IN_PROC_BROWSER_TEST_F(PKIMetadataComponentChromeRootStoreUpdateTest,
       ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
 }
 
+// TODO(https://crbug.com/1287211) additional Chrome Root Store browser tests to
+// add:
+//
+// * Test that AIA fetching still works after updating CRS.
+// * Test with the kChromeRootStoreUsed feature disabled: configuring a CRS
+//   update with the test root should not cause the page to load successfully.
+// * Test that updates propagate into TrialComparisonCertVerifier too. Testing
+//   that loading the root in CRS would cause it to succeed with the trial
+//   verifier but not with primary.
 #endif
 
 }  // namespace component_updater
