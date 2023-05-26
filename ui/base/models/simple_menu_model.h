@@ -148,6 +148,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
                                      int command_id,
                                      int string_id,
                                      int group_id);
+  void InsertTitleWithStringIdAt(size_t index, int string_id);
   void InsertSeparatorAt(size_t index, MenuSeparatorType separator_type);
   void InsertSubMenuAt(size_t index,
                        int command_id,

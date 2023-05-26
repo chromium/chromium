@@ -924,11 +924,6 @@ bool AppMenu::IsShowing() const {
 }
 
 const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
-    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
-        ui::ResourceBundle::BoldFont);
-  }
-
   ui::MenuModel* model = model_;
   size_t index = 0;
   ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
@@ -1048,16 +1043,13 @@ bool AppMenu::IsItemChecked(int command_id) const {
 }
 
 bool AppMenu::IsCommandEnabled(int command_id) const {
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
-    return false;
+  if (command_id <= 0) {
+    return false;  // The root item, a separator, or a title.
   }
 
   if (IsBookmarkCommand(command_id)) {
     return true;
   }
-
-  if (command_id == 0)
-    return false;  // The root item.
 
   if (command_id == IDC_MORE_TOOLS_MENU) {
     return true;
@@ -1110,11 +1102,12 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
 
 bool AppMenu::GetAccelerator(int command_id,
                              ui::Accelerator* accelerator) const {
-  if (IsBookmarkCommand(command_id))
-    return false;
-
-  if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
+  if (command_id < 0) {
     // This is a non-interactive title.
+    return false;
+  }
+
+  if (IsBookmarkCommand(command_id)) {
     return false;
   }
 
@@ -1311,12 +1304,8 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
                                    MenuModel* model,
                                    size_t model_index,
                                    MenuModel::ItemType menu_type) {
-  int command_id = model->GetCommandIdAt(model_index);
-  DCHECK(command_id > -1 ||
-         (command_id == -1 &&
-          model->GetTypeAt(model_index) == MenuModel::TYPE_SEPARATOR));
-
-  if (command_id > -1) {  // Don't add separators to |command_id_to_entry_|.
+  const int command_id = model->GetCommandIdAt(model_index);
+  if (command_id >= 0) {  // Don't add separators to |command_id_to_entry_|.
     // All command ID's should be unique except for IDC_SHOW_HISTORY which is
     // in both app menu and RecentTabs submenu,
     if (command_id != IDC_SHOW_HISTORY) {

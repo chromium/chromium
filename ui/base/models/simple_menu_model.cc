@@ -261,6 +261,13 @@ void SimpleMenuModel::InsertRadioItemWithStringIdAt(size_t index,
       index, command_id, l10n_util::GetStringUTF16(string_id), group_id);
 }
 
+void SimpleMenuModel::InsertTitleWithStringIdAt(size_t index, int string_id) {
+  Item item(kTitleId, TYPE_TITLE, l10n_util::GetStringUTF16(string_id));
+  // Titles are non-interactive and should not be enabled.
+  item.enabled = false;
+  InsertItemAtIndex(std::move(item), index);
+}
+
 void SimpleMenuModel::InsertSeparatorAt(size_t index,
                                         MenuSeparatorType separator_type) {
 #if !defined(USE_AURA)

@@ -139,15 +139,18 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerMenuItem);
 
-  // First command ID to use for the recent tabs menu. This is one higher than
-  // the first command id used for the bookmarks menus, as the command ids for
-  // these menus should be offset to avoid conflicts.
-  static const int kMinRecentTabsCommandId = IDC_FIRST_UNBOUNDED_MENU + 1;
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items
-  // varies depending upon the underlying model. Currently, this accounts for
-  // the bookmarks and recent tabs menus.
-  static const int kNumUnboundedMenuTypes = 2;
+  // varies depending upon the underlying model. The command IDs for items in
+  // these menus will be staggered and each increment by this value, so they
+  // don't have conflicts. Currently, this accounts for the bookmarks and recent
+  // tabs menus.
+  static constexpr int kNumUnboundedMenuTypes = 2;
+
+  // First command ID to use for each unbounded menu. These should be staggered,
+  // and there should be kNumUnboundedMenuTypes of them.
+  static constexpr int kMinBookmarksCommandId = IDC_FIRST_UNBOUNDED_MENU;
+  static constexpr int kMinRecentTabsCommandId = kMinBookmarksCommandId + 1;
 
   // Creates an app menu model for the given browser. Init() must be called
   // before passing this to an AppMenu. |app_menu_icon_controller|, if provided,

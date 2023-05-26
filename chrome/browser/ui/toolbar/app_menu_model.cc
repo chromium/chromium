@@ -536,10 +536,6 @@ void ExtensionsMenuModel::Build(Browser* browser) {
 ////////////////////////////////////////////////////////////////////////////////
 // AppMenuModel
 
-// static
-const int AppMenuModel::kMinRecentTabsCommandId;
-const int AppMenuModel::kNumUnboundedMenuTypes;
-
 AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
                            Browser* browser,
                            AppMenuIconController* app_menu_icon_controller,

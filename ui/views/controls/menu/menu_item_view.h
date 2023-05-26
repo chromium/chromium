@@ -191,6 +191,8 @@ class VIEWS_EXPORT MenuItemView : public View {
                                const std::u16string& label = std::u16string(),
                                const ui::ImageModel& icon = ui::ImageModel());
 
+  MenuItemView* AppendTitle(const std::u16string& label);
+
   // Append a submenu to this menu.
   // The returned pointer is owned by this menu.
   MenuItemView* AppendSubMenu(int item_id,

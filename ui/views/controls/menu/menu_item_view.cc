@@ -426,6 +426,11 @@ MenuItemView* MenuItemView::AppendMenuItem(int item_id,
   return AppendMenuItemImpl(item_id, label, icon, Type::kNormal);
 }
 
+MenuItemView* MenuItemView::AppendTitle(const std::u16string& label) {
+  return AppendMenuItemImpl(ui::MenuModel::kTitleId, label, ui::ImageModel(),
+                            Type::kTitle);
+}
+
 MenuItemView* MenuItemView::AppendSubMenu(int item_id,
                                           const std::u16string& label,
                                           const ui::ImageModel& icon) {

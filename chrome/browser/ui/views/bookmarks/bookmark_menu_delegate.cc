@@ -11,7 +11,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -134,7 +134,7 @@ BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
-      next_menu_id_(IDC_FIRST_UNBOUNDED_MENU),
+      next_menu_id_(AppMenuModel::kMinBookmarksCommandId),
       real_delegate_(nullptr),
       is_mutating_model_(false),
       location_(BookmarkLaunchLocation::kNone) {}
@@ -175,8 +175,7 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
       parent->AppendSeparator();
       // Add a "Bookmarks" title.
       if (features::IsChromeRefresh2023()) {
-        parent->AppendMenuItem(
-            IDC_BOOKMARKS_LIST_TITLE,
+        parent->AppendTitle(
             l10n_util::GetStringUTF16(IDS_BOOKMARKS_LIST_TITLE));
       }
     }
