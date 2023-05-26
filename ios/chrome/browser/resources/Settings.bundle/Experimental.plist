@@ -62,16 +62,16 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
-                <dict>
-                        <key>Type</key>
-                        <string>PSToggleSwitchSpecifier</string>
-                        <key>Title</key>
-                        <string>Ignore Tile Ablation Conditions</string>
-                        <key>Key</key>
-                        <string>IgnoreTileAblationConditions</string>
-                        <key>DefaultValue</key>
-                        <false/>
-                </dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Ignore Tile Ablation Conditions</string>
+			<key>Key</key>
+			<string>IgnoreTileAblationConditions</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
@@ -177,11 +177,13 @@
 			<array>
 				<string></string>
 				<string>AndroidPhone</string>
+				<string>SyncedAndFirstDevice</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled</string>
 				<string>Android Phone</string>
+				<string>Synced And First Device</string>
 			</array>
 		</dict>
 		<dict>

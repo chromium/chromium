@@ -214,9 +214,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 }
 
 // Tests that the overflow menu IPH shows up when triggered.
-// TODO(crbug.com/1439920) enable test when able to force the device switcher
-// result.
-- (void)DISABLED_testOverflowMenuIPHForHistory {
+- (void)testOverflowMenuIPHForHistory {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
@@ -227,6 +225,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   config.additional_args.push_back(base::StringPrintf(
       "--enable-features=%s:chosen_feature/IPH_iOSHistoryOnOverflowMenuFeature",
       feature_engagement::kIPHDemoMode.name));
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
 
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.

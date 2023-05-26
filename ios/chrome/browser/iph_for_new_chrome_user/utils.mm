@@ -40,10 +40,12 @@ bool IsUserEligible(
     }
   }
 
-  // TODO(crbug.com/1439920): check
-  // experimental_flags::GetSegmentForForcedDeviceSwitcherExperience() here
-  // before real result.
-
+  bool is_new_chrome_user_forced =
+      experimental_flags::GetSegmentForForcedDeviceSwitcherExperience() ==
+      segmentation_platform::DeviceSwitcherModel::kSyncedAndFirstDeviceLabel;
+  if (is_new_chrome_user_forced) {
+    return true;
+  }
   segmentation_platform::ClassificationResult result =
       dispatcher->GetCachedClassificationResult();
   // Use the device switcher classification result to determine the user is new
