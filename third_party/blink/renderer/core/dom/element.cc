@@ -2364,6 +2364,20 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kExportpartsAttr) {
     EnsureElementRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
+  } else if (name == html_names::kTabindexAttr) {
+    if (params.reason == AttributeModificationReason::kDirectly &&
+        AdjustedFocusedElementInTreeScope() == this) {
+      // The attribute change may cause supportsFocus() to return false
+      // for the element which had focus.
+      //
+      // TODO(tkent): We should avoid updating style.  We'd like to check only
+      // DOM-level focusability here.
+      GetDocument().UpdateStyleAndLayoutTreeForNode(
+          this, DocumentUpdateReason::kFocus);
+      if (!SupportsFocus() && !GetFocusableArea()) {
+        blur();
+      }
+    }
   } else if (IsElementReflectionAttribute(name)) {
     SynchronizeContentAttributeAndElementReference(name);
   } else if (IsStyledElement()) {
@@ -2387,21 +2401,6 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       if (params.old_value != params.new_value) {
         cache->HandleAttributeChanged(name, this);
       }
-    }
-  }
-
-  if (params.reason == AttributeModificationReason::kDirectly &&
-      name == html_names::kTabindexAttr &&
-      AdjustedFocusedElementInTreeScope() == this) {
-    // The attribute change may cause supportsFocus() to return false
-    // for the element which had focus.
-    //
-    // TODO(tkent): We should avoid updating style.  We'd like to check only
-    // DOM-level focusability here.
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
-                                                  DocumentUpdateReason::kFocus);
-    if (!SupportsFocus() && !GetFocusableArea()) {
-      blur();
     }
   }
 }
