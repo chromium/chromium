@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/error_page/common/localized_error.h"
 #include "content/public/common/content_switches.h"
@@ -235,8 +234,6 @@ void NetErrorHelperCore::UpdateErrorPage() {
   DCHECK(committed_error_page_info_->is_finished_loading);
   DCHECK_NE(error_page::DNS_PROBE_POSSIBLE, last_probe_status_);
 
-  UMA_HISTOGRAM_ENUMERATION("DnsProbe.ErrorPageUpdateStatus",
-                            last_probe_status_, error_page::DNS_PROBE_MAX);
   // Every status other than error_page::DNS_PROBE_POSSIBLE and
   // error_page::DNS_PROBE_STARTED is a final status code.  Once one is reached,
   // the page does not need further updates.

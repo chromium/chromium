@@ -4846,15 +4846,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DnsProbe.ErrorPageUpdateStatus" enum="DnsProbe.ProbeStatus"
-    expires_after="2021-06-04">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Status of DNS diagnostic probe updates sent to a Chrome net error page.
-  </summary>
-</histogram>
-
 <histogram name="DnsProbe.ProbeDuration2" units="ms" expires_after="2021-12-12">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
