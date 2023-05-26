@@ -519,6 +519,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
         return this.i18nAdvanced('aboutUpgradeDownloadError');
       case UpdateStatus.DISABLED_BY_ADMIN:
         return this.i18nAdvanced('aboutUpgradeAdministrator');
+      case UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
+        return this.i18nAdvanced('aboutUpdateToRollbackVersionDisallowed');
       case UpdateStatus.DEFERRED:
         return this.i18nAdvanced('aboutUpgradeNotUpToDate');
       default:
@@ -554,6 +556,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
         // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
         return 'settings:check-circle';
       case UpdateStatus.DEFERRED:
+      case UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
         return 'cr:warning';
       default:
         return null;
@@ -641,7 +644,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     return staleUpdatedStatus || this.checkStatus_(UpdateStatus.FAILED) ||
         this.checkStatus_(UpdateStatus.FAILED_HTTP) ||
         this.checkStatus_(UpdateStatus.FAILED_DOWNLOAD) ||
-        this.checkStatus_(UpdateStatus.DISABLED_BY_ADMIN);
+        this.checkStatus_(UpdateStatus.DISABLED_BY_ADMIN) ||
+        this.checkStatus_(UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED);
   }
 
   /**

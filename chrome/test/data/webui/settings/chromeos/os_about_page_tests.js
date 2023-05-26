@@ -238,6 +238,13 @@ suite('AboutPageTest', function() {
                 'aboutRollbackSuccess', {substitutions: [page.deviceManager_]})
             .toString(),
         statusMessageEl.innerHTML);
+
+    // Simulate update disallowed to previously installed version after a
+    // consumer rollback.
+    fireStatusChanged(UpdateStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED);
+    const expectedMessage =
+        page.i18n('aboutUpdateToRollbackVersionDisallowed').toString();
+    assertEquals(expectedMessage, statusMessageEl.textContent);
   });
 
   test('NoInternet', function() {

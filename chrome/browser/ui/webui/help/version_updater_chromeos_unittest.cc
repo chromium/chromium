@@ -262,6 +262,26 @@ TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_UpdatedNeedReboot) {
   version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
 }
 
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_UpdateToRollbackVersionDisallowed) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  status.set_is_interactive(true);
+  status.set_current_operation(update_engine::Operation::DISABLED);
+  int32_t error_code = static_cast<int32_t>(
+      update_engine::ErrorCode::kOmahaUpdateIgnoredPerPolicy);
+  status.set_last_attempt_error(error_code);
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect the status to be `UPDATE_TO_ROLLBACK_VERSION_DISALLOWED`.
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(VersionUpdater::UPDATE_TO_ROLLBACK_VERSION_DISALLOWED, _, _,
+                  _, _, _, _))
+      .Times(1);
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
 TEST_F(VersionUpdaterCrosTest, ToggleFeature) {
   EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
   version_updater_->ToggleFeature("feature-foo", true);

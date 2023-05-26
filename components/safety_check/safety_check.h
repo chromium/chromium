@@ -71,8 +71,11 @@ enum class UpdateStatus {
   kUnknown = 7,
   // Only used in Android where the user is directed to the Play Store.
   kOutdated = 8,
+  // Only used in ChromeOS where a user performed a consumer rollback, and now
+  // attempts to update to the previously installed (rollback) version.
+  kUpdateToRollbackVersionDisallowed = 9,
   // New enum values must go above here.
-  kMaxValue = kOutdated,
+  kMaxValue = kUpdateToRollbackVersionDisallowed,
 };
 
 // Gets the status of Safe Browsing from the PrefService and invokes

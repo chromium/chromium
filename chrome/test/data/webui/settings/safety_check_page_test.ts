@@ -468,6 +468,18 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
       sublabel: testDisplayString,
     });
   });
+
+  test('updateToRollbackVersionDisallowedUiTest', () => {
+    fireSafetyCheckUpdatesEvent(
+        SafetyCheckUpdatesStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED);
+    flush();
+    assertSafetyCheckChild({
+      page,
+      iconStatus: SafetyCheckIconStatus.INFO,
+      label: 'Updates',
+      sublabel: testDisplayString,
+    });
+  });
 });
 
 suite('SafetyCheckPasswordsChildUiTests', function() {

@@ -88,6 +88,7 @@ export class SettingsSafetyCheckUpdatesChildElement extends
         return SafetyCheckIconStatus.SAFE;
       case SafetyCheckUpdatesStatus.RELAUNCH:
       case SafetyCheckUpdatesStatus.DISABLED_BY_ADMIN:
+      case SafetyCheckUpdatesStatus.UPDATE_TO_ROLLBACK_VERSION_DISALLOWED:
       case SafetyCheckUpdatesStatus.FAILED_OFFLINE:
       case SafetyCheckUpdatesStatus.UNKNOWN:
         return SafetyCheckIconStatus.INFO;

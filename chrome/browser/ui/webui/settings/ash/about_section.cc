@@ -360,6 +360,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutUpgradeTryAgain", IDS_SETTINGS_UPGRADE_TRY_AGAIN},
     {"aboutUpgradeDownloadError", IDS_SETTINGS_UPGRADE_DOWNLOAD_ERROR},
     {"aboutUpgradeAdministrator", IDS_SETTINGS_UPGRADE_ADMINISTRATOR_ERROR},
+    {"aboutUpdateToRollbackVersionDisallowed",
+     IDS_SETTINGS_UPDATE_TO_ROLLBACK_VERSION_DISALLOWED},
 
     // About page auto update toggle.
     {"aboutConsumerAutoUpdateToggleTitle",

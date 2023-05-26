@@ -420,6 +420,9 @@
   <message name="IDS_SETTINGS_ABOUT_UPGRADE_CHECK_STARTED" desc="Status label: About to start checking for updates">
     Checking for updates
   </message>
+  <message name="IDS_SETTINGS_UPDATE_TO_ROLLBACK_VERSION_DISALLOWED" desc="Status label: After a consumer rollback, updating to the previously installed version just rolledback from is disallowed (ChromiumOS/ChromeOS)">
+    You reverted to a previous version of ChromeOS. To get updates, wait until the next version is available.
+  </message>
 
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes and wallpapers between multiple browser instances.">

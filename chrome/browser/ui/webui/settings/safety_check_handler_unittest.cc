@@ -584,6 +584,23 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_DestroyedOnJavascriptDisallowed) {
   EXPECT_TRUE(TestDestructionVersionUpdater::GetDestructorInvoked());
 }
 
+TEST_F(SafetyCheckHandlerTest, CheckUpdates_UpdateToRollbackVersionDisallowed) {
+  version_updater_->SetReturnedStatus(
+      VersionUpdater::Status::UPDATE_TO_ROLLBACK_VERSION_DISALLOWED);
+  safety_check_->PerformSafetyCheck();
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::
+                                     kUpdateToRollbackVersionDisallowed));
+  ASSERT_TRUE(event);
+  VerifyDisplayString(
+      event,
+      "You reverted to a previous version of ChromeOS. "
+      "To get updates, wait until the next version is available.");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.UpdatesResult",
+      SafetyCheckHandler::UpdateStatus::kUpdateToRollbackVersionDisallowed, 1);
+}
+
 TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_EnabledStandard) {
   TestingProfile::FromWebUI(&test_web_ui_)
       ->AsTestingProfile()
