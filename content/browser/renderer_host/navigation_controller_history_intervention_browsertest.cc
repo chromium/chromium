@@ -64,7 +64,7 @@ class NavigationControllerHistoryInterventionBrowserTest
   NavigationControllerHistoryInterventionBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kQueueNavigationsWhileWaitingForCommit,
-          {{"level", "full"}}}},
+          {{"queueing_level", "full"}}}},
         {});
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
                                        std::get<0>(GetParam()));

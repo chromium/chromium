@@ -5501,7 +5501,7 @@ class UndoCommitNavigationBrowserTest : public NavigationBrowserTest {
  public:
   UndoCommitNavigationBrowserTest() {
     std::map<std::string, std::string> parameters = {
-        {"level", "none"},
+        {"queueing_level", "none"},
     };
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kQueueNavigationsWhileWaitingForCommit, parameters);
@@ -5705,7 +5705,7 @@ class CommitNavigationRaceBrowserTest
  public:
   CommitNavigationRaceBrowserTest() {
     std::map<std::string, std::string> parameters = {
-        {"level", GetParam() ? "full" : "none"},
+        {"queueing_level", GetParam() ? "full" : "none"},
     };
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kQueueNavigationsWhileWaitingForCommit, parameters);

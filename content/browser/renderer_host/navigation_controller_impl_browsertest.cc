@@ -119,7 +119,7 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
   NavigationControllerBrowserTestBase() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kQueueNavigationsWhileWaitingForCommit,
-          {{"level", "full"}}}},
+          {{"queueing_level", "full"}}}},
         {});
   }
 
