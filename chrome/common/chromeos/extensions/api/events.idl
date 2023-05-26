@@ -239,6 +239,10 @@ namespace os.events {
         // Informs the extension  that an `AudioJack` event occured.
         static void onAudioJackEvent(AudioJackEventInfo event_info);
 
+        // Informs the extension that a Keyboard diagnostic has been completed
+        // in the first party diagnostic tool.
+        static void onKeyboardDiagnosticEvent(KeyboardDiagnosticEventInfo event_info);
+
         // Informs the extension that a `Lid` event occured.
         static void onLidEvent(LidEventInfo event_info);
 

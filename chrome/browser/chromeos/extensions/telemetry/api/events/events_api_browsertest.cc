@@ -12,19 +12,25 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
+#include "chrome/browser/profiles/profile.h"         // nogncheck
+#include "chrome/browser/ui/browser_list.h"          // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -37,6 +43,10 @@ namespace chromeos {
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -399,6 +409,28 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckKeyboardDiagnosticApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function sdCardNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class PendingApprovalTelemetryExtensionEventsApiBrowserTest
     : public TelemetryExtensionEventsApiBrowserTest {
  public:
@@ -476,6 +508,149 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
       }
     ]);
   )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckKeyboardDiagnosticApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
+        keyboard_info->id = crosapi::UInt32Value::New(1);
+        keyboard_info->connection_type =
+            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+        keyboard_info->name = "TestName";
+        keyboard_info->physical_layout =
+            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+        keyboard_info->mechanical_layout =
+            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+        keyboard_info->region_code = "de";
+        keyboard_info->number_pad_present =
+            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+
+        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
+        info->keyboard_info = std::move(keyboard_info);
+        info->tested_keys = {1, 2, 3};
+        info->tested_top_row_keys = {4, 5, 6};
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
+            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
+                std::move(info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "keyboardInfo": {
+              "connectionType":"bluetooth",
+              "id":1,
+              "mechanicalLayout":"ansi",
+              "name":"TestName",
+              "numberPadPresent":"present",
+              "physicalLayout":"chrome_os",
+              "regionCode":"de",
+              "topRowKeys":[]
+            },
+            "testedKeys":[1,2,3],
+            "testedTopRowKeys":[4,5,6]
+            }
+          );
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       KeyboardDiagnosticEventOpensDiagnosticApp) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
+        keyboard_info->id = crosapi::UInt32Value::New(1);
+        keyboard_info->connection_type =
+            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+        keyboard_info->name = "TestName";
+        keyboard_info->physical_layout =
+            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+        keyboard_info->mechanical_layout =
+            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+        keyboard_info->region_code = "de";
+        keyboard_info->number_pad_present =
+            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+
+        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
+        info->keyboard_info = std::move(keyboard_info);
+        info->tested_keys = {1, 2, 3};
+        info->tested_top_row_keys = {4, 5, 6};
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
+            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
+                std::move(info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "keyboardInfo": {
+              "connectionType":"bluetooth",
+              "id":1,
+              "mechanicalLayout":"ansi",
+              "name":"TestName",
+              "numberPadPresent":"present",
+              "physicalLayout":"chrome_os",
+              "regionCode":"de",
+              "topRowKeys":[]
+            },
+            "testedKeys":[1,2,3],
+            "testedTopRowKeys":[4,5,6]
+            }
+          );
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
+      }
+    ]);
+  )");
+
+// If this is executed in Lacros we can stop the test here. If the above
+// call succeeded, a request for opening the diagnostics application was
+// sent to Ash. Since we only test Lacros, we stop the test here instead
+// of checking if Ash opened the UI correctly.
+// If we run in Ash however, we can check that the UI was correctly open.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_diagnostic_app_open = false;
+  for (auto* target_browser : *BrowserList::GetInstance()) {
+    TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+    for (int i = 0; i < target_tab_strip->count(); ++i) {
+      content::WebContents* target_contents =
+          target_tab_strip->GetWebContentsAt(i);
+
+      if (target_contents->GetLastCommittedURL() ==
+          GURL(kKeyboardDiagnosticsUrl)) {
+        is_diagnostic_app_open = true;
+      }
+    }
+  }
+
+  EXPECT_TRUE(is_diagnostic_app_open);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace chromeos
