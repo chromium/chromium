@@ -6352,6 +6352,32 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
 //
 
 bool AXObject::PerformAction(const ui::AXActionData& action_data) {
+  Document* document = GetDocument();
+  if (!document) {
+    return false;
+  }
+  AXObjectCacheImpl& cache = AXObjectCache();
+  Node* node = GetNode();
+  if (!node) {
+    node = GetClosestElement();
+  }
+
+  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
+  // the action is part of a display locked node, that will not update the node
+  // because it's not part of the layout update cycle yet. In that case, calling
+  // UpdateStyleAndLayoutTreeForNode() is also necessary.
+  document->UpdateStyleAndLayoutTreeForNode(
+      node, DocumentUpdateReason::kAccessibility);
+  document->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
+
+  // Updating style and layout for the node can cause it to gain layout,
+  // detaching an AXNodeObject to make room for an AXLayoutObject.
+  if (IsDetached()) {
+    AXObject* new_object = cache.GetOrCreate(node);
+    return new_object ? new_object->PerformAction(action_data) : false;
+  }
+
   switch (action_data.action) {
     case ax::mojom::blink::Action::kBlur:
       return OnNativeBlurAction();
@@ -6383,6 +6409,8 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
           WTF::String::FromUTF8(action_data.value.c_str()));
     case ax::mojom::blink::Action::kShowContextMenu:
       return RequestShowContextMenuAction();
+    case ax::mojom::blink::Action::kScrollToMakeVisible:
+      return RequestScrollToMakeVisibleAction();
     case ax::mojom::blink::Action::kScrollBackward:
     case ax::mojom::blink::Action::kScrollDown:
     case ax::mojom::blink::Action::kScrollForward:
@@ -6401,7 +6429,6 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kLoadInlineTextBoxes:
     case ax::mojom::blink::Action::kNone:
     case ax::mojom::blink::Action::kReplaceSelectedText:
-    case ax::mojom::blink::Action::kScrollToMakeVisible:
     case ax::mojom::blink::Action::kSetSelection:
     case ax::mojom::blink::Action::kShowTooltip:
     case ax::mojom::blink::Action::kSignalEndOfTest:
@@ -6511,6 +6538,36 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
     const gfx::Rect& subfocus,
     blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
     blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) {
+  Document* document = GetDocument();
+  if (!document) {
+    return false;
+  }
+  AXObjectCacheImpl& cache = AXObjectCache();
+  Node* node = GetNode();
+  if (!node) {
+    node = GetClosestElement();
+  }
+
+  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
+  // focus is is moving to a display locked node, that will not update the node
+  // because it's not part of the layout update cycle yet. In that case, calling
+  // UpdateStyleAndLayoutTreeForNode() is also necessary.
+  document->UpdateStyleAndLayoutTreeForNode(
+      node, DocumentUpdateReason::kAccessibility);
+  document->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
+
+  // Updating style and layout for the node can cause it to gain layout,
+  // detaching an AXNodeObject to make room for an AXLayoutObject.
+  if (IsDetached()) {
+    AXObject* new_object = cache.GetOrCreate(node);
+    return new_object
+               ? new_object->OnNativeScrollToMakeVisibleWithSubFocusAction(
+                     subfocus, horizontal_scroll_alignment,
+                     vertical_scroll_alignment)
+               : false;
+  }
+
   return OnNativeScrollToMakeVisibleWithSubFocusAction(
       subfocus, horizontal_scroll_alignment, vertical_scroll_alignment);
 }

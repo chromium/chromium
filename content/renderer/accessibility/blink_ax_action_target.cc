@@ -66,10 +66,6 @@ void BlinkAXActionTarget::SetScrollOffset(const gfx::Point& point) const {
   web_ax_object_.SetScrollOffset(point);
 }
 
-bool BlinkAXActionTarget::SetSelected(bool selected) const {
-  return web_ax_object_.SetSelected(selected);
-}
-
 bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
                                        int anchor_offset,
                                        const ui::AXActionTarget* focus_object,

@@ -114,10 +114,6 @@ gfx::Point PdfAXActionTarget::MaximumScrollOffset() const {
 
 void PdfAXActionTarget::SetScrollOffset(const gfx::Point& point) const {}
 
-bool PdfAXActionTarget::SetSelected(bool selected) const {
-  return false;
-}
-
 bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
                                      int anchor_offset,
                                      const ui::AXActionTarget* focus_object,

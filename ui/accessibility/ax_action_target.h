@@ -30,7 +30,6 @@ class AXActionTarget {
   virtual gfx::Point MinimumScrollOffset() const = 0;
   virtual gfx::Point MaximumScrollOffset() const = 0;
   virtual void SetScrollOffset(const gfx::Point& point) const = 0;
-  virtual bool SetSelected(bool selected) const = 0;
   virtual bool SetSelection(const AXActionTarget* anchor_object,
                             int anchor_offset,
                             const AXActionTarget* focus_object,

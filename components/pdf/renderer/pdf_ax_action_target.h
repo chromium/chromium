@@ -36,7 +36,6 @@ class PdfAXActionTarget : public ui::AXActionTarget {
   gfx::Point MinimumScrollOffset() const override;
   gfx::Point MaximumScrollOffset() const override;
   void SetScrollOffset(const gfx::Point& point) const override;
-  bool SetSelected(bool selected) const override;
   bool SetSelection(const ui::AXActionTarget* anchor_object,
                     int anchor_offset,
                     const ui::AXActionTarget* focus_object,

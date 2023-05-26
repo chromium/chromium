@@ -33,10 +33,6 @@ gfx::Point NullAXActionTarget::MaximumScrollOffset() const {
 
 void NullAXActionTarget::SetScrollOffset(const gfx::Point& point) const {}
 
-bool NullAXActionTarget::SetSelected(bool selected) const {
-  return false;
-}
-
 bool NullAXActionTarget::SetSelection(const AXActionTarget* anchor_object,
                                       int anchor_offset,
                                       const AXActionTarget* focus_object,

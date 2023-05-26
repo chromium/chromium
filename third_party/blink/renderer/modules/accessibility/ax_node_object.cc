@@ -4743,9 +4743,6 @@ bool AXNodeObject::OnNativeBlurAction() {
     return false;
   }
 
-  document->UpdateStyleAndLayoutTreeForNode(
-      node, DocumentUpdateReason::kAccessibility);
-
   // An AXObject's node will always be of type `Element`, `Document` or
   // `Text`. If the object we're currently on is associated with the currently
   // focused element or the document object, we want to clear the focus.
@@ -4773,9 +4770,6 @@ bool AXNodeObject::OnNativeFocusAction() {
   Node* node = GetNode();
   if (!document || !node)
     return false;
-
-  document->UpdateStyleAndLayoutTreeForNode(
-      node, DocumentUpdateReason::kAccessibility);
 
   if (!CanSetFocusAttribute())
     return false;

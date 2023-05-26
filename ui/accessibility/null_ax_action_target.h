@@ -25,7 +25,6 @@ class AX_EXPORT NullAXActionTarget : public AXActionTarget {
   gfx::Point MinimumScrollOffset() const override;
   gfx::Point MaximumScrollOffset() const override;
   void SetScrollOffset(const gfx::Point& point) const override;
-  bool SetSelected(bool selected) const override;
   bool SetSelection(const AXActionTarget* anchor_object,
                     int anchor_offset,
                     const AXActionTarget* focus_object,
