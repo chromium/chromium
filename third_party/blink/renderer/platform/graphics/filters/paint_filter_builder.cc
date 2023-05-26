@@ -31,8 +31,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/effects/SkColorMatrixFilter.h"
-#include "third_party/skia/include/effects/SkTableColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
