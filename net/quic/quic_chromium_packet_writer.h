@@ -109,6 +109,10 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
 
   void OnWriteComplete(int rv);
 
+  // If the writer has enqueued a task to retry, OnSocketClosed() must be called
+  // when the socket is closed to avoid using an invalid socket.
+  bool OnSocketClosed(std::unique_ptr<DatagramClientSocket> socket);
+
  private:
   void SetPacket(const char* buffer, size_t buf_len);
   bool MaybeRetryAfterWriteError(int rv);

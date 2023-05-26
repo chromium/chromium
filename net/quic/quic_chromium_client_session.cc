@@ -2129,9 +2129,18 @@ void QuicChromiumClientSession::OnConnectionClosed(
   }
 
   CHECK_EQ(sockets_.size(), packet_readers_.size());
+  bool socket_found_in_writer = false;
   for (auto& socket : sockets_) {
     socket->Close();
+    // If a writer exists that was not destroyed when the connection migrated,
+    // then that writer may not be notified that its socket has been closed.
+    // We know that the writer is a QuicChromiumPacketWriter since the packet
+    // writer is set with the same type originally.
+    socket_found_in_writer |=
+        static_cast<QuicChromiumPacketWriter*>(connection()->writer())
+            ->OnSocketClosed(std::move(socket));
   }
+  CHECK(socket_found_in_writer);
   DCHECK(!HasActiveRequestStreams());
   CloseAllHandles(ERR_UNEXPECTED);
   CancelAllRequests(ERR_CONNECTION_CLOSED);
