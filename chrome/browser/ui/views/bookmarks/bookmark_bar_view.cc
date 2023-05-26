@@ -920,7 +920,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   int height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
 
   const int bookmark_bar_button_padding =
-      GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+      GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
 
   if (managed_bookmarks_button_->GetVisible()) {
     gfx::Size size = managed_bookmarks_button_->GetPreferredSize();
@@ -995,12 +995,13 @@ void BookmarkBarView::Layout() {
           : gfx::Size();
 
   const int bookmark_bar_button_padding =
-      GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+      GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
 
   int max_x = kBookmarkBarHorizontalMargin + width - overflow_pref.width() -
               bookmarks_separator_pref.width();
-  if (other_bookmarks_button_->GetVisible())
-    max_x -= other_bookmarks_pref.width();
+  if (other_bookmarks_button_->GetVisible()) {
+    max_x -= other_bookmarks_pref.width() + bookmark_bar_button_padding;
+  }
 
   // Start with the apps page shortcut button.
   if (apps_page_shortcut_->GetVisible()) {

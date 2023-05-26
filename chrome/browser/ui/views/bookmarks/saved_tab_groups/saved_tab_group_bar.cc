@@ -31,6 +31,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/canvas.h"
@@ -190,13 +191,14 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
 
   SetProperty(views::kElementIdentifierKey, kSavedTabGroupBarElementId);
 
+  const int element_padding = GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
+
   std::unique_ptr<views::LayoutManager> layout_manager =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(kButtonPadding,
-                            GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2,
-                            kButtonPadding, 0),
-          GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
+          gfx::Insets::TLBR(kButtonPadding, element_padding / 2, kButtonPadding,
+                            0),
+          element_padding);
   SetLayoutManager(std::move(layout_manager));
 
   if (!saved_tab_group_model_) {
@@ -443,7 +445,7 @@ void SavedTabGroupBar::OnWidgetDestroying(views::Widget* widget) {
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
-  const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  const int button_padding = GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
   int current_x = 0;
   // Calculate the amount of space that the SavedTabGroupBar can utilize
   // restricted by `max_x`.
@@ -728,7 +730,7 @@ void SavedTabGroupBar::MaybePaintDropIndicatorInBar(gfx::Canvas* canvas) {
   const int x =
       indicator_index.value() > 0
           ? children()[indicator_index.value() - 1]->bounds().right() +
-                GetLayoutConstant(TOOLBAR_ELEMENT_PADDING) / 2
+                GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING) / 2
           : kDropIndicatorThicknessDips / 2;
 
   const gfx::Rect drop_indicator_bounds =

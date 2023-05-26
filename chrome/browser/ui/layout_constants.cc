@@ -29,6 +29,10 @@ int GetLayoutConstant(LayoutConstant constant) {
     }
     case BOOKMARK_BAR_BUTTON_HEIGHT:
       return touch_ui ? 36 : 28;
+    case BOOKMARK_BAR_BUTTON_PADDING:
+      return features::IsChromeRefresh2023()
+                 ? (touch_ui ? 0 : 8)
+                 : GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
     case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
     case WEB_APP_PAGE_ACTION_ICON_SIZE:
