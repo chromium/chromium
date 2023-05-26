@@ -187,7 +187,7 @@ class ExternallyManagedAppManager {
   CreateInstallationTask(ExternalInstallOptions install_options);
 
   virtual std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-  StartRegistration(GURL launch_url);
+  CreateRegistration(GURL launch_url);
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);

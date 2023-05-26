@@ -35,7 +35,9 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
     : ExternallyManagedAppRegistrationTaskBase(std::move(install_url)),
       url_loader_(url_loader),
       web_contents_(web_contents),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)) {}
+
+void ExternallyManagedAppRegistrationTask::Start() {
   content::StoragePartition* storage_partition =
       web_contents_->GetBrowserContext()->GetStoragePartition(
           web_contents_->GetSiteInstance());
