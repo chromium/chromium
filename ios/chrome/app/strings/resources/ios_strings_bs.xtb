@@ -750,7 +750,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="595769230373966252">Pretražite putem pružaoca <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nije moguće kreirati link za istaknuti tekst.</translation>
 <translation id="5965679971710331625">Prijavljeni ste</translation>
-<translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
+<translation id="5971872012779224351">{count,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5979837087407522202">Pretražite lozinke</translation>
 <translation id="5981230843984570095">Zatvori sve neaktivne</translation>
 <translation id="5982717868370722439">Dodajte postojeće podatke na <ph name="USER_EMAIL" />.</translation>
@@ -920,6 +920,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="6822587385560699678">Kada je uključeno, lozinke se pohranjuju na računu <ph name="ACCOUNT" />. Kada je isključeno, lozinke se pohranjuju samo na ovom uređaju.</translation>
 <translation id="6831043979455480757">Prevedi</translation>
+<translation id="6839843088069935119">{count,plural, =1{Oznaka je spremljena u "{title}". Sprema se samo na ovom uređaju.}one{Oznake su spremljene u "{title}". Sprema se samo na ovom uređaju.}few{Oznake su spremljene u "{title}". Sprema se samo na ovom uređaju.}other{Oznake su spremljene u "{title}". Sprema se samo na ovom uređaju.}}</translation>
 <translation id="6842136130964845393">Potvrdite svoj identitet da uvijek možete pristupati sačuvanim lozinkama</translation>
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
 <translation id="6852222216891664518">Zatvori zakačenu karticu</translation>
@@ -998,7 +999,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7435356471928173109">Funkciju je isključio vaš administrator</translation>
 <translation id="7438481509621345350">Sada ćete vidjeti priče s web lokacije <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="7446583256109515732">Kartica je otkačena</translation>
-<translation id="7451023311965289370">{count,plural, =1{Oznaka je spremljena u "{title}"}one{Oznake su spremljene u "{title}"}few{Oznake su spremljene u "{title}"}other{Oznake su spremljene u "{title}"}}</translation>
+<translation id="7451023311965289370">{count,plural, =1{Oznaka je sačuvana u pregledniku "{title}"}one{Oznake su sačuvane u pregledniku "{title}"}few{Oznake su sačuvane u pregledniku "{title}"}other{Oznake su sačuvane u pregledniku "{title}"}}</translation>
 <translation id="7454057999980797137">Zemlja / Okrug</translation>
 <translation id="7459628154744868585">Poboljšana zaštita je uključena</translation>
 <translation id="746684838091935575">3. Odaberite Chrome</translation>

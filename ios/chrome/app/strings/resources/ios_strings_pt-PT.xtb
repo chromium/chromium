@@ -315,6 +315,9 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2975121486251958312">Só está disponível o Modo de navegação anónima</translation>
 <translation id="2982481275546140226">Limpar dados</translation>
 <translation id="298306318844797842">Adicionar método de pagamento…</translation>
+<translation id="2988274366244053197">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.
+
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
 <translation id="3020183492814296499">Atalhos</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
@@ -381,6 +384,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3471148582064653480">Sincronize as palavras-passe, o histórico e muito mais.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{para {COUNT} site ou app}other{para {COUNT} sites e apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Aceda às suas palavras-passe noutras apps.</translation>
 <translation id="3478058380795961209">Mês de validade</translation>
 <translation id="3482959374254649722">A sincronizar os seus separadores...</translation>
 <translation id="3484946776651937681">Abrir nas transferências</translation>
@@ -652,6 +656,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Já está a acompanhar este produto.</translation>
+<translation id="5325595483440111327">Veja o histórico de navegação.</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>

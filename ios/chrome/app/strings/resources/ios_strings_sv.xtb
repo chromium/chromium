@@ -750,6 +750,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Det gick inte att skapa en länk till markeringen.</translation>
 <translation id="5965679971710331625">Du är inloggad</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 bokmärke har raderats}other{{count} bokmärken har raderats}}</translation>
 <translation id="5979837087407522202">Sök efter lösenord</translation>
 <translation id="5981230843984570095">Stäng alla inaktiva</translation>
 <translation id="5982717868370722439">Lägg till befintlig data i <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +998,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="7446583256109515732">Fliken har lossats</translation>
+<translation id="7451023311965289370">{count,plural, =1{Bokmärke har sparats i {title}}other{Bokmärken har sparats i {title}}}</translation>
 <translation id="7454057999980797137">Delstat/county</translation>
 <translation id="7459628154744868585">Utökat skydd är aktiverat</translation>
 <translation id="746684838091935575">3. Välj Chrome</translation>

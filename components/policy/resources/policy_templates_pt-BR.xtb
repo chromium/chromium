@@ -2604,6 +2604,7 @@ Se uma extensão especificada nesta política não estiver instalada, a navegaç
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
 <translation id="334231891933432876">Desconectar o usuário assim que a conta perder a autenticação</translation>
+<translation id="3345323903592385588">A ordem em que a configuração da VM será mostrada no instalador. Quando várias configurações de VM são especificadas, aquela com o menor valor de display_order é mostrada no início da lista. O padrão é zero.</translation>
 <translation id="3348799281602260763">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
       obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão
@@ -5673,6 +5674,21 @@ Se a política for deixada sem definição ou se a lista não tiver referências
 <translation id="614665605501218241">Permitir que os sites da lista façam solicitações para endpoints de rede mais particulares de forma não segura.</translation>
 <translation id="614753473456574270">Não permitir que os usuários definam um PIN fraco</translation>
 <translation id="6150320133676152520">Desativar o envio automático do PIN nas telas de bloqueio e login</translation>
+<translation id="61518106107420459">Se definida, a política vai especificar uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
+
+      Se a política for deixada sem definição, nenhum app ou extensão será instalado automaticamente e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.
+
+      Esta política substitui a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se um app ou extensão de instalação forçada for removido da lista, será automaticamente desinstalado pelo <ph name="PRODUCT_NAME" />.
+
+      Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for gerenciada via MDM, associada a um domínio via MCX ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />
+
+      O código-fonte de qualquer extensão pode ser modificado pelos usuários com ferramentas para desenvolvedores, o que pode prejudicar a funcionalidade da extensão. Se isso for uma preocupação, defina a política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização vai apontar para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). Por padrão, é usado o URL de atualização da Chrome Web Store. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL de atualização indicado no manifesto da extensão.
+
+       Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="6155350825868160236">Permitir que o usuário escolha se serviços da Web do Google serão usados para solucionar erros de ortografia</translation>
 <translation id="6155936611791017817">Definir estado padrão do cursor grande na tela de login</translation>
 <translation id="6157537876488211233">Lista separada por vírgulas das regras de proxies ignoráveis</translation>

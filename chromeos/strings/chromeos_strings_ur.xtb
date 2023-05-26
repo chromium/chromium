@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">ڈیسکس</translation>
 <translation id="1018219910092211213">‏DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
+<translation id="1020274983236703756">اب خاص <ph name="PRODUCT_NAME" /> اثاثے دستیاب ہیں</translation>
 <translation id="1022433422498218992">عام کنٹرولز</translation>
 <translation id="1022628058306505708">ارتھ فلو</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">اسکینرز کی تلاش جاری ہے</translation>
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> خاص</translation>
 <translation id="3268178239013324452">ناکام ہو گیا - دروازہ کھلا ہے</translation>
 <translation id="3275729367986477355">اوتار کی تصویر</translation>
 <translation id="3283504360622356314">{0,plural, =1{فائل میں ترمیم کریں}other{فائلز میں ترمیم کریں}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">رازداری کی اسکرین کو ٹوگل کرنے کی کلید</translation>
 <translation id="3639846061339007994">اوپر</translation>
 <translation id="3651050199673793219">درجۂ حرارت کی یونٹ منتخب کریں</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> خاص آرٹ ورک منتخب کریں</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> ٹیسٹ</translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کریں</translation>
 <translation id="4111761024568264522">‏USB ٹچ پیڈ</translation>
+<translation id="4113067922640381334">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="4117637339509843559">تاریک وضع</translation>
 <translation id="4130035430755296270">لے آؤٹ کے مزید اختیارات کیلئے اسکرول کرتے رہیں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>
 <translation id="8593058461203131755">میڈیا موقوف کریں</translation>
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> کیلئے مزید کارروائیاں</translation>
 <translation id="86356131183441916">ہلکا جامنی</translation>
 <translation id="8651481478098336970">والیوم خاموش کریں</translation>
 <translation id="8655295600908251630">چینل</translation>

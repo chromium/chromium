@@ -755,6 +755,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="595769230373966252">Претражите помоћу: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">A link to the highlight can not be created (Прављење линка до истакнутог текста није успело).</translation>
 <translation id="5965679971710331625">Пријављени сте</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 обележивач је избрисан}one{{count} обележивач је избрисан}few{{count} обележивача су избрисана}other{{count} обележивача је избрисано}}</translation>
 <translation id="5979837087407522202">Претражите лозинке</translation>
 <translation id="5981230843984570095">Затвори све неактивне</translation>
 <translation id="5982717868370722439">Додајте постојеће податке на <ph name="USER_EMAIL" />.</translation>
@@ -924,6 +925,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="681368974849482173">Ставка је направљена</translation>
 <translation id="6822587385560699678">Када је укључено, лозинке се чувају на налогу <ph name="ACCOUNT" />. Када је искључено, лозинке се чувају само на овом уређају.</translation>
 <translation id="6831043979455480757">Преведи</translation>
+<translation id="6839843088069935119">{count,plural, =1{Обележивач је сачуван у {title}-у. Чува се само на овом уређају.}one{Обележивачи су сачувани у {title}-у. Чувају се само на овом уређају.}few{Обележивачи су сачувани у {title}-у. Чувају се само на овом уређају.}other{Обележивачи су сачувани у {title}-у. Чувају се само на овом уређају.}}</translation>
 <translation id="6842136130964845393">Да бисте били сигурни да увек можете да приступате сачуваним лозинкама, потврдите да сте то ви</translation>
 <translation id="6851516051005285358">Захтевај сајт за рачунар</translation>
 <translation id="6852222216891664518">Затвори закачену картицу</translation>
@@ -1002,6 +1004,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7435356471928173109">Искључио је администратор</translation>
 <translation id="7438481509621345350">Сада ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="7446583256109515732">Картица је откачена</translation>
+<translation id="7451023311965289370">{count,plural, =1{Обележивач је сачуван у: {title}}one{Обележивачи су сачувани у: {title}}few{Обележивачи су сачувани у: {title}}other{Обележивачи су сачувани у: {title}}}</translation>
 <translation id="7454057999980797137">Држава/земља</translation>
 <translation id="7459628154744868585">Побољшана заштита је укључена</translation>
 <translation id="746684838091935575">3. Изаберите Chrome</translation>

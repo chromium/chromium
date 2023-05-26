@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">ප්‍රවේශ්‍යතා සැකසීම් පෙන්වන්න</translation>
 <translation id="1104621072296271835">ඔබේ උපාංග එක්ව වඩා හොඳින් වැඩ කරයි</translation>
 <translation id="1111021433905331574">ඔබට සැකසීම් &gt; <ph name="APP_TITLE" /> තුළ ඔබගේ යතුරු පුවරුවේ පසුබිම් ආලෝකයේ වර්ණය වෙනස් කළ හැකිය</translation>
+<translation id="1117719261843403176">ජංගම දත්ත ටොගල් කරන්න. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
 <translation id="1142002900084379065">මෑත ඡායාරූප</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">අගුළු තිර දැනුම් දීම් සැකසීම් වෙනස් කරන්න</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">නිර්දේශිත යෙදුම්</translation>
+<translation id="1311294419381837540">ඔබ පටිත්ත විකාශය කරයි. ඔබට ඕනෑම වේලාවක විකාශනය විරාම කිරීම හෝ නැවැත්විය හැක.</translation>
 <translation id="1312604459020188865">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">සැමවිටම රාක්කය පෙන්වන්න</translation>
 <translation id="132346741904777634">කැමරාව ඉහළ වම් කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="1340378040547539434">පිටුවෙන් විශාලනය අඩු කරන්න</translation>
 <translation id="1341651618736211726">පිටාරය</translation>
+<translation id="1344141078024003905">ඔබ ඔබේ තිරය විකාශය කරමින් සිටී. ඔබට ඕනෑම වේලාවක ඔබේ තිරය විකාශය කිරීම විරාම කිරීමට හෝ නැවැත්වීමට හැකිය.</translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
 <translation id="1360220746312242196">පිටුවක් සොයන විට, සෙවීම සඳහා පෙර ගැළපීම වෙත යන්න</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">ඊතර්නෙට්: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ස්ථාන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
+<translation id="183465528887726323">හොට්ස්පොට් භාවිත කිරීමට ජංගම දත්ත වෙත සම්බන්ධ කරන්න</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">යෙදුමක් ඔබගේ මයික්‍රෆෝනය භාවිත කරමින් සිටී</translation>
 <translation id="2277103315734023688">ඉදිරියට සොයන්න</translation>
 <translation id="2282073721614284166">පටිත්ත තුළ සබැඳිය විවෘත කරන්න</translation>
+<translation id="2284237890386182187">සක්‍රීයයි, උපාංග සම්බන්ධ නැත</translation>
 <translation id="2292698582925480719">සංදර්ශන පරිමාණය</translation>
 <translation id="229397294990920565">ජංගම දත්ත අක්‍රිය කෙරේ...</translation>
 <translation id="2295777434187870477">මයිකය ක්‍රියාත්මකයි, ටොගල කිරීම ආදානය නිහඬ කරනු ඇත.</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830"><ph name="NAME" /> සක්‍රීය කරමින්</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2360398059912971776">බැටරිය</translation>
+<translation id="2361210043495191221">Wi-Fi ටොගල් කරන්න. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">ඔබගේ Chromebook වෙත පිරීමට නොහැකිය</translation>
 <translation id="2367972762794486313">යෙදුම් පෙන්වන්න</translation>
 <translation id="2369165858548251131">චීන භාෂාවෙන් "Hello"</translation>
+<translation id="2382875860893882175">විකාශය දැනට විරාම කර ඇත. ඔබට ඕනෑම වේලාවක විකාශය කිරීම නැවත ආරම්භ කිරීමට හෝ විකාශය නැවැත්වීමට හැකිය.</translation>
 <translation id="2386292613071805067">පිටුවෙහි ඇති සියල්ල තෝරන්න</translation>
 <translation id="2397416548179033562">Chrome මෙනුව පෙන්වන්න</translation>
 <translation id="240006516586367791">මාධ්‍ය පාලන</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> නවත්වන්න. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> වේ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">කවුළු අගුළු අරින්න</translation>
+<translation id="2528111225373402384">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="2530896289327917474">කැරට් බ්‍රවුස් කිරීම ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2531025035050312891">උපාංගය මන්දගාමී වේ</translation>
 <translation id="254900897760075745">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත පිටපත් කරන්න</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">අතිරේක සැකසීම්</translation>
 <translation id="3405101454990027959">මයික්‍රෆෝන ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
+<translation id="3408735331120433841">ඔබ දැනට ඔබේ තිරය විකාශය කරමින් සිටී.</translation>
 <translation id="3409584356742878290">සංවර්ධක මෙවලම් පරීක්ෂක පෙන්වන්න හෝ සඟවන්න</translation>
 <translation id="3410336247007142655">අඳුරු තේමා සැකසීම් පෙන්වන්න</translation>
 <translation id="3413817803639110246">තවම දැකීමට කිසිවක් නැත</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">සබැඳිය නව පටිත්තක විවෘත කර වත්මන් පටිත්තේ රැඳී සිටින්න</translation>
 <translation id="353086728817903341">උපාංග <ph name="NUM_DEVICES" />කට සම්බන්ධ විය</translation>
 <translation id="3533126039236445965">රාක්කයේ යෙදුම්</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> හොට්ස්පොට්</translation>
 <translation id="3542066395059568317">ඔබ නතර කළ තැනින් ඉදිරියට යාමට ඔබට නිර්දේශ පෙනෙනු ඇත. නිර්දේශ ඉවත් කිරීමට ඔබට දකුණු-ක්ලික් කළ හැකිය.</translation>
 <translation id="3546121235777416274">පින්තූරය-තුළ-පින්තූරය කවුළුවෙහි නාභිගත කරන්න</translation>
 <translation id="3552189655002856821">Wi-Fi ක්‍රියාවිරහිත කර ඇත</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">වැඩිපුර ආරක්‍ෂාව සඳහා මුරපදය අවශ්‍යයි</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">ඔබ ඔබේ තිරය බෙදා ගනියි</translation>
+<translation id="4049230407053723315">ක්ෂණික සැකසීම්</translation>
 <translation id="4057003836560082631">බ්‍රව්සර් ටැබ් <ph name="TOTAL_COUNT" />කින් <ph name="INDEX" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{යෙදුමකට අක්‍රියයි}one{යෙදුම් #කට අක්‍රියයි}other{යෙදුම් #කට අක්‍රියයි}}</translation>
 <translation id="4066027111132117168"><ph name="REMAINING_TIME" />ට</translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">VPN සැකසුම්</translation>
 <translation id="4217571870635786043">අනුලේඛනය</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම, විරාම කරන ලදී</translation>
+<translation id="4231053948789591973">විකාශය දැනට විරාම කර ඇත. ඔබට ඕනෑම වේලාවක විකාශය නැවත ආරම්භ කිරීමට හෝ ඔබේ තිරය විකාශය කිරීම නැවැත්වීමට හැකිය.</translation>
 <translation id="423685346499232137">මෙම අවස්ථාවේදී අන්තර්ගතය පිටපත් කිරීමට හෝ ඇලවීමට නොහැකිය</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">දළ විශ්ලේෂණ ආකාරය</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{වැදගත් දැනුම්දීම් 1}one{වැදගත් දැනුම්දීම් #}other{වැදගත් දැනුම්දීම් #}}</translation>
 <translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="4451374464530248585">Alt + පහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Down යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + පහළට ඊතලය ඔබන්න.</translation>
+<translation id="4453876312474547652">ඔබ Ctrl + V ඔබා අල්ලා ගෙන සිටින විට ඔබට පසුරු පුවරුව පෙනෙයි. chrome://flags හි #clipboard-history-longpress සලකුණු කිරීම අක්‍රිය කර ඔබට මෙම කෙටිමඟ අක්‍රිය කළ හැක (Lacros භාවිත කරන්නේ නම් os://flags).</translation>
 <translation id="4455051983450390249">ඔබගේ දුරකථනයේ දැනුම්දීම් ඔබගේ <ph name="DEVICE_TYPE" /> මත බලන්න</translation>
 <translation id="445864333228800152">සුබ සන්ධ්‍යාවක්,</translation>
 <translation id="4458688154122353284">තිරය පටිගත කිරීම නවත්වන්න</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">ආදර්ශන සැසියකදී Google සහකරු නොලැබේ.</translation>
 <translation id="4789348252524569426">කථන ගොනු ස්ථාපනය කළ නොහැක. ඔබේ උපාංගය යාවත්කාලීන කිරීමට අවශ්‍යයි. ඔබේ උපාංගය යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="478959186716341421">විකාශය කරමින්</translation>
+<translation id="4798622944000246716">ඔබේ ජංගම ජාලය හොට්ස්පොට් වෙත සහය නොදක්වයි</translation>
 <translation id="479989351350248267">සොයන්න</translation>
 <translation id="4804818685124855865">විසන්ධි කරන්න</translation>
 <translation id="4814539958450445987">පුරන තිරය</translation>
@@ -1199,6 +1213,7 @@
 <translation id="6453179446719226835">භාෂාව වෙනස් වී ඇත</translation>
 <translation id="6459472438155181876">තිරය <ph name="DISPLAY_NAME" /> වෙත දිගු කෙරෙමින්</translation>
 <translation id="6464094930452079790">රූප</translation>
+<translation id="6469104339369989396">හොට්ස්පොට් ටොගල් කරන්න</translation>
 <translation id="6477681113376365978">ගොනුව බාගැනීමට නොහැකිය</translation>
 <translation id="6482559668224714696">පූර්ණ තිර විශාලකය</translation>
 <translation id="6483727822843292440">අඩුවෙන්ම භාවිතා කරන කවුළුවෙන් කවුළු හරහා යන්න</translation>
@@ -1811,6 +1826,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> සඳහා ප්‍රමාණවත් තරම් ඉඩ නැත. ඉඩ නිදහස් කර ගන්න.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> සඳහා ප්‍රතිඵල <ph name="RESULT_COUNT" />ක් දක්වමින්</translation>
 <translation id="98120814841227350">ලේඛනයේ අගට යන්න</translation>
+<translation id="987589956647469042">ජංගම දත්ත සක්‍රීයයි</translation>
 <translation id="989374776391122812">කැමරා සහ ශ්‍රව්‍ය පාලන</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> කවුළුව වසා ඇත.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

@@ -426,6 +426,7 @@
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
 <translation id="3303414029551471755">콘텐츠를 다운로드하시겠습니까?</translation>
+<translation id="3305130791745726624">기기로 보내기</translation>
 <translation id="3305795716056605962">옵션 더보기 버튼을 눌러 페이지 번역하기</translation>
 <translation id="3319664549618064419">사이트를 더 편하게 보려면 데스크톱 사이트로 전환하세요</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
@@ -1174,6 +1175,7 @@
 <translation id="7304072650267745798">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 이 설정을 사용 설정하면 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
 <translation id="7304873321153398381">오프라인 상태입니다. Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
+<translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7332075081379534664">로그인 성공</translation>
 <translation id="7333232495927792353">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요.</translation>
 <translation id="7339898014177206373">새 창</translation>
@@ -1360,6 +1362,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8209050860603202033">이미지 열기</translation>
+<translation id="8210770465353466621">여기에서 탭을 확인할 수 있습니다.</translation>
 <translation id="8215740705341534369">측면 시트</translation>
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8221401890884589479">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

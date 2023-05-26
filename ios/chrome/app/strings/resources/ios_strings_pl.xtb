@@ -315,6 +315,9 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2975121486251958312">Dostępny jest tylko tryb incognito</translation>
 <translation id="2982481275546140226">Wyczyść dane</translation>
 <translation id="298306318844797842">Dodaj formę płatności…</translation>
+<translation id="2988274366244053197">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Otwórz w nowej karcie</translation>
 <translation id="3020183492814296499">Skróty</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
@@ -381,6 +384,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3471148582064653480">Synchronizuj swoje hasła, historię i inne dane.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{do {COUNT} witryny lub aplikacji}few{do {COUNT} witryn i aplikacji}many{do {COUNT} witryn i aplikacji}other{do {COUNT} witryny i aplikacji}}</translation>
 <translation id="3474624961160222204">Nadal używaj konta użytkownika <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Uzyskaj dostęp do swoich haseł w innych aplikacjach.</translation>
 <translation id="3478058380795961209">Miesiąc utraty ważności</translation>
 <translation id="3482959374254649722">Synchronizuję karty...</translation>
 <translation id="3484946776651937681">Otwórz w Pobranych</translation>
@@ -652,6 +656,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318298563956633672">Śledzisz już ten produkt.</translation>
+<translation id="5325595483440111327">Wyświetl historię przeglądania.</translation>
 <translation id="5339316356165661760">Włącz synchronizację</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
@@ -750,6 +755,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
 <translation id="5965679971710331625">Jesteś zalogowany</translation>
+<translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
 <translation id="5979837087407522202">Szukaj haseł</translation>
 <translation id="5981230843984570095">Zamknij wszystkie nieaktywne</translation>
 <translation id="5982717868370722439">Dodaj istniejące dane do konta <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7435356471928173109">Wyłączył administrator</translation>
 <translation id="7438481509621345350">Po otwarciu nowej karty będziesz teraz widzieć nowe relacje ze strony <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7446583256109515732">Karta została odpięta</translation>
+<translation id="7451023311965289370">{count,plural, =1{Zakładka została zapisana tutaj: „{title}”}few{Zakładki zostały zapisane tutaj: „{title}”}many{Zakładki zostały zapisane tutaj: „{title}”}other{Zakładki zostały zapisane tutaj: „{title}”}}</translation>
 <translation id="7454057999980797137">Stan/region</translation>
 <translation id="7459628154744868585">Silniejsza ochrona jest włączona</translation>
 <translation id="746684838091935575">3. Wybierz Chrome.</translation>

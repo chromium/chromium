@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">יומן, <ph name="CURRENT_MONTH_YEAR" />, התאריך שנבחר הוא <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
+<translation id="1815245884418711390">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט כבויה.</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1823280932251546115">מגש הסטטוס, השעה <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">תמיד אפשר להפסיק את תיעוד החבילות</translation>
 <translation id="2034971124472263449">אני בכל זאת רוצה לשמור</translation>
 <translation id="2049240716062114887">שמו של שולחן העבודה הווירטואלי שונה לשם <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">מלא</translation>
 <translation id="2064048859448024834">התצוגה המקדימה של המצלמה מופעלת</translation>
 <translation id="2067602449040652523">בהירות מקלדת</translation>
 <translation id="2075520525463668108">החלפת המצב של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">הקשה על לחצן הסטיילוס במדף מאפשרת לכתוב הערות, לצלם את המסך ולהשתמש בסמן הלייזר או בזכוכית המגדלת.</translation>
 <translation id="2341729377289034582">נעול במצב אנכי</translation>
 <translation id="2345226652884463045">‏יש להקיש על Enter או על מקש החיפוש + מקש הרווח כדי לבחור את הטקסט לעריכה.</translation>
+<translation id="2349785431103945039">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). צריך להתחבר לרשת הסלולרית כדי להשתמש בנקודת האינטרנט.</translation>
 <translation id="2350794187831162545">העיבוד של דיבור ב<ph name="LANGUAGE" /> נעשה עכשיו באופן מקומי ונשאר בזיכרון המכשיר. יש לך אפשרות לשנות את שפת ההכתבה ב'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="2352467521400612932">הגדרות סטיילוס</translation>
 <translation id="2354174487190027830">המערכת מפעילה את <ph name="NAME" /></translation>
@@ -335,6 +338,7 @@
 <translation id="2530896289327917474">הפעלה או השבתה של הגלישה באמצעות סמן הטקסט</translation>
 <translation id="2531025035050312891">המכשיר איטי</translation>
 <translation id="254900897760075745">העתקת התוכן שנבחר ללוח</translation>
+<translation id="2549711466868162843">שיפור התאורה</translation>
 <translation id="2549985041256363841">צילום סרטון</translation>
 <translation id="255671100581129685">‏Google Assistant אינה זמינה בסשן ציבורי.</translation>
 <translation id="256712445991462162">הזכוכית המגדלת שהוצמדה</translation>
@@ -428,6 +432,7 @@
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="301282384882049174">משותף על ידי האדמין</translation>
+<translation id="301584155502740476">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט כבויה.</translation>
 <translation id="3018135054368884502">הרצת המדיה קדימה</translation>
 <translation id="3033545621352269033">מופעל</translation>
 <translation id="3033912566804961911">שילוב עם <ph name="DESK_NAME" /></translation>
@@ -488,6 +493,7 @@
 <translation id="3291862315280588024">עבור אל תחילת המילה הקודמת</translation>
 <translation id="3294437725009624529">אורח</translation>
 <translation id="3298690094479023523">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. יש לנסות שוב.</translation>
+<translation id="3300193645498960160">תתקבל הודעה במקרים של דיבור כשההשתקה פועלת. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="3307642347673023554">עברת למצב מחשב נייד</translation>
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
 <translation id="3321628682574733415">קוד הורה שגוי</translation>
@@ -571,6 +577,7 @@
 <translation id="3621202678540785336">קלט</translation>
 <translation id="3621712662352432595">הגדרות אודיו</translation>
 <translation id="3626281679859535460">בהירות</translation>
+<translation id="3629640897379005903">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט מושבתת.</translation>
 <translation id="3630697955794050612">כבויה</translation>
 <translation id="3631369015426612114">המקורות הבאים יכולים להציג התראות</translation>
 <translation id="3633097874324966332">‏צריך לפתוח את הגדרות Bluetooth כדי להתאים את המכשיר</translation>
@@ -702,6 +709,7 @@
 <translation id="423685346499232137">לא ניתן להעתיק או להדביק תוכן כרגע</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
+<translation id="4240756737570479726">נקודת האינטרנט תושבת בקרוב…</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4247123849143712100">עדכון וכיבוי</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
@@ -840,6 +848,7 @@
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4864648187878336334">שולחן עבודה וירטואלי מספר 15</translation>
 <translation id="4868492592575313542">מופעלת</translation>
+<translation id="4871905435473761992">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). ברשת הסלולרית שלך אין תמיכה בנקודת אינטרנט.</translation>
 <translation id="4872237917498892622">‏Alt + חיפוש או Shift</translation>
 <translation id="4872852897273142380">התמקדות בסרגל הסימניות או הדגשה שלו (אם הסרגל מוצג)</translation>
 <translation id="4881695831933465202">פתיחה</translation>
@@ -899,6 +908,7 @@
 <translation id="5104236669533825617">לא ניתן ליצור הקלטת מסך</translation>
 <translation id="5107522548814527560">אינטרנט</translation>
 <translation id="5111318697104479778"><ph name="DESC" />,‏ <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">טשטוש הרקע</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5121628974188116412">מעבר אל תחתית הדף</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
@@ -911,6 +921,7 @@
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
+<translation id="5187627942836026988">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט חסומה על ידי האדמין.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> אירועים</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1094,7 @@
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
+<translation id="5961960957587052807">חלש</translation>
 <translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
@@ -1256,6 +1268,7 @@
 <translation id="6752912906630585008">שולחן העבודה <ph name="REMOVED_DESK" /> הוסר ושולב עם שולחן העבודה <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">כרטיסיות</translation>
 <translation id="6757237461819837179">מדיה לא מופעלת</translation>
+<translation id="6759628406555734414">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). ניתן להתחבר לנקודת האינטרנט.</translation>
 <translation id="6768043681523654438">אחסון</translation>
 <translation id="6777216307882431711">‏אספקת חשמל למכשירים המחוברים ב-USB-C</translation>
 <translation id="6781002679438061620">שולחן עבודה וירטואלי מספר 9</translation>
@@ -1280,6 +1293,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}one{נשארו # ספרות}two{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6867938213751067702">ההורדה של <ph name="FILENAME" /> הושהתה</translation>
+<translation id="6874854809828346832">‏הצגת פרטי הנקודה לשיתוף אינטרנט (Hotspot). נקודת האינטרנט פועלת.</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{אפליקציה אחת}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="6884665277231944629">חזרה להיום</translation>
@@ -1289,6 +1303,7 @@
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6901883536534621389">רוצה לנסות לנווט באמצעות תנועות?</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
+<translation id="6920245099716267363">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
 <translation id="6941333068993625698">שליחת משוב</translation>
 <translation id="6942518653766415536">התפריט של פורמט הצילום</translation>
@@ -1378,6 +1393,7 @@
 <translation id="7378203170292176219">יש לגרור כדי לבחור אזור להקלטה</translation>
 <translation id="7378594059915113390">פקדי מדיה</translation>
 <translation id="7378889811480108604">מצב חסכון בסוללה כבוי</translation>
+<translation id="7382640522316003298">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש <ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
 <translation id="7382680553121047388">מופעל</translation>
 <translation id="7384028040782072252">לוחצים לחיצה ימנית במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="7386767620098596324">הפעלה או השבתה של החיבור לרשת. <ph name="STATE_TEXT" />.</translation>
@@ -1430,6 +1446,7 @@
 <translation id="7579778809502851308">צילום מסך</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
 <translation id="7600875258240007829">הצגת כל ההתראות</translation>
+<translation id="7601417191446344542">להפעיל את הנדנוד לגבי השתקה?</translation>
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7609951632080598826">תצוגת היומן, <ph name="DATE" />,‏ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">המצלמה מחוברת שוב.</translation>
@@ -1554,6 +1571,7 @@
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8131994907636310308">סגירת ההודעה הקופצת של המיון</translation>
 <translation id="8132793192354020517">מחובר ל<ph name="NAME" /></translation>
+<translation id="8135163608236671037">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. אין מכשיר מחובר.</translation>
 <translation id="8138705869659070104">הפעלה לאחר הגדרת המכשיר</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>
 <translation id="8142441511840089262">לחיצה כפולה</translation>
@@ -1733,6 +1751,7 @@
 <translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">‏מצב היפוך הצבעים מופעל. יש להקיש שוב על Ctrl+Search+H כדי להשבית אותו.</translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
+<translation id="8993733019280019776">ניסית לדבר? המיקרופון שלך כבוי. עליך לבחור במיקרופון כדי להפעיל אותו.</translation>
 <translation id="9000771174482730261">ניהול האחסון</translation>
 <translation id="9005984960510803406">‏פתיחת חלון Crosh</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>

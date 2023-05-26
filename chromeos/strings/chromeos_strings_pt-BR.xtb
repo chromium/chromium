@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Espaços de trabalho</translation>
 <translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1020274983236703756">Recursos exclusivos do <ph name="PRODUCT_NAME" /> já estão disponíveis</translation>
 <translation id="1022433422498218992">Controles gerais</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Procurando scanners</translation>
 <translation id="3226657629376379887">Menu de ações de layout</translation>
 <translation id="3246869037381808805">Trabalhos de impressão enviados há mais de 1 dia serão removidos</translation>
+<translation id="3248223063252096240">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Falha - Porta aberta</translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar arquivo}one{Editar arquivo}other{Editar arquivos}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Alternar Tela de privacidade</translation>
 <translation id="3639846061339007994">parte de cima</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
+<translation id="3663574643422533538">Selecione pôsteres exclusivos do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Teste de <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Carregando...</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Selecionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Agora você tem acesso a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />planos de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4130035430755296270">Passe o cursor para ver mais opções de layout</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8593058461203131755">pausar mídia</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
+<translation id="8626489604350149811">Mais ações para o site <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>

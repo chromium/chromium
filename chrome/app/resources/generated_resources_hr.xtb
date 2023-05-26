@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Ovo proširenje može čitati i mijenjati vaše podatke na web-lokacijama. Možete upravljati time kojim web-lokacijama proširenje može pristupiti.</translation>
 <translation id="1007057452468855774">Uključi Trgovinu Google Play</translation>
 <translation id="1008186147501209563">Izvezi oznake</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> pamti kako ste se prijavili i automatski vas prijavljuje kada je to moguće. Kada je ta značajka isključena, tražit će se potvrda svaki put.</translation>
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokaciju koju niste posjetili dva mjeseca}one{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjetili dva mjeseca}few{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjetili dva mjeseca}other{Radi zaštite vaših podataka dopuštenja su uklonjena za web-lokacije koje niste posjetili dva mjeseca}}</translation>
 <translation id="1009663062402466586">Sad su dostupne kontrole igara</translation>
@@ -1466,6 +1467,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2241053333139545397">čitati i mijenjati vaše podatke na više web-lokacija</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2242687258748107519">Informacije o datoteci</translation>
+<translation id="2243452222143104807">Neaktivna kartica</translation>
 <translation id="2245603955208828424">Upotrijebite tipke sa strelicama da biste se pomicali slovo po slovo</translation>
 <translation id="2246129643805925002">Uređaj <ph name="DEVICE_TYPE" /> automatski se ažurira u pozadini i pruža najnovije značajke i poboljšanja sigurnosti. Postavke ažuriranja možete pregledati u postavkama.</translation>
 <translation id="2246549592927364792">Želite li dohvatiti opise slika s Googlea?</translation>
@@ -1924,6 +1926,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2616008379779647117">Jezik titlova</translation>
 <translation id="2616366145935564096">pročitati i promijeniti vaše podatke na <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Postavljanje dijeljenja u blizini</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047">Datoteka <ph name="FILE_NAME" /> ne može se sigurno preuzeti.</translation>
 <translation id="2620245777360407679">Uređaji koji su trenutačno povezani sa žarišnom točkom</translation>
 <translation id="2620436844016719705">Sustav</translation>
@@ -3850,6 +3853,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4325237902968425115">Deinstaliranje aplikacije <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Chromeova najjača zaštita čini više toga kako bi vas zaštitila od opasnih web-lokacija, preuzimanja i proširenja</translation>
 <translation id="4326484226728068206">Artikli u košarici: <ph name="DISCOUNT_TEXT" /> kod trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, pregledani <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Ova kartica upotrebljava <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Ledena voda</translation>
 <translation id="4330387663455830245">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Postavljanje roditeljskog nadzora</translation>
@@ -6131,6 +6135,7 @@ Možete je poslati Googleu da biste provjerili je li nesigurna. Pregled obično 
 <translation id="6384275966486438344">promijeniti postavke pretraživanja u: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se s internetom i pokušajte ponovo</translation>
+<translation id="6385382178401976503">Kartica: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Upozorenje: omogućeni su detaljni zapisnici. Zapisnici u nastavku mogu uključivati URL-ove ili neke druge osjetljive podatke. Pregledajte ih kako ne biste poslali neke podatke koje ne želite dijeliti.</translation>
 <translation id="6387674443318562538">Podijeli okomito</translation>
 <translation id="6388429472088318283">Pretražite jezike</translation>
@@ -7378,6 +7383,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7475671414023905704">URL Netscape izgubljene zaporke</translation>
 <translation id="7476454130948140105">Baterija nije dovoljno napunjena za ažuriranje (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Automatski je blokirano sljedeće: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Visoka potrošnja memorije: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Izradi QR kôd za ovu stranicu</translation>
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
 <translation id="7478069565037869084">Široko</translation>
@@ -8138,6 +8144,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8113476325385351118">Nastavite ovoj web-lokaciji blokirati potpunu kontrolu nad MIDI uređajima</translation>
 <translation id="8115139559594092084">S vašeg Google diska</translation>
 <translation id="8116972784401310538">&amp;Upravitelj oznaka</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> pamti kako ste se prijavili i automatski vas prijavljuje kada je to moguće. Kada je ta značajka isključena, tražit će se potvrda svaki put.</translation>
 <translation id="8118362518458010043">Onemogućio Chrome. To proširenje možda nije sigurno.</translation>
 <translation id="8118488170956489476">Vašim <ph name="BEGIN_LINK" />preglednikom upravlja<ph name="END_LINK" /> vaša organizacija</translation>
 <translation id="8118515372935001629">Učestalost osvježavanja zaslona</translation>
@@ -8888,6 +8895,7 @@ Ako odlučite da nećete dijeliti signale, ovaj će se profil zatvoriti.</transl
 <translation id="8771300903067484968">Pozadina početne stranice vraćena je na zadanu pozadinu.</translation>
 <translation id="8773280816776735812">Prikažite vrijednost IBAN-a</translation>
 <translation id="8773302562181397928">Spremite <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Štednja neaktivne kartice: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Potvrđivanje vraćanja</translation>
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
@@ -9166,6 +9174,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="9013037634206938463">Za instaliranje Linuxa trebate <ph name="INSTALL_SIZE" /> slobodnog prostora. Da biste oslobodili prostor, izbrišite datoteke s uređaja.</translation>
 <translation id="9014206344398081366">Vodič za ChromeVox</translation>
 <translation id="901668144954885282">Sigurnosno kopiranje na Google disku</translation>
+<translation id="90181708067259747">Datum isteka: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalacija je dovršena</translation>
 <translation id="9019062154811256702">čitati i mijenjati postavke automatskog popunjavanja</translation>
 <translation id="9019894137004772119">Upotreba lokacije. Aplikacijama i uslugama s dopuštenjem za lokaciju dopustite da upotrebljavaju lokaciju vašeg uređaja. Google može povremeno prikupljati podatke o lokaciji i upotrebljavati ih na anoniman način kako bi poboljšao točnost lokacije i usluga temeljenih na lokaciji.</translation>

@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">डेस्कहरू</translation>
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> का खास एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="1022433422498218992">सामान्य कन्ट्रोलहरू</translation>
 <translation id="1022628058306505708">अर्थ फ्लो</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
 <translation id="3226657629376379887">लेआउट एक्सन मेनु</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> को खास सामग्री</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
 <translation id="3275729367986477355">अवतारको फोटो</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल सम्पादन गर्नुहोस्}other{फाइलहरू सम्पादन गर्नुहोस्}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3639846061339007994">सिरान</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> को खास कलाकृति चयन गर्नुहोस्</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
 <translation id="3708186454126126312">यसअघि कनेक्ट गरिएका डिभाइस</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4111761024568264522">USB टचप्याड</translation>
+<translation id="4113067922640381334">तपाईं अब नयाँ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वालपेपरहरू<ph name="END_LINK_WALLPAPER_SUBPAGE" /> प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="4117637339509843559">अँध्यारो मोड</translation>
 <translation id="4130035430755296270">लेआउटसम्बन्धी थप विकल्पहरू प्राप्त गर्न होभर गरिराख्नुहोस्</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">सुरु गरिएको छैन</translation>
 <translation id="8593058461203131755">"मिडिया पज गर्नुहोस्" जनाउने आइकन</translation>
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="86356131183441916">हल्का बैजनी रङ</translation>
 <translation id="8651481478098336970">आवाज म्यूट</translation>
 <translation id="8655295600908251630">च्यानल</translation>

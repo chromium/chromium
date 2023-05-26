@@ -426,6 +426,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3290249595466894471">També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves</translation>
 <translation id="3293181007446299124">L'historial de navegació es desa en privat al teu dispositiu i els informes s'envien amb retard per protegir la teva identitat</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
+<translation id="3305130791745726624">Envia als dispositius</translation>
 <translation id="3305795716056605962">Tradueix pàgines des del botó Més opcions</translation>
 <translation id="3319664549618064419">Canvia al lloc web per a ordinadors per veure millor aquest lloc web</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
@@ -1174,6 +1175,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7304072650267745798">És possible que el teu dispositiu Android inclogui una opció de configuració similar. Si aquesta opció està activada a Chrome i al teu dispositiu Android, les empreses podrien mesurar l'efectivitat d'un anunci als llocs web que visites i a les aplicacions que fas servir.</translation>
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
+<translation id="7324354302972299151">Envia una sol·licitud Do Not Track</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
 <translation id="7333232495927792353">Sincronitza per obtenir el contingut més rellevant de Google</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
@@ -1360,6 +1362,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Els teus dispositius<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8209050860603202033">Obre la imatge</translation>
+<translation id="8210770465353466621">Trobaràs les teves pestanyes aquí</translation>
 <translation id="8215740705341534369">Full lateral</translation>
 <translation id="8218622182176210845">Gestiona el compte</translation>
 <translation id="8221401890884589479">Pots bloquejar els llocs web que no t'interessen. Chrome també suprimeix automàticament els llocs web de la llista que tenen més de 30 dies. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>

@@ -211,6 +211,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1442987760062738829">Otwór</translation>
 <translation id="1446396933673057385">Sprawdzenie dokładności</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Ustawienia wybrane przez Twojego rodzica zapewniają Ci teraz większe bezpieczeństwo online</translation>
 <translation id="1453974140256777690">Wpisany lub dołączony test jest wysyłany do Google Cloud lub innych firm w celu przeanalizowania. Na przykład może zostać przeskanowany w poszukiwaniu danych wrażliwych.</translation>
 <translation id="1455413310270022028">Gumka</translation>
 <translation id="1459693405370120464">Pogoda</translation>
@@ -268,6 +269,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1569487616857761740">Wpisz datę ważności</translation>
 <translation id="1569694109004336106">Google Chrome próbuje włączyć Windows Hello, aby wypełniać hasła.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (cale)</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Podczas wyświetlania strony wystąpił błąd.</translation>
 <translation id="1584492003828271317">Personalizacja reklam wyświetlanych podczas przeglądania internetu zależy od tego ustawienia, od ustawienia dotyczącego reklam sugerowanych przez witrynę, od ustawień plików cookie oraz od tego, czy wyświetlasz reklamy spersonalizowane</translation>
@@ -1133,6 +1135,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3740319564441798148">Międzymiastowe połączenia autobusowe i kolejowe</translation>
 <translation id="3743765582345153106">Zawsze sprawdzaj, jeśli używasz autouzupełniania</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
+<translation id="3744212718085287312">Czy następnym razem zwiększyć jej bezpieczeństwo za pomocą karty wirtualnej?</translation>
 <translation id="3744286742364977428">Pobierane pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą być skanowane pod kątem danych wrażliwych lub złośliwego oprogramowania i przechowywane zgodnie z zasadami firmy.</translation>
 <translation id="3744899669254331632">Nie możesz teraz odwiedzić strony <ph name="SITE" />, ponieważ wysłała ona zaszyfrowane dane logowania, których Chromium nie może przetworzyć. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
 <translation id="3748148204939282805">Osoby atakujące na stronie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą podstępem nakłonić Cię do wykonania czynności niebezpiecznych takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1268,6 +1271,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="410148943680000050">Skład tekstu</translation>
 <translation id="4103249731201008433">Numer seryjny urządzenia jest nieprawidłowy</translation>
 <translation id="4106133539597032659">Przycisk Utwórz witrynę; naciśnij Enter, aby szybko utworzyć nową witrynę w Witrynach Google</translation>
+<translation id="4106887816571530227">Umieszczona treść jest niedozwolona</translation>
 <translation id="4110652170750985508">Sprawdź szczegóły płatności</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
@@ -1605,6 +1609,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4876305945144899064">Brak nazwy użytkownika</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Brak}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Wyszukiwanie ciągu <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">Zezwolić na umieszczoną treść?</translation>
 <translation id="4879491255372875719">Automatycznie (domyślnie)</translation>
 <translation id="4880827082731008257">Przeszukaj historię</translation>
 <translation id="4881695831933465202">Otwórz</translation>
@@ -1802,6 +1807,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5314967030527622926">Tworzenie broszur</translation>
 <translation id="5316812925700871227">Obróć w lewo</translation>
 <translation id="5317780077021120954">Zapisz</translation>
+<translation id="5323043727018853753">Umieszczona treść jest dozwolona</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> z <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
 <translation id="5332219387342487447">Metoda wysyłki</translation>
@@ -2180,6 +2186,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6306713302480826305">Ten adres zostanie usunięty z tego urządzenia i innych urządzeń, na których się logujesz</translation>
 <translation id="6312113039770857350">Strona internetowa jest niedostępna</translation>
 <translation id="6316226860534107313">Skutery i motorowery</translation>
+<translation id="6316723751983724988">Nowość: tutaj obowiązują opcje Family Link dotyczące Chrome</translation>
 <translation id="63172326633386613">Zarządzaj ustawieniami ułatwień dostępu</translation>
 <translation id="6319249456820053699">Aparaty fotograficzne i kamery</translation>
 <translation id="6321917430147971392">Sprawdź ustawienia DNS</translation>
@@ -2731,6 +2738,7 @@ Dodatkowe informacje:
 <translation id="7598391785903975535">Mniej niż <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187">Serwer <ph name="HOST_NAME" /> nie może teraz obsłużyć tego żądania.</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
 <translation id="7613889955535752492">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
@@ -2831,6 +2839,7 @@ Dodatkowe informacje:
 <translation id="7822320754433038727">Łowiectwo i strzelectwo</translation>
 <translation id="782886543891417279">Sieć Wi-Fi (<ph name="WIFI_NAME" />), której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="7840103971441592723">Rozpoczęto wykonywanie zrzutu ekranu</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brak}=1{Jedna aplikacja (<ph name="EXAMPLE_APP_1" />)}=2{Dwie aplikacje (<ph name="EXAMPLE_APP_1" /> i <ph name="EXAMPLE_APP_2" />)}few{# aplikacje (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# aplikacji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Witryna, którą później odwiedzisz, może zapytać Chrome o interesujące Cię tematy, żeby spersonalizować wyświetlane reklamy. Chrome udostępnia do 3 tematów, jednocześnie chroniąc Twoją historię przeglądania i tożsamość.</translation>
@@ -2976,6 +2985,7 @@ Dodatkowe informacje:
 <translation id="8217748145574471584">Zasoby ludzkie</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
 <translation id="8228419419708659934">Widok dwóch stron</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> chce uzyskać dostęp do urządzenia w Twojej sieci:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Gry sportowe</translation>

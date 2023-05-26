@@ -2100,7 +2100,7 @@ Es posible que la política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> anul
       Si no la estableces (o determinas una URL no válida), <ph name="PRODUCT_NAME" /> no utilizará la política como fuente de reglas para cambiar de navegador.
 
       Nota: Esta política redirecciona a un archivo XML en el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. De esta manera, se cargan reglas de un archivo XML sin la necesidad de compartirlas con <ph name="IE_PRODUCT_NAME" />. Obtén más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
-<translation id="2940284205859074236">Usar el renderizador Skia para renderizar el PDF</translation>
+<translation id="2940284205859074236">Usar el renderizador Skia para renderizar documentos PDF</translation>
 <translation id="2940653651012844682">Lista de parámetros de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se produce un evento de seguridad en Chrome. Esto incluye los veredictos negativos de los análisis de Enterprise Connectors, la reutilización de contraseñas, la navegación en páginas no seguras y otras actividades del usuario que afectan la seguridad.
 
       El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de informes le corresponden los parámetros de configuración, y el campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica qué eventos están habilitados para este proveedor.

@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Witryna Google</translation>
 <translation id="1853795129690976061">Ten folder jest udostępniany Linuksowi</translation>
 <translation id="1864756863218646478">Nie można znaleźć pliku.</translation>
+<translation id="1877377730633446520">Zostanie użyte około <ph name="REQUIRED_SPACE" />. Obecnie masz <ph name="FREE_SPACE" /> wolnego miejsca.</translation>
 <translation id="1884013283844450420">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, połącz</translation>
 <translation id="1920670151694390848">Malajalam – transliteracja</translation>
 <translation id="1920798810075583923">Arbuz</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
+<translation id="2004942826429452291">Pliki będą przechowywane w chmurze i na tym Chromebooku.</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
 <translation id="2037845485764049925">Rosyjski</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Ustawienia urządzenia</translation>
 <translation id="2084809735218147718">Osoba śpiewająca, aby wyrazić podziękowanie</translation>
 <translation id="2088690981887365033">Sieć VPN</translation>
+<translation id="2089751716171649322">Łatwy dostęp do plików na Dysku Google w trybie offline</translation>
 <translation id="2111134541987263231">Włącz opcję <ph name="BEGIN_BOLD" />Zezwalaj w trybie incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementy (<ph name="NUMBER_OF_ITEMS" />) zostaną usunięte i nie będzie można ich przywrócić.</translation>
 <translation id="2122305276694332719">Automatyczne łączenie się z ukrytą siecią pozwala innym widzieć Twoje urządzenie wraz z niektórymi ustawieniami sieci. Nie zalecamy korzystania z tej funkcji.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
 <translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Twoje pliki na Dysku Google są dostępne offline</translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5500122897333236901">Islandzki</translation>
 <translation id="5508696409934741614">Punkty</translation>
+<translation id="5519161320735100193">Ustawienia Dysku Google</translation>
 <translation id="5522908512596376669">Lista plików została przełączona na widok listy.</translation>
 <translation id="5524517123096967210">Nie można odczytać pliku.</translation>
 <translation id="5533102081734025921">Obraz <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7806708061868529807">Hebrajski</translation>
 <translation id="78104721049218340">Tajski z klawiaturą kedmani</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Podczas konfigurowania sieci wystąpił błąd</translation>
 <translation id="7839804798877833423">Pobranie tych plików spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7908793776359722643">Sformatowanie partycji usunie wszystkie zapisane na niej dane. Tej czynności nie będzie można cofnąć.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Pliki z Mojego dysku są automatycznie synchronizowane z Chromebookiem, więc masz do nich dostęp bez połączenia z internetem.</translation>
 <translation id="7925247922861151263">Sprawdzenie AAA nie powiodło się</translation>
 <translation id="7925686952655276919">Nie synchronizuj przez połączenie komórkowe</translation>
 <translation id="7928710562641958568">Odłącz urządzenie</translation>
+<translation id="7933875256234974853">Przygotowuję synchronizację plików z Dysku…</translation>
 <translation id="7943385054491506837">amerykańska klawiatura Colemak</translation>
 <translation id="7953739707111622108">Nie można otworzyć urządzenia, ponieważ jego system plików nie został rozpoznany.</translation>
 <translation id="7969525169268594403">Słoweński</translation>
 <translation id="7972920761225148017">Francuski (Szwajcaria)</translation>
 <translation id="7973962044839454485">Uwierzytelnianie PPP nie powiodło się z powodu nieprawidłowej nazwy użytkownika lub hasła</translation>
 <translation id="7980421588063892270">Angielski (USA) z klawiaturą Colemak</translation>
+<translation id="7985008041109611710">Synchronizuję <ph name="NUMBER_OF_FILES_SYNCING" /> pliki(ów)</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8008366997883261463">Pies</translation>
 <translation id="8028993641010258682">Rozmiar</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Instalacja rozpoczęła się.</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219908252191632183">Księżycowy</translation>
+<translation id="937795003075802289">Synchronizuję 1 plik</translation>
 <translation id="938470336146445890">Zainstaluj certyfikat użytkownika.</translation>
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>

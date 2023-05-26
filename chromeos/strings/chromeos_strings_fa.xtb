@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">میزکارها</translation>
 <translation id="1018219910092211213">نمی‌توان ساناد را حل‌وفصل کرد</translation>
 <translation id="1018656279737460067">لغو شده</translation>
+<translation id="1020274983236703756">اکنون دارایی‌های انحصاری <ph name="PRODUCT_NAME" /> دردسترس است</translation>
 <translation id="1022433422498218992">کنترل‌های عمومی</translation>
 <translation id="1022628058306505708">جریان خاک</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3226657629376379887">منوی کنش‌های طرح‌بندی</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> انحصاری</translation>
 <translation id="3268178239013324452">انجام نشد - در باز است</translation>
 <translation id="3275729367986477355">تصویر چهره‌نما</translation>
 <translation id="3283504360622356314">{0,plural, =1{ویرایش فایل}one{ویرایش فایل}other{ویرایش فایل‌ها}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
 <translation id="3639846061339007994">بالا</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
+<translation id="3663574643422533538">انتخاب کارهای هنری انحصاری برای <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">آزمایش <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">انتخاب آلبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">‏تاچ‌پد USB</translation>
+<translation id="4113067922640381334">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌های جدید<ph name="END_LINK_WALLPAPER_SUBPAGE" /> دسترسی دارید</translation>
 <translation id="4117637339509843559">حالت تاریک</translation>
 <translation id="4130035430755296270">برای گزینه‌های طرح‌بندی بیشتر، همچنان نشانگر را نگه دارید</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>
 <translation id="8593058461203131755">مکث رسانه</translation>
 <translation id="8620617069779373398">وضعیت فراگردی</translation>
+<translation id="8626489604350149811">کنش‌های بیشتر برای <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">بنفش روشن</translation>
 <translation id="8651481478098336970">بی‌صدا کردن</translation>
 <translation id="8655295600908251630">کانال</translation>

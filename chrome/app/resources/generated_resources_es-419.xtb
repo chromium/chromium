@@ -4790,7 +4790,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5177549709747445269">Estás usando el plan de datos móviles.</translation>
 <translation id="5178667623289523808">Buscar anterior</translation>
 <translation id="5181140330217080051">Descargando...</translation>
-<translation id="5181172023548002891">En el Administrador de contraseñas de Google de <ph name="ACCOUNT" /></translation>
+<translation id="5181172023548002891">En el Administrador de contraseñas de Google de <ph name="ACCOUNT" /></translation>
 <translation id="5183344263225877832">¿Quieres restablecer todos los permisos de dispositivos HID?</translation>
 <translation id="5184063094292164363">&amp;Consola de JavaScript</translation>
 <translation id="5184209580557088469">Ya existe un ticket para este nombre de usuario</translation>
@@ -4934,7 +4934,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5302932258331363306">Mostrar sustituciones</translation>
 <translation id="5305145881844743843"><ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> administra esta cuenta</translation>
 <translation id="5307030433605830021">No se admite la fuente</translation>
-<translation id="5307386115243749078">Sincronizar el interruptor Bluetooth</translation>
+<translation id="5307386115243749078">Vincular interruptor Bluetooth</translation>
 <translation id="5307958609248661362">Se agotó el tiempo de espera del Administrador de contraseñas de Google</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5309418307557605830">Asistente de Google también funciona aquí</translation>
@@ -6500,7 +6500,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="671226373742585927">Haz clic en el botón "X" para cerrar el panel lateral</translation>
 <translation id="6712943853047024245">Ya guardaste una contraseña con este nombre de usuario para <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Agregar un perfil de trabajo</translation>
-<translation id="6713441551032149301">Mantén presionada la tecla del selector para alternar entre las teclas de función y las teclas de la fila superior del sistema</translation>
+<translation id="6713441551032149301">Mantén presionada la tecla del Selector para alternar entre las teclas de función y las teclas de la fila superior del sistema</translation>
 <translation id="6713668088933662563">Nunca ofrecer la traducción de estos idiomas</translation>
 <translation id="6715803357256707211">Se produjo un error durante la instalación de la app de Linux. Haz clic en la notificación para obtener más detalles.</translation>
 <translation id="671619610707606484">Esta acción borrará <ph name="TOTAL_USAGE" /> de datos almacenados por todos los sitios</translation>
@@ -6622,7 +6622,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6811034713472274749">Ya puedes ver la página</translation>
 <translation id="6811151703183939603">Firme</translation>
 <translation id="6811332638216701903">Nombre de host DHCP</translation>
-<translation id="6811792477922751991">Usa la tecla del selector para cambiar el comportamiento de las teclas de función</translation>
+<translation id="6811792477922751991">Usa la tecla del Selector para cambiar el comportamiento de las teclas de función</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no se puede ejecutar como raíz.</translation>
 <translation id="6812841287760418429">Conservar cambios</translation>
 <translation id="6813907279658683733">Pantalla completa</translation>

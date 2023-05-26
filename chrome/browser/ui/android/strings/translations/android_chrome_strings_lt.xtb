@@ -426,6 +426,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3290249595466894471">Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes</translation>
 <translation id="3293181007446299124">Naršymo istorija saugoma privačiai įrenginyje, o ataskaitos siunčiamos su delsa, siekiant apsaugoti jūsų tapatybę</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
+<translation id="3305130791745726624">Siųsti į įrenginius</translation>
 <translation id="3305795716056605962">Verskite puslapius naudodami mygtuką „Daugiau parinkčių“</translation>
 <translation id="3319664549618064419">Perjunkite į svetainę kompiuteriams, kad geriau peržiūrėtumėte šią svetainę</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
@@ -1174,6 +1175,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7304072650267745798">Jūsų „Android“ įrenginyje gali būti panašus nustatymas. Jei šis nustatymas įjungtas naršyklėje „Chrome“ ir „Android“ įrenginyje, įmonė gali vertinti skelbimo efektyvumą svetainėse, kuriose lankotės, ir programose, kurias naudojate.</translation>
 <translation id="7304873321153398381">Neprisijungta. „Chrome“ negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="7313188324932846546">Palieskite, kad nustatytumėte sinchronizavimą</translation>
+<translation id="7324354302972299151">Užklausos „Do Not Track“ siuntimas</translation>
 <translation id="7332075081379534664">Sėkmingai prisijungta</translation>
 <translation id="7333232495927792353">Sinchronizuokite, kad gautumėte aktualiausią turinį iš „Google“</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
@@ -1360,6 +1362,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8209050860603202033">Atidaryti vaizdą</translation>
+<translation id="8210770465353466621">Čia rasite skirtukus</translation>
 <translation id="8215740705341534369">Šoninis lapas</translation>
 <translation id="8218622182176210845">Paskyros tvarkymas</translation>
 <translation id="8221401890884589479">Galite užblokuoti nepageidaujamas svetaines. „Chrome“ taip pat iš sąrašo automatiškai ištrina senesnes nei trisdešimt dienų svetaines. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>

@@ -1133,6 +1133,7 @@
 <translation id="3740319564441798148">長距離バス、列車</translation>
 <translation id="3743765582345153106">自動入力を使用するときは常に確認する</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
+<translation id="3744212718085287312">次回から仮想カードでセキュリティを高めますか？</translation>
 <translation id="3744286742364977428">ダウンロードしたファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存される場合があります。</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、ソフトウェアのインストールや個人情報（パスワード、電話番号、クレジット カードなど）の入力といった危険な操作を行うよう誘導される可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>

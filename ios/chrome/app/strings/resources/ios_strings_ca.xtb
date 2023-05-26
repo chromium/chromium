@@ -315,6 +315,9 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2975121486251958312">Només està disponible el mode d'incògnit</translation>
 <translation id="2982481275546140226">Esborra les dades</translation>
 <translation id="298306318844797842">Afegeix una forma de pagament...</translation>
+<translation id="2988274366244053197">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
+
+Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Obre en una pestanya nova</translation>
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3037605927509011580">Vaja!</translation>
@@ -381,6 +384,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3471148582064653480">Sincronitza les contrasenyes, l'historial i altres elements.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{per a {COUNT} lloc web o aplicació}other{per a {COUNT} llocs web i aplicacions}}</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accedeix a les teves contrasenyes en altres aplicacions.</translation>
 <translation id="3478058380795961209">Mes de caducitat</translation>
 <translation id="3482959374254649722">S'estan sincronitzant les pestanyes...</translation>
 <translation id="3484946776651937681">Obre a Baixades</translation>
@@ -652,6 +656,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
+<translation id="5325595483440111327">Mostra l'historial de navegació.</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
 <translation id="536067926684072644">Mostra adreces d'interès</translation>
 <translation id="5360976571138293719">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta la pàgina <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>

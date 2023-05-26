@@ -6112,6 +6112,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6343003829431264373">Aðeins síður með sléttum tölum</translation>
 <translation id="6344170822609224263">Fá aðgang að lista yfir nettengingar</translation>
 <translation id="6344576354370880196">Vistaðir prentarar</translation>
+<translation id="6344608411615208519">Foreldri þitt <ph name="BEGIN_LINK" />stjórnar vafranum<ph name="END_LINK" /> hjá þér</translation>
 <translation id="6345418402353744910">Staðgengilsþjónninn <ph name="PROXY" /> þarf notandanafnið þitt og aðgangsorð til að stjórnandinn geti stillt netkerfið þitt</translation>
 <translation id="6345878117466430440">Merkja sem lesið</translation>
 <translation id="6347010704471250799">Sýna tilkynningu</translation>
@@ -7638,6 +7639,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7684212569183643648">Kerfisstjórinn þinn setti upp</translation>
 <translation id="7684559058815332124">Fara á innskráningarsíðu auðkenningargáttar</translation>
 <translation id="7684718995427157417">Kveiktu á villuleitarbrú Android (ADB) til að búa til og prófa forritin þín. Hafðu í huga að þessi aðgerð gerir þér kleift að setja upp Android forrit sem eru ekki staðfest af Google. Núllstilla þarf tækið til að slökkva á þessu.</translation>
+<translation id="7684913007876670600">Til að birta einfaldað yfirlit þessarar síðu skaltu opna hliðargluggann og velja lesstillingu</translation>
 <translation id="7685049629764448582">JavaScript-minni</translation>
 <translation id="7685087414635069102">PIN-númers krafist</translation>
 <translation id="7686086654630106285">Nánar um auglýsingar sem vefsvæði leggja til</translation>

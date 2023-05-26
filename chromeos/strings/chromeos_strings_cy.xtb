@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Desgiau</translation>
 <translation id="1018219910092211213">Methu â datrys DNS</translation>
 <translation id="1018656279737460067">Canslwyd</translation>
+<translation id="1020274983236703756">Asedau <ph name="PRODUCT_NAME" /> unigryw ar gael nawr</translation>
 <translation id="1022433422498218992">Rheolyddion Cyffredinol</translation>
 <translation id="1022628058306505708">Llif y Ddaear</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> o drywyddau, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Wrthi'n chwilio am sganwyr</translation>
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> unigryw</translation>
 <translation id="3268178239013324452">Wedi methu - Drws ar agor</translation>
 <translation id="3275729367986477355">Llun rhithffurf</translation>
 <translation id="3283504360622356314">{0,plural, =1{Golygu'r ffeil}zero{Golygu ffeiliau}two{Golygu ffeiliau}few{Golygu ffeiliau}many{Golygu ffeiliau}other{Golygu ffeiliau}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Togl sgrîn preifatrwydd</translation>
 <translation id="3639846061339007994">brig</translation>
 <translation id="3651050199673793219">Dewiswch uned tymheredd</translation>
+<translation id="3663574643422533538">Dewiswch waith celf unigryw <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Prawf <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Wrthi'n llwytho...</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Dewiswch albwm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sgrîn gyffwrdd USB</translation>
+<translation id="4113067922640381334">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> newydd</translation>
 <translation id="4117637339509843559">Modd tywyll</translation>
 <translation id="4130035430755296270">Parhewch i hofran am fwy o opsiynau cynllun</translation>
 <translation id="4131410914670010031">Du a gwyn</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Heb ei gychwyn</translation>
 <translation id="8593058461203131755">seibio'r cyfryngau</translation>
 <translation id="8620617069779373398">Statws crwydro</translation>
+<translation id="8626489604350149811">Rhagor o weithredoedd ar gyfer <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porffor golau</translation>
 <translation id="8651481478098336970">distewi'r sain</translation>
 <translation id="8655295600908251630">Sianel</translation>

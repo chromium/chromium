@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">სამუშაო მაგიდები</translation>
 <translation id="1018219910092211213">DNS-ის დარეგულირება ვერ ხერხდება</translation>
 <translation id="1018656279737460067">გაუქმდა</translation>
+<translation id="1020274983236703756">თქვენთვის ამიერიდან ხელმისაწვდომია <ph name="PRODUCT_NAME" />-ისთვის ექსკლუზიური რესურსები</translation>
 <translation id="1022433422498218992">მართვის ზოგადი საშუალებები</translation>
 <translation id="1022628058306505708">ხმელეთის ნაკადი</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ნაკადი, <ph name="CPU_MAX_CLOCK_SPEED" /> გჰც)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3226657629376379887">განლაგებასთან დაკავშირებული მოქმედებების მენიუ</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
+<translation id="3248223063252096240">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
 <translation id="3275729367986477355">ავატარის სურათი</translation>
 <translation id="3283504360622356314">{0,plural, =1{ფაილის რედაქტირება}other{ფაილების რედაქტირება}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
 <translation id="3639846061339007994">ზედა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
+<translation id="3663574643422533538">აირჩიეთ ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრები</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3708186454126126312">ადრე დაკავშირებული</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB სენსორული პანელი</translation>
+<translation id="4113067922640381334">ამიერიდან წვდომა გაქვთ ახალ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ფონებზე<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
 <translation id="4130035430755296270">განლაგებების მეტი ვარიანტებისთვის გააგრძელეთ გადატარება</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">არაინიცირებული</translation>
 <translation id="8593058461203131755">მედიის დაპაუზება</translation>
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
+<translation id="8626489604350149811">სხვა ქმედებები <ph name="APN_NAME" />-ისთვის</translation>
 <translation id="86356131183441916">ღია მეწამული</translation>
 <translation id="8651481478098336970">ხმის დადუმება</translation>
 <translation id="8655295600908251630">არხი</translation>

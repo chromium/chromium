@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">„Google“ svetainė</translation>
 <translation id="1853795129690976061">Šis aplankas bendrinamas su „Linux“</translation>
 <translation id="1864756863218646478">Nepavyko rasti failo.</translation>
+<translation id="1877377730633446520">Bus naudojama maždaug <ph name="REQUIRED_SPACE" />. Šiuo metu turite <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, prisijungti</translation>
 <translation id="1920670151694390848">Malajalių k. transliteracija</translation>
 <translation id="1920798810075583923">Arbūzas</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Išskleisti failų atsiliepimų skydelius</translation>
 <translation id="1995337122023280937">Eiti į failo vietą</translation>
 <translation id="2001796770603320721">Tvarkyti Diske</translation>
+<translation id="2004942826429452291">Failai bus saugomi debesyje ir šiame „Chromebook“.</translation>
 <translation id="2009067268969781306">Formatuojant atmintuką bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="2025955442973426285">Tigrinų k.</translation>
 <translation id="2037845485764049925">Rusų k.</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Įrenginio nustatymai</translation>
 <translation id="2084809735218147718">Rašoma „ačiū“</translation>
 <translation id="2088690981887365033">VPN tinklas</translation>
+<translation id="2089751716171649322">Lengvai pasiekite „Google“ disko failus neprisijungę</translation>
 <translation id="2111134541987263231">Įjunkite parinktį <ph name="BEGIN_BOLD" />Leisti inkognito režimu<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementai (iš viso: <ph name="NUMBER_OF_ITEMS" />) bus ištrinti ir nebegalėsite jų atkurti.</translation>
 <translation id="2122305276694332719">Automatiškai susiejus su paslėptu tinklu kiti gali matyti jūsų įrenginį ir kai kuriuos tinklo nustatymus (nerekomenduojama).</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
 <translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
+<translation id="3501954296166022751">Jūsų „Google“ disko failai pasiekiami neprisijungus</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3511705761158917664">Ruošiamasi sinchronizuoti <ph name="NUMBER_OF_ITEMS" /> elem...</translation>
 <translation id="3522708245912499433">Portugalų</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5500122897333236901">Islandų</translation>
 <translation id="5508696409934741614">Taškai</translation>
+<translation id="5519161320735100193">„Google“ disko nustatymai</translation>
 <translation id="5522908512596376669">Failų sąrašas pakeistas į sąrašo rodinį.</translation>
 <translation id="5524517123096967210">Nepavyko nuskaityti failo.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> vaizdas</translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7806708061868529807">Hebrajų k.</translation>
 <translation id="78104721049218340">Tajų k. su „Kedmanee“ klaviatūra</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Klaida konfigūruojant tinklą</translation>
 <translation id="7839804798877833423">Šiems failams gauti reikės apytiksliai <ph name="FILE_SIZE" /> duomenų mobiliesiems.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatuojant skaidinį bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Mano Diske esantys failai bus automatiškai sinchronizuojami su „Chromebook“, kad galėtumėte juos pasiekti be interneto ryšio.</translation>
 <translation id="7925247922861151263">AAA patikra nepavyko</translation>
 <translation id="7925686952655276919">Sinchronizuojant nenaudoti duomenų mobiliesiems</translation>
 <translation id="7928710562641958568">Išstumti įrenginį</translation>
+<translation id="7933875256234974853">Ruošiamasi sinchronizuoti Disko failus...</translation>
 <translation id="7943385054491506837">JAV „Colemak“</translation>
 <translation id="7953739707111622108">Įrenginio negalima atidaryti, nes nepavyko atpažinti jo failų išdėstymo sistemos.</translation>
 <translation id="7969525169268594403">Slovėnija</translation>
 <translation id="7972920761225148017">Prancūzų k. (Šveicarija)</translation>
 <translation id="7973962044839454485">Nepavyko autentifikuoti PGP dėl netinkamo naudotojo vardo ar slaptažodžio</translation>
 <translation id="7980421588063892270">Anglų k. (JAV) su „Colemak“ klaviatūra</translation>
+<translation id="7985008041109611710">Sinchronizuojama failų: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8000066093800657092">Tinklo nėra</translation>
 <translation id="8008366997883261463">Džeko Raselo terjeras</translation>
 <translation id="8028993641010258682">Dydis</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Diegimas sėkmingai pradėtas.</translation>
 <translation id="9219103736887031265">Vaizdai</translation>
 <translation id="9219908252191632183">Mėnulyje</translation>
+<translation id="937795003075802289">Sinchronizuojamas vienas failas</translation>
 <translation id="938470336146445890">Įdiekite naudotojo sertifikatą.</translation>
 <translation id="939736085109172342">Naujas aplankas</translation>
 <translation id="943972244133411984">Pakeitė</translation>

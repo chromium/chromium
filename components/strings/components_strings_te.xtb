@@ -213,6 +213,7 @@
 <translation id="1442987760062738829">రంధ్రం</translation>
 <translation id="1446396933673057385">ఖచ్చితత్వ తనిఖీ</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">మీ తల్లి/తండ్రి మీ కోసం ఎంపిక చేసిన సెట్టింగ్‌లు మిమ్మల్ని ఇప్పుడు ఆన్‌లైన్‌లో మరింత సురక్షితంగా ఉంచుతున్నాయి</translation>
 <translation id="1453974140256777690">మీరు పేస్ట్ చేసిన లేదా జోడించిన టెక్స్ట్ Google క్లౌడ్ లేదా థర్డ్ పార్టీలకు విశ్లేషణ కోసం పంపబడుతుంది. ఉదాహరణకు, ఇది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు.</translation>
 <translation id="1455413310270022028">ఎరేజర్</translation>
 <translation id="1459693405370120464">వాతావరణం</translation>
@@ -270,6 +271,7 @@
 <translation id="1569487616857761740">గడువు ముగింపు తేదీని నమోదు చేయండి</translation>
 <translation id="1569694109004336106">పాస్‌వర్డ్‌లను పూరించడం కోసం Windows Helloను ఆన్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> అంగుళాలు</translation>
+<translation id="1576277203042721907">షాపింగ్ గణాంకాలు</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ఈ వెబ్ పేజీని ప్రదర్శిస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</translation>
 <translation id="1584492003828271317">మీరు బ్రౌజ్ చేస్తున్నప్పుడు, మీకు కనిపించే యాడ్ ఈ సెట్టింగ్ ఆధారంగా, లేదా సైట్ సూచించిన యాడ్‌ల ఆధారంగా, లేదా మీ కుక్కీ సెట్టింగ్‌ల ఆధారంగా వ్యక్తిగతీకరించబడవచ్చు, అలాగే మీరు చూసే సైట్ యాడ్‌లను వ్యక్తిగతీకరించవచ్చు</translation>
@@ -1271,6 +1273,7 @@
 <translation id="410148943680000050">డెస్క్‌టాప్ పబ్లిషింగ్</translation>
 <translation id="4103249731201008433">పరికరం క్రమ సంఖ్య చెల్లదు</translation>
 <translation id="4106133539597032659">'సైట్‌ను క్రియేట్ చేయండి' బటన్, Google Sitesలో త్వరగా కొత్త సైట్‌ను క్రియేట్ చేయడానికి Enterను నొక్కండి</translation>
+<translation id="4106887816571530227">పొందుపరిచిన కంటెంట్‌కు అనుమతి లేదు</translation>
 <translation id="4110652170750985508">మీ పేమెంట్‌ను రివ్యూ చేయండి</translation>
 <translation id="4111546256784973544">పెయింట్‌బాల్</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
@@ -1608,6 +1611,7 @@
 <translation id="4876305945144899064">వినియోగదారు పేరు లేదు</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> శోధన</translation>
+<translation id="4877521229462766300">పొందుపరిచిన కంటెంట్‌ను అనుమతించాలా?</translation>
 <translation id="4879491255372875719">ఆటోమేటిక్ (డిఫాల్ట్)</translation>
 <translation id="4880827082731008257">హిస్టరీలో సెర్చ్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
@@ -1805,6 +1809,7 @@
 <translation id="5314967030527622926">బుక్‌లెట్ తయారీ దారు</translation>
 <translation id="5316812925700871227">అపసవ్య దిశలో తిప్పు</translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
+<translation id="5323043727018853753">పొందుపరిచిన కంటెంట్‌కు అనుమతి ఉంది</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" />లో <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">మీ బ్రౌజర్ నిర్వహించబడటం లేదు</translation>
 <translation id="5332219387342487447">షిప్పింగ్ పద్ధతి</translation>
@@ -2183,6 +2188,7 @@
 <translation id="6306713302480826305">ఈ అడ్రస్ దీని నుండి, అలాగే సైన్ ఇన్ చేసిన మీ ఇతర పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
 <translation id="6316226860534107313">స్కూటర్‌లు &amp; మోపెడ్‌లు</translation>
+<translation id="6316723751983724988">కొత్తది: Chromeకు సంబంధించిన Family Link ఎంపికలు ఇక్కడ వర్తిస్తాయి</translation>
 <translation id="63172326633386613">యాక్సెసిబిలిటీ సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6319249456820053699">కెమెరాలు &amp; క్యామ్‌కార్డర్‌లు</translation>
 <translation id="6321917430147971392">మీ DNS సెట్టింగ్‌లను చెక్ చేయండి</translation>
@@ -2734,6 +2740,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> కంటే తక్కువ</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ప్రస్తుతం ఈ రిక్వెస్ట్‌ను నిర్వహించలేదు.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />‌ను ఎప్పటికీ అనువదించవద్దు</translation>
+<translation id="7601297359530599375">మీరు సాధారణంగా ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ అవుతారు, కానీ Chrome ఈ సమయంలో సురక్షితమైన కనెక్షన్‌ను ఉపయోగించడం సాధ్యం కాదు. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌ను రహస్యంగా గమనించడానికి లేదా మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">విలువ <ph name="VALUE" /> పరిధి వెలుపల ఉంది.</translation>
 <translation id="7613889955535752492">గడువు ముగింపు: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూసి, మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
@@ -2834,6 +2841,7 @@
 <translation id="7822320754433038727">వేటాడటం &amp; షూటింగ్</translation>
 <translation id="782886543891417279">మీరు ఉపయోగిస్తున్న Wi-Fi (<ph name="WIFI_NAME" />)కు మీరు దాని లాగిన్ పేజీని సందర్శించడం అవసరం.</translation>
 <translation id="7840103971441592723">స్క్రీన్ క్యాప్చర్ ప్రారంభమైంది</translation>
+<translation id="784137052867620416">షాపింగ్ గణాంకాలు</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ఏదీ వద్దు}=1{1 యాప్ (<ph name="EXAMPLE_APP_1" />)}=2{2 యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# యాప్‌లు (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడానికి, తర్వాత, మీరు చూసే సైట్ Chromeను మీ టాపిక్‌ల కోసం అడగవచ్చు. మీ బ్రౌజింగ్ హిస్టరీ, గుర్తింపును రక్షిస్తూనే Chrome గరిష్ఠంగా 3 టాపిక్‌లను షేర్ చేస్తుంది.</translation>
@@ -2979,6 +2987,7 @@
 <translation id="8217748145574471584">మానవ వనరులు</translation>
 <translation id="8218327578424803826">కేటాయించిన స్థానం:</translation>
 <translation id="8228419419708659934">రెండు పేజీల వీక్షణ</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> మీ నెట్‌వర్క్‌లో ఒక పరికరాన్ని యాక్సెస్ చేయాలనుకుంటోంది:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> మి.మీ.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">క్రీడల గేమ్‌లు</translation>

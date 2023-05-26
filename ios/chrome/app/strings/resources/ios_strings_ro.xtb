@@ -755,6 +755,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="595769230373966252">Caută cu <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Nu se poate crea un link spre evidențiere.</translation>
 <translation id="5965679971710331625">Te-ai conectat</translation>
+<translation id="5971872012779224351">{count,plural, =1{Un marcaj șters}few{{count} marcaje șterse}other{{count} de marcaje șterse}}</translation>
 <translation id="5979837087407522202">Caută parole</translation>
 <translation id="5981230843984570095">Închide toate elementele inactive</translation>
 <translation id="5982717868370722439">Adaugă datele existente în <ph name="USER_EMAIL" />.</translation>
@@ -1002,6 +1003,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7438481509621345350">Acum vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="7446583256109515732">S-a anulat fixarea filei</translation>
+<translation id="7451023311965289370">{count,plural, =1{Marcajul s-a salvat în {title}}few{Marcajele s-au salvat în {title}}other{Marcajele s-au salvat în {title}}}</translation>
 <translation id="7454057999980797137">Stat/Județ</translation>
 <translation id="7459628154744868585">Protecția îmbunătățită este activată</translation>
 <translation id="746684838091935575">3. selectează Chrome.</translation>

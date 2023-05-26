@@ -294,6 +294,7 @@
 <translation id="124116460088058876">مزید زبانیں</translation>
 <translation id="1241381048229838873">سبھی بُک مارکس دکھائیں</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی ترتیبات کو دوبارہ ترتیب دینا چاہتا ہے۔</translation>
+<translation id="1243002225871118300">ڈسپلے اور ٹیکسٹ کے سائز کو تبدیل کریں</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
 <translation id="1243436884219965846">پاس ورڈز کا جائزہ لیں</translation>
 <translation id="1244265436519979884">‏Linux بحالی فی الحال جاری ہے</translation>
@@ -659,6 +660,7 @@
 <translation id="1567993339577891801">‏JavaScript کونسول</translation>
 <translation id="1569466257325986920">‏اگلی بار جب آپ کے Google اکاؤنٹ کا پاس ورڈ تبدیل ہوتا ہے تو آپ کے Google اکاؤنٹ میں سائن ان کرنے کے بعد آپ کا مقامی ڈیٹا خودکار طور پر بازیافت ہو جائے گا</translation>
 <translation id="1570604804919108255">اطلاعات کو غیر خاموش کریں</translation>
+<translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' بُک مارک فولڈر بنایا گیا۔</translation>
 <translation id="1571304935088121812">صارف نام کاپی کریں</translation>
 <translation id="1571738973904005196">ٹیب ملاحظہ کریں: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (مہمان)</translation>
@@ -706,6 +708,7 @@
 <translation id="1604774728851271529">‏Linux اپ گریڈ کرنے کے لیے آپ کو نیٹ ورک کنکشن کی ضرورت ہے۔ انٹرنیٹ سے منسلک ہوں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
 <translation id="1606077700029460857">ماؤس کی ترتیبات کو تبدیل کریں</translation>
+<translation id="1606307079840340755">آپ کے پاس پوائنٹ فراہم کنندہ کو صرف اس آلے سے ہٹا دیا جائے گا۔ اپنی سبسکرپشن میں تبدیلیاں کرنے کیلئے، سبسکرپشن فراہم کنندہ سے رابطہ کریں۔</translation>
 <translation id="1606566847233779212">آپ کی شامل کردہ مخصوص سائٹس کو ہٹائیں؟</translation>
 <translation id="1607139524282324606">داخلہ صاف کریں</translation>
 <translation id="1607499585984539560">صارف ڈومین کے ساتھ الحاق یافتہ نہیں ہے</translation>
@@ -1574,6 +1577,7 @@
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% مکمل</translation>
 <translation id="2318143611928805047">کاغذ کا سائز</translation>
 <translation id="2318817390901984578">‏Android ایپس استعمال کرنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو چارج اور اپ ڈیٹ کریں۔</translation>
+<translation id="2319072477089403627">‏آپ کے Android فون سے منسلک کیا جا رہا ہے...</translation>
 <translation id="2319459402137712349">کی بورڈ کھولنے کے لیے کسی بھی ٹیکسٹ فیلڈ کو منتخب کریں۔ آپ اپنی اسکرین کے نیچے کی بورڈ آئیکن کو بھی منتخب کر سکتے ہیں۔</translation>
 <translation id="2319993584768066746">سائن ان اسکرین کی تصاویر</translation>
 <translation id="2322193970951063277">ہیڈرز اور فوٹرز</translation>
@@ -2160,6 +2164,7 @@
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
+<translation id="2808714658215073920">‏Wi-Fi سے منسلک ہو رہا ہے...</translation>
 <translation id="2809586584051668049">اور <ph name="NUMBER_ADDITIONAL_DISABLED" /> مزید</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2811564570599779918">اسپام اور دھوکہ دہی میں تخفیف</translation>
@@ -2665,6 +2670,7 @@
 <translation id="3280243678470289153">‏Chrome میں رہیں</translation>
 <translation id="328119399589609861">مائیکروفون، کیمرا اور مزید تک آلے کی رسائی کو کنٹرول کریں</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> کے ساتھ ایک ٹیب کا اشتراک کیا جا رہا ہے</translation>
+<translation id="3283148363895519428">سیٹ اپ جاری رکھنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کا فون آس پاس ہے اور بلوٹوتھ آن ہے۔</translation>
 <translation id="3284050785966252943">آٹو فل میٹا ڈیٹا کا پیش منظر</translation>
 <translation id="3285322247471302225">نیا &amp;ٹیب</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
@@ -2872,6 +2878,13 @@
 <translation id="346298925039590474">یہ موبائل نیٹ ورک اس آلہ پر سبھی صارفین کیلئے دستیاب ہوگا</translation>
 <translation id="3464145797867108663">دفتری پروفائل شامل کریں</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> اور مزید کیلئے رعایتیں حاصل کریں</translation>
+<translation id="3466476162566821406">‏کوڈ کی توثیق کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    اپنے Wi-Fi اور Google اکاؤنٹ کی معلومات کو اپنے <ph name="DEVICE_TYPE" /> میں شامل کرنے کیلئے، آپ اپنے فون کا استعمال کر سکتے ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="3468298837301810372">لیبل</translation>
 <translation id="3468999815377931311">‏Android فون</translation>
 <translation id="3469583217479686109">انتخاب کرنے کا ٹول</translation>
@@ -3387,6 +3400,7 @@
 <translation id="3902789559055749153">منتخب کریں کہ آپ <ph name="APP_NAME" /> کے لئے کس طرح پاس کی تخلیق کرنا چاہتے ہیں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
+<translation id="3905218345729976782">‏Android فون کی مدد سے Wi-Fi سے منسلک کریں</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
 <translation id="3908288065506437185">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="3908501907586732282">ایکسٹینشن فعال کریں</translation>
@@ -3895,6 +3909,7 @@
 <translation id="436926121798828366">آپ اسے <ph name="SETTINGS_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں</translation>
 <translation id="4369735607080757018">ڈیٹا کی محدود اقسام کا اشتراک ان کے اشتہارات کی کارکردگی کی پیمائش کرنے کے لیے کیا جاتا ہے، جیسے کہ دن کا وہ وقت جب آپ کو اشتہار دکھایا گیا تھا۔</translation>
 <translation id="4370975561335139969">آپ کی جانب سے درج کردہ ای میل اور پاس ورڈ مماثل نہیں ہیں</translation>
+<translation id="4373418556073552953">‏اپنے Android فون سے سائن ان کریں</translation>
 <translation id="4374805630006466253">مختلف فون یا ٹیبلیٹ استعمال کریں</translation>
 <translation id="4374831787438678295">‏Linux انسٹالر</translation>
 <translation id="4375035964737468845">ڈاؤن لوڈ کردہ فائلیں کھولیں</translation>
@@ -4348,6 +4363,7 @@
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
 <translation id="4770119228883592393">‏اجازت کی درخواست کی گئی، جواب دینے کے لیے ⌘ + Option + نیچے تیر کا نشان دبائیں</translation>
 <translation id="4773112038801431077">‏Linux کو اپ گریڈ کریں</translation>
+<translation id="4774456473286455263">‏اپنے Android فون کی مدد سے سیٹ اپ کریں</translation>
 <translation id="477647109558161443">ڈیسک ٹاپ شارٹ کٹ بنائیں</translation>
 <translation id="4776594120007763294">بعد میں پڑھنے کی خاطر صفحہ شامل کرنے کے لیے، بٹن پر کلک کریں</translation>
 <translation id="4777458362738635055">اس آلہ کے دیگر صارفین یہ نیٹ ورک استعمال کر سکتے ہيں</translation>
@@ -4671,6 +4687,7 @@
 <translation id="5067867186035333991">پوچھیں کہ آیا <ph name="HOST" /> آپ کے مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="5068553687099139861">پاس ورڈز دکھائیں</translation>
 <translation id="5068919226082848014">پزّا</translation>
+<translation id="506934332411950286">‏اپنے Android فون سے Wi-Fi کو منتقل کرنا</translation>
 <translation id="5070710277167211639">‏نیویگیشنز کو HTTPS میں اپ گریڈ کریں اور ایسی سائٹس جو اسے سپورٹ نہیں کرتی ہیں وہ لوڈ کرنے سے پہلے آپ کو متنبہ کریں</translation>
 <translation id="5070773577685395116">سمجھ نہیں آئی؟</translation>
 <translation id="5071295820492622726">حالیہ ڈاؤن لوڈز پر واپس جائیں</translation>
@@ -4835,6 +4852,7 @@
 <translation id="5213114823401215820">بند گروپ دوبارہ کھولیں</translation>
 <translation id="5213481667492808996">آپ کی '<ph name="NAME" />' کی ڈیٹا سروس استعمال کیلئے تیار ہے</translation>
 <translation id="5213891612754844763">پراکسی ترتیبات دکھائيں</translation>
+<translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' بُک مارک بنایا گیا۔</translation>
 <translation id="5215502535566372932">ملک منتخب کریں</translation>
 <translation id="5222403284441421673">غیر محفوظ ڈاؤن لوڈ مسدود ہو گیا</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
@@ -4856,6 +4874,7 @@
 <translation id="5236374273162681467">‏آسانی سے اپنے سبھی آلات پر ان کا استعمال کرنے کیلئے آپ انہیں اپنے Google اکاؤنٹ میں منتقل کر سکتے ہیں</translation>
 <translation id="523862956770478816">سائٹ کی اجازتیں</translation>
 <translation id="5239752869099890912">ان ایکسٹینشنز کے لیے اس سائٹ پر اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کی خاطر اس صفحہ کو دوبارہ لوڈ کریں</translation>
+<translation id="5240931875940563122">‏Android فون سے سائن ان کریں</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" فعال کریں؟</translation>
 <translation id="5243522832766285132">براہ کرم کچھ دیر میں دوبارہ کوشش کریں</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> میں مطابقت پذیری کی جا رہی ہے</translation>
@@ -5163,6 +5182,7 @@
 <translation id="5511379779384092781">بہت ہی کم</translation>
 <translation id="5511823366942919280">کیا آپ واقعی اس آلہ کو "شارک" کے بطور تشکیل دینا چاہتے ہیں؟</translation>
 <translation id="5512739112435045339">اپنے آلہ پر جگہ خالی کریں۔ پھر دوبارہ ڈاؤن لوڈ کرنے کی کوشش کریں</translation>
+<translation id="5513807280330619196">کیلکولیٹر</translation>
 <translation id="5514315914873062345">ٹیب</translation>
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
@@ -5383,6 +5403,7 @@
 <translation id="571222594670061844">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
 <translation id="5713960379473463904">اسپیس ان پٹ کی طرز</translation>
+<translation id="5715254110426566593">‏Steam جلد ہی Chromebook پر آ رہا ہے۔ یہ دیکھنے کیلئے اپ ڈیٹس چیک کریں کہ آیا Steam دستیاب ہے۔</translation>
 <translation id="5715711091495208045">پلگ ان بروکر: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">آپ کو اب اسے تبدیل کرنا چاہیے</translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
@@ -5558,6 +5579,13 @@
 <translation id="586567932979200359">آپ <ph name="PRODUCT_NAME" /> کو اس کی ڈسک امیج سے چلا رہے ہیں۔ اسے آپ کے کمپیوٹر پر انسٹال کرنے سے یہ آپ کو اسے ڈسک امیج کے بغیر چلانے دیتا ہے اور یقینی بناتا ہے کہ اسے اپ ٹو ڈیٹ رکھا جائے گا۔</translation>
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
 <translation id="5867841422488265304">ویب پتہ تلاش کریں یا ٹائپ کریں</translation>
+<translation id="5867855474018538405">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ اس بات کو یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ اور Wi-Fi آن ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    اپنے Wi-Fi اور Google اکاؤنٹ کی معلومات کو اپنے <ph name="DEVICE_TYPE" /> میں شامل کرنے کیلئے، آپ اپنے فون کا استعمال کر سکتے ہیں۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="5868434909835797817">آپ کے آلے پر مائیکروفون آف ہے</translation>
 <translation id="5869029295770560994">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
@@ -5656,6 +5684,7 @@
 <translation id="5949544233750246342">فائل کو پارس کرنے سے قاصر</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> مقامی فونٹس استعمال کرنا چاہتی ہے</translation>
 <translation id="5951624318208955736">مانیٹر</translation>
+<translation id="595262438437661818">کسی ایکسٹینشن کو اس سائٹ تک رسائی درکار نہیں ہے</translation>
 <translation id="5953211687820750364">‏یہ فہرست <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           اور <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /> سے متاثر ہے</translation>
 <translation id="5955282598396714173">آپ کے پاس ورڈ کی میعاد ختم ہو گئی ہے۔ براہ کرم اس کو تبدیل کرنے کیلئے سائن آؤٹ کر کے دوبارہ سائن ان کریں۔</translation>
@@ -5764,6 +5793,8 @@
 <translation id="6052488962264772833">کاسٹ کرنا شروع کرنے کے لیے رسائی کا کوڈ ٹائپ کریں</translation>
 <translation id="6052976518993719690">‏SSL سرٹیفکیشن اتھارٹی</translation>
 <translation id="6053401458108962351">براؤزنگ ڈیٹا &amp;صاف کریں…</translation>
+<translation id="6053717018321787060">‏آپ کا Google اکاؤنٹ وہی اکاؤنٹ ہے جو آپ Gmail، ‏YouTube، ‏Chrome اور دیگر Google سروسز کیلئے استعمال کرتے ہیں۔
+    اپنے تمام بُک مارکس اور فائلز وغیرہ تک آسانی سے رسائی حاصل کرنے کیلئے اپنے اکاؤنٹ کا استعمال کریں۔ اگر آپ کے پاس اکاؤنٹ نہیں ہے تو آپ اگلی اسکرین پر ایک اکاؤنٹ تخلیق کر سکتے ہیں۔</translation>
 <translation id="6054284857788651331">حال ہی میں بند ٹیب گروپ</translation>
 <translation id="6054961935262556546">نظر آنے کو تبدیل کریں</translation>
 <translation id="6055171183283175969">آپ کا درج کردہ پاس ورڈ غلط ہے۔</translation>
@@ -6102,6 +6133,7 @@
 <translation id="634887995541211148">‏اپنے آلے پر Bruschetta چلائیں۔</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355395056805388423">‏Google اکاؤنٹ کی معلومات حاصل کی جا رہی ہے...</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
 <translation id="63566973648609420">‏صرف وہ شخص جس کے پاس آپ کا پاس فریز ہے آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا یا اس کے ذریعے اسٹور نہیں کیا جاتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />مطابقت پذیری دوبارہ ترتیب دینے<ph name="END_LINK" /> کی ضرورت ہوگی۔</translation>
 <translation id="6357305427698525450">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" /> یا  <ph name="APP_NAME_2" /> میں کھلیں گے۔</translation>
@@ -7016,6 +7048,7 @@
 <translation id="7159953856712257647">بطور ڈیفالٹ انسٹال ہے</translation>
 <translation id="7160182524506337403">اب آپ اپنے فون کی اطلاعات دیکھ سکتے ہیں</translation>
 <translation id="7163202347044721291">فعالیت کے کوڈ کی توثیق کی جا رہی ہے...</translation>
+<translation id="7165263843655074092">آپ کو اس آلے پر معیاری حفاظتی تحفظ حاصل ہو رہا ہے</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" نشان زد مقامات میں تصاویر، ویڈیوز اور آواز والی فائلیں پڑھ سکتا ہے۔</translation>
 <translation id="7166815366658507447">ہاٹ اسپاٹ فعال ہے</translation>
 <translation id="7167327771183668296">خودکار کلکس</translation>
@@ -7087,6 +7120,7 @@
 <translation id="7228523857728654909">اسکرین لاک اور سائن ان</translation>
 <translation id="7228854227189381547">سوئچ نہ کریں</translation>
 <translation id="7230222852462421043">&amp;ونڈو بحال کریں</translation>
+<translation id="7230881857327093958">تبدیلیوں کا اطلاق سیٹ اپ کے بعد ہوگا</translation>
 <translation id="7231260028442989757">اپنے فون کی اطلاعات دیکھیں، برخاست کریں اور ان کا جواب دیں</translation>
 <translation id="7232750842195536390">نام کی تبدییلی ناکام ہو گئی</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> سے تصاویر تلاش کریں</translation>
@@ -7693,6 +7727,7 @@
 <translation id="7744192722284567281">ڈیٹا کی خلاف ورزی میں ملا</translation>
 <translation id="7744649840067671761">تفویض شروع کرنے کیلئے نیا سوئچ یا کی بورڈ کی کلید دبائیں۔
 تفویض کو ہٹانے کیلئے تفویض کردہ سوئچ یا کلید دبائیں۔</translation>
+<translation id="7746045113967198252">ٹیکسٹ سمیت، اپنی اسکرین پر موجود آئٹمز کو زیادہ بڑا یا زیادہ چھوٹا بنائیں۔ آپ بعد میں اسے ترتیبات &gt; آلہ &gt; ڈسپلیز میں بھی دیکھ سکتے ہیں۔</translation>
 <translation id="7746739418892731373">‏آپ اپنی Google تصاویر کی لائبریری سے تصویر اور ویڈیو کی ہائی لائٹس کو دیکھ رہے ہیں۔ آپ <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> پر اپنی ہائی لائٹس میں دکھائی جانے والی چیزوں کو کنٹرول کر سکتے ہیں۔
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7746,6 +7781,10 @@
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="778480864305029524">‏فوری ٹیدرنگ استعمال کرنے کے لیے، اطلاعات برائے Google Play سروسز کو آن کریں۔</translation>
 <translation id="7785471469930192436">قابل اطلاق ہونے پر اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
+<translation id="7786663536153819505">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔
+    <ph name="BR" />
+    <ph name="BR" />
+    قریبی آلات پر بطور <ph name="QUICK_START_DEVICE_DISPLAY_NAME" /> دکھائی دے رہا ہے...</translation>
 <translation id="7786889348652477777">ایپ &amp;دوبارہ لوڈ کریں</translation>
 <translation id="7787308148023287649">کسی دوسری اسکرین پر ڈسپلے کریں</translation>
 <translation id="7788298548579301890">‏آپ کے کمپیوٹر پر موجود کسی دوسرے پروگرام نے ایک ایپ شامل کی ہے جو Chrome کے کام کرنے کا طریقہ تبدیل کر سکتی ہے۔
@@ -7765,6 +7804,7 @@
 <translation id="7800518121066352902">گ&amp;ھڑی کی مخالف سمت میں گھمائیں</translation>
 <translation id="7801679634091975683">‏آپ یہاں جو تبدیلیاں کرتے ہیں وہ صرف Lacros Chrome براؤزر پر لاگو ہوتی ہیں۔ اپنے Chrome براؤزر کی ترتیبات میں تبدیلیاں کرنے کے لیے، Chrome براؤزر کھولیں اور ترتیبات پر جائیں۔</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
+<translation id="7803657407897251194">‏اپنے Android آلے کی مدد سے سیٹ اپ کرنا جاری رکھنے کیلئے، اپنے <ph name="DEVICE_TYPE" /> کو کسی نیٹ ورک سے منسلک کریں</translation>
 <translation id="7804072833593604762">ٹیب بند ہو گیا</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7805906048382884326">ٹپ بند کریں</translation>
@@ -8210,6 +8250,7 @@
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> پر سوئچ کریں</translation>
 <translation id="8184318863960255706">مزید معلومات</translation>
 <translation id="8184472985242519288">یکساں</translation>
+<translation id="8186047833733689201">ایکسینٹ نشانات کا مینو کھلا ہے۔ نیویگیٹ کرنے کیلئے بائیں، دائیں یا نمبر کی کلیدیں دبائیں اور داخل کرنے کیلئے انٹر دبائیں۔</translation>
 <translation id="8186609076106987817">سرور فائل کو تلاش نہیں کر سکا۔</translation>
 <translation id="8188389033983459049">اپنے آلے کی ترتیبات چیک کریں اور جاری رکھنے کیلئے اسے آن کریں</translation>
 <translation id="8188742492803591566">‏اپنی اسکرین کاسٹ کرنا شروع کرنے کے لیے Chromecast یا TV پر دکھایا گیا رسائی کوڈ درج کریں۔</translation>
@@ -8387,6 +8428,7 @@
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
+<translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
@@ -8518,6 +8560,7 @@
 <translation id="8449036207308062757">اسٹوریج کا نظم کریں</translation>
 <translation id="8449836157089738489">سبھی کو نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="8451512073679317615">اسسٹنٹ</translation>
+<translation id="8452105022015742247">‏اپنے Android فون سے Google اکاؤنٹ کی معلومات کو منتقل کرنا</translation>
 <translation id="845702320058262034">منسلک نہیں ہو سکتا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="8457251154056341970">آپ کو دوبارہ اس صفحے پر <ph name="MODULE_NAME" /> دکھائی نہیں دیں گے</translation>
 <translation id="8457451314607652708">بُک مارکس درآمد کریں</translation>

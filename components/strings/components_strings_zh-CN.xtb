@@ -1129,6 +1129,7 @@
 <translation id="3740319564441798148">长途大巴与铁路</translation>
 <translation id="3743765582345153106">使用自动填充时，一律进行验证</translation>
 <translation id="3744111561329211289">后台同步</translation>
+<translation id="3744212718085287312">下次使用虚拟卡以提高安全性？</translation>
 <translation id="3744286742364977428">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，可能会通过扫描来确定文件是否包含敏感数据或恶意软件，并且可能会根据公司政策存储这些文件。</translation>
 <translation id="3744899669254331632">您目前无法访问 <ph name="SITE" />，因为此网站发送了 Chromium 无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会诱骗您做一些危险的事情，例如安装软件或泄露您的个人信息（如密码、电话号码或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>

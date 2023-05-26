@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">‏سایت Google</translation>
 <translation id="1853795129690976061">‏این پوشه با Linux هم‌رسانی شده است</translation>
 <translation id="1864756863218646478">این فایل پیدا نشد.</translation>
+<translation id="1877377730633446520">حدود <ph name="REQUIRED_SPACE" /> استفاده خواهد شد. درحال‌حاضر <ph name="FREE_SPACE" /> دردسترس دارید.</translation>
 <translation id="1884013283844450420">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، اتصال</translation>
 <translation id="1920670151694390848">نویسه‌گردانی مالایالم</translation>
 <translation id="1920798810075583923">هندوانه</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">بزرگ کردن پانل‌های بازخورد فایل‌ها</translation>
 <translation id="1995337122023280937">رفتن به محل فایل</translation>
 <translation id="2001796770603320721">مدیریت در درایو</translation>
+<translation id="2004942826429452291">‏فایل‌ها در فضای ابری و در این Chromebook ذخیره خواهد شد.</translation>
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="2025955442973426285">تیگرینیا</translation>
 <translation id="2037845485764049925">روسی</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">تنظیمات دستگاه</translation>
 <translation id="2084809735218147718">تشکر با زبان اشاره</translation>
 <translation id="2088690981887365033">‏شبکه VPN</translation>
+<translation id="2089751716171649322">‏زمانی‌که آفلاین هستید به‌راحتی به فایل‌های Google Drive خود دسترسی داشته باشید</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />در «حالت ناشناس» مجاز است<ph name="END_BOLD" /> را روشن کنید</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> مورد حذف خواهد شد و دیگر نمی‌توانید آن‌ها را بازیابی کنید.</translation>
 <translation id="2122305276694332719">اتصال خودکار به شبکه‌ای پنهان به دیگران امکان می‌دهد دستگاه و برخی تنظیمات شبکه‌تان را ببینند، و توصیه نمی‌شود.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3486821258960016770">مغولی</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
+<translation id="3501954296166022751">‏فایل‌های Google Drive شما در حالت آفلاین دردسترس است</translation>
 <translation id="3509680540198371098">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3511705761158917664">درحال آماده شدن برای همگام‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>
+<translation id="5519161320735100193">‏تنظیمات Google Drive</translation>
 <translation id="5522908512596376669">نمای فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
 <translation id="5524517123096967210">امکان خواندن فایل وجود نداشت.</translation>
 <translation id="5533102081734025921">تصویر <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7806708061868529807">عبری</translation>
 <translation id="78104721049218340">تایلندی با صفحه‌کلید کدمانی</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ترابایت</translation>
 <translation id="7831491651892296503">خطا در پیکربندی شبکه</translation>
 <translation id="7839804798877833423">دریافت این فایل‌ها تقریباً <ph name="FILE_SIZE" /> از داده تلفن همراه شما را مصرف می‌کند.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7908793776359722643">با قالب‌بندی پارتیشن، همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">‏فایل‌های شما در My Drive به‌طور خودکار با Chromebook همگام‌سازی می‌شود تا بتوانید بدون اتصال اینترنت به آن‌ها دسترسی داشته باشید.</translation>
 <translation id="7925247922861151263">‏بررسی AAA انجام نشد</translation>
 <translation id="7925686952655276919">از داده‌های تلفن همراه برای همگام‌سازی استفاده نشود</translation>
 <translation id="7928710562641958568">خارج کردن دستگاه</translation>
+<translation id="7933875256234974853">درحال آماده‌سازی برای همگام‌سازی فایل‌ها…</translation>
 <translation id="7943385054491506837">کلماک آمریکایی</translation>
 <translation id="7953739707111622108">این دستگاه باز نمی‌شود زیرا سیستم فایل‌ آن شناسایی نشد.</translation>
 <translation id="7969525169268594403">اسلوونیایی</translation>
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
 <translation id="7973962044839454485">‏اصالت‌سنجی PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
 <translation id="7980421588063892270">‏انگلیسی (امریکایی) با صفحه‌کلید Colemak</translation>
+<translation id="7985008041109611710">درحال همگام‌سازی <ph name="NUMBER_OF_FILES_SYNCING" /> فایل</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>
+<translation id="937795003075802289">درحال همگام‌سازی یک فایل</translation>
 <translation id="938470336146445890">لطفاً یک مجوز کاربر نصب کنید.</translation>
 <translation id="939736085109172342">پوشهٔ جدید</translation>
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>

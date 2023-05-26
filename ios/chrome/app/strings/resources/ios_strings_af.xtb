@@ -315,6 +315,9 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2975121486251958312">Slegs Incognitomodus is beskikbaar</translation>
 <translation id="2982481275546140226">Vee data uit</translation>
 <translation id="298306318844797842">Voeg betaalmetode by …</translation>
+<translation id="2988274366244053197">Betaalmetodes en adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
+
+Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="2989805286512600854">Maak in 'n nuwe oortjie oop</translation>
 <translation id="3020183492814296499">Kortpaaie</translation>
 <translation id="3037605927509011580">O, mapstieks!</translation>
@@ -381,6 +384,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3471148582064653480">Sinkroniseer jou wagwoorde, geskiedenis en meer.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{vir {COUNT} werf of app}other{vir {COUNT} werwe en apps}}</translation>
 <translation id="3474624961160222204">Gaan voort as <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Kry op ander apps toegang tot jou wagwoorde.</translation>
 <translation id="3478058380795961209">Vervalmaand</translation>
 <translation id="3482959374254649722">Sinkroniseer tans jou oortjies …</translation>
 <translation id="3484946776651937681">Maak oop in Aflaaie</translation>
@@ -652,6 +656,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318298563956633672">Jy spoor reeds hierdie produk na.</translation>
+<translation id="5325595483440111327">Bekyk blaaigeskiedenis.</translation>
 <translation id="5339316356165661760">Skakel sinkronisering aan</translation>
 <translation id="536067926684072644">Wys boekmerke</translation>
 <translation id="5360976571138293719">Raadpleeg <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling.</translation>
@@ -750,6 +755,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="595769230373966252">Soek met <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Kan nie skakel na die hoogtepunt skep nie.</translation>
 <translation id="5965679971710331625">Jy is aangemeld</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 boekmerk is uitgevee}other{{count} boekmerke is uitgevee}}</translation>
 <translation id="5979837087407522202">Soek wagwoorde</translation>
 <translation id="5981230843984570095">Maak alle onaktiewe oortjies toe</translation>
 <translation id="5982717868370722439">Voeg bestaande data by <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +1003,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7438481509621345350">Jy sal nou stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy 'n nuwe oortjie oopmaak.</translation>
 <translation id="7446583256109515732">Oortjie is ontspeld</translation>
+<translation id="7451023311965289370">{count,plural, =1{Boekmerk is gestoor na “{title}”}other{Boekmerke is gestoor na “{title}”}}</translation>
 <translation id="7454057999980797137">Staat / Distrik</translation>
 <translation id="7459628154744868585">Verbeterde Beskerming is aan</translation>
 <translation id="746684838091935575">3. Kies Chrome</translation>
