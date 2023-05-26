@@ -318,6 +318,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const std::string& realm,
       LookupProxyAuthCredentialsCallback callback) override {}
 #endif
+  void SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) override {}
 };
 
 }  // namespace network

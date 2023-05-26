@@ -41,6 +41,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   SharedDictionaryManagerOnDisk(
       const base::FilePath& database_path,
       const base::FilePath& cache_directory_path,
+      uint64_t cache_max_size,
 #if BUILDFLAG(IS_ANDROID)
       base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -56,6 +57,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
+  void SetCacheMaxSize(uint64_t cache_max_size) override;
 
   SharedDictionaryDiskCache& disk_cache() { return disk_cache_; }
   net::SQLitePersistentSharedDictionaryStore& metadata_store() {
@@ -91,6 +93,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       net::SQLitePersistentSharedDictionaryStore::
           RegisterDictionaryResultOrError result);
 
+  uint64_t cache_max_size_;
   SharedDictionaryDiskCache disk_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;
 

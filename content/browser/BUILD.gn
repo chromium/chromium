@@ -1373,6 +1373,8 @@ source_set("browser") {
     "network/network_quality_observer_impl.h",
     "network/reporting_service_proxy.cc",
     "network/reporting_service_proxy.h",
+    "network/shared_dictionary_util.cc",
+    "network/shared_dictionary_util.h",
     "network/socket_broker_impl.cc",
     "network/socket_broker_impl.h",
     "network_context_client_base_impl.cc",

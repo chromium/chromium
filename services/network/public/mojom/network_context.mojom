@@ -558,6 +558,11 @@ struct NetworkContextParams {
   // only.
   TransferableDirectory? shared_dictionary_directory;
 
+  // Maximum size of the shared dictionary cache. If this value is 0, the max
+  // size will be propagated via SetSharedDictionaryCacheMaxSize message.
+  // Ignored if `shared_dictionary_enabled` field is false.
+  uint64 shared_dictionary_cache_max_size = 0;
+
   // Parameters for constructing the FirstPartySetsAccessDelegate.
   // |first_party_sets_access_delegate_params| is the initial configuration to
   // use. If nullptr, uses the default configuration. Updated configurations
@@ -1538,4 +1543,7 @@ interface NetworkContext {
   // events for Reporting API reports currently stored in the reporting service.
   [EnableIf=enable_reporting]
   AddReportingApiObserver(pending_remote<ReportingApiObserver> observer);
+
+  // Sets maximum size of the shared dictionary cache.
+  SetSharedDictionaryCacheMaxSize(uint64 cache_max_size);
 };

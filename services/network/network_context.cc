@@ -509,12 +509,14 @@ NetworkContext::NetworkContext(
               FILE_PATH_LITERAL("db")),
           params_->shared_dictionary_directory->path().Append(
               FILE_PATH_LITERAL("cache")),
+          params_->shared_dictionary_cache_max_size,
 #if BUILDFLAG(IS_ANDROID)
           app_status_listeners_.rbegin()->get(),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
-      shared_dictionary_manager_ = SharedDictionaryManager::CreateInMemory();
+      shared_dictionary_manager_ = SharedDictionaryManager::CreateInMemory(
+          params_->shared_dictionary_cache_max_size);
     }
   }
 
@@ -2888,6 +2890,13 @@ void NetworkContext::CreateTrustedUrlLoaderFactoryForNetworkService(
   url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
   CreateURLLoaderFactory(std::move(url_loader_factory_pending_receiver),
                          std::move(url_loader_factory_params));
+}
+
+void NetworkContext::SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) {
+  if (!shared_dictionary_manager_) {
+    return;
+  }
+  shared_dictionary_manager_->SetCacheMaxSize(cache_max_size);
 }
 
 }  // namespace network

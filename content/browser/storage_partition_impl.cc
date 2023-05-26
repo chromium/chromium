@@ -79,6 +79,7 @@
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/network/shared_dictionary_util.h"
 #include "content/browser/network_context_client_base_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -3131,6 +3132,10 @@ void StoragePartitionImpl::InitNetworkContext() {
     if (!is_in_memory()) {
       context_params->shared_dictionary_directory =
           partition_path_.Append(FILE_PATH_LITERAL("Shared Dictionary"));
+    }
+    if (context_params->shared_dictionary_cache_max_size == 0u) {
+      CalculateAndSetSharedDictionaryCacheMaxSize(
+          GetWeakPtr(), is_in_memory() ? base::FilePath() : partition_path_);
     }
   }
 

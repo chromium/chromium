@@ -16,12 +16,14 @@ namespace network {
 SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
+    uint64_t cache_max_size,
 #if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener* app_status_listener,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory)
-    : metadata_store_(database_path,
+    : cache_max_size_(cache_max_size),
+      metadata_store_(database_path,
                       /*client_task_runner=*/
                       base::SingleThreadTaskRunner::GetCurrentDefault(),
                       /*background_task_runner=*/
@@ -45,6 +47,12 @@ SharedDictionaryManagerOnDisk::CreateStorage(
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
                          GetWeakPtr(), isolation_key)));
+}
+
+void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
+  // TODO(crbug.com/1413922): Implement cache eviction logic using
+  // `cache_max_size_`.
+  cache_max_size_ = cache_max_size;
 }
 
 scoped_refptr<SharedDictionaryWriter>

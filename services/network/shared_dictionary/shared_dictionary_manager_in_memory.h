@@ -14,7 +14,7 @@ class SharedDictionaryStorage;
 // A SharedDictionaryManager which keeps all dictionary information in memory.
 class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
  public:
-  SharedDictionaryManagerInMemory() = default;
+  explicit SharedDictionaryManagerInMemory(uint64_t cache_max_size);
 
   SharedDictionaryManagerInMemory(const SharedDictionaryManagerInMemory&) =
       delete;
@@ -24,6 +24,10 @@ class SharedDictionaryManagerInMemory : public SharedDictionaryManager {
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
       const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
+  void SetCacheMaxSize(uint64_t cache_max_size) override;
+
+ private:
+  uint64_t cache_max_size_;
 };
 
 }  // namespace network

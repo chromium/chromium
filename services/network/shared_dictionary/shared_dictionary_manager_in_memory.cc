@@ -9,6 +9,10 @@
 
 namespace network {
 
+SharedDictionaryManagerInMemory::SharedDictionaryManagerInMemory(
+    uint64_t cache_max_size)
+    : cache_max_size_(cache_max_size) {}
+
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerInMemory::CreateStorage(
     const net::SharedDictionaryStorageIsolationKey& isolation_key) {
@@ -16,6 +20,12 @@ SharedDictionaryManagerInMemory::CreateStorage(
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
                          GetWeakPtr(), isolation_key)));
+}
+
+void SharedDictionaryManagerInMemory::SetCacheMaxSize(uint64_t cache_max_size) {
+  // TODO(crbug.com/1413922): Implement cache eviction logic using
+  // `cache_max_size_`.
+  cache_max_size_ = cache_max_size;
 }
 
 }  // namespace network
