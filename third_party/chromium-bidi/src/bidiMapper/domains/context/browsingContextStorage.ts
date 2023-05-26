@@ -81,17 +81,6 @@ export class BrowsingContextStorage {
     return this.findTopLevelContextId(parentId);
   }
 
-  /** Returns the top-level context of the given context, if any. */
-  findTopLevelContext(
-    id: CommonDataTypes.BrowsingContext | null
-  ): BrowsingContextImpl | null | undefined {
-    const topLevelContextId = this.findTopLevelContextId(id);
-    if (topLevelContextId === null) {
-      return null;
-    }
-    return this.findContext(topLevelContextId);
-  }
-
   /** Gets the context with the given ID, if any, otherwise throws. */
   getContext(id: CommonDataTypes.BrowsingContext): BrowsingContextImpl {
     const result = this.findContext(id);

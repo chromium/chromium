@@ -190,6 +190,17 @@ export class BrowsingContextImpl {
     return this.#parentId === null;
   }
 
+  get top(): BrowsingContextImpl {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    let topContext: BrowsingContextImpl = this;
+    let parent = topContext.parent;
+    while (parent) {
+      topContext = parent;
+      parent = topContext.parent;
+    }
+    return topContext;
+  }
+
   addChild(childId: CommonDataTypes.BrowsingContext) {
     this.#children.add(childId);
   }
