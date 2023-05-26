@@ -85,8 +85,8 @@ void JSTranslateWebFrameManager::HandleTranslateResponse(
     const std::string& response_text) {
   // Return the response details to function defined in translate_ios.js.
   std::string script = base::StringPrintf(
-      "__gCrWeb.translate.handleResponse('%s', %d, %d, '%s', '%s', '%s')",
-      url.c_str(), request_id, response_code, status_text.c_str(),
-      response_url.c_str(), response_text.c_str());
+      "__gCrWeb.translate.handleResponse(%d, %d, '%s', '%s', '%s')", request_id,
+      response_code, status_text.c_str(), response_url.c_str(),
+      response_text.c_str());
   web_frame_->ExecuteJavaScript(base::UTF8ToUTF16(script));
 }
