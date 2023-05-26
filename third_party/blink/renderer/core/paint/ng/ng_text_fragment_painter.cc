@@ -202,12 +202,10 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
                                         const PhysicalSize box_size,
                                         const PaintInfo& paint_info,
                                         const PhysicalOffset& paint_offset) {
-  PhysicalRect marker_rect(ListMarker::RelativeSymbolMarkerRect(
-      style, LayoutCounter::ListStyle(layout_object, style), box_size.width));
+  const AtomicString& type = LayoutCounter::ListStyle(layout_object, style);
+  PhysicalRect marker_rect(
+      ListMarker::RelativeSymbolMarkerRect(style, type, box_size.width));
   marker_rect.Move(paint_offset);
-
-  // TODO(1229581): Use PhysicalRect directly.
-  const LayoutRect marker = marker_rect.ToLayoutRect();
 
   DCHECK(layout_object);
 #if DCHECK_IS_ON()
@@ -229,8 +227,7 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
   context.SetStrokeColor(color);
   context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeThickness(1.0f);
-  gfx::Rect snapped_rect = ToPixelSnappedRect(marker);
-  const AtomicString& type = LayoutCounter::ListStyle(layout_object, style);
+  const gfx::Rect snapped_rect = ToPixelSnappedRect(marker_rect);
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kListSymbol));
   if (type == keywords::kDisc) {
@@ -243,8 +240,9 @@ void NGTextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
              type == keywords::kDisclosureClosed) {
     Path path =
         GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen);
-    path.Transform(AffineTransform().Scale(marker.Width(), marker.Height()));
-    path.Translate(gfx::Vector2dF(marker.X(), marker.Y()));
+    path.Transform(AffineTransform::MakeScaleNonUniform(marker_rect.Width(),
+                                                        marker_rect.Height()));
+    path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
     context.FillPath(path, auto_dark_mode);
   } else {
     NOTREACHED();
