@@ -129,6 +129,7 @@ const char kChromeUIInvalidationsUrl[] = "chrome://invalidations";
 const char kChromeUIKillHost[] = "kill";
 const char kChromeUILauncherInternalsHost[] = "launcher-internals";
 const char kChromeUILocalStateHost[] = "local-state";
+const char kChromeUILocationInternalsHost[] = "location-internals";
 const char kChromeUIManagementHost[] = "management";
 const char kChromeUIManagementURL[] = "chrome://management";
 const char kChromeUIMediaEngagementHost[] = "media-engagement";
@@ -293,6 +294,7 @@ const char kCfmNetworkSettingsURL[] = "chrome://cfm-network-settings";
 #if BUILDFLAG(IS_CHROMEOS)
 const char kChromeUIGpuURL[] = "chrome://gpu";
 const char kChromeUIHistogramsURL[] = "chrome://histograms";
+const char kChromeUILocationInternalsURL[] = "chrome://location-internals";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

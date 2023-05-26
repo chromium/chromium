@@ -2455,6 +2455,7 @@ if (!is_android) {
       "../browser/ui/webui/identity_internals_ui_browsertest.h",
       "../browser/ui/webui/inspect_ui_browsertest.cc",
       "../browser/ui/webui/interstitials/interstitial_ui_browsertest.cc",
+      "../browser/ui/webui/location_internals/location_internals_ui_browsertest.cc",
       "../browser/ui/webui/log_web_ui_url_browsertest.cc",
       "../browser/ui/webui/management/management_a11y_browsertest.cc",
       "../browser/ui/webui/management/management_a11y_browsertest.h",

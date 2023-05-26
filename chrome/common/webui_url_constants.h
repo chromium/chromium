@@ -125,6 +125,7 @@ extern const char kChromeUIInvalidationsUrl[];
 extern const char kChromeUIKillHost[];
 extern const char kChromeUILauncherInternalsHost[];
 extern const char kChromeUILocalStateHost[];
+extern const char kChromeUILocationInternalsHost[];
 extern const char kChromeUIManagementHost[];
 extern const char kChromeUIManagementURL[];
 extern const char kChromeUIMediaEngagementHost[];
@@ -268,6 +269,7 @@ extern const char kChromeUIWebUITestHost[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIGpuURL[];
 extern const char kChromeUIHistogramsURL[];
+extern const char kChromeUILocationInternalsURL[];
 extern const char kChromeUIKerberosInBrowserHost[];
 extern const char kChromeUIKerberosInBrowserURL[];
 extern const char kChromeUINotifGeneratorURL[];

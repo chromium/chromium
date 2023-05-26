@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/invalidations/invalidations_ui.h"
 #include "chrome/browser/ui/webui/local_state/local_state_ui.h"
+#include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/media_history_ui.h"
@@ -480,6 +481,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUILocalStateHost)
     return &NewWebUI<LocalStateUI>;
+  if (url.host_piece() == chrome::kChromeUILocationInternalsHost) {
+    return &NewWebUI<LocationInternalsUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIMemoryInternalsHost)
     return &NewWebUI<MemoryInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIMetricsInternalsHost)
@@ -1137,6 +1141,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
         GURL(chrome::kChromeUIInternetConfigDialogURL),
         GURL(chrome::kChromeUIInternetDetailDialogURL),
         GURL(chrome::kOsUIInvalidationsURL),
+        GURL(chrome::kChromeUILocationInternalsURL),
         GURL(chrome::kChromeUILockScreenNetworkURL),
         GURL(chrome::kChromeUILockScreenStartReauthURL),
         GURL(chrome::kChromeUIManageMirrorSyncURL),
@@ -1207,6 +1212,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
                            GURL(chrome::kChromeUIGpuURL),
                            GURL(chrome::kChromeUIHistogramsURL),
                            GURL(chrome::kChromeUIInvalidationsUrl),
+                           GURL(chrome::kChromeUILocationInternalsURL),
                            GURL(chrome::kChromeUIManagementURL),
                            GURL(chrome::kChromeUIPolicyURL),
                            GURL(chrome::kChromeUIRestartURL),
