@@ -179,6 +179,8 @@ void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
 }
 
 void NotificationCenterTray::UpdateLayout() {
+  TrayBackgroundView::UpdateLayout();
+
   if (features::IsPrivacyIndicatorsEnabled()) {
     privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
   }
