@@ -1007,8 +1007,10 @@ TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsPositive) {
 
   base::TimeDelta mean = (latency1 + latency3) / 2.0;
   double variance =
-      (latency1 - mean).InMilliseconds() * (latency1 - mean).InMilliseconds() +
-      (latency3 - mean).InMilliseconds() * (latency3 - mean).InMilliseconds();
+      ((latency1 - mean).InMilliseconds() * (latency1 - mean).InMilliseconds() +
+       (latency3 - mean).InMilliseconds() *
+           (latency3 - mean).InMilliseconds()) /
+      2;
   histograms.ExpectUniqueSample("PrivacyBudget.ClockDrift.FetchLatencyVariance",
                                 variance, 1);
 }
@@ -1060,8 +1062,10 @@ TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsNegative) {
 
   base::TimeDelta mean = (latency1 + latency3) / 2.0;
   double variance =
-      (latency1 - mean).InMilliseconds() * (latency1 - mean).InMilliseconds() +
-      (latency3 - mean).InMilliseconds() * (latency3 - mean).InMilliseconds();
+      ((latency1 - mean).InMilliseconds() * (latency1 - mean).InMilliseconds() +
+       (latency3 - mean).InMilliseconds() *
+           (latency3 - mean).InMilliseconds()) /
+      2;
 
   histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.FetchLatencyVariance",
                               1);

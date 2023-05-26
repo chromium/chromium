@@ -648,6 +648,10 @@ void NetworkTimeTracker::RecordClockDriftHistograms() {
 }
 
 double NetworkTimeTracker::ComputeClockDriftLatencyVariance() {
+  if (static_cast<uint8_t>(kClockDriftSamples.Get()) == 0) {
+    return std::numeric_limits<double>::infinity();
+  }
+
   base::TimeDelta mean = base::Seconds(0);
   for (size_t i = 0; i < clock_drift_samples_.size(); i++) {
     // Exclude middle sample since we do not use it
@@ -666,6 +670,7 @@ double NetworkTimeTracker::ComputeClockDriftLatencyVariance() {
           diff_from_mean.InMilliseconds() * diff_from_mean.InMilliseconds();
     }
   }
+  variance /= static_cast<uint8_t>(kClockDriftSamples.Get());
 
   return variance;
 }
