@@ -17,7 +17,7 @@
                   "mb"
                 ],
                 "build_config": "Release",
-                "config": "chromium",
+                "config": "chromium_tsan2",
                 "target_bits": 64
               },
               "legacy_gclient_config": {

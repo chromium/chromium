@@ -35,7 +35,7 @@ ci.builder(
             config = "chromium",
         ),
         chromium_config = builder_config.chromium_config(
-            config = "chromium",
+            config = "chromium_tsan2",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
