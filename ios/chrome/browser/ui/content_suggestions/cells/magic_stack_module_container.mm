@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -48,6 +49,7 @@ const int kModuleWidthRegular = 382;
 
 @implementation MagicStackModuleContainer {
   NSLayoutConstraint* _contentViewWidthAnchor;
+  id<MagicStackModuleContainerDelegate> _delegate;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
@@ -58,11 +60,13 @@ const int kModuleWidthRegular = 382;
 }
 
 - (instancetype)initWithContentView:(UIView*)contentView
-                               type:(ContentSuggestionsModuleType)type {
+                               type:(ContentSuggestionsModuleType)type
+                           delegate:
+                               (id<MagicStackModuleContainerDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _type = type;
-
+    _delegate = delegate;
     self.layer.cornerRadius = kCornerRadius;
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
@@ -136,12 +140,19 @@ const int kModuleWidthRegular = 382;
 }
 
 - (CGSize)intrinsicContentSize {
-  // When the Most Visited Tiles module is not in the Magic Stack in a wider
-  // screen, the module is wider to match the wider Magic Stack ScrollView.
-  if (_type == ContentSuggestionsModuleType::kMostVisited &&
-      !ShouldPutMostVisitedSitesInMagicStack() &&
+  // When the Most Visited Tiles module is not in the Magic Stack or if a module
+  // is the only module in the Magic Stack in a wider screen, the module should
+  // be wider to match the wider Magic Stack ScrollView.
+  BOOL MVTModuleShouldUseWideWidth =
+      (_type == ContentSuggestionsModuleType::kMostVisited &&
+       !ShouldPutMostVisitedSitesInMagicStack() &&
+       self.traitCollection.horizontalSizeClass ==
+           UIUserInterfaceSizeClassRegular);
+  BOOL moduleShouldUseWideWidth =
       self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassRegular) {
+          UIUserInterfaceSizeClassRegular &&
+      [_delegate doesMagicStackShowOnlyOneModule:_type];
+  if (MVTModuleShouldUseWideWidth || moduleShouldUseWideWidth) {
     return CGSizeMake(kMagicStackWideWidth, self.bounds.size.height);
   }
   return CGSizeMake(
