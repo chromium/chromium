@@ -60,7 +60,6 @@ WaylandTestBase::~WaylandTestBase() = default;
 
 void WaylandTestBase::SetUp() {
   disabled_features_.push_back(ui::kWaylandSurfaceSubmissionInPixelCoordinates);
-  disabled_features_.push_back(features::kWaylandScreenCoordinatesEnabled);
 
   feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
 

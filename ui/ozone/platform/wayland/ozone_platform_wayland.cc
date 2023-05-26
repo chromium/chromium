@@ -310,8 +310,7 @@ class OzonePlatformWayland : public OzonePlatform,
       // their position on screens and always assume they are located at some
       // arbitrary position.
       properties->supports_global_screen_coordinates =
-          features::IsWaylandScreenCoordinatesEnabled();
-
+          kDefaultScreenCoordinateEnabled;
       initialised = true;
     }
 

@@ -445,19 +445,6 @@ BASE_FEATURE(kWaylandCancelComposition,
              "WaylandCancelComposition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWaylandScreenCoordinatesEnabled,
-             "WaylandScreenCoordinatesEnabled",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-bool IsWaylandScreenCoordinatesEnabled() {
-  return base::FeatureList::IsEnabled(kWaylandScreenCoordinatesEnabled);
-}
-
 // Enables chrome color management wayland protocol for lacros.
 BASE_FEATURE(kLacrosColorManagement,
              "LacrosColorManagement",

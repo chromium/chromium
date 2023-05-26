@@ -272,10 +272,15 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
     return;
 
   // Forward cursor location update info to the input handling delegate.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   should_process_drag_motion_events_ =
-      !(features::IsWaylandScreenCoordinatesEnabled() &&
-        static_cast<WaylandToplevelWindow*>(drag_target_window_)
+      !(static_cast<WaylandToplevelWindow*>(drag_target_window_)
             ->IsScreenCoordinatesEnabled());
+#else
+  // non-lacros platforms never use global coordinates so they always process
+  // drag events.
+  should_process_drag_motion_events_ = true;
+#endif
 
   pointer_location_ = location;
 

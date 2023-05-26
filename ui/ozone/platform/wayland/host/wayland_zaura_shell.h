@@ -7,12 +7,20 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/tablet_state.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
 
 class WaylandConnection;
+
+constexpr bool kDefaultScreenCoordinateEnabled =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    true;
+#else
+    false;
+#endif
 
 // Wraps the zaura_shell object.
 class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {

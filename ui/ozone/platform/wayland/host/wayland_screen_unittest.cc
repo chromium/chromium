@@ -14,7 +14,6 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -1002,6 +1001,9 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   display::Display::ResetForceDeviceScaleFactorForTesting();
 }
 
+// Lacros uses screen coordinates so this test doesn't make any sense there.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Regression test for https://crbug.com/1346534.
 //
 // Scenario: With (at least) one output connected and a surface, with no output
@@ -1039,6 +1041,8 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
   EXPECT_EQ(window_->applied_state().window_scale, 2);
   EXPECT_EQ(window_->ui_scale(), 2);
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Checks that output transform is properly translated into Display orientation.
 // The first one is counter-clockwise, while the latter is clockwise.
@@ -1108,6 +1112,8 @@ TEST_P(WaylandScreenTest, DualOutput) {
   // The client should now have a view of all three displays.
   EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class WaylandAuraShellScreenTest : public WaylandScreenTest {
  public:
@@ -1307,9 +1313,6 @@ TEST_P(WaylandAuraShellScreenTest,
 }
 
 TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWaylandScreenCoordinatesEnabled);
-
   // These have to be stored on the client thread, but must be used only on the
   // server thread.
   wl::TestOutput* output1 = nullptr;
@@ -1350,9 +1353,13 @@ TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
   EXPECT_EQ(2.f, window_->ui_scale());
 }
 
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
                          Values(wl::ServerConfig{}));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
@@ -1371,5 +1378,7 @@ INSTANTIATE_TEST_SUITE_P(
            wl::ServerConfig{
                .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
                .use_aura_output_manager = true}));
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace ui
