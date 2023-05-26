@@ -112,8 +112,7 @@ export class FileOperationHandler {
               // review dialog.
               chrome.fileManagerPrivate.showPolicyDialog(
                   event.taskId,
-                  chrome.fileManagerPrivate.PolicyDialogType.WARNING,
-                  event.pauseParams.policyParams.type);
+                  chrome.fileManagerPrivate.PolicyDialogType.WARNING);
             }
           });
           break;

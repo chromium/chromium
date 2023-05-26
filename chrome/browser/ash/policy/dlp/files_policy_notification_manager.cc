@@ -47,8 +47,7 @@ FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
 
 void FilesPolicyNotificationManager::ShowDialog(
     file_manager::io_task::IOTaskId task_id,
-    FilesDialogType type,
-    absl::optional<policy::Policy> policy) {
+    FilesDialogType type) {
   auto* profile = Profile::FromBrowserContext(context_);
   DCHECK(profile);
 
@@ -59,7 +58,7 @@ void FilesPolicyNotificationManager::ShowDialog(
       browser ? browser->window()->GetNativeWindow() : nullptr;
 
   if (modal_parent) {
-    ShowFilesPolicyDialog(type, policy, modal_parent);
+    ShowFilesPolicyDialog(type, modal_parent);
     return;
   }
 
@@ -69,7 +68,7 @@ void FilesPolicyNotificationManager::ShowDialog(
   DCHECK(!pending_callback_);
   pending_callback_ =
       base::BindOnce(&FilesPolicyNotificationManager::ShowFilesPolicyDialog,
-                     weak_factory_.GetWeakPtr(), type, policy);
+                     weak_factory_.GetWeakPtr(), type);
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.allowed_paths =
@@ -118,7 +117,6 @@ FilesPolicyNotificationManager::IOTaskInfo::~IOTaskInfo() = default;
 
 void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
     FilesDialogType type,
-    absl::optional<policy::Policy> policy,
     gfx::NativeWindow modal_parent) {
   // TODO(b/282664769): Pass correct values. These should be stored by
   // task_id.

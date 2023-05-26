@@ -37,11 +37,10 @@ class FilesPolicyNotificationManager
 
   ~FilesPolicyNotificationManager() override;
 
-  // Shows a policy dialog of type `type` and `policy` for task identified by
-  // `task_id`. Used for copy and move operations.
+  // Shows a policy dialog of type `type` for task identified by `task_id`.
+  // Used for copy and move operations.
   void ShowDialog(file_manager::io_task::IOTaskId task_id,
-                  FilesDialogType type,
-                  absl::optional<policy::Policy> policy);
+                  FilesDialogType type);
 
   // Returns whether IO task is being tracked.
   bool HasIOTask(file_manager::io_task::IOTaskId task_id) const;
@@ -77,7 +76,6 @@ class FilesPolicyNotificationManager
 
   // Shows a FilesPolicyDialog.
   void ShowFilesPolicyDialog(FilesDialogType type,
-                             absl::optional<policy::Policy> policy,
                              gfx::NativeWindow modal_parent);
 
   // Starts tracking IO task with `task_id`.

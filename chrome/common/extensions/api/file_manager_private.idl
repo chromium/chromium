@@ -1985,7 +1985,7 @@ interface Functions {
 
   // Shows a policy dialog for a task. Task ids are communicated to the Files
   // App in each I/O task's progress status.
-  static void showPolicyDialog(long taskId, PolicyDialogType type, optional PolicyErrorType policy);
+  static void showPolicyDialog(long taskId, PolicyDialogType type);
 
   // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
   // progress status.

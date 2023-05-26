@@ -1747,9 +1747,6 @@ FileManagerPrivateShowPolicyDialogFunction::Run() {
                             base::NumberToString(params->task_id)));
   }
 
-  absl::optional<policy::Policy> policy =
-      ApiPolicyErrorTypeToChromeEnum(params->policy);
-
   policy::FilesPolicyNotificationManager* manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
           browser_context());
@@ -1759,7 +1756,7 @@ FileManagerPrivateShowPolicyDialogFunction::Run() {
                << params->task_id;
     Respond(NoArguments());
   }
-  manager->ShowDialog(params->task_id, type, policy);
+  manager->ShowDialog(params->task_id, type);
 
   return RespondNow(NoArguments());
 }

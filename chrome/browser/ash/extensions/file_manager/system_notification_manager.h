@@ -255,8 +255,7 @@ class SystemNotificationManager {
 
   // Helper function to show a data protection policy dialog.
   void ShowDataProtectionPolicyDialog(file_manager::io_task::IOTaskId task_id,
-                                      policy::FilesDialogType type,
-                                      absl::optional<policy::Policy> policy);
+                                      policy::FilesDialogType type);
 
   // Helper function bound to notification instances that hides notifications.
   void Dismiss(const std::string& notification_id);

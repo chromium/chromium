@@ -1144,8 +1144,7 @@ NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
       proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kWarning,
-          status.pause_params.policy_params->type);
+          policy::FilesDialogType::kWarning);
     }
     cancel_callback =
         BindRepeating(&SystemNotificationManager::CancelTask,
@@ -1161,7 +1160,7 @@ NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
       proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kError, /*policy=*/absl::nullopt);
+          policy::FilesDialogType::kError);
     }
     cancel_callback =
         BindRepeating(&SystemNotificationManager::Dismiss,
@@ -1195,8 +1194,7 @@ SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
 
 void SystemNotificationManager::ShowDataProtectionPolicyDialog(
     file_manager::io_task::IOTaskId task_id,
-    policy::FilesDialogType type,
-    absl::optional<policy::Policy> policy) {
+    policy::FilesDialogType type) {
   policy::FilesPolicyNotificationManager* manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
           profile_);
@@ -1206,7 +1204,7 @@ void SystemNotificationManager::ShowDataProtectionPolicyDialog(
                << task_id;
     return;
   }
-  manager->ShowDialog(task_id, type, policy);
+  manager->ShowDialog(task_id, type);
 }
 
 void SystemNotificationManager::CancelTask(
