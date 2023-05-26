@@ -153,6 +153,10 @@ namespace feature_params {
 const base::FeatureParam<bool> kUseStrongerPromptLanguage{
     &features::kOneTimePermission, "use_stronger_prompt_language", false};
 
+const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
+    &features::kOneTimePermission, "one_time_permission_timeout",
+    base::Minutes(5)};
+
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_url", ""};
