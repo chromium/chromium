@@ -138,9 +138,16 @@ bool NotificationCenterTestApi::IsBubbleShown() {
 }
 
 bool NotificationCenterTestApi::IsPinnedIconShown() {
-  return notification_center_tray_->notification_icons_controller_->tray_items()
-      .back()
-      ->GetVisible();
+  return IsPinnedIconShownOnDisplay(primary_display_id_);
+}
+
+bool NotificationCenterTestApi::IsPinnedIconShownOnDisplay(int64_t display_id) {
+  auto* notification_center_tray = GetTrayOnDisplay(display_id);
+  CHECK(notification_center_tray);
+  auto tray_items =
+      notification_center_tray->notification_icons_controller_->tray_items();
+  CHECK(!tray_items.empty());
+  return tray_items.back()->GetVisible();
 }
 
 bool NotificationCenterTestApi::IsPopupShown(const std::string& id) {
@@ -188,7 +195,19 @@ message_center::MessagePopupView* NotificationCenterTestApi::GetPopupViewForId(
 }
 
 NotificationCenterTray* NotificationCenterTestApi::GetTray() {
-  return notification_center_tray_;
+  return features::IsQsRevampEnabled() ? notification_center_tray_ : nullptr;
+}
+
+NotificationCenterTray* NotificationCenterTestApi::GetTrayOnDisplay(
+    int64_t display_id) {
+  auto* root_window_controller =
+      Shell::Get()->GetRootWindowControllerWithDisplayId(display_id);
+  if (!root_window_controller || !features::IsQsRevampEnabled()) {
+    return nullptr;
+  }
+  return root_window_controller->shelf()
+      ->status_area_widget()
+      ->notification_center_tray();
 }
 
 views::Widget* NotificationCenterTestApi::GetWidget() {

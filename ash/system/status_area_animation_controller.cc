@@ -89,11 +89,20 @@ void StatusAreaAnimationController::PerformAnimation(bool visible) {
     views::AnimationBuilder()
         .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
                                    IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnScheduled(base::BindOnce(
+            [](base::WeakPtr<StatusAreaAnimationController> ptr) {
+              if (!ptr) {
+                return;
+              }
+              ptr->is_hide_animation_scheduled_ = true;
+            },
+            weak_factory_.GetWeakPtr()))
         .OnAborted(base::BindOnce(
             [](base::WeakPtr<StatusAreaAnimationController> ptr) {
               if (!ptr) {
                 return;
               }
+              ptr->is_hide_animation_scheduled_ = false;
               ptr->notification_center_tray_->OnAnimationAborted();
               ptr->ImmediatelyUpdateTrayItemVisibilities();
             },
@@ -103,6 +112,7 @@ void StatusAreaAnimationController::PerformAnimation(bool visible) {
               if (!ptr) {
                 return;
               }
+              ptr->is_hide_animation_scheduled_ = false;
               ptr->notification_center_tray_->OnAnimationEnded();
               ptr->ImmediatelyUpdateTrayItemVisibilities();
             },

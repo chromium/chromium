@@ -28,6 +28,9 @@ class ASH_EXPORT StatusAreaAnimationController
       const StatusAreaAnimationController&) = delete;
   ~StatusAreaAnimationController() override;
 
+  // Returns true if the "hide" animation is scheduled to run, false otherwise.
+  bool is_hide_animation_scheduled() { return is_hide_animation_scheduled_; }
+
  private:
   // Starts running the visibility animation sequence. This will be the "show"
   // animation sequence if `visible` is true, otherwise it will be the "hide"
@@ -64,6 +67,9 @@ class ASH_EXPORT StatusAreaAnimationController
   std::list<base::ScopedClosureRunner>
       notification_center_tray_item_animation_enablers_;
   raw_ptr<NotificationCenterTray, ExperimentalAsh> notification_center_tray_;
+
+  // Whether the "hide" animation is scheduled to be run.
+  bool is_hide_animation_scheduled_ = false;
 
   base::WeakPtrFactory<StatusAreaAnimationController> weak_factory_{this};
 };

@@ -93,8 +93,14 @@ class NotificationCenterTestApi {
   // Returns true if `NotificationCenterBubble` is shown, false otherwise.
   bool IsBubbleShown();
 
-  // Returns true if a pinned icons is shown in the `NotificationCenterTray`.
+  // Returns true if a pinned icon is shown in the primary display's
+  // `NotificationCenterTray`.
   bool IsPinnedIconShown();
+
+  // Returns true if a pinned icon is shown in the `NotificationCenterTray`
+  // associated with the display having an id of `display_id`. `CHECK()`s that
+  // there exists a notification center tray associated with that display.
+  bool IsPinnedIconShownOnDisplay(int64_t display_id);
 
   // Returns true if a popup associated with the provided `id` exists, false
   // otherwise.
@@ -122,8 +128,14 @@ class NotificationCenterTestApi {
   // nullptr otherwise.
   message_center::MessagePopupView* GetPopupViewForId(const std::string& id);
 
-  // Returns the `NotificationCenterTray` in the shelf.
+  // Returns the `NotificationCenterTray` for the primary display, or nullptr if
+  // QS revamp is not enabled.
   NotificationCenterTray* GetTray();
+
+  // Returns the `NotificationCenterTray` associated with the display having an
+  // id of `display_id`, or nullptr if there is no display with that id. Also
+  // returns nullptr if QS revamp is not enabled.
+  NotificationCenterTray* GetTrayOnDisplay(int64_t display_id);
 
   // Returns the widget that owns the `TrayBubbleView` for the notification
   // center.
