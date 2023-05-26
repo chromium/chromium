@@ -1124,6 +1124,10 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::kYPlane),
                                      frame->stride(VideoFrame::kUVPlane));
         break;
+      case CopyOutputResult::Format::NV12_MULTIPLANE:
+        // TODO(crbug.com/1429004): Implement.
+        NOTREACHED();
+        break;
       case CopyOutputResult::Format::RGBA:
         strides = base::StringPrintf("strideRGBA:%d",
                                      frame->stride(VideoFrame::kARGBPlane));

@@ -1603,6 +1603,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
                      std::move(request));
       break;
     }
+    case CopyOutputRequest::ResultFormat::NV12_MULTIPLANE: {
+      // TODO(crbug.com/1429004): Implement.
+      NOTREACHED();
+      break;
+    }
     case CopyOutputRequest::ResultFormat::RGBA: {
       CopyOutputRGBA(surface, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,

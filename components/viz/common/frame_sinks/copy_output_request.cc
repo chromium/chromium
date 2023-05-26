@@ -27,6 +27,8 @@ const char* ResultFormatToShortString(
       return "I420";
     case viz::CopyOutputRequest::ResultFormat::NV12_PLANES:
       return "NV12";
+    case viz::CopyOutputRequest::ResultFormat::NV12_MULTIPLANE:
+      return "NV12_MULTIPLANE";
   }
 }
 
@@ -129,6 +131,10 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
         break;
       case ResultFormat::NV12_PLANES:
         DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kNV12MaxPlanes);
+        break;
+      case ResultFormat::NV12_MULTIPLANE:
+        DCHECK_EQ(num_nonzeroed_mailboxes,
+                  CopyOutputResult::kNV12MultiplaneMaxPlanes);
         break;
       case ResultFormat::I420_PLANES:
         DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kI420MaxPlanes);
