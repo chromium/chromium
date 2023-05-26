@@ -173,12 +173,14 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     ChromeBrowserState* browser_state);
 
 // Updates a bookmark node position, and returns a snackbar with an undo action.
-// Returns nil if the operation wasn't successful or there's nothing to undo.
+// `node` and `folder` must belong to the same model. Returns nil if the
+// operation wasn't successful or there's nothing to undo.
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
 // Deletes all nodes in `bookmarks` from models in `bookmark_models` that are

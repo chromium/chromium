@@ -391,7 +391,8 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     size_t position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
   DCHECK(node);
   DCHECK(folder);
@@ -403,13 +404,20 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     return nil;
   }
 
+  bookmarks::BookmarkModel* node_model =
+      GetBookmarkModelForNode(node, local_or_syncable_model, account_model);
+  bookmarks::BookmarkModel* folder_model =
+      GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
+  CHECK_EQ(node_model, folder_model);
+
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
 
   // Update the bookmark.
   [wrapper startGroupingActions];
-  bookmark_model->Move(node, folder, position);
+
+  folder_model->Move(node, folder, position);
 
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
