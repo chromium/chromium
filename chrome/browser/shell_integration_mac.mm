@@ -7,7 +7,6 @@
 #include <AppKit/AppKit.h>
 #include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -17,10 +16,6 @@
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 #import "net/base/mac/url_conversions.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace shell_integration {
 
@@ -72,7 +67,7 @@ bool SetAsDefaultBrowser() {
     // We really do want the outer bundle here, not the main bundle since
     // setting a shortcut to Chrome as the default browser doesn't make sense.
     CFStringRef identifier =
-        base::apple::NSToCFPtrCast(base::apple::OuterBundle().bundleIdentifier);
+        base::mac::NSToCFCast(base::apple::OuterBundle().bundleIdentifier);
     if (!identifier) {
       return false;
     }
@@ -145,9 +140,8 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
     }
 
     NSString* scheme_ns = base::SysUTF8ToNSString(scheme);
-    OSStatus return_code =
-        LSSetDefaultHandlerForURLScheme(base::apple::NSToCFPtrCast(scheme_ns),
-                                        base::apple::NSToCFPtrCast(identifier));
+    OSStatus return_code = LSSetDefaultHandlerForURLScheme(
+        base::mac::NSToCFCast(scheme_ns), base::mac::NSToCFCast(identifier));
     return return_code == noErr;
   }
 }
@@ -180,8 +174,9 @@ std::vector<base::FilePath> GetAllApplicationPathsForURL(const GURL& url) {
     app_urls =
         [NSWorkspace.sharedWorkspace URLsForApplicationsToOpenURL:ns_url];
   } else {
-    app_urls = base::apple::CFToNSOwnershipCast(LSCopyApplicationURLsForURL(
-        base::apple::NSToCFPtrCast(ns_url), kLSRolesAll));
+    CFArrayRef urls =
+        LSCopyApplicationURLsForURL(base::mac::NSToCFCast(ns_url), kLSRolesAll);
+    app_urls = [base::mac::CFToNSCast(urls) autorelease];
   }
 
   if (app_urls.count == 0) {
@@ -200,8 +195,8 @@ bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url) {
   NSURL* ns_item_url = net::NSURLWithGURL(url);
   NSURL* ns_app_url = base::mac::FilePathToNSURL(app_path);
   Boolean result = FALSE;
-  LSCanURLAcceptURL(base::apple::NSToCFPtrCast(ns_item_url),
-                    base::apple::NSToCFPtrCast(ns_app_url), kLSRolesAll,
+  LSCanURLAcceptURL(base::mac::NSToCFCast(ns_item_url),
+                    base::mac::NSToCFCast(ns_app_url), kLSRolesAll,
                     kLSAcceptDefault, &result);
   return result;
 }

@@ -134,60 +134,6 @@ source_set("browser_process") {
   ]
 }
 
-if (is_mac) {
-  source_set("browser_noarc") {
-    # TODO(https://crbug.com/1280317): Merge back into the `browser` target.
-    sources = [
-      "app_controller_mac.h",
-      "app_controller_mac.mm",
-      "browser_process_platform_part_mac.h",
-      "browser_process_platform_part_mac.mm",
-      "chrome_browser_application_mac.h",
-      "chrome_browser_application_mac.mm",
-      "chrome_browser_main_mac.h",
-      "chrome_browser_main_mac.mm",
-      "mac/auth_session_request.h",
-      "mac/auth_session_request.mm",
-    ]
-    if (enable_service_discovery) {
-      sources += [
-        # TODO(https://crbug.com/1280317): When merging back, search for
-        # `enable_service_discovery` to put these back.
-        "local_discovery/service_discovery_client_mac.h",
-        "local_discovery/service_discovery_client_mac.mm",
-      ]
-    }
-    deps = [
-      ":browser_process",
-      "//base",
-      "//build:branding_buildflags",
-      "//chrome/app:command_ids",
-      "//chrome/app:notification_metrics",
-      "//chrome/browser:buildflags",
-      "//chrome/browser/apps/app_shim",
-      "//chrome/browser/apps/platform_apps",
-      "//chrome/browser/extensions",
-      "//chrome/browser/mac:keystone_glue",
-      "//chrome/browser/profiles",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/tabs:tab_enums",
-      "//chrome/browser/updater:browser_updater_client",
-      "//chrome/browser/updater:scheduler",
-      "//chrome/browser/web_applications",
-      "//chrome/common",
-      "//components/enterprise",
-      "//components/handoff",
-      "//components/keep_alive_registry",
-      "//components/os_crypt/sync",
-      "//components/prefs",
-      "//components/sessions",
-      "//components/sessions:session_id",
-      "//extensions/browser",
-      "//services/device/public/cpp/geolocation",
-    ]
-  }
-}
-
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
@@ -5970,18 +5916,23 @@ static_library("browser") {
     }
   }
 
-  if (is_apple) {
-    configs += [ "//build/config/compiler:enable_arc" ]
-  }
-
   if (is_mac) {
+    allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
     sources += [
       "accessibility/caption_settings_dialog.h",
       "accessibility/caption_settings_dialog_mac.cc",
+      "app_controller_mac.h",
+      "app_controller_mac.mm",
       "apps/intent_helper/mac_intent_picker_helpers.h",
       "apps/intent_helper/mac_intent_picker_helpers.mm",
       "badging/badge_manager_delegate_mac.cc",
       "badging/badge_manager_delegate_mac.h",
+      "browser_process_platform_part_mac.h",
+      "browser_process_platform_part_mac.mm",
+      "chrome_browser_application_mac.h",
+      "chrome_browser_application_mac.mm",
+      "chrome_browser_main_mac.h",
+      "chrome_browser_main_mac.mm",
       "component_updater/recovery_improved_component_installer_mac.cc",
       "device_reauth/mac/authenticator_mac.h",
       "device_reauth/mac/authenticator_mac.mm",
@@ -6000,6 +5951,8 @@ static_library("browser") {
       "hang_monitor/hang_crash_dump_mac.cc",
       "icon_loader_mac.mm",
       "lifetime/application_lifetime_mac.mm",
+      "mac/auth_session_request.h",
+      "mac/auth_session_request.mm",
       "mac/bluetooth_utility.h",
       "mac/bluetooth_utility.mm",
       "mac/chrome_browser_main_extra_parts_mac.h",
@@ -6060,7 +6013,6 @@ static_library("browser") {
       "webshare/mac/sharing_service_operation.mm",
     ]
     deps += [
-      ":browser_noarc",
       "//chrome/app:notification_metrics",
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
@@ -6082,11 +6034,7 @@ static_library("browser") {
       "//third_party/crashpad/crashpad/client",
       "//third_party/google_toolbox_for_mac",
     ]
-    allow_circular_includes_from += [
-      ":browser_noarc",
-      "//chrome/browser/apps/app_shim",
-      "//chrome/browser/ui:ui_arc",
-    ]
+    allow_circular_includes_from += [ "//chrome/browser/ui:ui_arc" ]
     frameworks = [
       "Accelerate.framework",
       "AudioUnit.framework",
@@ -7415,8 +7363,8 @@ static_library("browser") {
 
     if (is_mac) {
       sources += [
-        # TODO(https://crbug.com/1280317): Put service_discovery_client_mac files
-        # back here.
+        "local_discovery/service_discovery_client_mac.h",
+        "local_discovery/service_discovery_client_mac.mm",
         "local_discovery/service_discovery_client_mac_factory.h",
         "local_discovery/service_discovery_client_mac_factory.mm",
       ]

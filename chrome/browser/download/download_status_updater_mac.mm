@@ -15,10 +15,6 @@
 #include "components/download/public/common/download_item.h"
 #import "net/base/mac/url_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 const char kCrNSProgressUserDataKey[] = "CrNSProgressUserData";
@@ -27,16 +23,16 @@ class CrNSProgressUserData : public base::SupportsUserData::Data {
  public:
   CrNSProgressUserData(NSProgress* progress, const base::FilePath& target)
       : target_(target) {
-    progress_ = progress;
+    progress_.reset(progress, base::scoped_policy::RETAIN);
   }
-  ~CrNSProgressUserData() override { [progress_ unpublish]; }
+  ~CrNSProgressUserData() override { [progress_.get() unpublish]; }
 
-  NSProgress* progress() const { return progress_; }
+  NSProgress* progress() const { return progress_.get(); }
   base::FilePath target() const { return target_; }
   void setTarget(const base::FilePath& target) { target_ = target; }
 
  private:
-  NSProgress* __strong progress_;
+  base::scoped_nsobject<NSProgress> progress_;
   base::FilePath target_;
 };
 
@@ -153,12 +149,12 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
         base::mac::FilePathToNSString(download->GetTargetFilePath());
     if (download->GetState() == download::DownloadItem::COMPLETE) {
       // Bounce the dock icon.
-      [NSDistributedNotificationCenter.defaultCenter
+      [[NSDistributedNotificationCenter defaultCenter]
           postNotificationName:@"com.apple.DownloadFileFinished"
                         object:download_path];
     }
 
     // Notify the Finder.
-    [NSWorkspace.sharedWorkspace noteFileSystemChanged:download_path];
+    [[NSWorkspace sharedWorkspace] noteFileSystemChanged:download_path];
   }
 }

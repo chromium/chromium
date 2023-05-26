@@ -11,10 +11,6 @@
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
 

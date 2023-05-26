@@ -227,10 +227,7 @@ static_library("test_support") {
     sources += [ "chrome_main_mac.mm" ]
 
     configs += [ "//build/config/compiler:enable_arc" ]
-    deps += [
-      "//chrome:chrome_framework",
-      "//chrome/browser:browser_noarc",
-    ]
+    deps += [ "//chrome:chrome_framework" ]
   }
 
   if (is_win) {
