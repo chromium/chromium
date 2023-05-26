@@ -130,6 +130,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override {
+    has_fetched_well_known_ = true;
     FetchStatus fetch_status = {ParseStatus::kSuccess, net::HTTP_OK};
     std::set<GURL> well_known_urls = {GURL(kProviderUrl)};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -174,7 +175,13 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        std::move(accounts)));
   }
 
+  bool DidFetchAnyEndpoint() {
+    return has_fetched_well_known_ || has_fetched_config_ ||
+           has_fetched_accounts_endpoint_;
+  }
+
  protected:
+  bool has_fetched_well_known_{false};
   bool has_fetched_config_{false};
   bool has_fetched_accounts_endpoint_{false};
 
@@ -268,6 +275,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
+    network_manager_ = network_manager.get();
 
     blink::mojom::IdentityProviderConfigPtr idp_ptr =
         blink::mojom::IdentityProviderConfig::New();
@@ -276,11 +284,10 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     idp_ptr->nonce = kNonce;
 
     UserInfoCallbackHelper callback_helper;
-    std::unique_ptr<FederatedAuthUserInfoRequest> request =
-        FederatedAuthUserInfoRequest::CreateAndStart(
-            std::move(network_manager), api_permission_delegate_.get(),
-            permission_delegate_.get(), iframe_render_frame_host_,
-            metrics_.get(), std::move(idp_ptr), callback_helper.callback());
+    request_ = FederatedAuthUserInfoRequest::CreateAndStart(
+        std::move(network_manager), api_permission_delegate_.get(),
+        permission_delegate_.get(), iframe_render_frame_host_, metrics_.get(),
+        std::move(idp_ptr), callback_helper.callback());
     callback_helper.WaitForCallback();
 
     EXPECT_EQ(expected_user_info_status, callback_helper.user_info_status_);
@@ -303,12 +310,15 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     }
   }
 
+  bool DidFetchAnyEndpoint() { return network_manager_->DidFetchAnyEndpoint(); }
+
  protected:
   raw_ptr<RenderFrameHost> iframe_render_frame_host_;
-  std::unique_ptr<TestIdpNetworkRequestManager> network_manager_;
+  raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;
+  std::unique_ptr<FederatedAuthUserInfoRequest> request_;
 };
 
 TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
@@ -334,6 +344,7 @@ TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
                      {kAccount2Id, /*login_state=*/absl::nullopt,
                       /*was_granted_sharing_permission=*/false}};
   RunUserInfoTest(config, RequestUserInfoStatus::kError, {});
+  EXPECT_FALSE(DidFetchAnyEndpoint());
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {

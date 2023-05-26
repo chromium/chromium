@@ -103,6 +103,15 @@ void FederatedAuthUserInfoRequest::Start(
     return;
   }
 
+  if (!permission_delegate_->HasSharingPermission(
+          parent_frame_origin_, embedding_origin_,
+          url::Origin::Create(idp_config_url_), /*account_id=*/absl::nullopt)) {
+    // If there is no sharing permission, we can abort before performing any
+    // fetch.
+    CompleteWithError();
+    return;
+  }
+
   // FederatedProviderFetcher is stored as a member so that
   // FederatedProviderFetcher is destroyed when FederatedAuthRequestImpl is
   // destroyed.
