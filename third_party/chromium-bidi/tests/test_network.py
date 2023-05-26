@@ -234,9 +234,9 @@ async def test_network_network_response_completed_event_emitted(
                 "mimeType": "text/html",
                 "bytesReceived": ANY_NUMBER,
                 "headersSize": ANY_NUMBER,
-                "bodySize": -1,
+                "bodySize": 0,
                 "content": {
-                    "size": -1
+                    "size": 0
                 }
             }
         }

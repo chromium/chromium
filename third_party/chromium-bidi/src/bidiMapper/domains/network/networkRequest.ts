@@ -20,7 +20,6 @@
  * @fileoverview `NetworkRequest` represents a single network request and keeps
  * track of all the related CDP events.
  */
-
 import Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
@@ -29,54 +28,76 @@ import {Network} from '../../../protocol/protocol.js';
 
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
-  requestId: string;
-  #servedFromCache = false;
-  #eventManager: IEventManager;
-  #requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent | undefined;
-  #requestWillBeSentExtraInfoEvent:
-    | Protocol.Network.RequestWillBeSentExtraInfoEvent
-    | undefined;
-  #responseReceivedEvent: Protocol.Network.ResponseReceivedEvent | undefined;
 
-  #responseReceivedExtraInfoEvent:
-    | Protocol.Network.ResponseReceivedExtraInfoEvent
-    | undefined;
+  /**
+   * Each network request has an associated request id, which is a string
+   * uniquely identifying that request.
+   *
+   * The identifier for a request resulting from a redirect matches that of the
+   * request that initiated it.
+   */
+  requestId: Network.Request;
+
+  #servedFromCache = false;
+  #redirectCount: number;
+
+  #eventManager: IEventManager;
+
+  #requestWillBeSentEvent?: Protocol.Network.RequestWillBeSentEvent;
+  #requestWillBeSentExtraInfoEvent?: Protocol.Network.RequestWillBeSentExtraInfoEvent;
+  #responseReceivedEvent?: Protocol.Network.ResponseReceivedEvent;
+  #responseReceivedExtraInfoEvent?: Protocol.Network.ResponseReceivedExtraInfoEvent;
 
   #beforeRequestSentDeferred: Deferred<void>;
   #responseReceivedDeferred: Deferred<void>;
 
-  constructor(requestId: string, eventManager: IEventManager) {
+  constructor(requestId: Network.Request, eventManager: IEventManager) {
     this.requestId = requestId;
+    this.#redirectCount = 0;
     this.#eventManager = eventManager;
     this.#beforeRequestSentDeferred = new Deferred<void>();
     this.#responseReceivedDeferred = new Deferred<void>();
   }
 
-  onRequestWillBeSentEvent(
-    requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent
-  ) {
+  onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     if (this.#requestWillBeSentEvent !== undefined) {
       // TODO: Handle redirect event, requestId is same for the redirect chain
       return;
     }
+    this.#requestWillBeSentEvent = event;
 
-    this.#requestWillBeSentEvent = requestWillBeSentEvent;
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
       this.#beforeRequestSentDeferred.resolve();
     }
+
     this.#sendBeforeRequestEvent();
   }
 
   onRequestWillBeSentExtraInfoEvent(
-    requestWillBeSentExtraInfoEvent: Protocol.Network.RequestWillBeSentExtraInfoEvent
+    event: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
       // TODO: Handle redirect event, requestId is same for the redirect chain
       return;
     }
-    this.#requestWillBeSentExtraInfoEvent = requestWillBeSentExtraInfoEvent;
+    this.#requestWillBeSentExtraInfoEvent = event;
+
     if (this.#requestWillBeSentEvent !== undefined) {
       this.#beforeRequestSentDeferred.resolve();
+    }
+  }
+
+  onResponseReceivedEventExtraInfo(
+    event: Protocol.Network.ResponseReceivedExtraInfoEvent
+  ) {
+    if (this.#responseReceivedExtraInfoEvent !== undefined) {
+      // TODO: Handle redirect event, requestId is same for the redirect chain
+      return;
+    }
+    this.#responseReceivedExtraInfoEvent = event;
+
+    if (this.#responseReceivedEvent !== undefined) {
+      this.#responseReceivedDeferred.resolve();
     }
   }
 
@@ -88,12 +109,14 @@ export class NetworkRequest {
       return;
     }
     this.#responseReceivedEvent = responseReceivedEvent;
+
     if (
       !responseReceivedEvent.hasExtraInfo &&
       !this.#beforeRequestSentDeferred.isFinished
     ) {
       this.#beforeRequestSentDeferred.resolve();
     }
+
     if (
       !responseReceivedEvent.hasExtraInfo ||
       this.#responseReceivedExtraInfoEvent !== undefined ||
@@ -101,20 +124,8 @@ export class NetworkRequest {
     ) {
       this.#responseReceivedDeferred.resolve();
     }
-    this.#sendResponseReceivedEvent();
-  }
 
-  onResponseReceivedEventExtraInfo(
-    responseReceivedExtraInfoEvent: Protocol.Network.ResponseReceivedExtraInfoEvent
-  ) {
-    if (this.#responseReceivedExtraInfoEvent !== undefined) {
-      // TODO: Handle redirect event, requestId is same for the redirect chain
-      return;
-    }
-    this.#responseReceivedExtraInfoEvent = responseReceivedExtraInfoEvent;
-    if (this.#responseReceivedEvent !== undefined) {
-      this.#responseReceivedDeferred.resolve();
-    }
+    this.#sendResponseReceivedEvent();
   }
 
   onServedFromCache() {
@@ -129,58 +140,28 @@ export class NetworkRequest {
     this.#servedFromCache = true;
   }
 
-  onLoadingFailedEvent(
-    loadingFailedEvent: Protocol.Network.LoadingFailedEvent
-  ) {
+  onLoadingFailedEvent(event: Protocol.Network.LoadingFailedEvent) {
     this.#beforeRequestSentDeferred.resolve();
-    this.#responseReceivedDeferred.reject(loadingFailedEvent);
-
-    const params: Network.FetchErrorParams = {
-      ...this.#getBaseEventParams(),
-      errorText: loadingFailedEvent.errorText,
-    };
+    this.#responseReceivedDeferred.reject(event);
 
     this.#eventManager.registerEvent(
       {
         method: Network.EventNames.FetchErrorEvent,
-        params,
+        params: {
+          ...this.#getBaseEventParams(),
+          errorText: event.errorText,
+        },
       },
       this.#requestWillBeSentEvent?.frameId ?? null
     );
   }
 
-  #sendBeforeRequestEvent() {
-    if (!this.#isIgnoredEvent()) {
-      this.#eventManager.registerPromiseEvent(
-        this.#beforeRequestSentDeferred.then(() =>
-          this.#getBeforeRequestEvent()
-        ),
-        this.#requestWillBeSentEvent?.frameId ?? null,
-        Network.EventNames.BeforeRequestSentEvent
-      );
-    }
-  }
-
-  #getBeforeRequestEvent(): Network.BeforeRequestSentEvent {
-    if (this.#requestWillBeSentEvent === undefined) {
-      throw new Error('RequestWillBeSentEvent is not set');
-    }
-    const params: Network.BeforeRequestSentParams = {
-      ...this.#getBaseEventParams(),
-      initiator: {type: this.#getInitiatorType()},
-    };
-    return {
-      method: Network.EventNames.BeforeRequestSentEvent,
-      params,
-    };
-  }
-
-  #getBaseEventParams(): Network.BaseEventParams {
+  #getBaseEventParams(): Network.BaseParameters {
     return {
       context: this.#requestWillBeSentEvent?.frameId ?? null,
       navigation: this.#requestWillBeSentEvent?.loaderId ?? null,
       // TODO: implement.
-      redirectCount: 0,
+      redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
       // Timestamp should be in milliseconds, while CDP provides it in seconds.
       timestamp: Math.round(
@@ -190,12 +171,12 @@ export class NetworkRequest {
   }
 
   #getRequestData(): Network.RequestData {
-    const cookies =
-      this.#requestWillBeSentExtraInfoEvent === undefined
-        ? []
-        : NetworkRequest.#getCookies(
-            this.#requestWillBeSentExtraInfoEvent.associatedCookies
-          );
+    const cookies = this.#requestWillBeSentExtraInfoEvent
+      ? NetworkRequest.#getCookies(
+          this.#requestWillBeSentExtraInfoEvent.associatedCookies
+        )
+      : [];
+
     return {
       request:
         this.#requestWillBeSentEvent?.requestId ?? NetworkRequest.#unknown,
@@ -246,27 +227,111 @@ export class NetworkRequest {
     };
   }
 
-  #getInitiatorType(): Network.Initiator['type'] {
-    switch (this.#requestWillBeSentEvent?.initiator.type) {
-      case 'parser':
-      case 'script':
-      case 'preflight':
-        return this.#requestWillBeSentEvent.initiator.type;
-      default:
-        return 'other';
+  #sendBeforeRequestEvent() {
+    if (!this.#isIgnoredEvent()) {
+      this.#eventManager.registerPromiseEvent(
+        this.#beforeRequestSentDeferred.then(() =>
+          this.#getBeforeRequestEvent()
+        ),
+        this.#requestWillBeSentEvent?.frameId ?? null,
+        Network.EventNames.BeforeRequestSentEvent
+      );
     }
   }
 
-  static #getCookiesSameSite(
-    cdpSameSiteValue: string | undefined
-  ): Network.Cookie['sameSite'] {
-    switch (cdpSameSiteValue) {
-      case 'Strict':
-        return 'strict';
-      case 'Lax':
-        return 'lax';
+  #getBeforeRequestEvent(): Network.BeforeRequestSentEvent {
+    if (this.#requestWillBeSentEvent === undefined) {
+      throw new Error('RequestWillBeSentEvent is not set');
+    }
+
+    return {
+      method: Network.EventNames.BeforeRequestSentEvent,
+      params: {
+        ...this.#getBaseEventParams(),
+        initiator: {
+          type: NetworkRequest.#getInitiatorType(
+            this.#requestWillBeSentEvent.initiator.type
+          ),
+        },
+      },
+    };
+  }
+
+  #sendResponseReceivedEvent() {
+    if (!this.#isIgnoredEvent()) {
+      this.#eventManager.registerPromiseEvent(
+        this.#responseReceivedDeferred.then(() =>
+          this.#getResponseReceivedEvent()
+        ),
+        this.#responseReceivedEvent?.frameId ?? null,
+        Network.EventNames.ResponseCompletedEvent
+      );
+    }
+  }
+
+  #getResponseReceivedEvent(): Network.ResponseCompletedEvent {
+    if (this.#requestWillBeSentEvent === undefined) {
+      throw new Error('RequestWillBeSentEvent is not set');
+    }
+    if (this.#responseReceivedEvent === undefined) {
+      throw new Error('ResponseReceivedEvent is not set');
+    }
+
+    return {
+      method: Network.EventNames.ResponseCompletedEvent,
+      params: {
+        ...this.#getBaseEventParams(),
+        response: {
+          url: this.#responseReceivedEvent.response.url,
+          protocol: this.#responseReceivedEvent.response.protocol ?? '',
+          status: this.#responseReceivedEvent.response.status,
+          statusText: this.#responseReceivedEvent.response.statusText,
+          fromCache:
+            (this.#responseReceivedEvent.response.fromDiskCache ||
+              this.#responseReceivedEvent.response.fromPrefetchCache) ??
+            false,
+          headers: NetworkRequest.#getHeaders(
+            this.#responseReceivedEvent.response.headers
+          ),
+          mimeType: this.#responseReceivedEvent.response.mimeType,
+          bytesReceived: this.#responseReceivedEvent.response.encodedDataLength,
+          headersSize:
+            this.#responseReceivedExtraInfoEvent?.headersText?.length ?? 0,
+          // TODO: consider removing from spec.
+          bodySize: 0,
+          content: {
+            // TODO: consider removing from spec.
+            size: 0,
+          },
+        },
+      },
+    };
+  }
+
+  #isIgnoredEvent(): boolean {
+    return (
+      this.#requestWillBeSentEvent?.request.url.endsWith('/favicon.ico') ??
+      false
+    );
+  }
+
+  static #getHeaders(headers: Protocol.Network.Headers): Network.Header[] {
+    return Object.keys(headers).map((key) => ({
+      name: key,
+      value: headers[key],
+    }));
+  }
+
+  static #getInitiatorType(
+    initiatorType: Protocol.Network.Initiator['type']
+  ): Network.Initiator['type'] {
+    switch (initiatorType) {
+      case 'parser':
+      case 'script':
+      case 'preflight':
+        return initiatorType;
       default:
-        return 'none';
+        return 'other';
     }
   }
 
@@ -290,71 +355,16 @@ export class NetworkRequest {
     });
   }
 
-  #sendResponseReceivedEvent() {
-    if (!this.#isIgnoredEvent()) {
-      // Wait for both ResponseReceived and ResponseReceivedExtraInfo events.
-      this.#eventManager.registerPromiseEvent(
-        this.#responseReceivedDeferred.then(() =>
-          this.#getResponseReceivedEvent()
-        ),
-        this.#responseReceivedEvent?.frameId ?? null,
-        Network.EventNames.ResponseCompletedEvent
-      );
+  static #getCookiesSameSite(
+    cdpSameSiteValue?: string
+  ): Network.Cookie['sameSite'] {
+    switch (cdpSameSiteValue) {
+      case 'Strict':
+        return 'strict';
+      case 'Lax':
+        return 'lax';
+      default:
+        return 'none';
     }
-  }
-
-  #getResponseReceivedEvent(): Network.ResponseCompletedEvent {
-    if (this.#responseReceivedEvent === undefined) {
-      throw new Error('ResponseReceivedEvent is not set');
-    }
-    if (this.#requestWillBeSentEvent === undefined) {
-      throw new Error('RequestWillBeSentEvent is not set');
-    }
-
-    return {
-      method: Network.EventNames.ResponseCompletedEvent,
-      params: {
-        ...this.#getBaseEventParams(),
-        response: {
-          url: this.#responseReceivedEvent.response.url,
-          protocol: this.#responseReceivedEvent.response.protocol,
-          status: this.#responseReceivedEvent.response.status,
-          statusText: this.#responseReceivedEvent.response.statusText,
-          // Check if this is correct.
-          fromCache:
-            this.#responseReceivedEvent.response.fromDiskCache ||
-            this.#responseReceivedEvent.response.fromPrefetchCache ||
-            this.#servedFromCache,
-          // TODO: implement.
-          headers: this.#getHeaders(
-            this.#responseReceivedEvent.response.headers
-          ),
-          mimeType: this.#responseReceivedEvent.response.mimeType,
-          bytesReceived: this.#responseReceivedEvent.response.encodedDataLength,
-          headersSize:
-            this.#responseReceivedExtraInfoEvent?.headersText?.length ?? -1,
-          // TODO: consider removing from spec.
-          bodySize: -1,
-          content: {
-            // TODO: consider removing from spec.
-            size: -1,
-          },
-        },
-      } as Network.ResponseCompletedParams,
-    };
-  }
-
-  #getHeaders(headers: Protocol.Network.Headers) {
-    return Object.keys(headers).map((key) => ({
-      name: key,
-      value: headers[key],
-    }));
-  }
-
-  #isIgnoredEvent(): boolean {
-    return (
-      this.#requestWillBeSentEvent?.request.url.endsWith('/favicon.ico') ??
-      false
-    );
   }
 }

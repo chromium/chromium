@@ -451,8 +451,9 @@ describe('unroll events', () => {
   it('all Network events', () => {
     expect(unrollEvents([Network.AllEvents])).to.deep.equal([
       Network.EventNames.BeforeRequestSentEvent,
-      Network.EventNames.ResponseCompletedEvent,
       Network.EventNames.FetchErrorEvent,
+      Network.EventNames.ResponseStartedEvent,
+      Network.EventNames.ResponseCompletedEvent,
     ]);
   });
 
