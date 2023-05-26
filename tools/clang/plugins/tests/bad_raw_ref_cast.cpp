@@ -1,38 +1,38 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
 
-struct RawPtrWrapper {
-  raw_ptr<int> ptr;
+struct RawRefWrapper {
+  raw_ref<int> ref;
 };
 
-struct RawPtrWrapperWrapper {
-  RawPtrWrapper* ptr;
+struct RawRefWrapperWrapper {
+  RawRefWrapper* ref;
 };
 
-class RawPtrWrapperWrapperWrapper {
+class RawRefWrapperWrapperWrapper {
  public:
-  explicit RawPtrWrapperWrapperWrapper(RawPtrWrapperWrapper& ptr) : ptr_(ptr) {}
+  explicit RawRefWrapperWrapperWrapper(RawRefWrapperWrapper& ref) : ref_(ref) {}
 
-  RawPtrWrapperWrapper& ptr_;
+  RawRefWrapperWrapper& ref_;
 };
 
-struct RawPtrWrapperSub : RawPtrWrapper {};
-struct RawPtrWrapperVirtualSub : virtual RawPtrWrapper {};
+struct RawRefWrapperSub : RawRefWrapper {};
+struct RawRefWrapperVirtualSub : virtual RawRefWrapper {};
 
 void MyFunc(void* p) {}
 
 void CastFromCastingUnsafe() {
   // "Casting unsafe" type variables;
-  raw_ptr<int> p0;
-  RawPtrWrapper p1;
-  RawPtrWrapperWrapper p2;
-  RawPtrWrapperWrapperWrapper p3(p2);
-  RawPtrWrapper p4[10];
-  RawPtrWrapperSub p5;
-  RawPtrWrapperVirtualSub p6;
+  raw_ref<int> p0;
+  RawRefWrapper p1;
+  RawRefWrapperWrapper p2;
+  RawRefWrapperWrapperWrapper p3(p2);
+  RawRefWrapper p4[10];
+  RawRefWrapperSub p5;
+  RawRefWrapperVirtualSub p6;
 
   // CK_BitCast via |static_cast| should emit an error.
   (void)static_cast<void*>(&p0);
@@ -84,34 +84,34 @@ void CastToCastingUnsafe() {
   void* p = nullptr;
 
   // CK_BitCast via |static_cast| should emit an error.
-  (void)static_cast<raw_ptr<int>*>(p);
-  (void)static_cast<RawPtrWrapper*>(p);
-  (void)static_cast<RawPtrWrapperWrapper*>(p);
-  (void)static_cast<RawPtrWrapperWrapperWrapper*>(p);
-  (void)static_cast<RawPtrWrapperSub*>(p);
-  (void)static_cast<RawPtrWrapperVirtualSub*>(p);
+  (void)static_cast<raw_ref<int>*>(p);
+  (void)static_cast<RawRefWrapper*>(p);
+  (void)static_cast<RawRefWrapperWrapper*>(p);
+  (void)static_cast<RawRefWrapperWrapperWrapper*>(p);
+  (void)static_cast<RawRefWrapperSub*>(p);
+  (void)static_cast<RawRefWrapperVirtualSub*>(p);
 
   // CK_BitCast via C-style casting should emit an error.
   (void)(raw_ptr<int>*)p;
-  (void)(RawPtrWrapper*)p;
-  (void)(RawPtrWrapperWrapper*)p;
-  (void)(RawPtrWrapperWrapperWrapper*)p;
-  (void)(RawPtrWrapperSub*)p;
-  (void)(RawPtrWrapperVirtualSub*)p;
+  (void)(RawRefWrapper*)p;
+  (void)(RawRefWrapperWrapper*)p;
+  (void)(RawRefWrapperWrapperWrapper*)p;
+  (void)(RawRefWrapperSub*)p;
+  (void)(RawRefWrapperVirtualSub*)p;
 
   // CK_BitCast via |reinterpret_cast| should emit an error.
-  (void)reinterpret_cast<raw_ptr<int>*>(p);
-  (void)reinterpret_cast<RawPtrWrapper*>(p);
-  (void)reinterpret_cast<RawPtrWrapperWrapper*>(p);
-  (void)reinterpret_cast<RawPtrWrapperWrapperWrapper*>(p);
-  (void)reinterpret_cast<RawPtrWrapperSub*>(p);
-  (void)reinterpret_cast<RawPtrWrapperVirtualSub*>(p);
+  (void)reinterpret_cast<raw_ref<int>*>(p);
+  (void)reinterpret_cast<RawRefWrapper*>(p);
+  (void)reinterpret_cast<RawRefWrapperWrapper*>(p);
+  (void)reinterpret_cast<RawRefWrapperWrapperWrapper*>(p);
+  (void)reinterpret_cast<RawRefWrapperSub*>(p);
+  (void)reinterpret_cast<RawRefWrapperVirtualSub*>(p);
 
   // CK_LValueToRValueBitCast via |bit_cast| should emit an error.
-  (void)__builtin_bit_cast(raw_ptr<int>*, p);
-  (void)__builtin_bit_cast(RawPtrWrapper*, p);
-  (void)__builtin_bit_cast(RawPtrWrapperWrapper*, p);
-  (void)__builtin_bit_cast(RawPtrWrapperWrapperWrapper*, p);
-  (void)__builtin_bit_cast(RawPtrWrapperSub*, p);
-  (void)__builtin_bit_cast(RawPtrWrapperVirtualSub*, p);
+  (void)__builtin_bit_cast(raw_ref<int>*, p);
+  (void)__builtin_bit_cast(RawRefWrapper*, p);
+  (void)__builtin_bit_cast(RawRefWrapperWrapper*, p);
+  (void)__builtin_bit_cast(RawRefWrapperWrapperWrapper*, p);
+  (void)__builtin_bit_cast(RawRefWrapperSub*, p);
+  (void)__builtin_bit_cast(RawRefWrapperVirtualSub*, p);
 }
