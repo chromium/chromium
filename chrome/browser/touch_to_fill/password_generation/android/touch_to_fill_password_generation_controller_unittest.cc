@@ -4,7 +4,9 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -32,6 +34,8 @@ class TouchToFillPasswordGenerationControllerTest
     return base::AsWeakPtr(password_mananger_driver_.get());
   }
 
+  base::MockCallback<base::OnceCallback<void()>> on_dismissed_callback_;
+
  private:
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
       password_mananger_driver_;
@@ -44,7 +48,8 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
   auto bridge = std::make_unique<MockTouchToFillPasswordGenerationBridge>();
   MockTouchToFillPasswordGenerationBridge* bridge_ptr = bridge.get();
   auto controller = std::make_unique<TouchToFillPasswordGenerationController>(
-      password_mananger_driver(), web_contents(), std::move(bridge));
+      password_mananger_driver(), web_contents(), std::move(bridge),
+      on_dismissed_callback_.Get());
   EXPECT_CALL(*bridge_ptr, Show);
   controller->ShowTouchToFill();
 
@@ -67,4 +72,32 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
   // Keyboard is expected to be shown again after resetting the controller.
   EXPECT_FALSE(content::GetTextInputStateFromWebContents(web_contents())
                    ->always_hide_ime);
+}
+
+TEST_F(TouchToFillPasswordGenerationControllerTest,
+       OnDismissedCallbackIsTriggeredWhenBottomSheetDismissed) {
+  auto controller = std::make_unique<TouchToFillPasswordGenerationController>(
+      password_mananger_driver(), web_contents(),
+      std::make_unique<MockTouchToFillPasswordGenerationBridge>(),
+      on_dismissed_callback_.Get());
+
+  controller->ShowTouchToFill();
+
+  EXPECT_CALL(on_dismissed_callback_, Run);
+  controller->OnDismissed();
+}
+
+TEST_F(TouchToFillPasswordGenerationControllerTest,
+       CallsHideOnBridgeWhenTouchToFillPasswordGenerationControllerDestroyed) {
+  auto bridge = std::make_unique<MockTouchToFillPasswordGenerationBridge>();
+  MockTouchToFillPasswordGenerationBridge* bridge_ptr = bridge.get();
+  auto controller = std::make_unique<TouchToFillPasswordGenerationController>(
+      password_mananger_driver(), web_contents(), std::move(bridge),
+      on_dismissed_callback_.Get());
+
+  EXPECT_CALL(*bridge_ptr, Show);
+  controller->ShowTouchToFill();
+
+  EXPECT_CALL(*bridge_ptr, Hide);
+  controller.reset();
 }

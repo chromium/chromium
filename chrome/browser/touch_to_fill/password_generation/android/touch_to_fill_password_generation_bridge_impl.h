@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 class TouchToFillPasswordGenerationBridgeImpl
@@ -19,11 +21,18 @@ class TouchToFillPasswordGenerationBridgeImpl
       const TouchToFillPasswordGenerationBridgeImpl&) = delete;
   ~TouchToFillPasswordGenerationBridgeImpl() override;
 
-  bool Show(content::WebContents* web_contents) override;
+  bool Show(
+      content::WebContents* web_contents,
+      base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate) override;
+
+  void Hide() override;
+
+  void OnDismissed(JNIEnv* env) override;
 
  private:
   // The corresponding Java TouchToFillCreditCardViewBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  base::WeakPtr<TouchToFillPasswordGenerationDelegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_IMPL_H_

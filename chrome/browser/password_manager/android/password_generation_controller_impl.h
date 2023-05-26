@@ -72,6 +72,11 @@ class PasswordGenerationControllerImpl
       autofill::password_generation::PasswordGenerationType type) override;
   void HideBottomSheetIfNeeded() override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  // Creates the |TouchToFillPasswordGenerationController| with mocked bridge
+  // for testing.
+  std::unique_ptr<TouchToFillPasswordGenerationController>
+  CreateTouchToFillGenerationControllerForTesting(
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) override;
   gfx::NativeWindow top_level_native_window() override;
   content::WebContents* web_contents() override;
   autofill::FieldSignature get_field_signature_for_testing() override;
@@ -130,6 +135,8 @@ class PasswordGenerationControllerImpl
   void ShowDialog(autofill::password_generation::PasswordGenerationType type);
 
   bool TryToShowGenerationTouchToFill();
+
+  void OnTouchToFillForGenerationDismissed();
 
   // Resets the current active frame driver, as well as the dialog if shown
   // and the generation element data.

@@ -26,6 +26,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -34,21 +35,28 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TouchToFillPasswordGenerationModuleTest {
-    private TouchToFillPasswordGenerationCoordinator mCoordinator;
+    private TouchToFillPasswordGenerationBridge mBridge;
     private final ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private BottomSheetController mBottomSheetController;
+    @Mock
+    private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
+
+    private static final long sDummyNativePointer = 1;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mJniMocker.mock(TouchToFillPasswordGenerationBridgeJni.TEST_HOOKS, mBridgeJniMock);
         setUpBottomSheetController();
-        mCoordinator = new TouchToFillPasswordGenerationCoordinator(
+        mBridge = new TouchToFillPasswordGenerationBridge(sDummyNativePointer,
                 Robolectric.buildActivity(Activity.class).get(), mBottomSheetController);
     }
 
@@ -59,12 +67,22 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Test
     public void showsAndHidesBottomSheet() {
-        mCoordinator.show();
+        mBridge.show();
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
         verify(mBottomSheetController).addObserver(any());
 
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testBottomSheetForceHide() {
+        mBridge.show();
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+
+        mBridge.hide();
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
+        verify(mBridgeJniMock).onDismissed(sDummyNativePointer);
     }
 }
