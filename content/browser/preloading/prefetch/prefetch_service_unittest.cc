@@ -4326,6 +4326,23 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                        PreloadingFailureReason::kUnspecified);
 }
 
+class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
+    : public PrefetchServiceTest {
+ public:
+  void InitScopedFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"},
+           {"block_until_head_eager_prefetch", "true"},
+           {"block_until_head_moderate_prefetch", "true"},
+           {"block_until_head_conservative_prefetch", "true"}}},
+         {features::kPrefetchRedirects, {}}},
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
+  }
+};
+
 // TODO(crbug.com/1396460): Test flaky on lacros trybots.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RedirectNetworkContextTransitionBlockUntilHead \
@@ -4334,7 +4351,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 #define MAYBE_RedirectNetworkContextTransitionBlockUntilHead \
   RedirectNetworkContextTransitionBlockUntilHead
 #endif
-TEST_F(PrefetchServiceAllowRedirectTest,
+TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
        MAYBE_RedirectNetworkContextTransitionBlockUntilHead) {
   base::HistogramTester histogram_tester;
 
