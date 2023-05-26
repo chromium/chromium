@@ -826,6 +826,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*no_vary_search_expected=*/absl::nullopt,
           blink::mojom::SpeculationInjectionWorld::kNone,
           /*prefetch_document_manager=*/nullptr);
+  prefetch_container->RegisterCookieListener(cookie_manager());
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
   prefetch_container->TakeStreamingURLLoader(
@@ -834,7 +835,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
-  prefetch_container->RegisterCookieListener(kTestUrl, cookie_manager());
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());

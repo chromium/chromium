@@ -187,10 +187,13 @@ TEST_F(PrefetchContainerTest, CookieListener) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
-  // Add redirect hops. Each hop will have its own cookie listener.
+  // Add redirect hops, and register its own cookie listener for each hop.
   prefetch_container.AddRedirectHop(kTestUrl2);
+  prefetch_container.RegisterCookieListener(cookie_manager());
   prefetch_container.AddRedirectHop(kTestUrl3);
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
   // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
   // respectively. AdvanceCurrentURLToServe() and
@@ -202,10 +205,6 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   prefetch_container.AdvanceCurrentURLToServe();
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
   prefetch_container.ResetCurrentURLToServeForTesting();
-
-  prefetch_container.RegisterCookieListener(kTestUrl1, cookie_manager());
-  prefetch_container.RegisterCookieListener(kTestUrl2, cookie_manager());
-  prefetch_container.RegisterCookieListener(kTestUrl3, cookie_manager());
 
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
   prefetch_container.AdvanceCurrentURLToServe();
@@ -254,7 +253,7 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
-  prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
   EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
 
@@ -314,13 +313,13 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
       /*no_vary_search_expected=*/absl::nullopt,
       blink::mojom::SpeculationInjectionWorld::kNone,
       /*prefetch_document_manager=*/nullptr);
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
   prefetch_container.AddRedirectHop(kRedirectUrl1);
-  prefetch_container.AddRedirectHop(kRedirectUrl2);
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
-  prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
-  prefetch_container.RegisterCookieListener(kRedirectUrl1, cookie_manager());
-  prefetch_container.RegisterCookieListener(kRedirectUrl2, cookie_manager());
+  prefetch_container.AddRedirectHop(kRedirectUrl2);
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
   EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kTestUrl);
 
@@ -725,7 +724,7 @@ TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
   prefetch_container.SetNoVarySearchHelper(no_vary_search_helper);
 
   // Register Cookie listener for the prefetch URL.
-  prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
+  prefetch_container.RegisterCookieListener(cookie_manager());
 
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
 

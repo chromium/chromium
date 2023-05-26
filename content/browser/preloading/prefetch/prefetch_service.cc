@@ -660,8 +660,8 @@ void PrefetchService::OnGotEligibilityResult(
     if (prefetch_container
             ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
       prefetch_container->RegisterCookieListener(
-          url, browser_context_->GetDefaultStoragePartition()
-                   ->GetCookieManagerForBrowserProcess());
+          browser_context_->GetDefaultStoragePartition()
+              ->GetCookieManagerForBrowserProcess());
     }
   }
   prefetch_queue_.push_back(prefetch_container);
@@ -706,8 +706,8 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
         prefetch_container
             ->IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
       prefetch_container->RegisterCookieListener(
-          url, browser_context_->GetDefaultStoragePartition()
-                   ->GetCookieManagerForBrowserProcess());
+          browser_context_->GetDefaultStoragePartition()
+              ->GetCookieManagerForBrowserProcess());
     }
   }
 

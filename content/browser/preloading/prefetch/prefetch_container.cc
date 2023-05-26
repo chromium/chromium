@@ -503,13 +503,10 @@ absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
 }
 
 void PrefetchContainer::RegisterCookieListener(
-    const GURL& url,
     network::mojom::CookieManager* cookie_manager) {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-
-  this_prefetch->cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
-      this_prefetch->url_, cookie_manager);
+  SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
+  this_prefetch.cookie_listener_ = PrefetchCookieListener::MakeAndRegister(
+      this_prefetch.url_, cookie_manager);
 }
 
 void PrefetchContainer::StopAllCookieListeners() {

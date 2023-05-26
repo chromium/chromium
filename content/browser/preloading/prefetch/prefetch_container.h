@@ -146,10 +146,9 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetIsDecoy(bool is_decoy) { is_decoy_ = is_decoy; }
   bool IsDecoy() const { return is_decoy_; }
 
-  // Allows for |PrefetchCookieListener|s to be reigsitered for elements of
-  // |redirect_chain_|.
-  void RegisterCookieListener(const GURL& url,
-                              network::mojom::CookieManager* cookie_manager);
+  // Allows for |PrefetchCookieListener|s to be reigsitered for
+  // `GetCurrentSinglePrefetchToPrefetch()`.
+  void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
   void StopAllCookieListeners();
   bool HaveDefaultContextCookiesChanged() const;
 
