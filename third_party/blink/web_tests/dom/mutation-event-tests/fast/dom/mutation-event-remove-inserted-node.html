@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<body>
+
+<p>This test verifies that a mutation event that removes inserted nodes from the
+document doesn't crash upon the insertion of a new node into the document.</p>
+<p>PASS: You didn't crash.</p>
+
+<script id="dummy"></script>
+
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+function mutationListener(event)
+{
+    var element = event.srcElement;
+    element.parentNode.removeChild(element);
+}
+
+document.body.addEventListener("DOMNodeInserted", mutationListener, false);
+
+/* appendChild */
+document.body.appendChild(document.createElement("script"));
+
+/* insertBefore */
+document.body.insertBefore(document.createElement("script"), document.getElementById("dummy"));
+
+/* replaceChild */
+document.body.replaceChild(document.createElement("script"), document.getElementById("dummy"));
+
+/* Parser-inserted nodes don't fire mutation events. */
+</script>
+
+</body>

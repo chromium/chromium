@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<div id="sandbox" style="display:none"><span></span></div>
+<script src="../../../../../resources/js-test.js"></script>
+<script>
+description("Test MutationEvents interfering with MutationObservers: adding nodes 'out of order'");
+var sandbox = document.getElementById('sandbox');
+var inserted = false;
+sandbox.addEventListener('DOMNodeRemoved', function() {
+    if (!inserted) {
+        sandbox.appendChild(document.createElement('div'));
+        inserted = true;
+    }
+});
+var observer = new MutationObserver(function(){});
+observer.observe(sandbox, {childList: true});
+sandbox.textContent = 'hello world';
+
+var mutations = observer.takeRecords();
+shouldBe("mutations.length", "3");
+shouldBe("mutations[0].addedNodes.length", "0");
+shouldBe("mutations[0].removedNodes.length", "1");
+shouldBe("mutations[0].removedNodes[0].tagName", "'SPAN'");
+shouldBe("mutations[1].addedNodes.length", "1");
+shouldBe("mutations[1].removedNodes.length", "0");
+shouldBe("mutations[1].addedNodes[0].tagName", "'DIV'");
+shouldBe("mutations[2].addedNodes.length", "1");
+shouldBe("mutations[2].removedNodes.length", "0");
+shouldBe("mutations[2].addedNodes[0].nodeValue", "'hello world'");
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<p>This tests for a bug where delete would crash if a node just after the selection to delete is removed in a DOMNodeRemoved event handler for the last node in the selection to delete. <a href="rdar://problem/5156801">&lt;rdar://problem/5156801&gt;</a></p>
+<div id="div" contenteditable="true">foo<span id="foo">x</span><span id="removeme">y</span></div>
+<p id="console"></p>
+
+<script>
+
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+function log(message) {
+    var console = document.getElementById("console");
+    var text = document.createTextNode(message);
+    console.appendChild(text);
+}
+
+function removeHandler() {
+    var removeme = document.getElementById("removeme");
+    removeme.parentNode.removeChild(removeme);
+}
+
+document.getElementById("foo").addEventListener("DOMNodeRemoved", removeHandler);
+var sel = window.getSelection();
+sel.setBaseAndExtent( document.getElementById('foo'), 0, document.getElementById('foo'), 1 );
+document.execCommand("Delete");
+
+log(document.getElementById('div').innerHTML);
+
+</script>
+
+PASS

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<unknown>
+<script></script>
+<textarea></textarea>
+<script>
+if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+}
+
+function onDOMNodeRemoved(e) {
+    if (!(e.srcElement instanceof Element))
+        return;
+
+    e.srcElement.insertAdjacentHTML('afterbegin', ' ');
+    document.execCommand('FontSizeDelta', false, '1px');
+}
+
+document.addEventListener("DOMNodeRemoved", onDOMNodeRemoved, false);
+document.designMode = "on";
+document.execCommand("SelectAll", false)
+var unknown = document.getElementsByTagName("unknown")[0];
+unknown.textContent = "sss";
+unknown.outerHTML = "";
+document.execCommand("SelectAll", false);
+// Put description() here so as to not upset test condition.
+description("Verify that changing the style over an unknown element does not crash.");
+if (window.testRunner)
+    testRunner.notifyDone();
+</script>
+</body>
+</html>

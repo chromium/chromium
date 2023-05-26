@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script>
+document.addEventListener("DOMSubtreeModified",
+    function () {
+        document.designMode = "on";
+        document.execCommand("SelectAll");
+        window.stop();
+        document.execCommand("InsertOrderedList", false);
+        window.setTimeout(notifyFinish, 0);
+    }, true);
+
+window.onload = function () {
+    document.open();
+};
+
+function notifyFinish()
+{
+    window.parent.postMessage("FINISH", "*");
+}
+</script>
+<iframe>
+</iframe><body class="class2">

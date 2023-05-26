@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<p>Test that SELECT is in correct state when handling a DOM modification event for option removing.</p>
+<form>
+<select ><option selected>1</option><option>2</option></select>
+<select multiple><option selected>1</option><option selected>2</option></select>
+<select multiple></select>
+</form>
+<div id=res></div>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+
+    function log(msg)
+    {
+        var r = document.getElementById('res');
+        r.innerHTML = r.innerHTML + "<br>" + msg;
+    }
+
+    var theSelect;
+
+    function testResults(expectedArr)
+    {
+        var resultsArr = new Array(theSelect.options.length);
+
+        var i;
+        for (i=0; i < theSelect.options.length; i++) {
+            resultsArr[i] = theSelect.options[i].selected;
+        }
+        var successString = "Failed";
+        var success = false;
+        if (expectedArr.join() == resultsArr.join()) {
+            success = true;
+            successString = "Passed";
+        }
+
+        log(successString);
+        if (!success) {
+            log("<pre>     Expected: " + expectedArr.join() + "<br>" + "     Actual: " + resultsArr.join() + "</pre>");
+        }
+    }
+
+    function subtreeModified()
+    {
+        testResults([true], theSelect);
+    }
+
+    function nodeInserted()
+    {
+        testResults([false], theSelect);
+    }
+
+    try {
+        theSelect = document.forms[0].elements[0];
+        theSelect.addEventListener("DOMSubtreeModified", subtreeModified, true);
+        theSelect.remove(theSelect.options[0]);
+
+        theSelect = document.forms[0].elements[1];
+        theSelect.addEventListener("DOMSubtreeModified", subtreeModified, true);
+        theSelect.remove(theSelect.options[0]);
+
+        theSelect = document.forms[0].elements[2];
+        theSelect.addEventListener("DOMNodeInserted", nodeInserted, true);
+        theSelect.options.add(new Option("2", "2", false, false), 0);
+
+    } catch (ex) {
+        alert(ex);
+    }
+</script>

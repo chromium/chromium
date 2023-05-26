@@ -780,7 +780,7 @@ media/track/track-cue-rendering-horizontal.html
 media/track/track-language-preference.html
 media/video-controls-attribute-fullscreen.html
 media/video-controls-fullscreen-not-supported.html
-media/video-controls-with-mutation-event-handler.html
+dom/mutation-event-tests/media/video-controls-with-mutation-event-handler.html
 media/video-currentTime-before-have-metadata.html
 media/video-currentTime-delay.html
 media/video-move-to-new-document-srcobject.html

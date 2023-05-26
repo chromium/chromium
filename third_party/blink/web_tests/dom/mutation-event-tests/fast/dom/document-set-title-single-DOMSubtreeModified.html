@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>document title and DOMSubtreeModified</title>
+<script src="../../../../resources/js-test.js"></script>
+<body>
+<script>
+    description("On setting document.title, only one DOMSubtreeModified event is created.");
+
+    var titleElement = document.documentElement.firstChild.firstChild;
+    var i=0;
+    titleElement.addEventListener('DOMSubtreeModified', function() { i++; });
+    document.title = "new";
+    shouldBeEqualToString("document.title", "new");
+    shouldBeTrue("i == 1");
+</script>
+</body>

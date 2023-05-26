@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<div>
+  <div id="child"></div>
+  <div id="newparent"><span id="beforeChild"></div>
+</div>
+<script>
+description("Ensures that insertBefore() throws an exception if mutation even handler does something wrong");
+
+var listener = function() {
+    document.removeEventListener("DOMNodeRemoved", listener, false);
+    child.appendChild(newparent);
+};
+document.addEventListener("DOMNodeRemoved", listener, false);
+shouldThrow("newparent.insertBefore(child, beforeChild);",  '"HierarchyRequestError: Failed to execute \'insertBefore\' on \'Node\': The new child element contains the parent."');
+</script>
+</body>
+</html>

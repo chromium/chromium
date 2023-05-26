@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<body>
+<script src="../../../../resources/js-test.js"></script>
+<script>
+var input = document.createElement("input");
+var passed = true;
+input.type = "week";
+input.addEventListener("DOMCharacterDataModified", function() {
+  passed = false;
+  testFailed("DOMCharacterDataModified event should not be visible.");
+});
+
+input.value = "2015-W10";
+if (passed) {
+  testPassed("event did not get triggered.");
+}
+</script>
+</body>

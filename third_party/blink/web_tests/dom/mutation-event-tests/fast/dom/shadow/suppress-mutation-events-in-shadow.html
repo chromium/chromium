@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<body>
+<input>
+<script src="../../../../../resources/js-test.js"></script>
+<script>
+description('Test that mutation events are not triggered in shadow DOM');
+var mutationEventTriggered = false;
+function doTest() {
+    var input = document.querySelector('input');
+    var shadowRoot = internals.shadowRoot(input);
+    var firstChild = shadowRoot.firstChild;
+    firstChild.addEventListener('DOMNodeInserted', function(evt) {
+        mutationEventTriggered = true;
+    });
+    input.value = 'hello';
+    shouldBeFalse('mutationEventTriggered');
+}
+
+if (window.internals)
+    doTest();
+else
+    testFailed('This test only runs in DRT');
+</script>
+</body>

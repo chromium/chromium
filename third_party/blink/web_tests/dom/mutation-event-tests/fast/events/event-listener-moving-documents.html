@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<body>
+<script src="../../../../resources/js-test.js"></script>
+<script>
+description('Moving a Mutation Event listener between documents should keep it active');
+
+var doc = document.implementation.createHTMLDocument('');
+var div = doc.createElement('div');
+var addedCalls = 0;
+var removedCalls = 0;
+div.addEventListener('DOMNodeInserted', function() { addedCalls++ });
+div.addEventListener('DOMNodeRemoved', function() { removedCalls++ });
+document.body.appendChild(div);
+shouldBe('addedCalls', '1');
+div.appendChild(document.createElement('span'));
+shouldBe('addedCalls', '2');
+div.removeChild(div.firstChild);
+shouldBe('removedCalls', '1');
+</script>
+</body>

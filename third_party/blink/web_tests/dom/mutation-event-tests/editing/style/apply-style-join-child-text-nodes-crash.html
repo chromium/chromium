@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../../../resources/js-test.js"></script>
+<script id="script1">
+document.addEventListener("DOMCharacterDataModified",function(){
+    document.body.innerHTML = "PASS. WebKit didn't crash.";
+    gc();
+    finishJSTest();
+},true);
+</script>
+<script>
+window.jsTestIsAsync = true;
+
+if (window.testRunner)
+    testRunner.waitUntilDone();
+
+var scriptElement = document.getElementById('script1');
+scriptElement.parentNode.appendChild(scriptElement.firstChild);
+scriptElement.parentNode.removeChild(scriptElement);
+document.designMode = "on";
+document.execCommand("SelectAll");
+document.execCommand("FontSizeDelta", false, 3);
+</script>
+</body>
+</html>
+

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head id=head1 style="border-right-color: inherit;">
+<style>
+*[foo^=""] { border: inherit; }
+</style>
+<script src="../../../../resources/js-test.js"></script>
+<script>
+window.jsTestIsAsync = true;
+if (window.testRunner) {
+    testRunner.dumpAsText();
+}
+
+function handleSubtreeModifiedEvent() {
+    document.open();
+    document.write("FAIL. WebKit shouldn't dispatch a DOMSubtreeModified event when element inline style is modified through CSSOM.");
+    document.close();
+    finishJSTest();
+}
+
+function everythingWentBetterThanExpected() {
+    document.open();
+    document.write("PASS, assuming we didn't crash.");
+    document.close();
+    finishJSTest();
+}
+
+function load() {
+    head1.attributes[1].addEventListener("DOMSubtreeModified", handleSubtreeModifiedEvent, false);
+    head1.style.display = "none";
+    setTimeout("everythingWentBetterThanExpected()", 0);
+}
+
+document.addEventListener("DOMContentLoaded", load, false);
+</script>
+<body>
+</body>
+</html>

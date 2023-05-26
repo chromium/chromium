@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>&lt;video&gt; controls with mutation event handler</title>
+
+        <style type="text/css" media="screen">
+            body { background: #cccccc; }
+            video { background: yellow; border: 1px solid black; border-bottom: none; }
+        </style>
+
+        <script>
+            function runTest()
+            {
+                if (window.testRunner)
+                    testRunner.dumpAsText();
+
+                document.body.addEventListener("DOMSubtreeModified", function () { }, false);
+
+                var video = document.createElement('video');
+                video.setAttribute('id', 'vid');
+                video.setAttribute('width', '320');
+                video.setAttribute('height', '240');
+                video.setAttribute('autoplay', '');
+                video.setAttribute('controls', '');
+                var paragraph = document.createElement('p');
+                paragraph.appendChild(video);
+                document.body.appendChild(paragraph);
+
+                paragraph = document.createElement('p');
+                paragraph.appendChild(document.createTextNode("SUCCESS: The test ran without crashing"));
+                document.body.appendChild(paragraph);
+            }
+        </script>
+    </head>
+
+    <body onload="runTest()">
+        <p>This tests that we don't crash while creating a video element while a DOMSubtreeModified even handler is registered.</p>
+        <p>If you can see the movie below, the test passed.</p>
+    </body>
+</html>

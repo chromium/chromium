@@ -1,4 +1,5 @@
 (async function (testRunner) {
+  // TODO(crbug.com/1446498) This test can be deleted once Mutation Events are removed.
   const { session, dp } = await testRunner.startBlank(
   'Verifies that adding Mutation Event listeners triggers a deprecation issue.');
   await dp.Audits.enable();

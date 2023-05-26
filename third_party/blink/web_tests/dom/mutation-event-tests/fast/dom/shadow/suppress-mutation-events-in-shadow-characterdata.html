@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../../resources/js-test.js"></script>
+</head>
+<body>
+<div id="host"></div>
+<script>
+description("Ensures that DOMCharacterDataModified isn't fired inside shadows.");
+var fired = false;
+var host = document.getElementById("host");
+var shadow = host.attachShadow({mode: 'open'});
+var div = document.createElement("div");
+div.addEventListener("DOMCharacterDataModified", function(evt) {
+    fired = true;
+}, false);
+
+shadow.appendChild(div);
+div.innerHTML = "Hello, ";
+div.firstChild.appendData("World!");
+shouldBeFalse("fired");
+shouldBe("div.innerHTML", "'Hello, World!'");
+</script>
+</body>
+</html>

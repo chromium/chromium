@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function runTest() {
+  if (!window.testRunner)
+    return;
+
+  testRunner.dumpAsText();
+
+  var span = document.getElementById("root");
+  eventSender.mouseMoveTo(span.offsetLeft + 10, span.offsetTop + span.offsetHeight / 2);
+  for (var i = 0; i < 20; ++i) {
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+  }
+}
+window.addEventListener("DOMNodeRemoved", function(e) {
+  document.body.setAttribute("onclick", "|");
+}, false);
+window.addEventListener("error", function(e) {
+  document.body.removeChild(document.body.firstChild);
+
+  span = document.createElement("span");
+  span.innerHTML = "PASS";
+  span.setAttribute("onclick", "dispatchError()");
+  var child;
+  while (child = document.body.firstChild)
+    document.body.removeChild(child);
+
+  document.body.appendChild(span);
+}, false);
+
+var dispatchError = function() {
+  var evt = document.createEvent("Event");
+  evt.initEvent("error", false, false);
+  window.dispatchEvent(evt);
+}
+
+window.onload = function() { runTest() };
+</script>
+</head>
+<body>
+  <span onclick="dispatchError()" id="root">This test passes if it doesn't crash</span>
+</body>
+</html>

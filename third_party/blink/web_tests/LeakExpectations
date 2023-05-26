@@ -28,7 +28,7 @@ crbug.com/769885 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html
 crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.html [ Failure ]
 
 # Sheriff 2021-02-25
-crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
+crbug.com/1182675 [ Linux ] dom/mutation-event-tests/dom/attr/id-update-map-crash.html [ Failure Pass ]
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]

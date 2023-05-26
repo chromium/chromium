@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.execCommand("SelectAll", false);
+            window.getSelection().deleteFromDocument();
+            window.parent.postMessage('FINISH', '*');
+        }, true);
+
+        var count = 0;
+        document.addEventListener("DOMSubtreeModified", function () {
+            count++;
+            if (count < 3) {
+                var src = event.srcElement;
+                src.contentEditable = "true";
+                src.innerHTML = '<div></div>';
+                document.execCommand('InsertOrderedList', false, false);
+            }
+        }, false);
+    </script>
+    <h5>
+        aa
+        <textarea></textarea>
+    </h5>
+    <dl>
+        aa
+    </dl>
+</body>
+</html>

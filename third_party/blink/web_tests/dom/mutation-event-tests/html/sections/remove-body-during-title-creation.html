@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<body><div><script>
+
+if (!window.testRunner)
+    document.write("This test requires GCController.");
+else {
+    testRunner.dumpAsText();
+    testRunner.waitUntilDone();
+
+    function crash() {
+        if (document.lastChild.firstChild.firstChild.firstChild) {
+            document.lastChild.removeChild(document.lastChild.firstChild);
+            GCController.collect();
+            setTimeout(function () {
+                document.body.innerHTML = "PASS. WebKit (or Blink) didn't crash."
+                testRunner.notifyDone();
+            }, 0);
+        }
+        GCController.collect();
+    }
+
+    setTimeout(function () {
+        document.addEventListener('DOMNodeInsertedIntoDocument', function () { crash(); }, true);
+        document.addEventListener('DOMSubtreeModified', function () { /* noop */ }, false);
+        document.title = 'hello';
+    }, 0);
+}
+
+</script>
+</body>
+</html>

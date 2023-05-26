@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<p>Tests for a crash when creating a link inside a region with a subtree modified event listener.</p>
+<div contenteditable="true" id="div">This should be a link.</div>
+
+<script>
+
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var div = document.getElementById("div");
+div.addEventListener('DOMSubtreeModified', function () {;});
+div.focus();
+document.execCommand("SelectAll");
+document.execCommand("CreateLink", false, "#");
+</script>
+
+PASS

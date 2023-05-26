@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<div id="container">
+<div id="sample">foo</div>
+</div>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+function $(id) { return document.getElementById(id); }
+
+var done = false;
+document.addEventListener("DOMNodeRemovedFromDocument", function () {
+    if (done)
+        return;
+    done = true;
+    var beingRemoved = event.srcElement;
+    beingRemoved.parentNode.removeChild(beingRemoved);
+}, true);
+
+var range = document.createRange();
+range.selectNode($('sample'));
+
+try {
+    $('sample').parentNode.removeChild($('sample'));
+} catch (e) {
+    // We get 'NotFoundError'.
+}
+
+$('container').outerHTML = 'PASS; NOT CRASHED';
+</script>

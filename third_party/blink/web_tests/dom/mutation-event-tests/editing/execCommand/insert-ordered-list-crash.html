@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Issue 344280</title>
+    <script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+    <script>
+        description('Should not crash if we load a test case from crbug.com/344280.');
+
+        window.jsTestIsAsync = true;
+
+        window.addEventListener('message', didReceiveMessage, false);
+
+        var iframe = document.createElement('iframe');
+        iframe.src = 'resources/insert-ordered-list-crash-iframe.html';
+        document.body.appendChild(iframe);
+
+        function didReceiveMessage(event) {
+            shouldBeEqualToString('event.data', 'FINISH');
+            document.body.removeChild(iframe);
+            testPassed('Did not crash.');
+            window.finishJSTest();
+        }
+    </script>
+</body>
+</html>

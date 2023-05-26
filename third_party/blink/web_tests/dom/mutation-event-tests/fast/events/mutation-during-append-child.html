@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<div>
+  <div id="child"></div>
+  <div id="newparent"></div>
+</div>
+<script>
+description("Ensures that appendChild() throws an exception if mutation even handler does something wrong");
+
+var listener = function() {
+    document.removeEventListener("DOMNodeRemoved", listener, false);
+    child.appendChild(newparent);
+};
+document.addEventListener("DOMNodeRemoved", listener, false);
+shouldThrow("newparent.appendChild(child);",  '"HierarchyRequestError: Failed to execute \'appendChild\' on \'Node\': The new child element contains the parent."');
+</script>
+</body>
+</html>

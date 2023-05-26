@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("Mutation events should propagate in disconnected DOM trees.");
+
+var eventReceivedOnParent = false;
+var eventReceivedOnChild = false;
+
+var parent = document.createElement('div');
+var child = document.createElement('div');
+parent.addEventListener('DOMNodeInserted', function(e) { eventReceivedOnParent = true; } );
+child.addEventListener('DOMNodeInserted', function(e) { eventReceivedOnChild = true; } );
+parent.appendChild(child);
+
+shouldBeTrue("eventReceivedOnParent");
+shouldBeTrue("eventReceivedOnChild");
+</script>
+</body>
+</html>

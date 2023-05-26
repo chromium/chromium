@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<script src="../../../../resources/js-test.js"></script>
+<script>
+window.jsTestIsAsync = true;
+
+if (window.testRunner)
+    testRunner.waitUntilDone();
+
+document.addEventListener("DOMCharacterDataModified", function() {
+    document.body.innerHTML = "PASS. WebKit didn't crash.";
+    gc();
+    finishJSTest();
+}, true);
+
+document.write("A<br>");
+document.designMode = "on";
+document.execCommand("SelectAll");
+document.execCommand("InsertHTML", false, 4);
+</script>
+</html>
