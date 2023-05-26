@@ -27,7 +27,8 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     base::Time check_time,
     base::WeakPtr<content::WebContents> web_contents,
     CompletedCallback callback,
-    std::unique_ptr<WebAppDataRetriever> data_retriever)
+    std::unique_ptr<WebAppDataRetriever> data_retriever,
+    std::unique_ptr<WebAppIconDownloader> icon_downloader)
     : WebAppCommandTemplate<AppLock>("ManifestUpdateCheckCommand"),
       url_(url),
       app_id_(app_id),
@@ -35,7 +36,8 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
       completed_callback_(std::move(callback)),
       lock_description_(app_id),
       web_contents_(web_contents),
-      data_retriever_(std::move(data_retriever)) {}
+      data_retriever_(std::move(data_retriever)),
+      icon_downloader_(std::move(icon_downloader)) {}
 
 ManifestUpdateCheckCommand::~ManifestUpdateCheckCommand() = default;
 
@@ -174,9 +176,8 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
 
   IconDownloaderOptions options = {.skip_page_favicons = true,
                                    .fail_all_if_any_fail = true};
-  icon_downloader_.emplace(web_contents_.get(), std::move(icon_urls),
-                           std::move(next_step_callback), options);
-  icon_downloader_->Start();
+  icon_downloader_->Start(web_contents_.get(), icon_urls,
+                          std::move(next_step_callback), options);
 }
 
 void ManifestUpdateCheckCommand::StashNewIconBitmaps(

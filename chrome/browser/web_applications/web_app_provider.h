@@ -34,20 +34,21 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
-class WebAppSyncBridge;
-class WebAppIconManager;
-class PreinstalledWebAppManager;
-class WebAppInstallFinalizer;
 class ManifestUpdateManager;
-class WebAppAudioFocusIdMap;
-class WebAppInstallManager;
-class WebAppPolicyManager;
-class WebAppUiManager;
 class OsIntegrationManager;
-class WebAppTranslationManager;
+class PreinstalledWebAppManager;
+class WebAppAudioFocusIdMap;
 class WebAppCommandManager;
 class WebAppCommandScheduler;
+class WebAppIconManager;
+class WebAppInstallFinalizer;
+class WebAppInstallManager;
 class WebAppOriginAssociationManager;
+class WebAppPolicyManager;
+class WebAppSyncBridge;
+class WebAppTranslationManager;
+class WebAppUiManager;
+class WebContentsManager;
 
 // WebAppProvider is the heart of Chrome web app code.
 //
@@ -162,6 +163,8 @@ class WebAppProvider : public KeyedService {
 
   WebAppOriginAssociationManager& origin_association_manager();
 
+  WebContentsManager& web_contents_manager();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -228,6 +231,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
   std::unique_ptr<WebAppOriginAssociationManager> origin_association_manager_;
+  std::unique_ptr<WebContentsManager> web_contents_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

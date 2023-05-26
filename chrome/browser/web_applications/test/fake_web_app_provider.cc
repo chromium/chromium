@@ -11,8 +11,10 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -36,6 +39,9 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -185,6 +191,12 @@ void FakeWebAppProvider::SetOriginAssociationManager(
   origin_association_manager_ = std::move(origin_association_manager);
 }
 
+void FakeWebAppProvider::SetWebContentsManager(
+    std::unique_ptr<WebContentsManager> web_contents_manager) {
+  CheckNotStartedAndDisconnect();
+  web_contents_manager_ = std::move(web_contents_manager);
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
@@ -242,6 +254,8 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
 
   SetRegistrar(std::make_unique<WebAppRegistrarMutable>(profile_));
   SetDatabaseFactory(std::make_unique<FakeWebAppDatabaseFactory>());
+
+  SetWebContentsManager(std::make_unique<FakeWebContentsManager>());
 
   SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
       profile_, /*app_shortcut_manager=*/nullptr,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
 #include <map>
@@ -285,6 +286,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
               externally_managed_app_manager_impl->command_scheduler(),
+              /*data_retriever_factory=*/base::NullCallback(),
               std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),

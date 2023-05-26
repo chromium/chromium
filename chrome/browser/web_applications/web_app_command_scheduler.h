@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_COMMAND_SCHEDULER_H_
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -42,11 +45,13 @@ class ScopedProfileKeepAlive;
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
+class WebApp;
 class WebAppDataRetriever;
 class WebAppProvider;
-struct IsolationData;
-class WebApp;
+class WebAppUrlLoader;
+class WebContentsManager;
 enum class ApiApprovalState;
+struct IsolationData;
 struct SynchronizeOsOptions;
 
 // The command scheduler is the main API to access the web app system. The
@@ -67,6 +72,8 @@ class WebAppCommandScheduler {
 
   WebAppCommandScheduler(Profile& profile, WebAppProvider* provider);
   virtual ~WebAppCommandScheduler();
+
+  void Start();
 
   void Shutdown();
 
@@ -319,9 +326,13 @@ class WebAppCommandScheduler {
 
   const raw_ref<Profile> profile_;
   // Safe because we live on the WebAppProvider.
-  raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
+  // raw_ptr is required due to the FakeWebAppCommandScheduler not having a
+  // WebAppProvider.
+  const raw_ptr<WebAppProvider> provider_;
 
   bool is_in_shutdown_ = false;
+  // TODO(http://b/262606416): Remove this when fully transitioned to
+  // WebContentsManager.
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};

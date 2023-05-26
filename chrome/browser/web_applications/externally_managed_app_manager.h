@@ -37,12 +37,13 @@ namespace web_app {
 
 class AllAppsLock;
 class ExternallyManagedAppInstallTask;
-class WebAppInstallFinalizer;
-class WebAppCommandScheduler;
-class WebAppUiManager;
 class ExternallyManagedAppRegistrationTaskBase;
-class WebAppUrlLoader;
+class WebAppCommandScheduler;
 class WebAppDataRetriever;
+class WebAppInstallFinalizer;
+class WebAppUiManager;
+class WebAppUrlLoader;
+class WebContentsManager;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 
@@ -107,7 +108,8 @@ class ExternallyManagedAppManager {
 
   void SetSubsystems(WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* finalizer,
-                     WebAppCommandScheduler* command_scheduler);
+                     WebAppCommandScheduler* command_scheduler,
+                     WebContentsManager* web_contents_manager);
 
   // Queues an installation operation with the highest priority. Essentially
   // installing the app immediately if there are no ongoing operations or
@@ -172,7 +174,9 @@ class ExternallyManagedAppManager {
 
   void Shutdown();
 
+  // TODO(http://b/283521737): Remove this and use WebContentsManager.
   void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
+  // TODO(http://b/283521737): Remove this and use WebContentsManager.
   void SetDataRetrieverFactoryForTesting(
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory);
 
@@ -267,7 +271,7 @@ class ExternallyManagedAppManager {
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   // Allows tests to set the data retriever for install tasks.
   base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>
-      data_retriever_factory_for_testing_;
+      data_retriever_factory_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 

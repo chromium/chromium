@@ -33,9 +33,11 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_porter_interface.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -1390,8 +1392,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
 
   webapps::ChromeWebappsClient::GetInstance();
   auto* provider = web_app::FakeWebAppProvider::Get(profile());
-  provider->SetDefaultFakeSubsystems();
-  provider->StartWithSubsystems();
+  // This test harness is handling web contents loading, so use the real web
+  // contents manager.
+  provider->SetWebContentsManager(
+      std::make_unique<web_app::WebContentsManager>());
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   task_environment()->RunUntilIdle();
 
   // Check that no web app installation is happening at the moment.

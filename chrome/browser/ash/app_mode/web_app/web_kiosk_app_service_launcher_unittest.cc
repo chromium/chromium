@@ -113,9 +113,11 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     fake_web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
+    // TODO(http://b/283521737): Remove this usage and either fake out the
+    // scheduler, or use the whole FakeWebAppProvider system.
     externally_managed_app_manager().SetSubsystems(
         /*ui_manager=*/nullptr, /*finalizer=*/nullptr,
-        /*command_scheduler=*/nullptr);
+        /*command_scheduler=*/nullptr, /*web_contents_manager=*/nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const web_app::ExternalInstallOptions& install_options)

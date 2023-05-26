@@ -274,6 +274,8 @@ source_set("web_applications") {
     "web_contents/web_app_icon_downloader.h",
     "web_contents/web_app_url_loader.cc",
     "web_contents/web_app_url_loader.h",
+    "web_contents/web_contents_manager.cc",
+    "web_contents/web_contents_manager.h",
   ]
 
   if (is_chromeos) {

@@ -373,9 +373,8 @@ class ExternallyManagedAppInstallTaskTest
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
         profile(), url_loader_.get(), ui_manager_, install_finalizer_,
-        command_scheduler_, std::move(options));
-    task->SetDataRetrieverFactoryForTesting(
-        GetFactoryForRetriever(std::move(data_retriever)));
+        command_scheduler_, GetFactoryForRetriever(std::move(data_retriever)),
+        std::move(options));
     return task;
   }
 
@@ -895,7 +894,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
         ExternalInstallSource::kInternalDefault);
     ExternallyManagedAppInstallTask install_task(
         profile(), &url_loader(), ui_manager(), finalizer(),
-        command_scheduler(), install_options);
+        command_scheduler(), /*data_retriever_factory=*/base::NullCallback(),
+        install_options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(GURL(), result_pair.loader_result);
 
@@ -917,7 +917,7 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
       ExternalInstallSource::kInternalDefault);
   ExternallyManagedAppInstallTask install_task(
       profile(), &url_loader(), ui_manager(), finalizer(), command_scheduler(),
-      install_options);
+      base::NullCallback(), install_options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
       GURL(), WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
@@ -944,9 +944,9 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
-                                       ui_manager(), finalizer(),
-                                       command_scheduler(), std::move(options));
+  ExternallyManagedAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, ui_manager(), finalizer(),
+      command_scheduler(), base::NullCallback(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
@@ -992,9 +992,9 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
-                                       ui_manager(), finalizer(),
-                                       command_scheduler(), std::move(options));
+  ExternallyManagedAppInstallTask task(
+      profile(), /*url_loader=*/nullptr, ui_manager(), finalizer(),
+      command_scheduler(), base::NullCallback(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
       kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);

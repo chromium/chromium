@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
@@ -95,7 +96,7 @@ struct ExternallyManagedAppManager::TaskAndCallback {
 };
 
 ExternallyManagedAppManager::ExternallyManagedAppManager(Profile* profile)
-    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
+    : profile_(profile) {}
 
 ExternallyManagedAppManager::~ExternallyManagedAppManager() {
   DCHECK(!registration_callback_);
@@ -109,10 +110,27 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 void ExternallyManagedAppManager::SetSubsystems(
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
-    WebAppCommandScheduler* command_scheduler) {
+    WebAppCommandScheduler* command_scheduler,
+    WebContentsManager* web_contents_manager) {
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   command_scheduler_ = command_scheduler;
+  if (!web_contents_manager) {
+    CHECK_IS_TEST();
+  } else {
+    // TODO(http://b/283521737): Remove this and use WebContentsManager.
+    url_loader_ = web_contents_manager->CreateUrlLoader();
+    // TODO(http://b/283521737): Remove this and use WebContentsManager.
+    data_retriever_factory_ = base::BindRepeating(
+        [](base::WeakPtr<WebContentsManager> web_contents_manager)
+            -> std::unique_ptr<WebAppDataRetriever> {
+          if (!web_contents_manager) {
+            return nullptr;
+          }
+          return web_contents_manager->CreateDataRetriever();
+        },
+        web_contents_manager->GetWeakPtr());
+  }
 }
 
 void ExternallyManagedAppManager::InstallNow(
@@ -219,7 +237,7 @@ void ExternallyManagedAppManager::SetUrlLoaderForTesting(
 void ExternallyManagedAppManager::SetDataRetrieverFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()> factory) {
   CHECK_IS_TEST();
-  data_retriever_factory_for_testing_ = std::move(factory);
+  data_retriever_factory_ = std::move(factory);
 }
 
 void ExternallyManagedAppManager::ReleaseWebContents() {
@@ -237,12 +255,8 @@ ExternallyManagedAppManager::CreateInstallationTask(
   std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
       std::make_unique<ExternallyManagedAppInstallTask>(
           profile_, url_loader_.get(), ui_manager(), finalizer(),
-          command_scheduler(), std::move(install_options));
-  if (data_retriever_factory_for_testing_) {
-    CHECK_IS_TEST();
-    install_task->SetDataRetrieverFactoryForTesting(  // IN-TEST
-        data_retriever_factory_for_testing_);
-  }
+          command_scheduler(), data_retriever_factory_,
+          std::move(install_options));
   return install_task;
 }
 

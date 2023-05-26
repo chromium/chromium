@@ -153,7 +153,11 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       use_fallback_(use_fallback),
       data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
-                               install_surface_) {}
+                               install_surface_) {
+  debug_log_.Set("visible_url", web_contents_->GetVisibleURL().spec());
+  debug_log_.Set("last_committed_url",
+                 web_contents_->GetLastCommittedURL().spec());
+}
 
 FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 

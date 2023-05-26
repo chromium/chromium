@@ -74,10 +74,10 @@ TEST_F(WebAppIconDownloaderTest, SimpleDownload) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
 
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
   const std::vector<gfx::Size> sizes{gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(
       /*url=*/favicon_url->icon_url,
@@ -103,14 +103,14 @@ TEST_F(WebAppIconDownloaderTest, NoHTTPStatusCode) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
 
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(mojo::Clone(favicon_url));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
 
   std::vector<gfx::Size> sizes = {gfx::Size(0, 0)};
   // data: URLs have a 0 HTTP status code.
@@ -142,8 +142,7 @@ TEST_F(WebAppIconDownloaderTest, DownloadMultipleUrls) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), extra_urls,
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       favicon_url_1, blink::mojom::FaviconIconType::kFavicon,
@@ -159,7 +158,7 @@ TEST_F(WebAppIconDownloaderTest, DownloadMultipleUrls) {
 
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start();
+  downloader.Start(web_contents(), extra_urls, test_future.GetCallback());
 
   std::vector<gfx::Size> sizes_1(1, gfx::Size(16, 16));
   web_contents_tester()->TestDidDownloadImage(
@@ -217,10 +216,9 @@ TEST_F(WebAppIconDownloaderTest, SkipPageFavicons) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), extra_urls,
-                                  test_future.GetCallback(),
-                                  {.skip_page_favicons = true});
-  downloader.Start();
+  WebAppIconDownloader downloader;
+  downloader.Start(web_contents(), extra_urls, test_future.GetCallback(),
+                   {.skip_page_favicons = true});
 
   const std::vector<gfx::Size> sizes_1 = {gfx::Size{16, 16}};
   web_contents_tester()->TestDidDownloadImage(
@@ -255,8 +253,7 @@ TEST_F(WebAppIconDownloaderTest, ShuttingDown) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
 
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
@@ -264,7 +261,8 @@ TEST_F(WebAppIconDownloaderTest, ShuttingDown) {
       blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
 
   static_cast<content::WebContentsObserver&>(downloader).WebContentsDestroyed();
 
@@ -279,8 +277,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigates) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
 
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
@@ -288,7 +285,8 @@ TEST_F(WebAppIconDownloaderTest, PageNavigates) {
       blink::mojom::FaviconIconType::kFavicon, std::vector<gfx::Size>()));
   web_contents_tester()->TestSetFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
 
   content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://foo.example"), main_rfh())
@@ -307,10 +305,9 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesAfterDownload) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>{url},
-                                  test_future.GetCallback(),
-                                  {.skip_page_favicons = true});
-  downloader.Start();
+  WebAppIconDownloader downloader;
+  downloader.Start(web_contents(), std::vector<GURL>{url},
+                   test_future.GetCallback(), {.skip_page_favicons = true});
 
   std::vector<gfx::Size> sizes = {gfx::Size(32, 32)};
   web_contents_tester()->TestDidDownloadImage(
@@ -339,8 +336,7 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesSameDocument) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       favicon_url, blink::mojom::FaviconIconType::kFavicon,
@@ -348,7 +344,8 @@ TEST_F(WebAppIconDownloaderTest, PageNavigatesSameDocument) {
 
   web_contents_tester()->TestUpdateFaviconURL(mojo::Clone(favicon_urls));
 
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
 
   content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://foo.example/#test"), main_rfh())
@@ -389,15 +386,15 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
   base::test::TestFuture<IconsDownloadedResult, IconsMap,
                          DownloadedIconsHttpResults>
       test_future;
-  WebAppIconDownloader downloader(web_contents(), std::vector<GURL>(),
-                                  test_future.GetCallback());
+  WebAppIconDownloader downloader;
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   favicon_urls.push_back(blink::mojom::FaviconURL::New(
       favicon_url, blink::mojom::FaviconIconType::kFavicon,
       std::vector<gfx::Size>()));
 
   web_contents_tester()->TestUpdateFaviconURL(mojo::Clone(favicon_urls));
-  downloader.Start();
+  downloader.Start(web_contents(), std::vector<GURL>(),
+                   test_future.GetCallback());
 
   // Start a prerender and navigate the test page.
   const GURL& prerender_url = GURL("http://foo.example/bar");
