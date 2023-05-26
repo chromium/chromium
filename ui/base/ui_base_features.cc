@@ -525,8 +525,4 @@ BASE_FEATURE(kCr2023MacFontSmoothing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kUseNanosecondsForMotionEvent,
-             "UseNanosecondsForMotionEvent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
