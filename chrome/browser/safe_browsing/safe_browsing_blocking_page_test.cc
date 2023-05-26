@@ -3376,8 +3376,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest, UnsafeFencedFrame) {
 }
 
 // This test is modeled after IframeOptInAndReportThreatDetails above.
+// TODO(https://crbug.com/1445499): Flaky
 IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
-                       FencedFrameInThreatDetails) {
+                       DISABLED_FencedFrameInThreatDetails) {
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   const bool expect_threat_details =
       SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
