@@ -487,6 +487,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       modal_parent);
 }
 
+/*
 void RecordDriveOfflineUMAsGotDocsOfflineStats(
     bool open_available,
     drive::FileError error,
@@ -558,7 +559,7 @@ void RecordDriveOfflineUMAs(Profile* profile,
     }
   }
 }
-
+*/
 }  // namespace
 
 ResultingTasks::ResultingTasks() = default;
@@ -863,7 +864,8 @@ bool ExecuteFileTask(Profile* profile,
   // TODO(crbug.com/1005640): Move recording this metric to the App Service when
   // file handling is supported there.
   apps::RecordAppLaunch(task.app_id, apps::LaunchSource::kFromFileManager);
-  RecordDriveOfflineUMAs(profile, file_urls);
+  // TODO(b/281199375): Hold off Drive offline UMAs until DriveFS 76.
+  // RecordDriveOfflineUMAs(profile, file_urls);
 
   if (auto* notifier = FileTasksNotifier::GetForProfile(profile)) {
     notifier->NotifyFileTasks(file_urls);
