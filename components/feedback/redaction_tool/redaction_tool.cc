@@ -935,16 +935,23 @@ std::string RedactionTool::RedactIbans(
   result.reserve(input.size());
 
   RE2* iban_re = GetRegExp(
+      "(:| )"
       "((?:A[DELAOTZ]|B[AEFGHIJR]|C[HIMRVYZ]|D[EKOZ]|E[ES]|F[IOR]|G[BEILRT]|"
       "H[RU]|I[ELRST]|JO|K[WZ]|L[BITUV]|M[CDEGKLRTUZ]|N[LO]|P[KLST]|QA|R[OS]|"
-      "S[AEIKMN]|T[NR]|UA|VG|XK)(?:\\d{2})[ -]?(?:[ "
-      "\\-A-Z0-9]){11,30})");
+      "S[AEIKMN]|T[NR]|UA|VG|XK)(?:\\d{2})[ -]?(?:[ \\-A-Z0-9]){11,30})"
+      "([^a-zA-Z0-9_\\-\\+=/])");
 
   re2::StringPiece text(input);
   re2::StringPiece skipped;
+  re2::StringPiece pre_separating_char;
   re2::StringPiece iban;
-  while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped, &iban)) {
-    result.append(skipped.data(), skipped.size());
+  re2::StringPiece post_separating_char;
+  while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped,
+                                     &pre_separating_char, &iban,
+                                     &post_separating_char)) {
+    skipped.AppendToString(&result);
+    pre_separating_char.AppendToString(&result);
+
     // Validation sequence as per [1].
     //
     // [1]
@@ -957,6 +964,7 @@ std::string RedactionTool::RedactIbans(
     if (const auto previous_iban = ibans_.find(stripped);
         previous_iban != ibans_.end()) {
       result += previous_iban->second;
+      post_separating_char.AppendToString(&result);
       continue;
     }
 
@@ -1009,6 +1017,7 @@ std::string RedactionTool::RedactIbans(
 
     if (remainder != 1) {
       result.append(iban.data(), iban.size());
+      post_separating_char.AppendToString(&result);
       continue;
     }
 
@@ -1016,6 +1025,7 @@ std::string RedactionTool::RedactIbans(
         stripped, base::StrCat({"(IBAN: ",
                                 base::NumberToString(ibans_.size() + 1), ")"}));
     result += it->second;
+    post_separating_char.AppendToString(&result);
 
     if (detected != nullptr) {
       (*detected)[PIIType::kIBAN].insert(it->first);

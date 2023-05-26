@@ -218,12 +218,30 @@ const StringWithRedaction kStringsWithRedactions[] = {
     // This is not a timestamp even though "ms" appears after the number.
     {"Use 4012888888881881 or moms creditcard",
      "Use (CREDITCARD: 1)or moms creditcard", PIIType::kCreditCard},
-    {"GB82 WEST 1234 5698 7654 32", "(IBAN: 1)", PIIType::kIBAN},
-    {"GB33BUKB20201555555555", "(IBAN: 2)", PIIType::kIBAN},
+    {":GB82 WEST 1234 5698 7654 32", ":(IBAN: 1)", PIIType::kIBAN},
+    {":GB33BUKB20201555555555", ":(IBAN: 2)", PIIType::kIBAN},
+    {":GB82-WEST-1234-5698-7654-32", ":(IBAN: 1)", PIIType::kIBAN},
     // Invalid check digits.
-    {"GB94BARC20201530093459", "GB94BARC20201530093459", PIIType::kNone},
+    {":GB94BARC20201530093459", ":GB94BARC20201530093459", PIIType::kNone},
     // Country does not seem to support IBAN.
-    {"US64SVBKUS6S3300958879", "US64SVBKUS6S3300958879", PIIType::kNone},
+    {":US64SVBKUS6S3300958879", ":US64SVBKUS6S3300958879", PIIType::kNone},
+    // Random data before a valid IBAN shouldn't match.
+    {"base64Data=GB82WEST12345698765432", "base64Data=GB82WEST12345698765432",
+     PIIType::kNone},
+    {"base64DataGB82WEST12345698765432", "base64DataGB82WEST12345698765432",
+     PIIType::kNone},
+    // Random data after a valid IBAN shouldn't match.
+    {":GB82 WEST 1234 5698 7654 32/base64Data",
+     ":GB82 WEST 1234 5698 7654 32/base64Data", PIIType::kNone},
+    {":GB82 WEST 1234 5698 7654 32+base64Data",
+     ":GB82 WEST 1234 5698 7654 32+base64Data", PIIType::kNone},
+    {":GB82 WEST 1234 5698 7654 32=base64Data",
+     ":GB82 WEST 1234 5698 7654 32=base64Data", PIIType::kNone},
+    {":GB82 WEST 1234 5698 7654 32base64Data",
+     ":GB82 WEST 1234 5698 7654 32base64Data", PIIType::kNone},
+    // Random data before and after a valid IBAN shouldn't match.
+    {"base64DataGB82-WEST-1234-5698-7654-32+base64Data",
+     "base64DataGB82-WEST-1234-5698-7654-32+base64Data", PIIType::kNone},
 #if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -632,10 +650,10 @@ TEST_F(RedactionToolTest, RedactChunk) {
   }
   EXPECT_EQ(redaction_output, redactor_.Redact(redaction_input));
 
-  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 12);
+  histogram_tester.ExpectBucketCount(kHistogramName, kRegexMatch, 16);
   histogram_tester.ExpectBucketCount(kHistogramName, kTimestamp, 2);
   histogram_tester.ExpectBucketCount(kHistogramName, kRepeatedChars, 1);
-  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 4);
+  histogram_tester.ExpectBucketCount(kHistogramName, kDoesntValidate, 8);
   histogram_tester.ExpectBucketCount(kHistogramName, kValidated, 5);
 }
 
