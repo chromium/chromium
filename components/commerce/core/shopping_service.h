@@ -25,6 +25,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/unified_consent/consent_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 class GURL;
@@ -51,13 +52,17 @@ class NewOptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
+namespace power_bookmarks {
+class PowerBookmarkService;
+}  // namespace power_bookmarks
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace power_bookmarks {
-class PowerBookmarkService;
-}  // namespace power_bookmarks
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace commerce {
 
@@ -309,6 +314,14 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // whether to create critical, feature-related infrastructure.
   virtual bool IsShoppingListEligible();
 
+  // Wait for the shopping service and all of its dependent components to be
+  // ready before attempting to access different features. This can be used for
+  // UI that is available shortly after startup. If the dependencies time out or
+  // the browser is being shut down, a null pointer to the shopping service will
+  // be passed to the callback.
+  virtual void WaitForReady(
+      base::OnceCallback<void(ShoppingService*)> callback);
+
   // Check whether a product (based on cluster ID) is explicitly price tracked
   // by the user.
   virtual void IsClusterIdTrackedByUser(
@@ -484,6 +497,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   raw_ptr<PrefService> pref_service_;
 
+  raw_ptr<syncer::SyncService> sync_service_;
+
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   std::unique_ptr<AccountChecker> account_checker_;
@@ -511,6 +526,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // The object tracking metrics that are recorded at specific intervals.
   std::unique_ptr<commerce::metrics::ScheduledMetricsManager>
       scheduled_metrics_manager_;
+
+  // A consent throttle that will hold callbacks until the specific consent is
+  // obtained.
+  unified_consent::ConsentThrottle bookmark_consent_throttle_;
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

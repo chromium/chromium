@@ -26,6 +26,7 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr) {
   // Set up some defaults so tests don't have to explicitly set up each.
+  SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
       std::map<int64_t, ProductInfo>());
@@ -143,6 +144,17 @@ void MockShoppingService::SetGetAllSubscriptionsCallbackValue(
 void MockShoppingService::SetIsShoppingListEligible(bool eligible) {
   ON_CALL(*this, IsShoppingListEligible)
       .WillByDefault(testing::Return(eligible));
+}
+
+void MockShoppingService::SetIsReady(bool ready) {
+  ON_CALL(*this, WaitForReady)
+      .WillByDefault(
+          [ready, this](base::OnceCallback<void(ShoppingService*)> callback) {
+            if (ready) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), this));
+            }
+          });
 }
 
 void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -104,15 +105,23 @@ ShoppingListHandler::~ShoppingListHandler() = default;
 
 void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
-  if (!shopping_service_->IsShoppingListEligible()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::vector<BookmarkProductInfoPtr>()));
-    return;
-  }
-  shopping_service_->GetAllPriceTrackedBookmarks(
-      base::BindOnce(&ShoppingListHandler::OnFetchPriceTrackedBookmarks,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  shopping_service_->WaitForReady(base::BindOnce(
+      [](base::WeakPtr<ShoppingListHandler> handler,
+         GetAllPriceTrackedBookmarkProductInfoCallback callback,
+         ShoppingService* service) {
+        if (!service || !service->IsShoppingListEligible() ||
+            handler.WasInvalidated()) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback),
+                                        std::vector<BookmarkProductInfoPtr>()));
+          return;
+        }
+
+        service->GetAllPriceTrackedBookmarks(
+            base::BindOnce(&ShoppingListHandler::OnFetchPriceTrackedBookmarks,
+                           handler, std::move(callback)));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShoppingListHandler::OnFetchPriceTrackedBookmarks(
@@ -131,17 +140,25 @@ void ShoppingListHandler::OnFetchPriceTrackedBookmarks(
 
 void ShoppingListHandler::GetAllShoppingBookmarkProductInfo(
     GetAllShoppingBookmarkProductInfoCallback callback) {
-  if (!shopping_service_->IsShoppingListEligible()) {
-    std::move(callback).Run({});
-    return;
-  }
-  std::vector<const bookmarks::BookmarkNode*> bookmarks =
-      shopping_service_->GetAllShoppingBookmarks();
+  shopping_service_->WaitForReady(base::BindOnce(
+      [](base::WeakPtr<ShoppingListHandler> handler,
+         GetAllShoppingBookmarkProductInfoCallback callback,
+         ShoppingService* service) {
+        if (!service || !service->IsShoppingListEligible() ||
+            handler.WasInvalidated()) {
+          std::move(callback).Run({});
+          return;
+        }
 
-  std::vector<BookmarkProductInfoPtr> info_list =
-      BookmarkListToMojoList(*bookmark_model_, bookmarks, locale_);
+        std::vector<const bookmarks::BookmarkNode*> bookmarks =
+            service->GetAllShoppingBookmarks();
 
-  std::move(callback).Run(std::move(info_list));
+        std::vector<BookmarkProductInfoPtr> info_list = BookmarkListToMojoList(
+            *(handler->bookmark_model_), bookmarks, handler->locale_);
+
+        std::move(callback).Run(std::move(info_list));
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShoppingListHandler::TrackPriceForBookmark(int64_t bookmark_id) {

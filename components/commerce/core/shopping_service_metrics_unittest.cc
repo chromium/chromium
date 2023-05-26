@@ -46,6 +46,7 @@ class ShoppingServiceMetricsTest : public ShoppingServiceTestBase {
   ~ShoppingServiceMetricsTest() override = default;
 
   void SetUp() override {
+    ShoppingServiceTestBase::SetUp();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 

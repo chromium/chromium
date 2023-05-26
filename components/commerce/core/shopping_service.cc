@@ -47,6 +47,7 @@
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "components/sync/service/sync_service.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -104,8 +105,13 @@ ShoppingService::ShoppingService(
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
       pref_service_(pref_service),
+      sync_service_(sync_service),
       bookmark_model_(bookmark_model),
       power_bookmark_service_(power_bookmark_service),
+      bookmark_consent_throttle_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedBookmarksDataCollectionConsentHelper(
+                  sync_service)),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -955,6 +961,24 @@ void ShoppingService::ScheduleSavedProductUpdate() {
 bool ShoppingService::IsShoppingListEligible() {
   return IsShoppingListEligible(account_checker_.get(), pref_service_,
                                 country_on_startup_, locale_on_startup_);
+}
+
+void ShoppingService::WaitForReady(
+    base::OnceCallback<void(ShoppingService*)> callback) {
+  bookmark_consent_throttle_.EnqueueRequest(base::BindOnce(
+      [](base::WeakPtr<ShoppingService> service,
+         syncer::SyncService* sync_service,
+         base::OnceCallback<void(ShoppingService*)> callback,
+         bool has_consent) {
+        if (service.WasInvalidated() || !sync_service ||
+            sync_service->GetTransportState() !=
+                syncer::SyncService::TransportState::ACTIVE) {
+          std::move(callback).Run(nullptr);
+          return;
+        }
+        std::move(callback).Run(service.get());
+      },
+      AsWeakPtr(), sync_service_, std::move(callback)));
 }
 
 bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,

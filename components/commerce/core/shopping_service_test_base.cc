@@ -253,6 +253,11 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   RegisterPrefs(pref_service_->registry());
+}
+
+ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
+
+void ShoppingServiceTestBase::SetUp() {
   shopping_service_ = std::make_unique<ShoppingService>(
       "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
       pref_service_.get(), identity_test_env_->identity_manager(),
@@ -261,8 +266,6 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
           test_url_loader_factory_.get()),
       nullptr, nullptr);
 }
-
-ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::TestBody() {}
 
