@@ -75,6 +75,7 @@
 #include "media/capture/video/video_capture_system_impl.h"
 #include "media/mojo/mojom/display_media_information.mojom.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -3350,6 +3351,12 @@ void MediaStreamManager::HandleAccessRequestResponse(
 
   media_stream_metrics::RecordMediaStreamRequestResponseMetric(
       request->video_type(), request->request_type(), result);
+
+  if (request->salt_and_origin.ukm_source_id) {
+    media_stream_metrics::RecordMediaStreamRequestResponseUKM(
+        request->salt_and_origin.ukm_source_id.value(), request->video_type(),
+        request->request_type(), result);
+  }
 
   if (request->request_type() == blink::MEDIA_DEVICE_ACCESS) {
     FinalizeMediaAccessRequest(request_it, stream_devices_set);

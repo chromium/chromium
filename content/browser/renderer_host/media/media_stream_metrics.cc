@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "url/origin.h"
 
 namespace content::media_stream_metrics {
@@ -35,8 +36,54 @@ enum class MediaStreamRequestResult2 {
   kMaxValue = kDeviceInUse
 };
 
-void RecordMediaStreamRequestResult2(blink::mojom::MediaStreamType video_type,
-                                     MediaStreamRequestResult2 result2) {
+MediaStreamRequestResult2 MapResultToResult2(
+    blink::mojom::MediaStreamRequestResult result) {
+  using blink::mojom::MediaStreamRequestResult;
+  switch (result) {
+    case MediaStreamRequestResult::OK:
+      return MediaStreamRequestResult2::kOk;
+    case MediaStreamRequestResult::PERMISSION_DENIED:
+      return MediaStreamRequestResult2::kPermissionDenied;
+    case MediaStreamRequestResult::PERMISSION_DISMISSED:
+      return MediaStreamRequestResult2::kPermissionDismissed;
+    case MediaStreamRequestResult::INVALID_STATE:
+      return MediaStreamRequestResult2::kInvalidState;
+    case MediaStreamRequestResult::NO_HARDWARE:
+      return MediaStreamRequestResult2::kNoHardware;
+    case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
+      return MediaStreamRequestResult2::kInvalidSecurityOrigin;
+    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
+      return MediaStreamRequestResult2::kTabCaptureFailure;
+    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
+      return MediaStreamRequestResult2::kScreenCaptureFailure;
+    case MediaStreamRequestResult::CAPTURE_FAILURE:
+      return MediaStreamRequestResult2::kCaptureFailure;
+    case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
+      return MediaStreamRequestResult2::kConstraintNotSatisfied;
+    case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
+      return MediaStreamRequestResult2::kTrackStartFailureAudio;
+    case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
+      return MediaStreamRequestResult2::kTrackStartFailureVideo;
+    case MediaStreamRequestResult::NOT_SUPPORTED:
+      return MediaStreamRequestResult2::kNotSupported;
+    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
+      return MediaStreamRequestResult2::kFailedDueToShutdown;
+    case MediaStreamRequestResult::KILL_SWITCH_ON:
+      return MediaStreamRequestResult2::kKillSwitchOn;
+    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
+      return MediaStreamRequestResult2::kSystemPermissionDenied;
+    case MediaStreamRequestResult::DEVICE_IN_USE:
+      return MediaStreamRequestResult2::kDeviceInUse;
+    case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
+      break;
+  }
+  NOTREACHED_NORETURN();
+}
+
+void RecordMediaDeviceUpdateResponseMetric(
+    blink::mojom::MediaStreamType video_type,
+    blink::mojom::MediaStreamRequestResult result) {
+  MediaStreamRequestResult2 result2 = MapResultToResult2(result);
   switch (video_type) {
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
       base::UmaHistogramEnumeration(
@@ -50,85 +97,6 @@ void RecordMediaStreamRequestResult2(blink::mojom::MediaStreamType video_type,
     default:
       return;
   }
-}
-
-void RecordMediaDeviceUpdateResponseMetric(
-    blink::mojom::MediaStreamType video_type,
-    blink::mojom::MediaStreamRequestResult result) {
-  using blink::mojom::MediaStreamRequestResult;
-  switch (result) {
-    case MediaStreamRequestResult::OK:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kOk);
-      return;
-    case MediaStreamRequestResult::PERMISSION_DENIED:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kPermissionDenied);
-      return;
-    case MediaStreamRequestResult::PERMISSION_DISMISSED:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kPermissionDismissed);
-      return;
-    case MediaStreamRequestResult::INVALID_STATE:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kInvalidState);
-      return;
-    case MediaStreamRequestResult::NO_HARDWARE:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kNoHardware);
-      return;
-    case MediaStreamRequestResult::INVALID_SECURITY_ORIGIN:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kInvalidSecurityOrigin);
-      return;
-    case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kTabCaptureFailure);
-      return;
-    case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kScreenCaptureFailure);
-      return;
-    case MediaStreamRequestResult::CAPTURE_FAILURE:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kCaptureFailure);
-      return;
-    case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kConstraintNotSatisfied);
-      return;
-    case MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kTrackStartFailureAudio);
-      return;
-    case MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kTrackStartFailureVideo);
-      return;
-    case MediaStreamRequestResult::NOT_SUPPORTED:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kNotSupported);
-      return;
-    case MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kFailedDueToShutdown);
-      return;
-    case MediaStreamRequestResult::KILL_SWITCH_ON:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kKillSwitchOn);
-      return;
-    case MediaStreamRequestResult::SYSTEM_PERMISSION_DENIED:
-      RecordMediaStreamRequestResult2(
-          video_type, MediaStreamRequestResult2::kSystemPermissionDenied);
-      return;
-    case MediaStreamRequestResult::DEVICE_IN_USE:
-      RecordMediaStreamRequestResult2(video_type,
-                                      MediaStreamRequestResult2::kDeviceInUse);
-      return;
-    case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
-      break;
-  }
-  NOTREACHED();
 }
 
 }  // namespace
@@ -150,11 +118,18 @@ void RecordMediaStreamRequestResponseMetric(
 }
 
 void RecordMediaStreamRequestResponseUKM(
-    const url::Origin& main_frame_origin,
+    ukm::SourceId ukm_source_id,
     blink::mojom::MediaStreamType video_type,
     blink::MediaStreamRequestType request_type,
     blink::mojom::MediaStreamRequestResult result) {
-  NOTIMPLEMENTED();
+  MediaStreamRequestResult2 result2 = MapResultToResult2(result);
+  ukm::UkmRecorder* const recorder = ukm::UkmRecorder::Get();
+  if (video_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE &&
+      request_type == blink::MEDIA_GENERATE_STREAM) {
+    ukm::builders::MediaStream_Device(ukm_source_id)
+        .SetVideoCaptureGenerateStreamResult(static_cast<int64_t>(result2))
+        .Record(recorder);
+  }
 }
 
 }  // namespace content::media_stream_metrics

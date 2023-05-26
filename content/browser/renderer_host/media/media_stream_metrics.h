@@ -5,11 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_METRICS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
-
-namespace url {
-class Origin;
-}
 
 namespace content::media_stream_metrics {
 
@@ -19,7 +16,7 @@ void RecordMediaStreamRequestResponseMetric(
     blink::mojom::MediaStreamRequestResult result);
 
 void RecordMediaStreamRequestResponseUKM(
-    const url::Origin& main_frame_origin,
+    ukm::SourceId ukm_source_id,
     blink::mojom::MediaStreamType video_type,
     blink::MediaStreamRequestType request_type,
     blink::mojom::MediaStreamRequestResult result);

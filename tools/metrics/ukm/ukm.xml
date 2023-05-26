@@ -13666,6 +13666,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="MediaStream.Device">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Events recorded when a page requests access device media, i.e. by starting
+    screen capture or opening a webcam or microphone, and the result of that
+    request.
+  </summary>
+  <metric name="VideoCaptureGenerateStreamResult"
+      enum="MediaStreamRequestResult2">
+    <summary>
+      The result of a page's request to open a video capture device (e.g.,
+      webcam).
+    </summary>
+  </metric>
+</event>
+
 <event name="Memory.Experimental">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
