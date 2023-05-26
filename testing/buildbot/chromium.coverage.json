@@ -8835,7 +8835,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--gtest_filter=*PersonalizationApp*"
+          "--gtest_filter=*PersonalizationApp*:*OSSettings*"
         ],
         "isolate_profile_data": true,
         "merge": {
