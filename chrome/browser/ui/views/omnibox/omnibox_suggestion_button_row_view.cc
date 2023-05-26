@@ -65,7 +65,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     if (base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
         features::GetChromeRefresh2023Level() ==
             features::ChromeRefresh2023Level::kLevel2) {
-      SetImageLabelSpacing(4);
+      SetImageLabelSpacing(8);
       SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
           INSETS_OMNIBOX_PILL_BUTTON));
       SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
