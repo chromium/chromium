@@ -14,7 +14,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
-import {AcceleratorInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -204,5 +204,41 @@ suite('acceleratorEditDialogTest', function() {
 
     // Expect call count for `restoreDefault` to be 1.
     assertEquals(1, provider.getRestoreDefaultCallCount());
+  });
+
+  test('FilterDisabledAccelerators', async () => {
+    const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+
+    // Default state is kEnabled.
+    const acceleratorInfo3: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 't');
+
+    acceleratorInfo1.state = AcceleratorState.kDisabledByUnavailableKeys;
+    acceleratorInfo2.state = AcceleratorState.kDisabledByUser;
+
+    const accelerators = [acceleratorInfo1, acceleratorInfo2, acceleratorInfo3];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+
+    // Expect acceleratorInfo1 and acceleratorInfo2 are filtered out.
+    assertEquals(1, acceleratorElements.length);
   });
 });

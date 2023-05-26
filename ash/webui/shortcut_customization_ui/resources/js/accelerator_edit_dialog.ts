@@ -186,7 +186,8 @@ export class AcceleratorEditDialogElement extends
   protected getFilteredAccelerators(accelerators: AcceleratorInfo[]):
       AcceleratorInfo[] {
     return accelerators.filter(
-        accel => accel.state !== AcceleratorState.kDisabledByUser);
+        accel => accel.state !== AcceleratorState.kDisabledByUser &&
+            accel.state !== AcceleratorState.kDisabledByUnavailableKeys);
   }
 }
 
