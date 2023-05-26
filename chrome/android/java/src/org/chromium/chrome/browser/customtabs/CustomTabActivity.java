@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
@@ -162,7 +163,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // TODO(b/282739536): Add supplemental Web and App activity(sWAA) user setting.
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
                 && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(
-                        mIntentDataProvider);
+                        mIntentDataProvider)
+                && SyncService.get().isSyncingUnencryptedUrls();
     }
 
     @Override

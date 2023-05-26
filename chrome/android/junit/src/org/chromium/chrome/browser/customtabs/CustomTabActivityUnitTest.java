@@ -13,12 +13,9 @@ import android.content.Intent;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
@@ -26,6 +23,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.sync.SyncService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +32,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class CustomTabActivityUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     private final List<ActivityController> mActivityControllerList = new ArrayList<>();
 
     private CustomTabActivity mCustomTabActivity;
@@ -61,6 +56,13 @@ public final class CustomTabActivityUnitTest {
         return mCustomTabActivity;
     }
 
+    private void enablePageInsights(FeatureList.TestValues testValues,
+            CustomTabsConnection connection, SyncService syncService) {
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
+        when(syncService.isSyncingUnencryptedUrls()).thenReturn(true);
+    }
+
     @Test
     public void testPageInsightsHubEnabled() throws Exception {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
@@ -70,16 +72,23 @@ public final class CustomTabActivityUnitTest {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+        SyncService syncService = Mockito.mock(SyncService.class);
+        SyncService.overrideForTests(syncService);
 
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
-
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, false);
-        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
-        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
-
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        enablePageInsights(testValues, connection, syncService);
         assertTrue("PageInsightsHub should be enabled", getActivity().isPageInsightsHubEnabled());
+
+        // The method should return false if any one of the conditions is not met.
+        enablePageInsights(testValues, connection, syncService);
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, false);
+        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+
+        enablePageInsights(testValues, connection, syncService);
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(false);
+        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
+
+        enablePageInsights(testValues, connection, syncService);
+        when(syncService.isSyncingUnencryptedUrls()).thenReturn(false);
+        assertFalse("PageInsightsHub should be disabled", getActivity().isPageInsightsHubEnabled());
     }
 }
