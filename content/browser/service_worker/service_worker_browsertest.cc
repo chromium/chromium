@@ -54,6 +54,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -4328,7 +4329,7 @@ class ServiceWorkerSpeculativeStartupBrowserTest
       public testing::WithParamInterface<SpeculativeStartupNavigationType> {
  public:
   ServiceWorkerSpeculativeStartupBrowserTest() {
-    feature_list_.InitFromCommandLine("SpeculativeServiceWorkerStartup", "");
+    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
   }
   ~ServiceWorkerSpeculativeStartupBrowserTest() override = default;
 
@@ -4423,7 +4424,7 @@ class ServiceWorkerSpeculativeStartupWithoutParamBrowserTest
     : public ServiceWorkerBrowserTest {
  public:
   ServiceWorkerSpeculativeStartupWithoutParamBrowserTest() {
-    feature_list_.InitFromCommandLine("SpeculativeServiceWorkerStartup", "");
+    feature_list_.InitAndEnableFeature(kSpeculativeServiceWorkerStartup);
   }
 
  private:
@@ -4670,7 +4671,7 @@ class ServiceWorkerWarmUpByVisibilityBrowserTest
                    .name,
                "false"},
           }}},
-        {});
+        {kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByVisibilityBrowserTest() override = default;
 
@@ -4758,7 +4759,7 @@ class ServiceWorkerWarmUpByPointerBrowserTest
                    .name,
                GetParam().enable_warm_up_by_pointerdown ? "true" : "false"},
           }}},
-        {});
+        {kSpeculativeServiceWorkerStartup});
   }
   ~ServiceWorkerWarmUpByPointerBrowserTest() override = default;
 

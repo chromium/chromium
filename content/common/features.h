@@ -44,7 +44,7 @@ BASE_DECLARE_FEATURE(kRestrictCanAccessDataForOriginToUIThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSiteIsolationCitadelEnforcement);
 
 // (crbug/1377753): Speculatively start service worker before BeforeUnload runs.
-BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerStartup);
 
 // Please keep features in alphabetical order.
 
