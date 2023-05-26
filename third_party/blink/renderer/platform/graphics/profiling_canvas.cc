@@ -40,7 +40,7 @@ CanvasInterceptor<ProfilingCanvas>::~CanvasInterceptor() {
   if (!TopLevelCall())
     return;
   base::TimeDelta delta = base::TimeTicks::Now() - start_time_;
-  if (auto* timings = Canvas()->timings_) {
+  if (auto* timings = Canvas()->timings_.get()) {
     DCHECK_EQ(timings->size(), Canvas()->CallCount());
     timings->push_back(delta);
   }

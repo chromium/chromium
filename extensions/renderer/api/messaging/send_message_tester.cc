@@ -82,10 +82,10 @@ void SendMessageTester::TestConnect(const std::string& args,
       "(function() { return chrome.%s.connect(%s); })";
   PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
                           SerializationFormat::kJson);
-  EXPECT_CALL(
-      *ipc_sender_,
-      SendOpenMessageChannel(script_context_, expected_port_id, expected_target,
-                             ChannelType::kConnect, expected_channel));
+  EXPECT_CALL(*ipc_sender_,
+              SendOpenMessageChannel(script_context_.get(), expected_port_id,
+                                     expected_target, ChannelType::kConnect,
+                                     expected_channel));
   v8::Local<v8::Function> add_port = FunctionFromString(
       v8_context, base::StringPrintf(kAddPortTemplate, api_namespace_.c_str(),
                                      args.c_str()));
@@ -135,8 +135,8 @@ void SendMessageTester::TestSendMessageOrRequest(
 
   EXPECT_CALL(
       *ipc_sender_,
-      SendOpenMessageChannel(script_context_, expected_port_id, expected_target,
-                             channel_type, expected_channel));
+      SendOpenMessageChannel(script_context_.get(), expected_port_id,
+                             expected_target, channel_type, expected_channel));
   Message message(expected_message, SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 

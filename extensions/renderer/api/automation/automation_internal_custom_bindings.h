@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -105,7 +106,7 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
       const ExtensionMsg_AccessibilityLocationChangeParams& params);
 
   scoped_refptr<AutomationMessageFilter> message_filter_;
-  NativeExtensionBindingsSystem* bindings_system_;
+  raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
   bool should_ignore_context_;
 
   std::unique_ptr<ui::AutomationV8Bindings> automation_v8_bindings_;

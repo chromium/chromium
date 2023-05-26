@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
 #include <unicode/uscript.h>
@@ -37,8 +38,8 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
 }
 
 struct HarfBuzzShaperCallbackContext {
-  const HarfBuzzShaper* shaper;
-  const Font* font;
+  raw_ptr<const HarfBuzzShaper> shaper;
+  raw_ptr<const Font> font;
   TextDirection direction;
 };
 

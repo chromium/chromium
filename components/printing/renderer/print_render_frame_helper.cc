@@ -21,6 +21,8 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
@@ -766,7 +768,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
     }
 
    private:
-    blink::WebNavigationControl* frame_ = nullptr;
+    raw_ptr<blink::WebNavigationControl> frame_ = nullptr;
   };
 
   HeaderAndFooterClient frame_client;
@@ -916,7 +918,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
 
   FrameReference frame_;
   FrameReference original_frame_;
-  blink::WebNavigationControl* navigation_control_ = nullptr;
+  raw_ptr<blink::WebNavigationControl> navigation_control_ = nullptr;
   blink::WebNode node_to_print_;
   bool owns_web_view_ = false;
   mojom::PrintParamsPtr selection_only_print_params_;
@@ -927,7 +929,8 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   const bool should_print_backgrounds_;
   const bool should_print_selection_only_;
   bool is_printing_started_ = false;
-  blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
+  const raw_ref<blink::scheduler::WebAgentGroupScheduler>
+      agent_group_scheduler_;
 
   base::WeakPtrFactory<PrepareFrameAndViewForPrint> weak_ptr_factory_{this};
 };
@@ -1043,7 +1046,7 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
-      agent_group_scheduler_,
+      *agent_group_scheduler_,
       /*session_storage_namespace_id=*/base::EmptyString(),
       /*page_base_background_color=*/absl::nullopt,
       blink::BrowsingContextGroupInfo::CreateUnique());

@@ -24,7 +24,7 @@ IDBRequestLoader::IDBRequestLoader(
     IDBRequestQueueItem* queue_item,
     Vector<std::unique_ptr<IDBValue>>& result_values)
     : queue_item_(queue_item), values_(result_values) {
-  DCHECK(IDBValueUnwrapper::IsWrapped(values_));
+  DCHECK(IDBValueUnwrapper::IsWrapped(*values_));
 }
 
 IDBRequestLoader::~IDBRequestLoader() {}
@@ -39,7 +39,7 @@ void IDBRequestLoader::Start() {
   //               Consider parallelizing. The main issue is that the Blob reads
   //               will have to be throttled somewhere, and the extra complexity
   //               only benefits applications that use getAll().
-  current_value_ = values_.begin();
+  current_value_ = values_->begin();
   StartNextValue();
 }
 
@@ -60,7 +60,7 @@ void IDBRequestLoader::StartNextValue() {
   IDBValueUnwrapper unwrapper;
 
   while (true) {
-    if (current_value_ == values_.end()) {
+    if (current_value_ == values_->end()) {
       ReportSuccess();
       return;
     }
@@ -69,7 +69,7 @@ void IDBRequestLoader::StartNextValue() {
     ++current_value_;
   }
 
-  DCHECK(current_value_ != values_.end());
+  DCHECK(current_value_ != values_->end());
 
   ExecutionContext* exection_context =
       queue_item_->Request()->GetExecutionContext();

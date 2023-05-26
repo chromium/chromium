@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -101,7 +102,7 @@ class ScopedWebNNServiceBinder {
             std::make_unique<FakeWebNNContextProvider>()),
         interface_broker_(
             scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-    interface_broker_.SetBinderForTesting(
+    interface_broker_->SetBinderForTesting(
         blink_mojom::WebNNContextProvider::Name_,
         WTF::BindRepeating(
             &FakeWebNNContextProvider::BindRequest,
@@ -109,7 +110,7 @@ class ScopedWebNNServiceBinder {
   }
 
   ~ScopedWebNNServiceBinder() {
-    interface_broker_.SetBinderForTesting(
+    interface_broker_->SetBinderForTesting(
         blink_mojom::WebNNContextProvider::Name_, base::NullCallback());
   }
 
@@ -119,7 +120,7 @@ class ScopedWebNNServiceBinder {
 
  private:
   std::unique_ptr<FakeWebNNContextProvider> fake_webnn_context_provider_;
-  const BrowserInterfaceBrokerProxy& interface_broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> interface_broker_;
 };
 
 class MLGraphTestMojo : public testing::Test {};

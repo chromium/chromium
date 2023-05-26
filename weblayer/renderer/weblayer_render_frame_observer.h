@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_RENDERER_WEBLAYER_RENDER_FRAME_OBSERVER_H_
 #define WEBLAYER_RENDERER_WEBLAYER_RENDER_FRAME_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -54,10 +55,11 @@ class WebLayerRenderFrameObserver : public content::RenderFrameObserver {
   blink::AssociatedInterfaceRegistry associated_interfaces_;
 
   // Has the same lifetime as this object.
-  translate::TranslateAgent* translate_agent_;
+  raw_ptr<translate::TranslateAgent> translate_agent_;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+  raw_ptr<safe_browsing::PhishingClassifierDelegate> phishing_classifier_ =
+      nullptr;
 #endif
 };
 

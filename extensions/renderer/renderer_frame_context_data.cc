@@ -93,7 +93,7 @@ bool RendererFrameContextData::CanAccess(const FrameContextData& target) const {
 
 uintptr_t RendererFrameContextData::GetId() const {
   CHECK(frame_);
-  return reinterpret_cast<uintptr_t>(frame_);
+  return reinterpret_cast<uintptr_t>(frame_.get());
 }
 
 }  // namespace extensions

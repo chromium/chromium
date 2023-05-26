@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/safe_browsing/buildflags.h"
@@ -140,14 +141,15 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   static bool IsAnimatedWebp(const std::vector<uint8_t>& image_data);
 
   // Have the same lifetime as us.
-  translate::TranslateAgent* translate_agent_;
-  optimization_guide::PageTextAgent* page_text_agent_;
+  raw_ptr<translate::TranslateAgent> translate_agent_;
+  raw_ptr<optimization_guide::PageTextAgent> page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+  raw_ptr<safe_browsing::PhishingClassifierDelegate> phishing_classifier_ =
+      nullptr;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.
-  web_cache::WebCacheImpl* web_cache_impl_;
+  raw_ptr<web_cache::WebCacheImpl> web_cache_impl_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.

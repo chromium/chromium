@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_DECODER_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_DECODER_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -47,8 +48,8 @@ class ImageDecoderWrapper {
   std::unique_ptr<ImageDecoder> CreateDecoderWithData(
       ImageDecoderFactory* factory) const;
 
-  const ImageFrameGenerator* const generator_;
-  SegmentReader* data_;
+  const raw_ptr<const ImageFrameGenerator> generator_;
+  raw_ptr<SegmentReader> data_;
   SkPixmap pixmap_;
   const ColorBehavior decoder_color_behavior_;
   const wtf_size_t frame_index_;

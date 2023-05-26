@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -300,7 +301,7 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   base::RepeatingTimer timer_;
 
   // |tick_clock_| outlives |this|.
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Monotonically increasing number. Event id should not start from zero since
   // HashMap in Blink requires non-zero keys.

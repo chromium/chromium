@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -125,7 +126,7 @@ class FormCache {
   void PruneInitialValueCaches(const std::set<FieldRendererId>& ids_to_retain);
 
   // The frame this FormCache is associated with. Weak reference.
-  blink::WebLocalFrame* frame_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 
   // Same as |parsed_forms_|, but moved to a different type. It is used only if
   // `AutofillUseNewFormExtraction` feature is enabled.

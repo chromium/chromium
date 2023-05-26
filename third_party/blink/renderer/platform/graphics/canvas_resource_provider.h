@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
@@ -534,7 +535,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   RestoreMatrixClipStackCb restore_clip_stack_callback_;
 
-  CanvasResourceHost* resource_host_ = nullptr;
+  raw_ptr<CanvasResourceHost> resource_host_ = nullptr;
 
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;

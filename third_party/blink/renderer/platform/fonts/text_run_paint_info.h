@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TEXT_RUN_PAINT_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TEXT_RUN_PAINT_INFO_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
@@ -17,7 +18,7 @@ struct TextRunPaintInfo {
   explicit TextRunPaintInfo(const TextRun& r)
       : run(r), from(0), to(r.length()) {}
 
-  const TextRun& run;
+  const raw_ref<const TextRun> run;
   unsigned from;
   unsigned to;
 };
