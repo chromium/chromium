@@ -199,6 +199,9 @@ class ToolbarView : public views::AccessiblePaneView,
   void SetToolbarVisibility(bool visible);
 
  private:
+  // Forwards view overrides to this class.
+  class ContainerView;
+
   // AccessiblePaneView:
   views::View* GetDefaultFocusableChild() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -304,6 +307,14 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Whether this toolbar has been initialized.
   bool initialized_ = false;
+
+  // container_view_ is transparent with the same dimensions as ToolbarView.
+  // All children are added to container_view_ and layout_manager_ applies to
+  // container_view_. The reason for this layer of indiretion is because
+  // container_view_ has a clip path set in UpdateClipPath() which adds rounded
+  // corners. This leaves some unpainted pixels, which this class will paint in
+  // the future.
+  raw_ptr<ContainerView> container_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_
