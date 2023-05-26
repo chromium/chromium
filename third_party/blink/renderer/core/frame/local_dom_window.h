@@ -133,7 +133,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return token_;
   }
 
-  LocalFrame* GetFrame() const { return To<LocalFrame>(DOMWindow::GetFrame()); }
+  LocalFrame* GetFrame() const {
+    // UnsafeTo<> is safe here because DOMWindow's frame can only change to
+    // nullptr, and it was constructed with a LocalFrame in the constructor.
+    return UnsafeTo<LocalFrame>(DOMWindow::GetFrame());
+  }
 
   ScriptController& GetScriptController() const { return *script_controller_; }
 
