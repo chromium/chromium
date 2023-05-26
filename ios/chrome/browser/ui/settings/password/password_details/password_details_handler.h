@@ -17,8 +17,17 @@ typedef NS_ENUM(NSInteger, PasscodeDialogReason) {
 // Presenter which handles commands from `PasswordDetailsViewController`.
 @protocol PasswordDetailsHandler
 
-// Called when the view controller was dismissed.
+// Called when the view controller was dismissed by tapping on the Back button
+// of the view controller. This is called by the  -viewDidDisappear method of
+// the Password Details View Controller.
 - (void)passwordDetailsTableViewControllerWasDismissed;
+
+// Called to dismiss the view controller. Only call this method when the view
+// controller is displayed outside the Settings context and the user taps on the
+// cancel button. In the case of the Settings context, it is handled by the
+// -passwordDetailsTableViewControllerWasDismissed method above that is called
+// in -viewDidDisappear.
+- (void)dismissPasswordDetailsTableViewController;
 
 // Shows a dialog offering the user to set a passcode for `reason`.
 - (void)showPasscodeDialogForReason:(PasscodeDialogReason)reason;

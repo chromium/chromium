@@ -14,6 +14,12 @@
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator;
 
+// Called when the user tapped on the cancel button. This is never called when
+// the view is presented in the Settings context, because in these cases there
+// is a Back button instead of Cancel.
+@optional
+- (void)passwordDetailsCancelButtonWasTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_DELEGATE_H_

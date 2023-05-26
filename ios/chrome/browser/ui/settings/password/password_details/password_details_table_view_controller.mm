@@ -1558,7 +1558,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 - (void)dismissView {
   [self.view endEditing:YES];
-  [self.handler passwordDetailsTableViewControllerWasDismissed];
+  [self.handler dismissPasswordDetailsTableViewController];
 }
 
 #pragma mark - UIResponder
