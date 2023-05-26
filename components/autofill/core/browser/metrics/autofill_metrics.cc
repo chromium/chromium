@@ -121,6 +121,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_IBAN,
   GROUP_ADDRESS_HOME_LANDMARK,
   GROUP_ADDRESS_HOME_BETWEEN_STREETS,
+  GROUP_ADDRESS_HOME_ADMIN_LEVEL2,
   // Add new entries here and update enums.xml.
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
@@ -247,6 +248,9 @@ int GetFieldTypeGroupPredictionQualityMetric(
           break;
         case ADDRESS_HOME_BETWEEN_STREETS:
           group = GROUP_ADDRESS_HOME_BETWEEN_STREETS;
+          break;
+        case ADDRESS_HOME_ADMIN_LEVEL2:
+          group = GROUP_ADDRESS_HOME_ADMIN_LEVEL2;
           break;
         case UNKNOWN_TYPE:
           group = GROUP_UNKNOWN_TYPE;

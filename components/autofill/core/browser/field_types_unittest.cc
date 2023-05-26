@@ -108,7 +108,8 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       NUMERIC_QUANTITY,
       ONE_TIME_CODE,
       ADDRESS_HOME_LANDMARK,
-      ADDRESS_HOME_BETWEEN_STREETS};
+      ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_ADMIN_LEVEL2};
   ServerFieldType kInvalidValue = static_cast<ServerFieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));
   for (int i = -10; i < MAX_VALID_FIELD_TYPE + 10; ++i) {
