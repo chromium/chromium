@@ -1417,10 +1417,13 @@ void CaptureModeController::OnImageFileSaved(
   CopyImageToClipboard(image);
   // TODO(michelefan): Do not hard-code `BehaviorType::kDefault`. Screenshot
   // notification should be separated among different behaviors.
+  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kDefault);
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage,
-                          GetBehavior(BehaviorType::kDefault));
-  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
-    RecordSaveToLocation(GetSaveToOption(file_saved_path));
+                          behavior);
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    RecordSaveToLocation(GetSaveToOption(file_saved_path), behavior);
+  }
+
   // NOTE: Holding space `client` may be `nullptr` in tests.
   if (auto* client = HoldingSpaceController::Get()->client()) {
     client->AddItemOfType(HoldingSpaceItem::Type::kScreenshot, file_saved_path);
@@ -1454,14 +1457,15 @@ void CaptureModeController::OnVideoFileSaved(
       // DriveFs.
       blocking_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
-          base::BindOnce(&RecordVideoFileSizeKB, is_gif));
+          base::BindOnce(&RecordVideoFileSizeKB, is_gif, behavior));
     }
     CHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordingDuration(
         (base::TimeTicks::Now() - recording_start_time_), behavior, is_gif);
   }
-  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
-    RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
+    RecordSaveToLocation(GetSaveToOption(saved_video_file_path), behavior);
+  }
 
   if (on_file_saved_callback_for_test_)
     std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);

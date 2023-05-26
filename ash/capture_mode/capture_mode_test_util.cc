@@ -144,6 +144,18 @@ base::FilePath CreateCustomFolderInUserDownloadsPath(
   return custom_folder;
 }
 
+base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
+  auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
+  base::FilePath mount_point_path;
+  EXPECT_TRUE(test_delegate->GetDriveFsMountPointPath(&mount_point_path));
+  base::FilePath folder_on_drive_fs =
+      mount_point_path.Append("root").Append(custom_folder_name);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  const bool result = base::CreateDirectory(folder_on_drive_fs);
+  EXPECT_TRUE(result);
+  return folder_on_drive_fs;
+}
+
 void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
              int flags,

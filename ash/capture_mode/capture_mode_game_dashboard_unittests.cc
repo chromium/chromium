@@ -21,6 +21,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -406,5 +407,198 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeSessionConfigs) {
   EXPECT_FALSE(controller->enable_demo_tools());
   controller->Stop();
 }
+
+// -----------------------------------------------------------------------------
+// GameDashboardCaptureModeHistogramTest:
+// Test fixture to verify game dashboard initiated screen capture histograms
+// depending on the test param (true for tablet mode, false for clamshell mode).
+
+class GameDashboardCaptureModeHistogramTest
+    : public GameDashboardCaptureModeTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  GameDashboardCaptureModeHistogramTest() = default;
+  ~GameDashboardCaptureModeHistogramTest() override = default;
+
+  // GameDashboardCaptureModeTest:
+  void SetUp() override {
+    GameDashboardCaptureModeTest::SetUp();
+    if (GetParam()) {
+      SwitchToTabletMode();
+    }
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameCaptureConfigurationHistogram) {
+  constexpr char kCaptureConfigurationBase[] = "CaptureConfiguration";
+  CaptureModeTestApi test_api;
+
+  // TODO(michelefan): Add metric test for `kImage` capture configuration for
+  // game dashboard capture mode once the default and game capture behaviors for
+  // taking instant screenshot APIs are separated.
+  const std::string histogram_name =
+      BuildHistogramName(kCaptureConfigurationBase,
+                         test_api.GetBehavior(BehaviorType::kGameDashboard),
+                         /*append_ui_mode_suffix=*/true);
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      GetConfiguration(CaptureModeType::kVideo, CaptureModeSource::kWindow,
+                       RecordingType::kWebM),
+      0);
+  auto* controller = StartGameCaptureModeSession();
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  test_api.StopVideoRecording();
+  WaitForCaptureFileToBeSaved();
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      GetConfiguration(CaptureModeType::kVideo, CaptureModeSource::kWindow,
+                       RecordingType::kWebM),
+      1);
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameScreenRecordingLengthHistogram) {
+  constexpr char kRecordLenthHistogramBase[] = "ScreenRecordingLength";
+
+  auto* controller = StartGameCaptureModeSession();
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  WaitForSeconds(/*seconds=*/1);
+
+  CaptureModeTestApi test_api;
+  test_api.StopVideoRecording();
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  WaitForCaptureFileToBeSaved();
+
+  histogram_tester_.ExpectUniqueSample(
+      BuildHistogramName(kRecordLenthHistogramBase,
+                         test_api.GetBehavior(BehaviorType::kGameDashboard),
+                         /*append_ui_mode_suffix=*/true),
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameScreenRecordingFileSizeHistogram) {
+  constexpr char kHistogramNameBase[] = "ScreenRecordingFileSize";
+
+  CaptureModeTestApi test_api;
+  const auto histogram_name = BuildHistogramName(
+      kHistogramNameBase, test_api.GetBehavior(BehaviorType::kGameDashboard),
+      /*append_ui_mode_suffix=*/true);
+  histogram_tester_.ExpectTotalCount(histogram_name, /*expected_count=*/0);
+
+  StartGameCaptureModeSession();
+  StartVideoRecordingImmediately();
+  test_api.StopVideoRecording();
+  WaitForCaptureFileToBeSaved();
+
+  // Since getting the file size is an async operation, we have to run a loop
+  // until the task that records the file size is done.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectTotalCount(histogram_name,
+                                     /*expected_count=*/1);
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest, GameSaveToLocationHistogram) {
+  constexpr char kHistogramNameBase[] = "SaveLocation";
+
+  CaptureModeTestApi test_api;
+  const auto histogram_name = BuildHistogramName(
+      kHistogramNameBase, test_api.GetBehavior(BehaviorType::kGameDashboard),
+      /*append_ui_mode_suffix=*/true);
+
+  auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
+
+  // Initialize four different save-to locations for screen capture that
+  // includes default downloads folder, local customized folder, root drive and
+  // a specific folder on drive.
+  const auto downloads_folder = test_delegate->GetUserDefaultDownloadsFolder();
+  const base::FilePath custom_folder =
+      CreateCustomFolderInUserDownloadsPath("test");
+  base::FilePath mount_point_path;
+  test_delegate->GetDriveFsMountPointPath(&mount_point_path);
+  const auto root_drive_folder = mount_point_path.Append("root");
+  const base::FilePath non_root_drive_folder = CreateFolderOnDriveFS("test");
+
+  struct {
+    base::FilePath set_save_file_folder;
+    CaptureModeSaveToLocation save_location;
+  } kTestCases[] = {
+      {downloads_folder, CaptureModeSaveToLocation::kDefault},
+      {custom_folder, CaptureModeSaveToLocation::kCustomizedFolder},
+      {root_drive_folder, CaptureModeSaveToLocation::kDrive},
+      {non_root_drive_folder, CaptureModeSaveToLocation::kDriveFolder},
+  };
+
+  for (auto test_case : kTestCases) {
+    histogram_tester_.ExpectBucketCount(histogram_name, test_case.save_location,
+                                        0);
+    auto* controller = StartGameCaptureModeSession();
+    controller->SetCustomCaptureFolder(test_case.set_save_file_folder);
+    StartVideoRecordingImmediately();
+    test_api.StopVideoRecording();
+    auto file_saved_path = WaitForCaptureFileToBeSaved();
+    histogram_tester_.ExpectBucketCount(histogram_name, test_case.save_location,
+                                        1);
+  }
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameRecordingStartsWithCameraHistogram) {
+  UpdateDisplay("1000x700");
+  constexpr char kHistogramNameBase[] = "RecordingStartsWithCamera";
+  AddDefaultCamera();
+
+  for (const auto camera_on : {true, false}) {
+    CaptureModeTestApi test_api;
+    const std::string histogram_name = BuildHistogramName(
+        kHistogramNameBase, test_api.GetBehavior(BehaviorType::kGameDashboard),
+        /*append_ui_mode_suffix=*/true);
+    histogram_tester_.ExpectBucketCount(histogram_name, camera_on, 0);
+
+    auto* controller = StartGameCaptureModeSession();
+    EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
+    auto* camera_controller = controller->camera_controller();
+    if (!camera_on) {
+      camera_controller->SetSelectedCamera(CameraId());
+    }
+    test_api.PerformCapture();
+    WaitForRecordingToStart();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+
+    test_api.StopVideoRecording();
+    EXPECT_FALSE(controller->is_recording_in_progress());
+    WaitForCaptureFileToBeSaved();
+    histogram_tester_.ExpectBucketCount(histogram_name, camera_on, 1);
+  }
+}
+
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameDemoToolsEnabledOnRecordingHistogram) {
+  constexpr char kHistogramNameBase[] = "DemoToolsEnabledOnRecordingStart";
+  CaptureModeTestApi test_api;
+  for (const auto enable_demo_tools : {false, true}) {
+    const auto histogram_name = BuildHistogramName(
+        kHistogramNameBase, test_api.GetBehavior(BehaviorType::kGameDashboard),
+        /*append_ui_mode_suffix=*/true);
+    histogram_tester_.ExpectBucketCount(histogram_name, enable_demo_tools, 0);
+    auto* controller = StartGameCaptureModeSession();
+    controller->EnableDemoTools(enable_demo_tools);
+    StartVideoRecordingImmediately();
+    test_api.StopVideoRecording();
+    WaitForCaptureFileToBeSaved();
+    histogram_tester_.ExpectBucketCount(histogram_name, enable_demo_tools, 1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GameDashboardCaptureModeHistogramTest,
+                         ::testing::Bool());
 
 }  // namespace ash

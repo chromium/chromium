@@ -1742,6 +1742,84 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.CaptureModeController.GameDashboard.CaptureConfiguration.{TabletOrClamshell}"
+    enum="CaptureModeConfiguration" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a Game Dashboard initiated a screen capture is performed
+    in {TabletOrClamshell}. The recorded enum indicates the configuration used
+    for the Game Dashboard initiated capture, i.e. the capture source and the
+    capture type.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.GameDashboard.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a Game Dashboard initiated recording starts with demo tools
+    feature enabled or not in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.GameDashboard.RecordingStartsWithCamera.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records whether a Game Dashboard initiated recording starts with camera on
+    or not in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshell}"
+    enum="CaptureModeSaveToLocation" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever the screen capture is saved in {TabletOrClamshell} when
+    captured by the Game Dashboard intiated capture session. The recorded enum
+    value indicates the location that the screen capture is saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.GameDashboard.ScreenRecordingFileSize.{TabletOrClamshell}"
+    units="KB" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the size of the successfully recorded WebM file by the Game
+    Dashboard initiated capture mode in {TabletOrClamshell}. This metric will
+    not be recorded if a file was not successfully saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.GameDashboard.ScreenRecordingLength.{TabletOrClamshell}"
+    units="seconds" expires_after="2024-05-27">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode entered
+    from the Game Dashboard in {TabletOrClamshell}. This metric will not be
+    recorded if a file was not successfully saved. The upper limit of this
+    histogram is 3 hours.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
     name="Ash.CaptureModeController.GIFRecordingFileSize.{TabletOrClamshell}"
     units="KB" expires_after="2024-03-01">
   <owner>afakhry@chromium.org</owner>

@@ -235,13 +235,19 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldAutoSelectFirstCamera() const override { return true; }
+
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<GameCaptureBarView>();
   }
+
   void SetPreSelectedWindow(aura::Window* pre_selected_window) override {
     CHECK(!pre_selected_window_);
     pre_selected_window_ = pre_selected_window;
     pre_selected_window_->AddObserver(this);
+  }
+
+  const char* GetClientMetricComponent() const override {
+    return "GameDashboard.";
   }
 
   std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(

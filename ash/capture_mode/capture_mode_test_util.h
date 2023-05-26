@@ -89,6 +89,10 @@ base::FilePath WaitForCaptureFileToBeSaved();
 base::FilePath CreateCustomFolderInUserDownloadsPath(
     const std::string& custom_folder_name);
 
+// Creates and returns the custom folder path on driveFS. The custom folder is
+// created in the root folder with given `custom_folder_name`.
+base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name);
+
 // Sends a press release key combo `count` times.
 void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator,
