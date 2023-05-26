@@ -57,9 +57,7 @@ bool IsHandledProtocol(const std::string& scheme) {
 }
 
 bool ShouldLoadUrlInDesktopMode(const GURL& url,
-                                ChromeBrowserState* browser_state) {
-  HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+                                HostContentSettingsMap* settings_map) {
   ContentSetting setting = settings_map->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
 

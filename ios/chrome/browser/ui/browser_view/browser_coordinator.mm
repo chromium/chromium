@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
@@ -774,9 +776,14 @@ enum class ToolbarKind {
   [_toolbarCoordinatorAdaptor
       addToolbarCoordinator:_secondaryToolbarCoordinator];
 
-  _bubblePresenter = [[BubblePresenter alloc]
-      initWithBrowserState:browserState
-              webStateList:self.browser->GetWebStateList()];
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  HostContentSettingsMap* settingsMap =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
+  _bubblePresenter =
+      [[BubblePresenter alloc] initWithTracker:engagementTracker
+                        hostContentSettingsMap:settingsMap
+                                  webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.toolbarHandler =
       HandlerForProtocol(_dispatcher, ToolbarCommands);
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
@@ -1508,9 +1515,9 @@ enum class ToolbarKind {
 - (void)showTranslate {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
-  feature_engagement::Tracker* engagement_tracker =
+  feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-  engagement_tracker->NotifyEvent(
+  engagementTracker->NotifyEvent(
       feature_engagement::events::kTriggeredTranslateInfobar);
 
   web::WebState* currentWebState =

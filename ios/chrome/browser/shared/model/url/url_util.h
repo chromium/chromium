@@ -9,8 +9,8 @@
 
 #include <string>
 
-class ChromeBrowserState;
 class GURL;
+class HostContentSettingsMap;
 
 // Returns whether `url` is an external file reference.
 bool UrlIsExternalFileReference(const GURL& url);
@@ -28,7 +28,7 @@ bool IsHandledProtocol(const std::string& scheme);
 
 // Whether or not, by default, `url` should be loaded using Desktop Mode.
 bool ShouldLoadUrlInDesktopMode(const GURL& url,
-                                ChromeBrowserState* browser_state);
+                                HostContentSettingsMap* settings_map);
 
 // Singleton object that generates constants for Chrome iOS applications.
 // Behavior of this object can be overridden by unit tests.

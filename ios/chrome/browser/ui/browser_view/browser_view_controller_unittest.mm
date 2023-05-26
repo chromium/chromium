@@ -10,12 +10,15 @@
 
 #import <memory>
 
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
@@ -238,9 +241,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     secondary_toolbar_coordinator_ =
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
 
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+    HostContentSettingsMap* settings_map =
+        ios::HostContentSettingsMapFactory::GetForBrowserState(
+            chrome_browser_state_.get());
     bubble_presenter_ = [[BubblePresenter alloc]
-        initWithBrowserState:chrome_browser_state_.get()
-                webStateList:browser_->GetWebStateList()];
+               initWithTracker:(feature_engagement::Tracker*)tracker
+        hostContentSettingsMap:(HostContentSettingsMap*)settings_map
+                  webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 
