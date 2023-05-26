@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
@@ -15,9 +16,20 @@ namespace {
 
 constexpr char kScreenAIDlcName[] = "screen-ai";
 
+void RecordDlcStateChange(bool install, bool successful) {
+  if (install) {
+    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Install",
+                              successful);
+  } else {
+    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Uninstall",
+                              successful);
+  }
+}
 void OnInstallCompleted(
     const ash::DlcserviceClient::InstallResult& install_result) {
-  // TODO(https://crbug.com/1278249): Add mertics for install result.
+  RecordDlcStateChange(/*install=*/true, /*successful=*/install_result.error ==
+                                             dlcservice::kErrorNone);
+
   if (install_result.error != dlcservice::kErrorNone) {
     VLOG(0) << "ScreenAI installation failed: " << install_result.error;
     screen_ai::ScreenAIInstallState::GetInstance()->SetState(
@@ -34,6 +46,9 @@ void OnInstallCompleted(
 }
 
 void OnUninstallCompleted(const std::string& err) {
+  RecordDlcStateChange(/*install=*/false,
+                       /*successful=*/err == dlcservice::kErrorNone);
+
   if (err != dlcservice::kErrorNone) {
     VLOG(0) << "Unistall failed: " << err;
   }

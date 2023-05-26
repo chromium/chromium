@@ -1860,6 +1860,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Component.{Action}"
+    enum="BooleanSuccess" expires_after="2024-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records success or failure of Screen AI component {Action}.</summary>
+  <token key="Action">
+    <variant name="Install" summary="install"/>
+    <variant name="Uninstall" summary="uninstall"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2023-11-30">
   <owner>rhalavati@chromium.org</owner>
