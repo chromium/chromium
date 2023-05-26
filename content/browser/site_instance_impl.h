@@ -502,12 +502,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
   // Increments the active document count after a new document that uses `this`
   // finishes committing and becomes active.
-  void IncrementActiveDocumentCount() { active_document_count_++; }
+  void increment_active_document_count() { active_document_count_++; }
 
   // Decrement the active document count after a previously document that uses
   // `this` got swapped out and becomes inactive due to another document
   // committing in the same frame.
-  void DecrementActiveDocumentCount() {
+  void decrement_active_document_count() {
     CHECK_GT(active_document_count_, 0u);
     active_document_count_--;
   }

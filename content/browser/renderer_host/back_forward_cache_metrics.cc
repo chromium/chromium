@@ -627,7 +627,7 @@ void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
   related_active_contents_count_ =
       navigated_away_rfh->GetSiteInstance()->GetRelatedActiveContentsCount();
 
-  // Count how many documents in the navigating page uses each SiteInstance.
+  // Count how many documents in the navigating page are in each SiteInstance.
   std::map<SiteInstanceId, int> doc_count_in_page;
   navigated_away_rfh->ForEachRenderFrameHost(
       [&doc_count_in_page](RenderFrameHost* rfh) {
@@ -665,14 +665,32 @@ void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
             site_instance->active_document_count() -
             doc_count_in_page[site_instance->GetId()];
         if (doc_in_other_pages_count > 0) {
+          // The document shares a SiteInstance with another tab. This means the
+          // contents of this document might be synchronously accessible by
+          // a document in another tab, so note down this information.
           if (site_instance->IsDefaultSiteInstance()) {
+            // When the SiteInstance is a default SiteInstance, synchronous
+            // access might not be possible if the documents sharing the
+            // SiteInstance aren't same origin and can't be modified to become
+            // same origin through document.domain, e.g. when a document from
+            // A.com and another document from B.com both uses the default
+            // SiteInstance.
             related_active_contents_sync_access_info_ =
                 RelatedActiveContentsSyncAccessInfo::
                     kPotentiallySyncAccessibleDefaultSiteInstance;
           } else {
+            // When the SiteInstance is not a default SiteInstance, the
+            // documents must be from the same site, and it's more probable
+            // that the document is actually synchronously accessible by a
+            // document from another tab (either because the documents are
+            // same-origin, or through modifying document.domain).
             related_active_contents_sync_access_info_ =
                 RelatedActiveContentsSyncAccessInfo::
                     kPotentiallySyncAccessibleNormalSiteInstance;
+            // Once we've found a case where sync access is possible and it
+            // uses a normal/non-default SiteInstance, we can stop, as we've
+            // reached the maximum value for the enum
+            // (kPotentiallySyncAccessibleNormalSiteInstance).
             return RenderFrameHost::FrameIterationAction::kStop;
           }
         }
