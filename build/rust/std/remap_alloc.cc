@@ -75,6 +75,11 @@ extern "C" {
 #define REMAP_ALLOC_ATTRIBUTES __attribute__((weak))
 #endif  // COMPONENT_BUILD
 
+// This must exist as the stdlib depends on it to prove that we know the
+// alloc shims below are unstable. In the future we may be required to replace
+// them with a #[global_allocator] crate (see file comment above for more).
+[[maybe_unused]] unsigned char __rust_no_alloc_shim_is_unstable;
+
 REMAP_ALLOC_ATTRIBUTES void* __rust_alloc(size_t size, size_t align) {
   // This mirrors kMaxSupportedAlignment from
   // base/allocator/partition_allocator/partition_alloc_constants.h.
