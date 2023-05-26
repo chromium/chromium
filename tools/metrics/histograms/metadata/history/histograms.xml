@@ -1146,6 +1146,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.Backend.NumVisitsBelowFold"
+    units="number visits" expires_after="2023-12-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the number of visits that are &quot;below the fold&quot; in each
+    cluster after hidden and done visits have been culled. Logged for each
+    cluster that is shown to the user in the Journeys WebUI.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.NumVisitsBelowFoldPercentage"
+    units="%" expires_after="2023-12-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the percentage of visits that are &quot;below the fold&quot; in each
+    cluster after hidden and done visits have been culled. Logged for each
+    cluster that is shown to the user in the Journeys WebUI.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.NumVisitsPerCluster"
     units="number visits" expires_after="2022-12-01">
   <obsolete>

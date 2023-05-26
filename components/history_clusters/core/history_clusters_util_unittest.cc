@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
@@ -290,33 +291,79 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
   all_clusters[5].visits[1].interaction_state =
       history::ClusterVisit::InteractionState::kDone;
 
-  auto clusters = all_clusters;
-  // Test the zero-query state.
-  CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/true);
-  ASSERT_EQ(clusters.size(), 4u);
+  {
+    // Test the zero-query state.
+    base::HistogramTester histogram_tester;
 
-  EXPECT_EQ(clusters[0].cluster_id, 0);
-  EXPECT_EQ(clusters[0].visits.size(), 5u);
+    auto clusters = all_clusters;
+    CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/true);
+    ASSERT_EQ(clusters.size(), 4u);
 
-  EXPECT_EQ(clusters[1].cluster_id, 1);
-  EXPECT_EQ(clusters[1].visits.size(), 4u);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 4);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 4);
 
-  EXPECT_EQ(clusters[2].cluster_id, 2);
-  EXPECT_EQ(clusters[2].visits.size(), 2u);
+    // No visits are hidden as they are all high-scoring.
+    EXPECT_EQ(clusters[0].cluster_id, 0);
+    EXPECT_EQ(clusters[0].visits.size(), 5u);
 
-  EXPECT_EQ(clusters[3].cluster_id, 5);
-  EXPECT_EQ(clusters[3].visits.size(), 2u);
+    // 1 visit could have been shown but is below the fold due to score.
+    EXPECT_EQ(clusters[1].cluster_id, 1);
+    EXPECT_EQ(clusters[1].visits.size(), 4u);
 
-  // Test the queried state with a higher threshold of required visits.
-  clusters = all_clusters;
-  CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/false);
-  // Cluster id = 3, with 1 visit after filtering should no longer be removed.
-  ASSERT_EQ(clusters.size(), 5u);
-  EXPECT_EQ(clusters[3].cluster_id, 3);
-  EXPECT_EQ(clusters[3].visits.size(), 1u);
-  // Cluster id = 5, with a Done visit, should have that Done visit visible.
-  EXPECT_EQ(clusters[4].cluster_id, 5);
-  EXPECT_EQ(clusters[4].visits.size(), 3u);
+    // No visits that should actually be shown are hidden.
+    EXPECT_EQ(clusters[2].cluster_id, 2);
+    EXPECT_EQ(clusters[2].visits.size(), 2u);
+
+    // No visits that should actually be shown are hidden.
+    EXPECT_EQ(clusters[3].cluster_id, 5);
+    EXPECT_EQ(clusters[3].visits.size(), 2u);
+
+    // Clusters index 0, 2, and 3.
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 0, 3);
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 0, 3);
+
+    // Cluster index 1.
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 20, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    // Test the queried state with a higher threshold of required visits.
+    auto clusters = all_clusters;
+    CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/false);
+
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 5);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 5);
+
+    // Cluster id = 3, with 1 visit after filtering should no longer be removed.
+    ASSERT_EQ(clusters.size(), 5u);
+    EXPECT_EQ(clusters[3].cluster_id, 3);
+    EXPECT_EQ(clusters[3].visits.size(), 1u);
+    // Cluster id = 5, with a Done visit, should have that Done visit visible.
+    EXPECT_EQ(clusters[4].cluster_id, 5);
+    EXPECT_EQ(clusters[4].visits.size(), 3u);
+
+    // Clusters 0, 2, 3, and 4.
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 0, 4);
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 0, 4);
+
+    // Cluster 1.
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
+    histogram_tester.ExpectBucketCount(
+        "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 20, 1);
+  }
 }
 
 TEST(HistoryClustersUtilTest, CoalesceRelatedSearches) {

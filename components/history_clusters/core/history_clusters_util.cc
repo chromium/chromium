@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -289,6 +290,7 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
   DCHECK_GT(min_visits, 0u);
   base::EraseIf(clusters, [&](auto& cluster) {
     int index = -1;
+    size_t num_visits_below_fold = 0;
     base::EraseIf(cluster.visits, [&](auto& visit) {
       index++;
       // Easy cases: cull all zero-score and explicitly Hidden visits.
@@ -312,10 +314,26 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
 
       // At this point we know we have a low-scoring visit. If we haven't shown
       // enough visits above the fold yet, admit these low-score ones first.
-      return index >= static_cast<int>(
-                          GetConfig().num_visits_to_always_show_above_the_fold);
+      if (index >= static_cast<int>(
+                       GetConfig().num_visits_to_always_show_above_the_fold)) {
+        num_visits_below_fold++;
+        return true;
+      }
+      return false;
     });
-    return cluster.visits.size() < min_visits;
+    bool should_hide_cluster = cluster.visits.size() < min_visits;
+    if (!should_hide_cluster) {
+      // Log the # of visits that would be "below the fold" as a percentage of
+      // all visits in the cluster.
+      base::UmaHistogramCounts100("History.Clusters.Backend.NumVisitsBelowFold",
+                                  num_visits_below_fold);
+      base::UmaHistogramPercentage(
+          "History.Clusters.Backend.NumVisitsBelowFoldPercentage",
+          static_cast<int>(100 *
+                           (1.0 * num_visits_below_fold /
+                            (num_visits_below_fold + cluster.visits.size()))));
+    }
+    return should_hide_cluster;
   });
 }
 
