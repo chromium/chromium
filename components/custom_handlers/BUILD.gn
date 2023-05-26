@@ -95,4 +95,10 @@ source_set("browser_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (is_ios) {
+    deps += [
+      "//components/test:custom_handlers_test_bundle_data",
+      "//components/test:fenced_frames_test_bundle_data",
+    ]
+  }
 }

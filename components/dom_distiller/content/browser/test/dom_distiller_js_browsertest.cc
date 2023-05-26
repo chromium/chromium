@@ -91,7 +91,7 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
 #if BUILDFLAG(IS_ANDROID)
     CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
     pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     base::PathService::Get(base::DIR_MODULE, &pak_dir);
 #else
     base::PathService::Get(base::DIR_ASSETS, &pak_dir);

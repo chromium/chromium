@@ -389,4 +389,8 @@ source_set("browser_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_ios) {
+    deps += [ "//components/test:performance_manager_test_bundle_data" ]
+  }
 }
