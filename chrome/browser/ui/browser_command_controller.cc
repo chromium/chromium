@@ -1447,12 +1447,6 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, !is_app);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, is_normal);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, is_normal);
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_TABS_TO_RIGHT,
-                                        CanCloseTabsToRight(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
-                                        CanCloseOtherTabs(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
-                                        CanMoveActiveTabToNewWindow(browser_));
 
   // Page-related commands
   window()->SetStarredState(
@@ -1825,9 +1819,19 @@ void BrowserCommandController::UpdateCommandsForWebContentsFocus() {
 }
 
 void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
+  int tab_index = browser_->tab_strip_model()->active_index();
+  // No commands are updated if there is not yet any selected tab.
+  if (tab_index == TabStripModel::kNoTab) {
+    return;
+  }
   command_updater_.UpdateCommandEnabled(
-      IDC_CLOSE_TAB, browser_->tab_strip_model()->IsTabClosable(
-                         browser_->tab_strip_model()->active_index()));
+      IDC_CLOSE_TAB, browser_->tab_strip_model()->IsTabClosable(tab_index));
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_TABS_TO_RIGHT,
+                                        CanCloseTabsToRight(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
+                                        CanCloseOtherTabs(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_TO_NEW_WINDOW,
+                                        CanMoveActiveTabToNewWindow(browser_));
 }
 
 BrowserWindow* BrowserCommandController::window() {
