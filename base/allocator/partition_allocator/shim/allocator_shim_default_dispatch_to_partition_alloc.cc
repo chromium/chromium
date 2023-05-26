@@ -19,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -27,7 +26,6 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 #include "base/memory/nonscannable_memory.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
@@ -693,8 +691,6 @@ uint32_t GetMainPartitionRootExtrasSize() {
 
 #if BUILDFLAG(USE_STARSCAN)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
-  partition_alloc::internal::base::PlatformThread::SetThreadNameHook(
-      &::base::PlatformThread::SetName);
   partition_alloc::internal::PCScan::Initialize(config);
 
   partition_alloc::internal::PCScan::RegisterScannableRoot(Allocator());

@@ -14,7 +14,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/memory/page_size.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_WIN)
