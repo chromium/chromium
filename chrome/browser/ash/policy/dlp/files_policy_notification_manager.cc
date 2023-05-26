@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -123,8 +124,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<FilesPolicyDialog>(
           base::DoNothing(), std::vector<DlpConfidentialFile>(),
-          DlpFileDestination(""), DlpFilesController::FileAction::kCopy,
-          modal_parent),
+          DlpFileDestination(""), dlp::FileAction::kCopy, modal_parent),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   // TODO(ayaelattar): Timeout after total 5 minutes.

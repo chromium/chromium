@@ -72,7 +72,7 @@ base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& confidential_files,
     const DlpFileDestination& destination,
-    DlpFilesController::FileAction action) {
+    dlp::FileAction action) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<FilesPolicyDialog>(std::move(callback),
                                           confidential_files, destination,

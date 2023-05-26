@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -69,7 +70,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& confidential_files,
       const DlpFileDestination& destination,
-      DlpFilesController::FileAction action);
+      dlp::FileAction action);
 
   // Returns the number of active widgets, which equals the number of warning
   // dialogs shown conucrrently. Useful for testing to verify that the dialogs

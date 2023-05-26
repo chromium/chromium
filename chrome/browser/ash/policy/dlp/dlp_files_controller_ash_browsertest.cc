@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(data_controls::Component::kDrive),
-      DlpFilesControllerAsh::FileAction::kMove, base::DoNothing());
+      dlp::FileAction::kMove, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }
 
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(kExampleUrl1),
-      DlpFilesControllerAsh::FileAction::kMove, base::DoNothing());
+      dlp::FileAction::kMove, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(data_controls::Component::kDrive),
-      DlpFilesControllerAsh::FileAction::kDownload, base::DoNothing());
+      dlp::FileAction::kDownload, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }
 

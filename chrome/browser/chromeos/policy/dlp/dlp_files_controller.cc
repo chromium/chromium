@@ -177,25 +177,4 @@ void DlpFilesController::RequestCopyAccess(
           std::move(result_callback)));
 }
 
-// Maps |component| to ::dlp::DlpComponent.
-::dlp::DlpComponent DlpFilesController::MapPolicyComponentToProto(
-    data_controls::Component component) {
-  switch (component) {
-    case data_controls::Component::kUnknownComponent:
-      return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
-    case data_controls::Component::kArc:
-      return ::dlp::DlpComponent::ARC;
-    case data_controls::Component::kCrostini:
-      return ::dlp::DlpComponent::CROSTINI;
-    case data_controls::Component::kPluginVm:
-      return ::dlp::DlpComponent::PLUGIN_VM;
-    case data_controls::Component::kUsb:
-      return ::dlp::DlpComponent::USB;
-    case data_controls::Component::kDrive:
-      return ::dlp::DlpComponent::GOOGLE_DRIVE;
-    case data_controls::Component::kOneDrive:
-      return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
-  }
-}
-
 }  // namespace policy

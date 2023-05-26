@@ -40,6 +40,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -573,7 +574,7 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
   FileDaemonInfo file_info({}, file_path, download_src.url_or_path().value());
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
-      FileAction::kDownload,
+      dlp::FileAction::kDownload,
       base::BindOnce(
           [](CheckIfDlpAllowedCallback result_callback,
              const std::vector<std::pair<
@@ -649,14 +650,15 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
       request.set_destination_url(destination->url_or_path().value());
     } else if (destination->component().has_value()) {
       request.set_destination_component(
-          MapPolicyComponentToProto(destination->component().value()));
+          dlp::MapPolicyComponentToProto(destination->component().value()));
     }
   }
 
   chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request, base::BindOnce(&DlpFilesControllerAsh::ReturnIfActionAllowed,
-                              weak_ptr_factory_.GetWeakPtr(), FileAction::kOpen,
-                              std::move(result_callback)));
+      request,
+      base::BindOnce(&DlpFilesControllerAsh::ReturnIfActionAllowed,
+                     weak_ptr_factory_.GetWeakPtr(), dlp::FileAction::kOpen,
+                     std::move(result_callback)));
 }
 
 bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
@@ -702,7 +704,7 @@ bool DlpFilesControllerAsh::IsLaunchBlocked(const apps::AppUpdate& app_update,
 void DlpFilesControllerAsh::IsFilesTransferRestricted(
     const std::vector<FileDaemonInfo>& transferred_files,
     const DlpFileDestination& destination,
-    FileAction files_action,
+    dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback result_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
@@ -761,7 +763,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
         warned_files.push_back(file);
         warned_source_patterns.emplace_back(source_pattern);
         warned_rules_metadata.emplace_back(rule_metadata);
-        if (files_action != FileAction::kDownload) {
+        if (files_action != dlp::FileAction::kDownload) {
           dialog_files.emplace_back(file.path);
         }
         DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, files_action);
@@ -862,10 +864,12 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   switch (level) {
     case policy::DlpRulesManager::Level::kBlock:
       restricted = true;
-      DlpHistogramEnumeration(dlp::kFileActionBlockedUMA, FileAction::kUnknown);
+      DlpHistogramEnumeration(dlp::kFileActionBlockedUMA,
+                              dlp::FileAction::kUnknown);
       break;
     case policy::DlpRulesManager::Level::kWarn:
-      DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, FileAction::kUnknown);
+      DlpHistogramEnumeration(dlp::kFileActionWarnedUMA,
+                              dlp::FileAction::kUnknown);
       // TODO(crbug.com/1172959): Implement Warning mode for Files restriction
       break;
     default:
@@ -992,7 +996,7 @@ void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
     const DlpFileDestination& dst,
     const absl::optional<std::string>& dst_pattern,
-    FileAction files_action,
+    dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback callback,
     bool should_proceed) {
   DCHECK(warned_files.size() == warned_src_patterns.size());
@@ -1144,7 +1148,7 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
 }
 
 void DlpFilesControllerAsh::ReturnIfActionAllowed(
-    FileAction action,
+    dlp::FileAction action,
     CheckIfDlpAllowedCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message()) {
@@ -1159,7 +1163,7 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
     return;
   }
 
-  if (action == FileAction::kOpen) {
+  if (action == dlp::FileAction::kOpen) {
     ShowNotification(
         kOpenBlockedNotificationId,
         l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE),
@@ -1170,7 +1174,7 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
     return;
   }
 
-  if (action == FileAction::kMove) {
+  if (action == dlp::FileAction::kMove) {
     // TODO(b/269609831): Show correct notification here.
     std::move(result_callback).Run(/*is_allowed=*/false);
     return;
@@ -1290,7 +1294,7 @@ void DlpFilesControllerAsh::ContinueFilterDisallowedUploads(
   }
   if (destination.component().has_value()) {
     request.set_destination_component(
-        MapPolicyComponentToProto(destination.component().value()));
+        dlp::MapPolicyComponentToProto(destination.component().value()));
   } else {
     DCHECK(destination.url_or_path().has_value());
     request.set_destination_url(destination.url_or_path().value());
@@ -1322,7 +1326,7 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
   }
   if (destination.component().has_value()) {
     request.set_destination_component(
-        MapPolicyComponentToProto(destination.component().value()));
+        dlp::MapPolicyComponentToProto(destination.component().value()));
   } else {
     DCHECK(destination.url_or_path().has_value());
     request.set_destination_url(destination.url_or_path().value());
@@ -1331,7 +1335,7 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
 
   auto return_drop_allowed_cb =
       base::BindOnce(&DlpFilesControllerAsh::ReturnIfActionAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), FileAction::kMove,
+                     weak_ptr_factory_.GetWeakPtr(), dlp::FileAction::kMove,
                      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_drop_allowed_cb));

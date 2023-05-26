@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -169,7 +170,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
   void IsFilesTransferRestricted(
       const std::vector<FileDaemonInfo>& transferred_files,
       const DlpFileDestination& destination,
-      FileAction files_action,
+      dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
   // Returns restriction information for `source_url`.
@@ -221,7 +222,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
       std::vector<DlpRulesManager::RuleMetadata> warned_rules_metadata,
       const DlpFileDestination& dst,
       const absl::optional<std::string>& dst_pattern,
-      FileAction files_action,
+      dlp::FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
 
@@ -241,7 +242,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
   // Runs `result_callback` with true if `action` is allowed. It runs
   // `result_callback` with false and shows the required UI otherwise.
-  void ReturnIfActionAllowed(FileAction action,
+  void ReturnIfActionAllowed(dlp::FileAction action,
                              CheckIfDlpAllowedCallback result_callback,
                              ::dlp::CheckFilesTransferResponse response);
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,7 +43,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
   FilesPolicyDialog(OnDlpRestrictionCheckedCallback callback,
                     const std::vector<DlpConfidentialFile>& files,
                     DlpFileDestination destination,
-                    DlpFilesController::FileAction action,
+                    dlp::FileAction action,
                     gfx::NativeWindow modal_parent);
   // `callback` and `policy` are required only for kWarning `type`.
   FilesPolicyDialog(FilesDialogType type,
@@ -50,7 +51,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
                     absl::optional<OnDlpRestrictionCheckedCallback> callback,
                     const std::vector<DlpConfidentialFile>& files,
                     DlpFileDestination destination,
-                    DlpFilesController::FileAction action,
+                    dlp::FileAction action,
                     gfx::NativeWindow modal_parent);
 
   FilesPolicyDialog(const FilesPolicyDialog& other) = delete;
@@ -78,7 +79,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
   absl::optional<Policy> policy_;
   std::vector<DlpConfidentialFile> files_;
   DlpFileDestination destination_;
-  DlpFilesController::FileAction action_;
+  dlp::FileAction action_;
 
   base::WeakPtrFactory<FilesPolicyDialog> weak_factory_{this};
 };

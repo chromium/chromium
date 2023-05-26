@@ -153,7 +153,7 @@ GURL ToGURL(const base::FilePath& root, const std::string& path) {
 }
 
 struct FilesTransferInfo {
-  FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction files_action,
+  FilesTransferInfo(policy::dlp::FileAction files_action,
                     std::vector<ino_t> file_inodes,
                     std::vector<std::string> file_sources,
                     std::vector<std::string> file_paths)
@@ -162,7 +162,7 @@ struct FilesTransferInfo {
         file_sources(file_sources),
         file_paths(file_paths) {}
 
-  policy::DlpFilesControllerAsh::FileAction files_action;
+  policy::dlp::FileAction files_action;
   std::vector<ino_t> file_inodes;
   std::vector<std::string> file_sources;
   std::vector<std::string> file_paths;
@@ -1206,18 +1206,16 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kUnknown, 3),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload, 0),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 0)));
+      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 3),
+                       base::Bucket(dlp::FileAction::kDownload, 0),
+                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionWarnedUMA)),
-      base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kUnknown, 3),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload, 0),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 0)));
+      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 3),
+                       base::Bucket(dlp::FileAction::kDownload, 0),
+                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
@@ -1338,12 +1336,12 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
     // Report `event1` after this call if `delay` is at least `cooldown_time`.
     files_controller_->IsFilesTransferRestricted(
         transferred_files, DlpFileDestination(dst_url),
-        DlpFilesControllerAsh::FileAction::kTransfer, cb.Get());
+        dlp::FileAction::kTransfer, cb.Get());
 
     // Report `event2` after this call if `delay` is at least `cooldown_time`.
     files_controller_->IsFilesTransferRestricted(
         transferred_files, DlpFileDestination(dst_path.path().value()),
-        DlpFilesControllerAsh::FileAction::kTransfer, cb.Get());
+        dlp::FileAction::kTransfer, cb.Get());
 
     task_runner_->FastForwardBy(delay);
   }
@@ -1405,7 +1403,7 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnMixedCalls) {
   // Report a single `event` after this call
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(dst_url),
-      DlpFilesControllerAsh::FileAction::kTransfer, cb.Get());
+      dlp::FileAction::kTransfer, cb.Get());
 
   // Do not report after these calls
   ASSERT_TRUE(files_controller_->IsDlpPolicyMatched(file1));
@@ -1681,7 +1679,7 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(dst_url.path().value()),
-      DlpFilesControllerAsh::FileAction::kTransfer, cb.Get());
+      dlp::FileAction::kTransfer, cb.Get());
 
   ASSERT_EQ(events.size(), 2u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -1696,10 +1694,9 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kUnknown, 0),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload, 0),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 2)));
+      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 0),
+                       base::Bucket(dlp::FileAction::kDownload, 0),
+                       base::Bucket(dlp::FileAction::kTransfer, 2)));
 }
 
 TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
@@ -1839,7 +1836,7 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
 
   files_controller_->IsFilesTransferRestricted(
       transferred_files, DlpFileDestination(destination_url),
-      DlpFilesControllerAsh::FileAction::kDownload, cb.Get());
+      dlp::FileAction::kDownload, cb.Get());
 
   ASSERT_EQ(events.size(), disallowed_source_patterns.size());
   for (size_t i = 0u; i < disallowed_source_patterns.size(); ++i) {
@@ -1859,9 +1856,8 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionBlockedUMA)),
       base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload,
-                       blocked_downloads),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 0)));
+          base::Bucket(dlp::FileAction::kDownload, blocked_downloads),
+          base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 class DlpFilesWarningDialogChoiceTest
@@ -1898,7 +1894,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
                     OnDlpRestrictionCheckedCallback callback,
                     const std::vector<DlpConfidentialFile>& confidential_files,
                     const DlpFileDestination& destination,
-                    DlpFilesController::FileAction action) {
+                    dlp::FileAction action) {
         std::move(callback).Run(choice_result);
         return nullptr;
       });
@@ -1953,18 +1949,15 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionWarnedUMA)),
-      base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload, 1),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 0)));
+      base::BucketsAre(base::Bucket(dlp::FileAction::kDownload, 1),
+                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           GetDlpHistogramPrefix() +
           std::string(dlp::kFileActionWarnProceededUMA)),
-      base::BucketsAre(
-          base::Bucket(DlpFilesControllerAsh::FileAction::kDownload,
-                       choice_result),
-          base::Bucket(DlpFilesControllerAsh::FileAction::kTransfer, 0)));
+      base::BucketsAre(base::Bucket(dlp::FileAction::kDownload, choice_result),
+                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 }
@@ -1977,42 +1970,42 @@ INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
     DlpFilesWarningDialogContentTest,
     ::testing::Values(
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kDownload,
+        FilesTransferInfo(policy::dlp::FileAction::kDownload,
                           std::vector<ino_t>({kInode1}),
                           std::vector<std::string>({kExampleUrl1}),
                           std::vector<std::string>({kFilePath1})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kTransfer,
+        FilesTransferInfo(policy::dlp::FileAction::kTransfer,
                           std::vector<ino_t>({kInode1}),
                           std::vector<std::string>({kExampleUrl1}),
                           std::vector<std::string>({kFilePath1})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kTransfer,
+        FilesTransferInfo(policy::dlp::FileAction::kTransfer,
                           std::vector<ino_t>({kInode1, kInode2}),
                           std::vector<std::string>({kExampleUrl1,
                                                     kExampleUrl2}),
                           std::vector<std::string>({kFilePath1, kFilePath2})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kUpload,
+        FilesTransferInfo(policy::dlp::FileAction::kUpload,
                           std::vector<ino_t>({kInode1}),
                           std::vector<std::string>({kExampleUrl1}),
                           std::vector<std::string>({kFilePath1})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kUpload,
+        FilesTransferInfo(policy::dlp::FileAction::kUpload,
                           std::vector<ino_t>({kInode1, kInode2}),
                           std::vector<std::string>({kExampleUrl1,
                                                     kExampleUrl2}),
                           std::vector<std::string>({kFilePath1, kFilePath2})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kCopy,
+        FilesTransferInfo(policy::dlp::FileAction::kCopy,
                           std::vector<ino_t>({kInode1}),
                           std::vector<std::string>({kExampleUrl1}),
                           std::vector<std::string>({kFilePath1})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kCopy,
+        FilesTransferInfo(policy::dlp::FileAction::kCopy,
                           std::vector<ino_t>({kInode1, kInode2}),
                           std::vector<std::string>({kExampleUrl1,
                                                     kExampleUrl2}),
                           std::vector<std::string>({kFilePath1, kFilePath2})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kMove,
+        FilesTransferInfo(policy::dlp::FileAction::kMove,
                           std::vector<ino_t>({kInode1}),
                           std::vector<std::string>({kExampleUrl1}),
                           std::vector<std::string>({kFilePath1})),
-        FilesTransferInfo(policy::DlpFilesControllerAsh::FileAction::kMove,
+        FilesTransferInfo(policy::dlp::FileAction::kMove,
                           std::vector<ino_t>({kInode1, kInode2}),
                           std::vector<std::string>({kExampleUrl1,
                                                     kExampleUrl2}),
@@ -2058,8 +2051,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
 
   std::vector<DlpConfidentialFile> expected_files;
-  if (transfer_info.files_action !=
-      DlpFilesControllerAsh::FileAction::kDownload) {
+  if (transfer_info.files_action != dlp::FileAction::kDownload) {
     for (const auto& file_path : transfer_info.file_paths) {
       expected_files.emplace_back(base::FilePath(file_path));
     }
@@ -2080,7 +2072,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
       .WillOnce([](OnDlpRestrictionCheckedCallback callback,
                    const std::vector<DlpConfidentialFile>& confidential_files,
                    const DlpFileDestination& destination,
-                   DlpFilesController::FileAction action) {
+                   dlp::FileAction action) {
         std::move(callback).Run(false);
         return nullptr;
       });

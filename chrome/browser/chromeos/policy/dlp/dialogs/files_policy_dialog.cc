@@ -83,7 +83,7 @@ FilesPolicyDialog::FilesPolicyDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& files,
     DlpFileDestination destination,
-    DlpFilesController::FileAction action,
+    dlp::FileAction action,
     gfx::NativeWindow modal_parent)
     : type_(FilesDialogType::kWarning),  // default
       policy_(Policy::kDlp),             // default
@@ -106,7 +106,7 @@ FilesPolicyDialog::FilesPolicyDialog(
     absl::optional<OnDlpRestrictionCheckedCallback> callback,
     const std::vector<DlpConfidentialFile>& files,
     DlpFileDestination destination,
-    DlpFilesController::FileAction action,
+    dlp::FileAction action,
     gfx::NativeWindow modal_parent)
     : type_(type),
       policy_(policy),
@@ -162,24 +162,24 @@ void FilesPolicyDialog::MaybeAddConfidentialRows() {
 
 std::u16string FilesPolicyDialog::GetOkButton() {
   switch (action_) {
-    case DlpFilesController::FileAction::kDownload:
+    case dlp::FileAction::kDownload:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kUpload:
+    case dlp::FileAction::kUpload:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kCopy:
+    case dlp::FileAction::kCopy:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kMove:
+    case dlp::FileAction::kMove:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kOpen:
-    case DlpFilesController::FileAction::kShare:
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON);
-    case DlpFilesController::FileAction::kTransfer:
-    case DlpFilesController::FileAction::kUnknown:
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
       // TODO(crbug.com/1361900): Set proper text when file action is unknown.
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
@@ -192,27 +192,27 @@ std::u16string FilesPolicyDialog::GetCancelButton() {
 
 std::u16string FilesPolicyDialog::GetTitle() {
   switch (action_) {
-    case DlpFilesController::FileAction::kDownload:
+    case dlp::FileAction::kDownload:
       return l10n_util::GetPluralStringFUTF16(
           // Download action is only allowed for one file.
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
-    case DlpFilesController::FileAction::kUpload:
+    case dlp::FileAction::kUpload:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, files_.size());
-    case DlpFilesController::FileAction::kCopy:
+    case dlp::FileAction::kCopy:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_COPY_WARN_TITLE, files_.size());
-    case DlpFilesController::FileAction::kMove:
+    case dlp::FileAction::kMove:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, files_.size());
-    case DlpFilesController::FileAction::kOpen:
-    case DlpFilesController::FileAction::kShare:
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, files_.size());
-    case DlpFilesController::FileAction::kTransfer:
-    case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
-                                                    // Set proper text when file
-                                                    // action is unknown
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                     // Set proper text when file
+                                     // action is unknown
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, files_.size());
   }
@@ -222,7 +222,7 @@ std::u16string FilesPolicyDialog::GetMessage() {
   std::u16string destination_str;
   int message_id;
   switch (action_) {
-    case DlpFilesController::FileAction::kDownload:
+    case dlp::FileAction::kDownload:
       destination_str = GetDestinationComponent(destination_);
       // Download action is only allowed for one file.
       return base::ReplaceStringPlaceholders(
@@ -230,25 +230,25 @@ std::u16string FilesPolicyDialog::GetMessage() {
               IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
           destination_str,
           /*offset=*/nullptr);
-    case DlpFilesController::FileAction::kUpload:
+    case dlp::FileAction::kUpload:
       destination_str = GetDestinationURL(destination_);
       message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
       break;
-    case DlpFilesController::FileAction::kCopy:
+    case dlp::FileAction::kCopy:
       destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
       break;
-    case DlpFilesController::FileAction::kMove:
+    case dlp::FileAction::kMove:
       destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
       break;
-    case DlpFilesController::FileAction::kOpen:
-    case DlpFilesController::FileAction::kShare:
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
       destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE;
       break;
-    case DlpFilesController::FileAction::kTransfer:
-    case DlpFilesController::FileAction::kUnknown:
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
       // TODO(crbug.com/1361900): Set proper text when file action is unknown.
       destination_str = GetDestination(destination_);
       message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;

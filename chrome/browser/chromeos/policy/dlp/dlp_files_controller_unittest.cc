@@ -410,43 +410,4 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
   EXPECT_FALSE(future.Get()->is_allowed());
 }
 
-class DlpFilesControllerComponentsTest
-    : public DlpFilesControllerTest,
-      public ::testing::WithParamInterface<
-          std::tuple<data_controls::Component, ::dlp::DlpComponent>> {
- public:
-  DlpFilesControllerComponentsTest(const DlpFilesControllerComponentsTest&) =
-      delete;
-  DlpFilesControllerComponentsTest& operator=(
-      const DlpFilesControllerComponentsTest&) = delete;
-
- protected:
-  DlpFilesControllerComponentsTest() = default;
-  ~DlpFilesControllerComponentsTest() = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    DlpFiles,
-    DlpFilesControllerComponentsTest,
-    ::testing::Values(
-        std::make_tuple(data_controls::Component::kUnknownComponent,
-                        ::dlp::DlpComponent::UNKNOWN_COMPONENT),
-        std::make_tuple(data_controls::Component::kArc,
-                        ::dlp::DlpComponent::ARC),
-        std::make_tuple(data_controls::Component::kCrostini,
-                        ::dlp::DlpComponent::CROSTINI),
-        std::make_tuple(data_controls::Component::kPluginVm,
-                        ::dlp::DlpComponent::PLUGIN_VM),
-        std::make_tuple(data_controls::Component::kUsb,
-                        ::dlp::DlpComponent::USB),
-        std::make_tuple(data_controls::Component::kDrive,
-                        ::dlp::DlpComponent::GOOGLE_DRIVE),
-        std::make_tuple(data_controls::Component::kOneDrive,
-                        ::dlp::DlpComponent::MICROSOFT_ONEDRIVE)));
-
-TEST_P(DlpFilesControllerComponentsTest, TestConvert) {
-  auto [component, proto] = GetParam();
-  EXPECT_EQ(proto, files_controller_->MapPolicyComponentToProto(component));
-}
-
 }  // namespace policy

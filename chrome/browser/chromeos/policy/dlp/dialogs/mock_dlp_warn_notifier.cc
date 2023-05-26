@@ -26,7 +26,7 @@ MockDlpWarnNotifier::MockDlpWarnNotifier() : should_proceed_(true) {
           [this](OnDlpRestrictionCheckedCallback callback,
                  const std::vector<DlpConfidentialFile>& confidential_files,
                  const DlpFileDestination& destination,
-                 DlpFilesController::FileAction action) {
+                 dlp::FileAction action) {
             return this->DlpWarnNotifier::ShowDlpFilesWarningDialog(
                 std::move(callback), confidential_files, destination, action);
           });

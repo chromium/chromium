@@ -22,21 +22,6 @@ namespace policy {
 // of the Data leak prevention policy set by the admin.
 class DlpFilesController {
  public:
-  // Types of file actions. These actions are used when warning dialogs are
-  // shown because of files restrictions. This is used in UMA histograms, should
-  // not change order.
-  enum class FileAction {
-    kUnknown = 0,
-    kDownload = 1,
-    kTransfer = 2,
-    kUpload = 3,
-    kCopy = 4,
-    kMove = 5,
-    kOpen = 6,
-    kShare = 7,
-    kMaxValue = kShare
-  };
-
   // FileDaemonInfo represents file info used for communication with the DLP
   // daemon.
   struct FileDaemonInfo {
@@ -82,9 +67,6 @@ class DlpFilesController {
   virtual absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) = 0;
-
-  ::dlp::DlpComponent MapPolicyComponentToProto(
-      data_controls::Component component);
 
   // TODO(b/284122497): Remove testing friend.
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerComponentsTest, TestConvert);
