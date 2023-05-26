@@ -125,7 +125,8 @@ public class PasswordMigrationWarningRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testShowsPasswordMigrationWwarningFirstPage() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1449036")
+    public void testShowsPasswordMigrationWarningFirstPage() throws Exception {
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
