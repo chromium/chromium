@@ -19,23 +19,24 @@ import Protocol from 'devtools-protocol';
 import {
   BrowsingContext,
   CDP,
+  Input,
   Message,
   Script,
 } from '../../../protocol/protocol.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LoggerFn, LogType} from '../../../utils/log.js';
 import {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
-import {BrowsingContextStorage} from './browsingContextStorage.js';
-import {BrowsingContextImpl} from './browsingContextImpl.js';
-import {CdpTarget} from './cdpTarget.js';
 import {
-  PreloadScriptStorage,
-  CdpPreloadScript,
   BidiPreloadScript,
+  CdpPreloadScript,
+  PreloadScriptStorage,
 } from './PreloadScriptStorage.js';
+import {BrowsingContextImpl} from './browsingContextImpl.js';
+import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -424,6 +425,17 @@ export class BrowsingContextProcessor {
     const realm = await this.#getRealm(params.target);
     await Promise.all(params.handles.map(async (h) => realm.disown(h)));
     return {result: {}};
+  }
+
+  process_input_performActions(
+    _params: Input.PerformActionsParameters
+  ): Promise<Message.EmptyResult> {
+    throw new Message.UnsupportedOperationException('Not implemented yet.');
+  }
+  process_input_releaseActions(
+    _params: Input.ReleaseActionsParameters
+  ): Promise<Message.EmptyResult> {
+    throw new Message.UnsupportedOperationException('Not implemented yet.');
   }
 
   async process_browsingContext_close(

@@ -21,6 +21,7 @@ import * as Parser from '../protocol-parser/protocol-parser.js';
 import {
   BrowsingContext,
   CDP,
+  Input,
   Message,
   Script,
   Session,
@@ -323,6 +324,13 @@ class BidiParserImpl implements BidiParser {
   }
   parsePrintParams(params: object): BrowsingContext.PrintParameters {
     return Parser.BrowsingContext.parsePrintParams(params);
+  }
+
+  parsePerformActionsParams(params: object): Input.PerformActionsParameters {
+    return Parser.Input.parsePerformActionsParams(params);
+  }
+  parseReleaseActionsParams(params: object): Input.ReleaseActionsParameters {
+    return Parser.Input.parseReleaseActionsParams(params);
   }
 }
 
