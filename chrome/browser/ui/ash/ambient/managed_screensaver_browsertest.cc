@@ -8,13 +8,17 @@
 
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/autotest_ambient_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -44,6 +48,8 @@ namespace ash {
 constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
 
 const char kTestEmail[] = "test@example.com";
+constexpr char kCacheDirectoryName[] = "managed_screensaver";
+constexpr char kSigninCacheDirectoryPath[] = "signin";
 const char kTestLargeImage[] = "test_large.jpg";
 const char kTestInvalidImage[] = "test_invalid.jpf";
 const char kRedImageFileName[] = "chromeos/screensaver/red.jpg";
@@ -346,6 +352,19 @@ class ManagedScreensaverBrowserTestForAnyScreen
     }
     NOTREACHED();
   }
+
+  base::FilePath GetPolicyHandlerCachePath() {
+    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    switch (test_case.test_type) {
+      case TestType::LoginScreen:
+        return base::PathService::CheckedGet(
+                   ash::DIR_DEVICE_POLICY_SCREENSAVER_DATA)
+            .AppendASCII(kSigninCacheDirectoryPath);
+      case TestType::LockScreen:
+        return base::PathService::CheckedGet(base::DIR_HOME)
+            .AppendASCII(kCacheDirectoryName);
+    }
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -426,6 +445,40 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
       /*on_timeout=*/run_loop_->QuitClosure());
   run_loop_->Run();
+  ASSERT_EQ(nullptr, GetContainerView());
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
+                       ClearingTheImagesStopsScreensaver) {
+  Init();
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
+  AutotestAmbientApi test_api;
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  test_api.WaitForPhotoTransitionAnimationCompleted(
+      /*num_completions=*/3, /*timeout=*/base::Seconds(3),
+      /*on_complete=*/run_loop_->QuitClosure(),
+      /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
+  run_loop_->Run();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(ComputeDirectorySize(GetPolicyHandlerCachePath()) > 0);
+  }
+  ASSERT_NE(nullptr, GetContainerView());
+
+  SetImages({});
+  run_loop_ = std::make_unique<base::RunLoop>();
+  test_api.WaitForPhotoTransitionAnimationCompleted(
+      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_timeout=*/run_loop_->QuitClosure());
+  run_loop_->Run();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_EQ(0, ComputeDirectorySize(GetPolicyHandlerCachePath()));
+  }
   ASSERT_EQ(nullptr, GetContainerView());
 }
 
