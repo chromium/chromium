@@ -8,12 +8,12 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -40,14 +40,16 @@ bool AreImagesEqual(const gfx::ImageSkia& image,
 
 }  // namespace
 
-class HotspotTrayViewTest : public NoSessionAshTestBase,
+class HotspotTrayViewTest : public AshTestBase,
                             public testing::WithParamInterface<bool> {
  public:
-  HotspotTrayViewTest() = default;
+  HotspotTrayViewTest()
+      : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   ~HotspotTrayViewTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
     if (IsJellyEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kHotspot, chromeos::features::kJelly}, {});
@@ -57,12 +59,12 @@ class HotspotTrayViewTest : public NoSessionAshTestBase,
     cros_hotspot_config_test_helper_ =
         std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
             /*use_fake_implementation=*/true);
+    AshTestBase::SetUp();
     std::unique_ptr<HotspotTrayView> hotspot_tray_view =
         std::make_unique<HotspotTrayView>(GetPrimaryShelf());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     hotspot_tray_view_ = widget_->SetContentsView(std::move(hotspot_tray_view));
-    LogIn();
 
     // Spin the runloop to sync up the latest hotspot info.
     base::RunLoop().RunUntilIdle();
@@ -73,8 +75,6 @@ class HotspotTrayViewTest : public NoSessionAshTestBase,
     cros_hotspot_config_test_helper_.reset();
     AshTestBase::TearDown();
   }
-
-  void LogIn() { SimulateUserLogin("user1@test.com"); }
 
   void SetHotspotStateAndClientCount(HotspotState state, size_t client_count) {
     auto hotspot_info = HotspotInfo::New();
@@ -108,21 +108,39 @@ class HotspotTrayViewTest : public NoSessionAshTestBase,
 INSTANTIATE_TEST_SUITE_P(Jelly, HotspotTrayViewTest, testing::Bool());
 
 TEST_P(HotspotTrayViewTest, HotspotIconImage) {
+  SetHotspotStateAndClientCount(HotspotState::kDisabled, 0);
+  EXPECT_TRUE(AreImagesEqual(
+      hotspot_tray_view_->image_view()->GetImage(),
+      gfx::CreateVectorIcon(kHotspotOffIcon, kUnifiedTrayIconSize,
+                            widget_->GetColorProvider()->GetColor(
+                                cros_tokens::kCrosSysOnSurface))));
+
   SetHotspotStateAndClientCount(HotspotState::kEnabled, 0);
-  if (IsJellyEnabled()) {
-    EXPECT_TRUE(AreImagesEqual(
-        hotspot_tray_view_->image_view()->GetImage(),
-        gfx::CreateVectorIcon(kHotspotOnIcon, kUnifiedTrayIconSize,
-                              widget_->GetColorProvider()->GetColor(
-                                  cros_tokens::kCrosSysPrimary))));
-  } else {
-    EXPECT_TRUE(AreImagesEqual(
-        hotspot_tray_view_->image_view()->GetImage(),
-        gfx::CreateVectorIcon(
-            kHotspotOnIcon, kUnifiedTrayIconSize,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary))));
-  }
+  EXPECT_TRUE(AreImagesEqual(
+      hotspot_tray_view_->image_view()->GetImage(),
+      gfx::CreateVectorIcon(kHotspotOnIcon, kUnifiedTrayIconSize,
+                            widget_->GetColorProvider()->GetColor(
+                                cros_tokens::kCrosSysOnSurface))));
+
+  SetHotspotStateAndClientCount(HotspotState::kEnabling, 0);
+  EXPECT_TRUE(AreImagesEqual(
+      hotspot_tray_view_->image_view()->GetImage(),
+      gfx::CreateVectorIcon(kHotspotDotIcon, kUnifiedTrayIconSize,
+                            widget_->GetColorProvider()->GetColor(
+                                cros_tokens::kCrosSysOnSurface))));
+  // Verifies the hotspot icon is animating when enabling.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(AreImagesEqual(
+      hotspot_tray_view_->image_view()->GetImage(),
+      gfx::CreateVectorIcon(kHotspotOneArcIcon, kUnifiedTrayIconSize,
+                            widget_->GetColorProvider()->GetColor(
+                                cros_tokens::kCrosSysOnSurface))));
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(AreImagesEqual(
+      hotspot_tray_view_->image_view()->GetImage(),
+      gfx::CreateVectorIcon(kHotspotOnIcon, kUnifiedTrayIconSize,
+                            widget_->GetColorProvider()->GetColor(
+                                cros_tokens::kCrosSysOnSurface))));
 }
 
 TEST_P(HotspotTrayViewTest, HotspotIconVisibility) {
@@ -133,6 +151,9 @@ TEST_P(HotspotTrayViewTest, HotspotIconVisibility) {
 
   SetHotspotStateAndClientCount(HotspotState::kDisabled, 0);
   EXPECT_FALSE(IsIconVisible());
+
+  SetHotspotStateAndClientCount(HotspotState::kEnabling, 0);
+  EXPECT_TRUE(IsIconVisible());
 }
 
 TEST_P(HotspotTrayViewTest, HotspotIconTooltip) {

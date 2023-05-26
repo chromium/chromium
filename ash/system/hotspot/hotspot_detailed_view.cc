@@ -12,6 +12,8 @@
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/style/typography.h"
+#include "ash/system/hotspot/hotspot_icon.h"
+#include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -59,14 +61,21 @@ HotspotDetailedView::HotspotDetailedView(
   CreateContainer();
 }
 
-HotspotDetailedView::~HotspotDetailedView() = default;
+HotspotDetailedView::~HotspotDetailedView() {
+  Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
+}
 
 void HotspotDetailedView::UpdateViewForHotspot(HotspotInfoPtr hotspot_info) {
-  // Update the Hotspot icon.
-  hotspot_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      IsEnabledOrEnabling(hotspot_info->state) ? kHotspotOnIcon
-                                               : kHotspotOffIcon,
-      cros_tokens::kCrosSysOnSurface));
+  if (hotspot_info->state == HotspotState::kEnabling) {
+    Shell::Get()->hotspot_icon_animation()->AddObserver(this);
+  } else if (state_ == HotspotState::kEnabling) {
+    Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
+  }
+
+  if (state_ != hotspot_info->state) {
+    state_ = hotspot_info->state;
+    UpdateIcon();
+  }
 
   UpdateSubText(hotspot_info);
   UpdateToggleState(hotspot_info->state, hotspot_info->allow_status);
@@ -117,6 +126,8 @@ void HotspotDetailedView::CreateContainer() {
   auto hotspot_icon = std::make_unique<views::ImageView>();
   hotspot_icon->SetID(
       static_cast<int>(HotspotDetailedViewChildId::kHotspotIcon));
+  hotspot_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kHotspotOffIcon, cros_tokens::kCrosSysOnSurface));
   hotspot_icon_ = hotspot_icon.get();
   entry_row_->AddViewAndLabel(std::move(hotspot_icon), u"");
   entry_row_->text_label()->SetText(l10n_util::GetStringFUTF16(
@@ -156,6 +167,15 @@ void HotspotDetailedView::OnToggleClicked() {
 
 void HotspotDetailedView::ToggleHotspot(bool new_state) {
   delegate_->OnToggleClicked(new_state);
+}
+
+void HotspotDetailedView::HotspotIconChanged() {
+  UpdateIcon();
+}
+
+void HotspotDetailedView::UpdateIcon() {
+  hotspot_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      hotspot_icon::GetIconForHotspot(state_), cros_tokens::kCrosSysOnSurface));
 }
 
 void HotspotDetailedView::UpdateToggleState(
