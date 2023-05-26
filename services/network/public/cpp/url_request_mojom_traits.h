@@ -163,23 +163,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource> {
-  static uint32_t source_id(const net::NetLogSource& params) {
-    return params.id;
-  }
-  static uint32_t source_type(const net::NetLogSource& params) {
-    return static_cast<uint32_t>(params.type);
-  }
-  static base::TimeTicks start_time(const net::NetLogSource& params) {
-    return params.start_time;
-  }
-
-  static bool Read(network::mojom::NetLogSourceDataView data,
-                   net::NetLogSource* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::URLRequestDataView, network::ResourceRequest> {
   static const std::string& method(const network::ResourceRequest& request) {
     return request.method;

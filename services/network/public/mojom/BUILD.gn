@@ -537,10 +537,6 @@ mojom("url_loader_base") {
           cpp = "::network::ResourceRequest::WebBundleTokenParams"
         },
         {
-          mojom = "network.mojom.NetLogSource"
-          cpp = "::net::NetLogSource"
-        },
-        {
           mojom = "network.mojom.URLRequest"
           cpp = "::network::ResourceRequest"
           forward_declaration = "namespace network { struct ResourceRequest; }"
@@ -844,6 +840,10 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.HostPortPair"
           cpp = "::net::HostPortPair"
+        },
+        {
+          mojom = "network.mojom.NetLogSource"
+          cpp = "::net::NetLogSource"
         },
       ]
       traits_headers =

@@ -6,7 +6,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "net/log/net_log_source_type.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_client_cert_type.h"
 
@@ -204,6 +206,23 @@ bool StructTraits<network::mojom::SSLCertRequestInfoDataView,
 
   *out = ssl_cert_request_info;
 
+  return true;
+}
+
+// static
+bool StructTraits<network::mojom::NetLogSourceDataView, net::NetLogSource>::
+    Read(network::mojom::NetLogSourceDataView data, net::NetLogSource* out) {
+  if (data.source_type() >=
+      static_cast<uint32_t>(net::NetLogSourceType::COUNT)) {
+    return false;
+  }
+  base::TimeTicks start_time;
+  if (!data.ReadStartTime(&start_time)) {
+    return false;
+  }
+  *out =
+      net::NetLogSource(static_cast<net::NetLogSourceType>(data.source_type()),
+                        data.source_id(), start_time);
   return true;
 }
 

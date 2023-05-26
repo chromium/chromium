@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/scheme_host_port.mojom";
 
 // Information related to an authentication challenge in an HTTP response.
@@ -100,3 +101,10 @@ struct SSLInfo;
 
 [Native]
 struct X509Certificate;
+
+// Typemapped to net::NetLogSource.
+struct NetLogSource {
+  uint32 source_type;
+  uint32 source_id;
+  mojo_base.mojom.TimeTicks start_time;
+};
