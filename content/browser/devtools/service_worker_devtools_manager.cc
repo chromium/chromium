@@ -158,7 +158,8 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
   if (agent_host) {
     live_hosts_[worker_id] = agent_host;
     agent_host->WorkerStarted(worker_process_id, worker_route_id);
-    *pause_on_start = agent_host->IsAttached();
+    *pause_on_start =
+        agent_host->IsAttached() && agent_host->should_pause_on_start();
     *devtools_worker_token = agent_host->devtools_worker_token();
     return;
   }
