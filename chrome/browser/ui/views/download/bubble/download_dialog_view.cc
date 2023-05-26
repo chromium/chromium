@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -56,8 +57,12 @@ class ShowAllDownloadsButton : public RichHoverButton {
             /*secondary_text=*/std::u16string(),
             l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_FOOTER_TOOLTIP),
             /*subtitle_text=*/std::u16string(),
-            ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                           ui::kColorIconSecondary)) {
+            ui::ImageModel::FromVectorIcon(
+                features::IsChromeRefresh2023()
+                    ? vector_icons::kLaunchChromeRefreshIcon
+                    : vector_icons::kLaunchIcon,
+                ui::kColorIconSecondary,
+                GetLayoutConstant(DOWNLOAD_ICON_SIZE))) {
     // Override the table layout from RichHoverButton, in order to control the
     // spacing/padding. Code below is copied from rich_hover_button.cc but with
     // padding columns rearranged.
@@ -131,7 +136,9 @@ void DownloadDialogView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadDialogView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseRoundedIcon,
+          features::IsChromeRefresh2023()
+              ? vector_icons::kCloseChromeRefreshIcon
+              : vector_icons::kCloseRoundedIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   InstallCircleHighlightPathGenerator(close_button);
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));

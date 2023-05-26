@@ -57,6 +57,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -953,7 +954,9 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
     return DownloadUIModel::BubbleUIInfo()
         .AddSubpageSummary(l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
-        .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+        .AddIconAndColor(features::IsChromeRefresh2023()
+                             ? vector_icons::kNotSecureWarningChromeRefreshIcon
+                             : vector_icons::kNotSecureWarningIcon,
                          ui::kColorAlertMediumSeverityIcon)
         .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
@@ -987,7 +990,9 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
             .AddSubpageSummary(l10n_util::GetStringFUTF16(
                 IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
                 base::ASCIIToUTF16(email)))
-            .AddIconAndColor(vector_icons::kDangerousIcon,
+            .AddIconAndColor(features::IsChromeRefresh2023()
+                                 ? vector_icons::kDangerousChromeRefreshIcon
+                                 : vector_icons::kDangerousIcon,
                              ui::kColorAlertHighSeverity)
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
             .AddPrimarySubpageButton(
@@ -998,7 +1003,9 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
     return DownloadUIModel::BubbleUIInfo()
         .AddSubpageSummary(l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))
-        .AddIconAndColor(vector_icons::kDangerousIcon,
+        .AddIconAndColor(features::IsChromeRefresh2023()
+                             ? vector_icons::kDangerousChromeRefreshIcon
+                             : vector_icons::kDangerousIcon,
                          ui::kColorAlertHighSeverity)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
         .AddPrimarySubpageButton(

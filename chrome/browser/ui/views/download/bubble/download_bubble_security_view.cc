@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -60,16 +61,21 @@ void DownloadBubbleSecurityView::AddHeader() {
   auto* header = AddChildView(std::make_unique<views::View>());
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
-  header->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  if (!features::IsChromeRefresh2023()) {
+    header->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  }
 
   back_button_ =
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
-          vector_icons::kArrowBackIcon, GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+          features::IsChromeRefresh2023()
+              ? vector_icons::kArrowBackChromeRefreshIcon
+              : vector_icons::kArrowBackIcon,
+          GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_BACK_RECENT_DOWNLOADS));
@@ -94,7 +100,9 @@ void DownloadBubbleSecurityView::AddHeader() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
-          vector_icons::kCloseRoundedIcon,
+          features::IsChromeRefresh2023()
+              ? vector_icons::kCloseChromeRefreshIcon
+              : vector_icons::kCloseRoundedIcon,
           GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);
@@ -199,10 +207,17 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   icon_text_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  icon_text_row->SetProperty(views::kMarginsKey, gfx::Insets(side_margin));
+  icon_text_row->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(
+          side_margin,
+          // In CR2023 the horizontal margin is added to the parent view.
+          features::IsChromeRefresh2023() ? 0 : side_margin));
 
   icon_ = icon_text_row->AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
+  const int icon_size = GetLayoutConstant(DOWNLOAD_ICON_SIZE);
+  icon_->SetImageSize({icon_size, icon_size});
 
   auto* wrapper = icon_text_row->AddChildView(std::make_unique<views::View>());
   wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -362,6 +377,7 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
   // Announce that the subpage was opened to inform the user about the changes
   // in the UI.
 #if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
   GetViewAccessibility().OverrideName(ui_info.warning_summary);
   NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 #else
@@ -382,6 +398,9 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
       bubble_delegate_(bubble_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
+  if (features::IsChromeRefresh2023()) {
+    SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ROW));
+  }
   AddHeader();
   AddIconAndText();
 }

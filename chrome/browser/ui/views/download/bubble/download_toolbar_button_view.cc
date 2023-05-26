@@ -122,6 +122,12 @@ gfx::Insets GetPrimaryViewMargin() {
 }
 
 gfx::Insets GetSecurityViewMargin() {
+  if (features::IsChromeRefresh2023()) {
+    return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                           0);
+  }
+
   return gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
@@ -531,7 +537,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
 // browser becomes active, so that clicking outside the bubble will deactivate
 // and close it.
 void DownloadToolbarButtonView::OnBrowserSetLastActive(Browser* browser) {
-  if (browser == browser_ && bubble_delegate_) {
+  if (browser == browser_ && bubble_delegate_ &&
+      !bubble_delegate_->GetWidget()->IsClosed()) {
     // We need to defer activating the download bubble when the browser window
     // is being activated, otherwise this is ineffective on macOS.
     content::GetUIThreadTaskRunner()->PostTask(

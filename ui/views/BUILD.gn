@@ -33,6 +33,7 @@ aggregate_vector_icons("views_vector_icons") {
     "eye_crossed.icon",
     "ic_close.icon",
     "info.icon",
+    "info_chrome_refresh.icon",
     "launch.icon",
     "linux_high_density.icon",
     "linux_low_density.icon",

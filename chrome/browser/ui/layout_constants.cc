@@ -112,7 +112,7 @@ int GetLayoutConstant(LayoutConstant constant) {
       return base::FeatureList::IsEnabled(features::kChromeRefresh2023) ? 20
                                                                         : 16;
     case DOWNLOAD_ICON_SIZE:
-      return 16;
+      return features::IsChromeRefresh2023() ? 20 : 16;
     case TOOLBAR_CORNER_RADIUS:
       return 8;
     default:
@@ -129,8 +129,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
       return gfx::Insets(4);
 
     case DOWNLOAD_ROW:
-      return gfx::Insets::VH(8, 16);
-
+      return gfx::Insets::VH(8, features::IsChromeRefresh2023() ? 20 : 16);
     case LOCATION_BAR_ICON_INTERIOR_PADDING:
       return touch_ui ? gfx::Insets::VH(5, 10) : gfx::Insets::VH(4, 8);
 

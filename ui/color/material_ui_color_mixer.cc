@@ -66,6 +66,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorMenuIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForegroundSecondary] = {kColorSysOnSurfaceSubtle};
   mixer[kColorMenuItemForeground] = {kColorSysOnSurface};
+  mixer[kColorProgressBar] = {ui::kColorSysPrimary};
+  mixer[kColorProgressBarBackground] = {ui::kColorSysNeutralOutline};
+  mixer[kColorProgressBarPaused] = {ui::kColorSysStateDisabled};
   mixer[kColorRadioButtonForegroundChecked] = {kColorSysPrimary};
   mixer[kColorRadioButtonForegroundDisabled] = {
       kColorSysStateDisabledContainer};

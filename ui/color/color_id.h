@@ -345,6 +345,7 @@
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredDark) \
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
+  E_CPONLY(kColorProgressBarBackground) \
   E_CPONLY(kColorProgressBarPaused) \
   E_CPONLY(kColorRadioButtonForegroundUnchecked) \
   E_CPONLY(kColorRadioButtonForegroundDisabled) \

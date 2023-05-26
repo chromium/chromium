@@ -177,10 +177,11 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorOverlayScrollbarStrokeHoveredLight] =
       SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
                gfx::kGoogleGreyAlpha500);
+  mixer[kColorProgressBar] = PickGoogleColorTwoBackgrounds(
+      kColorAccent, kColorDialogBackground, kColorProgressBarBackground,
+      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorProgressBarBackground] = {kColorMidground};
   mixer[kColorProgressBarPaused] = {kColorDisabledForeground};
-  mixer[kColorProgressBar] =
-      PickGoogleColor(kColorAccent, kColorDialogBackground,
-                      color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorRadioButtonForegroundChecked] = {kColorButtonForeground};
   mixer[kColorRadioButtonForegroundUnchecked] = {kColorSecondaryForeground};
   mixer[kColorScrollbarArrowBackgroundHovered] = {
