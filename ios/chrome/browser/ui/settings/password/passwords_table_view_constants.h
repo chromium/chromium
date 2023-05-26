@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierBlocked,
   SectionIdentifierPasswordCheck,
   SectionIdentifierAddPasswordButton,
+  SectionIdentifierManageAccountHeader,
 };
 
 // Enum with all possible UI states for the Password Manager's Password Checkup
