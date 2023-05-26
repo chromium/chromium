@@ -43,6 +43,7 @@ include_rules = [
   "+components/sync_device_info",
   "+components/translate/core",
   "+components/translate/ios",
+  "+components/trusted_vault",
   "+components/unified_consent",
   "+components/update_client",
   "+components/url_formatter",
