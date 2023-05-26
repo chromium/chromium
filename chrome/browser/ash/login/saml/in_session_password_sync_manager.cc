@@ -217,8 +217,6 @@ void InSessionPasswordSyncManager::OnCookiesTransfered() {
         base::MakeRefCounted<AuthSessionAuthenticator>(
             this, std::make_unique<ChromeSafeModeDelegate>(),
             /*user_recorder=*/base::DoNothing(),
-            user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
-                primary_user_->GetAccountId()),
             g_browser_process->local_state());
   }
   // Perform a fast ("verify-only") check of the current password. This is an
@@ -227,6 +225,8 @@ void InSessionPasswordSyncManager::OnCookiesTransfered() {
   // changed, we'll need to start a new cryptohome AuthSession for updating
   // the password auth factor (in `password_update_flow_`).
   auth_session_authenticator_->AuthenticateToUnlock(
+      user_manager::UserManager::Get()->IsEphemeralAccountId(
+          user_context_.GetAccountId()),
       std::make_unique<UserContext>(user_context_));
 }
 

@@ -734,7 +734,7 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
     } else {
       authenticator_ = new AuthSessionAuthenticator(
           consumer, std::make_unique<ChromeSafeModeDelegate>(),
-          base::BindRepeating(&RecordKnownUser), IsEphemeralMountForced(),
+          base::BindRepeating(&RecordKnownUser),
           g_browser_process->local_state());
     }
   } else {
