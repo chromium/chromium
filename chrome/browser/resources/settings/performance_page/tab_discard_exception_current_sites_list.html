@@ -1,0 +1,33 @@
+<style include="settings-shared">
+  cr-checkbox::part(label-container) {
+    min-width: 0;
+  }
+
+  .label-slot {
+    align-items: center;
+    display: flex;
+  }
+
+  .checkbox-label {
+    margin-inline-start: 10px;
+  }
+</style>
+<div id="container" scrollable>
+  <iron-list id="list" scroll-target="container" role="grid"
+      items="[[currentSites_]]" selected-items="{{selectedSites_}}"
+      selection-enabled multi-selection
+      aria-rowcount$="[[currentSites_.length]]"
+      hidden$="[[!currentSites_.length]]">
+    <template>
+      <cr-checkbox class="list-item no-outline" role="row"
+          tab-index="[[tabIndex]]"
+          aria-rowindex$="[[getAriaRowindex_(index)]]"
+          on-change="onToggleSelection_" checked="{{selected}}">
+        <div class="label-slot">
+          <site-favicon url="[[item]]"></site-favicon>
+          <div class="checkbox-label text-elide">[[item]]</div>
+        </div>
+      </cr-checkbox>
+    </template>
+  </iron-list>
+</div>

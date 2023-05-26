@@ -180,6 +180,9 @@ const char kGooglePhotosURL[] = "https://photos.google.com";
 const char kHighEfficiencyModeLearnMoreUrl[] =
     "https://support.google.com/chrome/?p=chrome_memory_saver";
 
+const char kHighEfficiencyModeTabDiscardingHelpUrl[] =
+    "https://support.google.com/chrome/?p=performance_site_exclusion";
+
 const char kLearnMoreReportingURL[] =
     "https://support.google.com/chrome/?p=ui_usagestat";
 

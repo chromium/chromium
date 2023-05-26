@@ -503,6 +503,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isHighEfficiencyMultistateModeEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyMultistateMode));
+  html_source->AddBoolean(
+      "isDiscardExceptionsImprovementsEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kDiscardExceptionsImprovements));
 
   html_source->AddBoolean(
       "enablePermissionStorageAccessApi",

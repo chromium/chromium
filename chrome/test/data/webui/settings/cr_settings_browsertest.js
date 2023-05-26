@@ -557,6 +557,35 @@ TEST_F('CrSettingsPerformancePageMultistateTest', 'ExceptionList', function() {
   runMochaSuite('TabDiscardExceptionList');
 });
 
+var CrSettingsPerformancePageDiscardExceptionImprovementsTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'performance_manager::features::kDiscardExceptionsImprovements',
+      ],
+    };
+  }
+};
+
+TEST_F(
+    'CrSettingsPerformancePageDiscardExceptionImprovementsTest', 'Controls',
+    function() {
+      runMochaSuite('PerformancePage');
+    });
+
+TEST_F(
+    'CrSettingsPerformancePageDiscardExceptionImprovementsTest',
+    'ExceptionList', function() {
+      runMochaSuite('TabDiscardExceptionList');
+    });
+
 var CrSettingsBatteryPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

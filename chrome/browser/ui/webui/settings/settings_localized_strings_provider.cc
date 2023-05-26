@@ -675,6 +675,10 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER},
       {"tabDiscardingExceptionsAdditionalSites",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES},
+      {"tabDiscardingExceptionsAddDialogCurrentTabs",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS},
+      {"tabDiscardingExceptionsAddDialogManual",
+       IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -722,6 +726,11 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           base::NumberToString16(
               performance_manager::user_tuning::UserPerformanceTuningManager::
                   kLowBatteryThresholdPercent)));
+  html_source->AddString(
+      "tabDiscardingExceptionsAddDialogHelp",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP,
+          base::ASCIIToUTF16(chrome::kHighEfficiencyModeTabDiscardingHelpUrl)));
 
   html_source->AddString("highEfficiencyLearnMoreUrl",
                          chrome::kHighEfficiencyModeLearnMoreUrl);

@@ -7,15 +7,26 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     PerformanceBrowserProxy {
-  private validationResult_: boolean = true;
+  private currentSites_: string[] = [];
+  private validationResults_: Record<string, boolean> = {};
 
   constructor() {
     super([
+      'getCurrentOpenSites',
       'getDeviceHasBattery',
       'openBatterySaverFeedbackDialog',
       'openHighEfficiencyFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
+  }
+
+  setCurrentOpenSites(currentSites: string[]) {
+    this.currentSites_ = currentSites;
+  }
+
+  getCurrentOpenSites() {
+    this.methodCalled('getCurrentOpenSites');
+    return Promise.resolve(this.currentSites_);
   }
 
   getDeviceHasBattery() {
@@ -31,12 +42,12 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('openHighEfficiencyFeedbackDialog');
   }
 
-  setValidationResult(result: boolean) {
-    this.validationResult_ = result;
+  setValidationResults(results: Record<string, boolean>) {
+    this.validationResults_ = results;
   }
 
   validateTabDiscardExceptionRule(rule: string) {
     this.methodCalled('validateTabDiscardExceptionRule', rule);
-    return Promise.resolve(this.validationResult_);
+    return Promise.resolve(this.validationResults_[rule] ?? true);
   }
 }

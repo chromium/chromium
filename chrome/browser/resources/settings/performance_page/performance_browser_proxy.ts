@@ -5,6 +5,7 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 export interface PerformanceBrowserProxy {
+  getCurrentOpenSites(): Promise<string[]>;
   getDeviceHasBattery(): Promise<boolean>;
   openBatterySaverFeedbackDialog(): void;
   openHighEfficiencyFeedbackDialog(): void;
@@ -12,6 +13,10 @@ export interface PerformanceBrowserProxy {
 }
 
 export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
+  getCurrentOpenSites() {
+    return sendWithPromise('getCurrentOpenSites');
+  }
+
   getDeviceHasBattery() {
     return sendWithPromise('getDeviceHasBattery');
   }
