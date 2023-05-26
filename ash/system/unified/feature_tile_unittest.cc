@@ -19,6 +19,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -354,6 +355,18 @@ TEST_F(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
   EXPECT_EQ(
       views::InkDrop::Get(tile)->GetBaseColor(),
       color_provider->GetColor(cros_tokens::kCrosSysRippleNeutralOnSubtle));
+}
+
+// Regression test for http://b/284318391
+TEST_F(FeatureTileTest, TogglingTileHidesInkDrop) {
+  auto mock_controller = std::make_unique<MockFeaturePodController>(
+      /*togglable=*/true);
+  auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
+
+  LeftClickOn(tile);
+  ASSERT_TRUE(tile->IsToggled());
+  EXPECT_EQ(views::InkDrop::Get(tile)->GetInkDrop()->GetTargetInkDropState(),
+            views::InkDropState::HIDDEN);
 }
 
 }  // namespace ash

@@ -271,6 +271,7 @@ void FeatureTile::SetToggled(bool toggled) {
 
   toggled_ = toggled;
   UpdateColors();
+  views::InkDrop::Get(this)->GetInkDrop()->SnapToHidden();
 }
 
 bool FeatureTile::IsToggled() const {
