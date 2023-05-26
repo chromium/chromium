@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -44,8 +45,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = TabStripSceneLayerJni.get().init(
-                    TabStripSceneLayer.this, ChromeFeatureList.sTabStripRedesign.isEnabled());
+            mNativePtr = TabStripSceneLayerJni.get().init(TabStripSceneLayer.this,
+                    ChromeFeatureList.sTabStripRedesign.isEnabled(),
+                    TabUiFeatureUtilities.isTabStripButtonStyleDisabled());
         }
         // Set flag for testing
         if (!sTestFlag) {
@@ -177,7 +179,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
 
     @NativeMethods
     public interface Natives {
-        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled);
+        long init(TabStripSceneLayer caller, boolean isTabStripRedesignEnabled,
+                boolean isTsrButtonStyleDisabled);
         void beginBuildingFrame(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, boolean visible);
         void finishBuildingFrame(long nativeTabStripSceneLayer, TabStripSceneLayer caller);

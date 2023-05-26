@@ -27,9 +27,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.ContextThemeWrapper;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -94,6 +98,7 @@ public class StripLayoutHelperTest {
     private StripLayoutHelperManager mStripLayoutHelperManager;
 
     private Activity mActivity;
+    private Context mContext;
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
@@ -136,6 +141,8 @@ public class StripLayoutHelperTest {
         MockitoAnnotations.initMocks(this);
         when(mModelSelectorBtn.isVisible()).thenReturn(true);
         when(mTabGroupModelFilter.hasOtherRelatedTabs(any())).thenReturn(false);
+        mContext = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
@@ -768,6 +775,30 @@ public class StripLayoutHelperTest {
         // stripWidth(800) - tabWidth(237) - tabOverLapWidth(28) - NtbWidth(36) = 499
         assertEquals("New tab button position is not as expected", 499,
                 mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testNewTabButtonStyle_ButtonStyleDisabled() {
+        // Setup
+        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.setForTesting(true);
+        int tabCount = 1;
+        initializeTest(false, false, false, 0, tabCount);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify new tab button position.
+        // tabWidth(237) + tabOverLapWidth(28) + folioXOffset(6) = 271
+        assertEquals("New tab button position is not as expected", 271.f,
+                mStripLayoutHelper.getNewTabButton().getX(), EPSILON);
+
+        assertEquals("Unexpected incognito button color.",
+                AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_tint_list)
+                        .getDefaultColor(),
+                ((org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton)
+                                mStripLayoutHelper.getNewTabButton())
+                        .getTint());
     }
 
     @Test

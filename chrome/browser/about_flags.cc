@@ -3154,6 +3154,11 @@ const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorFolio[] = {
 const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorDetached[] = {
     {"disable_ntb_anchor", "true"},
     {"enable_detached", "true"}};
+const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleFolio[] = {
+    {"disable_btn_style", "true"},
+    {"enable_folio", "true"}};
+const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleDetached[] =
+    {{"disable_btn_style", "true"}, {"enable_detached", "true"}};
 
 const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
     {"Folio", kTabStripRedesignFolio, std::size(kTabStripRedesignFolio),
@@ -3163,7 +3168,12 @@ const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
     {"Folio NTB Unanchored ", kTabStripRedesignDisableNtbAnchorFolio,
      std::size(kTabStripRedesignDisableNtbAnchorFolio), nullptr},
     {"Detached NTB Unanchored", kTabStripRedesignDisableNtbAnchorDetached,
-     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr}};
+     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr},
+    {"Folio Remove Button Style", kTabStripRedesignDisableButtonStyleFolio,
+     std::size(kTabStripRedesignDisableButtonStyleFolio), nullptr},
+    {"Detached Remove Button Style",
+     kTabStripRedesignDisableButtonStyleDetached,
+     std::size(kTabStripRedesignDisableButtonStyleDetached), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

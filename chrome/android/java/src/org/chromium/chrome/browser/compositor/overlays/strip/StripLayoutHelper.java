@@ -1707,14 +1707,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
+    private boolean isNewTabButtonAnchorDisabled() {
+        return !ChromeFeatureList.sTabStripRedesign.isEnabled()
+                || TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()
+                || TabUiFeatureUtilities.isTabStripButtonStyleDisabled();
+    }
+
+    // @Todo (crbugs.com/1448590) Update NTB and incognito position for button style disabled param.
     private CompositorAnimator updateNewTabButtonState(boolean animate) {
         // 1. The NTB is faded out upon entering reorder mode and hidden when the model is empty.
         boolean isEmpty = mStripTabs.length == 0;
         mNewTabButton.setVisible(!isEmpty);
         if (mInReorderMode || isEmpty) return null;
 
-        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()
-                || TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
+        if (isNewTabButtonAnchorDisabled()) {
             // 2. Get offset from strip stacker.
             float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
                     mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
