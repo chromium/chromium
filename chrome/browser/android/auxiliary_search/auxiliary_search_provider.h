@@ -29,6 +29,8 @@ class AuxiliarySearchProvider : public KeyedService {
   base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
+  static void EnsureFactoryBuilt();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
 

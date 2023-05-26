@@ -101,3 +101,8 @@ jlong JNI_AuxiliarySearchBridge_GetForProfile(
   return reinterpret_cast<intptr_t>(
       AuxiliarySearchProviderFactory::GetForProfile(profile));
 }
+
+// static
+void AuxiliarySearchProvider::EnsureFactoryBuilt() {
+  AuxiliarySearchProviderFactory::GetInstance();
+}
