@@ -114,6 +114,8 @@ export class SettingsSafetyCheckPasswordsChildElement extends
       case SafetyCheckPasswordsStatus.ERROR:
       case SafetyCheckPasswordsStatus.FEATURE_UNAVAILABLE:
       case SafetyCheckPasswordsStatus.WEAK_PASSWORDS_EXIST:
+      case SafetyCheckPasswordsStatus.REUSED_PASSWORDS_EXIST:
+      case SafetyCheckPasswordsStatus.MUTED_COMPROMISED_EXIST:
         return SafetyCheckIconStatus.INFO;
       default:
         assertNotReached();

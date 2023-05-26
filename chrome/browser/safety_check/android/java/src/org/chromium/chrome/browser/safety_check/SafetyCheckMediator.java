@@ -266,7 +266,7 @@ class SafetyCheckMediator
             mLoadStage = PasswordCheckLoadStage.IDLE;
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.SIGNED_OUT);
             // Record the value in UMA.
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.SIGNED_OUT, PasswordsStatus.MAX_VALUE + 1);
             updatePasswordElementClickDestination();
         }
@@ -348,7 +348,7 @@ class SafetyCheckMediator
                     @SafetyCheckProperties.PasswordsState
                     int state = SafetyCheckProperties.passwordsStatefromErrorState(status);
                     RecordHistogram.recordEnumeratedHistogram(
-                            "Settings.SafetyCheck.PasswordsResult",
+                            "Settings.SafetyCheck.PasswordsResult2",
                             SafetyCheckProperties.passwordsStateToNative(state),
                             PasswordsStatus.MAX_VALUE + 1);
                     mModel.set(SafetyCheckProperties.PASSWORDS_STATE, state);
@@ -495,7 +495,7 @@ class SafetyCheckMediator
             mModel.set(SafetyCheckProperties.COMPROMISED_PASSWORDS, mBreachedCredentialsCount);
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.COMPROMISED_EXIST);
             // Record the value in UMA.
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.COMPROMISED_EXIST, PasswordsStatus.MAX_VALUE + 1);
         } else if (mLoadStage == PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD
                 && !mShowSafePasswordState) {
@@ -505,13 +505,13 @@ class SafetyCheckMediator
             // Can show safe state: display no passwords.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.NO_PASSWORDS);
             // Record the value in UMA.
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.NO_PASSWORDS, PasswordsStatus.MAX_VALUE + 1);
         } else {
             // Can show safe state: display no compromises.
             mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.SAFE);
             // Record the value in UMA.
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult2",
                     PasswordsStatus.SAFE, PasswordsStatus.MAX_VALUE + 1);
         }
         // Nothing is blocked on this any longer.
@@ -689,7 +689,7 @@ class SafetyCheckMediator
         setRunnablePasswords(() -> {
             if (mModel == null) return;
 
-            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult2",
                     SafetyCheckProperties.passwordsStateToNative(PasswordsState.ERROR),
                     PasswordsStatus.MAX_VALUE + 1);
             if (error instanceof PasswordCheckBackendException

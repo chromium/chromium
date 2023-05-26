@@ -93,4 +93,19 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   CheckStartStateCancel,
 };
 
+// Name of the histogram used for recording the resulting state of the updates
+// check.
+extern const char kSafetyCheckMetricsUpdates[];
+
+// Name of the histogram used for recording the resulting state of the password
+// check.
+extern const char kSafetyCheckMetricsPasswords[];
+
+// Name of the histogram used for recording the resulting state of the Safe
+// Browsing check.
+extern const char kSafetyCheckMetricsSafeBrowsing[];
+
+// Name of the histogram used for recording safety check interactions.
+extern const char kSafetyCheckInteractions[];
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_CONSTANTS_H_

@@ -358,7 +358,7 @@ void SafetyCheckHandler::OnPasswordsCheckResult(PasswordsStatus status,
             GetStringForPasswords(status, compromised, weak, done, total));
   FireWebUIListener(kPasswordsEvent, event);
   if (status != PasswordsStatus::kChecking) {
-    base::UmaHistogramEnumeration("Settings.SafetyCheck.PasswordsResult",
+    base::UmaHistogramEnumeration("Settings.SafetyCheck.PasswordsResult2",
                                   status);
   }
   passwords_status_ = status;
@@ -517,6 +517,11 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
     case PasswordsStatus::kFeatureUnavailable:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_FEATURE_UNAVAILABLE);
+    case PasswordsStatus::kReusedPasswordsExist:
+    case PasswordsStatus::kMutedCompromisedExist:
+      // Reused and muted compromised warning results not yet supported on
+      // Desktop.
+      NOTREACHED_NORETURN();
   }
 }
 

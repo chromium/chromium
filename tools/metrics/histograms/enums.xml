@@ -92111,6 +92111,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="FAILED"/>
   <int value="8" label="FEATURE_UNAVAILABLE"/>
   <int value="9" label="WEAK_PASSWORDS_EXIST"/>
+  <int value="10" label="REUSED_PASSWORDS_EXIST"/>
+  <int value="11" label="MUTED_COMPROMISED_EXIST"/>
 </enum>
 
 <enum name="SafetyCheckSafeBrowsingStatus">

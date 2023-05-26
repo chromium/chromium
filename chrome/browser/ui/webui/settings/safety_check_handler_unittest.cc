@@ -730,7 +730,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, u"");
-  histogram_tester_.ExpectTotalCount("Settings.SafetyCheck.PasswordsResult", 0);
+  histogram_tester_.ExpectTotalCount("Settings.SafetyCheck.PasswordsResult2",
+                                     0);
   // Second, an "offline" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kNetworkError);
@@ -742,7 +743,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
                       "Browser can't check your passwords. Try checking your "
                       "internet connection.");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kOffline, 1);
   // Another error, but since the previous state is terminal, the handler
   // should no longer be observing the BulkLeakCheckService state.
@@ -753,7 +754,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
   ASSERT_TRUE(event3);
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kOffline, 1);
 }
 
@@ -792,7 +793,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_InterruptedAndRefreshed) {
                       "Browser can't check your passwords because you're not "
                       "signed in");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kSignedOut, 1);
 }
 
@@ -817,7 +818,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StartedTwice) {
                       "Browser can't check your passwords. Try checking your "
                       "internet connection.");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kOffline, 1);
 }
 
@@ -855,7 +856,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Safe) {
   EXPECT_TRUE(event);
   VerifyDisplayString(event, "No compromised passwords found");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kSafe, 1);
 }
 
@@ -955,7 +956,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyLeakedExist) {
   VerifyDisplayString(event2,
                       base::NumberToString(kLeaked) + " compromised passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -979,7 +980,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyPhishedExist) {
   VerifyDisplayString(
       event2, base::NumberToString(kPhished) + " compromised passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -1004,7 +1005,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_LeakedAndPhishedExist) {
   VerifyDisplayString(event2, base::NumberToString(kLeaked + kPhished) +
                                   " compromised passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -1031,7 +1032,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
       event2, base::NumberToString(kCompromised) + " compromised passwords, " +
                   base::NumberToString(kWeak) + " weak passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -1055,7 +1056,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2, base::NumberToString(kWeak) + " weak passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist, 1);
 }
 
@@ -1074,7 +1075,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
                       "Browser can't check your passwords. Try again "
                       "later.");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kError, 1);
 }
 
@@ -1099,7 +1100,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_MutedCompromisedExist) {
   VerifyDisplayString(event2, base::NumberToString(kCompromised - kMuted) +
                                   " compromised passwords");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -1120,7 +1121,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_AllMutedCompromisedCredentials) {
       kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   ASSERT_TRUE(event);
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kSafe, 1);
 }
 
@@ -1139,7 +1140,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
                       "Browser can't check your passwords. Try again "
                       "later.");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kError, 1);
   // At some point later, the service discovers compromised passwords and goes
   // idle.
@@ -1176,7 +1177,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_FeatureUnavailable) {
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "Password check is not available in Chromium");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kFeatureUnavailable, 1);
 }
 
@@ -1193,7 +1194,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_RunningOneCompromised) {
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "1 compromised password");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
@@ -1210,7 +1211,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_NoPasswords) {
                       "No saved passwords. Chrome can check your passwords "
                       "when you save them.");
   histogram_tester_.ExpectBucketCount(
-      "Settings.SafetyCheck.PasswordsResult",
+      "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kNoPasswords, 1);
 }
 

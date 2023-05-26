@@ -13,3 +13,13 @@ NSString* const kSafeBrowsingSafetyCheckStringURL =
 
 NSString* const kTimestampOfLastIssueFoundKey =
     @"TimestampOfLastSafetyCheckIssueFound";
+
+const char kSafetyCheckMetricsUpdates[] = "Settings.SafetyCheck.UpdatesResult";
+
+const char kSafetyCheckMetricsPasswords[] =
+    "Settings.SafetyCheck.PasswordsResult2";
+
+const char kSafetyCheckMetricsSafeBrowsing[] =
+    "Settings.SafetyCheck.SafeBrowsingResult";
+
+const char kSafetyCheckInteractions[] = "Settings.SafetyCheck.Interactions";

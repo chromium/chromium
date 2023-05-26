@@ -84,7 +84,7 @@ public class SafetyCheckMediatorTest {
     private static final String SAFETY_CHECK_INTERACTIONS_HISTOGRAM =
             "Settings.SafetyCheck.Interactions";
     private static final String SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM =
-            "Settings.SafetyCheck.PasswordsResult";
+            "Settings.SafetyCheck.PasswordsResult2";
     private static final String SAFETY_CHECK_SAFE_BROWSING_RESULT_HISTOGRAM =
             "Settings.SafetyCheck.SafeBrowsingResult";
     private static final String SAFETY_CHECK_UPDATES_RESULT_HISTOGRAM =
