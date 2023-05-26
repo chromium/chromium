@@ -71,9 +71,9 @@ class AutofillDriverIOS : public AutofillDriver,
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
   void SetShouldSuppressKeyboard(bool suppress) override;
-  void TriggerReparse() override;
-  void TriggerReparseInAllFrames(
-      base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
+  void TriggerFormExtraction() override;
+  void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
   void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>

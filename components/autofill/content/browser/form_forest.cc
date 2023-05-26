@@ -170,9 +170,10 @@ void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
 // lookups.
 //
 // If the FrameData::parent_form of |form|'s frame is not set although a parent
-// frame exists, the function triggers a reparse in the parent frame. This will
-// trigger an UpdateTreeOfRendererForm() for the true parent form (amongst
-// others), which will then also set the child frame's FrameData::parent_form.
+// frame exists, the function triggers form re-extraction in the parent frame.
+// This will trigger UpdateTreeOfRendererForm() for the true parent form
+// (amongst others), which will then also set the child frame's
+// FrameData::parent_form.
 void FormForest::UpdateTreeOfRendererForm(FormData* form,
                                           AutofillDriver* driver) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
@@ -202,8 +203,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // Usually, a removed child frame has been or will be destroyed. However, a
   // child frame may also be removed because the frame became invisible. For
   // simplicity, we do not move fields from |form|'s root back to the former
-  // children. Instead, we rely on the descendant frames being reparsed before
-  // they become visible again.
+  // children. Instead, we rely on the forms in descendant frames being
+  // re-extracted when they become visible again.
   std::vector<FormFieldData> form_fields = std::move(form->fields);
   bool child_frames_changed;
   if (FormData* old_form = GetFormData(form->global_id(), frame)) {
@@ -459,8 +460,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // order, we do so in reverse order and after the right sibling.
         //
         // Even if a |child_frame| isn't known yet, we create its FrameData and
-        // set its FrameData::parent_frame to avoid a reparse of `n.frame` when
-        // a form is seen in |child_frame|.
+        // set its FrameData::parent_frame to avoid form re-extraction in
+        // `n.frame` when a form is seen in |child_frame|.
         //
         // If visiting |child_frame|'s field ranges would push us over the
         // kMaxVisits limit, we disconnect the |child_frame| from `n.form` by
@@ -497,7 +498,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         "Autofill.FormForest.UpdateTreeOfRendererForm.Visits", num_did_visit);
   }
 
-  // Triggers a reparse in a parent frame if `frame->parent_form` is unset.
+  // Triggers form re-extraction in the parent frame if `frame->parent_form` is
+  // unset.
   //
   // If |frame| has a parent frame and is not a fenced frame, there are two
   // scenarios where `frame->parent_form` is unset:
@@ -506,7 +508,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   //   FormData::child_frames (for example, because loading a cross-origin page
   //   into the <iframe> has changed |frame|'s FrameToken).
   //
-  // In this case, we trigger a reparse in the parent frame. As a result,
+  // In this case, we trigger form re-extraction the parent frame. As a result,
   // UpdateTreeOfRendererForm() will be called for the parent form, whose
   // FormData::child_frames now include |frame|.
   //
@@ -525,7 +527,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // https://crrev.com/c/3055422 for a draft implementation.
   if (!frame->parent_form && !driver->IsInFencedFrameRoot()) {
     if (AutofillDriver* parent_driver = driver->GetParent()) {
-      parent_driver->TriggerReparse();
+      parent_driver->TriggerFormExtraction();
     }
   }
 }

@@ -726,16 +726,16 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   EXPECT_TRUE(forms.removed_forms.empty());
 
   EXPECT_EQ(1u, GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).parsed_forms_size());
+  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).extracted_forms_size());
 }
 
-// Test that the FormCache never contains more than |kMaxParseableFields|
-// non-empty parsed forms.
+// Test that the FormCache never contains more than |kMaxExtractableFields|
+// non-empty extracted forms.
 TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
-  // Create a HTML page that contains `kMaxParseableFields + 1` non-empty
+  // Create a HTML page that contains `kMaxExtractableFields + 1` non-empty
   // forms.
   std::string html;
-  for (unsigned int i = 0; i < kMaxParseableFields + 1; i++) {
+  for (unsigned int i = 0; i < kMaxExtractableFields + 1; i++) {
     html += "<form><input></form>";
   }
   LoadHTML(html.c_str());
@@ -744,31 +744,32 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   FormCache::UpdateFormCacheResult forms =
       form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
 
-  EXPECT_EQ(forms.updated_forms.size(), kMaxParseableFields);
+  EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
   EXPECT_TRUE(forms.removed_forms.empty());
 
-  EXPECT_EQ(kMaxParseableFields + 1,
+  EXPECT_EQ(kMaxExtractableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(kMaxParseableFields,
-            FormCacheTestApi(&form_cache).parsed_forms_size());
+  EXPECT_EQ(kMaxExtractableFields,
+            FormCacheTestApi(&form_cache).extracted_forms_size());
 }
 
 // Test that FormCache::UpdateFormCache() limits the number of total fields by
 // skipping any additional forms.
 TEST_F(FormCacheBrowserTest, FieldLimit) {
   std::string html;
-  for (unsigned int i = 0; i < kMaxParseableFields + 1; i++)
+  for (unsigned int i = 0; i < kMaxExtractableFields + 1; i++) {
     html += "<form><input></form>";
+  }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxParseableFields + 1,
+  ASSERT_EQ(kMaxExtractableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
 
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
 
-  EXPECT_EQ(kMaxParseableFields, forms.updated_forms.size());
+  EXPECT_EQ(kMaxExtractableFields, forms.updated_forms.size());
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
@@ -776,27 +777,28 @@ TEST_F(FormCacheBrowserTest, FieldLimit) {
 // clearing their frames and skipping the then-empty forms.
 TEST_F(FormCacheIframeBrowserTest, FrameLimit) {
   std::string html;
-  for (unsigned int i = 0; i < kMaxParseableChildFrames + 1; i++)
+  for (unsigned int i = 0; i < kMaxExtractableChildFrames + 1; i++) {
     html += "<form><iframe></iframe></form>";
+  }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxParseableChildFrames + 1,
+  ASSERT_EQ(kMaxExtractableChildFrames + 1,
             GetMainFrame()->GetDocument().Forms().size());
 
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
 
-  EXPECT_EQ(kMaxParseableChildFrames, forms.updated_forms.size());
+  EXPECT_EQ(kMaxExtractableChildFrames, forms.updated_forms.size());
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
 // Test that FormCache::UpdateFormCache() limits the number of total fields and
 // total frames:
-// - the forms [0, kMaxParseableChildFrames) should be unchanged,
-// - the forms [kMaxParseableChildFrames, kMaxParseableFields) should have
+// - the forms [0, kMaxExtractableChildFrames) should be unchanged,
+// - the forms [kMaxExtractableChildFrames, kMaxExtractableFields) should have
 //   empty FormData::child_frames,
-// - the forms [kMaxParseableFields, end) should be skipped.
+// - the forms [kMaxExtractableFields, end) should be skipped.
 // TODO(https://crbug.com/1287782): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
@@ -804,29 +806,31 @@ TEST_F(FormCacheIframeBrowserTest, FrameLimit) {
 #define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
 #endif
 TEST_F(FormCacheIframeBrowserTest, MAYBE_FieldAndFrameLimit) {
-  ASSERT_LE(kMaxParseableChildFrames, kMaxParseableFields);
+  ASSERT_LE(kMaxExtractableChildFrames, kMaxExtractableFields);
 
   std::string html;
-  for (unsigned int i = 0; i < kMaxParseableFields + 1; i++)
+  for (unsigned int i = 0; i < kMaxExtractableFields + 1; i++) {
     html += "<form><input><iframe></iframe></form>";
+  }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxParseableFields + 1,
+  ASSERT_EQ(kMaxExtractableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
 
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.UpdateFormCache(/*field_data_manager=*/nullptr);
 
-  EXPECT_EQ(forms.updated_forms.size(), kMaxParseableFields);
+  EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
   EXPECT_TRUE(base::ranges::none_of(forms.updated_forms,
                                     &std::vector<FormFieldData>::empty,
                                     &FormData::fields));
   EXPECT_TRUE(base::ranges::none_of(
-      base::make_span(forms.updated_forms).subspan(0, kMaxParseableChildFrames),
+      base::make_span(forms.updated_forms)
+          .subspan(0, kMaxExtractableChildFrames),
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
   EXPECT_TRUE(base::ranges::all_of(
-      base::make_span(forms.updated_forms).subspan(kMaxParseableChildFrames),
+      base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
 
   EXPECT_TRUE(forms.removed_forms.empty());

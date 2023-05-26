@@ -151,12 +151,12 @@ void AutofillDriverIOS::SetShouldSuppressKeyboard(bool suppress) {
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::TriggerReparse() {
+void AutofillDriverIOS::TriggerFormExtraction() {
   NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
 }
 
-void AutofillDriverIOS::TriggerReparseInAllFrames(
-    base::OnceCallback<void(bool)> trigger_reparse_finished_callback) {
+void AutofillDriverIOS::TriggerFormExtractionInAllFrames(
+    base::OnceCallback<void(bool)> form_extraction_finished_callback) {
   NOTIMPLEMENTED();
 }
 

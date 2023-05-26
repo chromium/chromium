@@ -41,7 +41,7 @@ class FormCacheTestApi {
     return form_cache_->initial_checked_state_.size();
   }
 
-  size_t parsed_forms_size() { return form_cache_->parsed_forms_.size(); }
+  size_t extracted_forms_size() { return form_cache_->extracted_forms_.size(); }
 
  private:
   FormCache* form_cache_;

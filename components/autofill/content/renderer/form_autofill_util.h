@@ -305,7 +305,7 @@ std::vector<blink::WebElement> GetUnownedIframeElements(
     const blink::WebDocument& document);
 
 // Returns false iff the extraction fails because the number of fields exceeds
-// |kMaxParseableFields|, or |field| and |element| are not nullptr but
+// |kMaxExtractableFields|, or |field| and |element| are not nullptr but
 // |element| is not among |control_elements|.
 bool UnownedFormElementsToFormData(
     const std::vector<blink::WebFormControlElement>& control_elements,

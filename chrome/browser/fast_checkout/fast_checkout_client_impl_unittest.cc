@@ -152,7 +152,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
   MOCK_METHOD(void,
-              TriggerReparseInAllFrames,
+              TriggerFormExtractionInAllFrames,
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
@@ -723,7 +723,7 @@ TEST_F(FastCheckoutClientImplTest,
   std::unique_ptr<autofill::FormStructure> credit_card_form =
       SetUpCreditCardForm();
 
-  EXPECT_CALL(*autofill_manager(), TriggerReparseInAllFrames);
+  EXPECT_CALL(*autofill_manager(), TriggerFormExtractionInAllFrames);
 
   auto [autofill_profile, credit_card] = StartRunAndSelectOptions(
       {address_form->form_signature(), credit_card_form->form_signature()});
@@ -745,7 +745,7 @@ TEST_F(FastCheckoutClientImplTest,
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
 
-  EXPECT_CALL(*autofill_manager(), TriggerReparseInAllFrames);
+  EXPECT_CALL(*autofill_manager(), TriggerFormExtractionInAllFrames);
 
   auto [autofill_profile, credit_card] = StartRunAndSelectOptions(
       {credit_card_form->form_signature()}, /*local_card=*/true);

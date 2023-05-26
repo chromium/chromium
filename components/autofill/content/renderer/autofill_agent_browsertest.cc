@@ -296,26 +296,27 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedInput) {
   }
 }
 
-TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse) {
+TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   EXPECT_CALL(autofill_driver_, FormsSeen);
   LoadHTML(R"(<body> <input> </body>)");
   WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
+  autofill_agent_->TriggerFormExtractionWithResponse(mock_callback.Get());
   task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
 }
 
-TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse_CalledTwice) {
+TEST_F(AutofillAgentTestWithFeatures,
+       TriggerFormExtractionWithResponse_CalledTwice) {
   EXPECT_CALL(autofill_driver_, FormsSeen);
   LoadHTML(R"(<body> <input> </body>)");
   WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
-  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
+  autofill_agent_->TriggerFormExtractionWithResponse(mock_callback.Get());
   EXPECT_CALL(mock_callback, Run(false));
-  autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
+  autofill_agent_->TriggerFormExtractionWithResponse(mock_callback.Get());
 }
 
 }  // namespace autofill

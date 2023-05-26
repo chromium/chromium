@@ -1650,7 +1650,7 @@ bool OwnedOrUnownedFormToFormData(
         form->child_frames[k].predecessor = form->fields.size() - 1;
     }
 
-    if (form->fields.size() > kMaxParseableFields) {
+    if (form->fields.size() > kMaxExtractableFields) {
       form->child_frames.clear();
       form->fields.clear();
       return false;
@@ -1735,11 +1735,12 @@ bool OwnedOrUnownedFormToFormData(
     });
   }
 
-  if (form->child_frames.size() > kMaxParseableChildFrames)
+  if (form->child_frames.size() > kMaxExtractableChildFrames) {
     form->child_frames.clear();
+  }
 
   const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
-                       form->fields.size() < kMaxParseableFields;
+                       form->fields.size() < kMaxExtractableFields;
   if (!success) {
     form->fields.clear();
     form->child_frames.clear();
@@ -2860,7 +2861,7 @@ void TraverseDomForFourDigitCombinations(
         potential_matches) {
   re2::RE2 kFourDigitRegex("(?:\\D|^)(\\d{4})(?:\\D|$)");
   base::flat_set<std::string> matches;
-  // Iterate through each form control element in the DOM and parse the
+  // Iterate through each form control element in the DOM and extract the
   // elements nearby in search of four digit combinations.
   std::vector<WebFormControlElement> form_control_elements;
 
@@ -2919,9 +2920,9 @@ void TraverseDomForFourDigitCombinations(
     }
   }
 
-  // Check for consecutive numbers as a potential indicator that we've
-  // parsed a year <select> element of a credit card form. This indicates that
-  // a CVC field is not a standalone CVC element.
+  // Check for consecutive numbers as a potential indicator that we've parsed
+  // a year <select> element of a credit card form. This indicates that a CVC
+  // field is not a standalone CVC element.
   if (matches.size() > 2) {
     auto iter = matches.begin();
     int consecutive_numbers = 0;

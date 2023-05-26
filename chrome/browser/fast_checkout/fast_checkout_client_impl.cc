@@ -28,7 +28,8 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr base::TimeDelta kSleepBetweenTriggerReparseCalls = base::Seconds(1);
+constexpr base::TimeDelta kSleepBetweenTriggerFormExtractionCalls =
+    base::Seconds(1);
 constexpr base::TimeDelta kTimeout = base::Minutes(30);
 
 constexpr auto kSupportedFormTypes = base::MakeFixedFlatSet<autofill::FormType>(
@@ -269,7 +270,7 @@ void FastCheckoutClientImpl::InternalStop(bool allow_further_runs) {
   // Reset personal data manager observation.
   personal_data_manager_observation_.Reset();
   // Reset `autofill_manager_` and related objects.
-  reparse_timer_.AbandonAndStop();
+  form_extraction_timer_.AbandonAndStop();
   autofill_manager_observation_.Reset();
   autofill_manager_.reset();
 
@@ -321,8 +322,8 @@ void FastCheckoutClientImpl::OnOptionsSelected(
                                       FastCheckoutRunOutcome::kTimeout,
                                       /*allow_further_runs=*/true));
   TryToFillForms();
-  autofill_manager_->TriggerReparseInAllFrames(
-      base::BindOnce(&FastCheckoutClientImpl::OnTriggerReparseFinished,
+  autofill_manager_->TriggerFormExtractionInAllFrames(
+      base::BindOnce(&FastCheckoutClientImpl::OnTriggerFormExtractionFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -380,20 +381,19 @@ void FastCheckoutClientImpl::OnAfterLoadedServerPredictions(
   TryToFillForms();
 }
 
-void FastCheckoutClientImpl::OnTriggerReparseFinished(bool success) {
-  // `success == true` if `TriggerReparseInAllFrames()` was not called multiple
-  // times in parallel, potentially by another actor.
-  DCHECK(success);
-  if (!reparse_timer_.IsRunning()) {
-    // Trigger reparse in all frames continuously until the run stops. That will
-    // eventually trigger this (`OnAfterLoadedServerPredictions()`) method.
-    reparse_timer_.Start(
-        FROM_HERE, kSleepBetweenTriggerReparseCalls,
+void FastCheckoutClientImpl::OnTriggerFormExtractionFinished(bool success) {
+  if (!form_extraction_timer_.IsRunning()) {
+    // Trigger form (re-)extraction in all frames continuously until the run
+    // stops. That will eventually trigger this
+    // (`OnAfterLoadedServerPredictions()`) method.
+    form_extraction_timer_.Start(
+        FROM_HERE, kSleepBetweenTriggerFormExtractionCalls,
         base::BindOnce(
-            &autofill::AutofillManager::TriggerReparseInAllFrames,
+            &autofill::AutofillManager::TriggerFormExtractionInAllFrames,
             autofill_manager_,
-            base::BindOnce(&FastCheckoutClientImpl::OnTriggerReparseFinished,
-                           weak_ptr_factory_.GetWeakPtr())));
+            base::BindOnce(
+                &FastCheckoutClientImpl::OnTriggerFormExtractionFinished,
+                weak_ptr_factory_.GetWeakPtr())));
   }
 }
 

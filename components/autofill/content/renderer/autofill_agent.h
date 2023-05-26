@@ -98,8 +98,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::AutofillAgent:
-  void TriggerReparse() override;
-  void TriggerReparseWithResponse(
+  void TriggerFormExtraction() override;
+  void TriggerFormExtractionWithResponse(
       base::OnceCallback<void(bool)> callback) override;
   void FillOrPreviewForm(const FormData& form,
                          mojom::RendererFormDataAction action) override;
@@ -339,11 +339,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   //
   // Calls `callback(true)` asynchronously after the timer is completed.
   // Otherwise, calls `callback(false)` immediately.
-  void ProcessForms(base::OneShotTimer& timer,
+  void ExtractForms(base::OneShotTimer& timer,
                     base::OnceCallback<void(bool)> callback);
 
   // Extracts new and/or removed forms and triggers AutofillDriver::FormsSeen().
-  void ProcessFormsUnthrottled(base::OnceCallback<void(bool)> callback);
+  void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();
@@ -462,8 +462,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   base::OneShotTimer datalist_option_change_batch_timer_;
   // TODO(crbug.com/1444566): Merge some or all of these timers?
   base::OneShotTimer process_forms_after_dynamic_change_timer_;
-  base::OneShotTimer process_forms_reparse_timer_;
-  base::OneShotTimer process_forms_reparse_with_response_timer_;
+  base::OneShotTimer process_forms_form_extraction_timer_;
+  base::OneShotTimer process_forms_form_extraction_with_response_timer_;
 
   // True iff DidDispatchDOMContentLoadedEvent() fired.
   bool is_dom_content_loaded_ = false;

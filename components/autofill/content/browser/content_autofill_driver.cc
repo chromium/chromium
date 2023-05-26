@@ -82,12 +82,12 @@ ContentAutofillDriver::~ContentAutofillDriver() {
       suppress_showing_ime_callback_);
 }
 
-void ContentAutofillDriver::TriggerReparse() {
-  GetAutofillAgent()->TriggerReparse();
+void ContentAutofillDriver::TriggerFormExtraction() {
+  GetAutofillAgent()->TriggerFormExtraction();
 }
 
-void ContentAutofillDriver::TriggerReparseInAllFrames(
-    base::OnceCallback<void(bool success)> trigger_reparse_finished_callback) {
+void ContentAutofillDriver::TriggerFormExtractionInAllFrames(
+    base::OnceCallback<void(bool success)> form_extraction_finished_callback) {
   std::vector<ContentAutofillDriver*> drivers;
   render_frame_host()->GetMainFrame()->ForEachRenderFrameHost(
       [&drivers](content::RenderFrameHost* rfh) {
@@ -101,14 +101,15 @@ void ContentAutofillDriver::TriggerReparseInAllFrames(
       drivers.size(),
       base::BindOnce(
           [](base::OnceCallback<void(bool success)>
-                 trigger_reparse_finished_callback,
+                 form_extraction_finished_callback,
              const std::vector<bool>& successes) {
-            std::move(trigger_reparse_finished_callback)
+            std::move(form_extraction_finished_callback)
                 .Run(base::ranges::all_of(successes, base::identity()));
           },
-          std::move(trigger_reparse_finished_callback)));
+          std::move(form_extraction_finished_callback)));
   for (ContentAutofillDriver* driver : drivers) {
-    driver->GetAutofillAgent()->TriggerReparseWithResponse(barrier_callback);
+    driver->GetAutofillAgent()->TriggerFormExtractionWithResponse(
+        barrier_callback);
   }
 }
 

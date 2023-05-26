@@ -68,9 +68,9 @@ class MockAutofillAgent : public mojom::AutofillAgent {
                              std::move(handle)));
   }
 
-  MOCK_METHOD(void, TriggerReparse, (), (override));
+  MOCK_METHOD(void, TriggerFormExtraction, (), (override));
   MOCK_METHOD(void,
-              TriggerReparseWithResponse,
+              TriggerFormExtractionWithResponse,
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,

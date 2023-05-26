@@ -71,7 +71,7 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), ());
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
   MOCK_METHOD(void,
-              TriggerReparseInAllFrames,
+              TriggerFormExtractionInAllFrames,
               (base::OnceCallback<void(bool)>),
               ());
 };
@@ -424,9 +424,9 @@ TEST_F(AutofillManagerTest, CanShowAutofillUi) {
   EXPECT_TRUE(manager_->CanShowAutofillUi());
 }
 
-TEST_F(AutofillManagerTest, TriggerReparseInAllFrames) {
-  EXPECT_CALL(*driver_, TriggerReparseInAllFrames);
-  manager_->TriggerReparseInAllFrames(base::DoNothing());
+TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
+  EXPECT_CALL(*driver_, TriggerFormExtractionInAllFrames);
+  manager_->TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
 TEST_F(

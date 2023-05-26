@@ -169,7 +169,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // mojom::AutofillAgent:
   MOCK_METHOD(void,
-              TriggerReparseWithResponse,
+              TriggerFormExtractionWithResponse,
               (base::OnceCallback<void(bool)>),
               (override));
 
@@ -185,7 +185,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // mojom::AutofillAgent:
-  void TriggerReparse() override {}
+  void TriggerFormExtraction() override {}
 
   void FillOrPreviewForm(const FormData& form,
                          mojom::RendererFormDataAction action) override {
@@ -748,20 +748,20 @@ TEST_P(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
   EXPECT_TRUE(test_api(driver()).should_suppress_keyboard());
 }
 
-TEST_P(ContentAutofillDriverTest, TriggerReparseInAllFrames) {
+TEST_P(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  base::OnceCallback<void(bool)> trigger_reparse_finished_callback;
+  base::OnceCallback<void(bool)> form_extraction_finished_callback;
 
-  EXPECT_CALL(fake_agent_, TriggerReparseWithResponse)
-      .WillOnce(MoveArg<0>(&trigger_reparse_finished_callback));
-  driver()->browser_events().TriggerReparseInAllFrames(base::BindOnce(
+  EXPECT_CALL(fake_agent_, TriggerFormExtractionWithResponse)
+      .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
+  driver()->browser_events().TriggerFormExtractionInAllFrames(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
       &run_loop));
   run_loop.RunUntilIdle();
 
-  EXPECT_FALSE(trigger_reparse_finished_callback.is_null());
-  std::move(trigger_reparse_finished_callback).Run(true);
+  EXPECT_FALSE(form_extraction_finished_callback.is_null());
+  std::move(form_extraction_finished_callback).Run(true);
 }
 
 TEST_P(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {

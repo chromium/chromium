@@ -1600,7 +1600,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormData) {
 TEST_F(AutofillControllerJsTest, WebFormElementToFormDataTooManyFields) {
   NSString* html_fragment = @"<FORM name='Test' action='http://c.com'>";
   // In autofill_controller.js, the maximum number of parsable element is 200
-  // (__gCrWeb.fill.MAX_PARSEABLE_FIELDS = 200). Here an HTML page with 201
+  // (__gCrWeb.fill.MAX_EXTRACTABLE_FIELDS = 200). Here an HTML page with 201
   // elements is generated for testing.
   for (NSUInteger index = 0; index < 201; ++index) {
     html_fragment =

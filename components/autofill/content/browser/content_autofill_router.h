@@ -349,9 +349,9 @@ class ContentAutofillRouter {
   // Returns the driver of |frame| stored in |form_forest_|.
   ContentAutofillDriver* DriverOfFrame(LocalFrameToken frame);
 
-  // Calls ContentAutofillDriver::TriggerReparse() for all drivers in
+  // Calls ContentAutofillDriver::TriggerFormExtraction() for all drivers in
   // |form_forest_| except for |exception|.
-  void TriggerReparseExcept(ContentAutofillDriver* exception);
+  void TriggerFormExtractionExcept(ContentAutofillDriver* exception);
 
   // Update the last queried and source and do cleanup work.
   void SetLastQueriedSource(ContentAutofillDriver* source);

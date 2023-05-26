@@ -238,9 +238,9 @@ class ContentAutofillDriver : public AutofillDriver,
       const mojom::AutofillState state) override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
-  void TriggerReparse() override;
-  void TriggerReparseInAllFrames(
-      base::OnceCallback<void(bool success)> trigger_reparse_finished_callback)
+  void TriggerFormExtraction() override;
+  void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool success)> form_extraction_finished_callback)
       override;
   void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>

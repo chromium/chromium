@@ -910,8 +910,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
 
   // If the event is a form_changed, then the event concerns the whole page and
-  // not a particular form. The whole page need to be reparsed to find the new
-  // forms.
+  // not a particular form. The whole document's forms need to be extracted to
+  // find the new forms.
   if (params.type == "form_changed") {
     [self scanFormsInWebState:webState inFrame:frame];
     return;

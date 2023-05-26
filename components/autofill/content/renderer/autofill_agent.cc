@@ -345,7 +345,7 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
 
 void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
   is_dom_content_loaded_ = true;
-  ProcessFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{});
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
@@ -1068,23 +1068,24 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
   previewed_elements_.push_back(node);
 }
 
-void AutofillAgent::TriggerReparse() {
-  ProcessForms(process_forms_reparse_timer_, /*callback=*/{});
+void AutofillAgent::TriggerFormExtraction() {
+  ExtractForms(process_forms_form_extraction_timer_, /*callback=*/{});
 }
 
-void AutofillAgent::TriggerReparseWithResponse(
+void AutofillAgent::TriggerFormExtractionWithResponse(
     base::OnceCallback<void(bool)> callback) {
-  ProcessForms(process_forms_reparse_with_response_timer_, std::move(callback));
+  ExtractForms(process_forms_form_extraction_with_response_timer_,
+               std::move(callback));
 }
 
 std::vector<blink::WebAutofillClient::FormIssue>
 AutofillAgent::ProccessFormsAndReturnIssues() {
   // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
-  ProcessFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{});
   return {};
 }
 
-void AutofillAgent::ProcessForms(base::OneShotTimer& timer,
+void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
                                  base::OnceCallback<void(bool)> callback) {
   static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
   if (!is_dom_content_loaded_ || timer.IsRunning()) {
@@ -1094,11 +1095,11 @@ void AutofillAgent::ProcessForms(base::OneShotTimer& timer,
     return;
   }
   timer.Start(FROM_HERE, kThrottle,
-              base::BindOnce(&AutofillAgent::ProcessFormsUnthrottled,
+              base::BindOnce(&AutofillAgent::ExtractFormsUnthrottled,
                              base::Unretained(this), std::move(callback)));
 }
 
-void AutofillAgent::ProcessFormsUnthrottled(
+void AutofillAgent::ExtractFormsUnthrottled(
     base::OnceCallback<void(bool)> callback) {
   if (!form_cache_) {
     return;
@@ -1135,7 +1136,7 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically() {
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
-  ProcessForms(
+  ExtractForms(
       process_forms_after_dynamic_change_timer_,
       base::BindOnce(
           [](PasswordAutofillAgent* password_autofill_agent, bool success) {

@@ -167,9 +167,9 @@ namespace autofill::internal {
 // - If G is remote to F and a navigation causes G's render process to be
 //   swapped, then F may continue to refer to G by the same RemoteFrameToken
 //   as before even if G's LocalFrameToken has changed.
-// The first example is the reason why UpdateTreeOfRendererForm() may trigger a
-// reparse in a parent frame. The second example is the reason why we do not
-// cache LocalFrameTokens.
+// The first example is the reason why UpdateTreeOfRendererForm() sometimes
+// triggers form re-extraction in a parent frame. The second example is the
+// reason why we do not cache LocalFrameTokens.
 class FormForest {
  public:
   // A FrameData is a frame node in the form tree. Its children are FormData

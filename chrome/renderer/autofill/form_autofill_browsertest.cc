@@ -3031,7 +3031,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 TEST_F(FormAutofillTest, WebFormElementToFormDataTooManyFields) {
   std::string html =
       "<FORM name='TestForm' action='http://cnn.com' method='post'>";
-  for (size_t i = 0; i < (kMaxParseableFields + 1); ++i) {
+  for (size_t i = 0; i < (kMaxExtractableFields + 1); ++i) {
     html += "<INPUT type='text'/>";
   }
   html += "</FORM>";

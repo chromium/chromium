@@ -81,12 +81,12 @@ __gCrWeb.fill.MAX_STRING_LENGTH = 1024;
  * (3) router configuration pages; and (4) other configuration pages, e.g. for
  * Google code project settings.
  *
- * This variable is |kMaxParseableFields| from
+ * This variable is |kMaxExtractableFields| from
  * chromium/src/components/autofill/core/common/autofill_constants.h
  *
  * @const {number}
  */
-__gCrWeb.fill.MAX_PARSEABLE_FIELDS = 200;
+__gCrWeb.fill.MAX_EXTRACTABLE_FIELDS = 200;
 
 /**
  * A bit field mask to extract data from WebFormControlElement for
@@ -665,7 +665,7 @@ function extractFieldsFromControlElements_(
 
     // To avoid overly expensive computation, we impose a maximum number of
     // allowable fields.
-    if (formFields.length > __gCrWeb.fill.MAX_PARSEABLE_FIELDS) {
+    if (formFields.length > __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
       return false;
     }
   }

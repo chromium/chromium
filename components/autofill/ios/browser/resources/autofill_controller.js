@@ -411,7 +411,7 @@ __gCrWeb.autofill.extractNewForms = function(
     }
 
     numFieldsSeen += form['fields'].length;
-    if (numFieldsSeen > __gCrWeb.fill.MAX_PARSEABLE_FIELDS) {
+    if (numFieldsSeen > __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
       break;
     }
 
@@ -420,7 +420,7 @@ __gCrWeb.autofill.extractNewForms = function(
     }
   }
 
-  // Look for more parseable fields outside of forms.
+  // Look for more extractable fields outside of forms.
   const fieldsets = [];
   const unownedControlElements =
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -435,7 +435,7 @@ __gCrWeb.autofill.extractNewForms = function(
             restrictUnownedFieldsToFormlessCheckout, unownedForm);
     if (hasUnownedForm) {
       numFieldsSeen += unownedForm['fields'].length;
-      if (numFieldsSeen <= __gCrWeb.fill.MAX_PARSEABLE_FIELDS) {
+      if (numFieldsSeen <= __gCrWeb.fill.MAX_EXTRACTABLE_FIELDS) {
         const interesting = isFormInteresting_(
             unownedForm, numEditableUnownedElements, minimumRequiredFields);
         if (interesting) {

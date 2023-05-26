@@ -318,8 +318,8 @@ class AutofillManager
   virtual bool CanShowAutofillUi() const;
 
   // Forwards call to the same-named `AutofillDriver` function.
-  virtual void TriggerReparseInAllFrames(
-      base::OnceCallback<void(bool success)> trigger_reparse_finished_callback);
+  virtual void TriggerFormExtractionInAllFrames(
+      base::OnceCallback<void(bool success)> form_extraction_finished_callback);
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 

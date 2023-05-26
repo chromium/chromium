@@ -179,8 +179,8 @@ class FastCheckoutClientImpl
   bool ShouldFillForm(const autofill::FormStructure& form,
                       autofill::FormType expected_form_type) const;
 
-  // Will be called when reparse has been triggered in all frames.
-  void OnTriggerReparseFinished(bool success);
+  // Will be called when form extraction has been triggered in all frames.
+  void OnTriggerFormExtractionFinished(bool success);
 
   // Tries to fill all unfilled forms cached by `autofill_manager_` if they are
   // part of the ongoing run's funnel.
@@ -217,13 +217,14 @@ class FastCheckoutClientImpl
   // methods pair, then remove this method in favor of `Stop()`.
   void InternalStop(bool allow_further_runs);
 
-  // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
-  // Reparsing updates the forms cache `autofill_manager_->form_structures()`
-  // with current data from the renderer, eventually calling
-  // `OnAfterLoadedServerPredictions()` if there were any updates. This is
-  // necessary e.g. for the case when a form has been cached when it was not
-  // visible to the user and became visible in the meantime.
-  base::OneShotTimer reparse_timer_;
+  // Triggers form extraction with a delay of
+  // `kSleepBetweenTriggerFormExtractionCalls`. Reparsing updates the forms
+  // cache `autofill_manager_->form_structures()` with current data from the
+  // renderer, eventually calling `OnAfterLoadedServerPredictions()` if there
+  // were any updates. This is necessary e.g. for the case when a form has been
+  // cached when it was not visible to the user and became visible in the
+  // meantime.
+  base::OneShotTimer form_extraction_timer_;
 
   // Stops the run after timeout.
   base::OneShotTimer timeout_timer_;
