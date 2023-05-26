@@ -36,11 +36,6 @@ BASE_FEATURE(kWebAuthPasskeysUI,
              "WebAuthenticationPasskeysUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Added in M112. Remove in or after M115.
-BASE_FEATURE(kWebAuthnCredProtectThree,
-             "WebAuthenticationCredProtectThree",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Added in M112. Enabled in M113. Remove in or after M116.
 BASE_FEATURE(kWebAuthnPRFAsAuthenticator,
              "WebAuthenticationPRFAsAuthenticator",

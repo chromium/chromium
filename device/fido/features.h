@@ -36,10 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Set credProtect=3 when rk=required and uv=preferred.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnCredProtectThree);
-
 // Advertise support for the `prf` extension as a hybrid authenticator.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPRFAsAuthenticator);
