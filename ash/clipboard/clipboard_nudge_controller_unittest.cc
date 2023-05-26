@@ -92,30 +92,30 @@ class ClipboardNudgeControllerTest : public AshTestBase {
 // Checks that clipboard state advances after the nudge controller is fed the
 // right event type.
 TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
-  EXPECT_EQ(ClipboardState::kInit,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kInit,
+            nudge_controller_->onboarding_state_for_testing());
   // Checks that the first copy advances state as expected.
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kFirstCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstCopy,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Checks that the first paste advances state as expected.
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Checks that the second copy advances state as expected.
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kSecondCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kSecondCopy,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Check that clipboard nudge has not yet been created.
   EXPECT_FALSE(nudge_controller_->GetSystemNudgeForTesting());
 
   // Checks that the second paste resets state as expected.
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kInit,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kInit,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Check that clipboard nudge has been created.
   EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
@@ -133,12 +133,9 @@ TEST_F(ClipboardNudgeControllerTest, NudgeTimeOut) {
   clock()->Advance(kMaxTimeBetweenPaste);
   nudge_controller_->OnClipboardDataRead();
 
-  // Paste event should reset clipboard state to |kFirstPaste| instead of to
-  // |kShouldShowNudge|.
-  EXPECT_NE(ClipboardState::kShouldShowNudge,
-            nudge_controller_->GetClipboardStateForTesting());
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  // Paste event should reset clipboard state to `kFirstPaste`.
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 }
 
 // Checks that multiple pastes refreshes the |kMaxTimeBetweenPaste| timer that
@@ -146,16 +143,16 @@ TEST_F(ClipboardNudgeControllerTest, NudgeTimeOut) {
 TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Perform 5 pastes over 2.5*|kMaxTimeBetweenPaste|.
   for (int paste_cycle = 0; paste_cycle < 5; paste_cycle++) {
     SCOPED_TRACE("paste cycle " + base::NumberToString(paste_cycle));
     clock()->Advance(kMaxTimeBetweenPaste / 2);
     nudge_controller_->OnClipboardDataRead();
-    EXPECT_EQ(ClipboardState::kFirstPaste,
-              nudge_controller_->GetClipboardStateForTesting());
+    EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+              nudge_controller_->onboarding_state_for_testing());
   }
 
   // Check that clipboard nudge has not yet been created.
@@ -164,11 +161,11 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
   // Check that HandleClipboardChanged() will advance nudge_controller's
   // ClipboardState.
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kSecondCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kSecondCopy,
+            nudge_controller_->onboarding_state_for_testing());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kInit,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kInit,
+            nudge_controller_->onboarding_state_for_testing());
 
   // Check that clipboard nudge has been created.
   EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
@@ -177,40 +174,40 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
 // Checks that consecutive copy events does not advance the clipboard state.
 TEST_F(ClipboardNudgeControllerTest, RepeatedCopyDoesNotAdvanceState) {
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kFirstCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstCopy,
+            nudge_controller_->onboarding_state_for_testing());
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kFirstCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstCopy,
+            nudge_controller_->onboarding_state_for_testing());
 }
 
 // Checks that consecutive paste events does not advance the clipboard state.
 TEST_F(ClipboardNudgeControllerTest, RepeatedPasteDoesNotAdvanceState) {
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
-  EXPECT_EQ(ClipboardState::kFirstCopy,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstCopy,
+            nudge_controller_->onboarding_state_for_testing());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 }
 
 // Verifies that administrative events does not advance clipboard state.
 TEST_F(ClipboardNudgeControllerTest, AdminWriteDoesNotAdvanceState) {
   nudge_controller_->OnClipboardHistoryItemAdded(CreateItem());
   nudge_controller_->OnClipboardDataRead();
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 
   auto data = std::make_unique<ui::ClipboardData>();
   data->set_text("test");
   // Write the data to the clipboard, clipboard state should not advance.
   ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
       std::move(data));
-  EXPECT_EQ(ClipboardState::kFirstPaste,
-            nudge_controller_->GetClipboardStateForTesting());
+  EXPECT_EQ(ClipboardNudgeController::OnboardingState::kFirstPaste,
+            nudge_controller_->onboarding_state_for_testing());
 }
 
 // Verifies that controller cleans up and closes an old nudge before displaying
@@ -259,47 +256,72 @@ TEST_F(ClipboardNudgeControllerTest, NudgeClosingDuringShutdown) {
 
 // Asserts that all nudge metric related histograms start at 0.
 TEST_F(ClipboardNudgeControllerTest, NudgeMetrics_StartAtZero) {
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                0);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 0);
 }
 
 // Tests that opening the clipboard history after showing the nudges logs only
-// the metrics for the open time histograms. For this test, we only verify the
-// number of emits, but not the timing mechanism.
+// the metrics for the open time histograms.
 TEST_F(ClipboardNudgeControllerTest, ShowMenuAfterNudges_LogsOpenNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
+
+  constexpr int kFastForwardSeconds = 2;
+  clock()->Advance(base::Seconds(kFastForwardSeconds));
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
+  histograms().ExpectBucketCount(kClipboardHistoryOnboardingNudgeOpenTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(kClipboardHistoryZeroStateNudgeOpenTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(
+      kClipboardHistoryScreenshotNotificationOpenTime, kFastForwardSeconds,
+      /*expected_count=*/1);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 0);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 0);
 }
 
 // Tests that pasting something from the clipboard history after showing the
-// nudges only the metrics for the paste time histograms. For this test, we only
-// verify the number of emits, but not the timing mechanism.
+// nudges only the metrics for the paste time histograms.
 TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
+
+  constexpr int kFastForwardSeconds = 2;
+  clock()->Advance(base::Seconds(kFastForwardSeconds));
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
+  histograms().ExpectBucketCount(kClipboardHistoryOnboardingNudgeOpenTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(kClipboardHistoryZeroStateNudgeOpenTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(
+      kClipboardHistoryScreenshotNotificationOpenTime, kFastForwardSeconds,
+      /*expected_count=*/1);
+  histograms().ExpectBucketCount(kClipboardHistoryOnboardingNudgePasteTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(kClipboardHistoryZeroStateNudgePasteTime,
+                                 kFastForwardSeconds,
+                                 /*expected_count=*/1);
+  histograms().ExpectBucketCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, kFastForwardSeconds,
+      /*expected_count=*/1);
 }
 
 // Tests that the onboarding nudge being shown only logs the metrics for the
@@ -309,12 +331,14 @@ TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 0);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 0);
 }
 
 // Tests that the zero state nudge being shown only logs the metrics for the
@@ -324,12 +348,14 @@ TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 1);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 0);
 }
 
 // Tests that the screenshot notification nudge being shown only logs the
@@ -340,12 +366,14 @@ TEST_F(ClipboardNudgeControllerTest,
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                1);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 0);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 1);
 }
 
 // Tests that nudge metrics will not log multiple times if the nudges are not
@@ -359,12 +387,14 @@ TEST_F(ClipboardNudgeControllerTest, SecondTimeAction_DoesNotLogNudgeMetrics) {
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 1);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 1);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                1);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 1);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 1);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 1);
 }
 
 // Tests that nudge metrics can log more times as the nudges are shown before.
@@ -380,12 +410,14 @@ TEST_F(ClipboardNudgeControllerTest, ShowNudgeTwice_LogsMetricsTwoTimes) {
   nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 2);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 2);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 2);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 2);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 2);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 2);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 2);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 2);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                2);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 2);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 2);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 2);
 }
 
 // Tests that showing clipboard history from a source other than the accelerator
@@ -408,12 +440,14 @@ TEST_F(ClipboardNudgeControllerTest,
     }
   }
 
-  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
-  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
-  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgeOpenTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryScreenshotNotificationOpenTime,
+                                0);
+  histograms().ExpectTotalCount(kClipboardHistoryOnboardingNudgePasteTime, 0);
+  histograms().ExpectTotalCount(kClipboardHistoryZeroStateNudgePasteTime, 0);
+  histograms().ExpectTotalCount(
+      kClipboardHistoryScreenshotNotificationPasteTime, 0);
 }
 
 // Tests that nudge `TimeToAction` metric is logged after the nudge has been

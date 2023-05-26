@@ -310,8 +310,7 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
           clipboard_history_.get())),
       accelerator_target_(std::make_unique<AcceleratorTarget>(this)),
       nudge_controller_(
-          std::make_unique<ClipboardNudgeController>(clipboard_history_.get(),
-                                                     this)),
+          std::make_unique<ClipboardNudgeController>(clipboard_history_.get())),
       menu_delegate_(std::make_unique<MenuDelegate>(this)) {
   clipboard_history_->AddObserver(this);
   resource_manager_->AddObserver(this);

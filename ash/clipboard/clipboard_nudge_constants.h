@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_NUDGE_CONSTANTS_H_
 #define ASH_CLIPBOARD_CLIPBOARD_NUDGE_CONSTANTS_H_
 
+#include "ash/ash_export.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -21,25 +22,18 @@ enum ClipboardNudgeType {
   kScreenshotNotificationNudge = 2,
 };
 
-const char kOnboardingNudge_ShowCount[] =
-    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ShownCount";
-const char kOnboardingNudge_OpenTime[] =
-    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTime";
-const char kOnboardingNudge_PasteTime[] =
-    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTime";
-const char kZeroStateNudge_ShowCount[] =
-    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ShownCount";
-const char kZeroStateNudge_OpenTime[] =
-    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeatureOpenTime";
-const char kZeroStateNudge_PasteTime[] =
-    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeaturePasteTime";
-const char kScreenshotNotification_ShowCount[] =
-    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ShownCount";
-const char kScreenshotNotification_OpenTime[] =
-    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ToFeatureOpenTime";
-const char kScreenshotNotification_PasteTime[] =
-    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge."
-    "ToFeaturePasteTime";
+ASH_EXPORT extern const char* const kClipboardHistoryOnboardingNudgeShowCount;
+ASH_EXPORT extern const char* const kClipboardHistoryOnboardingNudgeOpenTime;
+ASH_EXPORT extern const char* const kClipboardHistoryOnboardingNudgePasteTime;
+ASH_EXPORT extern const char* const kClipboardHistoryZeroStateNudgeShowCount;
+ASH_EXPORT extern const char* const kClipboardHistoryZeroStateNudgeOpenTime;
+ASH_EXPORT extern const char* const kClipboardHistoryZeroStateNudgePasteTime;
+ASH_EXPORT extern const char* const
+    kClipboardHistoryScreenshotNotificationShowCount;
+ASH_EXPORT extern const char* const
+    kClipboardHistoryScreenshotNotificationOpenTime;
+ASH_EXPORT extern const char* const
+    kClipboardHistoryScreenshotNotificationPasteTime;
 
 constexpr int kNotificationLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;
