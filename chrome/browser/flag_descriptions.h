@@ -909,9 +909,6 @@ extern const char kGlobalMediaControlsCrOSUpdatedUIName[];
 extern const char kGlobalMediaControlsCrOSUpdatedUIDescription[];
 #endif
 
-extern const char kGlobalMediaControlsModernUIName[];
-extern const char kGlobalMediaControlsModernUIDescription[];
-
 extern const char kGoogleOneOfferFilesBannerName[];
 extern const char kGoogleOneOfferFilesBannerDescription[];
 

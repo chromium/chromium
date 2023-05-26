@@ -1630,12 +1630,6 @@ const char kGlobalMediaControlsCrOSUpdatedUIDescription[] =
     "Show updated UI for Global Media Controls in CrOS.";
 #endif
 
-const char kGlobalMediaControlsModernUIName[] =
-    "Global Media Controls Modern UI";
-const char kGlobalMediaControlsModernUIDescription[] =
-    "Use a redesigned version of the Global Media Controls UI. Requires "
-    "#global-media-controls to also be enabled.";
-
 const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
 const char kGoogleOneOfferFilesBannerDescription[] =
     "Shows a Files banner about Google One offer.";

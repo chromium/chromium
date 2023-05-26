@@ -4255,11 +4255,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "global-media-controls-modern-ui",
-    "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "google-one-offer-files-banner",
     "owners": ["yawano@google.com","assistive-eng@google.com"],
     "expiry_milestone": 116
