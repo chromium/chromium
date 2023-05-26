@@ -22,6 +22,10 @@
           on-click="onOpenAllButtonClick_">
         [[i18n('openAllInTabGroup')]]
       </button>
+      <button id="hideAllButton" class="dropdown-item"
+          on-click="onHideAllButtonClick_">
+        [[i18n('hideAllVisits')]]
+      </button>
       <button id="removeAllButton" class="dropdown-item"
           on-click="onRemoveAllButtonClick_"
           hidden="[[!allowDeletingHistory_]]">

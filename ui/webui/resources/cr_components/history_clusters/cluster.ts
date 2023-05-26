@@ -197,6 +197,14 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         ClusterAction.kOpenedInTabGroup, this.index);
   }
 
+  private onHideAllVisits_() {
+    this.dispatchEvent(new CustomEvent('hide-visits', {
+      bubbles: true,
+      composed: true,
+      detail: this.cluster.visits,
+    }));
+  }
+
   private onRemoveAllVisits_() {
     // Pass event up with new detail of all this cluster's visits.
     this.dispatchEvent(new CustomEvent('remove-visits', {
