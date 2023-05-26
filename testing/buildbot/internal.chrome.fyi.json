@@ -81,7 +81,7 @@
           "dimension_sets": [
             {
               "cpu": "arm64",
-              "os": "Mac-12",
+              "os": "Mac-12|Mac-13",
               "pool": "chrome.tests.finch"
             }
           ],
