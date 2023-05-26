@@ -258,8 +258,7 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
-    bool mipmapped,
-    bool root_surface) {
+    bool mipmapped) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
     MTLPixelFormat mtl_pixel_format =
@@ -293,11 +292,9 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
       dawn_texture_info.fSampleCount = 1;
       dawn_texture_info.fFormat = wgpu_format;
       dawn_texture_info.fUsage = wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding;
-      if (!root_surface) {
-        dawn_texture_info.fUsage |=
-            (wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst);
-      }
+                                 wgpu::TextureUsage::TextureBinding |
+                                 wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst;
       dawn_texture_info.fMipmapped =
           mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
       return dawn_texture_info;
