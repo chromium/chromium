@@ -12,15 +12,19 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/uninstall_request.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+
+namespace base {
+class Value;
+}
 
 namespace webapps {
 enum class UninstallResultCode;
@@ -65,12 +69,9 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   using RemoveManagementTypeCallback =
       base::RepeatingCallback<void(const AppId& app_id)>;
 
-  WebAppUninstallCommand(
-      const AppId& app_id,
-      absl::optional<WebAppManagement::Type> management_type_or_all,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallWebAppCallback callback,
-      Profile& profile);
+  WebAppUninstallCommand(UninstallRequest request,
+                         UninstallWebAppCallback callback,
+                         Profile& profile);
   ~WebAppUninstallCommand() override;
 
   // WebAppCommandTemplate<AllAppsLock>:
@@ -80,49 +81,33 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   base::Value ToDebugValue() const override;
 
  private:
-  // Used to store information needed for uninstalling an app with app_id.
-  struct UninstallInfo {
-    UninstallInfo(AppId app_id,
-                  absl::optional<WebAppManagement::Type> management_type_or_all,
-                  webapps::WebappUninstallSource uninstall_source);
-    ~UninstallInfo();
-    UninstallInfo(const UninstallInfo& uninstall_info);
-    UninstallInfo(UninstallInfo&& uninstall_info);
-    UninstallInfo& operator=(const UninstallInfo& uninstall_info) = delete;
-    UninstallInfo& operator=(UninstallInfo&& uninstall_info) = delete;
+  using RequestCompleteCallback =
+      base::OnceCallback<void(webapps::UninstallResultCode)>;
 
-    AppId app_id;
-    absl::optional<WebAppManagement::Type> management_type_or_all;
-    webapps::WebappUninstallSource uninstall_source;
-  };
+  void ProcessRequestQueueOrComplete();
+  void RequestComplete(AppId app_id, webapps::UninstallResultCode code);
 
-  void AppendUninstallInfoToDebugLog(const UninstallInfo& uninstall_info);
-  void AppendUninstallResultsToDebugLog(const AppId& app_id);
-  void Abort(webapps::UninstallResultCode code);
-  void Uninstall(const AppId& app_id,
-                 webapps::WebappUninstallSource uninstall_source);
-  void QueueSubAppsForUninstallIfAny(const AppId& app_id);
-  void RemoveManagementTypeAfterOsUninstallRegistration(
-      const AppId& app_id,
-      const WebAppManagement::Type& install_source,
-      webapps::WebappUninstallSource uninstall_source,
-      OsHooksErrors os_hooks_errors);
-  void OnSingleUninstallComplete(const AppId& app_id,
-                                 webapps::WebappUninstallSource source,
-                                 bool success);
-  void MaybeFinishUninstallAndDestruct();
+  void RemoveInstallUrl(const UninstallRequest& request,
+                        RequestCompleteCallback callback);
+
+  void RemoveInstallSource(const UninstallRequest& request,
+                           RequestCompleteCallback callback);
+  void RemoveInstallSourceFromDatabase(AppId app_id,
+                                       WebAppManagement::Type install_source,
+                                       RequestCompleteCallback callback,
+                                       OsHooksErrors os_hooks_errors);
+
+  void RemoveApp(const UninstallRequest& request,
+                 RequestCompleteCallback callback);
+  void OnUninstallJobComplete(RequestCompleteCallback callback, bool success);
 
   std::unique_ptr<AllAppsLockDescription> lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  const AppId app_id_;
-  base::circular_deque<UninstallInfo> queued_uninstalls_;
+  base::circular_deque<UninstallRequest> request_queue_;
+  const AppId initial_request_app_id_;
   base::flat_map<AppId, webapps::UninstallResultCode> uninstall_results_;
-  base::flat_map<AppId, std::unique_ptr<RemoveWebAppJob>>
-      apps_pending_uninstall_;
-  base::Value::Dict debug_log_;
-  bool all_uninstalled_queued_ = false;
-
+  std::unique_ptr<RemoveWebAppJob> active_remove_web_app_job_;
   UninstallWebAppCallback callback_;
 
   // `this` is owned by `profile_`.
@@ -133,4 +118,4 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_INSTALL_COMMAND_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_UNINSTALL_COMMAND_H_

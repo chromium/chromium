@@ -873,7 +873,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         provider->install_finalizer().UninstallWebApp(
             app_id, webapps::WebappUninstallSource::kAppsPage,
             base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-              EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+              EXPECT_TRUE(webapps::UninstallSucceeded(code));
               run_loop.Quit();
             }));
         run_loop.Run();
