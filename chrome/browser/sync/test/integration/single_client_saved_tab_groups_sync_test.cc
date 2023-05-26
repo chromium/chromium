@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
   SavedTabGroupKeyedService* const service =
       SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
 
-  // TODO(crbug/1445672): Verify that the orphaned tab was exists but isn't
+  // TODO(crbug/1445672): Verify that the orphaned tab exists but isn't
   // linked to any group.
 
   // Verify adding the corresponding group adds the orphaned tab to the model.
@@ -409,10 +409,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
   AddDataToFakeServer(*group2.ToSpecifics());
 
   // Verify the group positions are updated in the local model as well.
-  // TODO(tbergquist/dljames): Enable this check once ordering syncing is fixed.
-  // EXPECT_TRUE(saved_tab_groups_helper::GroupOrderChecker(
-  //                 service, {group2.saved_guid(), group1.saved_guid()})
-  //                 .Wait());
+  EXPECT_TRUE(saved_tab_groups_helper::GroupOrderChecker(
+                  service, {group2.saved_guid(), group1.saved_guid()})
+                  .Wait());
 }
 
 // Reorder tabs in a group.
@@ -453,11 +452,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
   AddDataToFakeServer(*tab2.ToSpecifics());
 
   // Verify the tab order was updated in the model.
-  // TODO(tbergquist/dljames): Enable this check once ordering syncing is fixed.
-  // EXPECT_TRUE(saved_tab_groups_helper::TabOrderChecker(
-  //                 service, group1.saved_guid(),
-  //                 {tab2.saved_tab_guid(), tab1.saved_tab_guid()})
-  //                 .Wait());
+  EXPECT_TRUE(saved_tab_groups_helper::TabOrderChecker(
+                  service, group1.saved_guid(),
+                  {tab2.saved_tab_guid(), tab1.saved_tab_guid()})
+                  .Wait());
 }
 
 }  // namespace
