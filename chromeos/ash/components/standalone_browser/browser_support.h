@@ -22,17 +22,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
   // Returns the global instance of BrowserSupport.
   static BrowserSupport* Get();
 
-  // Forces IsLacrosEnabled() to return true or false for testing. Reset upon
-  // destruction of returned |base::AutoReset| object.
-  // TODO(andreaorru): remove these methods once the refactoring in complete.
-  static base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled);
-  static bool GetLacrosEnabledForTest();
-
  private:
   BrowserSupport();
   ~BrowserSupport();
-
-  static bool lacros_enabled_for_test_;
 };
 
 }  // namespace ash::standalone_browser
