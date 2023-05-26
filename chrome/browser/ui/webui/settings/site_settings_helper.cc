@@ -84,7 +84,7 @@ const char kBluetoothChooserDataGroupType[] = "bluetooth-devices-data";
 const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // The following ContentSettingsTypes have UI in Content Settings
     // and require a mapping from their Javascript string representation in
-    // chrome/browser/resources/settings/site_settings/constants.js to their C++
+    // chrome/browser/resources/settings/site_settings/constants.ts to their C++
     // ContentSettingsType provided here. These group names are only used by
     // desktop webui.
     {ContentSettingsType::COOKIES, "cookies"},
@@ -129,6 +129,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
      "private-network-devices-data"},
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
+    {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -159,7 +160,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::NFC, nullptr},
     {ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_READ_GUARD, nullptr},
-    {ContentSettingsType::STORAGE_ACCESS, nullptr},
     {ContentSettingsType::CAMERA_PAN_TILT_ZOOM, nullptr},
     {ContentSettingsType::INSECURE_LOCAL_NETWORK, nullptr},
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},

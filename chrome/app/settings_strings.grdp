@@ -3969,6 +3969,15 @@
     Cancel
   </message>
 
+  <!-- Site Settings - Storage Access Page -->
+  <!-- TODO(https://crbug.com/1433644): Replace with the final SAA strings.  -->
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_ALLOWED" translateable="false" desc="It explains that an embedded site can request access to its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab).">
+    Embedded sites can ask to access info they've saved about you
+  </message>
+  <message name="IDS_SETTINGS_STORAGE_ACCESS_BLOCKED" translateable="false" desc="It explains that an embedded site is blocked from accessing its unpartitioned cookies that it would normally only have access to in a first-party context (i.e. when loaded directly in a browser tab) ">
+    Don't allow embedded sites to access info they've saved about you
+  </message>
+
   <message name="IDS_SETTINGS_NO_BLUETOOTH_DEVICES_FOUND" desc="Explanation for not showing Bluetooth devices in site settings.">
     No Bluetooth devices found
   </message>

@@ -79,6 +79,7 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -502,6 +503,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isHighEfficiencyMultistateModeEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyMultistateMode));
+
+  html_source->AddBoolean(
+      "enablePermissionStorageAccessApi",
+      base::FeatureList::IsEnabled(
+          permissions::features::kPermissionStorageAccessAPI));
 
   TryShowHatsSurveyWithTimeout();
 }

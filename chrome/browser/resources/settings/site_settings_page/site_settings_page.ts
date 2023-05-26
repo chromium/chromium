@@ -134,6 +134,17 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       otherLabel: 'cookiePageClearOnExit',
     },
     {
+      // TODO(b/276716832): Change route to the new Storage Access page.
+      route: routes.SITE_SETTINGS,
+      id: Id.STORAGE_ACCESS,
+      label: 'siteSettingsStorageAccess',
+      icon: 'settings:cookie',
+      enabledLabel: 'storageAccessAllowed',
+      disabledLabel: 'storageAccessBlocked',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enablePermissionStorageAccessApi'),
+    },
+    {
       route: routes.SITE_SETTINGS_LOCATION,
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
@@ -391,6 +402,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.MIC,
               Id.NOTIFICATIONS,
               Id.BACKGROUND_SYNC,
+              Id.STORAGE_ACCESS,
             ]),
             permissionsAdvanced: buildItemListFromIds([
               Id.SENSORS,

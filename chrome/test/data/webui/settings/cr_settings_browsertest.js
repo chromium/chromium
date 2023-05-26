@@ -22,6 +22,7 @@ GEN('#include "components/autofill/core/common/autofill_features.h"');
 GEN('#include "components/privacy_sandbox/privacy_sandbox_features.h"');
 GEN('#include "content/public/common/content_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "components/permissions/features.h"');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 GEN('#include "components/language/core/common/language_experiments.h"');
@@ -937,6 +938,7 @@ var CrSettingsSiteSettingsPageTest = class extends CrSettingsBrowserTest {
       enabled: [
         'privacy_sandbox::kPrivacySandboxSettings4',
         'content_settings::features::kSafetyCheckUnusedSitePermissions',
+        'permissions::features::kPermissionStorageAccessAPI',
       ],
     };
   }
@@ -986,6 +988,12 @@ TEST_F(
     'CrSettingsSiteSettingsPageTest',
     'MAYBE_UnusedSitePermissionsReviewDisabled', function() {
       runMochaSuite('UnusedSitePermissionsReviewDisabled');
+    });
+
+TEST_F(
+    'CrSettingsSiteSettingsPageTest', 'PermissionStorageAccessApiDisabled',
+    function() {
+      runMochaSuite('PermissionStorageAccessApiDisabled');
     });
 
 var CrSettingsMenuTest = class extends CrSettingsBrowserTest {

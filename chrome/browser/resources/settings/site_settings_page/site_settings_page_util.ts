@@ -69,6 +69,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsSerialPortsMidSentence';
     case ContentSettingsTypes.SOUND:
       return 'siteSettingsSoundMidSentence';
+    case ContentSettingsTypes.STORAGE_ACCESS:
+      return 'siteSettingsStorageAccessMidSentence';
     case ContentSettingsTypes.USB_DEVICES:
       return 'siteSettingsUsbDevicesMidSentence';
     case ContentSettingsTypes.VR:

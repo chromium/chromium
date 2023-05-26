@@ -3276,6 +3276,17 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");
 }
 
+void AddStorageAccessStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"siteSettingsStorageAccess", IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS},
+      {"siteSettingsStorageAccessMidSentence",
+       IDS_SITE_SETTINGS_TYPE_STORAGE_ACCESS_MID_SENTENCE},
+      {"storageAccessAllowed", IDS_SETTINGS_STORAGE_ACCESS_ALLOWED},
+      {"storageAccessBlocked", IDS_SETTINGS_STORAGE_ACCESS_BLOCKED},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
                             Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -3529,6 +3540,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
   AddSiteDataPageStrings(html_source, profile);
+  AddStorageAccessStrings(html_source);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   AddDefaultBrowserStrings(html_source);
