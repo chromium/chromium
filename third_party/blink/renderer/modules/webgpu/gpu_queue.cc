@@ -551,7 +551,7 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  WGPUTextureUsage dst_texture_usage = destination->texture()->Usage();
+  WGPUTextureUsageFlags dst_texture_usage = destination->texture()->Usage();
 
   if ((dst_texture_usage & WGPUTextureUsage_RenderAttachment) !=
           WGPUTextureUsage_RenderAttachment ||
