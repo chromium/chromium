@@ -507,8 +507,7 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
 
   DCHECK(access_details.render_frame_host);
 
-  // TODO(crbug.com/1434764): handle same-site iframes.
-  if (!access_details.render_frame_host->IsInPrimaryMainFrame() ||
+  if (!IsInPrimaryPage(access_details.render_frame_host) ||
       access_details.blocked_by_policy) {
     return;
   }

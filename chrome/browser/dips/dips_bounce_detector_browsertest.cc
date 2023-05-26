@@ -297,6 +297,10 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("e.test", "127.0.0.1");
     host_resolver()->AddRule("f.test", "127.0.0.1");
     host_resolver()->AddRule("g.test", "127.0.0.1");
+    SetUpDIPSWebContentsObserver();
+  }
+
+  void SetUpDIPSWebContentsObserver() {
     web_contents_observer_ =
         DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
   }
@@ -444,67 +448,6 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   raw_ptr<DIPSWebContentsObserver, DanglingUntriaged> web_contents_observer_ =
       nullptr;
 };
-
-class DIPSSiteDataAccessDetectorTest
-    : public DIPSBounceDetectorBrowserTest,
-      public testing::WithParamInterface<StorageType> {
- public:
-  DIPSSiteDataAccessDetectorTest(const DIPSSiteDataAccessDetectorTest&) =
-      delete;
-  DIPSSiteDataAccessDetectorTest& operator=(
-      const DIPSSiteDataAccessDetectorTest&) = delete;
-
-  DIPSSiteDataAccessDetectorTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    base::FilePath path;
-    base::PathService::Get(content::DIR_TEST_DATA, &path);
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_.ServeFilesFromDirectory(path);
-    https_server_.AddDefaultHandlers(kChromeTestDataDir);
-    ASSERT_TRUE(https_server_.Start());
-  }
-
-  auto* TestServer() { return &https_server_; }
-
- private:
-  net::test_server::EmbeddedTestServer https_server_;
-};
-
-IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
-                       DetectSiteDataAccess_Storages) {
-  // Start logging `WebContentsObserver` callbacks.
-  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
-  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
-
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(
-      GetActiveWebContents()->GetPrimaryMainFrame(),
-      TestServer()->GetURL("a.test", "/title1.html")));
-
-  EXPECT_TRUE(
-      AccessStorage(GetActiveWebContents()->GetPrimaryMainFrame(), GetParam()));
-
-  EXPECT_THAT(
-      logger->log(),
-      testing::ContainerEq(std::vector<std::string>({
-          "DidStartNavigation(a.test/title1.html)",
-          "DidFinishNavigation(a.test/title1.html)",
-          "OnSiteDataAccessed(AccessDetails, Storage: Unknown: a.test/)",
-      })));
-}
-
-// WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
-// there are not persistent.
-INSTANTIATE_TEST_SUITE_P(All,
-                         DIPSSiteDataAccessDetectorTest,
-                         ::testing::Values(StorageType::DATABASE,
-                                           StorageType::LOCAL_STORAGE,
-                                           StorageType::SESSION_STORAGE,
-                                           StorageType::CACHE,
-                                           StorageType::FILE_SYSTEM,
-                                           StorageType::INDEXED_DB));
 
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                        AttributeSameSiteIframesCookieClientAccessTo1P) {
@@ -1328,3 +1271,209 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
   // write cookies before bouncing the user.
   WaitForIssueAndCheckTrackingSites({"e.test", "f.test"});
 }
+
+class DIPSSiteDataAccessDetectorTest
+    : public DIPSBounceDetectorBrowserTest,
+      public testing::WithParamInterface<StorageType> {
+ public:
+  DIPSSiteDataAccessDetectorTest(const DIPSSiteDataAccessDetectorTest&) =
+      delete;
+  DIPSSiteDataAccessDetectorTest& operator=(
+      const DIPSSiteDataAccessDetectorTest&) = delete;
+
+  DIPSSiteDataAccessDetectorTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    base::FilePath path;
+    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromDirectory(path);
+    https_server_.AddDefaultHandlers(kChromeTestDataDir);
+    ASSERT_TRUE(https_server_.Start());
+    SetUpDIPSWebContentsObserver();
+  }
+
+  auto* TestServer() { return &https_server_; }
+
+ private:
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       DetectSiteDataAccess_Storages) {
+  // Start logging `WebContentsObserver` callbacks.
+  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
+  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetActiveWebContents()->GetPrimaryMainFrame(),
+      TestServer()->GetURL("a.test", "/title1.html")));
+
+  EXPECT_TRUE(
+      AccessStorage(GetActiveWebContents()->GetPrimaryMainFrame(), GetParam()));
+
+  EXPECT_THAT(
+      logger->log(),
+      testing::ContainerEq(std::vector<std::string>({
+          "DidStartNavigation(a.test/title1.html)",
+          "DidFinishNavigation(a.test/title1.html)",
+          "OnSiteDataAccessed(AccessDetails, Storage: Unknown: a.test/)",
+      })));
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       AttributeSameSiteIframesSiteDataAccessTo1P) {
+  std::vector<std::string> redirects;
+  StartAppendingRedirectsTo(&redirects);
+
+  const GURL primary_main_frame_url =
+      TestServer()->GetURL("a.test", "/iframe_blank.html");
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+
+  const GURL iframe_url = TestServer()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
+
+  EXPECT_TRUE(AccessStorage(GetIFrame(), GetParam()));
+
+  const GURL primary_main_frame_final_url =
+      TestServer()->GetURL("d.test", "/title1.html");
+  // Performs a Client-redirect to `primary_main_frame_final_url`.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetActiveWebContents(), primary_main_frame_final_url));
+
+  CloseTab();
+  EXPECT_THAT(redirects, ElementsAre(("[1/1] blank -> a.test/iframe_blank.html "
+                                      "(Write) -> d.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       AttributeSameSiteNestedIframesSiteDataAccessTo1P) {
+  std::vector<std::string> redirects;
+  StartAppendingRedirectsTo(&redirects);
+
+  const GURL primary_main_frame_url =
+      TestServer()->GetURL("a.test", "/iframe_blank.html");
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+
+  const GURL iframe_url = TestServer()->GetURL("a.test", "/iframe_blank.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
+
+  const GURL nested_iframe_url = TestServer()->GetURL("a.test", "/title1.html");
+  NavigateNestedIFrameTo(GetIFrame(), "test", nested_iframe_url);
+
+  EXPECT_TRUE(AccessStorage(GetNestedIFrame(), GetParam()));
+
+  const GURL primary_main_frame_final_url =
+      TestServer()->GetURL("d.test", "/title1.html");
+  // Performs a Client-redirect to `primary_main_frame_final_url`.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetActiveWebContents(), primary_main_frame_final_url));
+
+  CloseTab();
+  EXPECT_THAT(redirects, ElementsAre(("[1/1] blank -> a.test/iframe_blank.html "
+                                      "(Write) -> d.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       DiscardFencedFrameCookieClientAccess) {
+  // `StorageType::DATABASE` is disallowed in fenced frames.
+  if (GetParam() == StorageType::DATABASE) {
+    GTEST_SKIP();
+  }
+
+  std::vector<std::string> redirects;
+  StartAppendingRedirectsTo(&redirects);
+
+  const GURL primary_main_frame_url =
+      TestServer()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+
+  const GURL fenced_frame_url =
+      TestServer()->GetURL("a.test", "/fenced_frames/title2.html");
+  std::unique_ptr<content::RenderFrameHostWrapper> fenced_frame =
+      std::make_unique<content::RenderFrameHostWrapper>(
+          fenced_frame_test_helper()->CreateFencedFrame(
+              GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url));
+  EXPECT_NE(fenced_frame, nullptr);
+
+  EXPECT_TRUE(AccessStorage(fenced_frame->get(), GetParam()));
+
+  const GURL primary_main_frame_final_url =
+      TestServer()->GetURL("d.test", "/title1.html");
+  // Performs a Client-redirect to `primary_main_frame_final_url`.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetActiveWebContents(), primary_main_frame_final_url));
+
+  CloseTab();
+  EXPECT_THAT(
+      redirects,
+      ElementsAre(
+          ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       DiscardPrerenderedPageCookieClientAccess) {
+  // Prerendering pages do not have access to `StorageType::FILE_SYSTEM` until
+  // activation (AKA becoming the primary page, whose test case is already
+  // covered).
+  if (GetParam() == StorageType::FILE_SYSTEM) {
+    GTEST_SKIP();
+  }
+
+  std::vector<std::string> redirects;
+  StartAppendingRedirectsTo(&redirects);
+
+  const GURL primary_main_frame_url =
+      TestServer()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), primary_main_frame_url));
+
+  const GURL prerendering_url = TestServer()->GetURL("a.test", "/title2.html");
+  const int host_id = prerender_test_helper()->AddPrerender(prerendering_url);
+  prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
+  content::test::PrerenderHostObserver observer(*GetActiveWebContents(),
+                                                host_id);
+  EXPECT_FALSE(observer.was_activated());
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper()->GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  EXPECT_TRUE(AccessStorage(prerender_frame, GetParam()));
+
+  prerender_test_helper()->CancelPrerenderedPage(host_id);
+  observer.WaitForDestroyed();
+
+  const GURL primary_main_frame_final_url =
+      TestServer()->GetURL("d.test", "/title1.html");
+  // Performs a Client-redirect to `primary_main_frame_final_url`.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetActiveWebContents(), primary_main_frame_final_url));
+
+  CloseTab();
+  EXPECT_THAT(
+      redirects,
+      ElementsAre(
+          ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
+}
+
+// WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
+// there are not persistent.
+// TODO(crbug.com/1449328): Remove `StorageType::DATABASE` once deprecation is
+// complete.
+// TODO(crbug.com/1449328): Remove `StorageType::FILE_SYSTEM` once deprecation
+// is complete.
+INSTANTIATE_TEST_SUITE_P(All,
+                         DIPSSiteDataAccessDetectorTest,
+                         ::testing::Values(StorageType::DATABASE,
+                                           StorageType::LOCAL_STORAGE,
+                                           StorageType::SESSION_STORAGE,
+                                           StorageType::CACHE,
+                                           StorageType::FILE_SYSTEM,
+                                           StorageType::INDEXED_DB));
