@@ -249,11 +249,21 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu() {
         mMediator.onFolderStateSet(mBookmarkId);
         assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
                            .apply(R.id.edit_menu_id));
         verifyActivityLaunched(BookmarkAddEditFolderActivity.class);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
+    public void testOnMenuItemClick_editMenu_improvedBookmarks() {
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                           .apply(R.id.edit_menu_id));
+        verifyActivityLaunched(BookmarkEditActivity.class);
     }
 
     @Test

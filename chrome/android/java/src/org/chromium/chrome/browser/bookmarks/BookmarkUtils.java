@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /** A class holding static util functions for bookmark. */
@@ -721,6 +722,19 @@ public class BookmarkUtils {
         return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
                 ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
                 : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
+    }
+
+    /** Returns whether the given folder can have a new folder added to it. */
+    public static boolean canAddSubfolder(BookmarkModel bookmarkModel, BookmarkId folder) {
+        return !Objects.equals(folder, bookmarkModel.getReadingListFolder())
+                && !Objects.equals(folder, bookmarkModel.getPartnerFolderId());
+    }
+
+    /** Returns whether the given folder can have a new folder added to it. */
+    public static boolean shouldShowImagesForFolder(
+            BookmarkModel bookmarkModel, BookmarkId folder) {
+        return !bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/true)
+                        .contains(folder);
     }
 
     private static int getDisplayTextSize(Resources resources) {

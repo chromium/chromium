@@ -36,23 +36,29 @@
                     android:singleLine="true" />
             </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:layout_marginStart="3dp"
-                android:layout_marginEnd="3dp"
-                android:text="@string/bookmark_folder"
-                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
-
-            <TextView
-                android:id="@+id/folder_text"
+            <LinearLayout
+                android:id="@+id/folder_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:layout_marginStart="3dp"
-                android:layout_marginEnd="3dp"
-                android:textAppearance="@style/TextAppearance.BookmarkEditFolderName" />
+                android:orientation="vertical" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:text="@string/bookmark_folder"
+                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+                <TextView
+                    android:id="@+id/folder_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:textAppearance="@style/TextAppearance.BookmarkEditFolderName" />
+            </LinearLayout>
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/url_text"
@@ -69,6 +75,28 @@
                     android:inputType="textUri"
                     android:singleLine="true" />
             </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/improved_folder_container"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+                <TextView
+                    android:id="@+id/improved_folder_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:text="@string/bookmark_folder"
+                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+                <include
+                    android:id="@+id/improved_folder_row"
+                    layout="@layout/improved_bookmark_folder_select_layout" />
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

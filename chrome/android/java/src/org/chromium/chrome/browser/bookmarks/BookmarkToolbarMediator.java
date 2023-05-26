@@ -31,7 +31,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
-import java.util.Objects;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
@@ -120,7 +119,11 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID, id);
             return true;
         } else if (id == R.id.edit_menu_id) {
-            BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, mCurrentFolder);
+            if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+                BookmarkUtils.startEditActivity(mContext, mCurrentFolder);
+            } else {
+                BookmarkAddEditFolderActivity.startEditFolderActivity(mContext, mCurrentFolder);
+            }
             return true;
         } else if (id == R.id.close_menu_id) {
             BookmarkUtils.finishActivityOnPhone(mContext);
@@ -267,7 +270,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         // New folder button.
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mModel.set(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE,
-                    isAddNewFolderButtonVisible());
+                    BookmarkUtils.canAddSubfolder(mBookmarkModel, mCurrentFolder));
         }
     }
 
@@ -305,10 +308,5 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 return R.id.sort_by_reverse_alpha;
         }
         return ResourcesCompat.ID_NULL;
-    }
-
-    private boolean isAddNewFolderButtonVisible() {
-        return !Objects.equals(mCurrentFolder, mBookmarkModel.getReadingListFolder())
-                && !Objects.equals(mCurrentFolder, mBookmarkModel.getPartnerFolderId());
     }
 }

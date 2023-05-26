@@ -24,7 +24,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
@@ -1226,12 +1225,7 @@ class BookmarkManagerMediator
                 }
             } else if (textId == R.string.bookmark_item_edit) {
                 BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-                if (bookmarkItem.isFolder()) {
-                    BookmarkAddEditFolderActivity.startEditFolderActivity(
-                            mContext, bookmarkItem.getId());
-                } else {
-                    BookmarkUtils.startEditActivity(mContext, bookmarkItem.getId());
-                }
+                BookmarkUtils.startEditActivity(mContext, bookmarkItem.getId());
             } else if (textId == R.string.reading_list_mark_as_read) {
                 BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                 mBookmarkModel.setReadStatusForReadingList(bookmarkItem.getUrl(), /*read=*/true);
