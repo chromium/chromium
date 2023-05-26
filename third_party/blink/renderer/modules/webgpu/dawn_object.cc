@@ -19,7 +19,6 @@ DawnObjectBase::GetDawnControlClient() const {
 }
 
 void DawnObjectBase::setLabel(const String& value) {
-  // TODO: Relay label changes to Dawn
   label_ = value;
   setLabelImpl(value);
 }

@@ -19,6 +19,12 @@ class GPURenderBundle : public DawnObject<WGPURenderBundle> {
 
   GPURenderBundle(const GPURenderBundle&) = delete;
   GPURenderBundle& operator=(const GPURenderBundle&) = delete;
+
+ private:
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().renderBundleSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

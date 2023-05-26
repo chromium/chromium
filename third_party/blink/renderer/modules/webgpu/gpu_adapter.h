@@ -63,6 +63,10 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
                                WGPUDevice dawn_device,
                                const char* error_message);
 
+  void setLabelImpl(const String&) override {
+    // There isn't a wgpu::Adapter::SetLabel, just skip.
+  }
+
   WGPUAdapter handle_;
   Member<GPU> gpu_;
   bool is_fallback_adapter_;
