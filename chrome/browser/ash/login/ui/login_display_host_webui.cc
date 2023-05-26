@@ -569,7 +569,8 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
         wizard_controller_->current_screen() == welcome_screen;
     if (!should_show) {
       // When the booting animation might be played we postpone the wallpaper
-      // call. So we need to make it here if the animation won't be played.
+      // call and showing OOBE WebUI widget. Show them here.
+      login_window_->Show();
       WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
       return;
     }
@@ -578,6 +579,10 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
         ->ShowAnimationWithEndCallback(base::BindOnce(
             &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
             weak_factory_.GetWeakPtr()));
+    // We can show the wallpaper and OOBE widget after the animation widget is
+    // shown.
+    login_window_->Show();
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   }
 }
 
@@ -715,11 +720,6 @@ void LoginDisplayHostWebUI::OnShowWebUITimeout() {
 }
 
 void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
-  // When the booting animation might be played we postpone the wallpaper
-  // call. Make sure initial wallpaper is shown before removing the animation
-  // layer.
-  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
-
   booting_animation_finished_playing_ = true;
   if (webui_ready_to_take_over_) {
     // This function is called by the AnimationObserver which can't destroy the
@@ -784,8 +784,12 @@ void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() "
                     "NotifyLoginOrLockScreenVisible";
 
-    // Notify that the OOBE page is ready and the first screen is shown.
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
+    // Notify that the OOBE page is ready and the first screen is shown. It
+    // might happen that front-end part isn't fully initialized yet (when
+    // `OobeLazyLoading` is enabled), so wait for it to happen before notifying.
+    GetOobeUI()->IsJSReady(base::BindOnce(
+        &session_manager::SessionManager::NotifyLoginOrLockScreenVisible,
+        base::Unretained(session_manager::SessionManager::Get())));
   } else {
     // TODO(crbug.com/1305245) - Remove once the issue is fixed.
     LOG(WARNING) << "LoginDisplayHostWebUI::OnCurrentScreenChanged() Not "
@@ -853,7 +857,9 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
-  login_window_->Show();
+  if (!ash::features::IsOobeSimonEnabled()) {
+    login_window_->Show();
+  }
   CHECK(GetOobeUI());
   GetOobeUI()->AddObserver(this);
 }

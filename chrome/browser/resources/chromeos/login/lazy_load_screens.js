@@ -14,6 +14,15 @@ const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
 const flowSpecificScreensList = isOobeFlow ? oobeScreensList : loginScreensList;
 const lazyLoadingEnabled = loadTimeData.getBoolean('isOobeLazyLoadingEnabled');
 
+const isOobeSimon = loadTimeData.getBoolean('isOobeSimonEnabled');
+const animationTransitionTime = 900;
+let aboutToShrink = false;
+if (isOobeSimon) {
+  document.addEventListener('about-to-shrink', () => {
+    aboutToShrink = true;
+  }, {once: true});
+}
+
 // Right now we have only one priority screen and it is WelcomeScreen, that
 // means that there is no effect from async loading of screens on the login
 // page.
@@ -40,6 +49,12 @@ function addScreensSynchronously() {
  * main thread, the actual adding of the screens are done via scheduling tasks.
  */
 function addScreensAsync() {
+  // Optimization to make the shrink animation smooth.
+  if (aboutToShrink) {
+    aboutToShrink = false;
+    setTimeout(addScreensAsync, animationTransitionTime);
+    return;
+  }
   if (commonScreensList.length > 0) {
     const nextScreens = commonScreensList.pop();
     addScreensToMainContainer([nextScreens]);

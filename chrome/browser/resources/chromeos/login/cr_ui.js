@@ -51,6 +51,8 @@ export class Oobe extends DisplayManager {
    * Does the initial transition to the OOBE flow after booting animation.
    */
   static triggerDown() {
+    // Notify that we are going to play initial animation in the WebUI.
+    document.dispatchEvent(new CustomEvent('about-to-shrink'));
     // Delay this call to reduce the load during animation.
     setTimeout(() => Oobe.getInstance().triggerDown(), 0);
   }
