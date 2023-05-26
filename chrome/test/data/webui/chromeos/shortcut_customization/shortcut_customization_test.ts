@@ -489,9 +489,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(editElement.hasError);
   });
 
-  // TODO(b/283781252): this test causes all tests below fail consistently on
-  // debug builders. Fix and re-enable.
-  test.skip('AddAcceleratorMaximumAccelerators', async () => {
+  test('AddAcceleratorMaximumAccelerators', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
