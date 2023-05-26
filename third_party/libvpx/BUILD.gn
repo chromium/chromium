@@ -31,6 +31,10 @@ if (current_cpu == "x86") {
   }
 } else if (current_cpu == "arm64") {
   if (is_chromeos || is_mac) {
+    # This is necessary for CrOS and macOS as they reuse the Linux
+    # configuration, of which there are two (see the later definition of
+    # os_category). Windows is configured with highbd enabled in its arm64
+    # path.
     cpu_arch_full = "arm64-highbd"
   } else {
     cpu_arch_full = current_cpu
