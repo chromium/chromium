@@ -18,6 +18,7 @@ extern const char kNTPIdentityDiscTappedAction[];
 extern const char kActionOnNTPHistogram[];
 extern const char kActionOnStartHistogram[];
 extern const char kNTPTimeSpentHistogram[];
+extern const char kStartTimeSpentHistogram[];
 extern const char kNTPImpressionHistogram[];
 extern const char kStartImpressionHistogram[];
 extern const char kNTPOverscrollActionHistogram[];

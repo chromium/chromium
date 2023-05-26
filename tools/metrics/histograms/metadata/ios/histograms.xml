@@ -2383,6 +2383,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Start.TimeSpent" units="ms" expires_after="2023-10-22">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>freedjm@chromium.org</owner>
+  <summary>
+    The time spent on the Start Home surface as measured from when it was loaded
+    or last brought to the foreground until it was navigated away from or
+    hidden. Only measured on iOS.
+  </summary>
+</histogram>
+
 <histogram name="IOS.StoreKit.ITunesURLsHandlingResult"
     enum="IOSITunesURLsStoreKitHandlingResult" expires_after="2021-06-23">
   <owner>mrefaat@chromium.org</owner>

@@ -22,8 +22,13 @@
 
 #pragma mark - Public
 
-- (void)recordTimeSpentInNTP:(base::TimeDelta)timeSpent {
-  UmaHistogramMediumTimes(kNTPTimeSpentHistogram, timeSpent);
+- (void)recordTimeSpentInHome:(base::TimeDelta)timeSpent
+               isStartSurface:(BOOL)startSurface {
+  if (startSurface) {
+    UmaHistogramMediumTimes(kStartTimeSpentHistogram, timeSpent);
+  } else {
+    UmaHistogramMediumTimes(kNTPTimeSpentHistogram, timeSpent);
+  }
 }
 
 - (void)recordHomeImpression:(IOSNTPImpressionType)impressionType
