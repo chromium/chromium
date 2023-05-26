@@ -101,25 +101,6 @@ bool ShouldInstallOverwriteUserDisplayMode(
   }
 }
 
-bool IsExternalInstallSource(WebAppManagement::Type install_source) {
-  switch (install_source) {
-    case WebAppManagement::Type::kSystem:
-    case WebAppManagement::Type::kKiosk:
-    case WebAppManagement::Type::kPolicy:
-    case WebAppManagement::Type::kSubApp:
-    case WebAppManagement::Type::kWebAppStore:
-    case WebAppManagement::Type::kDefault:
-      return true;
-    case WebAppManagement::Type::kSync:
-    // TODO(crbug.com/1427340): These are classified incorrectly, this check
-    // isn't really useful and should be removed.
-    case WebAppManagement::Type::kOneDriveIntegration:
-    case WebAppManagement::Type::kCommandLine:
-    case WebAppManagement::Type::kOem:
-      return false;
-  }
-}
-
 }  // namespace
 
 WebAppInstallFinalizer::FinalizeOptions::FinalizeOptions(
@@ -295,24 +276,27 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
   DCHECK(started_);
-  DCHECK(IsExternalInstallSource(external_install_source));
 
-  ScheduleUninstallCommand(app_id, external_install_source,
-                           /*install_url=*/absl::nullopt, uninstall_source,
+  DCHECK(external_install_source == WebAppManagement::Type::kSystem ||
+         external_install_source == WebAppManagement::Type::kKiosk ||
+         external_install_source == WebAppManagement::Type::kPolicy ||
+         external_install_source == WebAppManagement::Type::kSubApp ||
+         external_install_source == WebAppManagement::Type::kWebAppStore ||
+         external_install_source == WebAppManagement::Type::kDefault);
+
+  ScheduleUninstallCommand(app_id, external_install_source, uninstall_source,
                            std::move(callback));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
-    const GURL& install_url,
+    const GURL& app_url,
     WebAppManagement::Type external_install_source,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
-  DCHECK(IsExternalInstallSource(external_install_source));
-
   absl::optional<AppId> app_id =
-      GetWebAppRegistrar().LookupExternalAppId(install_url);
+      GetWebAppRegistrar().LookupExternalAppId(app_url);
   if (!app_id.has_value()) {
-    LOG(WARNING) << "Couldn't uninstall web app with url " << install_url
+    LOG(WARNING) << "Couldn't uninstall web app with url " << app_url
                  << "; No corresponding web app for url.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -321,8 +305,8 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
     return;
   }
 
-  ScheduleUninstallCommand(std::move(app_id).value(), external_install_source,
-                           install_url, uninstall_source, std::move(callback));
+  UninstallExternalWebApp(app_id.value(), external_install_source,
+                          uninstall_source, std::move(callback));
 }
 
 void WebAppInstallFinalizer::UninstallWebApp(
@@ -333,7 +317,6 @@ void WebAppInstallFinalizer::UninstallWebApp(
   // An external install source (or management type) is only required
   // for apps that have been externally installed.
   ScheduleUninstallCommand(app_id, /*external_install_source=*/absl::nullopt,
-                           /*install_url=*/absl::nullopt,
                            webapp_uninstall_source, std::move(callback));
 }
 
@@ -724,13 +707,11 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
 void WebAppInstallFinalizer::ScheduleUninstallCommand(
     const AppId& app_id,
     absl::optional<WebAppManagement::Type> external_install_source,
-    absl::optional<GURL> install_url,
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback) {
   auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
-      UninstallRequest(uninstall_source, app_id, external_install_source,
-                       install_url),
-      std::move(callback), *profile_);
+      app_id, external_install_source, uninstall_source, std::move(callback),
+      *profile_);
 
   command_manager_->ScheduleCommand(std::move(uninstall_command));
 }

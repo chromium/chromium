@@ -16,8 +16,6 @@ enum class UninstallResultCode {
   kError,
 };
 
-bool UninstallSucceeded(UninstallResultCode code);
-
 std::string ConvertUninstallResultCodeToString(UninstallResultCode code);
 
 }  // namespace webapps

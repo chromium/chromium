@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
-#include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/remove_web_app_job.h"
@@ -48,90 +47,104 @@ bool CanUninstallAllManagementSources(
          uninstall_source == webapps::WebappUninstallSource::kTestCleanup;
 }
 
-enum class InstallUrlActionNeeded {
-  kNone,
-  kRemoveInstallUrl,
-  kRemoveInstallSource,
-};
-
-InstallUrlActionNeeded GetInstallUrlActionNeeded(
-    const WebApp::ExternalConfigMap& config_map,
-    const UninstallRequest& request) {
-  auto it = config_map.find(*request.install_source());
-  if (it == config_map.end()) {
-    return InstallUrlActionNeeded::kNone;
-  }
-
-  const WebApp::ExternalManagementConfig& config = it->second;
-  const base::flat_set<GURL>& install_urls = config.install_urls;
-  if (install_urls.empty()) {
-    // TODO(crbug.com/1427340): Return a different UninstallResultCode
-    // for this case and log it in metrics.
-    return InstallUrlActionNeeded::kRemoveInstallSource;
-  }
-  if (install_urls.size() == 1 &&
-      install_urls.contains(*request.install_url())) {
-    return InstallUrlActionNeeded::kRemoveInstallSource;
-  }
-
-  return InstallUrlActionNeeded::kRemoveInstallUrl;
-}
-
-enum class InstallSourceActionNeeded {
-  kNone,
-  kRemoveInstallSource,
-  kRemoveApp,
-};
-
-InstallSourceActionNeeded GetInstallSourceActionNeeded(
-    const WebAppSources& sources,
-    WebAppManagement::Type install_source) {
-  if (sources.none()) {
-    // TODO(crbug.com/1427340): Return a different UninstallResultCode
-    // for this case and log it in metrics.
-    return InstallSourceActionNeeded::kRemoveApp;
-  }
-
-  if (!sources[install_source]) {
-    return InstallSourceActionNeeded::kNone;
-  }
-
-  if (sources.count() > 1) {
-    return InstallSourceActionNeeded::kRemoveInstallSource;
-  }
-
-  return InstallSourceActionNeeded::kRemoveApp;
-}
-
 }  // namespace
 
-WebAppUninstallCommand::WebAppUninstallCommand(UninstallRequest request,
-                                               UninstallWebAppCallback callback,
-                                               Profile& profile)
+WebAppUninstallCommand::WebAppUninstallCommand(
+    const AppId& app_id,
+    absl::optional<WebAppManagement::Type> management_type_or_all,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallWebAppCallback callback,
+    Profile& profile)
     : WebAppCommandTemplate<AllAppsLock>("WebAppUninstallCommand"),
       lock_description_(std::make_unique<AllAppsLockDescription>()),
-      initial_request_app_id_(request.app_id()),
+      app_id_(app_id),
       callback_(std::move(callback)),
       profile_(profile) {
-  webapps::InstallableMetrics::TrackUninstallEvent(request.uninstall_source());
+  // Initializing data for uninstallation tracking.
+  queued_uninstalls_.emplace_back(app_id_, management_type_or_all,
+                                  uninstall_source);
 
-  request_queue_.push_back(std::move(request));
+  webapps::InstallableMetrics::TrackUninstallEvent(uninstall_source);
 }
 
 WebAppUninstallCommand::~WebAppUninstallCommand() = default;
 
 void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
-  ProcessRequestQueueOrComplete();
+
+  while (!queued_uninstalls_.empty()) {
+    DCHECK(!all_uninstalled_queued_);
+    const UninstallInfo current_uninstall =
+        std::move(queued_uninstalls_.back());
+    queued_uninstalls_.pop_back();
+    AppendUninstallInfoToDebugLog(current_uninstall);
+
+    const AppId& app_id = current_uninstall.app_id;
+    const WebApp* app = lock_->registrar().GetAppById(app_id);
+    if (!app) {
+      uninstall_results_[app_id] =
+          webapps::UninstallResultCode::kNoAppToUninstall;
+      AppendUninstallResultsToDebugLog(app_id);
+      continue;
+    }
+
+    // This contains the external uninstall logic.
+    if (current_uninstall.management_type_or_all.has_value()) {
+      const WebAppManagement::Type source =
+          current_uninstall.management_type_or_all.value();
+      // If there is more than a single source, then we can just remove the
+      // source from the web_app DB. Else we end up calling Uninstall() at the
+      // end.
+      if (!app->HasOnlySource(source)) {
+        // There is a chance that removed source type is NOT user uninstallable
+        // but the remaining source (after removal) types are user
+        // uninstallable. In this case, the following call will register os
+        // uninstallation.
+        apps_pending_uninstall_[app_id] = nullptr;
+        MaybeRegisterOsUninstall(
+            app, source, lock_->os_integration_manager(),
+            base::BindOnce(&WebAppUninstallCommand::
+                               RemoveManagementTypeAfterOsUninstallRegistration,
+                           weak_factory_.GetWeakPtr(), app_id, source,
+                           current_uninstall.uninstall_source));
+      } else {
+        Uninstall(app_id, current_uninstall.uninstall_source);
+      }
+    } else {
+      // This contains the user uninstall and sync uninstall logic.
+      DCHECK(
+          CanUninstallAllManagementSources(current_uninstall.uninstall_source));
+      // The following DCHECK streamlines the user uninstall and sync uninstall
+      // flow, because for sync uninstalls, the web_app source is removed before
+      // being synced, so the first condition fails by the time an Uninstall is
+      // invoked.
+      DCHECK(app->CanUserUninstallWebApp() ||
+             current_uninstall.uninstall_source ==
+                 webapps::WebappUninstallSource::kSync);
+      if (app->IsPreinstalledApp()) {
+        // Update the default uninstalled web_app prefs if it is a preinstalled
+        // app but being removed by user.
+        const WebApp::ExternalConfigMap& config_map =
+            app->management_to_external_config_map();
+        auto it = config_map.find(WebAppManagement::kDefault);
+        if (it != config_map.end()) {
+          UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
+              .Add(app_id, it->second.install_urls);
+        } else {
+          base::UmaHistogramBoolean(
+              "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall",
+              true);
+        }
+      }
+      Uninstall(app_id, current_uninstall.uninstall_source);
+    }
+  }
+  all_uninstalled_queued_ = true;
+  MaybeFinishUninstallAndDestruct();
 }
 
 void WebAppUninstallCommand::OnShutdown() {
-  CHECK(callback_);
-  base::UmaHistogramBoolean("WebApp.Uninstall.Result", false);
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kShutdown,
-      base::BindOnce(std::move(callback_),
-                     webapps::UninstallResultCode::kError));
+  Abort(webapps::UninstallResultCode::kError);
   return;
 }
 
@@ -140,251 +153,122 @@ const LockDescription& WebAppUninstallCommand::lock_description() const {
 }
 
 base::Value WebAppUninstallCommand::ToDebugValue() const {
-  base::Value::Dict dict;
-
-  base::Value::List requests;
-  for (const UninstallRequest& request : request_queue_) {
-    requests.Append(request.ToDebugValue());
-  }
-  dict.Set("request_queue", std::move(requests));
-
-  dict.Set("initial_request_app_id", initial_request_app_id_);
-
-  base::Value::List results;
-  for (const std::pair<AppId, webapps::UninstallResultCode>& pair :
-       uninstall_results_) {
-    base::Value::Dict result;
-    result.Set(pair.first, base::ToString(pair.second));
-  }
-  dict.Set("uninstall_results", std::move(results));
-
-  dict.Set("active_remove_web_app_job", bool(active_remove_web_app_job_));
-
-  return base::Value(std::move(dict));
+  base::Value::Dict uninstall_info;
+  uninstall_info.Set("command_data", debug_log_.Clone());
+  return base::Value(std::move(uninstall_info));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Process request queue.
-////////////////////////////////////////////////////////////////////////////////
-
-void WebAppUninstallCommand::ProcessRequestQueueOrComplete() {
-  if (request_queue_.empty()) {
-    CHECK(base::Contains(uninstall_results_, initial_request_app_id_));
-    webapps::UninstallResultCode code =
-        uninstall_results_[initial_request_app_id_];
-    base::UmaHistogramBoolean("WebApp.Uninstall.Result",
-                              webapps::UninstallSucceeded(code));
-    SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                    base::BindOnce(std::move(callback_), code));
-    return;
-  }
-
-  UninstallRequest request = std::move(request_queue_.front());
-  request_queue_.pop_front();
-
-  auto request_complete_callback =
-      base::BindOnce(&WebAppUninstallCommand::RequestComplete,
-                     weak_factory_.GetWeakPtr(), request.app_id());
-
-  if (request.install_url()) {
-    RemoveInstallUrl(request, std::move(request_complete_callback));
-  } else if (request.install_source()) {
-    RemoveInstallSource(request, std::move(request_complete_callback));
-  } else {
-    RemoveApp(request, std::move(request_complete_callback));
-  }
-}
-
-void WebAppUninstallCommand::RequestComplete(
+WebAppUninstallCommand::UninstallInfo::UninstallInfo(
     AppId app_id,
-    webapps::UninstallResultCode code) {
-  CHECK(!base::Contains(uninstall_results_, app_id));
-  uninstall_results_[app_id] = code;
-  ProcessRequestQueueOrComplete();
+    absl::optional<WebAppManagement::Type> management_type_or_all,
+    webapps::WebappUninstallSource uninstall_source)
+    : app_id(app_id),
+      management_type_or_all(management_type_or_all),
+      uninstall_source(uninstall_source) {}
+
+WebAppUninstallCommand::UninstallInfo::~UninstallInfo() = default;
+
+WebAppUninstallCommand::UninstallInfo::UninstallInfo(
+    const UninstallInfo& uninstall_info) = default;
+
+WebAppUninstallCommand::UninstallInfo::UninstallInfo(
+    UninstallInfo&& uninstall_info) = default;
+
+void WebAppUninstallCommand::AppendUninstallInfoToDebugLog(
+    const UninstallInfo& uninstall_info) {
+  base::Value::Dict source_info;
+  if (uninstall_info.management_type_or_all.has_value()) {
+    source_info.Set(
+        "management_type",
+        base::ToString(uninstall_info.management_type_or_all.value()));
+  }
+  source_info.Set("uninstall_source", ConvertUninstallSourceToStringType(
+                                          uninstall_info.uninstall_source));
+  debug_log_.Set(uninstall_info.app_id, base::Value(std::move(source_info)));
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Remove install URL.
-////////////////////////////////////////////////////////////////////////////////
+void WebAppUninstallCommand::AppendUninstallResultsToDebugLog(
+    const AppId& app_id) {
+  base::Value::Dict* app_dict = debug_log_.FindDict(app_id);
+  DCHECK(app_dict);
+  app_dict->Set("uninstall_result", webapps::ConvertUninstallResultCodeToString(
+                                        uninstall_results_[app_id]));
+}
 
-void WebAppUninstallCommand::RemoveInstallUrl(
-    const UninstallRequest& request,
-    RequestCompleteCallback callback) {
-  CHECK(request.install_source());
-  CHECK(request.install_url());
-
-  const WebApp* app = lock_->registrar().GetAppById(request.app_id());
-  if (!app) {
-    std::move(callback).Run(webapps::UninstallResultCode::kNoAppToUninstall);
+void WebAppUninstallCommand::Abort(webapps::UninstallResultCode code) {
+  base::UmaHistogramBoolean("WebApp.Uninstall.Result",
+                            (code == webapps::UninstallResultCode::kSuccess));
+  if (!callback_)
     return;
-  }
+  SignalCompletionAndSelfDestruct(CommandResult::kFailure,
+                                  base::BindOnce(std::move(callback_), code));
+}
 
-  switch (GetInstallUrlActionNeeded(app->management_to_external_config_map(),
-                                    request)) {
-    case InstallUrlActionNeeded::kNone:
-      std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
-      return;
+void WebAppUninstallCommand::Uninstall(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
+  QueueSubAppsForUninstallIfAny(app_id);
+  apps_pending_uninstall_[app_id] = RemoveWebAppJob::Start(
+      uninstall_source, app_id, *lock_, profile_.get(),
+      base::BindOnce(&WebAppUninstallCommand::OnSingleUninstallComplete,
+                     weak_factory_.GetWeakPtr(), app_id, uninstall_source));
+}
 
-    case InstallUrlActionNeeded::kRemoveInstallUrl: {
-      {
-        ScopedRegistryUpdate update(&lock_->sync_bridge());
-        CHECK(update->UpdateApp(request.app_id())
-                  ->RemoveInstallUrlForSource(*request.install_source(),
-                                              *request.install_url()));
-      }
-
-      std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
-      return;
-    }
-
-    case InstallUrlActionNeeded::kRemoveInstallSource:
-      RemoveInstallSource(
-          UninstallRequest(base::PassKey<WebAppUninstallCommand>(),
-                           /*is_sub_request=*/true, request.uninstall_source(),
-                           request.app_id(), request.install_source()),
-          std::move(callback));
-      return;
+void WebAppUninstallCommand::QueueSubAppsForUninstallIfAny(
+    const AppId& app_id) {
+  std::vector<AppId> sub_app_ids = lock_->registrar().GetAllSubAppIds(app_id);
+  for (const AppId& sub_app_id : sub_app_ids) {
+    queued_uninstalls_.emplace_back(
+        sub_app_id, WebAppManagement::kSubApp,
+        webapps::WebappUninstallSource::kParentUninstall);
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Remove install source.
-////////////////////////////////////////////////////////////////////////////////
-
-void WebAppUninstallCommand::RemoveInstallSource(
-    const UninstallRequest& request,
-    RequestCompleteCallback callback) {
-  CHECK(request.install_source());
-  CHECK(!request.install_url());
-
-  const WebApp* app = lock_->registrar().GetAppById(request.app_id());
-  if (!app) {
-    std::move(callback).Run(webapps::UninstallResultCode::kNoAppToUninstall);
-    return;
-  }
-
-  WebAppManagement::Type install_source = *request.install_source();
-  switch (GetInstallSourceActionNeeded(app->GetSources(), install_source)) {
-    case InstallSourceActionNeeded::kNone:
-      // TODO(crbug.com/1427340): Return a different UninstallResultCode
-      // for when no action is taken instead of being overly specific to the "no
-      // app" case.
-      std::move(callback).Run(webapps::UninstallResultCode::kNoAppToUninstall);
-      return;
-
-    case InstallSourceActionNeeded::kRemoveInstallSource:
-      MaybeRegisterOsUninstall(
-          app, install_source, lock_->os_integration_manager(),
-          base::BindOnce(
-              &WebAppUninstallCommand::RemoveInstallSourceFromDatabase,
-              weak_factory_.GetWeakPtr(), request.app_id(),
-              *request.install_source(), std::move(callback)));
-
-      return;
-
-    case InstallSourceActionNeeded::kRemoveApp:
-      RemoveApp(UninstallRequest(base::PassKey<WebAppUninstallCommand>(),
-                                 /*is_sub_request=*/true,
-                                 request.uninstall_source(), request.app_id()),
-                std::move(callback));
-      return;
-  }
-}
-
-void WebAppUninstallCommand::RemoveInstallSourceFromDatabase(
-    AppId app_id,
-    WebAppManagement::Type install_source,
-    RequestCompleteCallback callback,
+void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
+    const AppId& app_id,
+    const WebAppManagement::Type& management_type,
+    webapps::WebappUninstallSource uninstall_source,
     OsHooksErrors os_hooks_errors) {
   {
     ScopedRegistryUpdate update(&lock_->sync_bridge());
-    WebApp* app = update->UpdateApp(app_id);
-    app->RemoveSource(install_source);
-    if (install_source == WebAppManagement::kSubApp) {
-      app->SetParentAppId(absl::nullopt);
+    WebApp* app_to_update = update->UpdateApp(app_id);
+    app_to_update->RemoveSource(management_type);
+    if (management_type == WebAppManagement::kSubApp) {
+      app_to_update->SetParentAppId(absl::nullopt);
     }
-    // TODO(crbug.com/1447308): Make sync uninstall not synchronously
-    // remove its sync install source even while a command has an app lock so
-    // that we can CHECK(app->HasAnySources()) here.
   }
 
   lock_->install_manager().NotifyWebAppSourceRemovedForTesting(app_id);
 
-  std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
+  // Registering an OS uninstall is also an "uninstall", so the
+  // state is updated for the command.
+  OnSingleUninstallComplete(app_id, uninstall_source,
+                            /*success=*/true);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Remove app.
-////////////////////////////////////////////////////////////////////////////////
-
-void WebAppUninstallCommand::RemoveApp(const UninstallRequest& request,
-                                       RequestCompleteCallback callback) {
-  CHECK(!request.install_source().has_value());
-  CHECK(!request.install_url().has_value());
-
-  if (!request.is_sub_request()) {
-    CHECK(CanUninstallAllManagementSources(request.uninstall_source()));
-  }
-
-  const WebApp* app = lock_->registrar().GetAppById(request.app_id());
-  if (!app) {
-    std::move(callback).Run(webapps::UninstallResultCode::kNoAppToUninstall);
-    return;
-  }
-
-  if (!request.is_sub_request()) {
-    // The following CHECK streamlines the user uninstall and sync uninstall
-    // flow, because for sync uninstalls, the web_app source is removed before
-    // being synced, so the first condition fails by the time an Uninstall is
-    // invoked.
-    // TODO(crbug.com/1447308): Checking kSync shouldn't be needed once
-    // this issue is resolved.
-    // TODO(crbug.com/1427340): Change this to be:
-    // if (uninstall_source is user initiated) {
-    //   CHECK(user can uninstall);
-    //   Add to user uninstalled prefs.
-    // }
-    CHECK(app->CanUserUninstallWebApp() ||
-          request.uninstall_source() == webapps::WebappUninstallSource::kSync);
-
-    if (app->IsPreinstalledApp()) {
-      // Update the default uninstalled web_app prefs if it is a preinstalled
-      // app but being removed by user.
-      const WebApp::ExternalConfigMap& config_map =
-          app->management_to_external_config_map();
-      auto it = config_map.find(WebAppManagement::kDefault);
-      if (it != config_map.end()) {
-        UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
-            .Add(request.app_id(), it->second.install_urls);
-      } else {
-        base::UmaHistogramBoolean(
-            "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall", true);
-      }
-    }
-  }
-
-  for (const AppId& sub_app_id :
-       lock_->registrar().GetAllSubAppIds(request.app_id())) {
-    request_queue_.emplace_back(
-        base::PassKey<WebAppUninstallCommand>(),
-        /*is_sub_request=*/true,
-        webapps::WebappUninstallSource::kParentUninstall, sub_app_id,
-        WebAppManagement::kSubApp);
-  }
-
-  active_remove_web_app_job_ = RemoveWebAppJob::Start(
-      request.uninstall_source(), request.app_id(), *lock_, profile_.get(),
-      base::BindOnce(&WebAppUninstallCommand::OnUninstallJobComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebAppUninstallCommand::OnUninstallJobComplete(
-    RequestCompleteCallback callback,
+void WebAppUninstallCommand::OnSingleUninstallComplete(
+    const AppId& app_id,
+    webapps::WebappUninstallSource source,
     bool success) {
-  CHECK(active_remove_web_app_job_);
-  active_remove_web_app_job_.reset();
-  std::move(callback).Run(success ? webapps::UninstallResultCode::kSuccess
-                                  : webapps::UninstallResultCode::kError);
+  DCHECK(base::Contains(apps_pending_uninstall_, app_id));
+  apps_pending_uninstall_.erase(app_id);
+
+  if (source == webapps::WebappUninstallSource::kSync) {
+    base::UmaHistogramBoolean("Webapp.SyncInitiatedUninstallResult", success);
+  }
+  uninstall_results_[app_id] = success ? webapps::UninstallResultCode::kSuccess
+                                       : webapps::UninstallResultCode::kError;
+  AppendUninstallResultsToDebugLog(app_id);
+  MaybeFinishUninstallAndDestruct();
+}
+
+void WebAppUninstallCommand::MaybeFinishUninstallAndDestruct() {
+  if (apps_pending_uninstall_.empty() && all_uninstalled_queued_) {
+    // All uninstall jobs have finished.
+    SignalCompletionAndSelfDestruct(
+        CommandResult::kSuccess,
+        base::BindOnce(std::move(callback_), uninstall_results_[app_id_]));
+  }
 }
 
 }  // namespace web_app
