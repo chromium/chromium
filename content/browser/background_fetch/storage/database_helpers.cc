@@ -65,6 +65,7 @@ DatabaseStatus ToDatabaseStatus(blink::ServiceWorkerStatusCode status) {
     case blink::ServiceWorkerStatusCode::kErrorFailed:
     case blink::ServiceWorkerStatusCode::kErrorAbort:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       // kErrorFailed is for invalid arguments (e.g. empty key) or database
       // errors. kErrorAbort is for unexpected failures, e.g. because shutdown
       // is in progress. kErrorStorageDisconnected is for the Storage Service

@@ -697,7 +697,8 @@ void PushMessagingManager::DidGetSubscription(
     case blink::ServiceWorkerStatusCode::kErrorRedundant:
     case blink::ServiceWorkerStatusCode::kErrorDisallowed:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
-    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected: {
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted: {
       NOTREACHED() << "Got unexpected error code: "
                    << static_cast<uint32_t>(service_worker_status) << " "
                    << blink::ServiceWorkerStatusToString(service_worker_status);

@@ -61,6 +61,8 @@ blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
       return blink::ServiceWorkerStatusCode::kErrorAbort;
     case storage::mojom::ServiceWorkerDatabaseStatus::kErrorStorageDisconnected:
       return blink::ServiceWorkerStatusCode::kErrorStorageDisconnected;
+    case storage::mojom::ServiceWorkerDatabaseStatus::kErrorCorrupted:
+      return blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted;
     default:
       return blink::ServiceWorkerStatusCode::kErrorFailed;
   }
