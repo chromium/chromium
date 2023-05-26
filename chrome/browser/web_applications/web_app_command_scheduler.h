@@ -202,7 +202,7 @@ class WebAppCommandScheduler {
 
   // Schedules a command that uninstalls a web app.
   void Uninstall(const AppId& app_id,
-                 absl::optional<WebAppManagement::Type> install_source,
+                 absl::optional<WebAppManagement::Type> external_install_source,
                  webapps::WebappUninstallSource uninstall_source,
                  WebAppInstallFinalizer::UninstallWebAppCallback callback,
                  const base::Location& location = FROM_HERE);

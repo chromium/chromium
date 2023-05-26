@@ -556,10 +556,6 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     // Do copy on write:
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
     app_copy->RemoveSource(WebAppManagement::kSync);
-    // TODO(https://crbug.com/1447308): Mark the web app as pending sync source
-    // removal and schedule the removal so it conforms to the command locking
-    // system. Block web apps pending sync source removal from transmitting to
-    // the sync server.
     if (!app_copy->HasAnySources()) {
       // Uninstallation from the local database is a two-phase commit. Setting
       // this flag to true signals that uninstallation should occur, and then
@@ -681,7 +677,7 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     } else {
       for (const AppId& app_id : apps_to_delete) {
         command_scheduler_->Uninstall(app_id,
-                                      /*install_source=*/absl::nullopt,
+                                      /*external_install_source=*/absl::nullopt,
                                       webapps::WebappUninstallSource::kSync,
                                       base::BindOnce(callback, app_id));
       }

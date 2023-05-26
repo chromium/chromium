@@ -423,7 +423,7 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
 
 void WebAppCommandScheduler::Uninstall(
     const AppId& app_id,
-    absl::optional<WebAppManagement::Type> install_source,
+    absl::optional<WebAppManagement::Type> external_install_source,
     webapps::WebappUninstallSource uninstall_source,
     WebAppUninstallCommand::UninstallWebAppCallback callback,
     const base::Location& location) {
@@ -435,7 +435,7 @@ void WebAppCommandScheduler::Uninstall(
   }
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          UninstallRequest(uninstall_source, app_id, install_source),
+          app_id, external_install_source, uninstall_source,
           std::move(callback), profile_.get()),
       location);
 }

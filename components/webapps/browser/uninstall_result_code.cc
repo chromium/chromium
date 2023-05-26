@@ -8,17 +8,6 @@
 
 namespace webapps {
 
-bool UninstallSucceeded(UninstallResultCode code) {
-  switch (code) {
-    case UninstallResultCode::kSuccess:
-    case UninstallResultCode::kNoAppToUninstall:
-      return true;
-    case UninstallResultCode::kCancelled:
-    case UninstallResultCode::kError:
-      return false;
-  }
-}
-
 std::string ConvertUninstallResultCodeToString(UninstallResultCode code) {
   switch (code) {
     case UninstallResultCode::kSuccess:

@@ -116,12 +116,8 @@ class WebAppInstallFinalizer {
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
-  // If `install_url` is set the `install_url` for `external_install_source` in
-  // `app_id` will be removed. If `install_url` is not set then the entire
-  // `external_install_source` in `app_id` will be removed. If no install
-  // sources are left in `app_id` the app is removed.
-  // TODO(https://crbug.com/1427340): Make callsites use the WebAppScheduler
-  // instead of this interface.
+  // Removes |webapp_uninstall_surface| from |app_id|. If no more interested
+  // sources left, deletes the app from disk and registrar.
   virtual void UninstallExternalWebApp(
       const AppId& app_id,
       WebAppManagement::Type external_install_source,
@@ -130,18 +126,14 @@ class WebAppInstallFinalizer {
 
   // Removes the external app for |app_url| from disk and registrar. Fails if
   // there is no installed external app for |app_url|.
-  // TODO(https://crbug.com/1427340): Make callsites use the WebAppScheduler
-  // instead of this interface.
   virtual void UninstallExternalWebAppByUrl(
-      const GURL& install_url,
+      const GURL& app_url,
       WebAppManagement::Type external_install_source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback);
 
   // Removes |webapp_uninstall_surface| from |app_id|, no matter how many
   // sources are left.
-  // TODO(https://crbug.com/1427340): Make callsites use the WebAppScheduler
-  // instead of this interface.
   virtual void UninstallWebApp(const AppId& app_id,
                                webapps::WebappUninstallSource uninstall_surface,
                                UninstallWebAppCallback callback);
@@ -181,12 +173,9 @@ class WebAppInstallFinalizer {
   // Used to schedule a WebAppUninstallCommand. The |external_install_source|
   // field is only required for external app uninstalls to verify OS
   // unregistration, and is not used for sync/manual uninstalls.
-  // TODO(https://crbug.com/1427340): Make callsites use the WebAppScheduler
-  // instead of this interface.
   void ScheduleUninstallCommand(
       const AppId& app_id,
       absl::optional<WebAppManagement::Type> external_install_source,
-      absl::optional<GURL> install_url,
       webapps::WebappUninstallSource uninstall_source,
       UninstallWebAppCallback callback);
 
