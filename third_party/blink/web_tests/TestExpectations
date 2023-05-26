@@ -6834,3 +6834,7 @@ crbug.com/1448011 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pas
 
 # Sheriff 2023-05-26
 crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frames.html [ Failure Pass ]
+
+crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
+crbug.com/1448011 http/tests/devtools/oopif/oopif-storage.js [ Failure Pass ]
