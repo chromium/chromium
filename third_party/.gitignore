@@ -80,6 +80,7 @@
 /colorama/src
 /content_analysis_sdk/src
 /cpuinfo/src
+/cpu_features/src
 /crc32c/src
 /cros
 /cros-components/src
