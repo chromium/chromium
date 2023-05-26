@@ -23,3 +23,6 @@ per-file *.gn*=file://build/android/OWNERS
 
 # Translation artifacts:
 per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
+
+# Incognito
+per-file *chrome/browser/incognito*=file://chrome/browser/incognito/OWNERS
