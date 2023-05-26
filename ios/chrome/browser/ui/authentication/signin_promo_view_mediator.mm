@@ -682,13 +682,19 @@ const char* AlreadySeenSigninViewPreferenceKey(
                      hasCloseButton:hasCloseButton
                    hasSignInSpinner:self.signinInProgress];
   }
-  return [[SigninPromoViewConfigurator alloc]
-      initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
-                        userEmail:nil
-                    userGivenName:nil
-                        userImage:nil
-                   hasCloseButton:hasCloseButton
-                 hasSignInSpinner:self.signinInProgress];
+  SigninPromoViewConfigurator* configurator =
+      [[SigninPromoViewConfigurator alloc]
+          initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
+                            userEmail:nil
+                        userGivenName:nil
+                            userImage:nil
+                       hasCloseButton:hasCloseButton
+                     hasSignInSpinner:self.signinInProgress];
+  if (self.signInOnly) {
+    configurator.primaryButtonTitleNoAccountsModeOverride =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
+  }
+  return configurator;
 }
 
 - (void)signinPromoViewIsVisible {

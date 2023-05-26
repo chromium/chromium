@@ -110,7 +110,11 @@ using chrome_test_util::SecondarySignInButton;
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   NSString* body = l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_BOOKMARKS);
+  NSString* primaryButtonText =
+      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
   [[EarlGrey selectElementWithMatcher:grey_text(body)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_text(primaryButtonText)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
