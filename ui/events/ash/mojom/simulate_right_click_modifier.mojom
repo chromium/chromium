@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// The modifier used to simulate a right-click with keyboard and touchpad.
+// Note: The ordering of values in this enum must not change as the values are
+// saved to prefs.
+enum SimulateRightClickModifier {
+  kNone = 0,
+  kAlt = 1,
+  kSearch = 2,
+};

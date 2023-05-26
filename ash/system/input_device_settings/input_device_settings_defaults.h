@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "base/time/time.h"
+#include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 
 namespace ash {
 
@@ -34,6 +35,8 @@ constexpr bool kDefaultTapDraggingEnabled = false;
 constexpr bool kDefaultThreeFingerClickEnabled = false;
 constexpr bool kDefaultHapticFeedbackEnabled = false;
 constexpr int kDefaultHapticSensitivity = 3;
+constexpr ui::mojom::SimulateRightClickModifier kDefaultSimulateRightClick =
+    ui::mojom::SimulateRightClickModifier::kNone;
 
 }  // namespace ash
 

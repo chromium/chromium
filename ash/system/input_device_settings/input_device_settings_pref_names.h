@@ -72,6 +72,7 @@ constexpr char kTouchpadSettingThreeFingerClickEnabled[] =
 constexpr char kTouchpadSettingTapDraggingEnabled[] = "tap_dragging_enabled";
 constexpr char kTouchpadSettingHapticSensitivity[] = "haptic_sensitivity";
 constexpr char kTouchpadSettingHapticEnabled[] = "haptic_enabled";
+constexpr char kTouchpadSettingSimulateRightClick[] = "simulate_right_click";
 
 // Pointing stick settings dictionary keys.
 constexpr char kPointingStickSettingSensitivity[] = "sensitivity";

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, Touchpad} from './input_device_settings_types.js';
 
 export const fakeKeyboards: Keyboard[] = [
   {
@@ -135,6 +135,7 @@ export const fakeTouchpads: Touchpad[] = [
       scrollAcceleration: false,
       hapticSensitivity: 1,
       hapticEnabled: false,
+      simulateRightClick: SimulateRightClickModifier.kNone,
     },
   },
   {
@@ -154,6 +155,7 @@ export const fakeTouchpads: Touchpad[] = [
       scrollAcceleration: true,
       hapticSensitivity: 5,
       hapticEnabled: true,
+      simulateRightClick: SimulateRightClickModifier.kNone,
     },
   },
 ];
@@ -176,6 +178,7 @@ export const fakeTouchpads2: Touchpad[] = [
       scrollAcceleration: false,
       hapticSensitivity: 1,
       hapticEnabled: false,
+      simulateRightClick: SimulateRightClickModifier.kNone,
     },
   },
 ];

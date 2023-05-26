@@ -6,6 +6,7 @@ module ash.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "ui/events/ash/mojom/modifier_key.mojom";
+import "ui/events/ash/mojom/simulate_right_click_modifier.mojom";
 
 // The current status of the enterprise policy for the stated setting.
 enum PolicyStatus {
@@ -147,6 +148,8 @@ struct TouchpadSettings {
   uint8 haptic_sensitivity;
   // Toggles whether haptic feedback is enabled for the touchpad at all.
   bool haptic_enabled;
+  // The modifier used to simulate right-click with keyboard and touchpad.
+  ui.mojom.SimulateRightClickModifier simulate_right_click;
 };
 
 // Contains all information needed to display, apply, and update pointing stick
