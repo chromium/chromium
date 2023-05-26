@@ -25,6 +25,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -37,6 +38,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -147,10 +149,7 @@ class HomeButton::ButtonImageView : public views::View {
       cc::PaintFlags fg_flags;
       fg_flags.setAntiAlias(true);
       fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
-      fg_flags.setColor(GetColorProvider()->GetColor(
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-              : kColorAshButtonIconColor));
+      fg_flags.setColor(GetColorProvider()->GetColor(GetIconColorId()));
 
       if (is_assistant_available) {
         // active: 100% alpha, inactive: 54% alpha
@@ -191,6 +190,16 @@ class HomeButton::ButtonImageView : public views::View {
     UpdateBackground();
   }
 
+  void SetToggled(bool toggled) {
+    if (toggled_ == toggled) {
+      return;
+    }
+
+    toggled_ = toggled;
+    UpdateBackground();
+    SchedulePaint();
+  }
+
  private:
   // Updates the view background to match the current shelf config.
   void UpdateBackground() {
@@ -210,11 +219,8 @@ class HomeButton::ButtonImageView : public views::View {
             shelf_config->control_border_radius()));
       }
     } else {
-      const ui::ColorId color_id = shelf_config->in_tablet_mode()
-                                       ? cros_tokens::kCrosSysSystemBaseElevated
-                                       : cros_tokens::kCrosSysSystemOnBase;
       SetBackground(views::CreateThemedRoundedRectBackground(
-          color_id, shelf_config->control_border_radius()));
+          GetBackgroundColorId(), shelf_config->control_border_radius()));
     }
 
     if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
@@ -228,7 +234,28 @@ class HomeButton::ButtonImageView : public views::View {
     }
   }
 
+  ui::ColorId GetIconColorId() {
+    if (!chromeos::features::IsJellyEnabled()) {
+      return kColorAshButtonIconColor;
+    }
+
+    return toggled_ && !ShelfConfig::Get()->in_tablet_mode()
+               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+               : cros_tokens::kCrosSysOnSurface;
+  }
+
+  ui::ColorId GetBackgroundColorId() {
+    if (ShelfConfig::Get()->in_tablet_mode()) {
+      return cros_tokens::kCrosSysSystemBaseElevated;
+    }
+
+    return toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
+                    : cros_tokens::kCrosSysSystemOnBase;
+  }
+
   HomeButtonController* const button_controller_;
+
+  bool toggled_ = false;
 };
 
 // static
@@ -253,7 +280,10 @@ HomeButton::ScopedNoClipRect::~ScopedNoClipRect() {
 // HomeButton::ScopedNoClipRect ------------------------------------------------
 
 HomeButton::HomeButton(Shelf* shelf)
-    : ShelfControlButton(shelf, this), shelf_(shelf), controller_(this) {
+    : ShelfControlButton(shelf, this),
+      jelly_enabled_(chromeos::features::IsJellyEnabled()),
+      shelf_(shelf),
+      controller_(this) {
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   button_controller()->set_notify_action(
@@ -553,6 +583,10 @@ void HomeButton::StartNudgeAnimation() {
   AnimateNudgeRipple(builder);
 }
 
+void HomeButton::SetToggled(bool toggled) {
+  button_image_view_->SetToggled(toggled);
+}
+
 void HomeButton::AddNudgeAnimationObserverForTest(
     NudgeAnimationObserver* observer) {
   observers_.AddObserver(observer);
@@ -564,20 +598,18 @@ void HomeButton::RemoveNudgeAnimationObserverForTest(
 
 void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
+
   if (ripple_layer_delegate_) {
-    ripple_layer_delegate_->set_color(
-        GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
+    ripple_layer_delegate_->set_color(GetColorProvider()->GetColor(
+        jelly_enabled_ ? static_cast<ui::ColorId>(
+                             cros_tokens::kCrosSysRippleNeutralOnSubtle)
+                       : kColorAshInkDropOpaqueColor));
   }
   if (expandable_container_) {
-    expandable_container_->layer()->SetColor(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::
-                kControlBackgroundColorInactive));
-    if (nudge_label_) {
-      nudge_label_->SetEnabledColor(
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kTextColorPrimary));
-    }
+    expandable_container_->layer()->SetColor(GetColorProvider()->GetColor(
+        jelly_enabled_
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+            : kColorAshControlBackgroundColorInactive));
   }
 }
 
@@ -592,10 +624,12 @@ void HomeButton::CreateExpandableContainer() {
       std::make_unique<views::FillLayout>());
   expandable_container_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   expandable_container_->layer()->SetMasksToBounds(true);
-  expandable_container_->layer()->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::
-              kControlBackgroundColorInactive));
+  if (GetColorProvider()) {
+    expandable_container_->layer()->SetColor(GetColorProvider()->GetColor(
+        jelly_enabled_
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+            : kColorAshControlBackgroundColorInactive));
+  }
   expandable_container_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(home_button_width / 2.f));
   expandable_container_->layer()->SetName("NudgeLabelContainer");
@@ -626,9 +660,13 @@ void HomeButton::CreateNudgeLabel() {
   nudge_label_->layer()->SetFillsBoundsOpaquely(false);
   nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
   nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
-  nudge_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-
+  nudge_label_->SetEnabledColorId(
+      jelly_enabled_ ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+                     : kColorAshTextColorPrimary);
+  if (jelly_enabled_) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *nudge_label_);
+  }
   expandable_container_->SetVisible(false);
   Layout();
 }

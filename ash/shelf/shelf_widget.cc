@@ -40,6 +40,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -458,13 +459,20 @@ void ShelfWidget::DelegateView::ShowOpaqueBackground() {
 
 void ShelfWidget::DelegateView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
-  animating_background_.SetColor(
-      ShelfConfig::Get()->GetMaximizedShelfColor(GetWidget()));
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
-  animating_drag_handle_.SetColor(
-      GetColorProvider()->GetColor(kColorAshShelfHandleColor));
+  if (chromeos::features::IsJellyEnabled()) {
+    animating_background_.SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBase));
+    animating_drag_handle_.SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+  } else {
+    animating_background_.SetColor(
+        ShelfConfig::Get()->GetMaximizedShelfColor(GetWidget()));
+    animating_drag_handle_.SetColor(
+        GetColorProvider()->GetColor(kColorAshShelfHandleColor));
+  }
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {

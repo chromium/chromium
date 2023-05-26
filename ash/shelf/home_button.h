@@ -141,6 +141,10 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // Starts the launcher nudge animation.
   void StartNudgeAnimation();
 
+  // Sets the button's "toggled" state - the button is toggled when the bubble
+  // launcher is shown.
+  void SetToggled(bool toggled);
+
   void AddNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
   void RemoveNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
 
@@ -225,6 +229,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // Returns a clip rect which will clip the `expandable_container` to the
   // bounds of the home button.
   gfx::Rect GetExpandableContainerClipRectToHomeButton();
+
+  const bool jelly_enabled_;
 
   base::ScopedObservation<QuickAppAccessModel, QuickAppAccessModel::Observer>
       quick_app_model_observation_{this};

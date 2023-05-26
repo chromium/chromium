@@ -8,9 +8,10 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -58,7 +59,10 @@ ShelfControlButton::ShelfControlButton(
     : ShelfButton(shelf, shelf_button_delegate) {
   SetHasInkDropActionOnClick(true);
   SetInstallFocusRingOnFocus(true);
-  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetColorId(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
+          : ui::kColorAshFocusRing);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<ShelfControlButtonHighlightPathGenerator>());
   SetPaintToLayer();
