@@ -89,8 +89,6 @@ class PLATFORM_EXPORT EventWithCallback {
   // for latency reporting purposes.
   std::unique_ptr<cc::EventMetrics> TakeMetrics();
 
-  void SwapCallback(InputHandlerProxy::EventDispositionCallback& new_callback);
-
   // Called when the compositor thread starts/finishes processing the event so
   // that the metrics can be updated with the appropriate timestamp. These are
   // only called if the event has metrics.

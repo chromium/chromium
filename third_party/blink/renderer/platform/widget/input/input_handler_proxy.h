@@ -170,6 +170,18 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       EventDispositionCallback callback,
       cc::ElementId hit_tests_result);
 
+  // Handles creating synthetic gesture events. It is currently used for
+  // creating gesture event equivalents for mouse events on a composited
+  // scrollbar. `original_metrics` contains metrics for the original mouse event
+  // and is used to generated metrics for the new gesture event.
+  void InjectScrollbarGestureScroll(
+      const blink::WebInputEvent::Type type,
+      const gfx::PointF& position_in_widget,
+      const cc::InputHandlerPointerResult& pointer_result,
+      const ui::LatencyInfo& latency_info,
+      const base::TimeTicks now,
+      const cc::EventMetrics* original_metrics);
+
   // Attempts to perform attribution of the given WebInputEvent to a target
   // frame. Intended for simple impl-side hit testing.
   blink::WebInputEventAttribution PerformEventAttribution(
@@ -246,19 +258,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                                 const base::TimeTicks);
   void DispatchQueuedInputEvents(bool frame_aligned);
   void UpdateElasticOverscroll();
-
-  // Handles creating synthetic gesture events. It is currently used for
-  // creating gesture event equivalents for mouse events on a composited
-  // scrollbar. `original_metrics` contains metrics for the original mouse event
-  // and is used to generated metrics for the new gesture event.
-  void InjectScrollbarGestureScroll(
-      const blink::WebInputEvent::Type type,
-      const gfx::PointF& position_in_widget,
-      const cc::InputHandlerPointerResult& pointer_result,
-      const ui::LatencyInfo& latency_info,
-      const base::TimeTicks now,
-      const cc::EventMetrics* original_metrics,
-      InputHandlerProxy::EventDispositionCallback callback);
 
   // Helper functions for handling more complicated input events.
   EventDisposition HandleMouseWheel(const blink::WebMouseWheelEvent& event);
