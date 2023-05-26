@@ -290,6 +290,7 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
   for (const std::string& sync_id : sync_ids_to_delete) {
     data_.erase(sync_id);
     change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
+    write_batch->DeleteData(sync_id);
   }
   store_->CommitWriteBatch(
       std::move(write_batch),
@@ -309,6 +310,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
       store_->CreateWriteBatch();
   change_processor()->Put(sync_id, CreateEntityData(specifics),
                           write_batch->GetMetadataChangeList());
+  write_batch->WriteData(sync_id, specifics.SerializeAsString());
   store_->CommitWriteBatch(
       std::move(write_batch),
       base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,

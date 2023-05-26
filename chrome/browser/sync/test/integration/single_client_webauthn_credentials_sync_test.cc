@@ -273,6 +273,29 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                   .Wait());
 }
 
+// Tests that deleting a passkey is persisted across browser restarts.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       PRE_DeletingPasskeysPersistsOverRestarts) {
+  ASSERT_TRUE(SetupSync());
+
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().AddNewPasskeyForTesting(passkey);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey.sync_id())))
+                  .Wait());
+  EXPECT_THAT(GetModel().GetAllPasskeys(),
+              UnorderedElementsAre(PasskeyHasSyncId(passkey.sync_id())));
+  GetModel().DeletePasskey(passkey.credential_id());
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeletingPasskeysPersistsOverRestarts) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        LegacySyncIdCompatibility) {
   // Ordinarily, client_tag_hash is derived from the 16-byte `sync_id`.
