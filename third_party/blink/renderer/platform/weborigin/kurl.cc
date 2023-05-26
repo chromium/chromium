@@ -30,7 +30,6 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -116,7 +115,7 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   }
 
  private:
-  raw_ptr<const WTF::TextEncoding> encoding_;
+  const WTF::TextEncoding* encoding_;
 };
 
 }  // namespace

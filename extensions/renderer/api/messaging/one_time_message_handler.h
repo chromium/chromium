@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -153,7 +152,7 @@ class OneTimeMessageHandler {
                     absl::optional<base::Value> result);
 
   // The associated bindings system. Outlives this object.
-  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
+  NativeExtensionBindingsSystem* const bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
 };

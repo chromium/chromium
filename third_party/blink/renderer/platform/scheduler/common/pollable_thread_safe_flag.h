@@ -7,7 +7,6 @@
 
 #include <atomic>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -33,7 +32,7 @@ class PollableThreadSafeFlag {
 
  private:
   std::atomic<bool> flag_;
-  raw_ptr<base::Lock> write_lock_;  // Not owned.
+  base::Lock* write_lock_;  // Not owned.
 };
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_POLLABLE_THREAD_SAFE_FLAG_H_

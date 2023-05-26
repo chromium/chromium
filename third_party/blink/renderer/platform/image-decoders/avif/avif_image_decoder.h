@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -58,7 +57,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
 
  private:
   struct AvifIOData {
-    raw_ptr<blink::SegmentReader> reader = nullptr;
+    blink::SegmentReader* reader = nullptr;
     std::vector<uint8_t> buffer ALLOW_DISCOURAGED_TYPE("Required by libavif");
     bool all_data_received = false;
   };

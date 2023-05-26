@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -120,7 +119,7 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   absl::optional<base::TimeTicks> start_timestamp_;
 
   // WebRTC real time clock, needed to determine NTP offset.
-  raw_ptr<webrtc::Clock> clock_;
+  webrtc::Clock* clock_;
 
   // Offset between NTP clock and WebRTC clock.
   const int64_t ntp_offset_;

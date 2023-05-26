@@ -57,7 +57,7 @@ void FontFallbackIterator::WillUseRange(const AtomicString& family,
   if (!selector)
     return;
 
-  selector->WillUseRange(*font_description_, family, range_set);
+  selector->WillUseRange(font_description_, family, range_set);
 }
 
 scoped_refptr<FontDataForRangeSet> FontFallbackIterator::UniqueOrNext(
@@ -96,7 +96,7 @@ bool FontFallbackIterator::NeedsHintList() const {
     return false;
 
   const FontData* font_data = font_fallback_list_->FontDataAt(
-      *font_description_, current_font_data_index_);
+      font_description_, current_font_data_index_);
 
   if (!font_data)
     return false;
@@ -138,11 +138,12 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
     FontCache& font_cache = FontCache::Get();
     fallback_stage_ = kFirstCandidateForNotdefGlyph;
     scoped_refptr<SimpleFontData> last_resort =
-        font_cache.GetLastResortFallbackFont(*font_description_).get();
+        font_cache.GetLastResortFallbackFont(font_description_).get();
 
     if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
-      font_selector->ReportLastResortFallbackFontLookup(*font_description_,
-                                                        last_resort.get());
+      font_selector->ReportLastResortFallbackFontLookup(
+          font_description_,
+          last_resort.get());
     }
 
     return UniqueOrNext(
@@ -153,14 +154,14 @@ scoped_refptr<FontDataForRangeSet> FontFallbackIterator::Next(
   if (fallback_stage_ == kFirstCandidateForNotdefGlyph) {
     fallback_stage_ = kOutOfLuck;
     if (!first_candidate_)
-      FontCache::CrashWithFontInfo(&*font_description_);
+      FontCache::CrashWithFontInfo(&font_description_);
     return first_candidate_;
   }
 
   DCHECK(fallback_stage_ == kFontGroupFonts ||
          fallback_stage_ == kSegmentedFace);
   const FontData* font_data = font_fallback_list_->FontDataAt(
-      *font_description_, current_font_data_index_);
+      font_description_, current_font_data_index_);
 
   if (!font_data) {
     // If there is no fontData coming from the fallback list, it means
@@ -227,13 +228,13 @@ scoped_refptr<SimpleFontData> FontFallbackIterator::FallbackPriorityFont(
     UChar32 hint) {
   scoped_refptr<SimpleFontData> font_data =
       FontCache::Get().FallbackFontForCharacter(
-          *font_description_, hint,
-          font_fallback_list_->PrimarySimpleFontData(*font_description_),
+          font_description_, hint,
+          font_fallback_list_->PrimarySimpleFontData(font_description_),
           font_fallback_priority_);
 
   if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
     font_selector->ReportFontLookupByFallbackCharacter(
-        hint, font_fallback_priority_, *font_description_, font_data.get());
+        hint, font_fallback_priority_, font_description_, font_data.get());
   }
   return font_data;
 }
@@ -274,12 +275,12 @@ scoped_refptr<SimpleFontData> FontFallbackIterator::UniqueSystemFontForHintList(
   previously_asked_for_hint_.insert(hint);
 
   scoped_refptr<SimpleFontData> font_data = font_cache.FallbackFontForCharacter(
-      *font_description_, hint,
-      font_fallback_list_->PrimarySimpleFontData(*font_description_));
+      font_description_, hint,
+      font_fallback_list_->PrimarySimpleFontData(font_description_));
 
   if (FontSelector* font_selector = font_fallback_list_->GetFontSelector()) {
     font_selector->ReportFontLookupByFallbackCharacter(
-        hint, FontFallbackPriority::kText, *font_description_, font_data.get());
+        hint, FontFallbackPriority::kText, font_description_, font_data.get());
   }
   return font_data;
 }

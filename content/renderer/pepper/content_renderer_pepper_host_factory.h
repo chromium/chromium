@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_CONTENT_RENDERER_PEPPER_HOST_FACTORY_H_
 #define CONTENT_RENDERER_PEPPER_CONTENT_RENDERER_PEPPER_HOST_FACTORY_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ppapi/host/host_factory.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
@@ -37,7 +36,7 @@ class ContentRendererPepperHostFactory : public ppapi::host::HostFactory {
   const ppapi::PpapiPermissions& GetPermissions() const;
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHostImpl> host_;
+  RendererPpapiHostImpl* host_;
 };
 
 }  // namespace content

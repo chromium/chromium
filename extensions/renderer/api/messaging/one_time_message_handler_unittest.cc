@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
@@ -86,7 +85,7 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<OneTimeMessageHandler> message_handler_;
 
-  raw_ptr<ScriptContext> script_context_ = nullptr;
+  ScriptContext* script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

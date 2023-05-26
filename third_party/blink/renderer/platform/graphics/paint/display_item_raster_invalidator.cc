@@ -20,14 +20,14 @@ void DisplayItemRasterInvalidator::Generate() {
   HashMap<DisplayItemClientId, OldAndNewDisplayItems> clients_to_invalidate;
 
   Vector<bool> old_display_items_matched;
-  old_display_items_matched.resize(old_display_items_->size());
-  auto next_old_item_to_match = old_display_items_->begin();
+  old_display_items_matched.resize(old_display_items_.size());
+  auto next_old_item_to_match = old_display_items_.begin();
   auto latest_cached_old_item = next_old_item_to_match;
 
-  for (const auto& new_item : *new_display_items_) {
+  for (const auto& new_item : new_display_items_) {
     auto matched_old_item =
         MatchNewDisplayItemInOldChunk(new_item, next_old_item_to_match);
-    if (matched_old_item == old_display_items_->end()) {
+    if (matched_old_item == old_display_items_.end()) {
       if (new_item.DrawsContent()) {
         // Will invalidate for the new display item which doesn't match any old
         // display item.
@@ -67,7 +67,7 @@ void DisplayItemRasterInvalidator::Generate() {
     }
 
     wtf_size_t offset =
-        static_cast<wtf_size_t>(matched_old_item - old_display_items_->begin());
+        static_cast<wtf_size_t>(matched_old_item - old_display_items_.begin());
     DCHECK(!old_display_items_matched[offset]);
     old_display_items_matched[offset] = true;
 
@@ -80,12 +80,11 @@ void DisplayItemRasterInvalidator::Generate() {
   }
 
   // Invalidate remaining unmatched (disappeared or uncacheable) old items.
-  for (auto it = old_display_items_->begin(); it != old_display_items_->end();
+  for (auto it = old_display_items_.begin(); it != old_display_items_.end();
        ++it) {
     if (old_display_items_matched[static_cast<wtf_size_t>(
-            it - old_display_items_->begin())]) {
+            it - old_display_items_.begin())])
       continue;
-    }
 
     const auto& old_item = *it;
     if (old_item.DrawsContent() || old_item.IsTombstone()) {
@@ -104,8 +103,8 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
     const DisplayItem& new_item,
     DisplayItemIterator& next_old_item_to_match) {
   if (!new_item.IsCacheable())
-    return old_display_items_->end();
-  for (; next_old_item_to_match != old_display_items_->end();
+    return old_display_items_.end();
+  for (; next_old_item_to_match != old_display_items_.end();
        next_old_item_to_match++) {
     const auto& old_item = *next_old_item_to_match;
     if (!old_item.IsCacheable())
@@ -121,12 +120,12 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
   // Didn't find matching old item in sequential matching. Look up the index.
   auto it = old_display_items_index_.find(new_item.ClientId());
   if (it == old_display_items_index_.end())
-    return old_display_items_->end();
+    return old_display_items_.end();
   for (auto i : it->value) {
     if (i->GetId() == new_item.GetId())
       return i;
   }
-  return old_display_items_->end();
+  return old_display_items_.end();
 }
 
 void DisplayItemRasterInvalidator::AddRasterInvalidation(
@@ -134,12 +133,12 @@ void DisplayItemRasterInvalidator::AddRasterInvalidation(
     const gfx::Rect& rect,
     PaintInvalidationReason reason,
     RasterInvalidator::ClientIsOldOrNew old_or_new) {
-  gfx::Rect r = invalidator_->ClipByLayerBounds(mapper_->MapVisualRect(rect));
+  gfx::Rect r = invalidator_.ClipByLayerBounds(mapper_.MapVisualRect(rect));
   if (r.IsEmpty())
     return;
 
-  invalidator_->AddRasterInvalidation(raster_invalidation_function_, r,
-                                      client_id, reason, old_or_new);
+  invalidator_.AddRasterInvalidation(raster_invalidation_function_, r,
+                                     client_id, reason, old_or_new);
 }
 
 void DisplayItemRasterInvalidator::GenerateRasterInvalidation(

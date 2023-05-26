@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/discardable_memory_allocator.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
@@ -284,7 +283,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
   cc::PaintRecorder recorder;
 
   // Valid after SetUp() until SerializeAsSkPicture() is called.
-  raw_ptr<cc::PaintCanvas> canvas{};
+  cc::PaintCanvas* canvas{};
 
  protected:
   base::test::TaskEnvironment task_environment_;

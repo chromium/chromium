@@ -11,7 +11,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "base/observer_list.h"
@@ -437,7 +436,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner;
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner;
     const char* trace_event_scope_name;
-    raw_ptr<void> trace_event_scope_id;
+    void* trace_event_scope_id;
   };
 
   void BeginAgentGroupSchedulerScope(
@@ -528,7 +527,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     ~RendererPauseHandleImpl() override;
 
    private:
-    raw_ptr<MainThreadSchedulerImpl> scheduler_;  // NOT OWNED
+    MainThreadSchedulerImpl* scheduler_;  // NOT OWNED
   };
 
   // IdleHelper::Delegate implementation:

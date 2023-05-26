@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -85,7 +84,7 @@ class GCOwner : public GarbageCollected<GCOwner<Mode>>,
  private:
   HeapMojoAssociatedReceiverSet<sample::blink::Service, GCOwner, Mode>
       associated_receiver_set_;
-  raw_ptr<HeapMojoAssociatedReceiverSetGCBaseTest<Mode>> test_;
+  HeapMojoAssociatedReceiverSetGCBaseTest<Mode>* test_;
 };
 
 }  // namespace

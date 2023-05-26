@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 #define CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/var.h"
@@ -56,7 +55,7 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
  private:
   ~V8ObjectVar() override;
 
-  raw_ptr<content::PepperPluginInstanceImpl> instance_;
+  content::PepperPluginInstanceImpl* instance_;
 
   v8::Persistent<v8::Object> v8_object_;
 };

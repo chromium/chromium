@@ -7,7 +7,6 @@
 #include <hb.h>
 
 #include "base/logging.h"
-#include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
@@ -167,7 +166,7 @@ void ShapeResultBloberizer::CommitPendingRun() {
     CommitText();
 
   SkFont run_font =
-      pending_font_data_->PlatformData().CreateSkFont(&*font_description_);
+      pending_font_data_->PlatformData().CreateSkFont(&font_description_);
 
   const auto run_size = pending_glyphs_.size();
   const auto text_size = pending_utf8_.size();
@@ -269,7 +268,7 @@ class GlyphCallbackContext {
   GlyphCallbackContext& operator=(const GlyphCallbackContext&) = delete;
 
   ShapeResultBloberizer* bloberizer;
-  const raw_ref<const StringView> text;
+  const StringView& text;
 };
 }  // namespace
 
@@ -285,7 +284,7 @@ class GlyphCallbackContext {
   GlyphCallbackContext* parsed_context =
       static_cast<GlyphCallbackContext*>(context);
   ShapeResultBloberizer* bloberizer = parsed_context->bloberizer;
-  const StringView& text = parsed_context->text.get();
+  const StringView& text = parsed_context->text;
 
   if (bloberizer->IsSkipInkException(text, character_index))
     return;
@@ -341,7 +340,7 @@ class ClusterCallbackContext {
   ClusterCallbackContext& operator=(const ClusterCallbackContext&) = delete;
 
   ShapeResultBloberizer* bloberizer;
-  const raw_ref<const StringView> text;
+  const StringView& text;
   const GlyphData& emphasis_data;
   gfx::PointF glyph_center;
 };
@@ -357,7 +356,7 @@ class ClusterCallbackContext {
   ClusterCallbackContext* parsed_context =
       static_cast<ClusterCallbackContext*>(context);
   ShapeResultBloberizer* bloberizer = parsed_context->bloberizer;
-  const StringView& text = parsed_context->text.get();
+  const StringView& text = parsed_context->text;
   const GlyphData& emphasis_data = parsed_context->emphasis_data;
   gfx::PointF glyph_center = parsed_context->glyph_center;
 
@@ -434,14 +433,14 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     const ShapeResultBuffer& result_buffer,
     const Type type)
     : ShapeResultBloberizer(font_description, type) {
-  if (CanUseFastPath(run_info.from, run_info.to, run_info.run->length(),
+  if (CanUseFastPath(run_info.from, run_info.to, run_info.run.length(),
                      result_buffer.HasVerticalOffsets())) {
     DVLOG(4) << "FillGlyphs fast path";
     DCHECK(!result_buffer.HasVerticalOffsets());
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);
     advance_ =
-        FillFastHorizontalGlyphs(result_buffer, run_info.run->Direction());
+        FillFastHorizontalGlyphs(result_buffer, run_info.run.Direction());
     return;
   }
 
@@ -460,12 +459,12 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
       word_offset += word_result->NumCharacters();
     }
     cluster_starts.Finish(run_info.from, run_info.to);
-    SetText(run_info.run->ToStringView(), run_info.from, run_info.to,
+    SetText(run_info.run.ToStringView(), run_info.from, run_info.to,
             cluster_starts.Data());
   }
 
-  if (run_info.run->Rtl()) {
-    unsigned word_offset = run_info.run->length();
+  if (run_info.run.Rtl()) {
+    unsigned word_offset = run_info.run.length();
     for (unsigned j = 0; j < results.size(); j++) {
       unsigned resolved_index = results.size() - 1 - j;
       const scoped_refptr<const ShapeResult>& word_result =
@@ -476,7 +475,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
                << " to: " << run_info.to << " offset: " << word_offset
                << " length: " << word_characters;
       advance =
-          FillGlyphsForResult(word_result.get(), run_info.run->ToStringView(),
+          FillGlyphsForResult(word_result.get(), run_info.run.ToStringView(),
                               run_info.from, run_info.to, advance, word_offset);
     }
   } else {
@@ -487,7 +486,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
                << " to: " << run_info.to << " offset: " << word_offset
                << " length: " << word_characters;
       advance =
-          FillGlyphsForResult(word_result.get(), run_info.run->ToStringView(),
+          FillGlyphsForResult(word_result.get(), run_info.run.ToStringView(),
                               run_info.from, run_info.to, advance, word_offset);
       word_offset += word_characters;
     }
@@ -553,14 +552,14 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
   float advance = 0;
   auto results = result_buffer.results_;
 
-  if (run_info.run->Rtl()) {
-    unsigned word_offset = run_info.run->length();
+  if (run_info.run.Rtl()) {
+    unsigned word_offset = run_info.run.length();
     for (unsigned j = 0; j < results.size(); j++) {
       unsigned resolved_index = results.size() - 1 - j;
       const scoped_refptr<const ShapeResult>& word_result =
           results[resolved_index];
       word_offset -= word_result->NumCharacters();
-      StringView text = run_info.run->ToStringView();
+      StringView text = run_info.run.ToStringView();
       ClusterCallbackContext context = {this, text, emphasis, glyph_center};
       advance = word_result->ForEachGraphemeClusters(
           text, advance, run_info.from, run_info.to, word_offset,
@@ -569,7 +568,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
   } else {  // Left-to-right.
     unsigned word_offset = 0;
     for (const auto& word_result : results) {
-      StringView text = run_info.run->ToStringView();
+      StringView text = run_info.run.ToStringView();
       ClusterCallbackContext context = {this, text, emphasis, glyph_center};
       advance = word_result->ForEachGraphemeClusters(
           text, advance, run_info.from, run_info.to, word_offset,

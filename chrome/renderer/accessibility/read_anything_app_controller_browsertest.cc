@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
@@ -253,13 +252,13 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ui::AXTreeID ActiveTreeId() { return controller_->model_.active_tree_id(); }
 
   ui::AXTreeID tree_id_;
-  raw_ptr<MockAXTreeDistiller> distiller_ = nullptr;
+  MockAXTreeDistiller* distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingPageHandler> page_handler_;
 
  private:
   // ReadAnythingAppController constructor and destructor are private so it's
   // not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppController> controller_ = nullptr;
+  ReadAnythingAppController* controller_ = nullptr;
 };
 
 TEST_F(ReadAnythingAppControllerTest, Theme) {

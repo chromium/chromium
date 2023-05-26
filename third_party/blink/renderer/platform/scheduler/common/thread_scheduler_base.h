@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 #include "base/task/sequenced_task_runner.h"
@@ -115,7 +114,7 @@ class PLATFORM_EXPORT ThreadSchedulerBase : public VirtualTimeController,
   void OnBeginNestedRunLoop() override;
   void OnExitNestedRunLoop() override;
 
-  raw_ptr<v8::Isolate> isolate_ = nullptr;
+  v8::Isolate* isolate_ = nullptr;
 
   // Note |virtual_time_domain_| is only present iff virtual time is enabled.
   std::unique_ptr<AutoAdvancingVirtualTimeDomain> virtual_time_domain_;

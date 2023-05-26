@@ -5,8 +5,6 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -60,13 +58,13 @@ class ArgumentSpecUnitTest : public gin::V8Test {
                   TestResult result)
         : spec(spec), script_source(script_source), expected_result(result) {}
 
-    const raw_ref<const ArgumentSpec> spec;
+    const ArgumentSpec& spec;
     base::StringPiece script_source;
     TestResult expected_result;
     base::StringPiece expected_json;
     base::StringPiece expected_error;
     base::StringPiece expected_thrown_message;
-    raw_ptr<const base::Value> expected_value = nullptr;
+    const base::Value* expected_value = nullptr;
     bool should_convert_to_base = true;
     bool should_convert_to_v8 = false;
     V8Validator validate_v8;
@@ -158,7 +156,7 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
   std::string error;
   std::unique_ptr<base::Value> out_value;
   v8::Local<v8::Value> v8_out_value;
-  bool did_succeed = params.spec->ParseArgument(
+  bool did_succeed = params.spec.ParseArgument(
       context, val, type_refs_,
       params.should_convert_to_base ? &out_value : nullptr,
       params.should_convert_to_v8 ? &v8_out_value : nullptr, &error);

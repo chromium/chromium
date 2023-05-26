@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/wrappable.h"
@@ -99,7 +98,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   std::unique_ptr<APIEventListeners> listeners_;
 
   // The associated exception handler; guaranteed to outlive this object.
-  const raw_ptr<ExceptionHandler> exception_handler_ = nullptr;
+  ExceptionHandler* const exception_handler_ = nullptr;
 
   // The next id to use in the pending_filters_ map.
   int next_filter_id_ = 0;

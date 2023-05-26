@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/bitrate.h"
@@ -66,7 +65,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
 
   std::unique_ptr<EncoderImpl> encoder_impl_;
 
-  raw_ptr<PepperVideoEncoderHost> host_;
+  PepperVideoEncoderHost* host_;
 
   // Task doing the encoding.
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;

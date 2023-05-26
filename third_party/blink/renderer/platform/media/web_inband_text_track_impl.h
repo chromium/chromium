@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_INBAND_TEXT_TRACK_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_INBAND_TEXT_TRACK_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_inband_text_track.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -32,7 +31,7 @@ class PLATFORM_EXPORT WebInbandTextTrackImpl : public WebInbandTextTrack {
   WebString Id() const override;
 
  private:
-  raw_ptr<WebInbandTextTrackClient> client_;
+  WebInbandTextTrackClient* client_;
   Kind kind_;
   WebString label_;
   WebString language_;

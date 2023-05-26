@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
@@ -120,7 +119,7 @@ class PLATFORM_EXPORT V8PerContextData final
   v8::Local<v8::Object> CreateWrapperFromCacheSlowCase(const WrapperTypeInfo*);
   v8::Local<v8::Function> ConstructorForTypeSlowCase(const WrapperTypeInfo*);
 
-  const raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* const isolate_;
 
   // For each possible type of wrapper, we keep a boilerplate object.
   // The boilerplate is used to create additional wrappers of the same type.
@@ -135,7 +134,7 @@ class PLATFORM_EXPORT V8PerContextData final
   ScopedPersistent<v8::Context> context_;
 
   // This is owned by a static hash map in V8DOMActivityLogger.
-  raw_ptr<V8DOMActivityLogger> activity_logger_;
+  V8DOMActivityLogger* activity_logger_;
 
   using DataMap = HeapHashMap<const char*, Member<Data>>;
   DataMap data_map_;

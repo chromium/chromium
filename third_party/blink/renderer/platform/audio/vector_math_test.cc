@@ -9,7 +9,6 @@
 #include <numeric>
 #include <random>
 
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,7 +109,7 @@ class TestVector {
     T& operator*() const { return *p_; }
 
    private:
-    raw_ptr<T> p_;
+    T* p_;
     size_t stride_;
   };
 
@@ -131,7 +130,7 @@ class TestVector {
                    primary_vector.memory_layout(),
                    primary_vector.size()) {}
 
-  Iterator begin() const { return Iterator(p_.get(), stride()); }
+  Iterator begin() const { return Iterator(p_, stride()); }
   Iterator end() const { return Iterator(p_ + size() * stride(), stride()); }
   ReverseIterator rbegin() const { return ReverseIterator(end()); }
   ReverseIterator rend() const { return ReverseIterator(begin()); }
@@ -160,8 +159,8 @@ class TestVector {
     return reinterpret_cast<size_t>(p) % kMaxByteAlignment;
   }
 
-  raw_ptr<T> p_;
-  raw_ptr<const MemoryLayout> memory_layout_;
+  T* p_;
+  const MemoryLayout* memory_layout_;
   size_t size_;
 };
 

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
@@ -45,7 +44,7 @@ class FormCacheTestApi {
   size_t parsed_forms_size() { return form_cache_->parsed_forms_.size(); }
 
  private:
-  raw_ptr<FormCache> form_cache_;
+  FormCache* form_cache_;
 };
 
 }  // namespace autofill

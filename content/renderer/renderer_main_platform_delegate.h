@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_RENDERER_MAIN_PLATFORM_DELEGATE_H_
 #define CONTENT_RENDERER_RENDERER_MAIN_PLATFORM_DELEGATE_H_
 
-#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -38,7 +37,7 @@ class CONTENT_EXPORT RendererMainPlatformDelegate {
 
  private:
 #if BUILDFLAG(IS_WIN)
-  const raw_ref<const MainFunctionParams> parameters_;
+  const MainFunctionParams& parameters_;
 #endif
 };
 

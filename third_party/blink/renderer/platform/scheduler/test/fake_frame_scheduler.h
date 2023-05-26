@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_FRAME_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_FRAME_SCHEDULER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
@@ -168,7 +167,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
 
  private:
-  raw_ptr<PageScheduler> page_scheduler_;  // NOT OWNED
+  PageScheduler* page_scheduler_;  // NOT OWNED
 
   bool is_page_visible_;
   bool is_frame_visible_;

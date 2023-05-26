@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -242,7 +241,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
 
     std::move(callback_).Run(std::move(result_));
   }
-  raw_ptr<v8::Isolate> isolate_ = nullptr;
+  v8::Isolate* isolate_ = nullptr;
   GetV8MemoryUsageCallback callback_;
   mojom::blink::PerProcessV8MemoryUsagePtr result_;
   bool main_measurement_done_ = false;

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -81,7 +80,7 @@ class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
  private:
   mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls_;
 
-  raw_ptr<media::RendererFactory> real_renderer_factory_;
+  media::RendererFactory* real_renderer_factory_;
   bool has_create_been_called_ = false;
 };
 

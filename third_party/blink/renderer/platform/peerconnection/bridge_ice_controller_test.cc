@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
@@ -700,8 +699,8 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   void Recheck() { env.FastForwardBy(base::Milliseconds(recheck_delay_ms)); }
 
   const int recheck_delay_ms = 10;
-  raw_ptr<const Connection> conn = nullptr;
-  raw_ptr<const Connection> conn_two = nullptr;
+  const Connection* conn = nullptr;
+  const Connection* conn_two = nullptr;
   const std::vector<const Connection*> empty_conns_to_forget{};
   const IceSwitchReason reason = IceSwitchReason::DATA_RECEIVED;
   const IceRecheckEvent recheck_event;
@@ -709,7 +708,7 @@ class BridgeIceControllerInvalidProposalTest : public BridgeIceControllerTest {
   scoped_refptr<IceInteractionInterface> interaction_agent;
   StrictMock<MockIceAgent> agent;
   StrictMock<MockIceControllerObserver> observer;
-  raw_ptr<StrictMock<MockIceController>> wrapped_controller;
+  StrictMock<MockIceController>* wrapped_controller;
   std::unique_ptr<BridgeIceController> controller;
 };
 
@@ -750,7 +749,7 @@ TEST_F(BridgeIceControllerNoopTest, AcceptUnknownPingProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn.get(), recheck_event, empty_conns_to_forget};
+      conn, recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->AcceptSwitchProposal(proposal),
@@ -759,7 +758,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptUnsolicitedSwitchProposal) {
 
 TEST_F(BridgeIceControllerDeathTest, RejectUnsolicitedSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn.get(), recheck_event, empty_conns_to_forget};
+      conn, recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/false);
   EXPECT_DCHECK_DEATH_WITH(interaction_agent->RejectSwitchProposal(proposal),
@@ -787,7 +786,7 @@ TEST_F(BridgeIceControllerDeathTest, AcceptNullSwitchProposal) {
 
 TEST_F(BridgeIceControllerNoopTest, AcceptUnknownSwitchProposal) {
   const IceControllerInterface::SwitchResult switch_result{
-      conn_two.get(), recheck_event, empty_conns_to_forget};
+      conn_two, recheck_event, empty_conns_to_forget};
   const IceSwitchProposal proposal(reason, switch_result,
                                    /*reply_expected=*/true);
   interaction_agent->AcceptSwitchProposal(proposal);

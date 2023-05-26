@@ -30,8 +30,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/lru_cache.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
@@ -132,7 +130,7 @@ class ScopedRGBEmulationColorMask {
   ~ScopedRGBEmulationColorMask();
 
  private:
-  raw_ptr<WebGLRenderingContextBase> context_;
+  WebGLRenderingContextBase* context_;
   GLboolean color_mask_[4];
   const bool requires_emulation_;
 };
@@ -1034,7 +1032,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     WebGLExtension* GetExtension(WebGLRenderingContextBase* context) override {
       if (!extension_) {
         extension_ = MakeGarbageCollected<T>(context);
-        extension_field_ = raw_ref(extension_);
+        extension_field_ = extension_;
       }
 
       return extension_;
@@ -1064,7 +1062,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    raw_ref<Member<T>> extension_field_;
+    Member<T>& extension_field_;
     // ExtensionTracker holds it's own reference to the extension to ensure
     // that it is not deleted before this object's destructor is called
     Member<T> extension_;
@@ -1115,8 +1113,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     }
 
    private:
-    raw_ptr<DrawingBuffer> drawing_buffer_;
-    raw_ptr<WebGLFramebuffer> read_framebuffer_binding_;
+    DrawingBuffer* drawing_buffer_;
+    WebGLFramebuffer* read_framebuffer_binding_;
   };
 
   // Errors raised by synthesizeGLError() while the context is lost.

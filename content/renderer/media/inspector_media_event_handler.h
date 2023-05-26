@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
@@ -26,7 +25,7 @@ class CONTENT_EXPORT InspectorMediaEventHandler
   void OnWebMediaPlayerDestroyed() override;
 
  private:
-  raw_ptr<blink::MediaInspectorContext> inspector_context_;
+  blink::MediaInspectorContext* inspector_context_;
   blink::WebString player_id_;
   bool video_player_destroyed_ = false;
 };

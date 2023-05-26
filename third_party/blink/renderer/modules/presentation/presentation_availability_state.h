@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
@@ -130,7 +129,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
   HeapVector<Member<AvailabilityListener>> availability_listeners_;
 
   // A pointer to PresentationService owned by PresentationController.
-  const raw_ptr<mojom::blink::PresentationService> presentation_service_;
+  mojom::blink::PresentationService* const presentation_service_;
 };
 
 }  // namespace blink

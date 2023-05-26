@@ -15,7 +15,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
@@ -92,7 +91,7 @@ class AutomationMessageFilter : public IPC::MessageFilter {
     }
   }
 
-  raw_ptr<AutomationInternalCustomBindings> owner_;
+  AutomationInternalCustomBindings* owner_;
   bool removed_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
