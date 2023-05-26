@@ -71,6 +71,14 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser) {
 }
 
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
+  absl::optional<bool> should_force_pin =
+      switches::ShouldForceOverrideCompanionPinState();
+  if (should_force_pin) {
+    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
+                             *should_force_pin);
+    return;
+  }
+
   bool companion_should_be_default_pinned =
       base::FeatureList::IsEnabled(
           ::features::kSidePanelCompanionDefaultPinned) ||
