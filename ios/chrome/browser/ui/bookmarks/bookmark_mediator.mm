@@ -179,11 +179,6 @@ using bookmarks::BookmarkNode;
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   BOOL hasSyncConsent =
       _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  // TODO(crbug.com/1442345): Once `kEnableEmailInBookmarksReadingListSnackbar`
-  // and `kEnableBookmarksAccountStorage` are removed, `saveIntoAccount` can be
-  // set with the value from `ShouldDisplayCloudSlashIconForProfileModel()`. We
-  // will need to rename the function to something like:
-  // `IsLocalOrSyncableModelSynced()`.
   // The bookmark is saved in the account if either following condition is true:
   // * the saved folder is in the account model,
   // * the sync consent has been granted and the bookmark data type is enabled

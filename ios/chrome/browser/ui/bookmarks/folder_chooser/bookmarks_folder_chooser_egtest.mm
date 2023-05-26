@@ -105,13 +105,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Verify default parent folder is 'Mobile Bookmarks'.
-  NSString* accessibilityLabel = l10n_util::GetNSStringF(
-      IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
-      base::SysNSStringToUTF16(@"Mobile Bookmarks"));
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(accessibilityLabel),
+                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }

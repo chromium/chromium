@@ -15,14 +15,15 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
+class Browser;
+class GURL;
+class TestChromeBrowserState;
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
-class Browser;
-class GURL;
-class TestChromeBrowserState;
 
 // Provides common bookmark testing infrastructure.
 class BookmarkIOSUnitTestSupport : public PlatformTest {

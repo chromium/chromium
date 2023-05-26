@@ -20,7 +20,6 @@
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
-class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -123,11 +122,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
 bool AreAllAvailableBookmarkModelsLoaded(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
-
-// Whether the Cloud Slash icon should be displayed for the profile model.
-// For nodes in account model, the icon should never been shown.
-bool ShouldDisplayCloudSlashIconForProfileModel(
-    SyncSetupService* sync_setup_service);
 
 // Returns true if the user is signed in and they opted in for the account
 // bookmark storage.

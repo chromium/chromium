@@ -18,7 +18,6 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
@@ -429,41 +428,52 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   EXPECT_EQ(3u, missingNodesIndices[1]);
 }
 
-TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
+// Tests returned values from `IsAccountBookmarkStorageOptedIn()`.
+TEST_P(BookmarkIOSUtilsUnitTest, IsAccountBookmarkStorageOptedIn) {
   syncer::TestSyncService sync_service;
-  SyncSetupServiceMock sync_setup_service(&sync_service);
 
-  // If sync-the-feature is on, including bookmarks, the icon should not be
-  // displayed.
-  ON_CALL(sync_setup_service, IsSyncFeatureEnabled)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(sync_setup_service, IsDataTypePreferred)
-      .WillByDefault(testing::Return(true));
-  EXPECT_FALSE(bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-      &sync_setup_service));
+  // If the user is signed out, `IsAccountBookmarkStorageOptedIn()` should
+  // always return false.
+  EXPECT_FALSE(
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
 
-  // If sync-the-feature is on, but bookmarks excluded, the icon should be
-  // displayed, but only if the feature is enabled (IsAccountStorageEnabled()).
-  ON_CALL(sync_setup_service, IsDataTypePreferred)
-      .WillByDefault(testing::Return(false));
+  // Sign-in.
+  CoreAccountInfo account;
+  account.gaia = "gaia_id";
+  account.email = "email@test.com";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  sync_service.SetAccountInfo(account);
+
+  // If sync-the-feature is on, including bookmarks,
+  // `IsAccountBookmarkStorageOptedIn()` should always return false.
+  sync_service.SetHasSyncConsent(true);
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
+  EXPECT_FALSE(
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+
+  // If sync-the-feature is on, but bookmarks excluded,
+  // `IsAccountBookmarkStorageOptedIn()` should always return false.
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
+  EXPECT_FALSE(
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
+
+  // If sync-the-feature is off and the account storage is enabled,
+  // `IsAccountBookmarkStorageOptedIn()` should return true, but only if the
+  // feature is enabled (IsAccountStorageEnabled()).
+  sync_service.SetHasSyncConsent(false);
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true, /*types=*/syncer::UserSelectableTypeSet());
   EXPECT_EQ(IsAccountStorageEnabled(),
-            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-                &sync_setup_service));
+            bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
 
-  // If sync-the-feature is off, same thing: the icon should be displayed, but
-  // only if the feature is enabled (IsAccountStorageEnabled()).
-  ON_CALL(sync_setup_service, IsSyncFeatureEnabled)
-      .WillByDefault(testing::Return(true));
-  EXPECT_EQ(IsAccountStorageEnabled(),
-            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-                &sync_setup_service));
-
-  // IsDataTypePreferred() shouldn't change anything if sync-the-feature is off.
-  ON_CALL(sync_setup_service, IsDataTypePreferred)
-      .WillByDefault(testing::Return(false));
-  EXPECT_EQ(IsAccountStorageEnabled(),
-            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-                &sync_setup_service));
+  // If sync-the-feature is off and the account storage is not enabled,
+  // `IsAccountBookmarkStorageOptedIn()` should return false.
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/syncer::UserSelectableTypeSet());
+  EXPECT_FALSE(
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(&sync_service));
 }
 
 TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedNoMatches) {

@@ -62,7 +62,6 @@ TEST_F(BookmarksEditorViewControllerTest, CanSyncBeforeLoad) {
               accountBookmarkModel:nullptr
                       bookmarkNode:bookmark
                              prefs:nullptr
-                  syncSetupService:nullptr
                        syncService:nullptr
                       browserState:nullptr];
   controller.mutator = mediator;

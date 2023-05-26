@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_parent_folder_item.h"
@@ -79,7 +78,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   std::unique_ptr<BookmarkModelBridge> _accountModelBridge;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
-  SyncSetupService* _syncSetupService;
   syncer::SyncService* _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   // The browser for this view controller.
@@ -114,7 +112,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                       folderNode:(const BookmarkNode*)folder
                 parentFolderNode:(const BookmarkNode*)parentFolder
            authenticationService:(AuthenticationService*)authService
-                syncSetupService:(SyncSetupService*)syncSetupService
                      syncService:(syncer::SyncService*)syncService
                          browser:(Browser*)browser {
   DCHECK(profileBookmarkModel);
@@ -155,7 +152,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Set up the bookmark model oberver.
     _syncObserverModelBridge =
         std::make_unique<SyncObserverBridge>(self, syncService);
-    _syncSetupService = syncSetupService;
   }
   return self;
 }
@@ -169,8 +165,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _folder = nullptr;
   _parentFolder = nullptr;
   _authServiceBridge.reset();
+  _syncService = nullptr;
   _syncObserverModelBridge.reset();
-  _syncSetupService = nullptr;
   _titleItem.delegate = nil;
 }
 
@@ -508,8 +504,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (type) {
     case bookmarks::StorageType::kLocalOrSyncable:
       _parentFolderItem.shouldDisplayCloudSlashIcon =
-          bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-              _syncSetupService);
+          bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
       break;
     case bookmarks::StorageType::kAccount:
       _parentFolderItem.shouldDisplayCloudSlashIcon = NO;
