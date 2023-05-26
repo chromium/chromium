@@ -312,6 +312,13 @@ void OSSettingsUI::BindInterface(
 }
 
 void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<one_drive::mojom::PageHandlerFactory> receiver) {
+  one_drive_page_handler_factory_ =
+      std::make_unique<OneDrivePageHandlerFactory>(Profile::FromWebUI(web_ui()),
+                                                   std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<chromeos::connectivity::mojom::PasspointService>
         receiver) {
   ash::GetPasspointService(std::move(receiver));

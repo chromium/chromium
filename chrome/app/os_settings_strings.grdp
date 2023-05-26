@@ -1009,6 +1009,15 @@
     Share mounted successfully.
   </message>
   <!-- TODO(b/254586358): Finalise Office files strings -->
+  <message name="IDS_SETTINGS_ONE_DRIVE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the OneDrive account settings.">
+    OneDrive
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" translateable="false" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
+    Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" translateable="false" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
+    Disconnected
+  </message>
   <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
     Microsoft 365
   </message>
