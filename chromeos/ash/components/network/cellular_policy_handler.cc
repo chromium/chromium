@@ -155,6 +155,56 @@ void CellularPolicyHandler::ProcessRequests() {
   AttemptInstallESim();
 }
 
+void CellularPolicyHandler::ScheduleRetry(
+    std::unique_ptr<InstallPolicyESimRequest> request,
+    InstallRetryReason reason) {
+  if (reason != InstallRetryReason::kInternalError &&
+      request->retry_backoff.failure_count() >= kInstallRetryLimit) {
+    NET_LOG(ERROR) << "Failed to install policy eSIM profile: "
+                   << request->activation_code;
+    ProcessRequests();
+    return;
+  }
+
+  request->retry_backoff.InformOfRequest(/*succeeded=*/false);
+
+  if (reason == InstallRetryReason::kOther) {
+    request->retry_backoff.SetCustomReleaseTime(base::TimeTicks::Now() +
+                                                kInstallRetryDelay);
+  }
+
+  const base::TimeDelta retry_delay =
+      request->retry_backoff.GetTimeUntilRelease();
+
+  NET_LOG(ERROR) << "Failed to install policy eSIM profile. Retrying in "
+                 << retry_delay << ": " << request->activation_code;
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CellularPolicyHandler::PushRequestAndProcess,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)),
+      retry_delay);
+}
+
+void CellularPolicyHandler::PushRequestAndProcess(
+    std::unique_ptr<InstallPolicyESimRequest> request) {
+  remaining_install_requests_.push_back(std::move(request));
+  ProcessRequests();
+}
+
+void CellularPolicyHandler::PopRequest() {
+  remaining_install_requests_.pop_front();
+  is_installing_ = false;
+  if (remaining_install_requests_.empty()) {
+    const NetworkProfile* profile =
+        network_profile_handler_->GetProfileForUserhash(
+            /*userhash=*/std::string());
+    DCHECK(profile);
+
+    managed_network_configuration_handler_->OnCellularPoliciesApplied(*profile);
+  }
+}
+
 void CellularPolicyHandler::AttemptInstallESim() {
   DCHECK(is_installing_);
 
@@ -197,23 +247,6 @@ void CellularPolicyHandler::AttemptInstallESim() {
   }
 
   SetupESim(*euicc_path);
-}
-
-void CellularPolicyHandler::OnRefreshProfileList(
-    const dbus::ObjectPath& euicc_path,
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-  if (!inhibit_lock) {
-    NET_LOG(ERROR) << "Failed to refresh the profile list due to an inhibit "
-                   << "error, path: " << euicc_path.value();
-    SetupESim(euicc_path);
-    return;
-  }
-
-  need_refresh_profile_list_ = false;
-  // Reset the inhibit_lock so that the device will be uninhibited
-  // automatically.
-  inhibit_lock.reset();
-  SetupESim(euicc_path);
 }
 
 void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
@@ -261,25 +294,21 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
   }
 }
 
-base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
-  const NetworkProfile* profile =
-      network_profile_handler_->GetProfileForUserhash(
-          /*userhash=*/std::string());
-  const std::string* guid =
-      remaining_install_requests_.front()->onc_config.FindString(
-          ::onc::network_config::kGUID);
-  DCHECK(guid);
+void CellularPolicyHandler::OnRefreshProfileList(
+    const dbus::ObjectPath& euicc_path,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Failed to refresh the profile list due to an inhibit "
+                   << "error, path: " << euicc_path.value();
+    SetupESim(euicc_path);
+    return;
+  }
 
-  return policy_util::CreateShillConfiguration(
-      *profile, *guid, /*global_policy=*/nullptr,
-      &(remaining_install_requests_.front()->onc_config),
-      /*user_settings=*/nullptr);
-}
-
-const policy_util::SmdxActivationCode&
-CellularPolicyHandler::GetCurrentActivationCode() const {
-  DCHECK(is_installing_);
-  return remaining_install_requests_.front()->activation_code;
+  need_refresh_profile_list_ = false;
+  // Reset the inhibit_lock so that the device will be uninhibited
+  // automatically.
+  inhibit_lock.reset();
+  SetupESim(euicc_path);
 }
 
 void CellularPolicyHandler::OnConfigureESimService(
@@ -355,54 +384,34 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   ProcessRequests();
 }
 
-void CellularPolicyHandler::ScheduleRetry(
-    std::unique_ptr<InstallPolicyESimRequest> request,
-    InstallRetryReason reason) {
-  if (reason != InstallRetryReason::kInternalError &&
-      request->retry_backoff.failure_count() >= kInstallRetryLimit) {
-    NET_LOG(ERROR) << "Failed to install policy eSIM profile: "
-                   << request->activation_code;
-    ProcessRequests();
-    return;
-  }
+void CellularPolicyHandler::OnWaitTimeout() {
+  NET_LOG(ERROR) << "Timed out when waiting for the EUICC or profile list.";
 
-  request->retry_backoff.InformOfRequest(/*succeeded=*/false);
-
-  if (reason == InstallRetryReason::kOther) {
-    request->retry_backoff.SetCustomReleaseTime(base::TimeTicks::Now() +
-                                                kInstallRetryDelay);
-  }
-
-  const base::TimeDelta retry_delay =
-      request->retry_backoff.GetTimeUntilRelease();
-
-  NET_LOG(ERROR) << "Failed to install policy eSIM profile. Retrying in "
-                 << retry_delay << ": " << request->activation_code;
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CellularPolicyHandler::PushRequestAndProcess,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request)),
-      retry_delay);
-}
-
-void CellularPolicyHandler::PushRequestAndProcess(
-    std::unique_ptr<InstallPolicyESimRequest> request) {
-  remaining_install_requests_.push_back(std::move(request));
+  auto current_request = std::move(remaining_install_requests_.front());
+  PopRequest();
+  ScheduleRetry(std::move(current_request), InstallRetryReason::kInternalError);
   ProcessRequests();
 }
 
-void CellularPolicyHandler::PopRequest() {
-  remaining_install_requests_.pop_front();
-  is_installing_ = false;
-  if (remaining_install_requests_.empty()) {
-    const NetworkProfile* profile =
-        network_profile_handler_->GetProfileForUserhash(
-            /*userhash=*/std::string());
-    DCHECK(profile);
+base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
+  const NetworkProfile* profile =
+      network_profile_handler_->GetProfileForUserhash(
+          /*userhash=*/std::string());
+  const std::string* guid =
+      remaining_install_requests_.front()->onc_config.FindString(
+          ::onc::network_config::kGUID);
+  DCHECK(guid);
 
-    managed_network_configuration_handler_->OnCellularPoliciesApplied(*profile);
-  }
+  return policy_util::CreateShillConfiguration(
+      *profile, *guid, /*global_policy=*/nullptr,
+      &(remaining_install_requests_.front()->onc_config),
+      /*user_settings=*/nullptr);
+}
+
+const policy_util::SmdxActivationCode&
+CellularPolicyHandler::GetCurrentActivationCode() const {
+  DCHECK(is_installing_);
+  return remaining_install_requests_.front()->activation_code;
 }
 
 absl::optional<dbus::ObjectPath>
@@ -419,15 +428,6 @@ CellularPolicyHandler::FindExistingMatchingESimProfile() {
     }
   }
   return absl::nullopt;
-}
-
-void CellularPolicyHandler::OnWaitTimeout() {
-  NET_LOG(ERROR) << "Timed out when waiting for the EUICC or profile list.";
-
-  auto current_request = std::move(remaining_install_requests_.front());
-  PopRequest();
-  ScheduleRetry(std::move(current_request), InstallRetryReason::kInternalError);
-  ProcessRequests();
 }
 
 bool CellularPolicyHandler::HasNonCellularInternetConnectivity() {

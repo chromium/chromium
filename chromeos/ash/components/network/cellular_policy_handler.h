@@ -137,11 +137,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
 
   void ResumeInstallIfNeeded();
   void ProcessRequests();
+  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
+                     InstallRetryReason reason);
+  void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
+  void PopRequest();
+
   void AttemptInstallESim();
   void SetupESim(const dbus::ObjectPath& euicc_path);
-  base::Value::Dict GetNewShillProperties();
-  const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
-  std::string GetCurrentPolicyGuid() const;
+
   void OnRefreshProfileList(
       const dbus::ObjectPath& euicc_path,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
@@ -150,12 +153,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void ScheduleRetry(std::unique_ptr<InstallPolicyESimRequest> request,
-                     InstallRetryReason reason);
-  void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
-  void PopRequest();
-  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   void OnWaitTimeout();
+
+  base::Value::Dict GetNewShillProperties();
+  const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
+  absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   bool HasNonCellularInternetConnectivity();
 
   raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
