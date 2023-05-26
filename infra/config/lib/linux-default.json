@@ -16,6 +16,7 @@
     "build-perf-linux-siso": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
+    "linux-extended-tracing-rel": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
     "linux-remote-ssd-rel-dev": "Ubuntu-22.04"
