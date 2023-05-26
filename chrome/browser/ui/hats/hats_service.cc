@@ -31,6 +31,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -54,6 +55,9 @@ constexpr char kHatsSurveyTriggerPerformanceControlsHighEfficiencyOptOut[] =
     "performance-high-efficiency-opt-out";
 constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
     "performance-battery-saver-opt-out";
+// The permission prompt trigger permits configuring multiple triggers
+// simultaneously. Each trigger increments a counter at the end -->
+// "permission-prompt0", "permission-prompt1", ...
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
@@ -362,21 +366,27 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerWhatsNew);
 
   // Permissions surveys.
-  survey_configs.emplace_back(
-      &permissions::features::kPermissionsPromptSurvey,
-      kHatsSurveyTriggerPermissionsPrompt,
-      permissions::feature_params::kPermissionsPromptSurveyTriggerId.Get(),
-      std::vector<std::string>{
-          permissions::kPermissionsPromptSurveyHadGestureKey},
-      std::vector<std::string>{
-          permissions::kPermissionsPromptSurveyPromptDispositionKey,
-          permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
-          permissions::kPermissionsPromptSurveyActionKey,
-          permissions::kPermissionsPromptSurveyRequestTypeKey,
-          permissions::kPermissionsPromptSurveyReleaseChannelKey,
-          permissions::kPermissionsPromptSurveyDisplayTimeKey,
-          permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
-          permissions::kPermissionPromptSurveyUrlKey});
+  for (auto& trigger_id_pair : permissions::PermissionHatsTriggerHelper::
+           GetPermissionPromptTriggerIdPairs(
+               kHatsSurveyTriggerPermissionsPrompt)) {
+    // trigger_id_pair has structure <trigger_name, trigger_id>. trigger_name is
+    // a unique name used by the HaTS service integration, and trigger_id is an
+    // ID that specifies a survey in the Listnr backend.
+    survey_configs.emplace_back(
+        &permissions::features::kPermissionsPromptSurvey, trigger_id_pair.first,
+        trigger_id_pair.second,
+        std::vector<std::string>{
+            permissions::kPermissionsPromptSurveyHadGestureKey},
+        std::vector<std::string>{
+            permissions::kPermissionsPromptSurveyPromptDispositionKey,
+            permissions::kPermissionsPromptSurveyPromptDispositionReasonKey,
+            permissions::kPermissionsPromptSurveyActionKey,
+            permissions::kPermissionsPromptSurveyRequestTypeKey,
+            permissions::kPermissionsPromptSurveyReleaseChannelKey,
+            permissions::kPermissionsPromptSurveyDisplayTimeKey,
+            permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+            permissions::kPermissionPromptSurveyUrlKey});
+  }
 
   // Performance Controls surveys.
   survey_configs.emplace_back(
@@ -503,7 +513,7 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
   // of whether the feature is enabled, so checking whether a particular survey
   // is enabled should be fast.
   for (const SurveyConfig& survey : surveys) {
-    if (!survey.enabled) {
+    if (!survey.enabled || survey.trigger_id.empty()) {
       continue;
     }
 
