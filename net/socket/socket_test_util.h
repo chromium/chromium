@@ -495,9 +495,7 @@ struct SSLSocketDataProvider {
   SSLInfo ssl_info;
 
   // Result for GetSSLCertRequestInfo().
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SSLCertRequestInfo* cert_request_info = nullptr;
+  scoped_refptr<SSLCertRequestInfo> cert_request_info;
 
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
