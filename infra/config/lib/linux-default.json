@@ -14,6 +14,7 @@
     "build-perf-android-siso": "Ubuntu-22.04",
     "build-perf-linux": "Ubuntu-22.04",
     "build-perf-linux-siso": "Ubuntu-22.04",
+    "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
