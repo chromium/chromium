@@ -118,7 +118,11 @@ enum class NavigationRequestSecurityLevel {
   // This bucket is recorded IN ADDITION to kInsecure/kAllowlisted.
   kNonUniqueHostname = 8,
 
-  kMaxValue = kNonUniqueHostname,
+  // Request was insecure (HTTP), but was to a URL that was fully typed (as
+  // opposed to autocompleted) that included an explicit http scheme.
+  kExplicitHttpScheme = 9,
+
+  kMaxValue = kExplicitHttpScheme,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should

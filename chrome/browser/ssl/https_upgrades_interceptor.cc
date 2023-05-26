@@ -318,6 +318,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       state->AllowHttpForHost(tentative_resource_request.url.host(),
                               storage_partition);
     }
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kExplicitHttpScheme);
     std::move(callback).Run({});
     return;
   }
