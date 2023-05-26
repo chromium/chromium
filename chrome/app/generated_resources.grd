@@ -7684,6 +7684,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_EMPTY_STATE_BODY" desc="Body text for the bookmarks side panel empty state">
         Bookmark things you want to come back to later
       </message>
+      <message name="IDS_BOOKMARKS_EMPTY_STATE_TITLE_FOLDER" desc="Title for the bookmarks side panel empty state in a folder view">
+        Nothing to show yet
+      </message>
+      <message name="IDS_BOOKMARKS_EMPTY_STATE_BODY_FOLDER" desc="Body text for the bookmarks side panel empty state in a folder view">
+        Add a bookmark to this folder
+      </message>
       <message name="IDS_BOOKMARKS_EMPTY_STATE_TITLE_GUEST" desc="Title for the bookmarks side panel empty state in guest mode">
         Sign in to see your bookmarks
       </message>

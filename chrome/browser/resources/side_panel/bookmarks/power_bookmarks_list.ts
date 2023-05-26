@@ -27,6 +27,7 @@ import '//resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {SpEmptyStateElement} from '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -86,6 +87,8 @@ export interface PowerBookmarksListElement {
     sortMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
     disabledFeatureDialog: CrDialogElement,
+    topLevelEmptyState: SpEmptyStateElement,
+    folderEmptyState: SpEmptyStateElement,
   };
 }
 
@@ -765,12 +768,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     return false;
   }
 
-  private shouldShowEmptySearchState_() {
+  private shouldShowEmptySearchState_(): boolean {
     return this.hasActiveLabels_() || !!this.searchQuery_;
   }
 
+  private shouldShowTopLevelEmptyState_(): boolean {
+    return this.guestMode_ ||
+        (this.shownBookmarks_.length === 0 &&
+         (!!this.searchQuery_ || this.activeFolderPath_.length === 0));
+  }
+
   private shouldHideCard_(): boolean {
-    return this.shouldHideHeader_() && this.shownBookmarks_.length === 0;
+    return this.guestMode_ ||
+        (this.shouldHideHeader_() && this.shownBookmarks_.length === 0);
   }
 
   private shouldHideHeader_(): boolean {
