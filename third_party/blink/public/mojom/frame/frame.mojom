@@ -705,22 +705,28 @@ interface LocalFrameHost {
 
 // Implemented in Browser, this interface defines frame-specific methods
 // that will be invoked from the renderer process
-// (e.g. blink::LocalFrame) but processed at a higher priority than
-// methods invoked on the LocalFrameHost interface.
+// (e.g. blink::LocalFrame).
 //
 // Note this interface is not a channel-associated interface and as such
 // there are no ordering guarantees for messages sent on this interface
-// against the messages sent on LocalFrameHost. This interface is for
-// experimental purposes (https://crbug.com/1377753).
+// against messages sent to LocalFrameHost. These messages are only
+// meaningful if they arrive before navigation because these messages
+// are intended to prepare for navigation. This is why this interface is
+// not a channel-associated interface. This interface is for
+// experimental purposes (https://crbug.com/1377753,
+// https://crbug.com/1431792).
 interface NonAssociatedLocalFrameHost {
-  // Notifies that a renderer-initiated navigation to |url| will
-  // potentially start soon. This is fired before the beforeunload event
-  // (if it's needed) gets dispatched in the renderer, so that the
-  // browser can speculatively start service worker before processing
-  // beforeunload event, which might take a long time. Note that the
-  // navigation might not actually start, e.g. if it gets canceled by
-  // beforeunload.
-  WillPotentiallyStartOutermostMainFrameNavigation(url.mojom.Url url);
+  // Notifies that a renderer-initiated navigation to `urls` will
+  // potentially start.
+  // This is fired in the following situations so that the browser can
+  // speculatively start or warm-up service workers, which might take a
+  // long time to start.
+  // - The anchor tag is in the viewport.
+  // - The mouse hovered the anchor tag.
+  // - The mousedown event gets dispatched on the anchor tag.
+  // - The beforeunload event gets dispatched.
+  // Note that the navigation might not actually start.
+  MaybeStartOutermostMainFrameNavigation(array<url.mojom.Url> urls);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

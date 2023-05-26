@@ -2336,8 +2336,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
-  void WillPotentiallyStartOutermostMainFrameNavigation(
-      const GURL& url) override;
+  void MaybeStartOutermostMainFrameNavigation(
+      const std::vector<GURL>& urls) override;
   void UpdateFaviconURL(
       std::vector<blink::mojom::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(blink::mojom::DownloadURLParamsPtr params) override;

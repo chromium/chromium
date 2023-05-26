@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
@@ -68,8 +70,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                               int64_t registration_id)>;
   using UnregistrationCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
+  using WarmUpServiceWorkerCallback = base::OnceCallback<void()>;
   using ContainerHostByClientUUIDMap =
       std::map<std::string, std::unique_ptr<ServiceWorkerContainerHost>>;
+
+  using WarmUpRequest =
+      std::tuple<GURL, blink::StorageKey, WarmUpServiceWorkerCallback>;
 
   // Iterates over ServiceWorkerContainerHost objects in the
   // ContainerHostByClientUUIDMap.
@@ -379,6 +385,21 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // which are called in InitializeRegisteredOrigins().
   void WaitForRegistrationsInitializedForTest();
 
+  // Enqueue a warm-up request that consists of a tuple of (document_url, key,
+  // callback). The added request will be consumed in LIFO order. If the
+  // `warm_up_requests_` queue size exceeds the limit, then the older entries
+  // will be removed from the queue, and the removed entry's callbacks will be
+  // triggered.
+  void AddWarmUpRequest(const GURL& document_url,
+                        const blink::StorageKey& key,
+                        WarmUpServiceWorkerCallback callback);
+
+  absl::optional<WarmUpRequest> PopNextWarmUpRequest();
+
+  bool IsProcessingWarmingUp() const { return is_processing_warming_up_; }
+  void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }
+  void EndProcessingWarmingUp() { is_processing_warming_up_ = false; }
+
  private:
   friend class ServiceWorkerContextCoreTest;
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerContextCoreTest, FailureInfo);
@@ -499,6 +520,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   std::set<blink::StorageKey> registered_storage_keys_;
   bool registrations_initialized_ = false;
   base::OnceClosure on_registrations_initialized_for_test_;
+
+  base::circular_deque<WarmUpRequest> warm_up_requests_;
+
+  bool is_processing_warming_up_ = false;
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};
 };

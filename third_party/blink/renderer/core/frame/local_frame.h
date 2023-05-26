@@ -459,7 +459,7 @@ class CORE_EXPORT LocalFrame final
   // navigation at a later time.
   bool CanNavigate(const Frame&, const KURL& destination_url = KURL());
 
-  void WillPotentiallyStartOutermostMainFrameNavigation(const KURL& url) const;
+  void MaybeStartOutermostMainFrameNavigation(const Vector<KURL>& urls) const;
 
   // Whether a navigation should replace the current history entry or not.
   // Note this isn't exhaustive; there are other cases where a navigation does a
