@@ -20,7 +20,7 @@ class TexturePassthrough;
 class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
                                 public GLTextureImageRepresentationClient {
  public:
-  AngleVulkanImageBacking(const raw_ptr<SharedContextState>& context_state,
+  AngleVulkanImageBacking(SharedContextState* context_state,
                           const Mailbox& mailbox,
                           viz::SharedImageFormat format,
                           const gfx::Size& size,

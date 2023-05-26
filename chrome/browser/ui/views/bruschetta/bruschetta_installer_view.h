@@ -72,9 +72,7 @@ class BruschettaInstallerView
     installer_factory_ = std::move(factory);
   }
 
-  raw_ptr<views::ProgressBar> progress_bar_for_testing() {
-    return progress_bar_;
-  }
+  views::ProgressBar* progress_bar_for_testing() { return progress_bar_; }
 
   void set_finish_callback_for_testing(InstallResultCallback callback) {
     finish_callback_ = std::move(callback);

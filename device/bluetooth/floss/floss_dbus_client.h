@@ -897,7 +897,7 @@ class FlossProperty {
   // |update_callback| - Caller can provide this to be notified when there are
   //                     updates.
   void Init(FlossDBusClient* client,
-            raw_ptr<dbus::Bus> bus,
+            dbus::Bus* bus,
             const std::string& service_name,
             const dbus::ObjectPath& path,
             const dbus::ObjectPath& callback_path,

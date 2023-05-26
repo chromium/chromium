@@ -1021,7 +1021,7 @@ class HostResolverManager::RequestImpl
     source_net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST);
   }
 
-  raw_ptr<ClientSocketFactory> GetClientSocketFactory() {
+  ClientSocketFactory* GetClientSocketFactory() {
     if (resolve_context_->url_request_context()) {
       return resolve_context_->url_request_context()
           ->GetNetworkSessionContext()
@@ -3946,7 +3946,7 @@ void HostResolverManager::FinishIPv6ReachabilityCheck(
 
 int HostResolverManager::StartIPv6ReachabilityCheck(
     const NetLogWithSource& net_log,
-    raw_ptr<ClientSocketFactory> client_socket_factory,
+    ClientSocketFactory* client_socket_factory,
     CompletionOnceCallback callback) {
   // Don't bother checking if the request will use WiFi and IPv6 is assumed to
   // not work on WiFi.
@@ -3995,7 +3995,7 @@ void HostResolverManager::SetLastIPv6ProbeResult(bool last_ipv6_probe_result) {
 int HostResolverManager::StartGloballyReachableCheck(
     const IPAddress& dest,
     const NetLogWithSource& net_log,
-    raw_ptr<ClientSocketFactory> client_socket_factory,
+    ClientSocketFactory* client_socket_factory,
     CompletionOnceCallback callback) {
   std::unique_ptr<DatagramClientSocket> probing_socket =
       client_socket_factory->CreateDatagramClientSocket(

@@ -155,9 +155,7 @@ class TailoredSecurityService : public KeyedService {
 
   PrefService* prefs() { return prefs_; }
 
-  raw_ptr<signin::IdentityManager> identity_manager() {
-    return identity_manager_;
-  }
+  signin::IdentityManager* identity_manager() { return identity_manager_; }
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;

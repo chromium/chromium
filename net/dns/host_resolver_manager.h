@@ -431,10 +431,9 @@ class NET_EXPORT HostResolverManager
   // already cached, and ERR_IO_PENDING when a probe is scheduled to be
   // completed asynchronously. When called repeatedly this method returns OK to
   // confirm that results have been cached.
-  int StartIPv6ReachabilityCheck(
-      const NetLogWithSource& net_log,
-      raw_ptr<ClientSocketFactory> client_socket_factory,
-      CompletionOnceCallback callback);
+  int StartIPv6ReachabilityCheck(const NetLogWithSource& net_log,
+                                 ClientSocketFactory* client_socket_factory,
+                                 CompletionOnceCallback callback);
 
   void FinishIPv6ReachabilityCheck(CompletionOnceCallback callback, int rv);
 
@@ -451,7 +450,7 @@ class NET_EXPORT HostResolverManager
   virtual int StartGloballyReachableCheck(
       const IPAddress& dest,
       const NetLogWithSource& net_log,
-      raw_ptr<ClientSocketFactory> client_socket_factory,
+      ClientSocketFactory* client_socket_factory,
       CompletionOnceCallback callback);
 
   bool FinishGloballyReachableCheck(DatagramClientSocket* socket, int rv);

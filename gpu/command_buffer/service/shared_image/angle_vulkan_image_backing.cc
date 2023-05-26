@@ -172,7 +172,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 };
 
 AngleVulkanImageBacking::AngleVulkanImageBacking(
-    const raw_ptr<SharedContextState>& context_state,
+    SharedContextState* context_state,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,

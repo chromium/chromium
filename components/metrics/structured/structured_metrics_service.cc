@@ -11,7 +11,7 @@
 namespace metrics::structured {
 
 StructuredMetricsService::StructuredMetricsService(
-    base::raw_ptr<MetricsProvider> system_profile_provider,
+    MetricsProvider* system_profile_provider,
     MetricsServiceClient* client,
     PrefService* local_state)
     : StructuredMetricsService(client,

@@ -60,8 +60,7 @@ std::string GenerateTestSuffix(
   return suffix;
 }
 
-void UseFixedPlaceholderTextAndHideCursor(
-    raw_ptr<SearchBoxView> search_box_view) {
+void UseFixedPlaceholderTextAndHideCursor(SearchBoxView* search_box_view) {
   ASSERT_TRUE(search_box_view);
 
   // Use a fixed placeholder text instead of the one picked randomly to

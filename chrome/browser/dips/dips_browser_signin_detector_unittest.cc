@@ -89,17 +89,17 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
     EXPECT_NE(dips_service_, nullptr);
   }
 
-  raw_ptr<TestingProfile> profile() { return profile_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
 
-  raw_ptr<signin::IdentityManager> identity_manager() {
+  signin::IdentityManager* identity_manager() {
     return identity_test_env()->identity_manager();
   }
 
-  raw_ptr<signin::IdentityTestEnvironment> identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_environment_profile_adaptor_->identity_test_env();
   }
 
-  raw_ptr<DIPSService> dips_service() { return dips_service_; }
+  DIPSService* dips_service() { return dips_service_; }
 
   void WaitOnStorage() {
     dips_service_->storage()->FlushPostedTasksForTesting();

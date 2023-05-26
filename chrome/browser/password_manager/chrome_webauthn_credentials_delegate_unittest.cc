@@ -115,7 +115,7 @@ class ChromeWebAuthnCredentialsDelegateTest
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model() {
+  AuthenticatorRequestDialogModel* dialog_model() {
     return authenticator_request_delegate_->GetDialogModelForTesting();
   }
 #endif

@@ -497,11 +497,10 @@ class TestHostResolverManager : public HostResolverManager {
   const bool ipv4_reachable_;
   const bool is_async_;
 
-  int StartGloballyReachableCheck(
-      const IPAddress& dest,
-      const NetLogWithSource& net_log,
-      raw_ptr<ClientSocketFactory> client_socket_factory,
-      CompletionOnceCallback callback) override {
+  int StartGloballyReachableCheck(const IPAddress& dest,
+                                  const NetLogWithSource& net_log,
+                                  ClientSocketFactory* client_socket_factory,
+                                  CompletionOnceCallback callback) override {
     int rv = OK;
     if (dest.IsIPv6()) {
       rv = ipv6_reachable_ ? OK : ERR_FAILED;

@@ -77,7 +77,7 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
                                  false);
   }
 
-  raw_ptr<PriceTrackingView> CreateViewAndShow(bool is_price_track_enabled) {
+  PriceTrackingView* CreateViewAndShow(bool is_price_track_enabled) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
     const auto valid_product_image =

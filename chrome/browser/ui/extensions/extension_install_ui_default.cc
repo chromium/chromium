@@ -85,7 +85,7 @@ void ShowToast(const std::string& id,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShowInstalledNotification(
     scoped_refptr<const extensions::Extension> extension,
-    raw_ptr<Profile> profile) {
+    Profile* profile) {
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       std::string(kExtensionInstallSuccessToastId),
@@ -109,8 +109,7 @@ void ShowInstalledNotification(
 }
 #endif
 
-void OpenAppInstalledUIImpl(const std::string& app_id,
-                            raw_ptr<Profile> profile) {
+void OpenAppInstalledUIImpl(const std::string& app_id, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   // chrome://apps/ is not available on ChromeOS.
   // Toast is shown for Ash and Lacros.
@@ -128,7 +127,7 @@ void OpenAppInstalledUIImpl(const std::string& app_id,
 
 void ShowAppInstalledNotification(
     scoped_refptr<const extensions::Extension> extension,
-    raw_ptr<Profile> profile) {
+    Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ShowToast(kExtensionInstallSuccessToastId,
             ash::ToastCatalogName::kExtensionInstallSuccess,

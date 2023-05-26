@@ -460,13 +460,12 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
                  &RedactedFencedFrameConfig::shared_storage_budget_metadata,
                  test_shared_storage_budget_metadata, eq_fn, eq_fn);
 
-    auto pointer_value_eq_fn =
-        [](const raw_ptr<const SharedStorageBudgetMetadata>& a,
-           const SharedStorageBudgetMetadata& b) {
-          return a->origin == b.origin &&
-                 a->budget_to_charge == b.budget_to_charge &&
-                 a->top_navigated == b.top_navigated;
-        };
+    auto pointer_value_eq_fn = [](const SharedStorageBudgetMetadata* a,
+                                  const SharedStorageBudgetMetadata& b) {
+      return a->origin == b.origin &&
+             a->budget_to_charge == b.budget_to_charge &&
+             a->top_navigated == b.top_navigated;
+    };
     TestProperty(&FencedFrameProperties::shared_storage_budget_metadata_,
                  &RedactedFencedFrameProperties::shared_storage_budget_metadata,
                  static_cast<raw_ptr<const SharedStorageBudgetMetadata>>(
