@@ -4218,6 +4218,22 @@
       "features": [
         "disable_accelerated_vp9_encode"
       ]
+    },
+    {
+      "id": 413,
+      "cr_bugs": [1447972],
+      "description": "Force to use the triple buffer video swap chain of direct composition",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "meteorlake"
+      ],
+      "features": [
+        "force_dcomp_triple_buffer_video_swap_chain"
+      ]
     }
+
   ]
 }

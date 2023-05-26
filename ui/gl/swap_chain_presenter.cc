@@ -156,9 +156,9 @@ bool IsYUVSwapChainFormat(DXGI_FORMAT format) {
   return false;
 }
 
-UINT BufferCount() {
-  return base::FeatureList::IsEnabled(
-             features::kDCompTripleBufferVideoSwapChain)
+UINT BufferCount(bool force_triple_buffer) {
+  return force_triple_buffer || base::FeatureList::IsEnabled(
+                                    features::kDCompTripleBufferVideoSwapChain)
              ? 3u
              : 2u;
 }
@@ -1925,7 +1925,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
   desc.Format = swap_chain_format;
   desc.Stereo = FALSE;
   desc.SampleDesc.Count = 1;
-  desc.BufferCount = BufferCount();
+  desc.BufferCount =
+      BufferCount(layer_tree_->force_dcomp_triple_buffer_video_swap_chain());
   desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
   desc.Scaling = DXGI_SCALING_STRETCH;
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;

@@ -72,6 +72,7 @@ class DCLayerTree {
   DCLayerTree(bool disable_nv12_dynamic_textures,
               bool disable_vp_scaling,
               bool disable_vp_super_resolution,
+              bool force_dcomp_triple_buffer_video_swap_chain,
               bool no_downscaled_overlay_promotion);
 
   DCLayerTree(const DCLayerTree&) = delete;
@@ -106,6 +107,10 @@ class DCLayerTree {
 
   bool disable_vp_super_resolution() const {
     return disable_vp_super_resolution_;
+  }
+
+  bool force_dcomp_triple_buffer_video_swap_chain() const {
+    return force_dcomp_triple_buffer_video_swap_chain_;
   }
 
   bool no_downscaled_overlay_promotion() const {
@@ -309,6 +314,7 @@ class DCLayerTree {
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_scaling_;
   const bool disable_vp_super_resolution_;
+  const bool force_dcomp_triple_buffer_video_swap_chain_;
   const bool no_downscaled_overlay_promotion_;
 
   HWND window_;
