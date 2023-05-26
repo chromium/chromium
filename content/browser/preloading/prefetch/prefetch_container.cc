@@ -761,10 +761,27 @@ bool PrefetchContainer::DoesCurrentURLToServeMatch(const GURL& url) const {
                        url);
 }
 
-const GURL& PrefetchContainer::GetCurrentURLToServe() const {
+PrefetchContainer::SinglePrefetch&
+PrefetchContainer::GetCurrentSinglePrefetchToPrefetch() const {
+  CHECK(redirect_chain_.size() > 0);
+  return *redirect_chain_[redirect_chain_.size() - 1];
+}
+
+const PrefetchContainer::SinglePrefetch&
+PrefetchContainer::GetPreviousSinglePrefetchToPrefetch() const {
+  CHECK(redirect_chain_.size() > 1);
+  return *redirect_chain_[redirect_chain_.size() - 2];
+}
+
+const PrefetchContainer::SinglePrefetch&
+PrefetchContainer::GetCurrentSinglePrefetchToServe() const {
   DCHECK(index_redirect_chain_to_serve_ >= 0 &&
          index_redirect_chain_to_serve_ < redirect_chain_.size());
-  return redirect_chain_[index_redirect_chain_to_serve_]->url_;
+  return *redirect_chain_[index_redirect_chain_to_serve_];
+}
+
+const GURL& PrefetchContainer::GetCurrentURLToServe() const {
+  return GetCurrentSinglePrefetchToServe().url_;
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {

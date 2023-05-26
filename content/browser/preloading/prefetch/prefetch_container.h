@@ -322,7 +322,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // The URL that will potentially be prefetched. This can be the original
     // prefetch URL, or a URL from a redirect resulting from requesting the
     // original prefetch URL.
-    GURL url_;
+    const GURL url_;
 
     bool is_isolated_network_context_required_;
 
@@ -353,6 +353,21 @@ class CONTENT_EXPORT PrefetchContainer {
     base::OnceClosure on_cookie_copy_complete_callback_;
   };
 
+  // Returns the `SinglePrefetch` to be prefetched next. This is the last
+  // element in `redirect_chain_`, because, during prefetching from the network,
+  // we push back `SinglePrefetch`s to `redirect_chain_` and access the latest
+  // redirect hop.
+  SinglePrefetch& GetCurrentSinglePrefetchToPrefetch() const;
+
+  // Returns the `SinglePrefetch` for the redirect leg before
+  // `GetCurrentSinglePrefetchToPrefetch()`. This must be called only if `this`
+  // has redirect(s).
+  const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
+
+  // Returns the `SinglePrefetch` to be served next. This is the element in
+  // |redirect_chain_| at index |index_redirect_chain_to_serve_|.
+  const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
+
   // Helper function to get the |SinglePrefetch| for the given URL.
   SinglePrefetch* GetSinglePrefetch(const GURL& url) const;
 
@@ -368,7 +383,7 @@ class CONTENT_EXPORT PrefetchContainer {
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // The URL that was requested to be prefetch.
-  GURL prefetch_url_;
+  const GURL prefetch_url_;
 
   // The type of this prefetch. This controls some specific details about how
   // the prefetch is handled, including whether an isolated network context or
