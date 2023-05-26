@@ -2221,7 +2221,7 @@ crbug.com/399507 virtual/threaded/http/tests/devtools/tracing/timeline-paint/lay
 
 # These tests have test harness errors and PASS lines that have a
 # non-deterministic order.
-crbug.com/705125 [ Debug Mac13-arm64 ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
+crbug.com/705125 [ Mac13-arm64 ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
 crbug.com/705125 [ Mac11-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
 crbug.com/705125 [ Mac12-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
 
@@ -3853,6 +3853,8 @@ crbug.com/783154 [ Mac11 Release ] media/controls/doubletap-to-toggle-fullscreen
 crbug.com/783154 [ Mac11-arm64 Release ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac12 ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac12-arm64 Release ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
+crbug.com/783154 [ Mac13 ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
+crbug.com/783154 [ Mac13-arm64 Release ] media/controls/doubletap-to-toggle-fullscreen.html [ Crash Failure Pass Timeout ]
 crbug.com/783154 [ Mac ] media/controls/click-anywhere-to-play-pause.html [ Crash Failure Pass Timeout ]
 
 # Seen flaky on Linux, suppressing on Windows as well
@@ -5214,6 +5216,7 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/preload/without_doc_write_evaluator
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/preload/without_doc_write_evaluator.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
+crbug.com/1249176 [ Mac13-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
@@ -5328,6 +5331,8 @@ crbug.com/1268594 [ Debug Mac ] css3/filters/composited-layer-bounds-after-sw-bl
 crbug.com/1268594 [ Mac11 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Mac12 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Mac12-arm64 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac13 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268594 [ Mac13-arm64 Release ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 
 # Security OWP fixit week
