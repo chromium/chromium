@@ -163,7 +163,7 @@ def parse_param_list(line, from_javap=False):
 
 _NATIVE_PROXY_EXTRACTION_REGEX = re.compile(
     r'@NativeMethods(?:\(\s*"(?P<module_name>\w+)"\s*\))?[\S\s]+?'
-    r'(?P<visibility>public)?\binterface\s*'
+    r'(?P<visibility>public)?\s*\binterface\s*'
     r'(?P<interface_name>\w*)\s*(?P<interface_body>{(\s*.*)+?\s*})')
 
 # Matches on method declarations unlike _EXTRACT_NATIVES_REGEX
@@ -188,7 +188,7 @@ def _parse_proxy_natives(contents):
 
   match = matches[0]
   ret = _ParsedProxyNatives(interface_name=match.group('interface_name'),
-                            visibility=match.group('visibility') == 'public',
+                            visibility=match.group('visibility'),
                             module_name=match.group('module_name'),
                             methods=[])
   interface_body = match.group('interface_body')

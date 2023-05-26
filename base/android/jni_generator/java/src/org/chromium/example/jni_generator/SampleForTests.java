@@ -226,7 +226,7 @@ class SampleForTests {
     // The following methods demonstrate declaring methods to call into C++ from Java.
     // The generator detects the type and name of the first parameter.
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         // This declares a C++ function which the application code must implement:
         // static jint Init(JNIEnv* env, jobject caller);
         // The jobject parameter refers back to this java side object instance.

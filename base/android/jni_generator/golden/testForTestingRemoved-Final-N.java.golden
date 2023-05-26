@@ -15,6 +15,10 @@ public class N {
       public static native void MV9YSTxh();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_crazyTypes
       public static native String[][] My6x4jXt(int[] a, Object[][] b);
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTest
+      public static native void M3dXOemX_ForTesting();
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTesting
+      public static native void MCNruAwI_ForTesting();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB
       public static native void MyOkSBQ0(Object caller, Object b);
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder

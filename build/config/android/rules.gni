@@ -133,7 +133,7 @@ if (enable_java_templates) {
   }
 
   # JNI target implementation. See generate_jni or generate_jar_jni for usage.
-  template("generate_jni_impl") {
+  template("_generate_jni_impl") {
     _prev_jni_output_dir = "$target_gen_dir/$target_name"
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
     _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
@@ -171,6 +171,7 @@ if (enable_java_templates) {
       public_deps += _jni_generator_include_deps
 
       inputs = []
+      outputs = []
       args = [
         "--ptr_type=long",
 
@@ -207,6 +208,12 @@ if (enable_java_templates) {
         }
       } else {
         assert(defined(invoker.sources))
+        _srcjar_output = "$target_gen_dir/$target_name.srcjar"
+        args += [
+          "--srcjar-path",
+          rebase_path(_srcjar_output, root_build_dir),
+        ]
+        outputs += [ _srcjar_output ]
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
@@ -226,7 +233,6 @@ if (enable_java_templates) {
         args += [ "--split_name=${invoker.split_name}" ]
       }
 
-      outputs = []
       foreach(_name, _input_names) {
         _name = get_path_info(_name, "name") + "_jni.h"
         outputs += [ "$_jni_output_dir/$_name" ]
@@ -301,7 +307,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       metadata = {
@@ -336,7 +342,7 @@ if (enable_java_templates) {
   #     ]
   #   }
   template("generate_jar_jni") {
-    generate_jni_impl(target_name) {
+    _generate_jni_impl(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     }

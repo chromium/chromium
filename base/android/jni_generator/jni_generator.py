@@ -37,7 +37,10 @@ sys.path.insert(1, _BUILD_ANDROID_GYP)
 
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
+import zip_helpers  # build_utils adds //build to sys.path.
 
+from codegen import placeholder_gen_jni_java
+from codegen import proxy_impl_java
 import common
 import models
 import parse
@@ -576,6 +579,7 @@ class JNIFromJavaSource(object):
     self.type_resolver = parsed_file.type_resolver
     self.jni_namespace = parsed_file.jni_namespace or options.namespace
     self.module_name = parsed_file.module_name
+    self.proxy_interface = parsed_file.proxy_interface
 
     proxy_natives = []
     for parsed_method in parsed_file.proxy_methods:
@@ -1190,6 +1194,25 @@ def _ParseClassFiles(jar_file, class_files, options):
   return ret
 
 
+def _CreateSrcJar(srcjar_path, gen_jni_class, jni_objs, *, script_name):
+  with action_helpers.atomic_output(srcjar_path) as f:
+    with zipfile.ZipFile(f, 'w') as srcjar:
+      for jni_obj in jni_objs:
+        if not jni_obj.proxy_natives:
+          continue
+        content = proxy_impl_java.Generate(jni_obj,
+                                           gen_jni_class=gen_jni_class,
+                                           script_name=script_name)
+        zip_path = f'{jni_obj.java_class.full_name_with_slashes}Jni.java'
+        zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
+
+      content = placeholder_gen_jni_java.Generate(jni_objs,
+                                                  gen_jni_class=gen_jni_class,
+                                                  script_name=script_name)
+      zip_path = f'{gen_jni_class.full_name_with_slashes}.java'
+      zip_helpers.add_to_zip_hermetic(srcjar, zip_path, data=content)
+
+
 def DoGeneration(options):
   try:
     if options.jar_file:
@@ -1212,6 +1235,23 @@ def DoGeneration(options):
     content = jni_obj.GetContent()
     with action_helpers.atomic_output(output_file, 'w') as f:
       f.write(content)
+
+  # Write .srcjar
+  if options.srcjar_path:
+    # module_name is set only for proxy_natives.
+    jni_objs = [x for x in jni_objs if x.proxy_natives]
+    if jni_objs:
+      gen_jni_class = proxy.get_gen_jni_class(
+          short=False,
+          name_prefix=jni_objs[0].module_name,
+          package_prefix=options.package_prefix)
+      _CreateSrcJar(options.srcjar_path,
+                    gen_jni_class,
+                    jni_objs,
+                    script_name=GetScriptName())
+    else:
+      # Only @CalledByNatives.
+      zipfile.ZipFile(options.srcjar_path, 'w').close()
 
 
 def main():
@@ -1252,6 +1292,8 @@ See SampleForTests.java for more details.
                       action='append',
                       dest='output_names',
                       help='Output filenames within output directory.')
+  parser.add_argument('--srcjar-path',
+                      help='Path to output srcjar for generated .java files.')
   parser.add_argument(
       '--includes',
       help='The comma-separated list of header files to '

@@ -4,7 +4,7 @@
 
 #include "base/profiler/stack_sampling_profiler_java_test_util.h"
 
-#include "base/base_profiler_test_support_jni_headers/TestSupport_jni.h"
+#include "base/base_profiler_test_support_jni/TestSupport_jni.h"
 #include "base/location.h"
 
 namespace base {

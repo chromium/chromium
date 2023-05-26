@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni_headers/JavaExceptionReporter_jni.h"
+#include "base/base_jni/JavaExceptionReporter_jni.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

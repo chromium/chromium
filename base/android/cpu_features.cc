@@ -5,7 +5,7 @@
 #include <cpu-features.h>
 
 #include "base/android/jni_android.h"
-#include "base/base_jni_headers/CpuFeatures_jni.h"
+#include "base/base_jni/CpuFeatures_jni.h"
 
 namespace base {
 namespace android {

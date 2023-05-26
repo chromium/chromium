@@ -28,12 +28,16 @@ class JavaClass:
     return self.full_name_with_dots
 
   @property
-  def nested_name(self):
-    return self.name.rsplit('$', 1)[-1]
-
-  @property
   def name(self):
     return self._fqn.rsplit('/', 1)[-1]
+
+  @property
+  def name_with_dots(self):
+    return self.name.replace('$', '.')
+
+  @property
+  def nested_name(self):
+    return self.name.rsplit('$', 1)[-1]
 
   @property
   def package_with_slashes(self):
@@ -49,7 +53,7 @@ class JavaClass:
 
   @property
   def full_name_with_dots(self):
-    return self._fqn.replace('/', '.')
+    return self._fqn.replace('/', '.').replace('$', '.')
 
   @property
   def is_public(self):

@@ -4,7 +4,7 @@
 
 #include "base/android/base_features.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/BaseFeatureList_jni.h"
+#include "base/base_jni/BaseFeatureList_jni.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 

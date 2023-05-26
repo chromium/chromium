@@ -8,7 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/trace_event_binding.h"
-#include "base/base_jni_headers/TraceEvent_jni.h"
+#include "base/base_jni/TraceEvent_jni.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"

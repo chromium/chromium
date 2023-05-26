@@ -10,7 +10,7 @@
 #include "base/trace_event/base_tracing.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/base_jni_headers/MemoryInfoBridge_jni.h"
+#include "base/base_jni/MemoryInfoBridge_jni.h"
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base::android {

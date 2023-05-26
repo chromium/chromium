@@ -4,7 +4,7 @@
 
 #include "base/android/radio_utils.h"
 
-#include "base/base_jni_headers/RadioUtils_jni.h"
+#include "base/base_jni/RadioUtils_jni.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

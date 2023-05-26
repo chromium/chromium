@@ -9,7 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni_headers/ApkAssets_jni.h"
+#include "base/base_jni/ApkAssets_jni.h"
 #include "base/file_descriptor_store.h"
 
 namespace base {

@@ -4,7 +4,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni_headers/CommandLine_jni.h"
+#include "base/base_jni/CommandLine_jni.h"
 #include "base/command_line.h"
 
 using base::android::ConvertUTF8ToJavaString;

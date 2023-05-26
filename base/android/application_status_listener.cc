@@ -6,7 +6,7 @@
 
 #include <jni.h>
 
-#include "base/base_jni_headers/ApplicationStatus_jni.h"
+#include "base/base_jni/ApplicationStatus_jni.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/user_metrics.h"
