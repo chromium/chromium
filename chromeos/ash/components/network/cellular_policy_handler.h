@@ -67,6 +67,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void InstallESim(const std::string& smdp_address,
                    const base::Value::Dict& onc_config);
 
+  // Installs the policy eSIM profile defined in |onc_config|. The Shill service
+  // configuration will be updated to match the GUID provided by |onc_config|
+  // and to include the ICCID of the installed profile. Installations are
+  // performed using a queue, and each installation will be retried a fix number
+  // of times.
+  void InstallESim(const base::Value::Dict& onc_config);
+
  private:
   // This enum allows us to treat a retry differently depending on what the
   // reason for retrying is.
@@ -113,7 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
         delete;
     ~InstallPolicyESimRequest();
 
-    policy_util::SmdxActivationCode activation_code;
+    const policy_util::SmdxActivationCode activation_code;
     base::Value::Dict onc_config;
     net::BackoffEntry retry_backoff;
   };
@@ -133,7 +140,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void AttemptInstallESim();
   void SetupESim(const dbus::ObjectPath& euicc_path);
   base::Value::Dict GetNewShillProperties();
-  const std::string& GetCurrentSmdpAddress() const;
+  const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
   std::string GetCurrentPolicyGuid() const;
   void OnRefreshProfileList(
       const dbus::ObjectPath& euicc_path,

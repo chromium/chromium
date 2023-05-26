@@ -5,10 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -34,6 +36,12 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) SmdxActivationCode {
   Type type;
   std::string value;
 };
+
+// This function is used to output the activation code type and, when the type
+// is SM-DS, the activation code value.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::ostream& operator<<(std::ostream& stream,
+                         const SmdxActivationCode& activation_code);
 
 // This fake credential contains a random postfix which is extremely unlikely to
 // be used by any user. Used to determine saved but unknown credential

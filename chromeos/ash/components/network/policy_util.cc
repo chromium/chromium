@@ -167,6 +167,19 @@ SmdxActivationCode& SmdxActivationCode::operator=(SmdxActivationCode&& other) {
   return *this;
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         const SmdxActivationCode& activation_code) {
+  switch (activation_code.type) {
+    case SmdxActivationCode::Type::SMDP:
+      stream << "SM-DP+";
+      return stream;
+    case SmdxActivationCode::Type::SMDS:
+      stream << "SM-DS";
+      return stream;
+  }
+  NOTREACHED();
+}
+
 base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
                                    const base::Value::Dict* network_policy,
                                    const base::Value::Dict* user_settings,
