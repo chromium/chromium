@@ -2010,6 +2010,10 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
 
+  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
+      GetPrefetchToServe(GURL("https://example.com"));
+  EXPECT_FALSE(serveable_prefetch_container);
+
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
@@ -2021,10 +2025,6 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
   EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
   EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
             base::Milliseconds(kHeaderLatency));
-
-  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
-      GetPrefetchToServe(GURL("https://example.com"));
-  EXPECT_FALSE(serveable_prefetch_container);
 
   // ReadyTime will be included in the UKM, because the prefetch was ready, and
   // then failed.

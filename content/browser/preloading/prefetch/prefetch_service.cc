@@ -1248,30 +1248,6 @@ void PrefetchService::PrepareToServe(
 
   bool is_servable =
       prefetch_container->IsPrefetchServable(PrefetchCacheableDuration());
-  bool block_until_head = prefetch_container->ShouldBlockUntilHeadReceived();
-
-  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-    prefetch_container->UpdateServingPageMetrics();
-
-    DVLOG(1) << *prefetch_container
-             << ": didn't promote to ready (cookies changed)";
-    return;
-  }
-
-  // If the prefetch isn't ready to be served, then stop.
-  if (!is_servable && !block_until_head) {
-    DVLOG(1) << *prefetch_container
-             << ": didn't promote to ready (not servable)";
-    return;
-  }
-
-  // If the prefetch has a valid response, then it must be in
-  // |owned_prefetches_|.
-  DCHECK(
-      owned_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
-      owned_prefetches_.end());
 
   // `url` might be different from
   // `prefetch_container->GetPrefetchContainerKey().second` due to
@@ -1289,8 +1265,7 @@ void PrefetchService::PrepareToServe(
   }
 
   // Move prefetch into |prefetches_ready_to_serve_|.
-  DVLOG(1) << *prefetch_container << ": promoted to ready"
-           << (block_until_head ? " and is blocked until head" : "");
+  DVLOG(1) << *prefetch_container << ": promoted to ready";
   prefetches_ready_to_serve_[ready_key] = prefetch_container;
 
   if (is_servable) {
@@ -1383,7 +1358,7 @@ PrefetchContainer* PrefetchService::FindPrefetchContainerToServe(
   if (it != prefetches_ready_to_serve_.end()) {
     PrefetchContainer* prefetch = it->second.get();
     prefetches_ready_to_serve_.erase(it);
-    if (prefetch) {
+    if (prefetch && !prefetch->HasPrefetchBeenConsideredToServe()) {
       return prefetch;
     }
   }

@@ -139,17 +139,6 @@ void PrefetchDocumentManager::DidStartNavigation(
     return;
   }
 
-  // If this prefetch has already been used with another navigation then stop.
-  if (prefetch_iter->second->HasPrefetchBeenConsideredToServe()) {
-    DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
-             << *prefetch_iter->second
-             << ": skipped (already used for another navigation)";
-    SetMetricsForPossibleNoVarySearchHintMatches(
-        all_prefetches_, navigation_handle->GetURL(),
-        *serving_page_metrics_container);
-    return;
-  }
-
   prefetch_iter->second->SetServingPageMetrics(
       serving_page_metrics_container->GetWeakPtr());
   prefetch_iter->second->UpdateServingPageMetrics();
