@@ -6926,7 +6926,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7034692021407794547">Um administrador com os privilégios Gestão de faturação tem primeiro de aceitar os Termos de Utilização do hardware Google Meet na secção hardware Google Meet da consola do administrador.</translation>
 <translation id="7036706669646341689">Recomenda-se <ph name="DISK_SIZE" /> de espaço para o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="7037509989619051237">Texto para pré-visualização</translation>
-<translation id="7038632520572155338">Acesso por comutador</translation>
+<translation id="7038632520572155338">Acesso por interruptor</translation>
 <translation id="7038710352229712897">Adicione outra Conta Google para <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Aceder a dispositivos USB de <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Início de sessão de smart card Microsoft</translation>
@@ -6982,7 +6982,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7086672505018440886">Inclua ficheiros de registo do Chrome no arquivo.</translation>
 <translation id="7088434364990739311">Falha ao iniciar a verificação de atualizações (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Este dispositivo foi colocado num estado descontinuado pelo gestor. Para ativá-lo para inscrição, solicite ao gestor que coloque o dispositivo num estado pendente.</translation>
-<translation id="7088960765736518739">Acesso por comutador</translation>
+<translation id="7088960765736518739">Acesso por interruptor</translation>
 <translation id="7089253021944603172">Separador novamente ativo</translation>
 <translation id="7090160970140261931">Pode adicionar mais contas ao seu dispositivo <ph name="DEVICE_TYPE" /> para utilizar com Websites e apps Android. Também pode controlar as contas que são utilizadas com as apps Android.</translation>
 <translation id="7090714929377281710">Desativar zona Wi-Fi automaticamente</translation>
@@ -8873,7 +8873,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8737914367566358838">Escolha o idioma para o qual pretende traduzir a página</translation>
 <translation id="8740247629089392745">Pode entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída. Depois, pode começar a explorar.</translation>
 <translation id="8740672167979365981">Atualização do ChromeOS Flex necessária</translation>
-<translation id="8741944563400125534">Guia de configuração do acesso por comutador</translation>
+<translation id="8741944563400125534">Guia de configuração do acesso por interruptor</translation>
 <translation id="8742395827132970586">Falha ao instalar, a limpar</translation>
 <translation id="8742998548129056176">Estas são informações gerais acerca do seu dispositivo e de como o utiliza (como o nível da bateria, a atividade do sistema e das apps, e os erros). Os dados são utilizados para melhorar o Android, sendo que algumas informações agregadas também ajudam as apps e os parceiros Google, como os programadores Android, a melhorar as respetivas apps e produtos.</translation>
 <translation id="8744641000906923997">Romaji</translation>
