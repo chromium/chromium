@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -82,7 +81,6 @@ public class TabListCoordinator
     static final int GRID_LAYOUT_SPAN_COUNT_LARGE = 4;
     static final int MAX_SCREEN_WIDTH_COMPACT_DP = 600;
     static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
-
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
@@ -99,7 +97,6 @@ public class TabListCoordinator
     private @Nullable TabStripSnapshotter mTabStripSnapshotter;
     private ItemTouchHelper mItemTouchHelper;
     private OnItemTouchListener mOnItemTouchListener;
-    private TabListEmptyCoordinator mTabListEmptyCoordinator;
 
     /**
      * Construct a coordinator for UI that shows a list of tabs.
@@ -144,7 +141,6 @@ public class TabListCoordinator
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mRootView = rootView;
-
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
@@ -222,10 +218,6 @@ public class TabListCoordinator
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
                 selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
                 priceWelcomeMessageController, componentName, itemType);
-
-        if (ChromeFeatureList.sEmptyStates.isEnabled()) {
-            mTabListEmptyCoordinator = new TabListEmptyCoordinator(rootView, mModel);
-        }
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             if (!attachToParent) {
@@ -538,9 +530,6 @@ public class TabListCoordinator
     @Override
     public void onDestroy() {
         mMediator.destroy();
-        if (mTabListEmptyCoordinator != null) {
-            mTabListEmptyCoordinator.destroy();
-        }
         if (mListLayoutListener != null) {
             mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
             mLayoutListenerRegistered = false;
