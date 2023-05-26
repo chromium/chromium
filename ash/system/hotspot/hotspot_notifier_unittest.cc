@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/hotspot_notifier.h"
+#include "ash/system/hotspot/hotspot_notifier.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"

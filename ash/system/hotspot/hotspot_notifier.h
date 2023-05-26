@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_NETWORK_HOTSPOT_NOTIFIER_H_
-#define ASH_SYSTEM_NETWORK_HOTSPOT_NOTIFIER_H_
+#ifndef ASH_SYSTEM_HOTSPOT_HOTSPOT_NOTIFIER_H_
+#define ASH_SYSTEM_HOTSPOT_HOTSPOT_NOTIFIER_H_
 
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
@@ -91,4 +91,4 @@ class ASH_EXPORT HotspotNotifier
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_HOTSPOT_NOTIFIER_H_
+#endif  // ASH_SYSTEM_HOTSPOT_HOTSPOT_NOTIFIER_H_
