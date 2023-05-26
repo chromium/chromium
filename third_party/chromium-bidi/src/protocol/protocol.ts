@@ -750,7 +750,7 @@ export namespace Script {
 
   export type ChannelProperties = {
     channel: Channel;
-    maxDepth?: number;
+    serializationOptions?: SerializationOptions;
     ownership?: ResultOwnership;
   };
 
