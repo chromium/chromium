@@ -185,9 +185,12 @@ class AuthenticatorRequestDialogModel {
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
+    using ICloudKeychain =
+        base::StrongAlias<class iCloudKeychainTag, std::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
+    using Type =
+        absl::variant<Transport, WindowsAPI, Phone, AddPhone, ICloudKeychain>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -672,6 +675,8 @@ class AuthenticatorRequestDialogModel {
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
   void StartWinNativeApi(size_t mechanism_index);
+
+  void StartICloudKeychain(size_t mechanism_index);
 
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);

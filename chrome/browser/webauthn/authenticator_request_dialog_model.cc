@@ -985,6 +985,15 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
   }
 }
 
+void AuthenticatorRequestDialogModel::StartICloudKeychain(
+    size_t mechanism_index) {
+  DCHECK(transport_availability_.has_icloud_keychain);
+  current_mechanism_ = mechanism_index;
+
+  HideDialogAndDispatchToPlatformAuthenticator(
+      device::AuthenticatorType::kICloudKeychain);
+}
+
 void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name,
                                                    size_t mechanism_index) {
   current_mechanism_ = mechanism_index;
@@ -1185,6 +1194,16 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
   }
 
+  if (transport_availability_.has_icloud_keychain) {
+    const std::u16string name = u"iCloud Keychain (UNTRANSLATED)";
+    mechanisms_.emplace_back(
+        Mechanism::ICloudKeychain(), name, name, kSmartphoneIcon,
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::StartICloudKeychain,
+            base::Unretained(this), mechanisms_.size()),
+        /*priority=*/false);
+  }
+
   // The Windows API option comes first so that it gets focus and people can
   // select it by simply hitting enter.
   if (win_native_api_enabled()) {
@@ -1310,6 +1329,11 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
         transport_availability_.is_only_hybrid_or_internal;
     if (!use_conditional_mediation_) {
       // If there's a match on the platform authenticator, jump to that.
+      if (transport_availability_.has_icloud_keychain_credential ==
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential) {
+        priority_list.emplace_back(Mechanism::ICloudKeychain());
+      }
       if (transport_availability_.has_platform_authenticator_credential ==
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential) {

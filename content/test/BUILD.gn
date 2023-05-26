@@ -3084,6 +3084,7 @@ test("content_unittests") {
   }
   if (is_mac) {
     deps += [
+      "//device/fido:icloud_keychain_test_support",
       "//sandbox/mac:seatbelt",
       "//third_party/ocmock",
       "//ui/accelerated_widget_mac",
@@ -3092,6 +3093,7 @@ test("content_unittests") {
     frameworks = [
       "Carbon.framework",
       "IOSurface.framework",
+      "AuthenticationServices.framework",
     ]
   }
   if (is_chromeos_ash) {

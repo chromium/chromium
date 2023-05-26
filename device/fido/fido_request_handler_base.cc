@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -19,8 +20,10 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
@@ -44,12 +47,12 @@ struct TransportAvailabilityCallbackReadiness {
   // callback is pending BLE status information.
   bool ble_information_pending = false;
 
-  // platform_credential_check_pending is true if the
+  // num_platform_credential_checks_pending is true if the
   // |OnTransportAvailabilityEnumerated| callback is pending
   // |OnHasRecognizedPlatformCredentialFilled| being called after the platform
   // authenticator has decided if it has credentials that are responsive to the
   // request.
-  bool platform_credential_check_pending = false;
+  unsigned num_platform_credential_checks_pending = 0;
 
   // win_is_uvpaa_check_pending is true if |OnTransportAvailabilityEnumerated|
   // callback is pending |OnIsUvpaa| being called.
@@ -61,8 +64,8 @@ struct TransportAvailabilityCallbackReadiness {
 
   bool CanMakeCallback() const {
     return !callback_made && !ble_information_pending &&
-           !platform_credential_check_pending && !win_is_uvpaa_check_pending &&
-           num_discoveries_pending == 0;
+           num_platform_credential_checks_pending == 0 &&
+           !win_is_uvpaa_check_pending && num_discoveries_pending == 0;
   }
 };
 
@@ -330,13 +333,16 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     if (discovery->transport() == FidoTransportProtocol::kInternal &&
         // |authenticators| can be empty in tests.
         !authenticators.empty()) {
-      DCHECK(!internal_authenticator_found_);
       internal_authenticator_found_ = true;
 
-      DCHECK_EQ(authenticators.size(), 1u);
-      transport_availability_callback_readiness_
-          ->platform_credential_check_pending = true;
-      GetPlatformCredentialStatus(authenticators[0]);
+      for (FidoAuthenticator* platform_authenticator : authenticators) {
+        transport_availability_info_.has_icloud_keychain |=
+            platform_authenticator->GetType() ==
+            AuthenticatorType::kICloudKeychain;
+        transport_availability_callback_readiness_
+            ->num_platform_credential_checks_pending++;
+        GetPlatformCredentialStatus(platform_authenticator);
+      }
     }
   }
 
@@ -400,24 +406,42 @@ void FidoRequestHandlerBase::BleDenied() {
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   transport_availability_callback_readiness_
-      ->platform_credential_check_pending = false;
+      ->num_platform_credential_checks_pending--;
 }
 
 void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
+    AuthenticatorType authenticator_type,
     std::vector<DiscoverableCredentialMetadata> creds,
     RecognizedCredential has_credentials) {
-  DCHECK_EQ(transport_availability_info_.has_platform_authenticator_credential,
-            RecognizedCredential::kNoRecognizedCredential);
-  transport_availability_info_.has_platform_authenticator_credential =
-      has_credentials;
-  transport_availability_info_.recognized_platform_authenticator_credentials =
-      std::move(creds);
-  if (has_credentials == RecognizedCredential::kNoRecognizedCredential) {
-    transport_availability_info_.available_transports.erase(
-        FidoTransportProtocol::kInternal);
+  if (authenticator_type == AuthenticatorType::kICloudKeychain) {
+    // iCloud Keychain is the second platform authenticator on the system and
+    // its status is reported via a different field.
+    DCHECK_EQ(transport_availability_info_.has_icloud_keychain_credential,
+              RecognizedCredential::kNoRecognizedCredential);
+    transport_availability_info_.has_icloud_keychain_credential =
+        has_credentials;
+  } else {
+    DCHECK_EQ(
+        transport_availability_info_.has_platform_authenticator_credential,
+        RecognizedCredential::kNoRecognizedCredential);
+    transport_availability_info_.has_platform_authenticator_credential =
+        has_credentials;
+    if (has_credentials == RecognizedCredential::kNoRecognizedCredential) {
+      transport_availability_info_.available_transports.erase(
+          FidoTransportProtocol::kInternal);
+    }
   }
+
+  auto& out_creds = transport_availability_info_
+                        .recognized_platform_authenticator_credentials;
+  if (out_creds.empty()) {
+    out_creds = std::move(creds);
+  } else if (!creds.empty()) {
+    out_creds.insert(out_creds.end(), creds.begin(), creds.end());
+  }
+
   transport_availability_callback_readiness_
-      ->platform_credential_check_pending = false;
+      ->num_platform_credential_checks_pending--;
   MaybeSignalTransportsEnumerated();
 }
 
