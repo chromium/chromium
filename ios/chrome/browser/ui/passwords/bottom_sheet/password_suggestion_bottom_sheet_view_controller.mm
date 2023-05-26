@@ -33,15 +33,14 @@
 #endif
 
 namespace {
-// Base height value for the bottom sheet without the table view.
-// TODO(crbug.com/1422350): This needs some proper calculation.
-CGFloat const kBaseHeightForBottomSheet = 195;
+// Estimated base height value for the bottom sheet without the table view.
+CGFloat const kEstimatedBaseHeightForBottomSheet = 195;
 
 // Sets a custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
 
-// Row height for each cell in the table view.
-CGFloat const kTableViewRowHeight = 75;
+// Estimated row height for each cell in the table view.
+CGFloat const kTableViewEstimatedRowHeight = 75;
 
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
@@ -101,8 +100,6 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   self = [super init];
   if (self) {
     _handler = handler;
-
-    [self setUpBottomSheet];
   }
   return self;
 }
@@ -155,6 +152,20 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
                           [weakSelf expand];
                         }];
   }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  // Update height constraints for the table view.
+  [self.view layoutIfNeeded];
+  CGFloat minimizedTableViewHeight = _tableView.contentSize.height;
+  if (minimizedTableViewHeight > 0 &&
+      minimizedTableViewHeight != kTableViewEstimatedRowHeight) {
+    _minimizedHeightConstraint.constant = minimizedTableViewHeight;
+    _fullHeightConstraint.constant =
+        minimizedTableViewHeight * _suggestions.count;
+  }
+
+  [self setUpBottomSheet];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -363,7 +374,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
                                             style:UITableViewStylePlain];
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
-  _tableView.rowHeight = [self rowHeight];
+  _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
   _tableView.scrollEnabled = NO;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
@@ -371,12 +382,13 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   [_tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
-  _minimizedHeightConstraint =
-      [_tableView.heightAnchor constraintEqualToConstant:_tableView.rowHeight];
+  _minimizedHeightConstraint = [_tableView.heightAnchor
+      constraintEqualToConstant:kTableViewEstimatedRowHeight];
   _minimizedHeightConstraint.active = YES;
 
   _fullHeightConstraint = [_tableView.heightAnchor
-      constraintEqualToConstant:_tableView.rowHeight * _suggestions.count];
+      constraintEqualToConstant:kTableViewEstimatedRowHeight *
+                                _suggestions.count];
   _fullHeightConstraint.active = NO;
 
   _tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -437,24 +449,46 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   return NSUInteger(indexPath.row) == (_suggestions.count - 1);
 }
 
-// Height of 1 row in the table view
-- (CGFloat)rowHeight {
-  // TODO(crbug.com/1422350): The row height below must be dynamic for
-  // accessibility.
-  return kTableViewRowHeight;
+// Returns the cumulative height of the bottom sheet subviews.
+- (CGFloat)cumulativeHeightOfSubviews {
+  [self.view layoutIfNeeded];
+  CGFloat subviewsHeight = 0;
+  // Add height of the bottom sheet subviews. This include the navigation bar,
+  // the scroll view, the actions stack view and the gradient view.
+  for (UIView* subview in self.view.subviews) {
+    subviewsHeight += CGRectGetHeight(subview.frame);
+  }
+  return subviewsHeight;
 }
 
-// Returns the initial height of the bottom sheet.
+// Returns the initial height of the bottom sheet while showing a single row.
 - (CGFloat)initialHeight {
-  // Initial height for the bottom sheet while showing a single row.
-  return kBaseHeightForBottomSheet + [self rowHeight];
+  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
+  if (bottomSheetHeight > 0) {
+    return bottomSheetHeight;
+  }
+  // Return an estimated height if we can't calculate the actual height.
+  return kEstimatedBaseHeightForBottomSheet + kTableViewEstimatedRowHeight;
 }
 
 // Returns the desired height for the bottom sheet (can be larger than the
 // screen).
 - (CGFloat)fullHeight {
-  // Desired height for the bottom sheet while showing all rows.
-  return kBaseHeightForBottomSheet + ([self rowHeight] * _suggestions.count);
+  CGFloat bottomSheetHeight = [self cumulativeHeightOfSubviews];
+
+  // when this method is called, the table view has only one row and no padding.
+  CGFloat effectiveRowHeight = _tableView.contentSize.height;
+
+  // Add missing row height without calculating the one that is currently
+  // displayed, hence the -1.
+  if (bottomSheetHeight > 0 && effectiveRowHeight > 0) {
+    return bottomSheetHeight + (effectiveRowHeight * (_suggestions.count - 1));
+  }
+
+  // Return an estimated height for the bottom sheet while showing all rows
+  // (using estimated heights).
+  return kEstimatedBaseHeightForBottomSheet +
+         (kTableViewEstimatedRowHeight * _suggestions.count);
 }
 
 // Enables scrolling of the table view
