@@ -22,7 +22,8 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildOmniboxPedal(@NonNull String hint, @OmniboxPedalId int pedalId);
+    OmniboxAction buildOmniboxPedal(
+            long instance, @NonNull String hint, @OmniboxPedalId int pedalId);
 
     /**
      * Create a new OmniboxActionInSuggest.
@@ -35,7 +36,7 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildActionInSuggest(@NonNull String hint,
+    OmniboxAction buildActionInSuggest(long instance, @NonNull String hint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri);
 
     /**
@@ -47,7 +48,8 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildHistoryClustersAction(@NonNull String hint, @NonNull String query);
+    OmniboxAction buildHistoryClustersAction(
+            long instance, @NonNull String hint, @NonNull String query);
 
     @NativeMethods
     public interface Natives {

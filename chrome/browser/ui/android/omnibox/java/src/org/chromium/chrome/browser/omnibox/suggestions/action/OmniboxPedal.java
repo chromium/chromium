@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.action;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.R;
@@ -26,8 +25,8 @@ public class OmniboxPedal extends OmniboxAction {
     /** The type of the underlying pedal. */
     public final @OmniboxPedalId int pedalId;
 
-    public OmniboxPedal(@NonNull String hint, @OmniboxPedalId int pedalId) {
-        super(OmniboxActionId.PEDAL, hint,
+    public OmniboxPedal(long nativeInstance, @NonNull String hint, @OmniboxPedalId int pedalId) {
+        super(OmniboxActionId.PEDAL, nativeInstance, hint,
                 pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
     }
@@ -66,7 +65,6 @@ public class OmniboxPedal extends OmniboxAction {
                 delegate.openIncognitoTab();
                 break;
         }
-        OmniboxMetrics.recordPedalUsed(pedalId);
     }
 
     /**

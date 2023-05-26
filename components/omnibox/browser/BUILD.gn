@@ -632,6 +632,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",
     ]
   }

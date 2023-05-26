@@ -11,9 +11,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.EntityInfoProto.ActionInfo.ActionType;
-import org.chromium.components.omnibox.action.ActionInSuggestUmaType;
-import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
@@ -175,26 +172,6 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the pedal shown when the user used the omnibox to go somewhere.
-     *
-     * @param pedalId the shown pedal's {@link OmniboxActionId}.
-     */
-    public static void recordPedalShown(@OmniboxPedalId int pedalId) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.PedalShown", pedalId, OmniboxPedalId.TOTAL_COUNT);
-    }
-
-    /**
-     * Record a pedal is used.
-     *
-    @param omniboxActionType the clicked pedal's {@link OmniboxActionId}.
-     */
-    public static void recordPedalUsed(@OmniboxPedalId int pedalId) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.SuggestionUsed.Pedal", pedalId, OmniboxPedalId.TOTAL_COUNT);
-    }
-
-    /**
      * Record page class specific histogram reflecting whether the user scrolled the suggestions
      * list.
      *
@@ -266,48 +243,6 @@ public class OmniboxMetrics {
             @ActionInSuggestIntentResult int intentResult) {
         RecordHistogram.recordEnumeratedHistogram("Android.Omnibox.ActionInSuggest.IntentResult",
                 intentResult, ActionInSuggestIntentResult.COUNT);
-    }
-
-    /**
-     * Record the Use of the Omnibox Action in Suggest.
-     *
-     * @param actionType the direct value of corresponding {@link
-     *         EntityInfoProto.ActionInfo.ActionType}
-     * @param isUsed whether the suggestion was clicked
-     */
-    public static void recordActionInSuggestUsed(int actionType) {
-        RecordHistogram.recordEnumeratedHistogram("Omnibox.ActionInSuggest.Used",
-                actionTypeToUmaType(actionType), ActionInSuggestUmaType.MAX_VALUE);
-    }
-
-    /**
-     * Record the Presence of the Omnibox Action in Suggest.
-     *
-     * @param actionType the direct value of corresponding {@link
-     *         EntityInfoProto.ActionInfo.ActionType}
-     * @param isUsed whether the suggestion was visible
-     */
-    public static void recordActionInSuggestShown(int actionType) {
-        RecordHistogram.recordEnumeratedHistogram("Omnibox.ActionInSuggest.Shown",
-                actionTypeToUmaType(actionType), ActionInSuggestUmaType.MAX_VALUE);
-    }
-
-    /**
-     * Translate ActionType to ActionInSuggestUmaType.
-     *
-     * @param type the type of Action in Suggest to translate.
-     */
-    private static @ActionInSuggestUmaType int actionTypeToUmaType(int type) {
-        switch (type) {
-            case ActionType.CALL_VALUE:
-                return ActionInSuggestUmaType.CALL;
-            case ActionType.DIRECTIONS_VALUE:
-                return ActionInSuggestUmaType.DIRECTIONS;
-            case ActionType.REVIEWS_VALUE:
-                return ActionInSuggestUmaType.REVIEWS;
-            default:
-                return ActionInSuggestUmaType.UNKNOWN;
-        }
     }
 
     /**

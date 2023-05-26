@@ -6,16 +6,15 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.SparseBooleanArray;
+import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
-import androidx.collection.ArraySet;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.EntityInfoProto;
@@ -25,18 +24,17 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Set;
-
 /**
  * A class that handles model creation for the Action Chips.
  */
 public class ActionChipsProcessor {
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
-    private final @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
-    private final @NonNull SparseBooleanArray mActionInSuggestShownOrUsed =
-            new SparseBooleanArray();
+    private final @NonNull ArrayMap<OmniboxAction, Integer> mVisibleActions;
     private final boolean mDialerAvailable;
+
+    /** The action that was executed, or null if no action was executed by the user. */
+    private @Nullable OmniboxAction mExecutedAction;
     private int mJourneysActionShownPosition = -1;
 
     /**
@@ -51,6 +49,7 @@ public class ActionChipsProcessor {
         var pm = mContext.getPackageManager();
         var dialIntent = new Intent(Intent.ACTION_DIAL);
         mDialerAvailable = !pm.queryIntentActivities(dialIntent, 0).isEmpty();
+        mVisibleActions = new ArrayMap<>();
     }
 
     public void onUrlFocusChange(boolean hasFocus) {
@@ -60,7 +59,7 @@ public class ActionChipsProcessor {
     }
 
     public void onSuggestionsReceived() {
-        mActionInSuggestShownOrUsed.clear();
+        mVisibleActions.clear();
     }
 
     /**
@@ -103,17 +102,13 @@ public class ActionChipsProcessor {
 
             // TODO(crbug/1418077): Move this to appropriate implementations.
             switch (chip.actionId) {
-                case OmniboxActionId.PEDAL:
-                    mLastVisiblePedals.add(OmniboxPedal.from(chip).pedalId);
-                    break;
-
                 case OmniboxActionId.HISTORY_CLUSTERS:
                     mJourneysActionShownPosition = position;
                     break;
 
+                case OmniboxActionId.PEDAL:
                 case OmniboxActionId.ACTION_IN_SUGGEST:
-                    var actionType = OmniboxActionInSuggest.from(chip).actionType;
-                    mActionInSuggestShownOrUsed.put(actionType, false);
+                    mVisibleActions.put(chip, position);
                     break;
             }
         }
@@ -159,9 +154,9 @@ public class ActionChipsProcessor {
                 OmniboxMetrics.recordResumeJourneyClick(position);
                 break;
 
+            case OmniboxActionId.PEDAL:
             case OmniboxActionId.ACTION_IN_SUGGEST:
-                var actionType = OmniboxActionInSuggest.from(action).actionType;
-                mActionInSuggestShownOrUsed.put(actionType, true);
+                mExecutedAction = action;
                 break;
         }
         mSuggestionHost.onOmniboxActionClicked(action);
@@ -173,22 +168,12 @@ public class ActionChipsProcessor {
      * TODO(crbug/1418077): Move this to appropriate implementations.
      */
     private void recordActionsShown() {
-        for (Integer pedal : mLastVisiblePedals) {
-            OmniboxMetrics.recordPedalShown(pedal);
-        }
-
-        for (var actionIndex = 0; actionIndex < mActionInSuggestShownOrUsed.size(); actionIndex++) {
-            int actionType = mActionInSuggestShownOrUsed.keyAt(actionIndex);
-            boolean wasUsed = mActionInSuggestShownOrUsed.valueAt(actionIndex);
-            OmniboxMetrics.recordActionInSuggestShown(actionType);
-            if (wasUsed) {
-                OmniboxMetrics.recordActionInSuggestUsed(actionType);
-            }
-        }
+        mVisibleActions.forEach((OmniboxAction action, Integer position) -> {
+            action.recordActionShown(position, action == mExecutedAction);
+        });
 
         OmniboxMetrics.recordResumeJourneyShown(mJourneysActionShownPosition);
 
         mJourneysActionShownPosition = -1;
-        mLastVisiblePedals.clear();
     }
 }

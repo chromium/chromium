@@ -256,10 +256,6 @@ class OmniboxPedal : public OmniboxAction {
   SynonymGroup verbatim_synonym_group_;
 
   std::vector<SynonymGroup> synonym_groups_;
-
-#if BUILDFLAG(IS_ANDROID)
-  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
-#endif
 };
 
 // This is a simple pedal suitable only for use by tests.

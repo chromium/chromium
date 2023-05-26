@@ -14,16 +14,19 @@
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
+    intptr_t instance,
     const std::u16string& hint,
     OmniboxPedalId pedal_id);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     JNIEnv* env,
+    intptr_t instance,
     const std::u16string& hint,
     const std::string& query);
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
+    intptr_t instance,
     const std::u16string& hint,
     int action_type,
     const std::string& action_uri);

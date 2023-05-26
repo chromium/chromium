@@ -169,6 +169,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
+
+  void RecordActionShown(JNIEnv* env, int position, bool executed) {
+    RecordActionShown(position, executed);
+  }
 #endif
 
  protected:
@@ -182,6 +186,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
 
   // For navigation Actions, this holds the destination URL. Otherwise, empty.
   GURL url_;
+
+#if BUILDFLAG(IS_ANDROID)
+  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
+#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_H_

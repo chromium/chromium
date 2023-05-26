@@ -97,8 +97,8 @@ base::android::ScopedJavaLocalRef<jobject>
 OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
-        env, strings_.hint, action_info.action_type(),
-        action_info.action_uri()));
+        env, reinterpret_cast<intptr_t>(this), strings_.hint,
+        action_info.action_type(), action_info.action_uri()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

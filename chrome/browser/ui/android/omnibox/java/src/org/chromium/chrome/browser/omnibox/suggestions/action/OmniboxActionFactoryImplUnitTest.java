@@ -73,7 +73,7 @@ public class OmniboxActionFactoryImplUnitTest {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
         assertNotNull(HistoryClustersAction.from(
-                OmniboxActionFactoryImpl.get().buildHistoryClustersAction("hint", "query")));
+                OmniboxActionFactoryImpl.get().buildHistoryClustersAction(0, "hint", "query")));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class OmniboxActionFactoryImplUnitTest {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
         assertNotNull(
-                OmniboxPedal.from(OmniboxActionFactoryImpl.get().buildOmniboxPedal("hint", 1)));
+                OmniboxPedal.from(OmniboxActionFactoryImpl.get().buildOmniboxPedal(0, "hint", 1)));
     }
 
     @Test
@@ -89,6 +89,6 @@ public class OmniboxActionFactoryImplUnitTest {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
         assertNotNull(OmniboxActionInSuggest.from(
-                OmniboxActionFactoryImpl.get().buildActionInSuggest("hint", 1, "url")));
+                OmniboxActionFactoryImpl.get().buildActionInSuggest(0, "hint", 1, "url")));
     }
 }

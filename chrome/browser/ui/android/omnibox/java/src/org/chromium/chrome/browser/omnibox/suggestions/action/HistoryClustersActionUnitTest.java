@@ -33,28 +33,28 @@ public class HistoryClustersActionUnitTest {
 
     @Test
     public void creation_usesExpectedIcon() {
-        var action = new HistoryClustersAction("hint", "query");
+        var action = new HistoryClustersAction(0, "hint", "query");
         assertEquals(HistoryClustersAction.JOURNEYS_ICON, action.icon);
     }
 
     @Test
     public void creation_failsWithNullHint() {
-        assertThrows(AssertionError.class, () -> new HistoryClustersAction(null, "query"));
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction(0, null, "query"));
     }
 
     @Test
     public void creation_failsWithEmptyHint() {
-        assertThrows(AssertionError.class, () -> new HistoryClustersAction("", "query"));
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction(0, "", "query"));
     }
 
     @Test
     public void creation_failsWithNullQuery() {
-        assertThrows(AssertionError.class, () -> new HistoryClustersAction("hint", null));
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction(0, "hint", null));
     }
 
     @Test
     public void creation_failsWithEmptyQuery() {
-        assertThrows(AssertionError.class, () -> new HistoryClustersAction("hint", ""));
+        assertThrows(AssertionError.class, () -> new HistoryClustersAction(0, "hint", ""));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class HistoryClustersActionUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> HistoryClustersAction.from(
-                                new OmniboxAction(OmniboxActionId.HISTORY_CLUSTERS, "", null) {
+                                new OmniboxAction(OmniboxActionId.HISTORY_CLUSTERS, 0, "", null) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
@@ -76,13 +76,13 @@ public class HistoryClustersActionUnitTest {
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
         HistoryClustersAction.from(
-                OmniboxActionFactoryImpl.get().buildHistoryClustersAction("hint", "query"));
+                OmniboxActionFactoryImpl.get().buildHistoryClustersAction(0, "hint", "query"));
     }
 
     @Test
     public void executeHistoryClusters() {
         String testJourneyName = "example journey name";
-        var action = new HistoryClustersAction("hint", testJourneyName);
+        var action = new HistoryClustersAction(0, "hint", testJourneyName);
         action.execute(mDelegate);
         verify(mDelegate).openHistoryClustersPage(testJourneyName);
         verifyNoMoreInteractions(mDelegate);

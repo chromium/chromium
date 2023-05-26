@@ -40,10 +40,6 @@ class OmniboxActionInSuggest : public OmniboxAction {
 
  private:
   ~OmniboxActionInSuggest() override;
-
-#if BUILDFLAG(IS_ANDROID)
-  mutable base::android::ScopedJavaGlobalRef<jobject> j_omnibox_action_;
-#endif
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_IN_SUGGEST_H_
