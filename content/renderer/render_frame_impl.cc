@@ -5341,6 +5341,22 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
         initiator->ToWebLocalFrame()->GetDocument().Url().GetString();
   }
 
+  // To prevent pages from being able to abuse window.open() to determine the
+  // system entropy, always set a fixed value of 'normal', for consistency with
+  // other top-level navigations.
+  if (IsMainFrame()) {
+    navigation_params->navigation_timings.system_entropy_at_navigation_start =
+        blink::mojom::SystemEntropy::kNormal;
+  } else {
+    // Sub frames always have an empty entropy state since they are generally
+    // renderer-initiated. See
+    // https://docs.google.com/document/d/1D6DqptsCEd3wPRsZ0q1iwVBAXXmhxZuLV-KKFI0ptCg/edit?usp=sharing
+    // for background.
+    DCHECK_EQ(blink::mojom::SystemEntropy::kEmpty,
+              navigation_params->navigation_timings
+                  .system_entropy_at_navigation_start);
+  }
+
   frame_->CommitNavigation(std::move(navigation_params), BuildDocumentState());
 }
 

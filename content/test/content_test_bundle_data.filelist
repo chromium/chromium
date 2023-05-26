@@ -6140,6 +6140,7 @@ data/invalid.ico
 data/isolated_base_origin_with_subframe.html
 data/isolated_base_origin_with_subframe.html.mock-http-headers
 data/large-cursor.html
+data/launch_navigation_frame.html
 data/linearized.pdf
 data/linearized.pdf.README
 data/link_rel_prefetch.html

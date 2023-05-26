@@ -1,0 +1,5 @@
+<body><script>
+  let frame = document.createElement('iframe');
+  document.body.appendChild(frame);
+  const navigationEntry = frame.contentWindow.performance.getEntriesByType('navigation')[0];
+</script>
