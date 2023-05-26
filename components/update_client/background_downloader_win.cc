@@ -850,7 +850,6 @@ HRESULT BackgroundDownloader::ClearGit() {
   };
 
   for (auto cookie : cookies) {
-    // TODO(sorin): check the result of the call, see crbug.com/644857.
     git->RevokeInterfaceFromGlobal(cookie);
   }
 

@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <!--
-    Have compatibility section here instead of using
-      build/win/compatibility.manifest
-    to work around crbug.com/272660.
-    TODO(yukawa): Use build/win/compatibility.manifest again.
-  -->
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
       <!--The ID below indicates application support for Windows Vista -->

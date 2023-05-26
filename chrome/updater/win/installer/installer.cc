@@ -368,8 +368,6 @@ ProcessExitResult InstallerMain(HMODULE module) {
     return HandleRunDeElevated(command_line);
   }
 
-  // TODO(crbug.com/1379164) - simplify the command line handling to avoid
-  // mutating the command line of the process to make logging work.
   base::CommandLine::Init(0, nullptr);
   *base::CommandLine::ForCurrentProcess() = command_line;
   InitLogging(scope);

@@ -111,8 +111,6 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
 }
 
 // Gets the mandatory integrity level of a process.
-// TODO(crbug.com/1233748): consider reusing
-// base::GetCurrentProcessIntegrityLevel().
 HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
   HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, false, process_id);
   if (!process)
@@ -448,7 +446,6 @@ HResultOr<bool> IsTokenAdmin(HANDLE token) {
   return base::ok(is_member);
 }
 
-// TODO(crbug.com/1212187): maybe handle filtered tokens.
 HResultOr<bool> IsUserAdmin() {
   return IsTokenAdmin(NULL);
 }

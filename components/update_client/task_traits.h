@@ -10,8 +10,6 @@
 namespace update_client {
 
 // Task traits for tasks posted to base::ThreadPool from update_client.
-
-// TODO(crbug.com/1378759) - avoid hardcoding of the task priority.
 constexpr base::TaskTraits kTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};

@@ -48,12 +48,6 @@ struct std::hash<IID> {
 
 namespace updater {
 
-// Helper for methods which perform system operations which may fail. The
-// failure reason is returned as an HRESULT.
-// TODO(crbug.com/1369769): Remove the following warning once resolved in
-// base. NOTE: When ValueT is an integral type, base::expected's implicit ctors
-// are ambiguous. To return an error in this case it must be wrapped in a
-// base::unexpected(error);
 template <typename ValueT>
 using HResultOr = base::expected<ValueT, HRESULT>;
 

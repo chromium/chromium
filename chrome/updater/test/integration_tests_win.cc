@@ -614,9 +614,6 @@ void Clean(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   ASSERT_TRUE(path);
   ASSERT_TRUE(base::DeletePathRecursively(*path)) << *path;
-
-  // TODO(crbug.com/1401759) - this can be removed after the crbug is closed.
-  VLOG(0) << __func__ << " end.";
 }
 
 void EnterTestMode(const GURL& update_url,
@@ -665,7 +662,6 @@ void Uninstall(UpdaterScope scope) {
 
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
-  // TODO(crbug.com/1217765): Figure out a way to replace this.
   SleepFor(base::Seconds(5));
   ASSERT_EQ(0, exit_code);
 }
@@ -1092,11 +1088,6 @@ HRESULT DoUpdate(UpdaterScope scope,
         break;
     }
 
-    // TODO(crbug.com/1245992): Remove this logging once the code is test
-    // flakiness is eliminated and no further debugging is needed.
-    LOG(ERROR) << base::StringPrintf(L"[State: %d][%ls]%ls", state_value,
-                                     state_description.c_str(),
-                                     extra_data.c_str());
     base::PlatformThread::Sleep(base::Seconds(1));
   }
 

@@ -15,11 +15,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 
-// TODO(sorin): implement this in terms of
-// chrome/installer/util/google_update_settings (crbug.com/615187).
-
 namespace component_updater {
-
 namespace {
 
 // Google Update group policy settings.

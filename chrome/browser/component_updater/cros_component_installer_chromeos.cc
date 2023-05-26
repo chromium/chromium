@@ -88,7 +88,6 @@ const ComponentConfig* FindConfig(const std::string& name) {
   return config;
 }
 
-// TODO(xiaochu): add metrics for component usage (https://crbug.com/793052).
 void LogCustomUninstall(absl::optional<bool> result) {}
 
 void FinishCustomUninstallOnUIThread(const std::string& name) {

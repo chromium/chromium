@@ -11,7 +11,7 @@ class FilePath;
 
 namespace component_updater {
 
-// TODO(waffles): Remove in M66 or later.
+// TODO(crbug.com/1449043): Remove in M66 or later.
 void DeleteLegacyCRLSet(const base::FilePath& user_data_dir);
 
 }  // namespace component_updater

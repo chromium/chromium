@@ -38,9 +38,6 @@ using UpdaterStateProvider =
     base::RepeatingCallback<UpdaterStateAttributes(bool is_machine)>;
 
 // Controls the component updater behavior.
-// TODO(sorin): this class will be split soon in two. One class controls
-// the behavior of the update client, and the other class controls the
-// behavior of the component updater.
 class Configurator : public base::RefCountedThreadSafe<Configurator> {
  public:
   // Delay from calling Start() to the first update check.

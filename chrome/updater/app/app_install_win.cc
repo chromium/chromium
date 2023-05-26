@@ -251,7 +251,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
 
-    // TODO(crbug.com/1014591): handle `can_start_install`.
+    // TODO(crbug.com/1290331): handle `can_start_install`.
     PostClosure(base::BindOnce(&InstallProgressObserver::OnWaitingToInstall,
                                base::Unretained(observer_), app_id, app_name,
                                nullptr));
@@ -263,8 +263,6 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
                     int pos) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(observer_);
-
-    // TODO(crbug.com/1014594): implement progress.
     PostClosure(base::BindOnce(&InstallProgressObserver::OnInstalling,
                                base::Unretained(observer_), app_id, app_name,
                                time_remaining_ms, pos));
@@ -455,7 +453,6 @@ class AppInstallControllerImpl : public AppInstallController,
   const bool is_silent_install_ = false;
 };
 
-// TODO(crbug.com/1296931): fix the hardcoding of the application name.
 AppInstallControllerImpl::AppInstallControllerImpl(
     bool is_silent_install,
     scoped_refptr<UpdateService> update_service)
@@ -611,9 +608,6 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   base::Value::Dict install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);
 
-  // TODO(crbug.com/1286581): fine-tune installation behavior by serializing
-  // other related command line options, such as "/sessionid <sid>" into
-  // `install_settings`.
   base::CommandLine cmd_line = GetCommandLineLegacyCompatible();
   install_settings_dict.Set(kEnterpriseSwitch,
                             cmd_line.HasSwitch(kEnterpriseSwitch));
@@ -724,7 +718,6 @@ void AppInstallControllerImpl::StateChange(
       break;
 
     case UpdateService::UpdateState::State::kDownloading: {
-      // TODO(sorin): handle time remaining https://crbug.com/1014590.
       const auto pos = GetDownloadProgress(update_state.downloaded_bytes,
                                            update_state.total_bytes);
       install_progress_observer_ipc_->OnDownloading(app_id, app_name_, -1,
@@ -732,7 +725,7 @@ void AppInstallControllerImpl::StateChange(
     } break;
 
     case UpdateService::UpdateState::State::kInstalling: {
-      // TODO(crbug.com/1014591): handle the install cancellation.
+      // TODO(crbug.com/1290331): handle the install cancellation.
       bool can_start_install = false;
       install_progress_observer_ipc_->OnWaitingToInstall(app_id, app_name_,
                                                          &can_start_install);

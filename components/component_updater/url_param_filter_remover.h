@@ -11,7 +11,7 @@ class FilePath;
 
 namespace component_updater {
 
-// TODO(mreichhoff): Remove in M114 or later.
+// TODO(crbug.com/1449044): Remove in M114 or later.
 void DeleteUrlParamFilter(const base::FilePath& user_data_dir);
 
 }  // namespace component_updater

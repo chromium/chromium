@@ -705,7 +705,7 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN)  // TODO(crbug.com/1422385): fix for mac and linux.
+#if BUILDFLAG(IS_WIN)  // TODO(crbug.com/1422385): fix for macOS and Linux.
 TEST_F(IntegrationTest, InstallUpdaterAndApp) {
   ScopedServer test_server(test_commands_);
   const std::string kAppId("test");
@@ -1014,9 +1014,7 @@ TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
 
   // Expect that the updater uninstalled itself as well as the lower version.
 }
-#endif  // #if BUILDFLAG(GOOGLE_CHROME_BRANDING) TODO(crbug.com/1097297) Enable
-        // these tests once the `Brand the updater and qualification app ids`
-        // change is available on CIPD.
+#endif  // #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.

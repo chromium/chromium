@@ -37,7 +37,7 @@
 namespace winhttp {
 namespace {
 
-// TODO(crbug.com/1376713) - implement a way to express priority for
+// TODO(crbug.com/1164512) - implement a way to express priority for
 // foreground/background network fetches.
 constexpr base::TaskTraits kTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,

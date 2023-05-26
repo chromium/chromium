@@ -210,9 +210,6 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // Removes the load cache entry for `component_name`. Currently this is done
   // to avoid dispatching loads for old component versions. This can occur when
   // the old version has loaded successfully and is now in the load cache.
-  // TODO(crbug.com/1352867): The load cache is an implementation detail and
-  // should not be exposed in the public API for this class. Remove this once we
-  // have a more comprehensive solution for all CrOS components.
   void RemoveLoadCacheEntry(const std::string& component_name);
 
   // Test-only method for introspection.

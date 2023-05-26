@@ -169,7 +169,6 @@ void CrxDownloaderTest::RunThreads() {
   RunThreadsUntilIdle();
 }
 
-// TODO(crbug.com/1104691): rewrite the tests to not use RunUntilIdle().
 void CrxDownloaderTest::RunThreadsUntilIdle() {
   task_environment_.RunUntilIdle();
   base::RunLoop().RunUntilIdle();

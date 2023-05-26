@@ -158,9 +158,6 @@ CrxInstaller::Result InstallFunctionWrapper(
                                   : InstallError::GENERIC_ERROR);
 }
 
-// TODO(cpu): add a specific attribute check to a component json that the
-// extension unpacker will reject, so that a component cannot be installed
-// as an extension.
 absl::optional<base::Value::Dict> ReadManifest(
     const base::FilePath& unpack_path) {
   base::FilePath manifest =
