@@ -119,7 +119,6 @@ build_webui_tests("build") {
     "app_management/dom_switch_test.js",
     "app_management/fake_page_handler.ts",
     "app_management/file_handling_item_test.js",
-    "app_management/main_view_test.js",
     "app_management/managed_apps_test.js",
     "app_management/pin_to_shelf_item_test.js",
     "app_management/plugin_vm_detail_view_test.js",
@@ -205,6 +204,7 @@ build_webui_tests("build") {
 
     "os_apps_page/app_management_page/app_detail_view_test.ts",
     "os_apps_page/app_management_page/chrome_app_detail_view_test.ts",
+    "os_apps_page/app_management_page/main_view_test.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
     "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",

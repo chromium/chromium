@@ -217,7 +217,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['AppManagementDomSwitch', 'app_management/dom_switch_test.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
- ['AppManagementMainView', 'app_management/main_view_test.js'],
  ['AppManagementManagedApp', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
  ['AppManagementPinToShelfItem', 'app_management/pin_to_shelf_item_test.js'],
@@ -508,6 +507,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPageChromeAppDetailView',
    'os_apps_page/app_management_page/chrome_app_detail_view_test.js',
+ ],
+ [
+   'OsAppsPageAppManagementPageMainView',
+   'os_apps_page/app_management_page/main_view_test.js'
  ],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
  [

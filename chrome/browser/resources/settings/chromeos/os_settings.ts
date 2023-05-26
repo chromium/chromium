@@ -53,7 +53,6 @@ import './os_apps_page/app_management_page/app_management_page.js';
 import './os_apps_page/app_management_page/arc_detail_view.js';
 import './os_apps_page/app_management_page/borealis_page/borealis_detail_view.js';
 import './os_apps_page/app_management_page/dom_switch.js';
-import './os_apps_page/app_management_page/main_view.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.js';
 import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.js';
 import './os_apps_page/app_management_page/pwa_detail_view.js';

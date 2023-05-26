@@ -25,7 +25,8 @@ import {AppManagementStoreMixin} from './store_mixin.js';
 const AppManagementMainViewElementBase =
     AppManagementStoreMixin(RouteObserverMixin(PolymerElement));
 
-class AppManagementMainViewElement extends AppManagementMainViewElementBase {
+export class AppManagementMainViewElement extends
+    AppManagementMainViewElementBase {
   static get is() {
     return 'app-management-main-view';
   }
