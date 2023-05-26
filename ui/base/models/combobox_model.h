@@ -75,15 +75,6 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   virtual absl::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
       size_t index) const;
 
-  // The string representation of the font list at the given index. The default
-  // font set by combobox.cc will be used if GetLabelFontNameAt returns
-  // an empty vector.
-  virtual std::vector<std::string> GetLabelFontNameAt(size_t index);
-
-  // The font size that should be used for the label. If not given, this returns
-  // a nullopt and the default font size will be used.
-  virtual absl::optional<int> GetLabelFontSize();
-
  protected:
   base::ObserverList<ui::ComboboxModelObserver>& observers() {
     return observers_;

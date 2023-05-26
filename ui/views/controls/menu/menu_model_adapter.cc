@@ -264,10 +264,8 @@ void MenuModelAdapter::BuildMenuImpl(MenuItemView* menu, ui::MenuModel* model) {
     MenuItemView* item = AppendMenuItem(menu, model, i);
     if (item) {
       // Enabled state should be ignored for titles as they are non-interactive.
-      if (model->GetTypeAt(i) == ui::MenuModel::TYPE_TITLE)
-        item->SetEnabled(false);
-      else
-        item->SetEnabled(model->IsEnabledAt(i));
+      item->SetEnabled(model->GetTypeAt(i) != ui::MenuModel::TYPE_TITLE &&
+                       model->IsEnabledAt(i));
       item->SetVisible(model->IsVisibleAt(i));
     }
 

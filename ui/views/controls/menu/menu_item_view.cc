@@ -1416,6 +1416,13 @@ int MenuItemView::GetContentStart() const {
 
 int MenuItemView::GetLabelStartForThisItem() const {
   const bool icons_in_label = MenuConfig::instance().icons_in_label;
+
+  // Titles without icons should always be flush left. (This happens
+  // automatically when `icons_in_label` is true.)
+  if (!icons_in_label && type_ == Type::kTitle && !icon_view_) {
+    return GetContentStart();
+  }
+
   // When `!icons_in_label`, checkbox or radio items that also have icons draw
   // the check/radio in the normal icon space and move the icon to where the
   // label starts; see comments in Layout().

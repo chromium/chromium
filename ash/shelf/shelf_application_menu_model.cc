@@ -23,15 +23,6 @@ ShelfApplicationMenuModel::ShelfApplicationMenuModel(
     ShelfItemDelegate* delegate)
     : ui::SimpleMenuModel(this), delegate_(delegate) {
   AddTitle(title);
-  // Add an empty icon to the title for it to be aligned with the other menu
-  // item elements. See crbug/1117650.
-  SetIcon(0,
-          ui::ImageModel::FromImageGenerator(
-              base::BindRepeating([](const ui::ColorProvider* color_provider) {
-                return gfx::ImageSkia();
-              }),
-              gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize)));
-
   for (const auto& item : items) {
     enabled_commands_.emplace(item.command_id);
     AddItemWithIcon(item.command_id, item.title,

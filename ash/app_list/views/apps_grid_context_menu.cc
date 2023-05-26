@@ -75,14 +75,6 @@ void AppsGridContextMenu::BuildMenuModel() {
 
   context_menu_model_->AddTitle(l10n_util::GetStringUTF16(
       IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE));
-  // Add an empty icon to the title for it to be aligned with the other menu
-  // item elements. See crbug/1117650.
-  context_menu_model_->SetIcon(
-      0, ui::ImageModel::FromImageGenerator(
-             base::BindRepeating([](const ui::ColorProvider* color_provider) {
-               return gfx::ImageSkia();
-             }),
-             gfx::Size(kAppContextMenuIconSize, kAppContextMenuIconSize)));
   context_menu_model_->AddItemWithIcon(
       REORDER_BY_NAME_ALPHABETICAL,
       l10n_util::GetStringUTF16(

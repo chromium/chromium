@@ -648,11 +648,6 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
  private:
   class DisallowMenuDelegate : public test::TestMenuDelegate {
    public:
-    const gfx::FontList* GetLabelFontList(int command_id) const override {
-      EXPECT_NE(1, command_id);
-      return nullptr;
-    }
-
     absl::optional<SkColor> GetLabelColor(int command_id) const override {
       EXPECT_NE(1, command_id);
       return absl::nullopt;

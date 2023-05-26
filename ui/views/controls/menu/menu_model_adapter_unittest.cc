@@ -56,10 +56,6 @@ class MenuModelBase : public ui::MenuModel {
 
   bool IsItemDynamicAt(size_t index) const override { return false; }
 
-  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
-    return nullptr;
-  }
-
   bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override {
     return false;

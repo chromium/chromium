@@ -787,13 +787,6 @@ class AppMenu::RecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
     model_->SetMenuModelDelegate(nullptr);
   }
 
-  const gfx::FontList* GetLabelFontListForCommandId(int command_id) const {
-    ui::MenuModel* model = model_;
-    size_t index = 0;
-    AppMenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
-    return model->GetLabelFontListAt(index);
-  }
-
   // ui::MenuModelDelegate implementation:
 
   void OnIconChanged(int command_id) override {
@@ -931,17 +924,15 @@ bool AppMenu::IsShowing() const {
 }
 
 const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
-  if (IsRecentTabsCommand(command_id)) {
-    return recent_tabs_menu_model_delegate_->GetLabelFontListForCommandId(
-        command_id);
-  }
-
   if (command_id == IDC_BOOKMARKS_LIST_TITLE) {
     return &ui::ResourceBundle::GetSharedInstance().GetFontList(
         ui::ResourceBundle::BoldFont);
   }
 
-  return nullptr;
+  ui::MenuModel* model = model_;
+  size_t index = 0;
+  ui::MenuModel::GetModelAndIndexForCommandId(command_id, &model, &index);
+  return model->GetLabelFontListAt(index);
 }
 
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
