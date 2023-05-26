@@ -1020,7 +1020,7 @@
       "fjacky",
       "elklm"
     ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "chrome-cart-dom-based-heuristics",
@@ -1115,7 +1115,7 @@
       "fjacky",
       "elklm"
     ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "consistency-new-account-interface",
