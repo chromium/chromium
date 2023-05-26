@@ -31,6 +31,7 @@ import {
   Session as SessionTypes,
   Network as NetworkTypes,
   CommonDataTypes as CommonDataTypesTypes,
+  Input as InputTypes,
 } from '../protocol/protocol.js';
 
 const MAX_INT = 9007199254740991 as const;
@@ -53,6 +54,12 @@ export function parseObject<T extends ZodType>(
 
   throw new MessageTypes.InvalidArgumentException(errorMessage);
 }
+
+const UnicodeCharacterSchema = zod.string().refine((value) => {
+  // The spread is a little hack so JS gives us an array of unicode characters
+  // to measure.
+  return [...value].length === 1;
+});
 
 export namespace CommonDataTypes {
   export const SharedReferenceSchema = zod.object({
@@ -616,5 +623,293 @@ export namespace Session {
     params: object
   ): SessionTypes.SubscriptionRequest {
     return parseObject(params, SubscriptionRequestParametersSchema);
+  }
+}
+
+/** @see https://w3c.github.io/webdriver-bidi/#module-input */
+export namespace Input {
+  // input.ElementOrigin = {
+  //   type: "element",
+  //   element: script.SharedReference
+  // }
+  const ElementOriginSchema = zod.object({
+    type: zod.literal('element'),
+    element: CommonDataTypes.SharedReferenceSchema,
+  });
+
+  // input.Origin = "viewport" / "pointer" / input.ElementOrigin
+  const OriginSchema = zod.union([
+    zod.literal('viewport'),
+    zod.literal('pointer'),
+    ElementOriginSchema,
+  ]);
+
+  // input.PauseAction = {
+  //   type: "pause",
+  //   ? duration: js-uint
+  // }
+  const PauseActionSchema = zod.object({
+    type: zod.literal(InputTypes.ActionType.Pause),
+    duration: zod.number().nonnegative().int().optional(),
+  });
+
+  // input.KeyDownAction = {
+  //   type: "keyDown",
+  //   value: text
+  // }
+  const KeyDownActionSchema = zod.object({
+    type: zod.literal(InputTypes.ActionType.KeyDown),
+    value: UnicodeCharacterSchema,
+  });
+
+  // input.KeyUpAction = {
+  //   type: "keyUp",
+  //   value: text
+  // }
+  const KeyUpActionSchema = zod.object({
+    type: zod.literal(InputTypes.ActionType.KeyUp),
+    value: UnicodeCharacterSchema,
+  });
+
+  // input.TiltProperties = (
+  //   ? tiltX: -90..90 .default 0,
+  //   ? tiltY: -90..90 .default 0,
+  // )
+  const TiltPropertiesSchema = zod.object({
+    tiltX: zod.number().min(-90).max(90).int().default(0).optional(),
+    tiltY: zod.number().min(-90).max(90).int().default(0).optional(),
+  });
+
+  // input.AngleProperties = (
+  //   ? altitudeAngle: float .default 0.0,
+  //   ? azimuthAngle: float .default 0.0,
+  // )
+  const AnglePropertiesSchema = zod.object({
+    altitudeAngle: zod
+      .number()
+      .min(0.0)
+      .max(Math.PI / 2)
+      .default(0.0)
+      .optional(),
+    azimuthAngle: zod
+      .number()
+      .min(0.0)
+      .max(2 * Math.PI)
+      .default(0.0)
+      .optional(),
+  });
+
+  // input.PointerCommonProperties = (
+  //   ? width: js-uint .default 1,
+  //   ? height: js-uint .default 1,
+  //   ? pressure: float .default 0.0,
+  //   ? tangentialPressure: float .default 0.0,
+  //   ? twist: 0..359 .default 0,
+  //   (input.TiltProperties // input.AngleProperties)
+  // )
+  const PointerCommonPropertiesSchema = zod
+    .object({
+      width: zod.number().nonnegative().int().default(1),
+      height: zod.number().nonnegative().int().default(1),
+      pressure: zod.number().min(0.0).max(1.0).default(0.0),
+      tangentialPressure: zod.number().min(-1.0).max(1.0).default(0.0),
+      twist: zod.number().min(0).max(359).int().default(0),
+    })
+    .and(zod.union([TiltPropertiesSchema, AnglePropertiesSchema]));
+
+  // input.PointerUpAction = {
+  //   type: "pointerUp",
+  //   button: js-uint,
+  //   input.PointerCommonProperties
+  // }
+  const PointerUpActionSchema = zod
+    .object({
+      type: zod.literal(InputTypes.ActionType.PointerUp),
+      button: zod.number().nonnegative().int(),
+    })
+    .and(PointerCommonPropertiesSchema);
+
+  // input.PointerDownAction = {
+  //   type: "pointerDown",
+  //   button: js-uint,
+  //   input.PointerCommonProperties
+  // }
+  const PointerDownActionSchema = zod
+    .object({
+      type: zod.literal(InputTypes.ActionType.PointerDown),
+      button: zod.number().nonnegative().int(),
+    })
+    .and(PointerCommonPropertiesSchema);
+
+  // input.PointerMoveAction = {
+  //   type: "pointerMove",
+  //   x: js-int,
+  //   y: js-int,
+  //   ? duration: js-uint,
+  //   ? origin: input.Origin,
+  //   input.PointerCommonProperties
+  // }
+  const PointerMoveActionSchema = zod
+    .object({
+      type: zod.literal(InputTypes.ActionType.PointerMove),
+      x: zod.number().int(),
+      y: zod.number().int(),
+      duration: zod.number().nonnegative().int().optional(),
+      origin: OriginSchema.optional().default('viewport'),
+    })
+    .and(PointerCommonPropertiesSchema);
+
+  // input.WheelScrollAction = {
+  //   type: "scroll",
+  //   x: js-int,
+  //   y: js-int,
+  //   deltaX: js-int,
+  //   deltaY: js-int,
+  //   ? duration: js-uint,
+  //   ? origin: input.Origin .default "viewport",
+  // }
+  const WheelScrollActionSchema = zod.object({
+    type: zod.literal(InputTypes.ActionType.Scroll),
+    x: zod.number().int(),
+    y: zod.number().int(),
+    deltaX: zod.number().int(),
+    deltaY: zod.number().int(),
+    duration: zod.number().nonnegative().int().optional(),
+    origin: OriginSchema.optional().default('viewport'),
+  });
+
+  // input.WheelSourceAction = (
+  //   input.PauseAction //
+  //   input.WheelScrollAction
+  // )
+  const WheelSourceActionSchema = zod.discriminatedUnion('type', [
+    PauseActionSchema,
+    WheelScrollActionSchema,
+  ]);
+
+  // input.WheelSourceActions = {
+  //   type: "wheel",
+  //   id: text,
+  //   actions: [*input.WheelSourceAction]
+  // }
+  const WheelSourceActionsSchema = zod.object({
+    type: zod.literal(InputTypes.SourceActionsType.Wheel),
+    id: zod.string(),
+    actions: zod.array(WheelSourceActionSchema),
+  });
+
+  // input.PointerSourceAction = (
+  //   input.PauseAction //
+  //   input.PointerDownAction //
+  //   input.PointerUpAction //
+  //   input.PointerMoveAction
+  // )
+  const PointerSourceActionSchema = zod.union([
+    PauseActionSchema,
+    PointerDownActionSchema,
+    PointerUpActionSchema,
+    PointerMoveActionSchema,
+  ]);
+
+  // input.PointerType = "mouse" / "pen" / "touch"
+  const PointerTypeSchema = zod.nativeEnum(InputTypes.PointerType);
+
+  // input.PointerParameters = {
+  //   ? pointerType: input.PointerType .default "mouse"
+  // }
+  const PointerParametersSchema = zod.object({
+    pointerType: PointerTypeSchema.optional().default(
+      InputTypes.PointerType.Mouse
+    ),
+  });
+
+  // input.PointerSourceActions = {
+  //   type: "pointer",
+  //   id: text,
+  //   ? parameters: input.PointerParameters,
+  //   actions: [*input.PointerSourceAction]
+  // }
+  const PointerSourceActionsSchema = zod.object({
+    type: zod.literal(InputTypes.SourceActionsType.Pointer),
+    id: zod.string(),
+    parameters: PointerParametersSchema.optional(),
+    actions: zod.array(PointerSourceActionSchema),
+  });
+
+  // input.KeySourceAction = (
+  //   input.PauseAction //
+  //   input.KeyDownAction //
+  //   input.KeyUpAction
+  // )
+  const KeySourceActionSchema = zod.discriminatedUnion('type', [
+    PauseActionSchema,
+    KeyDownActionSchema,
+    KeyUpActionSchema,
+  ]);
+
+  // input.KeySourceActions = {
+  //   type: "key",
+  //   id: text,
+  //   actions: [*input.KeySourceAction]
+  // }
+  const KeySourceActionsSchema = zod.object({
+    type: zod.literal(InputTypes.SourceActionsType.Key),
+    id: zod.string(),
+    actions: zod.array(KeySourceActionSchema),
+  });
+
+  // input.NoneSourceAction = input.PauseAction
+  const NoneSourceActionSchema = PauseActionSchema;
+
+  // input.NoneSourceActions = {
+  //   type: "none",
+  //   id: text,
+  //   actions: [*input.NoneSourceAction]
+  // }
+  const NoneSourceActionsSchema = zod.object({
+    type: zod.literal(InputTypes.SourceActionsType.None),
+    id: zod.string(),
+    actions: zod.array(NoneSourceActionSchema),
+  });
+
+  // input.SourceActions = (
+  //   input.NoneSourceActions //
+  //   input.KeySourceActions //
+  //   input.PointerSourceActions //
+  //   input.WheelSourceActions
+  // )
+  const SourceActionsSchema = zod.discriminatedUnion('type', [
+    NoneSourceActionsSchema,
+    KeySourceActionsSchema,
+    PointerSourceActionsSchema,
+    WheelSourceActionsSchema,
+  ]);
+
+  // input.PerformActionsParameters = {
+  //   context: browsingContext.BrowsingContext,
+  //   actions: [*input.SourceActions]
+  // }
+  const PerformActionsParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    actions: zod.array(SourceActionsSchema),
+  });
+
+  export function parsePerformActionsParams(
+    params: object
+  ): InputTypes.PerformActionsParameters {
+    return parseObject(params, PerformActionsParametersSchema);
+  }
+
+  // input.ReleaseActionsParameters = {
+  //   context: browsingContext.BrowsingContext,
+  // }
+  const ReleaseActionsParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+  });
+
+  export function parseReleaseActionsParams(
+    params: object
+  ): InputTypes.ReleaseActionsParameters {
+    return parseObject(params, ReleaseActionsParametersSchema);
   }
 }
