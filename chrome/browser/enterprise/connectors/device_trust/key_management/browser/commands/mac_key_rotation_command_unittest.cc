@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -100,9 +101,9 @@ class MacKeyRotationCommandTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<MacKeyRotationCommand> rotation_command_;
-  MockSecureEnclaveClient* mock_secure_enclave_client_ = nullptr;
-  MockKeyNetworkDelegate* mock_network_delegate_ = nullptr;
-  MockKeyPersistenceDelegate* mock_persistence_delegate_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_ = nullptr;
+  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_ = nullptr;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   KeyRotationCommand::Params params_;
 };

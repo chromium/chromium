@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "base/task/bind_post_task.h"
@@ -45,7 +46,7 @@ bool CanUseAudioToolbox(const AudioDecoderConfig& config) {
 }
 
 struct InputData {
-  DecoderBuffer* buffer = nullptr;
+  raw_ptr<DecoderBuffer> buffer = nullptr;
   AudioStreamPacketDescription packet = {};
 };
 

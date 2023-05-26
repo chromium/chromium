@@ -5,8 +5,6 @@
 #ifndef SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_MAC_H_
 #define SERVICES_DEVICE_USB_USB_DEVICE_HANDLE_MAC_H_
 
-#include "services/device/usb/usb_device_handle.h"
-
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOReturn.h>
@@ -19,7 +17,9 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
+#include "base/memory/raw_ptr.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/usb/usb_device_handle.h"
 
 namespace base {
 class RefCountedBytes;
@@ -88,8 +88,8 @@ class UsbDeviceHandleMac : public UsbDeviceHandle {
 
  private:
   struct EndpointMapValue {
-    const mojom::UsbInterfaceInfo* interface;
-    const mojom::UsbEndpointInfo* endpoint;
+    raw_ptr<const mojom::UsbInterfaceInfo> interface;
+    raw_ptr<const mojom::UsbEndpointInfo> endpoint;
     uint8_t pipe_reference;
   };
 

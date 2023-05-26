@@ -88,7 +88,7 @@ class ExtensionPopup::ScopedBrowserActivationObservation
   }
 
  private:
-  ExtensionPopup* owner_;
+  raw_ptr<ExtensionPopup> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };

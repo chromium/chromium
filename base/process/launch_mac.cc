@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/mac/mach_port_rendezvous.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -111,7 +112,7 @@ struct GetAppOutputOptions {
   // Whether to pipe stderr to stdout in |output|.
   bool include_stderr = false;
   // Caller-supplied string poiter for the output.
-  std::string* output = nullptr;
+  raw_ptr<std::string> output = nullptr;
   // Result exit code of Process::Wait().
   int exit_code = 0;
 };
