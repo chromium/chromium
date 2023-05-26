@@ -335,6 +335,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
       runtimeFeatureNameToChromiumFeatureMapping[] = {
           {"AllowContentInitiatedDataUrlNavigations",
            raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
+          {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
+          {"AllowURNsInIframes",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
           {"AttributionReporting",
            raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},

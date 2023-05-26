@@ -318,6 +318,10 @@
       base_feature: "none",
     },
     {
+      name: "AllowURNsInIframes",
+      base_feature: "none",
+    },
+    {
       name: "AndroidDownloadableFontsMatching",
       base_feature: "none",
       public: true,
