@@ -107,6 +107,18 @@ TEST_F(BufferSourceTest, GetValueAggregate) {
   EXPECT_EQ(size_t(4), source_.Remaining());
 }
 
+TEST_F(BufferSourceTest, GetValueUnaligned) {
+  uint8_t v8 = 0U;
+  EXPECT_TRUE(source_.GetValue(&v8));
+  EXPECT_EQ(0x10U, v8);
+  uint16_t v16 = 0U;
+  EXPECT_TRUE(source_.GetValue(&v16));
+  EXPECT_EQ(0x5432U, v16);
+  uint32_t v32 = 0U;
+  EXPECT_TRUE(source_.GetValue(&v32));
+  EXPECT_EQ(0xDCBA9876U, v32);
+}
+
 TEST_F(BufferSourceTest, GetRegion) {
   ConstBufferView region;
   EXPECT_TRUE(source_.GetRegion(0, &region));

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <initializer_list>
 #include <type_traits>
@@ -53,7 +54,9 @@ class BufferSource : public ConstBufferView {
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T))
       return false;
-    return value == *reinterpret_cast<const T*>(begin());
+    T next_value = {};
+    ::memcpy(&next_value, begin(), sizeof(T));
+    return value == next_value;
   }
 
   // Returns true if the next bytes.size() bytes at the cursor match those in
@@ -75,7 +78,7 @@ class BufferSource : public ConstBufferView {
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T))
       return false;
-    *value = *reinterpret_cast<const T*>(begin());
+    ::memcpy(value, begin(), sizeof(T));
     remove_prefix(sizeof(T));
     return true;
   }

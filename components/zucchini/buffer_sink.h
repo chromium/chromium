@@ -6,6 +6,7 @@
 #define COMPONENTS_ZUCCHINI_BUFFER_SINK_H_
 
 #include <stdint.h>
+#include <string.h>
 
 #include <algorithm>
 #include <iterator>
@@ -38,7 +39,7 @@ class BufferSink : public MutableBufferView {
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T))
       return false;
-    *reinterpret_cast<T*>(begin()) = value;
+    ::memcpy(begin(), &value, sizeof(T));
     remove_prefix(sizeof(T));
     return true;
   }
