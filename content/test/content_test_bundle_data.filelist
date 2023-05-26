@@ -1667,6 +1667,8 @@ data/accessibility/css/content-visibility-to-hidden-expected-blink.txt
 data/accessibility/css/content-visibility-to-hidden.html
 data/accessibility/css/counter-text-expected-blink.txt
 data/accessibility/css/counter-text.html
+data/accessibility/css/display-contents-expected-blink.txt
+data/accessibility/css/display-contents.html
 data/accessibility/css/display-list-item-expected-blink.txt
 data/accessibility/css/display-list-item.html
 data/accessibility/css/display-none-expected-blink.txt

@@ -3132,7 +3132,8 @@ bool AXObject::ShouldIgnoreForHiddenOrInert(
 
   // Hide nodes that are whitespace or are occluded by CSS alt text.
   if (!GetLayoutObject() && GetNode() && !IsA<HTMLAreaElement>(GetNode()) &&
-      !DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode())) {
+      !DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode()) &&
+      (!GetElement() || !GetElement()->HasDisplayContentsStyle())) {
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXNotRendered));
     }
