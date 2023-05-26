@@ -707,6 +707,9 @@ class ASH_EXPORT WallpaperControllerImpl
       const OnlineWallpaperParams& params,
       SetWallpaperCallback callback);
 
+  // Called as a callback for `SetTimeOfDayWallpaper`.
+  void OnTimeOfDayWallpaperSetAfterOobe(bool success);
+
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
 

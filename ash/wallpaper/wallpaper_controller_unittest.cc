@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/schedule_enums.h"
@@ -400,7 +401,9 @@ std::vector<backdrop::Image> TimeOfDayImageSet() {
 class WallpaperControllerTest : public AshTestBase {
  public:
   WallpaperControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(features::kTimeOfDayWallpaper);
+  }
 
   WallpaperControllerTest(const WallpaperControllerTest&) = delete;
   WallpaperControllerTest& operator=(const WallpaperControllerTest&) = delete;
@@ -778,6 +781,7 @@ class WallpaperControllerTest : public AshTestBase {
   // TODO(esum): Use ash::InProcessImageDecoder here instead and exercise actual
   // decoding in these tests.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(WallpaperControllerTest, Client) {
@@ -1417,6 +1421,45 @@ TEST_F(WallpaperControllerTest, SetTimeOfDayWallpaper) {
   RunAllTasksUntilIdle();
   EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
       GURL(images[1].image_url()).ExtractFileName())));
+}
+
+TEST_F(WallpaperControllerTest,
+       ActiveUserPrefServiceChanged_SetTimeOfDayWallpaper) {
+  SetBypassDecode();
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+  SetSessionState(SessionState::OOBE);
+  // Log in and trigger `OnActiveUserPrefServiceChange`.
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_EQ(WallpaperType::kOnline, actual_info.type);
+  EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+            actual_info.collection_id);
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
+                                      1);
+}
+
+TEST_F(WallpaperControllerTest,
+       ActiveUserPrefServiceChanged_NonOOBE_SetTimeOfDayWallpaper) {
+  SetBypassDecode();
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
+  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+  // Log in and trigger `OnActiveUserPrefServiceChange`.
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_TRUE(local_info.MatchesAsset(actual_info));
+  histogram_tester().ExpectTotalCount("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe",
+                                      0);
 }
 
 TEST_F(WallpaperControllerTest, SetAndRemovePolicyWallpaper) {

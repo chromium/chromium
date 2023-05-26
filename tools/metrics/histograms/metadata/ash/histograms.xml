@@ -6823,6 +6823,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.IsSetToTimeOfDayAfterOobe" enum="Boolean"
+    expires_after="2024-05-23">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks whether the time of day wallpaper is set to be the default wallpaper
+    successfully on supported devices. Recorded each time the user goes through
+    OOBE flow and they did not have any synced wallpaper on any of their
+    previous devices.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
     expires_after="2024-02-13">
   <owner>jasontt@chromium.org</owner>

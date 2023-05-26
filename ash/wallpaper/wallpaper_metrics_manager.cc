@@ -47,4 +47,9 @@ void WallpaperMetricsManager::OnWallpaperPreviewStarted() {
   base::UmaHistogramBoolean("Ash.Wallpaper.Preview.Show", true);
 }
 
+void WallpaperMetricsManager::LogSettingTimeOfDayWallpaperAfterOobe(
+    bool success) {
+  base::UmaHistogramBoolean("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe", success);
+}
+
 }  // namespace ash

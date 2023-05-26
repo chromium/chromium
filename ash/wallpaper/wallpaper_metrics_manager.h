@@ -28,6 +28,8 @@ class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
   void OnWallpaperChanged() override;
   void OnWallpaperPreviewStarted() override;
 
+  void LogSettingTimeOfDayWallpaperAfterOobe(bool success);
+
  private:
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_controller_observation_{this};
