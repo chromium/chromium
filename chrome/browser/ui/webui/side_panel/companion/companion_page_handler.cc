@@ -8,6 +8,7 @@
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/companion_url_builder.h"
+#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/promo_handler.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -88,6 +90,12 @@ void CompanionPageHandler::DidFinishNavigation(
   ukm::SourceId ukm_source_id =
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
   metrics_logger_ = std::make_unique<CompanionMetricsLogger>(ukm_source_id);
+  auto* tab_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  auto open_trigger = tab_helper->GetAndResetMostRecentSidePanelOpenTrigger();
+  if (open_trigger.has_value()) {
+    metrics_logger_->RecordOpenTrigger(open_trigger);
+  }
 
   // Only notify the companion UI the page changed if we can share
   // information about the page by user consent.
