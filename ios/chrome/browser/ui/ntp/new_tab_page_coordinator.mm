@@ -1242,6 +1242,11 @@
                                  onStartSurface:[self isStartSurface]];
 }
 
+- (void)setUpListItemOpened {
+  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kSetUpList
+                                 onStartSurface:[self isStartSurface]];
+}
+
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
