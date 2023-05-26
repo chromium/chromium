@@ -187,7 +187,10 @@ void ClientSession::ControlVideo(const protocol::VideoControl& video_control) {
     for (const auto& [_, video_stream] : video_streams_) {
       video_stream->SetTargetFramerate(target_framerate_);
     }
-    mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
+    if (mouse_shape_pump_) {
+      mouse_shape_pump_->SetCursorCaptureInterval(
+          base::Hertz(target_framerate_));
+    }
   }
 
   if (video_control.has_framerate_boost()) {
@@ -667,6 +670,7 @@ void ClientSession::OnConnectionChannelsConnected() {
       desktop_environment_->CreateMouseCursorMonitor(),
       connection_->client_stub());
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+  mouse_shape_pump_->SetCursorCaptureInterval(base::Hertz(target_framerate_));
 
   // Create KeyboardLayoutMonitor to send keyboard layout.
   // Unretained is sound because callback will never be called after
