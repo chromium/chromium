@@ -1550,12 +1550,6 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
 
-  // Force a style update. This ensures that base property values are set prior
-  // to `:popover-open` matching, so that transitions can start on the change to
-  // top layer.
-  original_document.UpdateStyleAndLayoutTreeForNode(
-      this, DocumentUpdateReason::kPopover);
-
   // Queue a delayed hide event, if necessary.
   if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     if (!GetDocument().HoverElement() ||
