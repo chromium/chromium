@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -18,19 +18,6 @@ namespace web_app {
 constexpr base::StringPiece kUpdateManifestAllVersionsKey = "versions";
 constexpr base::StringPiece kUpdateManifestVersionKey = "version";
 constexpr base::StringPiece kUpdateManifestSrcKey = "src";
-
-enum class IwaVersionParseError {
-  kNotThreeComponents,
-  kEmptyComponent,
-  kLeadingZero,
-  kNonDigit,
-  kCannotConvertToNumber,
-};
-
-// Parses a string representing the version of an Isolated Web App. Returns an
-// array with the three version components on success.
-base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
-ParseIwaVersionIntoComponents(base::StringPiece version_string);
 
 // An Isolated Web App Update Manifest contains a list of versions and download
 // URLs of an Isolated Web App. The format is described in more detail here:

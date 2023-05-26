@@ -4,10 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 
-#include <array>
-#include <tuple>
-#include <vector>
-
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,92 +17,6 @@ using testing::Eq;
 using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsTrue;
-
-struct IwaVersionTestParam {
-  std::string version_string;
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
-      expected_components;
-};
-
-using IwaVersionTest = testing::TestWithParam<IwaVersionTestParam>;
-
-TEST_P(IwaVersionTest, ParsesSuccessfully) {
-  base::expected<std::array<uint32_t, 3>, IwaVersionParseError> components =
-      ParseIwaVersionIntoComponents(GetParam().version_string);
-
-  ASSERT_THAT(components, Eq(GetParam().expected_components));
-  if (components.has_value()) {
-    base::Version version(
-        std::vector<uint32_t>(components->begin(), components->end()));
-    EXPECT_THAT(version.IsValid(), IsTrue());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix*/,
-    IwaVersionTest,
-    testing::ValuesIn(std::vector<IwaVersionTestParam>{
-        {.version_string = "1",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
-        {.version_string = "1.2",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
-        // This is bigger than what uint32_t can handle
-        {.version_string = "999994294967295.2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kCannotConvertToNumber)},
-        {.version_string = "0.0.0",
-         .expected_components = std::array<uint32_t, 3>{0, 0, 0}},
-        {.version_string = "1.2.3",
-         .expected_components = std::array<uint32_t, 3>{1, 2, 3}},
-        {.version_string = "1.2.3.4",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
-        {.version_string = "10.20.30",
-         .expected_components = std::array<uint32_t, 3>{10, 20, 30}},
-        {.version_string = "1.-2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1..2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNotThreeComponents)},
-        {.version_string = "1..3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kEmptyComponent)},
-        {.version_string = "1.--2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.+2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "a.2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.a.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.2.a",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.2.3-a",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.2.3+a",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "1.2.3-a+a",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kNonDigit)},
-        {.version_string = "01.2.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kLeadingZero)},
-        {.version_string = "1.02.3",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kLeadingZero)},
-        {.version_string = "1.2.03",
-         .expected_components =
-             base::unexpected(IwaVersionParseError::kLeadingZero)}}));
 
 TEST(UpdateManifestTest, FailsToParseManifestWithoutKeys) {
   auto update_manifest = UpdateManifest::CreateFromJson(
