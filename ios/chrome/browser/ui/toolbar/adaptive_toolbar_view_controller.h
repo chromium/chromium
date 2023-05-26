@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_type.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 
 @protocol AdaptiveToolbarMenusProvider;
 @class AdaptiveToolbarViewController;
+@protocol AdaptiveToolbarViewControllerDelegate;
 @protocol BrowserCommands;
 @class LayoutGuideCenter;
 @protocol OmniboxCommands;
@@ -28,7 +30,9 @@
 // dismissed on such events. For example, the tools menu is closed upon
 // rotation.
 @interface AdaptiveToolbarViewController
-    : UIViewController <PopupMenuUIUpdating, ToolbarConsumer>
+    : UIViewController <FullscreenUIElement,
+                        PopupMenuUIUpdating,
+                        ToolbarConsumer>
 
 // Button factory.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
@@ -41,6 +45,9 @@
 
 // Provider for the context menus.
 @property(nonatomic, weak) id<AdaptiveToolbarMenusProvider> menuProvider;
+// Delegate for events in `AdaptiveToolbarViewController`.
+@property(nonatomic, weak) id<AdaptiveToolbarViewControllerDelegate>
+    adaptiveDelegate;
 
 // Returns the tools menu button.
 - (ToolbarButton*)toolsMenuButton;

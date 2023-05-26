@@ -21,10 +21,12 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
+#import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
@@ -36,7 +38,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface AdaptiveToolbarCoordinator ()
+@interface AdaptiveToolbarCoordinator () <AdaptiveToolbarViewControllerDelegate>
 
 // Whether this coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -68,6 +70,7 @@
           ? UIUserInterfaceStyleDark
           : UIUserInterfaceStyleUnspecified;
   self.viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(browser);
+  self.viewController.adaptiveDelegate = self;
 
   self.mediator = [[ToolbarMediator alloc] init];
   self.mediator.incognito = browser->GetBrowserState()->IsOffTheRecord();
@@ -101,6 +104,12 @@
 
 - (BOOL)showingOmniboxPopup {
   return [self.locationBarCoordinator showingOmniboxPopup];
+}
+
+#pragma mark - AdaptiveToolbarViewControllerDelegate
+
+- (void)exitFullscreen {
+  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
 }
 
 #pragma mark - SideSwipeToolbarSnapshotProviding
