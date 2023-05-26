@@ -422,12 +422,14 @@ void QtUi::FontChanged() {
   auto desc = shim_->GetFontDescription();
 
   font_family_ = desc.family.c_str();
+  // Points are defined at 72 DPI and pixels are 96 DPI by default.
+  constexpr double kPointToPixelRatio = 96.0 / 72.0;
   if (desc.size_pixels > 0) {
     font_size_pixels_ = desc.size_pixels;
-    font_size_points_ = font_size_pixels_ / GetDeviceScaleFactor();
+    font_size_points_ = std::round(font_size_pixels_ / kPointToPixelRatio);
   } else {
     font_size_points_ = desc.size_points;
-    font_size_pixels_ = font_size_points_ * GetDeviceScaleFactor();
+    font_size_pixels_ = std::round(font_size_points_ * kPointToPixelRatio);
   }
   font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
   font_weight_ = QtWeightToCssWeight(desc.weight);
