@@ -14,6 +14,8 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+import("//build/config/android/config.gni")
+
 config("xnnpack_config") {
   include_dirs = [
     "//third_party/pthreadpool/src/include",
@@ -124,6 +126,94 @@ source_set("xnnpack") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("xnnpack_standalone") {
+  public = [ "src/include/xnnpack.h" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  sources = [
+    "src/src/allocator.c",
+    "src/src/argmaxpool-config.c",
+    "src/src/avgpool-config.c",
+    "src/src/binary-elementwise-config.c",
+    "src/src/cache.c",
+    "src/src/conv-hwc2chw-config.c",
+    "src/src/dwconv-config.c",
+    "src/src/dwconv2d-chw-config.c",
+    "src/src/gavgpool-config.c",
+    "src/src/gavgpool-cw-config.c",
+    "src/src/gemm-config.c",
+    "src/src/hardware-config.c",
+    "src/src/ibilinear-chw-config.c",
+    "src/src/ibilinear-config.c",
+    "src/src/indirection.c",
+    "src/src/init.c",
+    "src/src/log.c",
+    "src/src/lut32norm-config.c",
+    "src/src/maxpool-config.c",
+    "src/src/memory-planner.c",
+    "src/src/memory.c",
+    "src/src/microkernel-utils.c",
+    "src/src/microparams-init.c",
+    "src/src/mutex.c",
+    "src/src/normalization.c",
+    "src/src/operator-delete.c",
+    "src/src/operator-run.c",
+    "src/src/operator-utils.c",
+    "src/src/packing.c",
+    "src/src/params.c",
+    "src/src/pavgpool-config.c",
+    "src/src/prelu-config.c",
+    "src/src/raddstoreexpminusmax-config.c",
+    "src/src/rmax-config.c",
+    "src/src/runtime.c",
+    "src/src/spmm-config.c",
+    "src/src/subgraph.c",
+    "src/src/tensor.c",
+    "src/src/transpose-config.c",
+    "src/src/unary-elementwise-config.c",
+    "src/src/unpool-config.c",
+    "src/src/vmulcaddc-config.c",
+    "src/src/x8-lut-config.c",
+    "src/src/xx-fill-config.c",
+    "src/src/xx-pad-config.c",
+    "src/src/zip-config.c",
+  ]
+
+  deps = [
+    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone",
+    ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
+    ":amalgam_avx512f_standalone",
+    ":amalgam_avx_standalone",
+    ":amalgam_f16c-fma-avx2_standalone",
+    ":amalgam_f16c-fma_standalone",
+    ":amalgam_f16c_standalone",
+    ":amalgam_sse2_standalone",
+    ":amalgam_sse4.1_standalone",
+    ":amalgam_ssse3_standalone",
+    ":amalgam_standalone",
+    ":amalgam_xop_standalone",
+    ":enums_standalone",
+    ":jit_standalone",
+    ":operators_standalone",
+    ":subgraph_standalone",
+    ":tables_standalone",
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam") {
   cflags = []
 
@@ -141,6 +231,30 @@ source_set("amalgam") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_standalone") {
+  cflags = []
+
+  sources = [ "src/src/amalgam/gen/scalar.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_avx") {
@@ -162,6 +276,30 @@ source_set("amalgam_avx") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("amalgam_avx_standalone") {
+  cflags = [ "-mavx" ]
+
+  sources = [ "src/src/amalgam/gen/avx.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam_avx512f") {
   cflags = [ "-mavx512f" ]
 
@@ -179,6 +317,30 @@ source_set("amalgam_avx512f") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_avx512f_standalone") {
+  cflags = [ "-mavx512f" ]
+
+  sources = [ "src/src/amalgam/gen/avx512f.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
@@ -204,6 +366,36 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone") {
+  cflags = [
+    "-mavx512bw",
+    "-mavx512cd",
+    "-mavx512dq",
+    "-mavx512f",
+    "-mavx512vl",
+  ]
+
+  sources = [ "src/src/amalgam/gen/avx512skx.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
@@ -232,6 +424,38 @@ source_set("amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set(
+    "amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone") {
+  cflags = [
+    "-mavx512bw",
+    "-mavx512cd",
+    "-mavx512dq",
+    "-mavx512f",
+    "-mavx512vbmi",
+    "-mavx512vl",
+  ]
+
+  sources = [ "src/src/amalgam/gen/avx512vbmi.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam_f16c") {
   cflags = [ "-mf16c" ]
 
@@ -249,6 +473,30 @@ source_set("amalgam_f16c") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_f16c_standalone") {
+  cflags = [ "-mf16c" ]
+
+  sources = [ "src/src/amalgam/gen/f16c.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_f16c-fma") {
@@ -271,6 +519,33 @@ source_set("amalgam_f16c-fma") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_f16c-fma_standalone") {
+  cflags = [
+    "-mf16c",
+    "-mfma",
+  ]
+
+  sources = [ "src/src/amalgam/gen/fma3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_f16c-fma-avx2") {
@@ -296,6 +571,34 @@ source_set("amalgam_f16c-fma-avx2") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("amalgam_f16c-fma-avx2_standalone") {
+  cflags = [
+    "-mavx2",
+    "-mf16c",
+    "-mfma",
+  ]
+
+  sources = [ "src/src/amalgam/gen/avx2.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam_sse2") {
   cflags = [ "-msse2" ]
 
@@ -318,6 +621,33 @@ source_set("amalgam_sse2") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("amalgam_sse2_standalone") {
+  cflags = [ "-msse2" ]
+
+  sources = [
+    "src/src/amalgam/gen/sse.c",
+    "src/src/amalgam/gen/sse2.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam_sse4.1") {
   cflags = [ "-msse4.1" ]
 
@@ -335,6 +665,30 @@ source_set("amalgam_sse4.1") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_sse4.1_standalone") {
+  cflags = [ "-msse4.1" ]
+
+  sources = [ "src/src/amalgam/gen/sse41.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("amalgam_ssse3") {
@@ -356,6 +710,30 @@ source_set("amalgam_ssse3") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("amalgam_ssse3_standalone") {
+  cflags = [ "-mssse3" ]
+
+  sources = [ "src/src/amalgam/gen/ssse3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("amalgam_xop") {
   cflags = [ "-mxop" ]
 
@@ -373,6 +751,30 @@ source_set("amalgam_xop") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_xop_standalone") {
+  cflags = [ "-mxop" ]
+
+  sources = [ "src/src/amalgam/gen/xop.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("enums") {
@@ -399,6 +801,35 @@ source_set("enums") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("enums_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/enums/datatype-strings.c",
+    "src/src/enums/microkernel-type.c",
+    "src/src/enums/node-type.c",
+    "src/src/enums/operator-type.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("jit") {
   cflags = []
 
@@ -420,6 +851,34 @@ source_set("jit") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("jit_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/jit/aarch32-assembler.cc",
+    "src/src/jit/aarch64-assembler.cc",
+    "src/src/jit/assembler.cc",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("operators") {
@@ -463,6 +922,54 @@ source_set("operators") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("operators_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/operators/argmax-pooling-nhwc.c",
+    "src/src/operators/average-pooling-nhwc.c",
+    "src/src/operators/binary-elementwise-nd.c",
+    "src/src/operators/channel-shuffle-nc.c",
+    "src/src/operators/constant-pad-nd.c",
+    "src/src/operators/convolution-nchw.c",
+    "src/src/operators/convolution-nhwc.c",
+    "src/src/operators/deconvolution-nhwc.c",
+    "src/src/operators/dynamic-fully-connected-nc.c",
+    "src/src/operators/fully-connected-nc.c",
+    "src/src/operators/global-average-pooling-ncw.c",
+    "src/src/operators/global-average-pooling-nwc.c",
+    "src/src/operators/lut-elementwise-nc.c",
+    "src/src/operators/max-pooling-nhwc.c",
+    "src/src/operators/post-operation.c",
+    "src/src/operators/prelu-nc.c",
+    "src/src/operators/resize-bilinear-nchw.c",
+    "src/src/operators/resize-bilinear-nhwc.c",
+    "src/src/operators/slice-nd.c",
+    "src/src/operators/softmax-nc.c",
+    "src/src/operators/transpose-nd.c",
+    "src/src/operators/unary-elementwise-nc.c",
+    "src/src/operators/unpooling-nhwc.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
 
 source_set("subgraph") {
@@ -529,6 +1036,75 @@ source_set("subgraph") {
   public_configs = [ ":xnnpack_config" ]
 }
 
+# This is a target that cannot depend on //base.
+source_set("subgraph_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/subgraph/abs.c",
+    "src/src/subgraph/add2.c",
+    "src/src/subgraph/argmax-pooling-2d.c",
+    "src/src/subgraph/average-pooling-2d.c",
+    "src/src/subgraph/bankers-rounding.c",
+    "src/src/subgraph/ceiling.c",
+    "src/src/subgraph/clamp.c",
+    "src/src/subgraph/concatenate.c",
+    "src/src/subgraph/convert.c",
+    "src/src/subgraph/convolution-2d.c",
+    "src/src/subgraph/copy.c",
+    "src/src/subgraph/deconvolution-2d.c",
+    "src/src/subgraph/depth-to-space.c",
+    "src/src/subgraph/depthwise-convolution-2d.c",
+    "src/src/subgraph/divide.c",
+    "src/src/subgraph/elu.c",
+    "src/src/subgraph/even-split.c",
+    "src/src/subgraph/floor.c",
+    "src/src/subgraph/fully-connected.c",
+    "src/src/subgraph/global-average-pooling.c",
+    "src/src/subgraph/global-sum-pooling.c",
+    "src/src/subgraph/hardswish.c",
+    "src/src/subgraph/leaky-relu.c",
+    "src/src/subgraph/max-pooling-2d.c",
+    "src/src/subgraph/maximum2.c",
+    "src/src/subgraph/minimum2.c",
+    "src/src/subgraph/multiply2.c",
+    "src/src/subgraph/negate.c",
+    "src/src/subgraph/prelu.c",
+    "src/src/subgraph/sigmoid.c",
+    "src/src/subgraph/softmax.c",
+    "src/src/subgraph/space-to-depth-2d.c",
+    "src/src/subgraph/square-root.c",
+    "src/src/subgraph/square.c",
+    "src/src/subgraph/squared-difference.c",
+    "src/src/subgraph/static-constant-pad.c",
+    "src/src/subgraph/static-reshape.c",
+    "src/src/subgraph/static-resize-bilinear-2d.c",
+    "src/src/subgraph/static-slice.c",
+    "src/src/subgraph/static-transpose.c",
+    "src/src/subgraph/subtract.c",
+    "src/src/subgraph/tanh.c",
+    "src/src/subgraph/unpooling-2d.c",
+    "src/src/subgraph/validation.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
 source_set("tables") {
   cflags = []
 
@@ -556,4 +1132,38 @@ source_set("tables") {
   ]
 
   public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("tables_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/tables/exp2-k-over-2048.c",
+    "src/src/tables/exp2-k-over-64.c",
+    "src/src/tables/exp2minus-k-over-16.c",
+    "src/src/tables/exp2minus-k-over-2048.c",
+    "src/src/tables/exp2minus-k-over-32.c",
+    "src/src/tables/exp2minus-k-over-4.c",
+    "src/src/tables/exp2minus-k-over-64.c",
+    "src/src/tables/exp2minus-k-over-8.c",
+    "src/src/tables/vlog.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
 }
