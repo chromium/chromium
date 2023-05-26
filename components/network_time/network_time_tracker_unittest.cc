@@ -992,7 +992,9 @@ TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsPositive) {
 
   double expected_positive_drift =
       (base::Milliseconds(150) - latency3 / 2 + latency1 / 2).InMicroseconds() /
-      2.0;
+      (base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[4] + 150) -
+       base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[1]))
+          .InSeconds();
   ASSERT_GT(expected_positive_drift, 0);
   histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Positive", 1);
   histograms.ExpectUniqueSample("PrivacyBudget.ClockDrift.Magnitude.Positive",
@@ -1047,7 +1049,9 @@ TEST_F(NetworkTimeTrackerTest, ClockDriftHistogramsNegative) {
 
   double expected_negative_drift =
       (base::Milliseconds(1) - latency1 / 2 + latency3 / 2).InMicroseconds() /
-      2.0;
+      (base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[3] - 1) -
+       base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[1]))
+          .InSeconds();
   ASSERT_GT(expected_negative_drift, 0);
   histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Positive", 0);
   histograms.ExpectTotalCount("PrivacyBudget.ClockDrift.Magnitude.Negative", 1);
