@@ -94,10 +94,7 @@ class TokenService : public TokenServiceInterface {
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }
-  bool IsEnrollmentMandatory() const override {
-    // TODO(crbug.com/1345407) : check if enrollment is mandatory.
-    return false;
-  }
+  bool IsEnrollmentMandatory() const override { return false; }
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override { return enrollment_token_; }
   bool StoreDmToken(const std::string& dm_token) override;

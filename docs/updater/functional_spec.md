@@ -557,7 +557,7 @@ server.
 By default, if enrollment fails, for example if the enrollment token is invalid
 or revoked, the updater will start in an unmanaged state. Instead, if you want
 to prevent the updater from starting if enrollment fails, set
-`EnrollmentMandatory` to `1`.
+`EnrollmentMandatory` to `1` (Windows only).
 
 After the updater sets itself up, the `FetchPolicies` RPC is invoked on the
 updater server to register with device management and fetch policies.
