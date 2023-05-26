@@ -503,7 +503,8 @@ crbug.com/1276186 [ mac amd-0x67ef angle-opengl ] conformance/rendering/clear-de
 
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind.html [ Failure ]
-crbug.com/1442626 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
+crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind-2.html [ RetryOnFailure ]
+crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
 
 ## Mac Intel ##
 
