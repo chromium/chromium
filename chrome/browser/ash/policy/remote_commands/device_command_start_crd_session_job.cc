@@ -381,6 +381,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.curtain_local_user_session = curtain_local_user_session_;
   parameters.admin_email = admin_email_;
   parameters.allow_troubleshooting_tools = ShouldAllowTroubleshootingTools();
+  parameters.allow_reconnections = ShouldAllowReconnections();
 
   delegate_->StartCrdHostAndGetCode(
       parameters,
@@ -544,6 +545,16 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
   }
 }
 
+bool DeviceCommandStartCrdSessionJob::ShouldAllowReconnections() const {
+  if (!base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
+    return false;
+  }
+
+  // Curtained off sessions support reconnections if Chrome restarts.
+  return curtain_local_user_session_;
+}
+
 bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
   if (GetCurrentUserSessionType() !=
           UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION &&
@@ -551,9 +562,8 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
           UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION) {
     return false;
   }
-  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  CHECK(prefs);
-  return prefs->GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+  return CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
+      .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 DeviceCommandStartCrdSessionJob::ErrorCallback

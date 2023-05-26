@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
 
 #include <iomanip>
+#include <ostream>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -46,6 +47,25 @@ class DefaultRemotingService : public CrdHostDelegate::RemotingServiceProxy {
   }
 };
 
+std::ostream& operator<<(
+    std::ostream& os,
+    const DeviceCommandStartCrdSessionJob::Delegate::SessionParameters&
+        parameters) {
+  return os << "{ "
+            << "user_name " << std::quoted(parameters.user_name)
+            << ", admin_email "
+            << std::quoted(parameters.admin_email.value_or("<null>"))
+            << ", terminate_upon_input " << parameters.terminate_upon_input
+            << ", show_confirmation_dialog "
+            << parameters.show_confirmation_dialog
+            << ", curtain_local_user_session "
+            << parameters.curtain_local_user_session
+            << ", allow_troubleshooting_tools "
+            << parameters.allow_troubleshooting_tools
+            << ", allow_reconnections " << parameters.allow_reconnections
+            << "}";
+}
+
 }  // namespace
 
 class CrdHostDelegate::CrdHostSession
@@ -64,18 +84,7 @@ class CrdHostDelegate::CrdHostSession
   ~CrdHostSession() override = default;
 
   void Start(CrdHostDelegate::RemotingServiceProxy& remoting_service) {
-    CRD_DVLOG(3) << "Starting CRD session with parameters { "
-                 << "user_name " << std::quoted(parameters_.user_name)
-                 << ", admin_email "
-                 << std::quoted(parameters_.admin_email.value_or("<null>"))
-                 << ", terminate_upon_input "
-                 << parameters_.terminate_upon_input
-                 << ", show_confirmation_dialog "
-                 << parameters_.show_confirmation_dialog
-                 << ", curtain_local_user_session "
-                 << parameters_.curtain_local_user_session
-                 << ", allow_troubleshooting_tools "
-                 << parameters_.allow_troubleshooting_tools << "}";
+    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
 
     remoting_service.StartSession(
         GetSessionParameters(), GetEnterpriseParameters(),
@@ -165,7 +174,9 @@ class CrdHostDelegate::CrdHostSession
         .suppress_notifications = !parameters_.show_confirmation_dialog,
         .terminate_upon_input = parameters_.terminate_upon_input,
         .curtain_local_user_session = parameters_.curtain_local_user_session,
-        .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools};
+        .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools,
+        .allow_reconnections = parameters_.allow_reconnections,
+    };
   }
 
   void ReportSuccess(const std::string& access_code) {

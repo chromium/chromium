@@ -53,6 +53,7 @@ using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
 using remoting::features::kEnableCrdAdminRemoteAccess;
+using remoting::features::kEnableCrdAdminRemoteAccessV2;
 
 using Payload = base::Value::Dict;
 
@@ -308,21 +309,20 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
                              const std::string& error_message);
   Payload CreateNotIdlePayload(int idle_time_in_sec);
 
-  void StartSessionOfTypeWithProfile(TestSessionType user_session_type) {
-    profile_ = test::StartSessionOfTypeWithProfile(
-        user_session_type, user_manager(), profile_manager_);
+  void StartSessionOfType(TestSessionType user_session_type) {
+    profile_ = StartSessionOfTypeWithProfile(user_session_type, user_manager(),
+                                             profile_manager_);
   }
   void LogInAsKioskUser() {
-    StartSessionOfTypeWithProfile(
-        TestSessionType::kAutoLaunchedWebKioskSession);
+    StartSessionOfType(TestSessionType::kAutoLaunchedWebKioskSession);
   }
 
   void LogInAsRegularUser() {
-    StartSessionOfTypeWithProfile(TestSessionType::kUnaffiliatedUserSession);
+    StartSessionOfType(TestSessionType::kUnaffiliatedUserSession);
   }
 
   void LogInAsAffiliatedUser() {
-    StartSessionOfTypeWithProfile(TestSessionType::kAffiliatedUserSession);
+    StartSessionOfType(TestSessionType::kAffiliatedUserSession);
   }
 
   void SetDeviceIdleTime(int idle_time_in_sec) {
@@ -482,7 +482,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult();
 
   bool is_supported = [&]() {
@@ -648,7 +648,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", false));
 
@@ -690,7 +690,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true));
 
@@ -713,7 +713,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true));
 
@@ -757,7 +757,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   base::HistogramTester histogram_tester;
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   RunJobAndWaitForResult();
 
   UmaSessionType expected_session_type = [&]() {
@@ -808,7 +808,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
   base::HistogramTester histogram_tester;
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   RunJobAndWaitForResult();
   crd_host_delegate().TerminateCrdSession(duration);
 
@@ -934,7 +934,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
 
   auto payload_without_crd_session_type = Payload();
 
@@ -956,7 +956,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
 
   Result result = RunJobAndWaitForResult(
       Payload().Set("crdSessionType", CrdSessionType::REMOTE_SUPPORT_SESSION));
@@ -976,7 +976,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   AddActiveManagedNetwork();
 
   Result result = RunJobAndWaitForResult(
@@ -1045,10 +1045,67 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
 
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsEnabled) {
+  TestSessionType user_session_type = GetParam();
+  if (SupportsRemoteAccess(user_session_type)) {
+    EnableFeature(kEnableCrdAdminRemoteAccessV2);
+
+    SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                    SessionTypeToString(user_session_type)));
+    StartSessionOfType(user_session_type);
+    AddActiveManagedNetwork();
+
+    Result result = RunJobAndWaitForResult(
+        Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
+
+    EXPECT_SUCCESS(result);
+    EXPECT_TRUE(crd_host_delegate().session_parameters().allow_reconnections);
+  }
+}
+
+TEST_P(
+    DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+    ShouldNotAllowReconnectionsForRemoteAccessSessionsIfV2FeatureIsDisabled) {
+  TestSessionType user_session_type = GetParam();
+  if (SupportsRemoteAccess(user_session_type)) {
+    DisableFeature(kEnableCrdAdminRemoteAccessV2);
+
+    SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                    SessionTypeToString(user_session_type)));
+    StartSessionOfType(user_session_type);
+    AddActiveManagedNetwork();
+
+    Result result = RunJobAndWaitForResult(
+        Payload().Set("crdSessionType", CrdSessionType::REMOTE_ACCESS_SESSION));
+
+    EXPECT_SUCCESS(result);
+    EXPECT_FALSE(crd_host_delegate().session_parameters().allow_reconnections);
+  }
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
+       ShouldNeverAllowReconnectionsForRemoteSupport) {
+  TestSessionType user_session_type = GetParam();
+  if (SupportsRemoteSupport(user_session_type)) {
+    EnableFeature(kEnableCrdAdminRemoteAccessV2);
+
+    SCOPED_TRACE(base::StringPrintf("Testing session type %s",
+                                    SessionTypeToString(user_session_type)));
+    StartSessionOfType(user_session_type);
+
+    Result result = RunJobAndWaitForResult(Payload().Set(
+        "crdSessionType", CrdSessionType::REMOTE_SUPPORT_SESSION));
+
+    EXPECT_SUCCESS(result);
+    EXPECT_FALSE(crd_host_delegate().session_parameters().allow_reconnections);
+  }
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
@@ -1220,7 +1277,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
@@ -1241,7 +1298,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
@@ -1276,7 +1333,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfTypeWithProfile(user_session_type);
+  StartSessionOfType(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
   crd_host_delegate().TerminateCrdSession(duration);
 

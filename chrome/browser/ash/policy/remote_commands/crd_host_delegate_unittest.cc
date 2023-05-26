@@ -317,6 +317,21 @@ TEST_P(CrdHostDelegateTest, ShouldPassTerminateUponInputToRemotingService) {
   EXPECT_EQ(actual_parameters.terminate_upon_input, GetParam());
 }
 
+TEST_P(CrdHostDelegateTest, ShouldPassAllowReconnectionsToRemotingService) {
+  SessionParameters parameters;
+  parameters.allow_reconnections = GetParam();
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.allow_reconnections, GetParam());
+}
+
 TEST_F(CrdHostDelegateTest, ShouldPassAdminEmailToRemotingService) {
   SessionParameters parameters;
   parameters.admin_email = "the.admin@email.com";
