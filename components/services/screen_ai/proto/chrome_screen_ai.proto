@@ -10,10 +10,6 @@ syntax = "proto3";
 
 package chrome_screen_ai;
 
-// This option should be enabled for Chrome, but not in Google3.
-// TODO(https://crbug.com/1278249): Try to make this based on build commands.
-option optimize_for = LITE_RUNTIME;
-
 // A component of a given UI. This proto is filled based on
 // /research/socrates/proto/visual.proto. Refer to that for more context.
 //
