@@ -470,9 +470,9 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
   gpu::Mailbox shared_image_mailbox;
   if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
-        gpu_memory_buffer_.get(), gpu_memory_buffer_manager, GetColorSpace(),
-        surface_origin, surface_alpha_type, shared_image_usage_flags,
-        "CanvasResourceRasterGmb");
+        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
+        gpu_memory_buffer_->CloneHandle());
   } else {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
