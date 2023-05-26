@@ -7,6 +7,7 @@ import os
 import pytest
 
 from chrome.test.variations import test_utils
+from chrome.test.variations.drivers import DriverFactory
 
 
 def pytest_addoption(parser):
@@ -27,6 +28,20 @@ def pytest_addoption(parser):
   parser.addoption('--chromedriver',
                    help='The path to the existing chromedriver. '
                    'This will ignore --channel and skip downloading.')
+
+  # Options for android emulators
+  parser.addoption(
+    '--avd-config',
+    type=os.path.realpath,
+    help=('Path to the avd config. Required for Android products. '
+          '(See //tools/android/avd/proto for message definition '
+          'and existing *.textpb files.)'))
+
+  parser.addoption(
+    '--emulator-window',
+    action='store_true',
+    default=False,
+    help='Enable graphical window display on the emulator.')
 
 
 # pylint: disable=redefined-outer-name
@@ -67,20 +82,46 @@ def chromedriver_path(pytestconfig) -> str:
   return str(os.path.join(downloaded_dir, 'chromedriver'))
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def driver_factory(
   pytestconfig,
   chromedriver_path: str,
-  tmp_path_factory: pytest.TempPathFactory
-  ) -> 'DriverFactory':
+  tmp_path_factory: pytest.TempPathFactory,
+  local_http_server: 'HTTPServer',
+  ) -> DriverFactory:
   """Returns a factory that creates a webdriver."""
+  factory: Optional[DriverFactory] = None
   target_platform = pytestconfig.getoption('target_platform')
   if target_platform in ('linux', 'win', 'mac'):
     from chrome.test.variations.drivers import desktop
-
-    return desktop.DesktopDriverFactory(
+    factory = desktop.DesktopDriverFactory(
       channel=pytestconfig.getoption('channel'),
       crash_dump_dir=str(tmp_path_factory.mktemp('crash')),
       chromedriver_path=chromedriver_path)
 
-  assert False, f'Not supported platform {target_platform}.'
+  elif target_platform in ('android', 'webview'):
+    assert test_utils.get_hosted_platform() == 'linux', (
+      f'Only support to run android tests on Linux, but running on '
+      f'{test_utils.get_hosted_platform()}'
+    )
+    from chrome.test.variations.drivers import android
+    factories = {
+      'android': android.AndroidDriverFactory,
+      'webview': android.WebviewDriverFactory,
+    }
+
+    factory = factories[target_platform](
+      channel=pytestconfig.getoption('channel'),
+      avd_config=pytestconfig.getoption('avd_config'),
+      enabled_emulator_window=pytestconfig.getoption('emulator_window'),
+      chromedriver_path=chromedriver_path,
+      ports=[local_http_server.server_port]
+    )
+
+  if not factory:
+    assert False, f'Not supported platform {target_platform}.'
+
+  try:
+    yield factory
+  finally:
+    factory.close()

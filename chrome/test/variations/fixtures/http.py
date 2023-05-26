@@ -28,7 +28,7 @@ def _start_http_server(
   threading.Thread(target=http_server.serve_forever).start()
   return http_server
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def local_http_server():
   """Starts and returns a http server."""
   http_server = _start_http_server()
