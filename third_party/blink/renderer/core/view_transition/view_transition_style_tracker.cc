@@ -48,6 +48,11 @@
 namespace blink {
 namespace {
 
+// The non-root elements start their index counting from this number. This is to
+// avoid unstable sorts when the index of a root element conflicts with a
+// non-root element.
+constexpr const int kElementIndexOffset = 1000;
+
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
@@ -663,7 +668,7 @@ bool ViewTransitionStyleTracker::Capture() {
   element_data_map_.ReserveCapacityForSize(captured_name_count_);
   HeapHashMap<Member<Element>, viz::ViewTransitionElementResourceId>
       element_snapshot_ids;
-  int next_index = OldRootDataTagSize();
+  int next_index = kElementIndexOffset;
   for (wtf_size_t i = 0; i < transition_names.size(); ++i) {
     const auto& name = transition_names[i];
     const auto& element = elements[i];
@@ -781,8 +786,9 @@ bool ViewTransitionStyleTracker::Start() {
     found_new_names = true;
   }
 
-  int next_index =
-      element_data_map_.size() + OldRootDataTagSize() + NewRootDataTagSize();
+  // We would have an new element index for each of the element_data_map_
+  // entries, which in turn would start from kElementIndexOffset.
+  int next_index = element_data_map_.size() + kElementIndexOffset;
   for (wtf_size_t i = 0; i < elements.size(); ++i) {
     const auto& name = transition_names[i];
     const auto& element = elements[i];
@@ -807,6 +813,8 @@ bool ViewTransitionStyleTracker::Start() {
     DCHECK(!element_data->target_element);
     element_data->target_element = element;
     element_data->new_snapshot_id = snapshot_id;
+    // Verify that the element_index assigned in Capture is less than next_index
+    // here, just as a sanity check.
     DCHECK_LT(element_data->element_index, next_index);
   }
 
@@ -853,9 +861,17 @@ bool ViewTransitionStyleTracker::Start() {
                 return left.second < right.second;
               });
 
+#if DCHECK_IS_ON()
+    int last_index = -1;
+#endif
     VectorOf<AtomicString> new_names;
-    for (auto& [name, index] : new_name_pairs)
+    for (auto& [name, index] : new_name_pairs) {
       new_names.push_back(name);
+#if DCHECK_IS_ON()
+      DCHECK_NE(last_index, index);
+      last_index = index;
+#endif
+    }
 
 #if DCHECK_IS_ON()
     for (wtf_size_t i = 0; i < new_names.size(); ++i) {
@@ -915,9 +931,15 @@ void ViewTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
     viz::ViewTransitionElementResourceId& resource_id) const {
   DCHECK(element);
 
+  // In cc, the index is matched against the elements based on the 0 based
+  // position in a vector, so the index here really does need to be a 0-n range.
+  // This means we need to subtract back the kElementIndexOffset for elements.
+  // However, at this point we know that a root is either transitioning or not,
+  // so we might need to reserve a single slot for the root.
+  int index_offset = -kElementIndexOffset + IsRootTransitioning();
   for (const auto& entry : element_data_map_) {
     if (entry.value->target_element == element) {
-      index.AddIndex(entry.value->element_index);
+      index.AddIndex(entry.value->element_index + index_offset);
       const auto& snapshot_id = HasLiveNewContent()
                                     ? entry.value->new_snapshot_id
                                     : entry.value->old_snapshot_id;
