@@ -70,7 +70,7 @@ class ExternalVkImageBackingFactoryDawnTest
     ExternalVkImageBackingFactoryTest::SetUp();
 
     // Create a Dawn Vulkan device
-    dawn_instance_.DiscoverDefaultAdapters();
+    dawn_instance_.DiscoverDefaultPhysicalDevices();
 
     std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
     auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Vulkan,

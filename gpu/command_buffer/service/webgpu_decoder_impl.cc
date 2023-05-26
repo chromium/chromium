@@ -381,7 +381,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // only if not returning an error.
   error::Error current_decoder_error_ = error::kNoError;
 
-  void DiscoverAdapters();
+  void DiscoverPhysicalDevices();
 
   WGPUAdapter CreatePreferredAdapter(WGPUPowerPreference power_preference,
                                      bool force_fallback,
@@ -1182,7 +1182,7 @@ ContextResult WebGPUDecoderImpl::Initialize(
     use_webgpu_adapter_ = WebGPUAdapterName::kSwiftShader;
   }
 
-  DiscoverAdapters();
+  DiscoverPhysicalDevices();
   return ContextResult::kSuccess;
 }
 
@@ -1516,7 +1516,7 @@ bool WebGPUDecoderImpl::use_blocklist() const {
            base::Contains(require_disabled_toggles_, "adapter_blocklist"));
 }
 
-void WebGPUDecoderImpl::DiscoverAdapters() {
+void WebGPUDecoderImpl::DiscoverPhysicalDevices() {
   dawn_instance_->EnableAdapterBlocklist(use_blocklist());
 
 #if BUILDFLAG(IS_WIN)
@@ -1532,32 +1532,33 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
 
-  dawn::native::d3d12::AdapterDiscoveryOptions d3d12Options(dxgi_adapter);
-  dawn_instance_->DiscoverAdapters(&d3d12Options);
+  dawn::native::d3d12::PhysicalDeviceDiscoveryOptions d3d12Options(
+      dxgi_adapter);
+  dawn_instance_->DiscoverPhysicalDevices(&d3d12Options);
 
   if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
-    dawn::native::d3d11::AdapterDiscoveryOptions d3d11Options(
+    dawn::native::d3d11::PhysicalDeviceDiscoveryOptions d3d11Options(
         std::move(dxgi_adapter));
-    dawn_instance_->DiscoverAdapters(&d3d11Options);
+    dawn_instance_->DiscoverPhysicalDevices(&d3d11Options);
   }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-  // Also discover the SwiftShader adapter. It will be discovered by default
-  // for other OSes in DiscoverDefaultAdapters.
-  dawn::native::vulkan::AdapterDiscoveryOptions swiftShaderOptions;
+  // Also discover the SwiftShader physical device. It will be discovered by
+  // default for other OSes in DiscoverDefaultPhysicalDevices.
+  dawn::native::vulkan::PhysicalDeviceDiscoveryOptions swiftShaderOptions;
   swiftShaderOptions.forceSwiftShader = true;
-  dawn_instance_->DiscoverAdapters(&swiftShaderOptions);
+  dawn_instance_->DiscoverPhysicalDevices(&swiftShaderOptions);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
-    // Discover default adapters to also discover the OpenGLES adapter.
+    // Discover default physical devices to also discover the OpenGLES one.
     // TODO(senorblanco): This may incorrectly discover a compat adapter that
     // does not match the one ANGLE is using.
-    dawn_instance_->DiscoverDefaultAdapters();
+    dawn_instance_->DiscoverDefaultPhysicalDevices();
   }
 #else   // BUILDFLAG(IS_WIN)
-  // Only discover default adapters on non-Windows. Windows requires
+  // Only discover default physical devices on non-Windows. Windows requires
   // compatibility with ANGLE. Other adapters will not be compatible.
-  dawn_instance_->DiscoverDefaultAdapters();
+  dawn_instance_->DiscoverDefaultPhysicalDevices();
 #endif  // BUILDFLAG(IS_WIN)
 }
 

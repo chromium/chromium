@@ -625,7 +625,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
 TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -821,7 +821,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ConcurrentReads) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -984,7 +984,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1076,7 +1076,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create dawn device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1343,7 +1343,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,
@@ -1473,7 +1473,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // Create a Dawn D3D12 device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::D3D12,

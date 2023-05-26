@@ -73,7 +73,7 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   instance_.EnableBackendValidation(true);
 #endif
 
-  instance_.DiscoverDefaultAdapters();
+  instance_.DiscoverDefaultPhysicalDevices();
   DawnProcTable backend_procs = dawn::native::GetProcs();
   dawnProcSetProcs(&backend_procs);
 

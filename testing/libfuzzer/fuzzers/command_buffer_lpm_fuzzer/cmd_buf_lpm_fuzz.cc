@@ -151,7 +151,7 @@ void CmdBufFuzz::GfxInit() {
   wire_descriptor_->serializer = dawn_wire_serializer_.get();
   wire_server_ = std::make_unique<dawn::wire::WireServer>(*wire_descriptor_);
   dawn_instance_ = std::make_unique<dawn::native::Instance>();
-  dawn_instance_->DiscoverDefaultAdapters();
+  dawn_instance_->DiscoverDefaultPhysicalDevices();
   wire_server_->InjectInstance(dawn_instance_->Get(), 1, 0);
 
   VLOG(3) << "Populate data structure grab bag";

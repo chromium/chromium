@@ -169,7 +169,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
   // Create a Dawn Metal device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
@@ -313,7 +313,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a Dawn Metal device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
@@ -403,7 +403,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create dawn device
   dawn::native::Instance instance;
-  instance.DiscoverDefaultAdapters();
+  instance.DiscoverDefaultPhysicalDevices();
 
   std::vector<dawn::native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = base::ranges::find(adapters, wgpu::BackendType::Metal,
