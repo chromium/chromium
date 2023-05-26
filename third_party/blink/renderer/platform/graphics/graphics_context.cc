@@ -30,6 +30,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "cc/paint/color_filter.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -260,7 +260,7 @@ void GraphicsContext::BeginLayer(SkBlendMode xfermode) {
   BeginLayer(flags);
 }
 
-void GraphicsContext::BeginLayer(sk_sp<SkColorFilter> color_filter) {
+void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter) {
   cc::PaintFlags flags;
   flags.setColorFilter(std::move(color_filter));
   BeginLayer(flags);

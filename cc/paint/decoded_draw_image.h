@@ -12,12 +12,13 @@
 #include "cc/paint/paint_flags.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
 
 namespace cc {
+
+class ColorFilter;
 
 // A DecodedDrawImage is a finalized (decoded, scaled, colorspace converted,
 // possibly uploaded) version of a DrawImage.  When this image is going to
@@ -27,7 +28,7 @@ namespace cc {
 class CC_PAINT_EXPORT DecodedDrawImage {
  public:
   DecodedDrawImage(sk_sp<SkImage> image,
-                   sk_sp<SkColorFilter> dark_mode_color_filter,
+                   sk_sp<ColorFilter> dark_mode_color_filter,
                    const SkSize& src_rect_offset,
                    const SkSize& scale_adjustment,
                    PaintFlags::FilterQuality filter_quality,
@@ -35,7 +36,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   DecodedDrawImage(const gpu::Mailbox& mailbox,
                    PaintFlags::FilterQuality filter_quality);
   DecodedDrawImage(absl::optional<uint32_t> transfer_cache_entry_id,
-                   sk_sp<SkColorFilter> dark_mode_color_filter,
+                   sk_sp<ColorFilter> dark_mode_color_filter,
                    const SkSize& src_rect_offset,
                    const SkSize& scale_adjustment,
                    PaintFlags::FilterQuality filter_quality,
@@ -50,7 +51,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   ~DecodedDrawImage();
 
   const sk_sp<SkImage>& image() const { return image_; }
-  const sk_sp<SkColorFilter>& dark_mode_color_filter() const {
+  const sk_sp<ColorFilter>& dark_mode_color_filter() const {
     return dark_mode_color_filter_;
   }
   absl::optional<uint32_t> transfer_cache_entry_id() const {
@@ -76,7 +77,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
   sk_sp<SkImage> image_;
   gpu::Mailbox mailbox_;
   absl::optional<uint32_t> transfer_cache_entry_id_;
-  sk_sp<SkColorFilter> dark_mode_color_filter_;
+  sk_sp<ColorFilter> dark_mode_color_filter_;
   SkSize src_rect_offset_;
   SkSize scale_adjustment_;
   PaintFlags::FilterQuality filter_quality_;

@@ -20,11 +20,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/source_alpha.h"
 
+#include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 
 namespace blink {
 
@@ -39,7 +39,7 @@ sk_sp<PaintFilter> SourceAlpha::CreateImageFilter() {
       InputEffect(0), OperatingInterpolationSpace()));
   float matrix[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                       0, 0, 0, 0, 0, 0, 0, 0, 1, 0};
-  sk_sp<SkColorFilter> color_filter = SkColorFilters::Matrix(matrix);
+  sk_sp<cc::ColorFilter> color_filter = cc::ColorFilter::MakeMatrix(matrix);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(source_graphic));
 }

@@ -336,10 +336,10 @@ TEST(PaintOpHelper, TranslateToString) {
 
 TEST(PaintOpHelperFilters, ColorFilterPaintFilter) {
   PaintFilter::CropRect crop_rect(SkRect::MakeWH(100.f, 100.f));
-  ColorFilterPaintFilter filter(SkLumaColorFilter::Make(),
+  ColorFilterPaintFilter filter(ColorFilter::MakeLuma(),
                                 /*input=*/nullptr, &crop_rect);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
-            "ColorFilterPaintFilter(color_filter=SkColorFilter, input=(nil), "
+            "ColorFilterPaintFilter(color_filter=ColorFilter, input=(nil), "
             "crop_rect=[0.000,0.000 100.000x100.000])");
 }
 

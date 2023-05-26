@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 
+#include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
-#include "third_party/skia/include/effects/SkLumaColorFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -74,7 +74,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   bool needs_luminance_layer =
       masker->StyleRef().MaskType() == EMaskType::kLuminance;
   if (needs_luminance_layer) {
-    context.BeginLayer(SkLumaColorFilter::Make());
+    context.BeginLayer(cc::ColorFilter::MakeLuma());
   }
   context.DrawRecord(std::move(record));
   if (needs_luminance_layer)

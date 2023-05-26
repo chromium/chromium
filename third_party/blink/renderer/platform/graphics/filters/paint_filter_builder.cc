@@ -96,7 +96,7 @@ sk_sp<PaintFilter> TransformInterpolationSpace(
     sk_sp<PaintFilter> input,
     InterpolationSpace src_interpolation_space,
     InterpolationSpace dst_interpolation_space) {
-  sk_sp<SkColorFilter> color_filter =
+  sk_sp<cc::ColorFilter> color_filter =
       interpolation_space_utilities::CreateInterpolationSpaceFilter(
           src_interpolation_space, dst_interpolation_space);
   if (!color_filter)

@@ -55,6 +55,10 @@ class SkPath;
 class SkRRect;
 struct SkRect;
 
+namespace cc {
+class ColorFilter;
+}
+
 namespace paint_preview {
 class PaintPreviewTracker;
 }  // namespace paint_preview
@@ -451,7 +455,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // the backdrop (i.e. EndLayer()).
   void BeginLayer(float opacity = 1.0f);
   void BeginLayer(SkBlendMode);
-  void BeginLayer(sk_sp<SkColorFilter>);
+  void BeginLayer(sk_sp<cc::ColorFilter>);
   void BeginLayer(sk_sp<PaintFilter>);
   void EndLayer();
 

@@ -13,8 +13,11 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-class SkColorFilter;
 class SkPixmap;
+
+namespace cc {
+class ColorFilter;
+}
 
 namespace blink {
 
@@ -62,8 +65,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // empty or |src| is larger than pixmap bounds. This function should be called
   // only if image policy is set to DarkModeImagePolicy::kFilterSmart and image
   // is classified as ImageType::kIcon or kSeparator. This API is thread-safe.
-  sk_sp<SkColorFilter> GenerateImageFilter(const SkPixmap& pixmap,
-                                           const SkIRect& src) const;
+  sk_sp<cc::ColorFilter> GenerateImageFilter(const SkPixmap& pixmap,
+                                             const SkIRect& src) const;
 
   void ApplyFilterToImage(Image* image,
                           cc::PaintFlags* flags,
@@ -78,7 +81,7 @@ class PLATFORM_EXPORT DarkModeFilter {
     std::unique_ptr<DarkModeColorClassifier> background_classifier;
     std::unique_ptr<DarkModeImageClassifier> image_classifier;
     std::unique_ptr<DarkModeColorFilter> color_filter;
-    sk_sp<SkColorFilter> image_filter;
+    sk_sp<cc::ColorFilter> image_filter;
   };
 
   SkColor4f AdjustDarkenColor(const SkColor4f& color,
@@ -90,7 +93,7 @@ class PLATFORM_EXPORT DarkModeFilter {
   // Returns dark mode color filter for images. This function should be called
   // only if image policy is set to DarkModeImagePolicy::kFilterAll or image is
   // classified as ImageType::kIcon or kSeparator. This API is thread-safe.
-  sk_sp<SkColorFilter> GetImageFilter() const;
+  sk_sp<cc::ColorFilter> GetImageFilter() const;
 
   DarkModeImagePolicy GetDarkModeImagePolicy() const;
 

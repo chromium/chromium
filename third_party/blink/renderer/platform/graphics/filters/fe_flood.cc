@@ -65,10 +65,8 @@ sk_sp<PaintFilter> FEFlood::CreateImageFilter() {
   color.fA *= flood_opacity_;
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(
-      // TODO(crbug.com/1308932): SkColorFilters::Blend to SkColor4f
-      SkColorFilters::Blend(Color::FromSkColor4f(color).Rgb(),
-                            SkBlendMode::kSrc),
-      nullptr, base::OptionalToPtr(crop_rect));
+      cc::ColorFilter::MakeBlend(color, SkBlendMode::kSrc), nullptr,
+      base::OptionalToPtr(crop_rect));
 }
 
 WTF::TextStream& FEFlood::ExternalRepresentation(WTF::TextStream& ts,

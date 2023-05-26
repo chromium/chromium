@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
+#include "cc/paint/color_filter.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_shader.h"
@@ -152,12 +153,12 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
 class CC_PAINT_EXPORT ColorFilterPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kColorFilter;
-  ColorFilterPaintFilter(sk_sp<SkColorFilter> color_filter,
+  ColorFilterPaintFilter(sk_sp<ColorFilter> color_filter,
                          sk_sp<PaintFilter> input,
                          const CropRect* crop_rect = nullptr);
   ~ColorFilterPaintFilter() override;
 
-  const sk_sp<SkColorFilter>& color_filter() const { return color_filter_; }
+  const sk_sp<ColorFilter>& color_filter() const { return color_filter_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
@@ -168,7 +169,7 @@ class CC_PAINT_EXPORT ColorFilterPaintFilter final : public PaintFilter {
       ImageProvider* image_provider) const override;
 
  private:
-  sk_sp<SkColorFilter> color_filter_;
+  sk_sp<ColorFilter> color_filter_;
   sk_sp<PaintFilter> input_;
 };
 

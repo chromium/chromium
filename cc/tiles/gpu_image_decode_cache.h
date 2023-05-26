@@ -42,6 +42,7 @@ namespace cc {
 
 CC_EXPORT BASE_DECLARE_FEATURE(kPurgeOldCacheEntriesOnTimer);
 
+class ColorFilter;
 class RasterDarkModeFilter;
 
 // OVERVIEW:
@@ -392,7 +393,7 @@ class CC_EXPORT GpuImageDecodeCache
       }
     };
 
-    base::flat_map<SkIRect, sk_sp<SkColorFilter>, SkIRectCompare>
+    base::flat_map<SkIRect, sk_sp<ColorFilter>, SkIRectCompare>
         dark_mode_color_filter_cache;
 
    private:

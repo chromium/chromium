@@ -116,14 +116,18 @@ bool PaintFlags::getFillPath(const SkPath& src,
 }
 
 bool PaintFlags::SupportsFoldingAlpha() const {
-  if (getBlendMode() != SkBlendMode::kSrcOver)
+  if (getBlendMode() != SkBlendMode::kSrcOver) {
     return false;
-  if (getColorFilter())
+  }
+  if (getColorFilter()) {
     return false;
-  if (getImageFilter())
+  }
+  if (getImageFilter()) {
     return false;
-  if (getLooper())
+  }
+  if (getLooper()) {
     return false;
+  }
   return true;
 }
 
@@ -133,7 +137,9 @@ SkPaint PaintFlags::ToSkPaint() const {
   if (shader_)
     paint.setShader(shader_->GetSkShader(getFilterQuality()));
   paint.setMaskFilter(mask_filter_);
-  paint.setColorFilter(color_filter_);
+  if (color_filter_) {
+    paint.setColorFilter(color_filter_->GetSkColorFilter());
+  }
   if (image_filter_)
     paint.setImageFilter(image_filter_->cached_sk_filter_);
   paint.setColor(color_);
@@ -184,8 +190,8 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
                                           other.path_effect_) &&
          AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST
                                           other.mask_filter_) &&
-         AreSkFlattenablesEqualForTesting(color_filter_,  // IN-TEST
-                                          other.color_filter_) &&
+         AreValuesEqualForTesting(color_filter_,  // IN-TEST
+                                  other.color_filter_) &&
          AreSkFlattenablesEqualForTesting(draw_looper_,  // IN-TEST
                                           other.draw_looper_) &&
          AreValuesEqualForTesting(image_filter_,  // IN-TEST

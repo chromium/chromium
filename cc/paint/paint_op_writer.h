@@ -20,6 +20,7 @@
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 
 struct SkGainmapInfo;
+struct SkHighContrastConfig;
 struct SkRect;
 struct SkIRect;
 class SkRRect;
@@ -30,6 +31,7 @@ struct Mailbox;
 
 namespace cc {
 
+class ColorFilter;
 class DecodedDrawImage;
 class DrawImage;
 class PaintShader;
@@ -111,6 +113,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   static constexpr size_t SerializedSize(const T& data);
   static size_t SerializedSize(const PaintImage& image);
   static size_t SerializedSize(const PaintRecord& record);
+  static size_t SerializedSize(const SkHighContrastConfig& config);
 
   // Serialization of raw/smart pointers is not supported by default.
   template <typename T>
@@ -128,6 +131,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   }
   static size_t SerializedSize(const SkFlattenable* flattenable);
   static size_t SerializedSize(const SkColorSpace* color_space);
+  static size_t SerializedSize(const ColorFilter* filter);
   static size_t SerializedSize(const PaintFilter* filter);
 
   template <typename T>
@@ -199,6 +203,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkYUVAInfo::PlaneConfig plane_config);
   void Write(SkYUVAInfo::Subsampling subsampling);
   void Write(const gpu::Mailbox& mailbox);
+  void Write(const SkHighContrastConfig& config);
 
   // Shaders and filters need to know the current transform in order to lock in
   // the scale factor they will be evaluated at after deserialization. This is
@@ -208,6 +213,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const PaintShader* shader,
              PaintFlags::FilterQuality quality,
              const SkM44& current_ctm);
+  void Write(const ColorFilter* filter);
   void Write(const PaintFilter* filter, const SkM44& current_ctm);
 
   void Write(SkClipOp op) { WriteEnum(op); }

@@ -11,6 +11,8 @@ cc_component("paint") {
   sources = [
     "clear_for_opaque_raster.cc",
     "clear_for_opaque_raster.h",
+    "color_filter.cc",
+    "color_filter.h",
     "decode_stashing_image_provider.cc",
     "decode_stashing_image_provider.h",
     "decoded_draw_image.cc",

@@ -498,8 +498,8 @@ class PaintOpHelper {
     return "<unknown SkImageFilters::Dither>";
   }
 
-  static std::string ToString(const SkColorFilter& filter) {
-    return "SkColorFilter";
+  static std::string ToString(const ColorFilter& filter) {
+    return "ColorFilter";
   }
 
   static std::string ToString(const SkMaskFilter& filter) {

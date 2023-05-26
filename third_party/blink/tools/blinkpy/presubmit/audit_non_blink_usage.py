@@ -319,6 +319,7 @@ _CONFIG = [
 
             # cc painting and raster types.
             'cc::CategorizedWorkerPool',
+            'cc::ColorFilter',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',

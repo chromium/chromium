@@ -133,8 +133,8 @@ sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
   GetValues(r_values, g_values, b_values, a_values);
 
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
-  sk_sp<SkColorFilter> color_filter =
-      SkTableColorFilter::MakeARGB(a_values, r_values, g_values, b_values);
+  sk_sp<cc::ColorFilter> color_filter =
+      cc::ColorFilter::MakeTableARGB(a_values, r_values, g_values, b_values);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(input),
                                             base::OptionalToPtr(crop_rect));

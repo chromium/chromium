@@ -9,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/notreached.h"
+#include "cc/paint/color_filter.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -36,6 +37,7 @@
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -93,6 +95,22 @@ size_t PaintOpWriter::SerializedSize(const PaintRecord& record) {
   // This works only for security constrained serialization which ignores
   // records and writes only a size_t(0).
   return SerializedSize<size_t>();
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const SkHighContrastConfig& config) {
+  return SerializedSize(config.fGrayscale) +
+         SerializedSize(config.fInvertStyle) + SerializedSize(config.fContrast);
+}
+
+// static
+size_t PaintOpWriter::SerializedSize(const ColorFilter* filter) {
+  if (!filter) {
+    return SerializedSize(ColorFilter::Type::kNull);
+  }
+  base::CheckedNumeric<size_t> size = SerializedSize(filter->type_);
+  size += filter->SerializedDataSize();
+  return size.ValueOrDie();
 }
 
 // static
@@ -298,7 +316,7 @@ void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
 
   WriteFlattenable(flags.path_effect_.get());
   WriteFlattenable(flags.mask_filter_.get());
-  WriteFlattenable(flags.color_filter_.get());
+  Write(flags.color_filter_.get());
 
   if (enable_security_constraints_)
     WriteSize(static_cast<size_t>(0u));
@@ -422,6 +440,12 @@ void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox) {
 
   memcpy(memory_, mailbox.name, sizeof(mailbox.name));
   DidWrite(sizeof(mailbox.name));
+}
+
+void PaintOpWriter::Write(const SkHighContrastConfig& config) {
+  WriteSimple(config.fGrayscale);
+  WriteEnum(config.fInvertStyle);
+  WriteSimple(config.fContrast);
 }
 
 void PaintOpWriter::Write(const sk_sp<SkData>& data) {
@@ -687,6 +711,15 @@ void PaintOpWriter::AlignMemory(size_t alignment) {
   remaining_bytes_ -= padding;
 }
 
+void PaintOpWriter::Write(const ColorFilter* filter) {
+  if (!filter) {
+    WriteEnum(ColorFilter::Type::kNull);
+    return;
+  }
+  WriteEnum(filter->type_);
+  filter->SerializeData(*this);
+}
+
 void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
   if (!filter) {
     WriteEnum(PaintFilter::Type::kNullFilter);
@@ -782,7 +815,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
 
 void PaintOpWriter::Write(const ColorFilterPaintFilter& filter,
                           const SkM44& current_ctm) {
-  WriteFlattenable(filter.color_filter().get());
+  Write(filter.color_filter().get());
   Write(filter.input().get(), current_ctm);
 }
 
