@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -17,10 +19,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/views/widget/widget.h"
 
 namespace policy {
 
@@ -81,16 +85,57 @@ FilesPolicyDialog::FilesPolicyDialog(
     DlpFileDestination destination,
     DlpFilesController::FileAction action,
     gfx::NativeWindow modal_parent)
-    : PolicyDialogBase(std::move(callback)),
+    : type_(FilesDialogType::kWarning),  // default
+      policy_(Policy::kDlp),             // default
       files_(std::move(files)),
       destination_(destination),
       action_(action) {
-  // TODO(b/277879595): When no Files app window, open a new one.
-  // TODO(b/279397364): Confirm behavior if we cannot open Files App.
-  ui::ModalType type =
-      modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
-  SetModalType(type);
+  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
 
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
+  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+
+  AddGeneralInformation();
+  MaybeAddConfidentialRows();
+}
+
+FilesPolicyDialog::FilesPolicyDialog(
+    FilesDialogType type,
+    absl::optional<Policy> policy,
+    absl::optional<OnDlpRestrictionCheckedCallback> callback,
+    const std::vector<DlpConfidentialFile>& files,
+    DlpFileDestination destination,
+    DlpFilesController::FileAction action,
+    gfx::NativeWindow modal_parent)
+    : type_(type),
+      policy_(policy),
+      files_(std::move(files)),
+      destination_(destination),
+      action_(action) {
+  // TODO(b/279397364): Confirm behavior if we cannot open Files App.
+  ui::ModalType modal =
+      modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
+  SetModalType(modal);
+
+  switch (type_) {
+    case FilesDialogType::kWarning:
+      DCHECK(policy.has_value());
+      DCHECK(callback.has_value());
+      SetOnDlpRestrictionCheckedCallback(std::move(callback.value()));
+      break;
+    case FilesDialogType::kError:
+      SetAcceptCallback(base::BindOnce(&FilesPolicyDialog::Dismiss,
+                                       weak_factory_.GetWeakPtr()));
+      SetCancelCallback(base::BindOnce(&FilesPolicyDialog::OpenHelpPage,
+                                       weak_factory_.GetWeakPtr()));
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  // TODO(b/283786807): Use type & policy for computing the strings.
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
@@ -213,6 +258,15 @@ std::u16string FilesPolicyDialog::GetMessage() {
       l10n_util::GetPluralStringFUTF16(message_id, files_.size()),
       destination_str,
       /*offset=*/nullptr);
+}
+
+void FilesPolicyDialog::OpenHelpPage() {
+  // TODO(b/283786134): Implementation.
+}
+
+void FilesPolicyDialog::Dismiss() {
+  GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 BEGIN_METADATA(FilesPolicyDialog, PolicyDialogBase)

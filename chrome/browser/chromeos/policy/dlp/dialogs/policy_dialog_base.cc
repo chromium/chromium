@@ -79,11 +79,7 @@ constexpr int kConfidentialContentLineHeight = 20;
 constexpr int kConfidentialContentListMaxHeight = 240;
 }  // namespace
 
-PolicyDialogBase::PolicyDialogBase(OnDlpRestrictionCheckedCallback callback) {
-  auto split = base::SplitOnceCallback(std::move(callback));
-  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
-  SetCancelCallback(base::BindOnce(std::move(split.second), false));
-
+PolicyDialogBase::PolicyDialogBase() {
   SetShowCloseButton(false);
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -93,6 +89,13 @@ PolicyDialogBase::PolicyDialogBase(OnDlpRestrictionCheckedCallback callback) {
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+}
+
+void PolicyDialogBase::SetOnDlpRestrictionCheckedCallback(
+    OnDlpRestrictionCheckedCallback callback) {
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
+  SetCancelCallback(base::BindOnce(std::move(split.second), false));
 }
 
 void PolicyDialogBase::SetupUpperPanel(const std::u16string& title,
