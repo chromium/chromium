@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, OpenOnAnotherScreen) {
     for (const display::Display& target_display : displays) {
       for (const char* url : {".", "about:blank"}) {
         const std::string open_script = content::JsReplace(
-            "open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+            "open($1, '', 'left=$2,top=$3,width=200,height=200')", url,
             target_display.work_area().x(), target_display.work_area().y());
         Browser* popup = OpenPopup(browser(), open_script);
         display::Display popup_display = GetDisplayNearestBrowser(popup);
