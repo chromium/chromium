@@ -260,9 +260,7 @@ std::vector<uint8_t> BuildGetInfoResponse() {
 
   cbor::Value::ArrayValue extensions;
   extensions.emplace_back("devicePubKey");
-  if (base::FeatureList::IsEnabled(kWebAuthnPRFAsAuthenticator)) {
-    extensions.emplace_back("prf");
-  }
+  extensions.emplace_back("prf");
 
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));

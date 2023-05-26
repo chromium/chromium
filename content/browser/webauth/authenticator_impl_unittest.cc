@@ -9619,8 +9619,6 @@ class AuthenticatorCableV2AuthenticatorTest
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction_;
   bool did_complete_ = false;
   absl::optional<device::cablev2::authenticator::Platform::Error> error_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnPRFAsAuthenticator};
 };
 
 TEST_F(AuthenticatorCableV2AuthenticatorTest, GetAssertion) {
