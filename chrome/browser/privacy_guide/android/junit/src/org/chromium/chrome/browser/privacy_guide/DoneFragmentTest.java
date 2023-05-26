@@ -23,6 +23,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -35,6 +38,8 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 public class DoneFragmentTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public JniMocker mMocker = new JniMocker();
 
     @Mock
     private Profile mProfile;
@@ -42,14 +47,15 @@ public class DoneFragmentTest {
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
     private IdentityManager mIdentityManager;
+    @Mock
+    private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
 
     private FragmentScenario mScenario;
     private DoneFragment mFragment;
     private View mPsButton;
     private View mWaaButton;
 
-    private void initFragmentWithSignInState(boolean isSignedIn) {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
+    private void initFragment() {
         mScenario = FragmentScenario.launchInContainer(
                 DoneFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> {
@@ -59,11 +65,22 @@ public class DoneFragmentTest {
         });
     }
 
+    private void setSignedInState(boolean isSignedIn) {
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(isSignedIn);
+    }
+
+    private void setPrivacySandboxState(boolean isRestricted, boolean isRestrictedNoticeEnabled) {
+        when(mPrivacySandboxBridge.isPrivacySandboxRestricted()).thenReturn(isRestricted);
+        when(mPrivacySandboxBridge.isRestrictedNoticeEnabled())
+                .thenReturn(isRestrictedNoticeEnabled);
+    }
+
     @Before
     public void setUp() {
         Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mMocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridge);
     }
 
     @After
@@ -76,16 +93,50 @@ public class DoneFragmentTest {
     }
 
     @Test
-    public void testOneLinkVisibleWhenSignedOut() {
-        initFragmentWithSignInState(false);
-        assertTrue(mPsButton.isShown());
-        assertFalse(mWaaButton.isShown());
+    public void testPSButtonNotVisible() {
+        setPrivacySandboxState(true, false);
+        initFragment();
+
+        assertFalse(mPsButton.isShown());
     }
 
     @Test
-    public void testTwoLinksVisibleWhenSignedIn() {
-        initFragmentWithSignInState(true);
+    public void testPSButtonVisibleWhenNotRestricted() {
+        setPrivacySandboxState(false, false);
+        initFragment();
+
         assertTrue(mPsButton.isShown());
+    }
+
+    @Test
+    public void testPSButtonVisibleWhenRestrictedNoticeEnabled() {
+        setPrivacySandboxState(true, true);
+        initFragment();
+
+        assertTrue(mPsButton.isShown());
+    }
+
+    @Test
+    public void testPSButtonVisibleWhenNotRestrictedAndRestrictedNoticeEnabled() {
+        setPrivacySandboxState(false, true);
+        initFragment();
+
+        assertTrue(mPsButton.isShown());
+    }
+
+    @Test
+    public void testWaaButtonVisibleWhenSignedIn() {
+        setSignedInState(true);
+        initFragment();
+
         assertTrue(mWaaButton.isShown());
+    }
+
+    @Test
+    public void testWaaButtonNotVisibleWhenNotSignedIn() {
+        setSignedInState(false);
+        initFragment();
+
+        assertFalse(mWaaButton.isShown());
     }
 }

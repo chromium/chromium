@@ -41,11 +41,13 @@ found in the LICENSE file.
             style="@style/TextAppearance.TextLarge.Secondary" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+            android:id="@+id/ps_heading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:titleText="@string/privacy_guide_privacy_sandbox_heading" />
 
         <LinearLayout
+            android:id="@+id/ps_explanation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/done_step_explanation_marginBottom"
