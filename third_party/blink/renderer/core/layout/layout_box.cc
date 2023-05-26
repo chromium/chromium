@@ -3780,24 +3780,6 @@ void LayoutBox::ComputeLogicalHeight(
   }
 }
 
-LayoutUnit LayoutBox::ComputeLogicalHeightWithoutLayout() const {
-  NOT_DESTROYED();
-  LogicalExtentComputedValues computed_values;
-
-  if (!SelfNeedsLayout() && HasOverrideIntrinsicContentLogicalHeight()) {
-    ComputeLogicalHeight(OverrideIntrinsicContentLogicalHeight() +
-                             BorderAndPaddingLogicalHeight(),
-                         LayoutUnit(), computed_values);
-  } else {
-    // TODO(cbiesinger): We should probably return something other than just
-    // border + padding, but for now we have no good way to do anything else
-    // without layout, so we just use that.
-    ComputeLogicalHeight(BorderAndPaddingLogicalHeight(), LayoutUnit(),
-                         computed_values);
-  }
-  return computed_values.extent_;
-}
-
 LayoutUnit LayoutBox::ComputeLogicalHeightUsing(
     SizeType height_type,
     const Length& height,

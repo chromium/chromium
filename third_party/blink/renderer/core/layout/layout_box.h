@@ -1149,13 +1149,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual void ComputeLogicalHeight(LayoutUnit logical_height,
                                     LayoutUnit logical_top,
                                     LogicalExtentComputedValues&) const;
-  // This function will compute the logical border-box height, without laying
-  // out the box. This means that the result is only "correct" when the height
-  // is explicitly specified. This function exists so that intrinsic width
-  // calculations have a way to deal with children that have orthogonal flows.
-  // When there is no explicit height, this function assumes a content height of
-  // zero (and returns just border+padding).
-  LayoutUnit ComputeLogicalHeightWithoutLayout() const;
 
   bool StretchesToViewport() const {
     NOT_DESTROYED();

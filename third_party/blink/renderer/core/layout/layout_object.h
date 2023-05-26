@@ -2273,11 +2273,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   void ForceLayout();
-  void ForceLayoutWithPaintInvalidation() {
-    NOT_DESTROYED();
-    SetShouldDoFullPaintInvalidation();
-    ForceLayout();
-  }
 
   // Used for element state updates that cannot be fixed with a paint
   // invalidation and do not need a relayout.
