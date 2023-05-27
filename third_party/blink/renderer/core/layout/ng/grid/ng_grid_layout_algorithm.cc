@@ -2917,7 +2917,8 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   finding the size of an fr using all the grid tracks that the item
     //   crosses and a space to fill of the item’s max-content contribution.
     for (auto& grid_item : sizing_data.grid_items) {
-      if (grid_item.IsSpanningFlexibleTrack(track_direction)) {
+      if (grid_item.IsConsideredForSizing(track_direction) &&
+          grid_item.IsSpanningFlexibleTrack(track_direction)) {
         double grid_item_fr_size =
             FindFrSize(GetSetIteratorForItem(grid_item, track_collection),
                        ContributionSizeForGridItem(
