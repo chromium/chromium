@@ -184,6 +184,10 @@ HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
   return dxgi_handle_.Get();
 }
 
+const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
+  return dxgi_token_;
+}
+
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     gfx::GpuMemoryBufferId id,
     const gfx::Size& size,

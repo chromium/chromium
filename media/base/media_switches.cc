@@ -1156,6 +1156,11 @@ BASE_FEATURE(kMediaFoundationD3D11VideoCapture,
              "MediaFoundationD3D11VideoCapture",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable zero-copy based on MediaFoundation video capture with D3D11.
+BASE_FEATURE(kMediaFoundationD3D11VideoCaptureZeroCopy,
+             "MediaFoundationD3D11VideoCaptureZeroCopy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables VP8 decode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
     "MediaFoundationVP8Decoding", base::FEATURE_DISABLED_BY_DEFAULT};

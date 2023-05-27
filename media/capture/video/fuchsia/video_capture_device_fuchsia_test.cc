@@ -164,7 +164,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       std::vector<CapturedExternalVideoBuffer> scaled_buffers,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      gfx::Rect visible_rect) override {
+      const gfx::Rect& visible_rect) override {
     NOTREACHED_NORETURN();
   }
   void OnIncomingCapturedBuffer(Buffer buffer,

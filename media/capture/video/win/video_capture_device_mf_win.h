@@ -166,6 +166,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
                                  base::TimeTicks reference_time,
                                  base::TimeDelta timestamp);
+  HRESULT DeliverExternalBufferToClient(ID3D11Texture2D* texture,
+                                        const gfx::Size& texture_size,
+                                        const VideoPixelFormat& pixel_format,
+                                        base::TimeTicks reference_time,
+                                        base::TimeDelta timestamp);
   void OnCameraControlChangeInternal(REFGUID control_set, UINT32 id);
   void OnIncomingCapturedDataInternal(
       Microsoft::WRL::ComPtr<IMFMediaBuffer> buffer,

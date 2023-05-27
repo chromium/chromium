@@ -487,9 +487,16 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     std::vector<CapturedExternalVideoBuffer> scaled_buffers,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    gfx::Rect visible_rect) {
-  auto ready_frame = CreateReadyFrameFromExternalBuffer(
-      std::move(buffer), reference_time, timestamp, visible_rect);
+    const gfx::Rect& visible_rect) {
+  ReadyFrameInBuffer ready_frame;
+  if (CreateReadyFrameFromExternalBuffer(
+          std::move(buffer), reference_time, timestamp, visible_rect,
+          &ready_frame) != ReserveResult::kSucceeded) {
+    DVLOG(2) << __func__
+             << " CreateReadyFrameFromExternalBuffer failed: reservation "
+                "trakcer failed.";
+    return;
+  }
   std::vector<ReadyFrameInBuffer> scaled_ready_frames;
   scaled_ready_frames.reserve(scaled_buffers.size());
   for (auto& scaled_buffer : scaled_buffers) {
@@ -498,25 +505,40 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     // be removed in another CL.
     gfx::Rect scaled_buffer_visible_rect =
         gfx::Rect{scaled_buffer.format.frame_size};
-    scaled_ready_frames.push_back(CreateReadyFrameFromExternalBuffer(
-        std::move(scaled_buffer), reference_time, timestamp,
-        scaled_buffer_visible_rect));
+    ReadyFrameInBuffer scaled_ready_frame;
+    if (CreateReadyFrameFromExternalBuffer(
+            std::move(scaled_buffer), reference_time, timestamp,
+            scaled_buffer_visible_rect,
+            &scaled_ready_frame) != ReserveResult::kSucceeded) {
+      DVLOG(2) << __func__
+               << " CreateReadyFrameFromExternalBuffer failed: scaled frame "
+                  "reservation trakcer failed.";
+      return;
+    }
+    scaled_ready_frames.push_back(std::move(scaled_ready_frame));
   }
   receiver_->OnFrameReadyInBuffer(std::move(ready_frame),
                                   std::move(scaled_ready_frames));
 }
 
-ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
+VideoCaptureDevice::Client::ReserveResult
+VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     CapturedExternalVideoBuffer buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    gfx::Rect visible_rect) {
+    const gfx::Rect& visible_rect,
+    ReadyFrameInBuffer* ready_buffer) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
   int buffer_id_to_drop = VideoCaptureBufferPool::kInvalidId;
-  int buffer_id = buffer_pool_->ReserveIdForExternalBuffer(buffer.handle,
-                                                           &buffer_id_to_drop);
-
+  // Use std::move to transfer the handle ownership here since the buffer will
+  // be created and confirm each ScopedHandle can only have one owner at a
+  // time.
+  int buffer_id = VideoCaptureBufferPool::kInvalidId;
+  VideoCaptureDevice::Client::ReserveResult reservation_result_code =
+      buffer_pool_->ReserveIdForExternalBuffer(
+          std::move(buffer.handle), buffer.format.pixel_format,
+          visible_rect.size(), &buffer_id_to_drop, &buffer_id);
   // If a buffer to retire was specified, retire one.
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     auto entry_iter =
@@ -527,11 +549,18 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     }
   }
 
+  if (reservation_result_code != ReserveResult::kSucceeded) {
+    return reservation_result_code;
+  }
+
   // Register the buffer with the receiver if it is new.
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
+    // On windows, 'GetGpuMemoryBufferHandle' will duplicate a new handle which
+    // refers to the same object as the original handle.
+    // https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle
     media::mojom::VideoBufferHandlePtr buffer_handle =
         media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
-            std::move(buffer.handle));
+            buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
@@ -550,11 +579,12 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
 
-  return ReadyFrameInBuffer(
+  *ready_buffer = ReadyFrameInBuffer(
       buffer_id, 0 /* frame_feedback_id */,
       std::make_unique<ScopedBufferPoolReservation<ConsumerReleaseTraits>>(
           buffer_pool_, buffer_id),
       std::move(info));
+  return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
 }
 
 VideoCaptureDevice::Client::ReserveResult

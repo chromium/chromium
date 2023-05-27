@@ -87,13 +87,20 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   virtual void RelinquishProducerReservation(int buffer_id) = 0;
 
   // Reserve a buffer id to use for a buffer specified by |handle| (which was
-  // allocated by some external source). This call cannot fail (no allocation is
-  // done). It may return a new id, or may reuse an existing id, if the buffer
-  // represented by |handle| is already being tracked. The behavior of
-  // |buffer_id_to_drop| is the same as ReserveForProducer.
-  virtual int ReserveIdForExternalBuffer(
-      const gfx::GpuMemoryBufferHandle& handle,
-      int* buffer_id_to_drop) = 0;
+  // allocated by some external source).
+
+  // For windows, |handle| is used to create buffer, but not on mac. |format| is
+  // the source texture format, it should be NV12 now. |dimensions| is used
+  // for create buffer on Windows. If the pool is already at maximum capacity,
+  // return the reused ID based on LRU strategy. Otherwise, return a new tracker
+  // ID via |buffer_id|. The behavior of |buffer_id_to_drop| is the same as
+  // ReserveForProducer.
+  virtual VideoCaptureDevice::Client::ReserveResult ReserveIdForExternalBuffer(
+      gfx::GpuMemoryBufferHandle handle,
+      VideoPixelFormat format,
+      const gfx::Size& dimensions,
+      int* buffer_id_to_drop,
+      int* buffer_id) = 0;
 
   // Returns a snapshot of the current number of buffers in-use divided by the
   // maximum |count_|.

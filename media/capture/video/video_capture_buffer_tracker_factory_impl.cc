@@ -39,7 +39,7 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
 
 std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
-    const gfx::GpuMemoryBufferHandle& handle) {
+    gfx::GpuMemoryBufferHandle handle) {
 #if BUILDFLAG(IS_MAC)
   return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
 #else

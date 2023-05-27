@@ -19,7 +19,7 @@ class CAPTURE_EXPORT VideoCaptureBufferTrackerFactoryImpl
       VideoCaptureBufferType buffer_type) override;
   std::unique_ptr<VideoCaptureBufferTracker>
   CreateTrackerForExternalGpuMemoryBuffer(
-      const gfx::GpuMemoryBufferHandle& handle) override;
+      gfx::GpuMemoryBufferHandle handle) override;
 };
 
 }  // namespace media

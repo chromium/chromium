@@ -76,6 +76,14 @@ GpuMemoryBufferTracker::GpuMemoryBufferTracker(
     : dxgi_device_manager_(std::move(dxgi_device_manager)),
       d3d_device_(dxgi_device_manager_->GetDevice()) {}
 
+GpuMemoryBufferTracker::GpuMemoryBufferTracker(
+    gfx::GpuMemoryBufferHandle gmb_handle,
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
+    : dxgi_device_manager_(std::move(dxgi_device_manager)),
+      d3d_device_(dxgi_device_manager_->GetDevice()),
+      external_dxgi_handle_(std::move(gmb_handle)),
+      is_external_dxgi_handle_(true) {}
+
 GpuMemoryBufferTracker::~GpuMemoryBufferTracker() = default;
 
 bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
@@ -87,24 +95,39 @@ bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
     return false;
   }
 
-  buffer_size_ = dimensions;
+  if (is_external_dxgi_handle_) {
+    return CreateBufferInternal(std::move(external_dxgi_handle_),
+                                std::move(dimensions));
+  }
 
-  return CreateBufferInternal();
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.dxgi_handle = CreateNV12Texture(d3d_device_.Get(), dimensions);
+  gmb_handle.dxgi_token = gfx::DXGIHandleToken();
+  return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
 }
 
-bool GpuMemoryBufferTracker::CreateBufferInternal() {
-  gfx::GpuMemoryBufferHandle buffer_handle;
-  buffer_handle.dxgi_handle =
-      CreateNV12Texture(d3d_device_.Get(), buffer_size_);
-  buffer_handle.dxgi_token = gfx::DXGIHandleToken();
+bool GpuMemoryBufferTracker::IsSameGpuMemoryBuffer(
+    const gfx::GpuMemoryBufferHandle& handle) const {
+  // This function is used for reusing external buffer.
+  if (!is_external_dxgi_handle_) {
+    return false;
+  }
+  // On Windows, we need use 'dxgi_token' to decide whether the two handles
+  // point to same gmb instead of handle directly since handle could be
+  // duplicated, please see GpuMemoryBufferImplDXGI::CloneHandle.
+  return buffer_->GetToken() == handle.dxgi_token;
+}
 
+bool GpuMemoryBufferTracker::CreateBufferInternal(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    const gfx::Size& dimensions) {
   if (!buffer_handle.dxgi_handle.IsValid()) {
-    LOG(ERROR) << "Failed to create NV12 texture";
+    LOG(ERROR) << "dxgi_handle is not valid.";
     return false;
   }
 
   buffer_ = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-      std::move(buffer_handle), buffer_size_,
+      std::move(buffer_handle), std::move(dimensions),
       gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
       gpu::GpuMemoryBufferImpl::DestructionCallback(), nullptr, nullptr);
   if (!buffer_) {
@@ -136,8 +159,9 @@ bool GpuMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
+  // External buffer is never reused.
   return !IsD3DDeviceChanged() && (format == PIXEL_FORMAT_NV12) &&
-         (dimensions == buffer_->GetSize());
+         (dimensions == buffer_->GetSize()) && !is_external_dxgi_handle_;
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
