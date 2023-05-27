@@ -40,8 +40,13 @@ class PushNotificationClient {
   virtual NSArray<UNNotificationCategory*>*
   RegisterActionableNotifications() = 0;
 
-  // Signals to the client that a browser is ready.
-  virtual void OnBrowserReady() = 0;
+  // Signals to the client that a browser with scene level
+  // SceneActivationLevelForegroundActive is ready. Without this
+  // URL opening code driven by push notifications may not be able to
+  // access a browser appropriate for opening a URL (active & scene
+  // level SceneActivationLevelForegroundActive) resulting in the URL
+  // not being opened.
+  virtual void OnSceneActiveForegroundBrowserReady() = 0;
 
   // Returns the feature's `client_id_`.
   PushNotificationClientId GetClientId();
