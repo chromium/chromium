@@ -14,12 +14,17 @@ enum ClipboardNudgeType {
   // Onboarding nudge. Shows when a user copy and pastes repeatedly within a
   // time frame.
   kOnboardingNudge = 0,
+
   // Shows when the keyboard shortcut for clipboard is pressed with no items
   // in the history.
   kZeroStateNudge = 1,
+
   // Shows the keyboard shortcut for clipboard history in the screenshot
   // notification nudge.
   kScreenshotNotificationNudge = 2,
+
+  // NOTE: Need to update when adding a new nudge type.
+  kMax = kScreenshotNotificationNudge,
 };
 
 ASH_EXPORT extern const char* const kClipboardHistoryOnboardingNudgeShowCount;
@@ -34,6 +39,15 @@ ASH_EXPORT extern const char* const
     kClipboardHistoryScreenshotNotificationOpenTime;
 ASH_EXPORT extern const char* const
     kClipboardHistoryScreenshotNotificationPasteTime;
+
+// Returns the histogram that records the time delta between showing the nudge
+// of `type` and pasting clipboard history data.
+ASH_EXPORT const char* GetClipboardHistoryPasteTimeDeltaHistogram(
+    ClipboardNudgeType type);
+
+// Returns the histogram that records the time delta between showing the nudge
+// of `type` and showing the clipboard history menu.
+ASH_EXPORT const char* GetMenuOpenTimeDeltaHistogram(ClipboardNudgeType type);
 
 constexpr int kNotificationLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;

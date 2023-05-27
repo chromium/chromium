@@ -42,33 +42,6 @@ base::Time GetTime() {
   return g_clock_override ? g_clock_override->Now() : base::Time::Now();
 }
 
-// Returns the histogram that records the time delta between showing the nudge
-// of `type` and pasting clipboard history data.
-const char* GetClipboardHistoryPasteTimeDeltaHistogram(
-    ClipboardNudgeType type) {
-  switch (type) {
-    case ClipboardNudgeType::kOnboardingNudge:
-      return kClipboardHistoryOnboardingNudgePasteTime;
-    case ClipboardNudgeType::kZeroStateNudge:
-      return kClipboardHistoryZeroStateNudgePasteTime;
-    case ClipboardNudgeType::kScreenshotNotificationNudge:
-      return kClipboardHistoryScreenshotNotificationPasteTime;
-  }
-}
-
-// Returns the histogram that records the time delta between showing the nudge
-// of `type` and showing the clipboard history menu.
-const char* GetMenuOpenTimeDeltaHistogram(ClipboardNudgeType type) {
-  switch (type) {
-    case ClipboardNudgeType::kOnboardingNudge:
-      return kClipboardHistoryOnboardingNudgeOpenTime;
-    case ClipboardNudgeType::kZeroStateNudge:
-      return kClipboardHistoryZeroStateNudgeOpenTime;
-    case ClipboardNudgeType::kScreenshotNotificationNudge:
-      return kClipboardHistoryScreenshotNotificationOpenTime;
-  }
-}
-
 NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
   switch (type) {
     case kOnboardingNudge:
@@ -282,11 +255,9 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
   zero_state_nudge_recorder_.OnClipboardHistoryMenuShown();
   screenshot_nudge_recorder_.OnClipboardHistoryMenuShown();
 
-  // These metrics will not be recorded if the respective nudges have not been
-  // shown before.
-  SystemNudgeController::RecordNudgeAction(
+  SystemNudgeController::MaybeRecordNudgeAction(
       NudgeCatalogName::kClipboardHistoryOnboarding);
-  SystemNudgeController::RecordNudgeAction(
+  SystemNudgeController::MaybeRecordNudgeAction(
       NudgeCatalogName::kClipboardHistoryZeroState);
 }
 

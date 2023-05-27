@@ -26,4 +26,27 @@ constexpr const char* const kClipboardHistoryScreenshotNotificationPasteTime =
     "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge."
     "ToFeaturePasteTime";
 
+const char* GetClipboardHistoryPasteTimeDeltaHistogram(
+    ClipboardNudgeType type) {
+  switch (type) {
+    case ClipboardNudgeType::kOnboardingNudge:
+      return kClipboardHistoryOnboardingNudgePasteTime;
+    case ClipboardNudgeType::kZeroStateNudge:
+      return kClipboardHistoryZeroStateNudgePasteTime;
+    case ClipboardNudgeType::kScreenshotNotificationNudge:
+      return kClipboardHistoryScreenshotNotificationPasteTime;
+  }
+}
+
+const char* GetMenuOpenTimeDeltaHistogram(ClipboardNudgeType type) {
+  switch (type) {
+    case ClipboardNudgeType::kOnboardingNudge:
+      return kClipboardHistoryOnboardingNudgeOpenTime;
+    case ClipboardNudgeType::kZeroStateNudge:
+      return kClipboardHistoryZeroStateNudgeOpenTime;
+    case ClipboardNudgeType::kScreenshotNotificationNudge:
+      return kClipboardHistoryScreenshotNotificationOpenTime;
+  }
+}
+
 }  // namespace ash
