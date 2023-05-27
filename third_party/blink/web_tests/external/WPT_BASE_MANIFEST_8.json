@@ -163294,6 +163294,19 @@
        {}
       ]
      ],
+     "file-selector-button-float.html": [
+      "a9299ce3c43b626d4f4664d297fabfce399c7a61",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-letter-001.html": [
       "b1dc5860a39d6c4d7088eccfaaec42898b6b12b3",
       [
@@ -247302,19 +247315,6 @@
        {}
       ]
      ],
-     "file-control-button-float.html": [
-      "a9299ce3c43b626d4f4664d297fabfce399c7a61",
-      [
-       null,
-       [
-        [
-         "/css/reference/blank.html",
-         "!="
-        ]
-       ],
-       {}
-      ]
-     ],
      "first-letter-flag-001.html": [
       "dc23dda1741b154a7af3f48677b0fbe0744d06d4",
       [
@@ -272875,16 +272875,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "911860e774a696c5b4e2376c3f3b188e7322d27d",
-     []
-    ],
-    "mtime.json": [
-     "317054789f21d498c84804d07095674fb3e16abb",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
