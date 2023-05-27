@@ -97950,6 +97950,19 @@
        {}
       ]
      ],
+     "oklab-009.html": [
+      "49bd916f5d7b5ceadb07ce1bdcde703887c67866",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "oklch-001.html": [
       "f32b7fe888b304576790175a0f7e6b5bbe45b354",
       [
@@ -98074,6 +98087,19 @@
        [
         [
          "/css/css-color/blacksquare-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "oklch-011.html": [
+      "6944867cd8d434eeebe30038cd6ececc26e38428",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-ref.html",
          "=="
         ]
        ],
@@ -272838,11 +272864,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "4f3827ccf6bbfead7d13bf2c74c468459fe28f5a",
+     "48b76947e26e757cee4885b593a899f0255e0489",
      []
     ],
     "mtime.json": [
-     "902cb2f1f5e4bc2724341555eda186acc1899018",
+     "02e2feb1403d8d6b50b9304e59ae9f6b842300d8",
      []
     ]
    },
@@ -284443,6 +284469,10 @@
        "7345888e9a1eadbb866c4f5f7d2669644ca8da62",
        []
       ],
+      "block-formatting-contexts-015.xht.ini": [
+       "fec1bd970d5f97b050f6886d7d734ce7239b7806",
+       []
+      ],
       "block-formatting-contexts-016.xht.ini": [
        "bbedc86d3b26278acf37d3f8f0b633024a329378",
        []
@@ -292786,6 +292816,10 @@
       "c71e428aa2a88250fa5a09304885143fe6b9ae29",
       []
      ],
+     "oklab-009.html.ini": [
+      "1c1ba09c195f4d348558e1c203fca4a42bde3853",
+      []
+     ],
      "oklch-004-ref.html": [
       "58117583ee0a2aca2477b210c49dc339fdbe51fa",
       []
@@ -292808,6 +292842,10 @@
      ],
      "oklch-010.html.ini": [
       "a818f6989e120bcd28c814dba6c99ac4e525b169",
+      []
+     ],
+     "oklch-011.html.ini": [
+      "fac99a3e6514a6f38e0453ed51db2179a6559cb4",
       []
      ],
      "opacity-overlapping-letters-ref.html": [
@@ -315353,6 +315391,10 @@
        "vrl-in-multicol-ref.html": [
         "0e22219eabdbb3cdd6e748834080da412c5e69a3",
         []
+       ],
+       "vrl-rtl-ltr-in-multicol.tentative.html.ini": [
+        "bf1c33193e1c2084a634dd6c2345c879229ea1de",
+        []
        ]
       },
       "vlr-in-multicols-ref.html": [
@@ -327399,7 +327441,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-003.html.ini": [
-      "3d7677e07b4db7b35dd0fc2969edae2a8260ce55",
+      "a7f8e81851d827783b2e26e6484b419a5e998e91",
       []
      ],
      "preserve3d-and-flattening-z-order-004.html.ini": [
@@ -330271,6 +330313,10 @@
        "7dcd817f746113233616f393724f4c05bbefd158",
        []
       ],
+      "kind-of-widget-fallback-input-button-border-start-end-radius-001.html.ini": [
+       "0d50a5dcf3c721d64b86d56bd46ebcdc101267ce",
+       []
+      ],
       "kind-of-widget-fallback-input-button-border-top-color-001.html.ini": [
        "2c2002c0f81608453c7ab1ac2b732569bbe56885",
        []
@@ -330796,7 +330842,7 @@
        []
       ],
       "kind-of-widget-fallback-input-text-border-block-start-color-001.html.ini": [
-       "fcde24444057c513f11d2b9040adb5b436eb4208",
+       "a3d5414a29380888ee4ee2aba913ac990ceff559",
        []
       ],
       "kind-of-widget-fallback-input-text-border-block-start-width-001.html.ini": [
@@ -337885,7 +337931,7 @@
       []
      ],
      "clip-under-filter-003.html.ini": [
-      "769107653a340aac5a45d2ce31b4a5c52fbc238a",
+      "080f0b845f117b12572d33920006d541f648e81d",
       []
      ],
      "css-backdrop-filters-animation-blur-ref.html": [
@@ -342551,7 +342597,7 @@
       []
      ],
      "exec-command-with-text-editor.tentative.html.ini": [
-      "8bee6b9051b05f1f861b489d47b0c996e2da6ed1",
+      "085e2f1aea3b872071c696a8b8b669cdc53cc60c",
       []
      ],
      "exec-command-with-text-editor.tentative_type=password-expected.txt": [
@@ -380942,7 +380988,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "0b97ad78b42585a7fa093fccc323efb76d9b9a85",
+     "be475d70ff324442293f9e55df997fd81a9fa8cf",
      []
     ],
     "modulepreload-expected.txt": [
@@ -395706,7 +395752,7 @@
      []
     ],
     "full-cycle-test.https.any.js.ini": [
-     "25f7e85df3b64827a2f185f56ca4ba73de5cf023",
+     "5aa0dd339983f306f8a4233d32a3245a618350b1",
      []
     ],
     "h264.annexb": [
@@ -395742,7 +395788,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "8424c92fd7e40187639e9b7b251ebb068d8b1a35",
+     "1f7e751a15d59bc88db8a185ad895a758fceedce",
      []
     ],
     "sfx-aac.mp4": [
@@ -474407,6 +474453,13 @@
       ],
       "child-indexed-pseudo-classes-in-has.html": [
        "5c689e233300650cc8e4aff6853f7c9c8d73479f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "defined-in-has.html": [
+       "d691c4a53fd063e5e361cef9ae12536d32b78076",
        [
         null,
         {}
