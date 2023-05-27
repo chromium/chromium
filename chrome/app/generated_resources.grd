@@ -3861,6 +3861,9 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
         <message name="IDS_CERT_X509_CERT_POLICIES" desc="description of extension Certificate Policies">
           Certificate Policies
         </message>
+        <message name="IDS_CERT_X509_SCT_LIST" desc="description of extension Signed Certificate Timestamp List">
+          Signed Certificate Timestamp List
+        </message>
         <message name="IDS_CERT_X509_POLICY_MAPPINGS" desc="description of extension Certificate Policy Mappings">
           Certificate Policy Mappings
         </message>
@@ -3980,6 +3983,12 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
         </message>
         <message name="IDS_CERT_GENERAL_NAME_REGISTERED_ID" desc="label for the certRegisteredID general name type">
           Registered OID
+        </message>
+        <message name="IDS_CERT_EXT_MS_APP_POLICIES" desc="description of extension Microsoft Application Policies">
+          Microsoft Application Policies
+        </message>
+        <message name="IDS_CERT_EXT_MS_CERT_TEMPLATE" desc="description of extension Microsoft Certificate Template">
+          Microsoft Certificate Template
         </message>
         <message name="IDS_CERT_EXT_MS_CERT_TYPE" desc="description of extension Microsoft Certificate Template Name">
           Microsoft Certificate Template Name

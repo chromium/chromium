@@ -160,6 +160,43 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
       extensions[3].value);
 }
 
+TEST_P(X509CertificateModel, GetSCTField) {
+  auto cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                      "lets-encrypt-dst-x3-root.pem");
+  ASSERT_TRUE(cert);
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  EXPECT_EQ("3", model.GetVersion());
+  EXPECT_EQ("04:7B:F4:FD:2C:FB:01:92:D5:30:C1:0F:C9:19:83:2A:49:EF",
+            model.GetSerialNumberHexified());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  auto extension_value =
+      FindExtension(extensions, "Signed Certificate Timestamp List");
+  ASSERT_TRUE(extension_value);
+  EXPECT_EQ(
+      "notcrit\n"
+      "04 81 F1 00 EF 00 76 00 41 C8 CA B1 DF 22 46 4A\n"
+      "10 C6 A1 3A 09 42 87 5E 4E 31 8B 1B 03 EB EB 4B\n"
+      "C7 68 F0 90 62 96 06 F6 00 00 01 7E 17 63 85 3D\n"
+      "00 00 04 03 00 47 30 45 02 20 05 FB 47 45 BD 63\n"
+      "AD FD E7 AF 9E 7E D6 51 5A 1E AB 62 FE 2A 27 4B\n"
+      "A0 ED 8A 4A 8F B3 C8 36 8C BD 02 21 00 8B 07 10\n"
+      "4C BF 07 1C ED 54 DF 28 2C E3 B2 32 6B 43 48 E4\n"
+      "04 80 28 17 91 50 8D 28 FC 58 08 BF 7C 00 75 00\n"
+      "46 A5 55 EB 75 FA 91 20 30 B5 A2 89 69 F4 F3 7D\n"
+      "11 2C 41 74 BE FD 49 B8 85 AB F2 FC 70 FE 6D 47\n"
+      "00 00 01 7E 17 63 85 53 00 00 04 03 00 46 30 44\n"
+      "02 20 73 8C D6 ED CC 59 2D 3D 5E 1A 37 E9 42 A2\n"
+      "74 6D 95 1B 20 0E 19 91 40 0E AD A3 80 66 48 FB\n"
+      "17 32 02 20 02 3A 61 DA 61 EF CB 37 BB 97 5E AC\n"
+      "79 08 2B 5E 71 EA 9B 7B FC B4 F5 50 04 2E E0 40\n"
+      "42 44 2C 79",
+      extension_value);
+}
+
 TEST_P(X509CertificateModel, GetNDNCertFields) {
   auto cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ndn.ca.crt");

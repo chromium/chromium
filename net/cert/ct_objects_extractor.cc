@@ -21,11 +21,6 @@ namespace net::ct {
 
 namespace {
 
-// The wire form of the OID 1.3.6.1.4.1.11129.2.4.2. See Section 3.3 of
-// RFC6962.
-const uint8_t kEmbeddedSCTOid[] = {0x2B, 0x06, 0x01, 0x04, 0x01,
-                                   0xD6, 0x79, 0x02, 0x04, 0x02};
-
 // The wire form of the OID 1.3.6.1.4.1.11129.2.4.5 - OCSP SingleExtension for
 // X.509v3 Certificate Transparency Signed Certificate Timestamp List, see
 // Section 3.3 of RFC6962.

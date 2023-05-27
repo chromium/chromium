@@ -16,9 +16,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
+#include "net/cert/ct_objects_extractor.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/extended_key_usage.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/parse_name.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/pki/verify_signed_data.h"
@@ -215,6 +217,10 @@ constexpr uint8_t kMsNtPrincipalName[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
 // 1.3.6.1.4.1.311.25.1
 constexpr uint8_t kMsNtdsReplication[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
                                           0x82, 0x37, 0x19, 0x01};
+
+// 1.3.6.1.4.1.311.21.7
+constexpr uint8_t kMsCertTemplate[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
+                                       0x82, 0x37, 0x15, 0x07};
 
 // 1.3.6.1.4.1.311.2.1.21
 constexpr uint8_t kEkuMsIndividualCodeSigning[] = {
@@ -471,6 +477,7 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
      IDS_CERT_X509_AUTH_INFO_ACCESS},
     {net::der::Input(net::kCpsPointerId), IDS_CERT_PKIX_CPS_POINTER_QUALIFIER},
     {net::der::Input(net::kUserNoticeId), IDS_CERT_PKIX_USER_NOTICE_QUALIFIER},
+    {net::der::Input(net::ct::kEmbeddedSCTOid), IDS_CERT_X509_SCT_LIST},
 
     // Extended Key Usages:
     {net::der::Input(net::kAnyEKU), IDS_CERT_EKU_ANY_EKU},
@@ -490,6 +497,9 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
     {net::der::Input(kMsCertsrvCaVersion), IDS_CERT_EXT_MS_CA_VERSION},
     {net::der::Input(kMsNtPrincipalName), IDS_CERT_EXT_MS_NT_PRINCIPAL_NAME},
     {net::der::Input(kMsNtdsReplication), IDS_CERT_EXT_MS_NTDS_REPLICATION},
+    {net::der::Input(net::kMSApplicationPoliciesOid),
+     IDS_CERT_EXT_MS_APP_POLICIES},
+    {net::der::Input(kMsCertTemplate), IDS_CERT_EXT_MS_CERT_TEMPLATE},
     {net::der::Input(kEkuMsIndividualCodeSigning),
      IDS_CERT_EKU_MS_INDIVIDUAL_CODE_SIGNING},
     {net::der::Input(kEkuMsCommercialCodeSigning),
