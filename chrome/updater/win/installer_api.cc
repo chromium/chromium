@@ -393,7 +393,7 @@ AppInstallerResult RunApplicationInstaller(
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
     return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED);
+        update_client::InstallError::LAUNCH_PROCESS_FAILED, -1);
   }
 
   DeleteInstallerOutput(app_info.scope, app_info.app_id);
@@ -415,10 +415,11 @@ AppInstallerResult RunApplicationInstaller(
                            : L"0"},
   };
 
-  auto process = base::LaunchProcess(cmdline, options);
+  base::Process process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {
     return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED);
+        update_client::InstallError::LAUNCH_PROCESS_FAILED,
+        HRESULTFromLastError());
   }
 
   int exit_code = -1;
