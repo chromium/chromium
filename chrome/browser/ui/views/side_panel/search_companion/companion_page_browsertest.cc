@@ -88,6 +88,7 @@ struct CompanionScriptBuilder {
   absl::optional<PhFeedback> ph_feedback;
   absl::optional<std::string> reporting_url;
   absl::optional<bool> is_exps_opted_in;
+  absl::optional<std::string> url_for_open_in_new_tab;
   absl::optional<UiSurface> ui_surface;
   absl::optional<int> ui_surface_position;
   absl::optional<int> child_element_available_count;
@@ -140,6 +141,11 @@ struct CompanionScriptBuilder {
     if (is_exps_opted_in.has_value()) {
       ss << "message['isExpsOptedIn'] = "
          << base::NumberToString(is_exps_opted_in.value()) << ";";
+    }
+
+    if (url_for_open_in_new_tab.has_value()) {
+      ss << "message['urlForOpenInNewTab'] = '"
+         << url_for_open_in_new_tab.value() << "';";
     }
 
     if (ui_surface.has_value()) {
@@ -880,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Load a page on the active tab.
@@ -896,22 +902,79 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
-  // Post message for click metrics. Verify histograms.
-  CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceClicked);
-  builder.ui_surface = UiSurface::kRegionSearch;
+  // Start region search. Verify histograms.
+  CompanionScriptBuilder builder(MethodType::kOnRegionSearchClicked);
   EXPECT_TRUE(ExecJs(builder.Build()));
   WaitForHistogram("Companion.RegionSearch.Clicked");
-
   histogram_tester_->ExpectBucketCount("Companion.RegionSearch.Clicked",
                                        /*sample=*/true,
                                        /*expected_count=*/1);
-  histogram_tester_->ExpectTotalCount("Companion.RegionSearch.ClickPosition",
-                                      0);
 
   side_panel_coordinator()->Close();
   ExpectUkmEntry(
       &ukm_recorder,
       ukm::builders::Companion_PageView::kRegionSearch_ClickCountName, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OnExpsOptInStatusAvailable) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Send exps optin status. Verify histograms.
+  CompanionScriptBuilder builder(MethodType::kOnExpsOptInStatusAvailable);
+  builder.is_exps_opted_in = true;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+  WaitForHistogram("Companion.IsUserOptedInToExps");
+  histogram_tester_->ExpectBucketCount("Companion.IsUserOptedInToExps",
+                                       /*sample=*/true,
+                                       /*expected_count=*/1);
+
+  // Verify that the optin status is saved to a pref.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      companion::kExpsOptInStatusGrantedPref));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenInNewTabButtonClicked) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Send open in new tab URL.
+  auto open_in_new_tab_url = CreateUrl(kHost, kRelativeUrl2);
+  CompanionScriptBuilder builder(MethodType::kOnOpenInNewTabButtonURLChanged);
+  builder.url_for_open_in_new_tab = open_in_new_tab_url.spec();
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Send another message so that we can wait for the histogram.
+  CompanionScriptBuilder builder2(MethodType::kOnExpsOptInStatusAvailable);
+  builder2.is_exps_opted_in = true;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
+  WaitForHistogram("Companion.IsUserOptedInToExps");
+  side_panel_coordinator()->OpenInNewTab();
+
+  WaitForTabCount(2);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      open_in_new_tab_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
