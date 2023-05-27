@@ -47,6 +47,11 @@ function classifyRoute(route: Route|undefined): RouteState {
   return RouteState.SECTION;
 }
 
+function isAdvancedRoute(route: Route): boolean {
+  const routes = Router.getInstance().routes;
+  return routes.ADVANCED && routes.ADVANCED.contains(route);
+}
+
 const ALL_STATES = new Set([
   RouteState.DIALOG,
   RouteState.SECTION,
@@ -105,12 +110,6 @@ export const MainPageMixin = dedupingMixin(
           assertNotReached();
         }
 
-        private shouldExpandAdvanced_(route: Route): boolean {
-          const routes = Router.getInstance().routes;
-          return (this.tagName === 'OS-SETTINGS-PAGE') && routes.ADVANCED &&
-              routes.ADVANCED.contains(route);
-        }
-
         loadAdvancedPage(): Promise<Element> {
           return this.shadowRoot!
               .querySelector<SettingsIdleLoadElement>(
@@ -134,7 +133,8 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (this.shouldExpandAdvanced_(route)) {
+            if (this.tagName === 'MAIN-PAGE-CONTAINER' &&
+                isAdvancedRoute(route)) {
               this.dispatchCustomEvent_('hide-container');
               waitFn(async () => {
                 await this.loadAdvancedPage();
@@ -202,7 +202,7 @@ export const MainPageMixin = dedupingMixin(
 
           // Case where going from |this| page to an unrelated page.
           // For example:
-          //  |this| is os-settings-page AND
+          //  |this| is main-page-container AND
           //  oldRoute is /searchEngines AND
           //  newRoute is /help.
           if (containsOld && !containsNew) {
@@ -211,7 +211,7 @@ export const MainPageMixin = dedupingMixin(
 
           // Case where return from an unrelated page to |this| page.
           // For example:
-          //  |this| is os-settings-page AND
+          //  |this| is main-page-container AND
           //  oldRoute is /help AND
           //  newRoute is /searchEngines
           if (!containsOld && containsNew) {

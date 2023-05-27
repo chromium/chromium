@@ -386,6 +386,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
+ ['MainPageContainer', 'main_page_container_test.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
@@ -592,7 +593,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
  ['OsSettingsMenu', 'os_settings_menu/os_settings_menu_test.js'],
- ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
  ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],

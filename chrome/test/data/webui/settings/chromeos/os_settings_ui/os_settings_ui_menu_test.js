@@ -99,10 +99,11 @@ suite('<os-settings-ui> menu', () => {
 
     const main = ui.shadowRoot.querySelector('os-settings-main');
     assertTrue(!!main);
-    const mainPage = main.shadowRoot.querySelector('os-settings-page');
-    assertTrue(!!mainPage);
+    const mainPageContainer =
+        main.shadowRoot.querySelector('main-page-container');
+    assertTrue(!!mainPageContainer);
     const mainPageAdvancedToggle =
-        mainPage.shadowRoot.querySelector('#advancedToggle');
+        mainPageContainer.shadowRoot.querySelector('#advancedToggle');
     assertTrue(!!mainPageAdvancedToggle);
     const floatingMenu = ui.shadowRoot.querySelector('#left os-settings-menu');
     assertTrue(!!floatingMenu);

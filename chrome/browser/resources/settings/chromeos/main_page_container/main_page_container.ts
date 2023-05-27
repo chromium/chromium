@@ -4,7 +4,8 @@
 
 /**
  * @fileoverview
- * 'os-settings-page' is the settings page containing the actual OS settings.
+ * 'main-page-container' is the container hosting all the
+ * main (top-level) pages, including advanced pages.
  */
 
 /**
@@ -30,11 +31,11 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './settings_idle_load.js';
+import '../os_settings_page/settings_idle_load.js';
+import '../main_page_container/main_page_container_styles.css.js';
 import '../os_about_page/eol_offer_section.js';
 import '../os_settings_icons.html.js';
 import '../os_settings_page/os_settings_section.js';
-import '../os_settings_page_styles.css.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -49,14 +50,14 @@ import {OsPageAvailability} from '../os_page_availability.js';
 import {routes} from '../os_settings_routes.js';
 import {Route, Router} from '../router.js';
 
-import {getTemplate} from './os_settings_page.html.js';
+import {getTemplate} from './main_page_container.html.js';
 
-const OsSettingsPageElementBase =
+const MainPageContainerElementBase =
     MainPageMixin(WebUiListenerMixin(PolymerElement));
 
-export class OsSettingsPageElement extends OsSettingsPageElementBase {
+export class MainPageContainerElement extends MainPageContainerElementBase {
   static get is() {
-    return 'os-settings-page';
+    return 'main-page-container' as const;
   }
 
   static get template() {
@@ -332,8 +333,8 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-settings-page': OsSettingsPageElement;
+    [MainPageContainerElement.is]: MainPageContainerElement;
   }
 }
 
-customElements.define(OsSettingsPageElement.is, OsSettingsPageElement);
+customElements.define(MainPageContainerElement.is, MainPageContainerElement);

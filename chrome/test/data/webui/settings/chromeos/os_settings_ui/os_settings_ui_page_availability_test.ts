@@ -8,7 +8,7 @@
  * Separated into a separate file to mitigate test timeouts.
  */
 
-import {CrSettingsPrefs, OsSettingsMainElement, OsSettingsPageElement, OsSettingsSectionElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsSectionElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,7 +17,7 @@ import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_asser
 suite('<os-settings-ui> page availability', () => {
   let ui: OsSettingsUiElement;
   let settingsMain: OsSettingsMainElement;
-  let settingsPage: OsSettingsPageElement;
+  let mainPageContainer: MainPageContainerElement;
 
   async function createUi() {
     ui = document.createElement('os-settings-ui');
@@ -30,12 +30,12 @@ suite('<os-settings-ui> page availability', () => {
     settingsMain = mainElement;
 
     const pageElement =
-        settingsMain.shadowRoot!.querySelector('os-settings-page');
+        settingsMain.shadowRoot!.querySelector('main-page-container');
     assert(pageElement);
-    settingsPage = pageElement;
+    mainPageContainer = pageElement;
 
     const idleRender =
-        settingsPage.shadowRoot!.querySelector('settings-idle-load');
+        mainPageContainer.shadowRoot!.querySelector('settings-idle-load');
     assert(idleRender);
     await idleRender.get();
     flush();
@@ -118,9 +118,9 @@ suite('<os-settings-ui> page availability', () => {
     ];
     for (const name of availablePages) {
       test(`${name} page should be stamped and subpages hidden`, () => {
-        const section =
-            settingsPage.shadowRoot!.querySelector<OsSettingsSectionElement>(
-                `os-settings-section[section=${name}]`);
+        const section = mainPageContainer.shadowRoot!
+                            .querySelector<OsSettingsSectionElement>(
+                                `os-settings-section[section=${name}]`);
         assertTrue(!!section, `Expected to find ${name} page stamped`);
         verifySubpagesHidden(section);
       });
@@ -149,9 +149,9 @@ suite('<os-settings-ui> page availability', () => {
     ];
     for (const name of unavailablePages) {
       test(`${name} page should not be stamped`, () => {
-        const section =
-            settingsPage.shadowRoot!.querySelector<OsSettingsSectionElement>(
-                `os-settings-section[section=${name}]`);
+        const section = mainPageContainer.shadowRoot!
+                            .querySelector<OsSettingsSectionElement>(
+                                `os-settings-section[section=${name}]`);
         assertEquals(null, section, `Found unexpected page ${name}`);
       });
     }
@@ -171,9 +171,9 @@ suite('<os-settings-ui> page availability', () => {
     ];
     for (const name of availablePages) {
       test(`${name} page should be stamped and subpages hidden`, () => {
-        const section =
-            settingsPage.shadowRoot!.querySelector<OsSettingsSectionElement>(
-                `os-settings-section[section=${name}]`);
+        const section = mainPageContainer.shadowRoot!
+                            .querySelector<OsSettingsSectionElement>(
+                                `os-settings-section[section=${name}]`);
         assertTrue(!!section, `Expected to find ${name} page stamped`);
         verifySubpagesHidden(section);
       });

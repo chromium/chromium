@@ -55,11 +55,12 @@ suite('MainPageTests', function() {
 
     assertTrue(showManagedHeader());
 
-    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
+    const mainPageContainer =
+        settingsMain.shadowRoot.querySelector('main-page-container');
 
     const subpageExpandEvent =
         new CustomEvent('subpage-expand', {'bubbles': true, composed: true});
-    page.dispatchEvent(subpageExpandEvent);
+    mainPageContainer.dispatchEvent(subpageExpandEvent);
 
     assertFalse(showManagedHeader());
   });
@@ -75,9 +76,11 @@ suite('MainPageTests', function() {
 
   /** @return {!HTMLElement} */
   function getToggleContainer() {
-    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
-    assertTrue(!!page);
-    const toggleContainer = page.shadowRoot.querySelector('#toggleContainer');
+    const mainPageContainer =
+        settingsMain.shadowRoot.querySelector('main-page-container');
+    assertTrue(!!mainPageContainer);
+    const toggleContainer =
+        mainPageContainer.shadowRoot.querySelector('#toggleContainer');
     assertTrue(!!toggleContainer);
     return toggleContainer;
   }
@@ -103,13 +106,17 @@ suite('MainPageTests', function() {
    */
   async function assertPageDisplay(expectedBasic, expectedAdvanced) {
     flush();
-    const page = settingsMain.shadowRoot.querySelector('os-settings-page');
+    const mainPageContainer =
+        settingsMain.shadowRoot.querySelector('main-page-container');
     assertEquals(
         expectedBasic,
-        getComputedStyle(page.shadowRoot.querySelector('#basicPage')).display);
+        getComputedStyle(
+            mainPageContainer.shadowRoot.querySelector('#basicPage'))
+            .display);
 
-    const advancedPage =
-        await page.shadowRoot.querySelector('#advancedPageTemplate').get();
+    const advancedPage = await mainPageContainer.shadowRoot
+                             .querySelector('#advancedPageTemplate')
+                             .get();
     assertEquals(expectedAdvanced, getComputedStyle(advancedPage).display);
   }
 

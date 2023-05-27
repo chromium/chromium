@@ -37,7 +37,7 @@
   <managed-footnote show-device-info></managed-footnote>
 </template>
 <template is="dom-if" if="[[showPages_.settings]]">
-  <os-settings-page
+  <main-page-container
       class="cr-centered-card-container"
       prefs="{{prefs}}"
       page-availability="[[pageAvailability]]"
@@ -45,7 +45,7 @@
       on-subpage-expand="onShowingSubpage_"
       on-showing-main-page="onShowingMainPage_"
       advanced-toggle-expanded="{{advancedToggleExpanded}}">
-  </os-settings-page>
+  </main-page-container>
 </template>
 <template is="dom-if" if="[[showPages_.about]]">
   <os-settings-about-page role="main"

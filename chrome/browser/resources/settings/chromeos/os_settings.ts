@@ -130,6 +130,7 @@ export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';
 export {SettingsKerberosPageElement} from './kerberos_page/kerberos_page.js';
+export {MainPageContainerElement} from './main_page_container/main_page_container.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
@@ -182,7 +183,6 @@ export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
 export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
-export {OsSettingsPageElement} from './os_settings_page/os_settings_page.js';
 export {OsSettingsSectionElement} from './os_settings_page/os_settings_section.js';
 export {OsSettingsRoutes, routes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';

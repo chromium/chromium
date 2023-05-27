@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/js/search_highlight_utils.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_about_page/os_about_page.js';
-import '../os_settings_page/os_settings_page.js';
+import '../main_page_container/main_page_container.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
@@ -174,9 +174,9 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   }
 
   /**
-   * A handler for the 'showing-section' event fired from os-settings-page,
-   * indicating that a section should be scrolled into view as a result of a
-   * navigation.
+   * A handler for the 'showing-section' event fired from
+   * main-page-container, indicating that a section should be
+   * scrolled into view as a result of a navigation.
    */
   private onShowingSection_(e: CustomEvent<HTMLElement>) {
     const section = e.detail;

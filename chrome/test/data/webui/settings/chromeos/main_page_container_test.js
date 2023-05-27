@@ -12,9 +12,9 @@ import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bl
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
 
-suite('<os-settings-page>', function() {
-  /** @type {?OsSettingsPageElement} */
-  let settingsPage = null;
+suite('<main-page-container>', function() {
+  /** @type {?MainPageContainerElement} */
+  let mainPageContainer = null;
 
   /** @type {?SettingsPrefsElement} */
   let prefElement = null;
@@ -42,9 +42,9 @@ suite('<os-settings-page>', function() {
     await CrSettingsPrefs.initialized;
   });
 
-  /** @return {OsSettingsPageElement} */
+  /** @return {MainPageContainerElement} */
   function init() {
-    const element = document.createElement('os-settings-page');
+    const element = document.createElement('main-page-container');
     element.prefs = prefElement.prefs;
     element.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(element);
@@ -56,15 +56,15 @@ suite('<os-settings-page>', function() {
   suite('Page availability', () => {
     suiteSetup(async () => {
       Router.getInstance().navigateTo(routes.BASIC);
-      settingsPage = init();
+      mainPageContainer = init();
 
       const idleRender =
-          settingsPage.shadowRoot.querySelector('settings-idle-load');
+          mainPageContainer.shadowRoot.querySelector('settings-idle-load');
       await idleRender.get();
     });
 
     suiteTeardown(() => {
-      settingsPage.remove();
+      mainPageContainer.remove();
       CrSettingsPrefs.resetForTesting();
       Router.getInstance().resetRouteForTesting();
     });
@@ -144,23 +144,24 @@ suite('<os-settings-page>', function() {
     ].forEach(({pageName, elementName}) => {
       test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available
-        settingsPage.pageAvailability = {
-          ...settingsPage.pageAvailability,
+        mainPageContainer.pageAvailability = {
+          ...mainPageContainer.pageAvailability,
           [pageName]: true,
         };
         flush();
 
-        let pageElement = settingsPage.shadowRoot.querySelector(elementName);
+        let pageElement =
+            mainPageContainer.shadowRoot.querySelector(elementName);
         assertTrue(!!pageElement, `<${elementName}> should exist.`);
 
         // Make page unavailable
-        settingsPage.pageAvailability = {
-          ...settingsPage.pageAvailability,
+        mainPageContainer.pageAvailability = {
+          ...mainPageContainer.pageAvailability,
           [pageName]: false,
         };
         flush();
 
-        pageElement = settingsPage.shadowRoot.querySelector(elementName);
+        pageElement = mainPageContainer.shadowRoot.querySelector(elementName);
         assertEquals(null, pageElement, `<${elementName}> should not exist.`);
       });
     });
