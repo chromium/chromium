@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL enumerateDevices returns expected mostly empty objects in case device-info permission is not granted assert_equals: deviceId is empty before capture expected "" but got "default"
-PASS enumerateDevices returns expected objects in case device-info permission is granted
+FAIL enumerateDevices exposes mostly empty objects ahead of successful getUserMedia call assert_equals: deviceId is empty before capture expected "" but got "default"
+PASS enumerateDevices exposes expected objects after successful getUserMedia call
 Harness: the test ran to completion.
 

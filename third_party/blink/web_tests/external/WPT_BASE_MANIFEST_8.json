@@ -136226,6 +136226,19 @@
         ],
         {}
        ]
+      ],
+      "writing-directions-003.html": [
+       "1df5512d19e89addfcd75abfd94c6e5a9bd0bcaf",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/subgrid/writing-directions-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "table-grid-item-dynamic-001.html": [
@@ -272864,11 +272877,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "48b76947e26e757cee4885b593a899f0255e0489",
+     "911860e774a696c5b4e2376c3f3b188e7322d27d",
      []
     ],
     "mtime.json": [
-     "02e2feb1403d8d6b50b9304e59ae9f6b842300d8",
+     "317054789f21d498c84804d07095674fb3e16abb",
      []
     ]
    },
@@ -280525,6 +280538,10 @@
        "2ea5cc8b91d349c40df1e8a0ee03f3b4c6a2557b",
        []
       ],
+      "background-017.xht.ini": [
+       "ed39d57638594a7a4fed13a96a669163201cbd61",
+       []
+      ],
       "background-022.xht.ini": [
        "b94a73473cf6103ff48b6df0eca630d413ca558c",
        []
@@ -280539,6 +280556,10 @@
       ],
       "background-043-ref.xht": [
        "86cbebe62e06f8f90f2801d348af7f84ced12312",
+       []
+      ],
+      "background-082.xht.ini": [
+       "a49592a4199ba582664c9803b187b36d633d699a",
        []
       ],
       "background-087-ref.xht": [
@@ -281737,6 +281758,10 @@
        "ff381421b7ac5f70952f610b93d18561d81136d6",
        []
       ],
+      "border-bottom-applies-to-005.xht.ini": [
+       "19fe0b81a8fc18989c1ea68c74705c4ad9a45a87",
+       []
+      ],
       "border-bottom-applies-to-012.xht.ini": [
        "52428072b1e3e839af08903f4547ec32194272cb",
        []
@@ -281991,6 +282016,10 @@
       ],
       "border-bottom-color-145-ref.xht": [
        "a7e37e77a62ab18c7c93537db0a065abca66c830",
+       []
+      ],
+      "border-bottom-style-002.xht.ini": [
+       "24fb108b67436f14457d35732c400336208b91e6",
        []
       ],
       "border-bottom-style-005-ref.xht": [
@@ -308481,6 +308510,10 @@
       ],
       "writing-directions-002-ref.html": [
        "cd1ee527ab1053bc5aa4b3e10466b09cfaa605e0",
+       []
+      ],
+      "writing-directions-003-ref.html": [
+       "b8038a2b5095cbbf03ff82c667b759587a3a6389",
        []
       ]
      },
@@ -354899,7 +354932,7 @@
         []
        ],
        "window-name.sub.html": [
-        "55fb8ebbbc5957cbabf7ce57ba9c6e818cced034",
+        "5bb8ebda8f85134ac2dd02fc5862e49ec7c76b8d",
         []
        ],
        "window-opener.html": [
@@ -377404,19 +377437,19 @@
      []
     ],
     "MediaDevices-enumerateDevices-returned-objects.https-expected.txt": [
-     "d7fe4a5aa6e7cf953f39c36d01c58996c5874877",
+     "746b4ef4dcf7700fd7912af927a4cb305f295af9",
      []
     ],
     "MediaDevices-enumerateDevices-returned-objects.https.html.ini": [
-     "75fbe7801d8c5ddf63bce002817edb769182dc51",
+     "72f20494200151ad66b80f6bd7edd2f5ab92a837",
      []
     ],
     "MediaDevices-enumerateDevices.https-expected.txt": [
-     "973e380f7808eec4d031e62130107ec97297c6f5",
+     "b68158e043a4de4541ff989a845a679c4f6fad93",
      []
     ],
     "MediaDevices-enumerateDevices.https.html.ini": [
-     "b6d4a0024e1d04e904c1a56c984c44198551f3b1",
+     "0f4bb7c8a184f6c78fce09a9040ab5a088461e16",
      []
     ],
     "MediaStream-MediaElement-firstframe.https-expected.txt": [
@@ -380988,7 +381021,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "be475d70ff324442293f9e55df997fd81a9fa8cf",
+     "8f8232e0c21fecfcafa00148167f7aa12728acf1",
      []
     ],
     "modulepreload-expected.txt": [
@@ -419338,7 +419371,7 @@
      ]
     ],
     "enumerateDevices-with-selectAudioOutput.https.html": [
-     "51da44286a760b1f6df84d7cfdb24f6dbdf6f6a9",
+     "c1a825592a6030fb76c7b5cbd765973ecb1eb49c",
      [
       null,
       {
@@ -521970,6 +522003,15 @@
         }
        ]
       ],
+      "dangling-markup-window-name.tentative.html": [
+       "1bc8bb9f7ff558f60bda1dbacda617e34dfe2d19",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
+       ]
+      ],
       "document-domain-nested-navigate.window.js": [
        "f51eed5ca941f591536c70187e4201c464f02ab3",
        [
@@ -576415,7 +576457,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices-returned-objects.https.html": [
-     "2b5687f672b9f6ec288be7003c361f96af83a10c",
+     "6e6dbaf3bba4fa84d2ebd2a74fc56034afe33070",
      [
       null,
       {
@@ -576424,7 +576466,7 @@
      ]
     ],
     "MediaDevices-enumerateDevices.https.html": [
-     "4971f4fc48280c42388d24085e35dde07e0d9b10",
+     "88c07048a1b48940787f8659dc32cb78bf041b86",
      [
       null,
       {
@@ -576440,7 +576482,7 @@
      ]
     ],
     "MediaDevices-getUserMedia.https.html": [
-     "96399c804fcf35e5a2f554eae6f2e2dbc2ad8db5",
+     "9376f528974a95ebf57e920d10678e182ac6582d",
      [
       null,
       {
@@ -576609,7 +576651,7 @@
      ]
     ],
     "MediaStreamTrack-getSettings.https.html": [
-     "c1d90a4f4831abb2a7045dc79c5b662164f2616b",
+     "1bda4c748ac5a0c0711cc231710c18ed5afa7c25",
      [
       null,
       {
