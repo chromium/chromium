@@ -450,82 +450,102 @@
     'illo.color1': {
       light: '$cros.ref.primary30',
       dark: '$cros.ref.primary80',
+      generate_per_mode: true,
     },
     'illo.color1.1': {
       light: '$cros.ref.primary80',
       dark: '$cros.ref.secondary40',
+      generate_per_mode: true,
     },
     'illo.color1.2': {
       light: '$cros.ref.primary90',
       dark: '$cros.ref.secondary30',
+      generate_per_mode: true,
     },
     'illo.color2': {
       light: '$cros.ref.green60',
       dark: '$cros.ref.green70',
+      generate_per_mode: true,
     },
     'illo.color3': {
       light: '$cros.ref.yellow70',
       dark: '$cros.ref.yellow80',
+      generate_per_mode: true,
     },
     'illo.color4': {
       light: '$cros.ref.red60',
       dark: '$cros.ref.red60',
+      generate_per_mode: true,
     },
     'illo.color5': {
       light: '$cros.ref.tertiary70',
       dark: '$cros.ref.tertiary40',
+      generate_per_mode: true,
     },
     'illo.color6': {
       light: '$cros.ref.secondary90',
       dark: '$cros.ref.secondary50',
+      generate_per_mode: true,
     },
     'illo.base': {
       light: '$cros.ref.secondary100',
       dark: '$cros.ref.secondary0',
+      generate_per_mode: true,
     },
     'illo.secondary': {
       light: '$cros.ref.neutralvariant90',
       dark: '$cros.ref.neutralvariant40',
+      generate_per_mode: true,
     },
     'illo.card.color1' : {
       light: '#fce3e0',
       dark: '#4d2726',
+      generate_per_mode: true,
     },
     'illo.card.on-color1' : {
       light: '#a50e0e',
       dark: '#f6aea9',
+      generate_per_mode: true,
     },
     'illo.card.color2' : {
       light: '#fef2cb',
       dark: '#443117',
+      generate_per_mode: true,
     },
     'illo.card.on-color2' : {
       light: '#9b6100',
       dark: '#fde293',
+      generate_per_mode: true,
     },
     'illo.card.color3' : {
       light: '#dcf4e3',
       dark: '#16341e',
+      generate_per_mode: true,
     },
     'illo.card.on-color3' : {
       light: '#0d652d',
       dark: '#a8dab5',
+      generate_per_mode: true,
     },
     'illo.card.color4' : {
       light: '#d6e5fc',
       dark: '#20314e',
+      generate_per_mode: true,
     },
     'illo.card.on-color4' : {
       light: '#185abc',
       dark: '#aecbfa',
+      generate_per_mode: true,
     },
     'illo.card.color5' : {
       light: '#f4e3fe',
       dark: '#433355',
+      generate_per_mode: true,
     },
     'illo.card.on-color5' : {
       light: '#75099b',
       dark: '#d7aefb',
+      generate_per_mode: true,
     },
 
     /* Icon colors. */
