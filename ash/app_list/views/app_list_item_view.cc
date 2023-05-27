@@ -30,6 +30,8 @@
 #include "ash/style/dot_indicator.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -40,6 +42,7 @@
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -73,6 +76,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -606,6 +610,17 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   SetAnimationDuration(base::TimeDelta());
 
   preview_circle_radius_ = 0;
+
+  if (features::IsUserEducationEnabled() && context == Context::kAppsGridView) {
+    if (absl::optional<ui::ElementIdentifier> element_identifier =
+            UserEducationController::Get()->GetElementIdentifierForAppId(
+                item->id())) {
+      // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+      // in case registration causes a help bubble to be created synchronously.
+      SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+      SetProperty(views::kElementIdentifierKey, *element_identifier);
+    }
+  }
 }
 
 void AppListItemView::InitializeIconLoader() {

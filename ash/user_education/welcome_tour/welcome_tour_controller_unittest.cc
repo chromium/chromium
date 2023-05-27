@@ -38,10 +38,12 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Matches;
 using ::testing::Pair;
 using ::testing::StrictMock;
 using ::user_education::TutorialDescription;
 
+using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
 // Actions ---------------------------------------------------------------------
@@ -60,18 +62,8 @@ auto MoveArgs(T*... out) {
 
 // Matchers --------------------------------------------------------------------
 
-MATCHER_P4(BubbleStep,
-           help_bubble_id,
-           element_specifier,
-           body_text_id,
-           has_next_button,
-           "") {
-  namespace util = user_education_util;
-  return arg.step_type == ui::InteractionSequence::StepType::kShown &&
-         util::GetHelpBubbleId(arg.extended_properties) == help_bubble_id &&
-         arg.body_text_id == body_text_id &&
-         arg.next_button_callback.is_null() != has_next_button &&
-         absl::visit(base::Overloaded{
+MATCHER_P(ElementSpecifierEq, element_specifier, "") {
+  return absl::visit(base::Overloaded{
                          [&](const ui::ElementIdentifier& element_id) {
                            return arg.element_id == element_id &&
                                   arg.element_name.empty();
@@ -84,20 +76,31 @@ MATCHER_P4(BubbleStep,
                      element_specifier);
 }
 
-MATCHER_P2(EventStep, element_specifier, has_name_elements_callback, "") {
+MATCHER_P5(BubbleStep,
+           element_specifier,
+           context_mode,
+           help_bubble_id,
+           body_text_id,
+           has_next_button,
+           "") {
+  namespace util = user_education_util;
+  return arg.step_type == ui::InteractionSequence::StepType::kShown &&
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode == context_mode &&
+         util::GetHelpBubbleId(arg.extended_properties) == help_bubble_id &&
+         arg.body_text_id == body_text_id &&
+         arg.next_button_callback.is_null() != has_next_button;
+}
+
+MATCHER_P3(EventStep,
+           element_specifier,
+           context_mode,
+           has_name_elements_callback,
+           "") {
   return arg.step_type == ui::InteractionSequence::StepType::kCustomEvent &&
-         arg.name_elements_callback.is_null() != has_name_elements_callback &&
-         absl::visit(base::Overloaded{
-                         [&](const ui::ElementIdentifier& element_id) {
-                           return arg.element_id == element_id &&
-                                  arg.element_name.empty();
-                         },
-                         [&](const std::string& element_name) {
-                           return arg.element_name == element_name &&
-                                  arg.element_id == ui::ElementIdentifier();
-                         },
-                     },
-                     element_specifier);
+         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.context_mode == context_mode &&
+         arg.name_elements_callback.is_null() != has_name_elements_callback;
 }
 
 }  // namespace
@@ -138,32 +141,46 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
           Field(
               &TutorialDescription::steps,
               ElementsAre(
-                  BubbleStep(HelpBubbleId::kWelcomeTourShelf,
-                             ElementSpecifier(kShelfViewElementId),
+                  BubbleStep(ElementSpecifier(kShelfViewElementId),
+                             ContextMode::kInitial,
+                             HelpBubbleId::kWelcomeTourShelf,
                              IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kShelfViewElementId),
+                            ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourStatusArea,
-                             ElementSpecifier(kUnifiedSystemTrayElementName),
+                  BubbleStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourStatusArea,
                              IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                            ContextMode::kFromPreviousStep,
                             /*has_name_elements_callback=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourHomeButton,
-                             ElementSpecifier(kHomeButtonElementName),
+                  BubbleStep(ElementSpecifier(kHomeButtonElementName),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourHomeButton,
                              IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourSearchBox,
-                             ElementSpecifier(kSearchBoxViewElementId),
+                  BubbleStep(ElementSpecifier(kSearchBoxViewElementId),
+                             ContextMode::kAny,
+                             HelpBubbleId::kWelcomeTourSearchBox,
                              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourSettingsApp,
-                             ElementSpecifier(kSettingsAppElementId),
+                  EventStep(ElementSpecifier(kSearchBoxViewElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kSettingsAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourSettingsApp,
                              IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/true),
-                  BubbleStep(HelpBubbleId::kWelcomeTourExploreApp,
-                             ElementSpecifier(kExploreAppElementId),
+                  EventStep(ElementSpecifier(kSettingsAppElementId),
+                            ContextMode::kFromPreviousStep,
+                            /*has_name_elements_callback=*/false),
+                  BubbleStep(ElementSpecifier(kExploreAppElementId),
+                             ContextMode::kFromPreviousStep,
+                             HelpBubbleId::kWelcomeTourExploreApp,
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
                              /*has_next_button=*/false))))));
 }
