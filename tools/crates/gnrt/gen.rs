@@ -48,14 +48,9 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     .into_iter()
     .flat_map(|(list, vis)| list.iter().map(move |(name, spec)| (name, spec, vis)))
     {
-        let full_dep: FullDependency = dep_spec.clone().into_full();
-        let version_req = semver::VersionReq::parse(
-            &full_dep
-                .version
-                .as_ref()
-                .ok_or_else(|| format_err!("{dep_name} is missing a version in third_party.toml"))?
-                .0,
-        )?;
+        let full_dep: ThirdPartyFullDependency = dep_spec.clone().into_full();
+
+        let version_req = full_dep.version.to_version_req();
         let crate_id = source.find_match(dep_name, &version_req).ok_or_else(|| {
             format_err!(
                 "{dep_name} {version_req} was requested in third_party.toml \

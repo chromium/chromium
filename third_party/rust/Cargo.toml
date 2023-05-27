@@ -51,7 +51,6 @@ version = "0.17"
 
 [dependencies.rustversion]
 version = "1"
-build-script-outputs = ["version.rs"]
 
 [dependencies.serde_json_lenient]
 version = "0.1"
@@ -67,7 +66,6 @@ features = ["preserve_order"]
 
 [dependencies.unicode-linebreak]
 version = "0.1"
-build-script-outputs = ["tables.rs"]
 [patch.crates-io.aho-corasick_v0_7]
 path = "aho_corasick/v0_7/crate"
 package = "aho-corasick"

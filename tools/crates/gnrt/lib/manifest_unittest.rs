@@ -4,13 +4,14 @@
 
 use rust_gtest_interop::prelude::*;
 
+use gnrt_lib::crates::Epoch;
 use gnrt_lib::manifest::*;
 
 #[gtest(ManifestTest, ParseSingleFullDependency)]
 fn test() {
     expect_eq!(
         toml::de::from_str(concat!(
-            "version = \"1.0.0\"\n",
+            "version = \"1\"\n",
             "features = [\"foo\", \"bar\"]\n",
             "allow-first-party-usage = false\n",
             "build-script-outputs = [\"stuff.rs\"]\n",
@@ -19,9 +20,9 @@ fn test() {
             configs = []
             \"\"\""
         )),
-        Ok(FullDependency {
+        Ok(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("1.0.0".to_string())),
+            version: Epoch::Major(1),
             features: vec!["foo".to_string(), "bar".to_string()],
             allow_first_party_usage: false,
             build_script_outputs: vec!["stuff.rs".to_string()],
@@ -33,12 +34,12 @@ fn test() {
 
     expect_eq!(
         toml::de::from_str(concat!(
-            "version = \"3.14.159\"\n",
+            "version = \"3\"\n",
             "build-script-outputs = [\"generated.rs\"]\n",
         )),
-        Ok(FullDependency {
+        Ok(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("3.14.159".to_string())),
+            version: Epoch::Major(3),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["generated.rs".to_string()],
@@ -52,7 +53,7 @@ fn test() {
     expect_eq!(
         toml::de::from_str(concat!(
             "default-features = false\n",
-            "version = \"1.0.0\"\n",
+            "version = \"1\"\n",
             "features = [\"foo\", \"bar\"]\n",
             "allow-first-party-usage = false\n",
             "build-script-outputs = [\"stuff.rs\"]\n",
@@ -61,9 +62,9 @@ fn test() {
             configs = []
             \"\"\""
         )),
-        Ok(FullDependency {
+        Ok(ThirdPartyFullDependency {
             default_features: false,
-            version: Some(VersionConstraint("1.0.0".to_string())),
+            version: Epoch::Major(1),
             features: vec!["foo".to_string(), "bar".to_string()],
             allow_first_party_usage: false,
             build_script_outputs: vec!["stuff.rs".to_string()],
@@ -98,18 +99,18 @@ fn test() {
 
     expect_eq!(
         manifest.dependencies.get("cxx"),
-        Some(&Dependency::Short(VersionConstraint("1".to_string())))
+        Some(&ThirdPartyDependency::Short(Epoch::Major(1)))
     );
     expect_eq!(
         manifest.dependencies.get("serde"),
-        Some(&Dependency::Short(VersionConstraint("1".to_string())))
+        Some(&ThirdPartyDependency::Short(Epoch::Major(1)))
     );
 
     expect_eq!(
         manifest.dependencies.get("rustversion"),
-        Some(&Dependency::Full(FullDependency {
+        Some(&Dependency::Full(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("1".to_string())),
+            version: Epoch::Major(1),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec!["version.rs".to_string()],
@@ -119,9 +120,9 @@ fn test() {
 
     expect_eq!(
         manifest.dependencies.get("unicode-linebreak"),
-        Some(&Dependency::Full(FullDependency {
+        Some(&Dependency::Full(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("0.1".to_string())),
+            version: Epoch::Minor(1),
             features: vec![],
             allow_first_party_usage: false,
             build_script_outputs: vec!["table.rs".to_string()],
@@ -131,9 +132,9 @@ fn test() {
 
     expect_eq!(
         manifest.dependencies.get("special-stuff"),
-        Some(&Dependency::Full(FullDependency {
+        Some(&Dependency::Full(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("0.1".to_string())),
+            version: Epoch::Minor(1),
             features: vec![],
             allow_first_party_usage: true,
             build_script_outputs: vec![],
@@ -143,9 +144,9 @@ fn test() {
 
     expect_eq!(
         manifest.testonly_dependencies.get("syn"),
-        Some(&Dependency::Full(FullDependency {
+        Some(&Dependency::Full(ThirdPartyFullDependency {
             default_features: true,
-            version: Some(VersionConstraint("1".to_string())),
+            version: Epoch::Major(1),
             features: vec!["full".to_string()],
             allow_first_party_usage: true,
             build_script_outputs: vec![],
@@ -166,7 +167,7 @@ fn test() {
             license: "funtimes".to_string(),
         },
         workspace: None,
-        dependencies: DependencySet::new(),
+        dependencies: CargoDependencySet::new(),
         patches: vec![(
             "crates-io".to_string(),
             vec![(
