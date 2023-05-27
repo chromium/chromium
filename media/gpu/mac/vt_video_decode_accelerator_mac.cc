@@ -6,8 +6,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreVideo/CoreVideo.h>
-#include <OpenGL/CGLIOSurface.h>
-#include <OpenGL/gl.h>
 #include <stddef.h>
 
 #include <algorithm>
