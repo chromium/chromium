@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardImageTransport
   // pointer to the SDK here and in CardboardRenderLoop to get this, but we need
   // to consider that design.
   mojom::VRFieldOfViewPtr GetFOV(CardboardEye eye, const gfx::Size& frame_size);
+  gfx::Transform GetMojoFromView(CardboardEye eye,
+                                 gfx::Transform mojo_from_viewer);
 
   // Take the current WebXr Rendering Frame and render it to the supplied
   // framebuffer.

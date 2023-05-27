@@ -138,6 +138,19 @@ mojom::VRFieldOfViewPtr CardboardImageTransport::GetFOV(
       fov[kFovLeft] * kRadToDeg, fov[kFovRight] * kRadToDeg);
 }
 
+gfx::Transform CardboardImageTransport::GetMojoFromView(
+    CardboardEye eye,
+    gfx::Transform mojo_from_viewer) {
+  float view_from_viewer[16];
+  CardboardLensDistortion_getEyeFromHeadMatrix(lens_distortion_.get(), eye,
+                                               view_from_viewer);
+  // This needs to be inverted because the Cardboard SDK appears to be giving
+  // back values that are the inverse of what WebXR expects.
+  gfx::Transform viewer_from_view =
+      gfx::Transform::ColMajorF(view_from_viewer).InverseOrIdentity();
+  return mojo_from_viewer * viewer_from_view;
+}
+
 std::unique_ptr<CardboardImageTransport> CardboardImageTransportFactory::Create(
     std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge) {
   return std::make_unique<CardboardImageTransport>(std::move(mailbox_bridge));
