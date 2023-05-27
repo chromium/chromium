@@ -663,13 +663,7 @@ class DebuggerExtensionApiTest : public ExtensionApiTest {
   }
 };
 
-// TODO(crbug/1434257): Flaky on Lacros and Linux.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_Debugger DISABLED_Debugger
-#else
-#define MAYBE_Debugger Debugger
-#endif
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, MAYBE_Debugger) {
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
   ASSERT_TRUE(RunExtensionTest("debugger")) << message_;
 }
 
@@ -748,13 +742,7 @@ class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
   }
 };
 
-// TODO(crbug/1440919): Flaky on Lacros and Linux.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_Debugger DISABLED_Debugger
-#else
-#define MAYBE_Debugger Debugger
-#endif
-IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, MAYBE_Debugger) {
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest, Debugger) {
   GURL url(embedded_test_server()->GetURL(
       "a.com", "/extensions/api_test/debugger/oopif.html"));
   GURL iframe_url(embedded_test_server()->GetURL(
