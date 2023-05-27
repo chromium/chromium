@@ -39,13 +39,13 @@ const uint16_t kChildToParent[] = {
     344, 344, 344, 332,
 };
 
-constexpr size_t kNumTopics = std::size(kChildToParent);
 constexpr Topic kNullTopic = Topic(0);
 
-static_assert(kNumTopics == 349);
+static_assert(SemanticTree::kNumTopics == std::size(kChildToParent));
 static_assert(IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_349 -
                   IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1 + 1 ==
-              kNumTopics);
+              SemanticTree::kNumTopics);
+
 // These asserts also have a side-effect of preventing unused resource
 // removal from removing them.
 #define ASSERT_RESOURCE_ID(num)                                              \
@@ -403,7 +403,7 @@ ASSERT_RESOURCE_ID(349);
 
 bool IsTopicValid(Topic topic) {
   int i = static_cast<int>(topic);
-  return i > 0 && i <= static_cast<int>(kNumTopics);
+  return i > 0 && i <= static_cast<int>(SemanticTree::kNumTopics);
 }
 
 Topic GetParentTopic(Topic topic) {

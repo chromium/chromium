@@ -468,6 +468,28 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   return true;
 }
 
+int BrowsingTopicsServiceImpl::NumVersionsInEpochs(
+    const url::Origin& main_frame_origin) const {
+  CHECK(browsing_topics_state_loaded_);
+  CHECK(privacy_sandbox_settings_->IsTopicsAllowed());
+
+  std::string main_frame_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          main_frame_origin.GetURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  std::set<std::pair<int, int64_t>> distinct_versions;
+  for (const EpochTopics* epoch :
+       browsing_topics_state_.EpochsForSite(main_frame_domain)) {
+    if (epoch->HasValidVersions()) {
+      distinct_versions.emplace(epoch->taxonomy_version(),
+                                epoch->model_version());
+    }
+  }
+
+  return distinct_versions.size();
+}
+
 void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
     bool calculate_now,
     mojom::PageHandler::GetBrowsingTopicsStateCallback callback) {

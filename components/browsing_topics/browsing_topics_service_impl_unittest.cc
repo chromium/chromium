@@ -1314,6 +1314,115 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_EQ(result[2]->version, "chrome.1:1:4");
 }
 
+TEST_F(BrowsingTopicsServiceImplTest, NumVersionsInEpochs_OneVerison) {
+  base::queue<EpochTopics> mock_calculator_results;
+
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     kTime1));
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     kTime1));
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     kTime1));
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     kTime1));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish all calculations.
+  task_environment()->FastForwardBy(4 * kCalculatorDelay + 3 * kEpoch);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 4u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  EXPECT_EQ(
+      browsing_topics_service_->NumVersionsInEpochs(
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()),
+      1);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest,
+       NumVersionsInEpochs_ThreeVerisons_ClearedTopics) {
+  base::queue<EpochTopics> mock_calculator_results;
+
+  EpochTopics epoch_version1 =
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5,
+                            /*model_version=*/1);
+  EpochTopics epoch_version2 =
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5,
+                            /*model_version=*/2);
+  EpochTopics epoch_version3 =
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5,
+                            /*model_version=*/3);
+  EpochTopics epoch_version4 =
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            kTime1,
+                            /*padded_top_topics_start_index=*/5,
+                            /*model_version=*/4);
+
+  epoch_version1.ClearTopics();
+  epoch_version2.ClearTopics();
+  epoch_version3.ClearTopics();
+  epoch_version4.ClearTopics();
+
+  mock_calculator_results.push(std::move(epoch_version1));
+  mock_calculator_results.push(std::move(epoch_version2));
+  mock_calculator_results.push(std::move(epoch_version3));
+  mock_calculator_results.push(std::move(epoch_version4));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish all calculations.
+  task_environment()->FastForwardBy(4 * kCalculatorDelay + 3 * kEpoch);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 4u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  EXPECT_EQ(
+      browsing_topics_service_->NumVersionsInEpochs(
+          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()),
+      3);
+}
+
 TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(

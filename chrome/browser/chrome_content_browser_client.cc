@@ -6995,6 +6995,19 @@ bool ChromeContentBrowserClient::HandleTopicsWebApi(
   return allowed;
 }
 
+int ChromeContentBrowserClient::NumVersionsInTopicsEpochs(
+    content::RenderFrameHost* main_frame) const {
+  browsing_topics::BrowsingTopicsService* browsing_topics_service =
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              content::WebContents::FromRenderFrameHost(main_frame)
+                  ->GetBrowserContext()));
+
+  CHECK(browsing_topics_service);
+  return browsing_topics_service->NumVersionsInEpochs(
+      main_frame->GetLastCommittedOrigin());
+}
+
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,

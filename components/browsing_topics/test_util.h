@@ -119,6 +119,7 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
                bool,
                std::vector<blink::mojom::EpochTopicPtr>&),
               (override));
+  MOCK_METHOD(int, NumVersionsInEpochs, (const url::Origin&), (const override));
   MOCK_METHOD(void,
               GetBrowsingTopicsStateForWebUi,
               (bool, mojom::PageHandler::GetBrowsingTopicsStateCallback),

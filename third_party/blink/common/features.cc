@@ -1152,12 +1152,13 @@ const base::FeatureParam<int>
 // multiple configurations as long as they are compatible (from both Chrome's
 // and users/websites' perspective). For a configuration that's incompatible
 // with previous ones, a new dedicated version number should be used.
-const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
-                                                           "config_version", 1};
+const base::FeatureParam<int> kBrowsingTopicsConfigVersion{
+    &kBrowsingTopics, "config_version", kBrowsingTopicsConfigVersionDefault};
 // The taxonomy version. This only affects the topics classification that occurs
 // during this browser session, and doesn't affect the pre-existing epochs.
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
-    &kBrowsingTopics, "taxonomy_version", 1};
+    &kBrowsingTopics, "taxonomy_version",
+    kBrowsingTopicsTaxonomyVersionDefault};
 
 const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
     &kBrowsingTopics, "browsing_topics_disabled_topics_list", ""};

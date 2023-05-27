@@ -1261,6 +1261,11 @@ bool ContentBrowserClient::HandleTopicsWebApi(
   return true;
 }
 
+int ContentBrowserClient::NumVersionsInTopicsEpochs(
+    content::RenderFrameHost* main_frame) const {
+  return 0;
+}
+
 bool ContentBrowserClient::IsBluetoothScanningBlocked(
     content::BrowserContext* browser_context,
     const url::Origin& requesting_origin,

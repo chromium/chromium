@@ -2170,6 +2170,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool observe,
       std::vector<blink::mojom::EpochTopicPtr>& topics);
 
+  // Returns the number of distinct topics epochs versions for `main_frame`.
+  // Must be called when topics are eligible (i.e. `HandleTopicsWebApi` would
+  // return true for the same main frame context).
+  virtual int NumVersionsInTopicsEpochs(
+      content::RenderFrameHost* main_frame) const;
+
   // Returns whether a site is blocked to use Bluetooth scanning API.
   virtual bool IsBluetoothScanningBlocked(
       content::BrowserContext* browser_context,
