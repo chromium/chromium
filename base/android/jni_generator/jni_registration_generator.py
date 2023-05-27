@@ -40,6 +40,11 @@ MERGEABLE_KEYS = [
     'REGISTER_NATIVES',
 ]
 
+# Classes here will be removed from the java side of registration.
+PERMANENTLY_IGNORED_JAVA_ONLY_FILES = [r'\W+third_party/cardboard/']
+PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE = re.compile(
+    '|'.join(PERMANENTLY_IGNORED_JAVA_ONLY_FILES))
+
 
 def _Generate(options, native_sources, java_sources):
   """Generates files required to perform JNI registration.
@@ -998,6 +1003,11 @@ def main(argv):
       set(action_helpers.parse_gn_list(args.java_sources_files)))
   java_sources = _GetFilesSetFromSources(java_sources_files,
                                          args.file_exclusions)
+  java_sources = {
+      j
+      for j in java_sources
+      if not PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE.match(j)
+  }
   if args.native_sources_file:
     native_sources = _GetFilesSetFromSources([args.native_sources_file],
                                              args.file_exclusions)
@@ -1011,6 +1021,14 @@ def main(argv):
       # when only looking at java.
       native_sources = java_sources
 
+  native_ignored = {
+      j
+      for j in native_sources if PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE.match(j)
+  }
+  assert not native_ignored, (
+      f'''Permanently ignored java files shouldn't be in a generate_jni target:
+      {native_ignored}
+      ''')
   _Generate(args, native_sources, java_sources=java_sources)
 
   if args.depfile:
