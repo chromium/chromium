@@ -209,7 +209,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
- ['AppManagementAppItem', 'app_management/app_item_test.js'],
  ['AppManagementArcDetailView', 'app_management/arc_detail_view_test.js'],
  [
    'AppManagementBorealisDetailView',
@@ -504,6 +503,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsAppsPageAppManagementPageAppDetailView',
    'os_apps_page/app_management_page/app_detail_view_test.js'
+ ],
+ [
+   'OsAppsPageAppManagementPageAppItem',
+   'os_apps_page/app_management_page/app_item_test.js'
  ],
  [
    'OsAppsPageAppManagementPageChromeAppDetailView',
