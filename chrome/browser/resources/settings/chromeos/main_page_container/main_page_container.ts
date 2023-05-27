@@ -43,6 +43,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {MainPageMixin} from '../main_page_mixin.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
@@ -127,6 +128,19 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         type: Boolean,
         value: false,
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
+
+      shouldShowAdvancedToggle_: {
+        type: Boolean,
+        computed: 'computeShouldShowAdvancedToggle_(' +
+            'isRevampWayfindingEnabled_, hasExpandedSection_)',
+      },
     };
   }
 
@@ -143,6 +157,8 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private advancedTogglingInProgress_: boolean;
   private showEolIncentive_: boolean;
   private shouldShowOfferText_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
+  private shouldShowAdvancedToggle_: boolean;
 
   constructor() {
     super();
@@ -215,6 +231,10 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
 
   private computeShowEolIncentive_(): boolean {
     return !this.hasExpandedSection_ && this.showEolIncentive_;
+  }
+
+  private computeShouldShowAdvancedToggle_(): boolean {
+    return !this.isRevampWayfindingEnabled_ && !this.hasExpandedSection_;
   }
 
   private androidAppsInfoUpdate_(info: AndroidAppsInfo) {

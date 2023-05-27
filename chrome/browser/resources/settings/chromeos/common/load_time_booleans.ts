@@ -15,6 +15,10 @@ export function isGuest(): boolean {
   return loadTimeData.getBoolean('isGuest');
 }
 
+export function isRevampWayfindingEnabled(): boolean {
+  return loadTimeData.getBoolean('isRevampWayfindingEnabled');
+}
+
 // Apps page
 export function androidAppsVisible(): boolean {
   return loadTimeData.getBoolean('androidAppsVisible');

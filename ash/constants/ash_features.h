@@ -882,6 +882,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeThemeSelectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeTouchpadScrollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDisplaySizeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsAppBadgingToggleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsRevampWayfindingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsSearchFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSyncConsentRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOverviewDeskNavigationEnabled();

@@ -222,7 +222,7 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[!hasExpandedSection_]]">
+<template is="dom-if" if="[[shouldShowAdvancedToggle_]]">
   <div id="toggleSpacer"></div>
   <h2 id="toggleContainer">
     <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
