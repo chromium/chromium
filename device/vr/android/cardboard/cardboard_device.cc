@@ -116,14 +116,11 @@ void CardboardDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
                          base::BindOnce(&CardboardDevice::OnCreateSessionResult,
                                         weak_ptr_factory_.GetWeakPtr()));
 
-  render_loop_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CardboardRenderLoop::CreateSession,
-                     render_loop_->GetWeakPtr(),
-                     std::move(session_result_callback),
-                     std::move(session_shutdown_callback),
-                     xr_java_coordinator_.get(), cardboard_sdk_.get(), window,
-                     frame_size, rotation, std::move(options_)));
+  PostTaskToRenderThread(base::BindOnce(
+      &CardboardRenderLoop::CreateSession, render_loop_->GetWeakPtr(),
+      std::move(session_result_callback), std::move(session_shutdown_callback),
+      xr_java_coordinator_.get(), cardboard_sdk_.get(), window, frame_size,
+      rotation, std::move(options_)));
 }
 
 void CardboardDevice::OnDrawingSurfaceTouch(bool is_primary,
@@ -134,7 +131,15 @@ void CardboardDevice::OnDrawingSurfaceTouch(bool is_primary,
   DVLOG(3) << __func__ << ": pointer_id=" << pointer_id
            << " is_primary=" << is_primary << " touching=" << touching;
 
-  // TODO(https://crbug.com/1429087): Process Touch Events.
+  // Cardboard doesn't care about anything but the primary pointer.
+  if (!is_primary) {
+    return;
+  }
+
+  // Cardboard touch events don't make use of any of the pointer information,
+  // so we only need to notify that an touch has happened.
+  PostTaskToRenderThread(base::BindOnce(&CardboardRenderLoop::OnTriggerEvent,
+                                        render_loop_->GetWeakPtr(), touching));
 }
 
 void CardboardDevice::OnDrawingSurfaceDestroyed() {
@@ -178,6 +183,11 @@ void CardboardDevice::OnSessionEnded() {
 
   // This sets HasExclusiveSession status to false.
   OnExitPresent();
+}
+
+void CardboardDevice::PostTaskToRenderThread(base::OnceClosure task) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+  render_loop_->task_runner()->PostTask(FROM_HERE, std::move(task));
 }
 
 }  // namespace device

@@ -149,6 +149,7 @@ void CardboardRenderLoop::CreateSession(
   // deliver any poses. Not clear if this is intended, as it's not mentioned in
   // the documentation.
   CardboardHeadTracker_resume(head_tracker_.get());
+  CardboardHeadTracker_recenter(head_tracker_.get());
 }
 
 bool CardboardRenderLoop::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
@@ -391,6 +392,10 @@ void CardboardRenderLoop::GetFrameData(
 
   frame_data->views.push_back(left_eye_.Clone());
   frame_data->views.push_back(right_eye_.Clone());
+
+  std::vector<mojom::XRInputSourceStatePtr> input_state;
+  input_state.push_back(GetInputSourceState());
+  frame_data->input_state = std::move(input_state);
 
   frame_data->time_delta = now - base::TimeTicks();
 
@@ -684,6 +689,44 @@ void CardboardRenderLoop::SetFrameDataRestricted(bool frame_data_restricted) {
   } else {
     Resume();
   }
+}
+
+void CardboardRenderLoop::OnTriggerEvent(bool pressed) {
+  DVLOG(2) << __func__ << ": pressed=" << pressed;
+
+  if (pressed) {
+    trigger_pressed_ = true;
+  } else if (trigger_pressed_) {
+    trigger_pressed_ = false;
+    trigger_clicked_ = true;
+  }
+}
+
+device::mojom::XRInputSourceStatePtr
+CardboardRenderLoop::GetInputSourceState() {
+  device::mojom::XRInputSourceStatePtr state =
+      device::mojom::XRInputSourceState::New();
+  // Only one gaze input source to worry about, so it can have a static id.
+  state->source_id = 1;
+
+  // Report any trigger state changes made since the last call and reset the
+  // state here.
+  state->primary_input_pressed = trigger_pressed_;
+  state->primary_input_clicked = trigger_clicked_;
+  trigger_clicked_ = false;
+
+  state->description = device::mojom::XRInputSourceDescription::New();
+
+  // It's a gaze-cursor-based device.
+  state->description->target_ray_mode = device::mojom::XRTargetRayMode::GAZING;
+  state->emulated_position = true;
+
+  // No implicit handedness
+  state->description->handedness = device::mojom::XRHandedness::NONE;
+
+  // Pointer and grip transforms are omitted since this is a gaze-based source.
+
+  return state;
 }
 
 void CardboardRenderLoop::Pause() {

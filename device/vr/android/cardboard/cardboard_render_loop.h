@@ -86,6 +86,9 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   // mojom::XRSessionController
   void SetFrameDataRestricted(bool restricted) override;
 
+  void OnTriggerEvent(bool pressed);
+  device::mojom::XRInputSourceStatePtr GetInputSourceState();
+
   base::WeakPtr<CardboardRenderLoop> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -134,6 +137,10 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   scoped_refptr<gl::GLContext> context_;
   gfx::RectF left_bounds_;
   gfx::RectF right_bounds_;
+
+  // Input Parameters
+  bool trigger_pressed_ = false;
+  bool trigger_clicked_ = false;
 
   // Owned by our parent (cardboard_device)
   raw_ptr<CardboardSdk> cardboard_sdk_;

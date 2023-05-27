@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
   void OnCreateSessionResult(mojom::XRRuntimeSessionResultPtr result);
 
  private:
+  void PostTaskToRenderThread(base::OnceClosure task);
+
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   std::unique_ptr<CardboardSdk> cardboard_sdk_;
