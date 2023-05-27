@@ -720,9 +720,6 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     // Opposite direction subgrids iterate backwards.
     const wtf_size_t first_set_index =
         is_opposite_direction_in_root_grid ? end_set_index : begin_set_index;
-    const wtf_size_t last_set_index =
-        is_opposite_direction_in_root_grid ? begin_set_index : end_set_index;
-
     LayoutUnit first_set_offset = sets_geometry_[first_set_index].offset;
 
     if (is_opposite_direction_in_root_grid) {
@@ -740,21 +737,36 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
           subgrid_sets_geometry.emplace_back(sets_geometry_[current_index]);
       if (is_opposite_direction_in_root_grid) {
         set.offset = first_set_offset - set.offset;
+
+        // Opposite direction subgrids take their offset from the current index,
+        // but their track counts from the subsequent index.
+        const wtf_size_t next_index = current_index + 1;
+        DCHECK_LT(next_index, sets_geometry_.size());
+        set.track_count = sets_geometry_[next_index].track_count;
       } else {
         set.offset -= first_set_offset;
       }
+      DCHECK_GT(set.track_count, 0U);
       set.offset += subgrid_gutter_size_delta / 2;
     }
+    const wtf_size_t last_set_index =
+        is_opposite_direction_in_root_grid ? begin_set_index : end_set_index;
     auto& last_set =
         subgrid_sets_geometry.emplace_back(sets_geometry_[last_set_index]);
 
     if (is_opposite_direction_in_root_grid) {
       last_set.offset = first_set_offset - last_set.offset;
+      // Opposite direction subgrids take their offset from the current index,
+      // but their track counts from the subsequent index.
+      const wtf_size_t next_index = last_set_index + 1;
+      DCHECK_LT(next_index, sets_geometry_.size());
+      last_set.track_count = sets_geometry_[next_index].track_count;
     } else {
       last_set.offset -= first_set_offset;
     }
     last_set.offset +=
         subgrid_gutter_size_delta - subgrid_margin_border_scrollbar_padding_end;
+    DCHECK_GT(last_set.track_count, 0U);
   }
 
   // Copy the last indefinite indices in the subgrid's span.
