@@ -411,6 +411,7 @@ blink_core_tests_editing = [
   "markers/active_suggestion_marker_test.cc",
   "markers/composition_marker_list_impl_test.cc",
   "markers/composition_marker_test.cc",
+  "markers/custom_highlight_marker_test.cc",
   "markers/document_marker_controller_test.cc",
   "markers/document_marker_test.cc",
   "markers/grammar_marker_list_impl_test.cc",

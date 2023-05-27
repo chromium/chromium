@@ -104,6 +104,19 @@ void HighlightRegistry::SetForTesting(AtomicString highlight_name,
   ScheduleRepaint();
 }
 
+void HighlightRegistry::RemoveForTesting(AtomicString highlight_name,
+                                         Highlight* highlight) {
+  auto highlights_iterator = GetMapIterator(highlight_name);
+  if (highlights_iterator != highlights_.end()) {
+    highlights_iterator->Get()->highlight->DeregisterFrom(this);
+    // It's necessary to delete it and insert a new entry to the registry
+    // instead of just modifying the existing one so the insertion order is
+    // preserved.
+    highlights_.erase(highlights_iterator);
+    ScheduleRepaint();
+  }
+}
+
 HighlightRegistry* HighlightRegistry::setForBinding(
     ScriptState* script_state,
     AtomicString highlight_name,

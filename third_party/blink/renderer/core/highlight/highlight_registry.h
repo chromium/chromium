@@ -43,6 +43,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
   void SetForTesting(AtomicString, Highlight*);
+  void RemoveForTesting(AtomicString, Highlight*);
   HighlightRegistry* setForBinding(ScriptState*,
                                    AtomicString,
                                    Member<Highlight>,
