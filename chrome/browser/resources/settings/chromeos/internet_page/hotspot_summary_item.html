@@ -4,7 +4,7 @@
         --network-summary-item-border-top, var(--cr-separator-line));
   }
   #hotspotPageTitle {
-    padding-inline-start: 22px;
+    padding-inline-start: 0;
   }
 </style>
 
@@ -13,8 +13,10 @@
       actionable$="[[shouldShowArrowButton_(hotspotInfo.allowStatus)]]"
       on-click="navigateToDetailPage_"
       class="flex layout horizontal center link-wrapper">
-    <iron-icon id="hotspotIcon" icon="[[getIconClass_(isHotspotToggleOn_)]]">
-    </iron-icon>
+      <network-icon
+          id="hotspotIcon"
+          hotspot-info="[[hotspotInfo]]">
+      </network-icon>
 
     <div id="hotspotPageTitle" class="middle settings-box-text"
         aria-hidden="true">

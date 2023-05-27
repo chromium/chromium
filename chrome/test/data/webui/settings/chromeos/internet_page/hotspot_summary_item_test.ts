@@ -9,7 +9,6 @@ import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/
 import {CrosHotspotConfigInterface, CrosHotspotConfigObserverInterface, CrosHotspotConfigObserverRemote, HotspotAllowStatus, HotspotControlResult, HotspotState, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {CrPolicyIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -34,8 +33,8 @@ suite('<hotspot-summary-item>', () => {
         '#enableHotspotToggle');
   }
 
-  function queryHotspotIcon(): IronIconElement|null {
-    return hotspotSummaryItem.shadowRoot!.querySelector<IronIconElement>(
+  function queryHotspotIcon(): HTMLElement|null {
+    return hotspotSummaryItem.shadowRoot!.querySelector<HTMLElement>(
         '#hotspotIcon');
   }
 
@@ -125,7 +124,9 @@ suite('<hotspot-summary-item>', () => {
     assertFalse(enableToggle.disabled, 'Toggle should be enabled');
     assertTrue(!!subpageArrow, 'Subpage arrow should exist');
     assertNull(policyIndicator, 'Policy indicator should not exist');
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    const icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-off'));
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
@@ -153,7 +154,9 @@ suite('<hotspot-summary-item>', () => {
     assertFalse(enableToggle.disabled, 'Toggle should be enabled');
     assertTrue(!!subpageArrow, 'Subpage arrow should exist');
     assertNull(policyIndicator, 'Policy indicator should not exist');
-    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
+    const icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-on'));
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
@@ -183,7 +186,9 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(enableToggle.disabled, 'Toggle should be disabled');
     assertNull(subpageArrow, 'Subpage arrow should not exist');
     assertTrue(!!policyIndicator, 'Policy indicator should exist');
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    let icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-off'));
     assertFalse(hotspotStateSublabel.hidden, 'State sublabel should show');
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
@@ -199,14 +204,18 @@ suite('<hotspot-summary-item>', () => {
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOn'),
         hotspotStateSublabel.textContent!.trim());
-    assertEquals('os-settings:hotspot-enabled', hotspotIcon.icon);
+    icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-on'));
 
     hotspotConfig_.setFakeHotspotState(HotspotState.kDisabled);
     await flushAsync();
     assertEquals(
         hotspotSummaryItem.i18n('hotspotSummaryStateOff'),
         hotspotStateSublabel.textContent!.trim());
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-off'));
   });
 
   test('UI state when mobile data plan doesn\'t support hotspot', async () => {
@@ -229,7 +238,9 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(enableToggle.disabled, 'Toggle should be disabled');
     assertNull(subpageArrow, 'Subpage arrow should not exist');
     assertNull(policyIndicator, 'Policy indicator should not exist');
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    const icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-off'));
     assertTrue(hotspotStateSublabel.hidden, 'State sublabel should hide');
     assertFalse(
         hotspotDisabledSublabelLink.hidden,
@@ -261,7 +272,9 @@ suite('<hotspot-summary-item>', () => {
     assertTrue(enableToggle.disabled, 'Toggle should be disabled');
     assertNull(subpageArrow, 'Subpage arrow should not exist');
     assertNull(policyIndicator, 'Policy indicator should not exist');
-    assertEquals('os-settings:hotspot-disabled', hotspotIcon.icon);
+    const icon = hotspotIcon.shadowRoot!.querySelector<HTMLElement>('#icon');
+    assertTrue(!!icon);
+    assertTrue(icon.classList.contains('hotspot-off'));
     assertTrue(hotspotStateSublabel.hidden, 'State sublabel should hide');
     assertFalse(
         hotspotDisabledSublabelLink.hidden,

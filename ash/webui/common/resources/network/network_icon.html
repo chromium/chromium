@@ -121,6 +121,45 @@
     }
   }
 
+  /* Hotspot images */
+  #icon.hotspot-on {
+    -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot.svg);
+  }
+
+  #icon.hotspot-off {
+    -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot-off.svg);
+  }
+
+  #icon.hotspot-0 {
+    -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot_dot.svg);
+  }
+
+  #icon.hotspot-1 {
+    -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot_inner.svg);
+  }
+
+  #icon.hotspot-2 {
+    -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot.svg);
+  }
+
+  #icon.hotspot-connecting {
+    animation: hotspot-levels 1500ms infinite;
+    animation-direction: alternate;
+    animation-timing-function: steps(4, end);
+  }
+
+  @keyframes hotspot-levels {
+    0% {
+      -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot_dot.svg);
+    }
+    50% {
+      -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot_inner.svg);
+    }
+    100% {
+      -webkit-mask: url(chrome://resources/ash/common/hotspot/hotspot.svg);
+    }
+  }
+
   /* Cellular images */
   #icon.cellular-not-connected {
     -webkit-mask: url(chrome://resources/ash/common/network/cellular_0_with_x.svg);
@@ -183,16 +222,16 @@
     }
   }
 </style>
-<template is="dom-if" if="[[showIcon_(networkState)]]" restamp>
+<template is="dom-if" if="[[showIcon_(networkState, hotspotInfo)]]" restamp>
   <div id="icon"
-      class$="[[getIconClass_(networkState, deviceState, isListItem)]]">
+      class$="[[getIconClass_(networkState, deviceState, isListItem, hotspotInfo)]]">
   </div>
   <iron-icon id="technology"
-      hidden="[[!showTechnology_(networkState, showTechnologyBadge)]]"
-      icon="[[getTechnology_(networkState)]]">
+      hidden="[[!showTechnology_(networkState, showTechnologyBadge, hotspotInfo)]]"
+      icon="[[getTechnology_(networkState, hotspotInfo)]]">
   </iron-icon>
-  <iron-icon id="secure" hidden="[[!showSecure_(networkState)]]"
+  <iron-icon id="secure" hidden="[[!showSecure_(networkState, hotspotInfo)]]"
       icon="network8:badge-secure">
   </iron-icon>
-  <div id="roaming" hidden="[[!showRoaming_(networkState)]]"></div>
+  <div id="roaming" hidden="[[!showRoaming_(networkState, hotspotInfo)]]"></div>
 </template>
