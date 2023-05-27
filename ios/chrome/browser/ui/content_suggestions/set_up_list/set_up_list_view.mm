@@ -70,6 +70,9 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   // The array of item data given to the initializer.
   NSArray<SetUpListItemViewData*>* _itemsData;
 
+  // The view that needs layout if SetUpListView's height changes.
+  UIView* _rootView;
+
   // The array of SetUpListItemViews.
   NSMutableArray<SetUpListItemView*>* _items;
 
@@ -86,11 +89,13 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   UIButton* _menuButton;
 }
 
-- (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items {
+- (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items
+                     rootView:(UIView*)rootView {
   self = [super init];
   if (self) {
     CHECK_GT(items.count, 0ul);
     _itemsData = items;
+    _rootView = rootView;
   }
   return self;
 }
@@ -433,7 +438,12 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
     index++;
   }
   _itemsStack.accessibilityElements = _items;
+  // Layout the newly added (but still hidden) items, so that the animation is
+  // correct.
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 
+  __weak __typeof(self) weakSelf = self;
   __weak __typeof(_expandButton) weakExpandButton = _expandButton;
   [UIView animateWithDuration:kExpandAnimationDuration.InSecondsF()
                    animations:^{
@@ -444,6 +454,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
                      // Flip the expand button to point up;
                      weakExpandButton.transform = CGAffineTransformScale(
                          CGAffineTransformIdentity, 1, -1);
+                     [weakSelf heightDidChange];
                    }];
 }
 
@@ -455,6 +466,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   _expandButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_EXPAND);
 
+  __weak __typeof(self) weakSelf = self;
   __weak __typeof(_expandButton) weakExpandButton = _expandButton;
   [UIView animateWithDuration:kExpandAnimationDuration.InSecondsF()
       animations:^{
@@ -465,12 +477,21 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
         // Flip the expand button to point down again;
         weakExpandButton.transform =
             CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
+        [weakSelf heightDidChange];
       }
       completion:^(BOOL finished) {
         for (SetUpListItemView* item in items) {
           [item removeFromSuperview];
         }
       }];
+}
+
+// Tells the root view to re-layout and tells the delegate that the height
+// changed.
+- (void)heightDidChange {
+  [_rootView setNeedsLayout];
+  [_rootView layoutIfNeeded];
+  [self.delegate setUpListViewHeightDidChange];
 }
 
 #pragma mark Private methods (All Set view)

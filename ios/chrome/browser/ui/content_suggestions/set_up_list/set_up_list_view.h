@@ -21,14 +21,19 @@ enum class SetUpListItemType;
 // Called when the user selects the Set Up List menu.
 - (void)showSetUpListMenuWithButton:(UIButton*)button;
 
+// Called when the height of the SetUpListView did change.
+- (void)setUpListViewHeightDidChange;
+
 @end
 
 // A view that displays the Set Up List, a list of tasks a new user may want
 // to complete to set up the app.
 @interface SetUpListView : UIView
 
-// Initializes the SetUpListView, with the given items.
-- (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items;
+// Initializes the SetUpListView, with the given `items`, and the given
+// `rootView`.
+- (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items
+                     rootView:(UIView*)rootView;
 
 // The object that should handle delegate events.
 @property(nonatomic, weak) id<SetUpListViewDelegate> delegate;

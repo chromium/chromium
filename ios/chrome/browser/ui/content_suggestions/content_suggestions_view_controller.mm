@@ -506,7 +506,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
 
   } else {
-    SetUpListView* setUpListView = [[SetUpListView alloc] initWithItems:items];
+    SetUpListView* setUpListView =
+        [[SetUpListView alloc] initWithItems:items rootView:self.view];
     setUpListView.delegate = self.setUpListViewDelegate;
     self.setUpListView = setUpListView;
     [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
