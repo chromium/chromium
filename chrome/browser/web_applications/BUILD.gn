@@ -190,8 +190,6 @@ source_set("web_applications") {
     "remove_web_app_job.h",
     "scope_extension_info.cc",
     "scope_extension_info.h",
-    "uninstall_request.cc",
-    "uninstall_request.h",
     "user_display_mode.cc",
     "user_display_mode.h",
     "user_uninstalled_preinstalled_web_app_prefs.cc",

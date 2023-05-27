@@ -115,8 +115,6 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
 // The function should be called before removing a source from the WebApp.
-// If an install source that blocks user uninstallation is removed then OS hooks
-// for user uninstallation should be deployed.
 void MaybeRegisterOsUninstall(const WebApp* web_app,
                               WebAppManagement::Type source_uninstalling,
                               OsIntegrationManager& os_integration_manager,
