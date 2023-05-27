@@ -258,6 +258,9 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void UpdateClipPath();
 
+  // Called when active state for the window changes.
+  void ActiveStateChanged();
+
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only
@@ -312,9 +315,21 @@ class ToolbarView : public views::AccessiblePaneView,
   // All children are added to container_view_ and layout_manager_ applies to
   // container_view_. The reason for this layer of indiretion is because
   // container_view_ has a clip path set in UpdateClipPath() which adds rounded
-  // corners. This leaves some unpainted pixels, which this class will paint in
+  // corners. This leaves some unpainted pixels, which are painted by
+  // background_view_left_ and background_view_right_.
   // the future.
   raw_ptr<ContainerView> container_view_ = nullptr;
+
+  // There are two situations where background_view_left_ and
+  // background_view_right_ need be repainted: window active state change and
+  // theme change. active_state_subscription_ handles the former, and the latter
+  // causes the whole toolbar to be repainted so not special logic is necessary.
+  raw_ptr<View> background_view_left_ = nullptr;
+  raw_ptr<View> background_view_right_ = nullptr;
+
+  // Listens to changes to active state to update background_view_right_ and
+  // background_view_left_, as their background depends on active state.
+  base::CallbackListSubscription active_state_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_VIEW_H_

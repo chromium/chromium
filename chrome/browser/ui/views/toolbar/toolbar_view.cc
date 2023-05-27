@@ -170,6 +170,28 @@ constexpr int kToolbarDividerSpacing = 9;
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
+// Draws background akin to the tabstrip.
+class TabstripLikeBackground : public views::Background {
+ public:
+  explicit TabstripLikeBackground(BrowserView* browser_view)
+      : browser_view_(browser_view) {}
+
+ private:
+  // views::Background:
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    bool painted = TopContainerBackground::PaintThemeCustomImage(
+        canvas, view, browser_view_, /*translate_view_coordinates=*/false);
+    if (!painted) {
+      SkColor frame_color =
+          browser_view_->frame()->GetFrameView()->GetFrameColor(
+              BrowserFrameActiveState::kUseCurrent);
+      canvas->DrawColor(frame_color);
+    }
+  }
+
+  const raw_ptr<BrowserView> browser_view_;
+};
+
 }  // namespace
 
 class ToolbarView::ContainerView : public views::View {
@@ -222,6 +244,20 @@ void ToolbarView::Init() {
   // See crbug.com/1183894#c2
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 #endif
+
+  // The background views must be behind container_view_.
+  if (features::IsChromeRefresh2023()) {
+    background_view_left_ = AddChildViewAt(std::make_unique<View>(), 0);
+    background_view_left_->SetBackground(
+        std::make_unique<TabstripLikeBackground>(browser_view_));
+    background_view_right_ = AddChildViewAt(std::make_unique<View>(), 0);
+    background_view_right_->SetBackground(
+        std::make_unique<TabstripLikeBackground>(browser_view_));
+
+    active_state_subscription_ =
+        GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+            &ToolbarView::ActiveStateChanged, base::Unretained(this)));
+  }
 
   auto location_bar = std::make_unique<LocationBarView>(
       browser_, browser_->profile(), browser_->command_controller(), this,
@@ -707,6 +743,15 @@ void ToolbarView::Layout() {
   // The container view should be the exact same size/position as ToolbarView.
   container_view_->SetSize(size());
 
+  if (features::IsChromeRefresh2023()) {
+    // The background views should be behind the top-left and top-right corners
+    // of the container_view_.
+    const int corner_radius = GetLayoutConstant(TOOLBAR_CORNER_RADIUS);
+    background_view_left_->SetBounds(0, 0, corner_radius, corner_radius);
+    background_view_right_->SetBounds(width() - corner_radius, 0, corner_radius,
+                                      corner_radius);
+  }
+
   if (display_mode_ == DisplayMode::CUSTOM_TAB) {
     custom_tab_bar_->SetBounds(0, 0, width(),
                                custom_tab_bar_->GetPreferredSize().height());
@@ -752,6 +797,11 @@ void ToolbarView::UpdateClipPath() {
   path.lineTo(local_bounds.width(), local_bounds.height());
   path.lineTo(0, local_bounds.height());
   container_view_->SetClipPath(path);
+}
+
+void ToolbarView::ActiveStateChanged() {
+  background_view_left_->SchedulePaint();
+  background_view_right_->SchedulePaint();
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {

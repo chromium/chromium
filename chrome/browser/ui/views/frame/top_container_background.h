@@ -22,6 +22,13 @@ class TopContainerBackground : public views::Background {
   TopContainerBackground& operator=(const TopContainerBackground& other) =
       delete;
 
+  // Paints the theme's custom image if one exists. Returns whether or not any
+  // painting occurred.
+  static bool PaintThemeCustomImage(gfx::Canvas* canvas,
+                                    const views::View* view,
+                                    const BrowserView* browser_view,
+                                    bool translate_view_coordinates);
+
   // Static version for painting this background, used by the SidePanel
   // background to paint this background as a part of its background.
   // TODO(pbos): See if we can get rid of `translate_view_coordinates` by
