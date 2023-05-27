@@ -49,6 +49,7 @@ void RecordScreenType(LockScreen::ScreenType type) {
       screen_type = AuthEventsRecorder::AuthenticationSurface::kLock;
       break;
   }
+  AuthEventsRecorder::Get()->ResetLoginData();
   AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
 }
 

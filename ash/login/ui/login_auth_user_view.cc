@@ -47,6 +47,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -1369,6 +1370,7 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
+  AuthEventsRecorder::Get()->OnAuthSubmit();
   LOG(WARNING) << "crbug.com/1339004 : AuthSubmit "
                << password_view_->IsReadOnly() << " / "
                << pin_input_view_->IsReadOnly();

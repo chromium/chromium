@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -94,6 +95,7 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
     absl::optional<std::string> user_input = GetCode();
     DCHECK(on_submit_);
     LOG(WARNING) << "crbug.com/1339004 : Submitting PIN " << IsReadOnly();
+    AuthEventsRecorder::Get()->OnPinSubmit();
     SetReadOnly(true);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }

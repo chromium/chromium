@@ -652,6 +652,7 @@ void LockContentsView::OnUsersChanged(const std::vector<LoginUserInfo>& users) {
     LOG(WARNING)
         << "LockContentsView::OnUsersChanged called during Authentication.";
   }
+  AuthEventsRecorder::Get()->OnLockContentsViewUpdate();
   // The debug view will potentially call this method many times. Make sure to
   // invalidate any child references.
   primary_big_view_ = nullptr;
@@ -2515,7 +2516,7 @@ void LockContentsView::SetKioskLicenseModeForTesting(
 void LockContentsView::RecordAndResetPasswordAttempts(
     AuthEventsRecorder::AuthenticationOutcome outcome,
     AccountId account_id) {
-  AuthEventsRecorder::Get()->OnExistingUserLoginExit(
+  AuthEventsRecorder::Get()->OnExistingUserLoginScreenExit(
       outcome, unlock_attempt_by_user_[account_id]);
   unlock_attempt_by_user_[account_id] = 0;
 }

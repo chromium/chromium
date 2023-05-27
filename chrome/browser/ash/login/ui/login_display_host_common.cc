@@ -60,7 +60,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -204,9 +203,6 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
-  AuthEventsRecorder::Get()->ResetLoginData();
-  AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
-      AuthEventsRecorder::AuthenticationSurface::kLogin);
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() {

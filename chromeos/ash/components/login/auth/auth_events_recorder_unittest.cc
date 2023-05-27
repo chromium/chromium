@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -18,6 +19,25 @@ namespace {
 
 std::string GetSessionStateCrashKeyValue() {
   return crash_reporter::GetCrashKeyValue("session-state");
+}
+
+std::string GetAuthEventsCrashKeyValue() {
+  std::string result = crash_reporter::GetCrashKeyValue("auth-events");
+  if (!result.empty()) {
+    return result;
+  }
+
+  // Breakpad breaks the crash key value up into chunks into chunks labeled
+  // name__1 through name__N.
+  static const std::string kCrashKeyName = "auth-events__%d";
+  std::string chunk;
+  int index = 0;
+  do {
+    chunk = crash_reporter::GetCrashKeyValue(
+        base::StringPrintf(kCrashKeyName.c_str(), ++index));
+    result += chunk;
+  } while (chunk.length() > 0);
+  return result;
 }
 
 }  // namespace
@@ -59,8 +79,8 @@ TEST_F(AuthEventsRecorderTest, LoginFlowShowUsers) {
                             /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.1", 1);
   histogram_tester.ExpectBucketCount(
-      "Login.Flow.ShowUsers.1", static_cast<int>(AuthEventsRecorder::kOffline),
-      1);
+      "Login.Flow.ShowUsers.1",
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOffline), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 1);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
@@ -75,7 +95,7 @@ TEST_F(AuthEventsRecorderTest, LoginFlowShowUsers) {
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.Few", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.ShowUsers.Few",
-      static_cast<int>(AuthEventsRecorder::kOnlineExisting), 1);
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOnlineExisting), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 2);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
@@ -90,7 +110,7 @@ TEST_F(AuthEventsRecorderTest, LoginFlowShowUsers) {
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.Many", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.ShowUsers.Many",
-      static_cast<int>(AuthEventsRecorder::kOnlineNew), 1);
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOnlineNew), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 3);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
@@ -108,8 +128,8 @@ TEST_F(AuthEventsRecorderTest, LoginFlowHideUsers) {
                             /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.1", 1);
   histogram_tester.ExpectBucketCount(
-      "Login.Flow.HideUsers.1", static_cast<int>(AuthEventsRecorder::kOffline),
-      1);
+      "Login.Flow.HideUsers.1",
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOffline), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 1);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
@@ -124,7 +144,7 @@ TEST_F(AuthEventsRecorderTest, LoginFlowHideUsers) {
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.Few", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.HideUsers.Few",
-      static_cast<int>(AuthEventsRecorder::kOnlineExisting), 1);
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOnlineExisting), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 2);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
@@ -139,20 +159,20 @@ TEST_F(AuthEventsRecorderTest, LoginFlowHideUsers) {
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.Many", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.HideUsers.Many",
-      static_cast<int>(AuthEventsRecorder::kOnlineNew), 1);
+      static_cast<int>(AuthEventsRecorder::UserLoginType::kOnlineNew), 1);
   histogram_tester.ExpectTotalCount("Login.SuccessReason", 3);
   histogram_tester.ExpectBucketCount(
       "Login.SuccessReason",
       static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 3);
 }
 
-TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
+TEST_F(AuthEventsRecorderTest, OnExistingUserLoginScreenExit) {
   base::HistogramTester histogram_tester;
 
   int two_attempts = 2;
   recorder_->OnAuthenticationSurfaceChange(
       AuthEventsRecorder::AuthenticationSurface::kLogin);
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kSuccess, two_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilSuccess", 1);
@@ -160,7 +180,7 @@ TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilSuccess", two_attempts, 1);
 
   int three_attempts = 3;
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kFailure, three_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure", 1);
@@ -168,7 +188,7 @@ TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilFailure", three_attempts, 1);
 
   int eleven_attempts = 11;
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kRecovery, eleven_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Login.NbPasswordAttempts.UntilRecovery", 1);
@@ -178,7 +198,7 @@ TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
   int five_attempts = 5;
   recorder_->OnAuthenticationSurfaceChange(
       AuthEventsRecorder::AuthenticationSurface::kLock);
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kSuccess, five_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", 1);
@@ -186,7 +206,7 @@ TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", five_attempts, 1);
 
   int seven_attempts = 7;
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kFailure, seven_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilFailure", 1);
@@ -195,13 +215,13 @@ TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {
 }
 
 // User exits the login/lock screen without any failed attempts.
-TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExitWithNoFailure) {
+TEST_F(AuthEventsRecorderTest, OnExistingUserLoginScreenExitWithNoFailure) {
   base::HistogramTester histogram_tester;
 
   int zero_attempts = 0;
   recorder_->OnAuthenticationSurfaceChange(
       AuthEventsRecorder::AuthenticationSurface::kLock);
-  recorder_->OnExistingUserLoginExit(
+  recorder_->OnExistingUserLoginScreenExit(
       AuthEventsRecorder::AuthenticationOutcome::kSuccess, zero_attempts);
   histogram_tester.ExpectTotalCount(
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", 1);
@@ -272,6 +292,49 @@ TEST_F(AuthEventsRecorderTest, SessionStateCrashKey) {
 
   session_manager_->SetSessionState(session_manager::SessionState::UNKNOWN);
   EXPECT_EQ(GetSessionStateCrashKeyValue(), "unknown");
+}
+
+TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnSuccessfullLogin) {
+  // Login screen:
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLogin);
+  recorder_->OnLockContentsViewUpdate();
+  recorder_->OnAuthSubmit();
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_ONLY,
+                            /*is_new_user=*/false, /*is_login_offline=*/true,
+                            /*is_ephemeral=*/false);
+  recorder_->OnExistingUserLoginScreenExit(
+      AuthEventsRecorder::AuthenticationOutcome::kSuccess, 1);
+  EXPECT_EQ(GetAuthEventsCrashKeyValue(),
+            "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
+            "login_offline,login_screen_exit_success,");
+  // Lock screen:
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthEventsRecorder::AuthenticationSurface::kLock);
+  recorder_->OnLockContentsViewUpdate();
+  // 3 failed attempts:
+  recorder_->OnAuthSubmit();
+  recorder_->OnAuthFailure(
+      AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  recorder_->OnAuthSubmit();
+  recorder_->OnAuthFailure(
+      AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  recorder_->OnAuthSubmit();
+  recorder_->OnAuthFailure(
+      AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME);
+  // 1 successfull attempt:
+  recorder_->OnAuthSubmit();
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_ONLY,
+                            /*is_new_user=*/false, /*is_login_offline=*/true,
+                            /*is_ephemeral=*/false);
+  recorder_->OnExistingUserLoginScreenExit(
+      AuthEventsRecorder::AuthenticationOutcome::kSuccess, 4);
+  EXPECT_EQ(GetAuthEventsCrashKeyValue(),
+            "auth_surface_change_Login,update_lock_screen_view,auth_submit,"
+            "login_offline,login_screen_exit_success,auth_surface_change_Lock,"
+            "update_lock_screen_view,auth_submit,login_failure,auth_submit,"
+            "login_failure,auth_submit,login_failure,auth_submit,login_offline,"
+            "login_screen_exit_success,");
 }
 
 }  // namespace ash

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 
+#include <numeric>
 #include <vector>
 
 #include "base/check_is_test.h"
@@ -23,12 +24,19 @@
 namespace ash {
 namespace {
 
-constexpr int kMaxSessionStateCrashKeyLength = 32;
-constexpr char kSessionStateCrashKey[] = "session-state";
-
 using AuthenticationSurface = AuthEventsRecorder::AuthenticationSurface;
 using AuthenticationOutcome = AuthEventsRecorder::AuthenticationOutcome;
 using CryptohomeRecoveryResult = AuthEventsRecorder::CryptohomeRecoveryResult;
+using UserLoginType = AuthEventsRecorder::UserLoginType;
+
+// Constants for crash keys:
+constexpr int kMaxSessionStateCrashKeyLength = 32;
+constexpr int kMaxAuthEventsCrashKeyLength = 1024;
+constexpr char kAuthEventSeparator = ',';
+
+// Names of the crash keys:
+constexpr char kAuthEventsCrashKey[] = "auth-events";
+constexpr char kSessionStateCrashKey[] = "session-state";
 
 // Histogram for tracking the reason of auth failure
 constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
@@ -101,7 +109,7 @@ std::string UserCountSuffix(int user_count) {
 // Suffix for grouping by screen type. Should match suffixes of the
 // Ash.OSAuth.{Login,Lock}.NbPasswordAttempts.{UntilFailure,UntilSuccess}
 // metrics in metadata/ash/histograms.xml
-std::string GetAuthenticationSurfaceSuffix(AuthenticationSurface screen) {
+std::string GetAuthenticationSurfaceName(AuthenticationSurface screen) {
   switch (screen) {
     case AuthenticationSurface::kLock:
       return "Lock";
@@ -141,7 +149,7 @@ std::string GetNbPasswordAttemptsHistogramName(
     AuthenticationSurface screen,
     AuthenticationOutcome exit_type) {
   return base::StringPrintf(kNbPasswordAttemptsHistogramName,
-                            GetAuthenticationSurfaceSuffix(screen).c_str(),
+                            GetAuthenticationSurfaceName(screen).c_str(),
                             GetAuthenticationOutcomeSuffix(exit_type).c_str());
 }
 
@@ -209,6 +217,39 @@ std::string GetSessionStateCrashKeyValue(session_manager::SessionState state) {
   }
 }
 
+std::string GetUserLoginTypeName(AuthEventsRecorder::UserLoginType type) {
+  switch (type) {
+    case UserLoginType::kOnlineNew:
+      return "online_new";
+    case UserLoginType::kOnlineExisting:
+      return "online_existing";
+    case UserLoginType::kOffline:
+      return "offline";
+    case UserLoginType::kEphemeral:
+      return "ephemeral";
+  }
+  NOTREACHED();
+  return "";
+}
+
+std::string GetAuthenticationOutcomeName(AuthenticationOutcome exit_type) {
+  switch (exit_type) {
+    case AuthenticationOutcome::kSuccess:
+      return "success";
+    case AuthenticationOutcome::kFailure:
+      return "failure";
+    case AuthenticationOutcome::kRecovery:
+      return "recovery";
+  }
+  NOTREACHED();
+  return "";
+}
+
+std::string GetCrashKeyStringWithStatus(const std::string& event_name,
+                                        bool success) {
+  return event_name + (success ? "_success" : "_failure");
+}
+
 }  // namespace
 
 // static
@@ -258,6 +299,7 @@ void AuthEventsRecorder::OnAuthFailure(
   base::RecordAction(base::UserMetricsAction("Login_Failure"));
   UMA_HISTOGRAM_ENUMERATION(kFailureReasonHistogramName, reason,
                             AuthFailure::NUM_FAILURE_REASONS);
+  AddAuthEvent(GetCrashKeyStringWithStatus("login", /*success=*/false));
 }
 
 void AuthEventsRecorder::OnLoginSuccess(const SuccessReason& reason,
@@ -267,11 +309,12 @@ void AuthEventsRecorder::OnLoginSuccess(const SuccessReason& reason,
   base::RecordAction(base::UserMetricsAction("Login_Success"));
   UMA_HISTOGRAM_ENUMERATION(kSuccessReasonHistogramName, reason,
                             SuccessReason::NUM_SUCCESS_REASONS);
-  MaybeUpdateUserLoginType(is_new_user, is_login_offline, is_ephemeral);
+  UpdateUserLoginType(is_new_user, is_login_offline, is_ephemeral);
 }
 
 void AuthEventsRecorder::OnGuestLoginSuccess() {
   base::RecordAction(base::UserMetricsAction("Login_GuestLoginSuccess"));
+  AddAuthEvent(GetCrashKeyStringWithStatus("guest_login", /*success=*/true));
 }
 
 void AuthEventsRecorder::OnUserCount(int user_count) {
@@ -287,11 +330,12 @@ void AuthEventsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
 void AuthEventsRecorder::OnAuthenticationSurfaceChange(
     AuthenticationSurface surface) {
   auth_surface_ = surface;
+  AddAuthEvent("auth_surface_change_" + GetAuthenticationSurfaceName(surface));
 }
 
-void AuthEventsRecorder::OnExistingUserLoginExit(
+void AuthEventsRecorder::OnExistingUserLoginScreenExit(
     AuthenticationOutcome exit_type,
-    int num_login_attempts) const {
+    int num_login_attempts) {
   CHECK(auth_surface_);
   CHECK_GE(num_login_attempts, 0);
   if (exit_type == AuthenticationOutcome::kFailure) {
@@ -301,6 +345,7 @@ void AuthEventsRecorder::OnExistingUserLoginExit(
   base::UmaHistogramCounts100(
       GetNbPasswordAttemptsHistogramName(auth_surface_.value(), exit_type),
       num_login_attempts);
+  AddAuthEvent("login_screen_exit_" + GetAuthenticationOutcomeName(exit_type));
 }
 
 void AuthEventsRecorder::RecordUserAuthFactors(
@@ -322,6 +367,20 @@ void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
                                         const base::TimeDelta& time) {
   base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
+  AddAuthEvent(GetCrashKeyStringWithStatus(
+      "recovery_done", result == CryptohomeRecoveryResult::kSucceeded));
+}
+
+void AuthEventsRecorder::OnAuthSubmit() {
+  AddAuthEvent("auth_submit");
+}
+
+void AuthEventsRecorder::OnPinSubmit() {
+  AddAuthEvent("pin_submit");
+}
+
+void AuthEventsRecorder::OnLockContentsViewUpdate() {
+  AddAuthEvent("update_lock_screen_view");
 }
 
 void AuthEventsRecorder::OnSessionStateChanged() {
@@ -332,21 +391,22 @@ void AuthEventsRecorder::OnSessionStateChanged() {
   key.Set(GetSessionStateCrashKeyValue(session_state));
 }
 
-void AuthEventsRecorder::MaybeUpdateUserLoginType(bool is_new_user,
-                                                  bool is_login_offline,
-                                                  bool is_ephemeral) {
+void AuthEventsRecorder::UpdateUserLoginType(bool is_new_user,
+                                             bool is_login_offline,
+                                             bool is_ephemeral) {
   if (is_login_offline) {
-    user_login_type_ = AuthEventsRecorder::kOffline;
+    user_login_type_ = UserLoginType::kOffline;
   } else if (!is_new_user) {
     // The rest 3 online login types are with either existing user and new users
-    user_login_type_ = AuthEventsRecorder::kOnlineExisting;
+    user_login_type_ = UserLoginType::kOnlineExisting;
   } else if (is_ephemeral) {
     // The rest 2 new user login types are either ephemeral or new online users
-    user_login_type_ = AuthEventsRecorder::kEphemeral;
+    user_login_type_ = UserLoginType::kEphemeral;
   } else {
-    user_login_type_ = AuthEventsRecorder::kOnlineNew;
+    user_login_type_ = UserLoginType::kOnlineNew;
   }
 
+  AddAuthEvent("login_" + GetUserLoginTypeName(user_login_type_.value()));
   MaybeReportFlowMetrics();
 }
 
@@ -360,6 +420,44 @@ void AuthEventsRecorder::MaybeReportFlowMetrics() {
       GetLoginFlowHistogramName(show_users_on_signin_.value(),
                                 user_count_.value()),
       user_login_type_.value());
+}
+
+void AuthEventsRecorder::AddAuthEvent(const std::string& event_name) {
+  events_.push_back(event_name);
+  UpdateAuthEventsCrashKey();
+}
+
+void AuthEventsRecorder::UpdateAuthEventsCrashKey() {
+  if (events_.size() == 0) {
+    return;
+  }
+
+  // Preallocate the space needed for all the events combined.
+  const size_t events_string_length =
+      std::accumulate(events_.begin(), events_.end(), 0,
+                      [](const size_t sum, const std::string& event) {
+                        return sum + event.length() + 1;
+                      });
+  std::string crash_key_string;
+  crash_key_string.reserve(events_string_length);
+
+  // Put new events at the front, so that we keep the most recent & relevant
+  // ones.
+  for (const std::string& event : events_) {
+    crash_key_string += event;
+    crash_key_string += kAuthEventSeparator;
+  }
+  DCHECK_EQ(crash_key_string.length(), events_string_length);
+
+  if (crash_key_string.length() > kMaxAuthEventsCrashKeyLength) {
+    crash_key_string = crash_key_string.substr(crash_key_string.length() -
+                                               kMaxAuthEventsCrashKeyLength);
+  }
+
+  // Note: the string will be truncated to `kMaxAuthEventsCrashKeyLength`.
+  static crash_reporter::CrashKeyString<kMaxAuthEventsCrashKeyLength> key(
+      kAuthEventsCrashKey);
+  key.Set(crash_key_string);
 }
 
 void AuthEventsRecorder::Reset() {
