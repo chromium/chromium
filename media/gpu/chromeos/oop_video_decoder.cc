@@ -249,7 +249,7 @@ class OOPVideoDecoderSupportedConfigsManager {
 
   void OnDecoderDisconnected() {
     base::AutoLock lock(lock_);
-    configs_ = {};
+    configs_.emplace();
     decoder_type_ = absl::nullopt;
     interface_version_ = absl::nullopt;
     disconnected_ = true;
@@ -278,7 +278,7 @@ class OOPVideoDecoderSupportedConfigsManager {
       decoder_type_ = decoder_type;
     } else {
       // The remote decoder is of an unexpected type, so let's assume it's bad.
-      configs_ = {};
+      configs_.emplace();
     }
 
     MaybeNotifyWaitingCallbacks();
