@@ -403,7 +403,6 @@ crbug.com/1266821 transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
 # Existing failures. Mark these as [ Pass ] when these tests are fixed.
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fill-stroke/paint-order-001.tentative.html [ Failure ]
-crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-001.html [ Failure ]
 crbug.com/694218 external/wpt/css/css-masking/clip-path/clip-path-viewBox-1b.html [ Failure ]
 crbug.com/1129522 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-011.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-text/shaping/shaping-011.html [ Failure ]
