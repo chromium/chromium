@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/page/create_window.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 using std::swap;
@@ -54,7 +55,8 @@ void LogDanglingMarkupHistogram(Document* document, const AtomicString& name) {
 }
 
 bool ContainsNewLineAndLessThan(const AtomicString& name) {
-  return name.Contains('\n') && name.Contains('<');
+  return (name.Contains('\n') || name.Contains('\r') || name.Contains('\t')) &&
+         name.Contains('<');
 }
 
 bool IsRequestFromHtml(FrameLoadRequest& request) {
@@ -233,17 +235,21 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
   if (request.GetNavigationPolicy() != kNavigationPolicyCurrentTab)
     return FindResult(current_frame, false);
 
+  AtomicString cleanName = name;
   // Log use counters if the name contains both '\n' and '<'.
   if (ContainsNewLineAndLessThan(name) && IsRequestFromHtml(request) &&
       current_frame->GetDocument()) {
     LogDanglingMarkupHistogram(current_frame->GetDocument(), name);
+    if (RuntimeEnabledFeatures::RemoveDanglingMarkupInTargetEnabled()) {
+      cleanName = AtomicString("_blank");
+    }
   }
 
   const KURL& url = request.GetResourceRequest().Url();
-  Frame* frame = FindFrameForNavigationInternal(name, url, &request);
+  Frame* frame = FindFrameForNavigationInternal(cleanName, url, &request);
   bool new_window = false;
   if (!frame) {
-    frame = CreateNewWindow(*current_frame, request, name);
+    frame = CreateNewWindow(*current_frame, request, cleanName);
     new_window = true;
     // CreateNewWindow() might have modified NavigationPolicy.
     // Set it back now that the new window is known to be the right one.

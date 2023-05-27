@@ -2925,6 +2925,11 @@
       status: "stable",
     },
     {
+      name: "RemoveDanglingMarkupInTarget",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "RemoveDataUrlInSvgUse",
       status: "experimental",
       base_feature: "none",
