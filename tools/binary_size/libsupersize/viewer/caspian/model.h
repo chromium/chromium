@@ -308,7 +308,10 @@ struct SizeInfo : BaseSizeInfo {
 };
 
 struct DeltaSizeInfo : BaseSizeInfo {
-  DeltaSizeInfo(const SizeInfo* before_in, const SizeInfo* after_in);
+  DeltaSizeInfo(const SizeInfo* before_in,
+                const SizeInfo* after_in,
+                const std::vector<std::string>* removed_sources_in,
+                const std::vector<std::string>* added_sources_in);
   ~DeltaSizeInfo() override;
   DeltaSizeInfo(const DeltaSizeInfo&);
   DeltaSizeInfo& operator=(const DeltaSizeInfo&);
@@ -325,6 +328,8 @@ struct DeltaSizeInfo : BaseSizeInfo {
 
   const SizeInfo* before = nullptr;
   const SizeInfo* after = nullptr;
+  const std::vector<std::string>* removed_sources;
+  const std::vector<std::string>* added_sources;
   std::vector<DeltaSymbol> delta_symbols;
   // Symbols created during diffing, e.g. aggregated padding symbols.
   std::deque<Symbol> owned_symbols;
@@ -365,6 +370,7 @@ struct NodeStats {
   DiffStatus GetGlobalDiffStatus() const;
 
   std::map<SectionId, Stat> child_stats;
+  DiffStatus imposed_diff_status = DiffStatus::kUnchanged;
 };
 
 struct TreeNode {

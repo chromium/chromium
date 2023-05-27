@@ -32,6 +32,16 @@ TreeBuilder::TreeBuilder(DeltaSizeInfo* size_info)
   for (const DeltaSymbol& sym : size_info->delta_symbols) {
     symbols_.push_back(&sym);
   }
+  if (size_info->removed_sources) {
+    for (const auto& s : *size_info->removed_sources) {
+      source_to_diff_status_[s] = DiffStatus::kRemoved;
+    }
+  }
+  if (size_info->added_sources) {
+    for (const auto& s : *size_info->added_sources) {
+      source_to_diff_status_[s] = DiffStatus::kAdded;
+    }
+  }
   size_info_ = size_info;
 }
 
@@ -186,6 +196,11 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
         file_node->id_path.size() - file_node->id_path.ShortName(sep_).size();
     _parents[file_node->id_path] = file_node;
     file_node->node_stats = node_stats;
+    auto it = source_to_diff_status_.find(grouped_path.path);
+    std::string p(grouped_path.path);
+    if (it != source_to_diff_status_.end()) {
+      file_node->node_stats.imposed_diff_status = it->second;
+    }
   }
 
   for (TreeNode* symbol_node : symbol_nodes) {

@@ -371,6 +371,7 @@ class SizeInfo(BaseSizeInfo):
 
   Fields:
     size_path: Path to .size file this was loaded from (or None).
+    is_sparse: Whether the list of symbols is sparse.
   """
   __slots__ = (
       'size_path',
@@ -408,16 +409,28 @@ class DeltaSizeInfo(BaseSizeInfo):
   Fields:
     before: SizeInfo for "before".
     after: SizeInfo for "after".
+    removed_sources: List of removed source files from "before".
+    added_sources: List of added source files from "after".
   """
   __slots__ = (
       'before',
       'after',
+      'removed_sources',
+      'added_sources',
   )
 
-  def __init__(self, before, after, containers, raw_symbols):
+  def __init__(self,
+               before,
+               after,
+               containers,
+               raw_symbols,
+               removed_sources=None,
+               added_sources=None):
     super().__init__(None, containers, raw_symbols)
     self.before = before
     self.after = after
+    self.removed_sources = removed_sources or []
+    self.added_sources = added_sources or []
 
   @property
   def is_sparse(self):
@@ -1475,6 +1488,16 @@ class DeltaSymbolGroup(SymbolGroup):
 
   def WhereDiffStatusIs(self, diff_status):
     return self.Filter(lambda s: s.diff_status == diff_status)
+
+  def GetEntireAddOrRemoveSources(self):
+    """Return source paths with entirely added or removed symbols."""
+    source_flags = collections.defaultdict(int)
+    for sym in self:
+      source_flags[sym.source_path] |= 1 << sym.diff_status
+    add_flag = 1 << DIFF_STATUS_ADDED
+    remove_flag = 1 << DIFF_STATUS_REMOVED
+    return (sorted(k for k, v in source_flags.items() if v == remove_flag),
+            sorted(k for k, v in source_flags.items() if v == add_flag))
 
 
 def _ExtractPrefixBeforeSeparator(string, separator, count):

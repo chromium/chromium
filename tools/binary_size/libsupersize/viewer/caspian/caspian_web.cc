@@ -58,6 +58,8 @@ FilterBuffer filter_buffer;
 
 std::unique_ptr<SizeInfo> info;
 std::unique_ptr<SizeInfo> before_info;
+std::vector<std::string> removed_sources;
+std::vector<std::string> added_sources;
 std::unique_ptr<DeltaSizeInfo> diff_info;
 std::unique_ptr<TreeBuilder> builder;
 
@@ -121,6 +123,8 @@ void ClearInfoAndBuilderObjects() {
   diff_info.reset(nullptr);
   before_info.reset(nullptr);
   info.reset(nullptr);
+  removed_sources = {};
+  added_sources = {};
 }
 
 }  // namespace
@@ -131,8 +135,11 @@ void LoadSizeFile(char* compressed, size_t size) {
   if (IsDiffSizeInfo(compressed, size)) {
     info = std::make_unique<SizeInfo>();
     before_info = std::make_unique<SizeInfo>();
+    ParseDiffSizeInfo(compressed, size, before_info.get(), info.get(),
+                      &removed_sources, &added_sources);
     // DeltaSizeInfo instantiation for sparse diff.
-    ParseDiffSizeInfo(compressed, size, before_info.get(), info.get());
+    diff_info.reset(new DeltaSizeInfo(
+        Diff(before_info.get(), info.get(), &removed_sources, &added_sources)));
   } else {
     info = std::make_unique<SizeInfo>();
     ParseSizeInfo(compressed, size, info.get());
@@ -248,7 +255,8 @@ bool BuildTree(bool method_count_mode,
   // and let the TreeBuilder filter the symbols we care about.
   if (diff_mode && !diff_info) {
     // DeltaSizeInfo instantiation for dense diff.
-    diff_info.reset(new DeltaSizeInfo(Diff(before_info.get(), info.get())));
+    diff_info.reset(new DeltaSizeInfo(
+        Diff(before_info.get(), info.get(), nullptr, nullptr)));
   }
 
   if (diff_mode) {

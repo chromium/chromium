@@ -204,8 +204,11 @@ class DiffHelper {
 namespace caspian {
 
 // See docs/diffs.md for diffing algorithm.
-DeltaSizeInfo Diff(const SizeInfo* before, const SizeInfo* after) {
-  DeltaSizeInfo ret(before, after);
+DeltaSizeInfo Diff(const SizeInfo* before,
+                   const SizeInfo* after,
+                   const std::vector<std::string>* removed_sources,
+                   const std::vector<std::string>* added_sources) {
+  DeltaSizeInfo ret(before, after, removed_sources, added_sources);
   bool is_sparse = before->IsSparse() && after->IsSparse();
 
   std::vector<const Symbol*> unmatched_before;

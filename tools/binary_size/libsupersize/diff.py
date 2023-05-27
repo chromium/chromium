@@ -163,7 +163,9 @@ def Diff(before, after, sort=False):
   is_sparse = before.is_sparse and after.is_sparse
   symbol_diff = _DiffSymbolGroups(containers_diff, before.raw_symbols,
                                   after.raw_symbols, is_sparse)
-  ret = models.DeltaSizeInfo(before, after, containers_diff, symbol_diff)
+  removed_sources, added_sources = symbol_diff.GetEntireAddOrRemoveSources()
+  ret = models.DeltaSizeInfo(before, after, containers_diff, symbol_diff,
+                             removed_sources, added_sources)
 
   if sort:
     syms = ret.symbols  # Triggers clustering.
