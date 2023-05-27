@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">പ്രവേശനക്ഷമത ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1104621072296271835">നിങ്ങളുടെ ഉപകരണങ്ങൾ 'ഒരുമിച്ചും' നന്നായി പ്രവർത്തിക്കും</translation>
 <translation id="1111021433905331574">ക്രമീകരണം &gt; <ph name="APP_TITLE" /> എന്നതിൽ നിങ്ങൾക്ക് കീബോർഡ് ബാക്ക്‌ലൈറ്റിന്റെ നിറം മാറ്റാനാകും</translation>
+<translation id="1117719261843403176">മൊബൈൽ ഡാറ്റ ടോഗിൾ ചെയ്യുക. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">ഷെൽഫ് സ്വയമേവ മറയ്‌ക്കുക</translation>
 <translation id="1142002900084379065">പുതിയ ഫോട്ടോകൾ</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">ലോക്ക് സ്ക്രീൻ അറിയിപ്പ് ക്രമീകരണം മാറ്റുക</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ശുപാർശിത ആപ്പുകൾ</translation>
+<translation id="1311294419381837540">നിങ്ങൾ ഒരു ടാബ് കാസ്റ്റ് ചെയ്യുന്നു. നിങ്ങൾക്ക് ഏതുസമയത്തും കാസ്റ്റ് ചെയ്യൽ നിർത്തുകയോ താൽക്കാലികമായി നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="1312604459020188865">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">എല്ലായ്‌പ്പോഴും ഷെല്‍ഫ് കാണിക്കുക</translation>
 <translation id="132346741904777634">മുകളിൽ ഇടത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="1340378040547539434">പേജിൽ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1341651618736211726">ഓവര്‍ഫ്ലോ</translation>
+<translation id="1344141078024003905">നിങ്ങൾ സ്ക്രീൻ കാസ്റ്റ് ചെയ്യുകയാണ്. നിങ്ങൾക്ക് ഏതുസമയത്തും സ്ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുകയോ താൽക്കാലികമായി നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1360220746312242196">പേജ് തിരയുമ്പോൾ, തിരയുന്നതിന് മുമ്പത്തെ പൊരുത്തത്തിലേക്ക് പോകുക</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">ഇതർനെറ്റ്: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>
+<translation id="183465528887726323">ഹോട്ട്സ്‌പോട്ട് ഉപയോഗിക്കാൻ മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1862380676329487333">അപ്ഡേറ്റ് ചെയ്ത് സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">ഒരു ആപ്പ് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="2277103315734023688">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="2282073721614284166">ടാബ് ലിങ്ക് തുറക്കുക</translation>
+<translation id="2284237890386182187">ഓണാണ്, ഉപകരണങ്ങളൊന്നും കണക്റ്റ് ചെയ്തിട്ടില്ല</translation>
 <translation id="2292698582925480719">ഡിസ്പ്ലേ സ്കെയിൽ</translation>
 <translation id="229397294990920565">മൊബൈൽ ഡാറ്റ ഓഫാക്കുന്നു...</translation>
 <translation id="2295777434187870477">മൈക്ക് ഓണാണ്, മാറ്റുന്നത് ഇൻപുട്ടിനെ മ്യൂട്ട് ചെയ്യും.</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830"><ph name="NAME" /> സജീവമാക്കുന്നു</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2360398059912971776">ബാറ്ററി</translation>
+<translation id="2361210043495191221">വൈഫൈ ടോഗിൾ ചെയ്യുക. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">നിങ്ങളുടെ Chromebook-ലേക്ക് സൈൻ ഇൻ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="2367972762794486313">അപ്ലിക്കേഷനുകൾ കാണിക്കുക</translation>
 <translation id="2369165858548251131">"ഹലോ" എന്നത് ചൈനീസിൽ</translation>
+<translation id="2382875860893882175">കാസ്റ്റ് ചെയ്യുന്നത് നിലവിൽ താൽക്കാലികമായി നിർത്തി. നിങ്ങൾക്ക് ഏതുസമയത്തും കാസ്റ്റ് ചെയ്യൽ പുനരാരംഭിക്കുകയോ നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="2386292613071805067">പേജിലെ എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2397416548179033562">Chrome മെനു കാണിക്കുക</translation>
 <translation id="240006516586367791">മീഡിയാ നിയന്ത്രണങ്ങൾ</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> നിർത്തുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">വിൻഡോകൾ അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="2528111225373402384">ഹോട്ട്സ്പോട്ട് ക്രമീകരണം</translation>
 <translation id="2530896289327917474">ക്രമീകരണത്തിൽ കാരറ്റ് ബ്രൗസ് ചെയ്യൽ ഓണാക്കാനോ ഓഫാക്കാനോ കഴിയും</translation>
 <translation id="2531025035050312891">ഉപകരണം മന്ദഗതിയിലാണ്</translation>
 <translation id="254900897760075745">ക്ലിപ്പ്ബോർഡിലേക്ക് തിരഞ്ഞെടുത്ത ഉള്ളടക്കം പകർത്തുക</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">അധിക ക്രമീകരണങ്ങൾ</translation>
 <translation id="3405101454990027959">മൈക്രോഫോൺ ആക്‌സസ് ഓണാക്കുക</translation>
+<translation id="3408735331120433841">നിങ്ങൾ നിലവിൽ നിങ്ങളുടെ സ്ക്രീൻ കാസ്റ്റ് ചെയ്യുകയാണ്.</translation>
 <translation id="3409584356742878290">ഡെവലപ്പർ ടൂൾസ് ഇൻസ്‌പെക്‌ടർ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
 <translation id="3410336247007142655">ഡാർക്ക് തീം ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="3413817803639110246">ഇതുവരെ കാണാൻ ഒന്നുമില്ല</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">പുതിയ ടാബിൽ ലിങ്ക് തുറന്ന് നിലവിലെ ടാബിൽ തുടരുക</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3533126039236445965">ഷെൽഫിലെ ആപ്പുകൾ</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="3542066395059568317">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം. നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ വലത്-ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3546121235777416274">ചിത്രത്തിനുള്ളിൽ ചിത്രം വിൻഡോ ഫോക്കസ് ചെയ്യുക</translation>
 <translation id="3552189655002856821">വൈഫൈ ഓഫാണ്</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">കൂടുതൽ സുരക്ഷയ്ക്ക് പാസ്‍വേഡ് ആവശ്യമാണ്</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">നിങ്ങൾ സ്‌ക്രീൻ പങ്കിടുന്നു</translation>
+<translation id="4049230407053723315">ദ്രുത ക്രമീകരണം</translation>
 <translation id="4057003836560082631"><ph name="TOTAL_COUNT" /> ബ്രൗസർ ടാബുകളിൽ <ph name="INDEX" />-ാമത്തേത്. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ആപ്പിൽ അറിയിപ്പ് ഓഫ്}other{# ആപ്പിൽ അറിയിപ്പ് ഓഫ്}}</translation>
 <translation id="4066027111132117168">ഓണാണ്, <ph name="REMAINING_TIME" /></translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">VPN ക്രമീകരണം</translation>
 <translation id="4217571870635786043">പറഞ്ഞ് കൊടുക്കൽ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ഇൻസ്‌റ്റാൾ ചെയ്‌ത ആപ്പ്, താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു</translation>
+<translation id="4231053948789591973">കാസ്റ്റ് ചെയ്യുന്നത് നിലവിൽ താൽക്കാലികമായി നിർത്തി. നിങ്ങൾക്ക് ഏതുസമയത്തും നിങ്ങളുടെ സ്ക്രീൻ കാസ്റ്റ് ചെയ്യുന്നത് പുനരാരംഭിക്കുകയോ നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="423685346499232137">ഇപ്പോൾ ഉള്ളടക്കം പകർത്താനോ ഒട്ടിക്കാനോ കഴിയില്ല</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">അവലോകന മോഡ്</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{പ്രധാനപ്പെട്ട ഒരു അറിയിപ്പ്}other{പ്രധാനപ്പെട്ട # അറിയിപ്പുകൾ}}</translation>
 <translation id="4450893287417543264">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="4451374464530248585">'Alt + താഴേക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Page Down കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ + താഴേക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
+<translation id="4453876312474547652">നിങ്ങൾ Ctrl + V അമർത്തിപ്പിടിക്കുമ്പോൾ ക്ലിപ്പ്ബോർഡ് നിങ്ങൾക്ക് കാണാം. chrome://flags (Lacros ആണ് ഉപയോഗിക്കുന്നതെങ്കിൽ os://flags)-ൽ #clipboard-history-longpress ഫ്ലാഗ് പ്രവർത്തനരഹിതമാക്കി നിങ്ങൾക്ക് ഈ കുറുക്കുവഴി ഓഫാക്കാം.</translation>
 <translation id="4455051983450390249"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുക</translation>
 <translation id="445864333228800152">ഗുഡ് ഈവനിംഗ്,</translation>
 <translation id="4458688154122353284">സ്ക്രീൻ റെക്കോർഡിംഗ് നിർത്തുക</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">ഡെമോ സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="4789348252524569426">സംഭാഷണ ഫയലുകൾ ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്‌ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="478959186716341421">കാസ്റ്റുചെയ്യുന്നു</translation>
+<translation id="4798622944000246716">നിങ്ങളുടെ മൊബൈൽ നെറ്റ്‌വർക്ക്, ഹോട്ട്സ്‌പോട്ട് പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="479989351350248267">തിരയുക</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
@@ -1199,6 +1213,7 @@
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
 <translation id="6464094930452079790">ചിത്രങ്ങൾ</translation>
+<translation id="6469104339369989396">ഹോട്ട്സ്‌പോട്ട് ടോഗിൾ ചെയ്യുക</translation>
 <translation id="6477681113376365978">ഫയൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6482559668224714696">പൂർണ്ണസ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
 <translation id="6483727822843292440">ഏറ്റവും കുറവ് ഉപയോഗിച്ച വിൻഡോ ആദ്യം എന്ന ക്രമത്തിൽ വിൻഡോകൾ പരിശോധിക്കുക</translation>
@@ -1811,6 +1826,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> എന്നതിനാവശ്യമായ ഇടം ലഭ്യമല്ല. ഇടം സൃഷ്ടിക്കുക.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="98120814841227350">ഡോക്യുമെന്റിന്റെ താഴേക്ക് പോവുക</translation>
+<translation id="987589956647469042">മൊബൈൽ ഡാറ്റ ഓണാക്കി</translation>
 <translation id="989374776391122812">ക്യാമറ, ഓഡിയോ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> വിൻഡോ അടച്ചു.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

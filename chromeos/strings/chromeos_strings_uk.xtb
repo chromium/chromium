@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Робочі столи</translation>
 <translation id="1018219910092211213">Не вдається перетворити DNS</translation>
 <translation id="1018656279737460067">Скасовано</translation>
+<translation id="1020274983236703756">Доступні ексклюзивні об’єкти <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Загальні налаштування</translation>
 <translation id="1022628058306505708">Опливина</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3226657629376379887">Меню дій для макета</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
+<translation id="3248223063252096240">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Не надруковано – відкрито кришку принтера</translation>
 <translation id="3275729367986477355">Зображення аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редагувати файл}one{Редагувати файли}few{Редагувати файли}many{Редагувати файли}other{Редагувати файли}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Перемикач Екрана конфіденційності</translation>
 <translation id="3639846061339007994">верх</translation>
 <translation id="3651050199673793219">Виберіть одиницю вимірювання температури</translation>
+<translation id="3663574643422533538">Вибрати ексклюзивну анімацію для пристрою <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3708186454126126312">Підключені раніше</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорна панель USB</translation>
+<translation id="4113067922640381334">Тепер ви маєте доступ до нових <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />фонових малюнків<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темний режим</translation>
 <translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8593058461203131755">призупинити відтворення медіаконтенту</translation>
 <translation id="8620617069779373398">Статус роумінгу</translation>
+<translation id="8626489604350149811">Інші дії для точки доступу <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Світло-фіолетовий</translation>
 <translation id="8651481478098336970">вимкнути звук</translation>
 <translation id="8655295600908251630">Канал</translation>

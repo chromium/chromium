@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Situs Google</translation>
 <translation id="1853795129690976061">Folder ini dibagikan ke Linux</translation>
 <translation id="1864756863218646478">File tidak dapat ditemukan.</translation>
+<translation id="1877377730633446520">Tindakan ini akan menggunakan sekitar <ph name="REQUIRED_SPACE" />. Saat ini Anda memiliki <ph name="FREE_SPACE" /> yang tersedia.</translation>
 <translation id="1884013283844450420">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Sambungkan</translation>
 <translation id="1920670151694390848">Transliterasi Malayalam</translation>
 <translation id="1920798810075583923">Semangka</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Luaskan panel masukan file</translation>
 <translation id="1995337122023280937">Buka lokasi file</translation>
 <translation id="2001796770603320721">Kelola di Drive</translation>
+<translation id="2004942826429452291">File akan disimpan di cloud dan di Chromebook ini.</translation>
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Rusia</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Setelan perangkat</translation>
 <translation id="2084809735218147718">Menandatangani terima kasih</translation>
 <translation id="2088690981887365033">Jaringan VPN</translation>
+<translation id="2089751716171649322">Akses file Google Drive Anda dengan mudah saat offline</translation>
 <translation id="2111134541987263231">Aktifkan <ph name="BEGIN_BOLD" />Izinkan dalam mode Samaran<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dihapus dan Anda tidak akan dapat memulihkannya.</translation>
 <translation id="2122305276694332719">Menghubungkan ke jaringan tersembunyi secara otomatis akan memungkinkan orang lain melihat perangkat Anda dan beberapa setelan jaringan, sehingga tindakan ini tidak direkomendasikan.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3486821258960016770">Mongolia</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> kesalahan.</translation>
+<translation id="3501954296166022751">File Google Drive Anda tersedia secara offline</translation>
 <translation id="3509680540198371098">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3511705761158917664">Menyiapkan sinkronisasi <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="3522708245912499433">Portugis</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5500122897333236901">Islandia</translation>
 <translation id="5508696409934741614">Titik</translation>
+<translation id="5519161320735100193">Setelan Google Drive</translation>
 <translation id="5522908512596376669">Daftar file telah berubah menjadi tampilan daftar.</translation>
 <translation id="5524517123096967210">File tidak dapat dibaca.</translation>
 <translation id="5533102081734025921">Gambar <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Ibrani</translation>
 <translation id="78104721049218340">Thai dengan keyboard Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Terjadi error saat mengonfigurasi jaringan</translation>
 <translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Memformat partisi akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">File Anda di Drive Saya akan otomatis disinkronkan ke Chromebook sehingga Anda dapat mengaksesnya tanpa koneksi internet.</translation>
 <translation id="7925247922861151263">Pemeriksaan AAA gagal</translation>
 <translation id="7925686952655276919">Jangan gunakan data seluler untuk sinkronisasi</translation>
 <translation id="7928710562641958568">Keluarkan perangkat</translation>
+<translation id="7933875256234974853">Bersiap untuk menyinkronkan file Drive...</translation>
 <translation id="7943385054491506837">Colemak AS</translation>
 <translation id="7953739707111622108">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak dikenali.</translation>
 <translation id="7969525169268594403">Slovenia</translation>
 <translation id="7972920761225148017">Prancis (Swiss)</translation>
 <translation id="7973962044839454485">Autentifikasi PDB gagal karena nama pengguna dan sandi salah</translation>
 <translation id="7980421588063892270">Inggris (AS) dengan keyboard Colemak</translation>
+<translation id="7985008041109611710">Menyinkronkan <ph name="NUMBER_OF_FILES_SYNCING" /> file</translation>
 <translation id="8000066093800657092">Tidak ada jaringan</translation>
 <translation id="8008366997883261463">Anjing</translation>
 <translation id="8028993641010258682">Ukuran</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Penginstalan berhasil dimulai.</translation>
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">Menyinkronkan 1 file</translation>
 <translation id="938470336146445890">Instal sertifikat pengguna.</translation>
 <translation id="939736085109172342">Folder baru</translation>
 <translation id="943972244133411984">Diubah oleh</translation>

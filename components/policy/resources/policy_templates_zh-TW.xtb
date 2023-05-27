@@ -2553,6 +2553,7 @@
 <translation id="3339271789059866414">設定系統 Proxy 服務的可用性和系統服務的 Proxy 憑證。
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
 <translation id="334231891933432876">在使用者帳戶驗證狀態失效時立即將使用者登出</translation>
+<translation id="3345323903592385588">VM 設定在安裝程式中的顯示順序。如果指定多組 VM 設定，display_order 值最小的設定會顯示在清單頂端。預設值為零。</translation>
 <translation id="3348799281602260763">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
       如果停用或不設定這項政策，系統會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
 
@@ -3306,6 +3307,11 @@
 <translation id="4052529125939620019">啟動時載入 CryptoToken 元件擴充功能</translation>
 <translation id="4053157306171963473">停用裝置活動時間回報功能</translation>
 <translation id="4053612967614057854">停用螢幕小鍵盤</translation>
+<translation id="4055758693679485627">設定當使用者關閉所有瀏覽器視窗時，要刪除哪些瀏覽資料類型的清單。可用的資料類型有瀏覽記錄 (<ph name="DATA_TYPE_BROWSING_HISTORY" />)、下載記錄 (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />)、Cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />)、快取內容<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、自動填入內容 (<ph name="DATA_TYPE_AUTOFILL" />)、密碼 (<ph name="DATA_TYPE_PASSWORD" />)、網站設定 (<ph name="DATA_TYPE_SITE_SETTINGS" />) 和代管的應用程式資料 (<ph name="DATA_TYPE_HOSTED_APP_DATA" />)。這項政策的優先順序低於 <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />。
+
+在 Chrome 114 以下版本，這項政策需要將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設定為 True。從 Chrome 115 版開始，如果未以設定 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策的方式停用「<ph name="CHROME_SYNC_NAME" />」，也沒有停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，設定這項政策就會停用個別資料類型的同步處理作業。
+
+      如果沒有正常關閉 <ph name="PRODUCT_NAME" /> (例如瀏覽器或作業系統當機)，系統會在下次載入設定檔時清除瀏覽資料。</translation>
 <translation id="4056910949759281379">停用 SPDY 通訊協定</translation>
 <translation id="4061107397839125009">你可以透過這項政策設定網址模式清單，用於指定無法顯示通知的網站。
 
@@ -3694,6 +3700,13 @@
 <translation id="4426601693403743089">為 Family Link 使用者停用螢幕側錄 Dogfood 測試</translation>
 <translation id="4427173305799125784">PDF 檢視器無法為 PDF 加註</translation>
 <translation id="4432762137771104529">啟用安全瀏覽模式的進階回報功能</translation>
+<translation id="4434531680131327140">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。管理員可以透過這項政策設定瀏覽器刪除資料 (依資料類型) 的時間點。這很適合需要處理敏感客戶資料的客戶。
+
+      可用的資料類型有 <ph name="DATA_TYPE_BROWSING_HISTORY" />、<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />、<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />、<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />、<ph name="DATA_TYPE_PASSWORD" />、<ph name="DATA_TYPE_AUTOFILL" />、<ph name="DATA_TYPE_SITE_SETTINGS" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。Android 不支援 <ph name="DATA_TYPE_DOWNLOAD_HISTORY" /> 和 <ph name="DATA_TYPE_HOSTED_APP_DATA" />。
+
+      瀏覽器會根據所選資料類型，自動移除存放時間超過 <ph name="TIME_TO_LIVE_IN_HOURS" />的資料。最小值為 1 小時。
+
+      系統會在瀏覽器啟動後 15 秒刪除超過保留期限的資料，並在瀏覽器執行期間每 30 分鐘執行一次刪除作業。在 Chrome 114 以下版本，這項政策需要將 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策設定為 True。從 Chrome 115 版開始，如果未以設定 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策的方式停用「<ph name="CHROME_SYNC_NAME" />」，也沒有停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，設定這項政策就會停用個別資料類型的同步處理作業。</translation>
 <translation id="443454694385851356">舊版 (不安全)</translation>
 <translation id="4435032708588431506">允許 QUIC</translation>
 <translation id="443665821428652897">瀏覽器關閉時清除網站資料 (已淘汰)</translation>
@@ -5457,6 +5470,21 @@
 <translation id="614665605501218241">允許列出的網站譯不安全的方式，向更私密的網路端點傳送要求。</translation>
 <translation id="614753473456574270">不允許使用者設定低強度 PIN 碼</translation>
 <translation id="6150320133676152520">在鎖定畫面和登入畫面上停用 PIN 碼自動提交功能</translation>
+<translation id="61518106107420459">你可以透過這項政策指定要以無訊息方式 (使用者不用操作) 安裝的應用程式和擴充功能清單，使用者無法解除安裝或停用這些應用程式和擴充功能。系統會直接授予 enterprise.deviceAttributes 和 enterprise.platformKeys 擴充功能 API 等適用的權限 (非強制安裝的應用程式和擴充功能無法取得這 2 個 API 的權限)。
+
+      如果未設定這項政策，系統不會自動安裝任何應用程式或擴充功能，且使用者可以在 <ph name="PRODUCT_NAME" /> 中解除安裝任何應用程式或擴充功能。
+
+          這項政策會取代 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 政策。如果從這份清單中移除先前強制安裝的應用程式或擴充功能，<ph name="PRODUCT_NAME" /> 會自動將其解除安裝。
+
+      在 <ph name="MS_WIN_NAME" /> 執行個體上，執行個體必須先加入 <ph name="MS_AD_NAME" /> 網域、<ph name="MS_AAD_NAME" /> 或是已註冊<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />，系統才能強制安裝來自 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+      在 <ph name="MAC_OS_NAME" /> 執行個體上，執行個體必須透過行動裝置管理 (MDM) 進行管理、透過 MCX 加入網域或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />，系統才能強制安裝來自 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+
+      使用者可透過開發人員工具變更任何擴充功能的原始碼，但可能會導致擴充功能無法正常運作。如有疑慮，請設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。
+
+      這項政策的每個清單項目都是一行字串，其中包含以分號 (;) 區隔的擴充功能 ID 和「更新」網址 (選用)。擴充功能 ID 為 32 個字母的字串，你可以在開發人員模式下前往 chrome://extensions 等位置查看這類字串。「更新」網址 (如有指定) 應指向更新資訊清單 XML 文件 (https://developer.chrome.com/extensions/autoupdate)。根據預設，系統會使用 Chrome 線上應用程式商店的更新網址。這項政策設定的「更新」網址僅適用於初次安裝，後續的擴充功能更新將使用擴充功能資訊清單中的更新網址。
+
+       注意：這項政策不適用於無痕模式。請前往以下頁面，參閱有關代管擴充功能的資訊：https://developer.chrome.com/extensions/hosting。</translation>
 <translation id="6155350825868160236">允許使用者選擇是否要使用 Google 網路服務來解決拼字錯誤</translation>
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>

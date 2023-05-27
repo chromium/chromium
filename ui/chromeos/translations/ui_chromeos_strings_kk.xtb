@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
 <translation id="1864756863218646478">Файлды табу мүмкін емес.</translation>
+<translation id="1877377730633446520">Бұл шамамен <ph name="REQUIRED_SPACE" /> пайдаланады. Қазір сізге <ph name="FREE_SPACE" /> қолжетімді.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, қоcылу</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
 <translation id="1920798810075583923">Қарбыз</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
+<translation id="2004942826429452291">Файлдар бұлтта және осы Chromebook-та сақталады.</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2037845485764049925">Орыс</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Құрылғы параметрлері</translation>
 <translation id="2084809735218147718">Рақмет деп ымдап жатқан адам</translation>
 <translation id="2088690981887365033">VPN желісі</translation>
+<translation id="2089751716171649322">Сіз офлайн болғанда Google Drive файлдарын оңай пайдаланыңыз</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Инкогнито режимінде рұқсат беру<ph name="END_BOLD" /> мүмкіндігін қосу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> элемент жойылады және оларды қалпына келтіре алмайсыз.</translation>
 <translation id="2122305276694332719">Жасырын желіге автоматты түрде қосылсаңыз, басқалар сіздің құрылғыңызды және кейбір желілік параметрлеріңізді көре алады. Сондықтан жасырын желіге автоматты түрде қосылмағаныңыз жөн.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3486821258960016770">Моңғол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
+<translation id="3501954296166022751">Google Drive файлдарыңыз офлайн қолжетімді</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> элементті синхрондауға әзірленуде...</translation>
 <translation id="3522708245912499433">португал</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5500122897333236901">исланд</translation>
 <translation id="5508696409934741614">Нүктелер</translation>
+<translation id="5519161320735100193">Google Drive параметрлері</translation>
 <translation id="5522908512596376669">Файлдар тізім ретінде көрсетілді.</translation>
 <translation id="5524517123096967210">Файлды оқу мүмкін болмады.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> суреті</translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7806708061868529807">Иврит</translation>
 <translation id="78104721049218340">Тай (Kedmanee пернетақтасымен)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Желіні конфигурациялауда қате болды</translation>
 <translation id="7839804798877833423">Бұл файлдарды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Бөлімді форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">"Жеке Drive" ішіндегі файлдарыңыз Chromebook-қа автоматты түрде синхрондалады, осылайша оларды интернет байланысынсыз пайдалана аласыз.</translation>
 <translation id="7925247922861151263">AAA тексеру сәтсіз аяқталды</translation>
 <translation id="7925686952655276919">Синхрондау үшін ұялы деректерді пайдаланбау</translation>
 <translation id="7928710562641958568">Құрылғыны шығару</translation>
+<translation id="7933875256234974853">Drive файлдарын синхрондауға дайындалып жатыр...</translation>
 <translation id="7943385054491506837">АҚШ Колемак</translation>
 <translation id="7953739707111622108">Бұл құрылғыны ашу мүмкін емес, себебі оның файл жүйесі анықталмаған.</translation>
 <translation id="7969525169268594403">словен</translation>
 <translation id="7972920761225148017">Француз (Швейцария)</translation>
 <translation id="7973962044839454485">Пайдаланушы аты немесе құпия сөз дұрыс болмағандықтан, PPP аутентификациясы сәтсіз аяқталды</translation>
 <translation id="7980421588063892270">Ағылшын (АҚШ), Колемак пернетақтасымен</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> файл синхрондалып жатыр</translation>
 <translation id="8000066093800657092">Желі жоқ</translation>
 <translation id="8008366997883261463">Ит</translation>
 <translation id="8028993641010258682">Көлемі</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">Орнату басталды.</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219908252191632183">Ай ландшафты</translation>
+<translation id="937795003075802289">1 файл синхрондалып жатыр</translation>
 <translation id="938470336146445890">Пайдаланушы сертификатын орнатыңыз.</translation>
 <translation id="939736085109172342">Жаңа қалта</translation>
 <translation id="943972244133411984">Өзгерткен:</translation>

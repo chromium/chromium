@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
+<translation id="2840432500933227975">在 iOS 中開啟 Chrome 設定，輕觸「瀏覽器預設應用程式」，然後選取「Chrome」。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">這代表 Chrome 每次都會對行動版網站發出要求。</translation>
 <translation id="3706101708757577809">現在你只要在訊息、文件或其他應用程式中輕觸連結，即可使用 Chrome。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕分頁</translation>
+<translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用你的相機</translation>
 <translation id="3980220367029651214">您設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將您的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">貴機構要求你在 Chrome 保持登出狀態。</translation>

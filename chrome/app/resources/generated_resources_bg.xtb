@@ -6140,6 +6140,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6343003829431264373">Само четните страници</translation>
 <translation id="6344170822609224263">Достъп до списъка с мрежови връзки</translation>
 <translation id="6344576354370880196">Запазени принтери</translation>
+<translation id="6344608411615208519"><ph name="BEGIN_LINK" />Браузърът се управлява<ph name="END_LINK" /> от родителя ви</translation>
 <translation id="6345418402353744910">Потребителското име и паролата ви се изискват за прокси сървъра <ph name="PROXY" />, така че администраторът да може да конфигурира мрежата ви</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6347010704471250799">Показване на известие</translation>
@@ -7667,6 +7668,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7684212569183643648">Инсталирано от администратора ви</translation>
 <translation id="7684559058815332124">Посещаване на страницата за вход в портала за удостоверяване</translation>
 <translation id="7684718995427157417">За да създавате и тествате приложения, активирайте моста на Android за отстраняване на грешки (ADB). Обърнете внимание, че това действие позволява инсталирането на приложения за Android, които не са удостоверени от Google. За деактивирането на ADB е необходимо да бъдат възстановени фабричните настройки.</translation>
+<translation id="7684913007876670600">За да се покаже опростен изглед на тази страница, отворете страничния панел и изберете Reading mode</translation>
 <translation id="7685049629764448582">Памет за JavaScript</translation>
 <translation id="7685087414635069102">Изисква се ПИН код</translation>
 <translation id="7686086654630106285">Повече за предлаганите от сайтовете реклами</translation>

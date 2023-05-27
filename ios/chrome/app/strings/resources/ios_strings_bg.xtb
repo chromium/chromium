@@ -755,6 +755,7 @@
 <translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
 <translation id="5965679971710331625">Влезли сте в профил</translation>
+<translation id="5971872012779224351">{count,plural, =1{Изтрихте 1 отметка}other{Изтрихте {count} отметки}}</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>
 <translation id="5981230843984570095">Затваряне на всички неактивни</translation>
 <translation id="5982717868370722439">Добавяне на съществуващите данни към <ph name="USER_EMAIL" />.</translation>
@@ -1002,6 +1003,7 @@
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
 <translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7446583256109515732">Разделът е освободен</translation>
+<translation id="7451023311965289370">{count,plural, =1{Отметката е запазена в(ъв) „{title}“}other{Отметките са запазени в(ъв) „{title}“}}</translation>
 <translation id="7454057999980797137">Щат/държава</translation>
 <translation id="7459628154744868585">Режимът за подобрена защита е включен</translation>
 <translation id="746684838091935575">3. Изберете Chrome.</translation>

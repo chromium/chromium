@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Googleৰ ছাইট</translation>
 <translation id="1853795129690976061">এই ফ’ল্ডাৰটো Linuxৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="1864756863218646478">ফাইলটো বিচাৰি পোৱা নগ’ল।</translation>
+<translation id="1877377730633446520">এইটোৱে প্ৰায় <ph name="REQUIRED_SPACE" /> ব্যৱহাৰ কৰিব। বৰ্তমান আপোনাৰ <ph name="FREE_SPACE" /> উপলব্ধ আছে।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সংযোগ কৰক</translation>
 <translation id="1920670151694390848">মালায়ালম লিপ্যন্তৰণ</translation>
 <translation id="1920798810075583923">তৰমুজ</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ফাইলসমূহৰ প্ৰতিক্ৰিয়াৰ পেনেলটো বিস্তাৰ কৰক</translation>
 <translation id="1995337122023280937">ফাইলৰ অৱস্থানলৈ যাওক</translation>
 <translation id="2001796770603320721">ড্ৰাইভত পৰিচালনা কৰক</translation>
+<translation id="2004942826429452291">ফাইলসমূহ ক্লাউডত আৰু এই Chromebookটোত ষ্ট’ৰ কৰা হ’ব।</translation>
 <translation id="2009067268969781306">এটা ড্ৰাইভ ফর্মেট কৰা কার্যই ড্ৰাইভটোত ষ্ট'ৰ কৰি ৰখা সকলো ডেটা মচিব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="2025955442973426285">টিগ্ৰিনিয়া</translation>
 <translation id="2037845485764049925">ৰাছিয়ান</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">ডিভাইচৰ ছেটিংসমূহ</translation>
 <translation id="2084809735218147718">ধন্যবাদৰ গীত গাই থকা ব্যক্তিৰ ছবি</translation>
 <translation id="2088690981887365033">VPN নেটৱৰ্ক</translation>
+<translation id="2089751716171649322">অফলাইন হৈ থকাৰ সময়তো আপোনাৰ Google Driveৰ ফাইলসমূহ সহজে এক্সেছ কৰক</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ইনক’গনিট’ ম’ডত অনুমতি দিয়ক<ph name="END_BOLD" /> সুবিধাটো অন কৰক</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু মচা হ’ব আৰু আপুনি সেইবোৰ পুনঃস্থাপন কৰিব নোৱাৰিব।</translation>
 <translation id="2122305276694332719">লুকাই থকা কোনো নেটৱৰ্কত স্বয়ংক্ৰিয়ভাৱে সংযুক্ত কৰাটোৱে অন্য লোকক আপোনাৰ ডিভাইচ আৰু নেটৱৰ্কৰ কিছুমান ছেটিং চাবলৈ দিয়ে আৰু সেয়েহে সেয়া চুপাৰিছ কৰা নহয়।</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3486821258960016770">মংগোলিয়ান</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টা আসোঁৱাহ।</translation>
+<translation id="3501954296166022751">আপোনাৰ Google Driveৰ ফাইলসমূহ অফলাইনত উপলব্ধ হয়</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="3522708245912499433">পর্তুগীজ</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">সকলো বাছনি কৰক</translation>
 <translation id="5500122897333236901">আইচলেণ্ডীয়</translation>
 <translation id="5508696409934741614">ডট্‌</translation>
+<translation id="5519161320735100193">Google Driveৰ ছেটিং</translation>
 <translation id="5522908512596376669">ফাইলৰ সূচীখন সূচী ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="5524517123096967210">ফাইলটো পঢ়িব নোৱাৰি।</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> প্ৰতিচ্ছবি</translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7806708061868529807">হিব্ৰু</translation>
 <translation id="78104721049218340">Kedmanee কীব’ৰ্ডৰ সৈতে থাই</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটৱৰ্ক কনফিগাৰ কৰাত আসোঁৱাহ</translation>
 <translation id="7839804798877833423">এই ফাইলবোৰ বিচাৰি আনিবলৈ ম’বাইল ডেটাৰ প্ৰায় <ph name="FILE_SIZE" /> খৰচ হ’ব৷</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">কাটাকনা</translation>
 <translation id="7908793776359722643">এটা বিভাজন ফৰ্মেট কৰা কাৰ্যই তাত ষ্ট'ৰ কৰি ৰখা সকলো ডেটা মচিব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">মোৰ ড্ৰাইভত থকা আপোনাৰ ফাইলসমূহ আপোনাৰ Chromebookত স্বয়ংক্ৰিয়ভাৱে ছিংক কৰা হ’ব যাতে সেইবোৰ আপুনি কোনো ইণ্টাৰনেট সংযোগৰ অবিহনে এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7925247922861151263">AAA পৰীক্ষা কৰিব পৰা নগ’ল</translation>
 <translation id="7925686952655276919">ছিংক কৰিবলৈ ম'বাইল ডেটা ব্যৱহাৰ নকৰিব</translation>
 <translation id="7928710562641958568">ডিভাইচ এৰুৱাওক</translation>
+<translation id="7933875256234974853">Driveৰ ফাইলসমূহ ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="7943385054491506837">ইউ.এছ. ক’লমাক</translation>
 <translation id="7953739707111622108">এই ডিভাইচটো খুলিব পৰা নাযায় কাৰণ ইয়াৰ ফাইলছিষ্টেমটো চিনাক্ত কৰিব পৰা নাই।</translation>
 <translation id="7969525169268594403">শ্ল'ভেনিয়ান</translation>
 <translation id="7972920761225148017">ফৰাচী (ছুইজাৰলেণ্ড)</translation>
 <translation id="7973962044839454485">কোনো অশুদ্ধ ব্যৱহাৰকাৰীৰ নাম বা পাছৱর্ডৰ বাবে PPP বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ কৰিব পৰা নগ’ল</translation>
 <translation id="7980421588063892270">Colemak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> টা ফাইল ছিংক কৰি থকা হৈছে</translation>
 <translation id="8000066093800657092">নেটৱৰ্ক নাই</translation>
 <translation id="8008366997883261463">কুকুৰ</translation>
 <translation id="8028993641010258682">আকাৰ</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">ইনষ্টলেশ্বন সফলতাৰে আৰম্ভ কৰা হ’ল৷</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">চান্দ্ৰ</translation>
+<translation id="937795003075802289">১ টা ফাইল ছিংক কৰি থকা হৈছে</translation>
 <translation id="938470336146445890">অনুগ্ৰহ কৰি, কোনো ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ ইনষ্টল কৰক।</translation>
 <translation id="939736085109172342">নতুন ফ'ল্ডাৰ</translation>
 <translation id="943972244133411984">সংশোধন কৰোঁতা</translation>

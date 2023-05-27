@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">শুধুমাত্র 'ছদ্মবেশী মোড' উপলভ্য রয়েছে</translation>
 <translation id="2982481275546140226">ডেটা মুছুন</translation>
 <translation id="298306318844797842">পেমেন্টের পদ্ধতি যোগ করুন...</translation>
+<translation id="2988274366244053197">Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।
+
+এমন কোনও ব্যক্তি যার কাছে আপনার পাসফ্রেজে রয়েছে, শুধুমাত্র তিনিই আপনার এনক্রিপটেড ডেটা পড়তে পারবেন। পাসফ্রেজ Google-এ পাঠানো বা তার মাধ্যমে সেভ করা হয় না। আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome সম্পর্কিত ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="2989805286512600854">নতুন ট্যাবে খুলুন</translation>
 <translation id="3020183492814296499">শর্টকাট</translation>
 <translation id="3037605927509011580">ইস!</translation>
@@ -380,6 +383,7 @@
 <translation id="3470502288861289375">অনুলিপি করা হচ্ছে...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT}টি সাইট বা অ্যাপের জন্য}one{{COUNT}টি সাইট বা অ্যাপের জন্য}other{{COUNT}টি সাইট বা অ্যাপের জন্য}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
+<translation id="3476450923187944815">অন্যান্য অ্যাপ জুড়ে আপনার পাসওয়ার্ড অ্যাক্সেস করুন।</translation>
 <translation id="3478058380795961209">মেয়াদপূর্তির মাস</translation>
 <translation id="3482959374254649722">আপনার ট্যাবগুলি সিঙ্ক করা হচ্ছে ...</translation>
 <translation id="3484946776651937681">ডাউনলোডগুলি খুলুন</translation>
@@ -650,6 +654,7 @@
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5318298563956633672">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন।</translation>
+<translation id="5325595483440111327">ব্রাউজিং ইতিহাস দেখুন।</translation>
 <translation id="5339316356165661760">সিঙ্ক চালু করুন</translation>
 <translation id="536067926684072644">বুকমার্ক দেখান</translation>
 <translation id="5360976571138293719">আপনার গোপনীয়তা, নিরাপত্তা ও ডেটা সংগ্রহের সাথে সম্পর্কিত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> দেখুন।</translation>

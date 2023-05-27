@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">無法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1020274983236703756">現已推出 <ph name="PRODUCT_NAME" /> 專屬素材資源</translation>
 <translation id="1022433422498218992">一般控制項</translation>
 <translation id="1022628058306505708">地球動態</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> 獨家設計</translation>
 <translation id="3268178239013324452">失敗 - 蓋子處於開啟狀態</translation>
 <translation id="3275729367986477355">顯示圖片</translation>
 <translation id="3283504360622356314">{0,plural, =1{編輯檔案}other{編輯檔案}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">隱私保護功能切換</translation>
 <translation id="3639846061339007994">頂端</translation>
 <translation id="3651050199673793219">選取溫度單位</translation>
+<translation id="3663574643422533538">選取 <ph name="PRODUCT_NAME" /> 專屬藝術創作</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3708186454126126312">先前連線的裝置</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2 和 WPA3</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
+<translation id="4113067922640381334">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4131410914670010031">黑白</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8593058461203131755">暫停播放媒體</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
+<translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他動作</translation>
 <translation id="86356131183441916">淺紫色</translation>
 <translation id="8651481478098336970">靜音</translation>
 <translation id="8655295600908251630">版本</translation>

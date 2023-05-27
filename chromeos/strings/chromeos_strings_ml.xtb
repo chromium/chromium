@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">ഡെസ്‌ക്കുകൾ</translation>
 <translation id="1018219910092211213">DNS പരിഹരിക്കാനാകുന്നില്ല</translation>
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
+<translation id="1020274983236703756">എക്സ്ക്ലൂസീവ് <ph name="PRODUCT_NAME" /> അസറ്റുകൾ ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="1022433422498218992">പൊതുവായ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="1022628058306505708">എർത്ത് ഫ്ലോ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">സ്‌കാനറുകൾ തിരയുന്നു</translation>
 <translation id="3226657629376379887">ലേഔട്ട് പ്രവർത്തന മെനു</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> എക്സ്ക്ലൂസീവ്</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="3275729367986477355">അവതാർ ചിത്രം</translation>
 <translation id="3283504360622356314">{0,plural, =1{ഫയൽ എഡിറ്റ് ചെയ്യുക}other{ഫയലുകൾ എഡിറ്റ് ചെയ്യുക}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
 <translation id="3639846061339007994">മുകളിൽ</translation>
 <translation id="3651050199673793219">താപനിലാ യൂണിറ്റ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> എക്സ്ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> പരിശോധന</translation>
 <translation id="370665806235115550">ലോഡ്ചെയ്യുന്നു...</translation>
 <translation id="3708186454126126312">മുമ്പ് കണക്റ്റ് ചെയ്തവ</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4111761024568264522">USB ടച്ച്പാഡ്</translation>
+<translation id="4113067922640381334">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്ക്<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ആക്സസ് ഉണ്ട്</translation>
 <translation id="4117637339509843559">ഡാർക്ക് മോഡ്</translation>
 <translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="4131410914670010031">കറുപ്പും വെള്ളയും</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
 <translation id="8593058461203131755">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>
 <translation id="8651481478098336970">വോളിയം മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="8655295600908251630">ചാനല്‍</translation>

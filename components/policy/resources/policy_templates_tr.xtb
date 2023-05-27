@@ -2597,6 +2597,7 @@ Bu politikada belirtilen bir uzantı yüklenmezse Gizli modda gezinme engellenir
 <translation id="3339271789059866414">System-proxy hizmetinin kullanılabilirliğini ve sistem hizmetleri için proxy kimlik bilgilerini yapılandırır.
       Politika ayarlanmazsa System-proxy hizmeti kullanılamaz.</translation>
 <translation id="334231891933432876">Hesabının kimlik doğrulaması geçersiz hale gelir gelmez kullanıcının oturumunu kapat</translation>
+<translation id="3345323903592385588">Sanal makine yapılandırmasının yükleyicide gösterileceği sıra. Birden fazla sanal makine yapılandırması belirtildiğinde, listenin başında en küçük display_order değerine sahip olan yapılandırma gösterilir. Varsayılan değer sıfırdır.</translation>
 <translation id="3348799281602260763">Politika etkinleştirilirse WebRTC eş bağlantıları, TLS/DTLS (DTLS 1.0, TLS 1.0, TLS 1.1) protokollerinin eski sürümlerine geçebilir.
       Bu politika devre dışı bırakılır veya ayarlanmazsa bu TLS/DTLS sürümleri devre dışı bırakılır.
 
@@ -5581,6 +5582,21 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
 <translation id="614665605501218241">Listelenen sitelerin, daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin ver.</translation>
 <translation id="614753473456574270">Kullanıcıların zayıf bir PIN belirlemesine izin verme</translation>
 <translation id="6150320133676152520">Kilit ve giriş ekranlarında otomatik PIN gönderme özelliğini devre dışı bırak</translation>
+<translation id="61518106107420459">Politikanın ayarlanması, kullanıcı etkileşimi olmadan sessizce yüklenen, kullanıcı tarafından yüklemesi kaldırılamayan veya kapatılamayan uygulamaların ve uzantıların bir listesini belirtir. İzinler, enterprise.deviceAttributes ve enterprise.platformKeys uzantı API'leri için dolaylı olarak verilir. (Bu iki API zorunlu olarak yüklenmemiş uygulamalar ve uzantılar tarafından kullanılamaz.)
+
+      Bu politika ayarlanmadan bırakılırsa hiçbir uygulama veya uzantı otomatik olarak yüklenmez ve kullanıcılar <ph name="PRODUCT_NAME" /> ürünündeki uygulama veya uzantıları kaldırabilirler.
+
+      Bu politika, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> politikasının yerini alır. Önceden zorunlu olarak yüklenmiş bir uygulama veya uzantı listeden çıkarılırsa <ph name="PRODUCT_NAME" /> ürünü, otomatik olarak bu uygulamayı veya uzantıyı kaldırır.
+
+      <ph name="MS_WIN_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca bir <ph name="MS_AD_NAME" /> veya <ph name="MS_AAD_NAME" /> alanına katılmışsa ya da "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />" hizmetine kaydolmuşsa zorunlu olarak yüklenebilir.
+
+      <ph name="MAC_OS_NAME" /> örneklerinde, Chrome Web Mağazası dışından uygulamalar ve uzantılar, örnek yalnızca MDM üzerinden yönetiliyorsa, MCX aracılığıyla bir alana katılmışsa veya "<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />" hizmetine kaydolmuşsa zorunlu olarak yüklenebilir.
+
+      Herhangi bir uzantının kaynak kodu, kullanıcılar tarafından geliştirici araçları kullanılarak uzantının işlevselliğini devre dışı bırakabilecek şekilde değiştirilebilir. Böyle bir endişe olması durumunda <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> politikasını ayarlayın.
+
+      Politikaya ait her liste öğesi, noktalı virgülle (;) ayrılmış bir uzantı kimliği ve isteğe bağlı bir "güncelleme" URL'si içeren bir dizedir. Uzantı kimliği, örneğin Geliştirici modundayken chrome://extensions adresinde bulunabilen 32 harfli bir dizedir. Belirtilmişse "güncelleme" URL'si bir Güncelleme Manifest XML dokümanına işaret etmelidir. (https://developer.chrome.com/extensions/autoupdate). Varsayılan olarak Chrome Web Mağazası'nın güncelleme URL'si kullanılır. Bu politikada ayarlanan "güncelleme" URL'si yalnızca ilk yükleme için kullanılır. Uzantının sonraki güncellemelerinde ise uzantının manifest dosyasındaki güncelleme URL'si kullanılır.
+
+       Not: Bu politika gizli mod için geçerli değildir. Uzantıların barındırılması (https://developer.chrome.com/extensions/hosting) ile ilgili bilgi edinin.</translation>
 <translation id="6155350825868160236">Kullanıcının, Google web hizmetlerinin yazım hatalarını çözmek için kullanılıp kullanılmayacağını seçmesine izin ver</translation>
 <translation id="6155936611791017817">Giriş ekranında büyük imleç modunun varsayılan durumunu ayarla</translation>
 <translation id="6157537876488211233">Proxy atlama kurallarının noktalı virgül ile ayrılmış listesi</translation>

@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">ডেস্ক</translation>
 <translation id="1018219910092211213">ডিএনএস (DNS) সংক্রান্ত সমস্যার সমাধান করা যায়নি</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
+<translation id="1020274983236703756">এক্সক্লুসিভ <ph name="PRODUCT_NAME" /> অ্যাসেট এখন উপলভ্য</translation>
 <translation id="1022433422498218992">সাধারণ নিয়ন্ত্রণ</translation>
 <translation id="1022628058306505708">আর্থ ফ্লো</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -269,6 +270,7 @@
 <translation id="3226405216343213872">স্ক্যানার খোঁজা হচ্ছে</translation>
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ</translation>
 <translation id="3268178239013324452">প্রিন্ট করা যায়নি - প্রিন্টারের ঢাকনা ভাল করে বন্ধ করা হয়নি</translation>
 <translation id="3275729367986477355">অবতারের ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
@@ -321,6 +323,7 @@
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
 <translation id="3639846061339007994">উপরে</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
 <translation id="370665806235115550">লোড হচ্ছে...</translation>
 <translation id="3708186454126126312">আগে কানেক্ট করা ছিল</translation>
@@ -370,6 +373,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> অ্যালবাম বেছে নিন</translation>
 <translation id="4111761024568264522">ইউএসবি টাচপ্যাড</translation>
+<translation id="4113067922640381334">নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপারে<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আপনার অ্যাকশন রয়েছে</translation>
 <translation id="4117637339509843559">'ডার্ক মোড'</translation>
 <translation id="4130035430755296270">আরও লেআউট বিকল্পের জন্য ঘোরাতে থাকুন</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
@@ -929,6 +933,7 @@
 <translation id="8576249514688522074">যা শুরু করা হয়নি</translation>
 <translation id="8593058461203131755">মিডিয়া পজ করুন</translation>
 <translation id="8620617069779373398">রোমিং স্থিতি</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="86356131183441916">হালকা বেগুনি</translation>
 <translation id="8651481478098336970">ভলিউম মিউট করুন</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>

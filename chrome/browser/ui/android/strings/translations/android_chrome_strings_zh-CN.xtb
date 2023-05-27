@@ -426,6 +426,7 @@
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="3293181007446299124">您的浏览记录会被私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
 <translation id="3303414029551471755">要开始下载该内容吗？</translation>
+<translation id="3305130791745726624">发送到设备</translation>
 <translation id="3305795716056605962">通过“更多选项”按钮翻译网页</translation>
 <translation id="3319664549618064419">切换到桌面版网站以获得更好的浏览体验</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
@@ -1174,6 +1175,7 @@
 <translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了这项设置，相关公司或许就能对在您访问的网站和使用的应用中投放的广告进行效果衡量。</translation>
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
+<translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7332075081379534664">登录成功</translation>
 <translation id="7333232495927792353">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
@@ -1360,6 +1362,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">继续</translation>
 <translation id="8209050860603202033">打开图片</translation>
+<translation id="8210770465353466621">此处会显示您所打开的标签页</translation>
 <translation id="8215740705341534369">侧边动作条</translation>
 <translation id="8218622182176210845">管理您的帐号</translation>
 <translation id="8221401890884589479">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

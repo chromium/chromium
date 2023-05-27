@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google সাইট</translation>
 <translation id="1853795129690976061">এই ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="1864756863218646478">ফাইলটি পাওয়া যায়নি৷</translation>
+<translation id="1877377730633446520">এটি <ph name="REQUIRED_SPACE" /> স্পেস ব্যবহার করবে। বর্তমানে আপনার <ph name="FREE_SPACE" /> স্পেস উপলভ্য রয়েছে।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, কানেক্ট করুন</translation>
 <translation id="1920670151694390848">মালয়ালাম লিপ্যন্তর</translation>
 <translation id="1920798810075583923">তরমুজ</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
 <translation id="1995337122023280937">ফাইল লোকেশনে যান</translation>
 <translation id="2001796770603320721">ড্রাইভে পরিচালনা করুন</translation>
+<translation id="2004942826429452291">ক্লাউড ও এই Chromebook-এ ফাইল স্টোর করা হবে।</translation>
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="2025955442973426285">টাইগ্রিনা</translation>
 <translation id="2037845485764049925">রুশ</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">ডিভাইস সেটিংস</translation>
 <translation id="2084809735218147718">ধন্যবাদ জানাচ্ছেন এমন ব্যক্তির ছবি</translation>
 <translation id="2088690981887365033">ভিপিএন নেটওয়ার্ক</translation>
+<translation id="2089751716171649322">অফলাইন থাকাকালীন সহজেই আপনার Google Drive ফাইল অ্যাক্সেস করুন</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />ছদ্মবেশী মোডে অনুমতি দিন<ph name="END_BOLD" /> বিকল্প চালু করুন</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মুছে ফেলা হবে এবং আপনি সেগুলি আর ফিরিয়ে আনতে পারবেন না।</translation>
 <translation id="2122305276694332719">কোনও লুকানো নেটওয়ার্কে অটোমেটিক কানেক্ট করলে, অন্যরা আপনার ডিভাইস ও নেটওয়ার্কের কিছু সেটিংস দেখার সুযোগ পান। তাই, এটি সাজেস্ট করা হয় না।</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">এখনই নয়</translation>
 <translation id="3486821258960016770">মঙ্গোলিয়ান</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টি ত্রুটি৷</translation>
+<translation id="3501954296166022751">আপনার Google Drive ফাইল অফলাইনে উপলভ্য রয়েছে</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সিঙ্ক করার জন্য প্রস্তুত করা হচ্ছে...</translation>
 <translation id="3522708245912499433">পর্তুগিজ</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5500122897333236901">আইসল্যান্ডিক</translation>
 <translation id="5508696409934741614">বিন্দু</translation>
+<translation id="5519161320735100193">Google Drive সেটিংস</translation>
 <translation id="5522908512596376669">লিস্ট ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="5524517123096967210">ফাইল পড়া যায়নি৷</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ছবি</translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7806708061868529807">হিব্রু</translation>
 <translation id="78104721049218340">থাই ভাষায় কেডমানি কীবোর্ড</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
 <translation id="7839804798877833423">এই ফাইলগুলি আনতে আনুমানিক মোবাইল ডেটা <ph name="FILE_SIZE" /> ব্যবহার হবে</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">কাটাকানা</translation>
 <translation id="7908793776359722643">পার্টিশন ফর্ম্যাট করলে তাতে সেভ থাকা সব ডেটা মুছে যাবে। সেটি আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">আমার ড্রাইভে থাকা আপনার ফাইল অটোমেটিক আপনার Chromebook-এ সিঙ্ক করে যাবে, তাই ইন্টারনেট কানেকশন ছাড়াই আপনি সেগুলি অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="7925247922861151263">AAA চেক করা যায়নি</translation>
 <translation id="7925686952655276919">সিঙ্ক-এর জন্য মোবাইল ডেটা ব্যবহার করবেন না</translation>
 <translation id="7928710562641958568">বের করে দেওযার ডিভাইস</translation>
+<translation id="7933875256234974853">Drive ফাইল সিঙ্ক করার জন্য প্রস্তুত হচ্ছে...</translation>
 <translation id="7943385054491506837">মার্কিন যুক্তরাষ্ট্রীয় কোলেম্যাক</translation>
 <translation id="7953739707111622108">এই ডিভাইসটি ফাইল সিস্টেমটি স্বীকৃত না হওয়ার কারণে খুলতে পারা যায়না৷</translation>
 <translation id="7969525169268594403">স্লোভেনিয়ান</translation>
 <translation id="7972920761225148017">ফরাসি (সুইজারল্যান্ড)</translation>
 <translation id="7973962044839454485">একটি ভুল ইউজারনেম বা পাসওয়ার্ডের কারণে PPP যাচাই করা যায়নি৷</translation>
 <translation id="7980421588063892270">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় কোলম্যাক কীবোর্ড</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" />টি ফাইল সিঙ্ক হচ্ছে</translation>
 <translation id="8000066093800657092">কোনও নেটওয়ার্ক নেই</translation>
 <translation id="8008366997883261463">জ্যাক রাসেল ক্ষুদ্রকায় কুকুর</translation>
 <translation id="8028993641010258682">সাইজ</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">ইনস্টলেশন চালু হয়েছে।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">লুনার</translation>
+<translation id="937795003075802289">১টি ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="938470336146445890">একটি ব্যবহারকারী সার্টিফিকেট ইনস্টল করুন৷</translation>
 <translation id="939736085109172342">নতুন ফোল্ডার</translation>
 <translation id="943972244133411984">পরিবর্তন করেছেন</translation>

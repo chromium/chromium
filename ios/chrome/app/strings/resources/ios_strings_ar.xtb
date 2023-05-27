@@ -317,6 +317,9 @@
 <translation id="2975121486251958312">لا يتوفّر سوى "وضع التصفُّح المتخفي"</translation>
 <translation id="2982481275546140226">محو البيانات</translation>
 <translation id="298306318844797842">إضافة طريقة الدفع...</translation>
+<translation id="2988274366244053197">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
+
+جدير بالذكر أنّه لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">فتح في علامة تبويب جديدة</translation>
 <translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
@@ -383,6 +386,7 @@
 <translation id="3471148582064653480">مزامنة كلمات المرور والسجلّ وغير ذلك</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{لواحد من المواقع الإلكترونية أو التطبيقات ({COUNT})}zero{لـ {COUNT} موقع إلكتروني وتطبيق}two{لإثنين من المواقع الإلكترونية والتطبيقات ({COUNT})}few{لـ {COUNT} مواقع إلكترونية وتطبيقات}many{لـ {COUNT} موقعًا إلكترونيًا وتطبيقًا}other{لـ {COUNT} موقع إلكتروني وتطبيق}}</translation>
 <translation id="3474624961160222204">المتابعة باسم <ph name="NAME" /></translation>
+<translation id="3476450923187944815">يمكنك الوصول في التطبيقات الأخرى إلى كلمات المرور.</translation>
 <translation id="3478058380795961209">شهر انتهاء الصلاحية</translation>
 <translation id="3482959374254649722">جارٍ مزامنة علامات التبويب الخاصة بك ...</translation>
 <translation id="3484946776651937681">فتح في الملف الخاصّ بعمليات التنزيل</translation>
@@ -654,6 +658,7 @@
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318298563956633672">يتم تتبُّع هذا المنتج حاليًا.</translation>
+<translation id="5325595483440111327">عرض سجلّ التصفُّح</translation>
 <translation id="5339316356165661760">تفعيل المزامنة</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
 <translation id="5360976571138293719">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" />.</translation>
@@ -752,6 +757,7 @@
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
+<translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
 <translation id="5979837087407522202">بحث عن كلمات المرور</translation>
 <translation id="5981230843984570095">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="5982717868370722439">يمكنك إضافة البيانات الحالية إلى <ph name="USER_EMAIL" />.</translation>
@@ -999,6 +1005,7 @@
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
 <translation id="7446583256109515732">تمت إزالة تثبيت علامة التبويب.</translation>
+<translation id="7451023311965289370">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}".}zero{تم حفظ الإشارات المرجعية في "{title}".}two{تم حفظ الإشارتَين المرجعيتَين في "{title}".}few{تم حفظ الإشارات المرجعية في "{title}".}many{تم حفظ الإشارات المرجعية في "{title}".}other{تم حفظ الإشارات المرجعية في "{title}".}}</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
 <translation id="7459628154744868585">"الحماية المحسَّنة" مفعَّلة</translation>
 <translation id="746684838091935575">‏3- اختَر Chrome.</translation>

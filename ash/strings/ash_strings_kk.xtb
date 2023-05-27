@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
 <translation id="1111021433905331574">Пернетақта жарығының түсін "Параметрлер &gt; <ph name="APP_TITLE" />" бөлімінен өзгерте аласыз.</translation>
+<translation id="1117719261843403176">Мобильдік интернетті қосу/өшіру. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
 <translation id="1142002900084379065">Жақында түскен фотосуреттер</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">Құлып экранындағы хабарландыру параметрлерін өзгертіңіз</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ҰСЫНЫЛАТЫН ҚОЛДАНБАЛАР</translation>
+<translation id="1311294419381837540">Сіз қойындыны трансляциялап жатырсыз. Трансляцияны кез келген уақытта кідіртуге немесе тоқтатуға болады.</translation>
 <translation id="1312604459020188865">Сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Сөрені әрқашан көрсету</translation>
 <translation id="132346741904777634">Камера жоғарғы сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
 <translation id="1340378040547539434">Бетті кішірейту</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
+<translation id="1344141078024003905">Экраныңызды трансляциялап жатырсыз. Экраныңызды трансляциялауды кез келген уақытта кідіртуге немесе тоқтатуға болады.</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1360220746312242196">Беттегі іздеу сұрауына сай келетін алдыңғы нәтижеге өту</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">Геодеректі пайдалану рұқсатын қосыңыз</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> босатылды.</translation>
+<translation id="183465528887726323">Хотспотты пайдалану үшін мобильдік интернетке қосылыңыз</translation>
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
 <translation id="1854180393107901205">Трансляцияны тоқтату</translation>
 <translation id="1862380676329487333">Жаңарту және шығу</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">Қолданба сіздің микрофоныңызды қолданып жатыр.</translation>
 <translation id="2277103315734023688">Алға</translation>
 <translation id="2282073721614284166">Сілтемені қойындыда ашу</translation>
+<translation id="2284237890386182187">Қосулы, ешбір құрылғы қосылмаған</translation>
 <translation id="2292698582925480719">Дисплей масштабы</translation>
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830"><ph name="NAME" /> белсендіру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360398059912971776">батарея</translation>
+<translation id="2361210043495191221">Wi-Fi функциясын қосу/өшіру. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2367972762794486313">Қолданбаларды көрсету</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
+<translation id="2382875860893882175">Қазір трансляция кідіртілген. Кез келген уақытта трансляцияны жалғастыруға немесе тоқтатуға болады.</translation>
 <translation id="2386292613071805067">Беттегі барлығын таңдау</translation>
 <translation id="2397416548179033562">Chrome мәзірін көрсету</translation>
 <translation id="240006516586367791">Мультимедианы басқару элементтері</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> аялдама. <ph name="CAPTURE_MEDIUM" /> — <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Терезелер құлпын ашу</translation>
+<translation id="2528111225373402384">Хотспот параметрлері</translation>
 <translation id="2530896289327917474">Пернелер арқылы навигациялауды қосу немесе өшіру</translation>
 <translation id="2531025035050312891">құрылғы баяу</translation>
 <translation id="254900897760075745">Таңдалған мазмұнды буферге көшіру</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3400357268283240774">Қосымша параметрлер</translation>
 <translation id="3405101454990027959">Микрофонды пайдалану мүмкіндігін қосу</translation>
+<translation id="3408735331120433841">Қазір экраныңызды трансляциялап жатырсыз.</translation>
 <translation id="3409584356742878290">"Әзірлеуші құралдары" бақылаушысын көрсету немесе жасыру</translation>
 <translation id="3410336247007142655">Қараңғы режим параметрлерін көрсету</translation>
 <translation id="3413817803639110246">Ештеңе жоқ</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">Сілтемені жаңа қойындыда ашу және ағымдағы қойындыда қалу</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> құрылғыға қосылды.</translation>
 <translation id="3533126039236445965">Сөредегі қолданбалар</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> хотспоты</translation>
 <translation id="3542066395059568317">Көретін ұсыныстардың арқасында тоқтаған жеріңізден жалғастыра аласыз. Ұсыныстарды өшіру үшін тінтуірдің оң жақ түймесін басыңыз.</translation>
 <translation id="3546121235777416274">"Суреттегі сурет" терезесін ерекшелеу</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">Қауіпсіздікті күшейту үшін құпия сөзді енгізу қажет.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Экранды бөлісудесіз</translation>
+<translation id="4049230407053723315">Жылдам параметрлер</translation>
 <translation id="4057003836560082631">Браузер қойындысы: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Өшірулі}other{# үшін өшірулі}}</translation>
 <translation id="4066027111132117168">Қосулы, <ph name="REMAINING_TIME" /></translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">VPN параметрлері</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, қолданба орнатылған, кідіртілген</translation>
+<translation id="4231053948789591973">Қазір трансляция кідіртілген. Кез келген уақытта экранды трансляциялауды жалғастыруға немесе тоқтатуға болады.</translation>
 <translation id="423685346499232137">Контентті қазір көшіру немесе қою мүмкін емес.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Шолу режимі</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 маңызды хабарландыру}other{# маңызды хабарландыру}}</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="4451374464530248585">Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. Page Down пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
+<translation id="4453876312474547652">Ctrl + V тіркесімін басып тұрған кезде буферді көресіз. chrome://flags (Lacros жобасы пайдаланылса, os://flags) ішінде #clipboard-history-longpress жалаушасын өшіру арқылы осы таңбашаны өшіруге болады.</translation>
 <translation id="4455051983450390249">Телефондағы хабарландыруларды <ph name="DEVICE_TYPE" /> құрылғысынан көріңіз.</translation>
 <translation id="445864333228800152">Қайырлы кеш!</translation>
 <translation id="4458688154122353284">Экран жазуды тоқтату</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">Google Assistant демо сеанста қолжетімді емес.</translation>
 <translation id="4789348252524569426">Дыбыс тану файлдарын орнату мүмкін емес. Құрылғыны жаңарту қажет. Құрылғыны өшіріп қосып, әрекетті қайталаңыз.</translation>
 <translation id="478959186716341421">Трансляциялануда</translation>
+<translation id="4798622944000246716">Мобильдік желі хотспотты қолдамайды</translation>
 <translation id="479989351350248267">іздеу</translation>
 <translation id="4804818685124855865">Ажырату</translation>
 <translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
@@ -1199,6 +1213,7 @@
 <translation id="6453179446719226835">Тіл өзгерді</translation>
 <translation id="6459472438155181876">Экранды <ph name="DISPLAY_NAME" /> дисплейіне кеңейту</translation>
 <translation id="6464094930452079790">суреттер</translation>
+<translation id="6469104339369989396">Хотспотты қосу/өшіру</translation>
 <translation id="6477681113376365978">Файлды жүктеп алу мүмкін емес</translation>
 <translation id="6482559668224714696">Толық экран ұлғайтқышы</translation>
 <translation id="6483727822843292440">Ең аз пайдаланылған терезеден терезелер арқылы өту</translation>
@@ -1811,6 +1826,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> файлын сақтауға орын жеткіліксіз. Орын босатыңыз.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 <translation id="98120814841227350">Құжаттың соңына өту</translation>
+<translation id="987589956647469042">Мобильдік интернет қосулы</translation>
 <translation id="989374776391122812">Камера мен аудионы басқару элементтері</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезесі жабық.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

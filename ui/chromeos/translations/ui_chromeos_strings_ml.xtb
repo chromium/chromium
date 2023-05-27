@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google സൈറ്റ്</translation>
 <translation id="1853795129690976061">Linux-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="1864756863218646478">ഫയൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല.</translation>
+<translation id="1877377730633446520">ഇത് ഏതാണ്ട് <ph name="REQUIRED_SPACE" /> ഉപയോഗിക്കും. നിലവിൽ നിങ്ങൾക്ക് <ph name="FREE_SPACE" /> ലഭ്യമാണ്.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="1920670151694390848">മലയാള ലിപ്യന്തരണം</translation>
 <translation id="1920798810075583923">തണ്ണിമത്തൻ</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ഫയലുകളുടെ ഫീഡ്ബാക്ക് പാനലുകൾ വികസിപ്പിക്കുക</translation>
 <translation id="1995337122023280937">ഫയൽ ലൊക്കേഷനിലേക്ക് പോവുക</translation>
 <translation id="2001796770603320721">ഡ്രൈവിൽ മാനേജ് ചെയ്യുക</translation>
+<translation id="2004942826429452291">ഫയലുകൾ ക്ലൗഡിലും ഈ Chromebook-ലും സംഭരിക്കും.</translation>
 <translation id="2009067268969781306">ഒരു ഡ്രൈവ് ഫോർമാറ്റ് ചെയ്‌താൽ അതിൽ സൂക്ഷിച്ചിരിക്കുന്ന മുഴുവൻ ഡാറ്റയും ഇല്ലാതാക്കപ്പെടും. ഈ പ്രവൃത്തി പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="2025955442973426285">ടിഗ്രിന്യ</translation>
 <translation id="2037845485764049925">റഷ്യൻ</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">ഉപകരണ ക്രമീകരണം</translation>
 <translation id="2084809735218147718">നന്ദി അറിയിക്കുന്ന വ്യക്തി</translation>
 <translation id="2088690981887365033">VPN നെറ്റ്‍വർക്ക്</translation>
+<translation id="2089751716171649322">ഓഫ്‌ലൈനിലായിരിക്കുമ്പോൾ നിങ്ങളുടെ Google Drive ഫയലുകൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യൂ</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />അദൃശ്യ മോഡിൽ അനുവദിക്കുക<ph name="END_BOLD" /> ഓണാക്കുക</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കും, നിങ്ങൾക്ക് അവ പുനഃസ്ഥാപിക്കാനാകില്ല.</translation>
 <translation id="2122305276694332719">മറച്ച നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ ഉപകരണവും ചില നെറ്റ്‌വർക്ക് ക്രമീകരണവും കാണാൻ മറ്റുള്ളവരെ അനുവദിക്കുന്നതിനാൽ അത് ശുപാർശചെയ്യുന്നില്ല.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3486821258960016770">മംഗോളിയൻ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> പിശകുകൾ.</translation>
+<translation id="3501954296166022751">നിങ്ങളുടെ Google Drive ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ സമന്വയിപ്പിക്കാൻ തയ്യാറെടുക്കുന്നു...</translation>
 <translation id="3522708245912499433">പോര്‍ച്ചുഗീസ്</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5500122897333236901">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="5508696409934741614">ഡോട്ടുകൾ</translation>
+<translation id="5519161320735100193">Google Drive ക്രമീകരണം</translation>
 <translation id="5522908512596376669">ഫയൽ ലിസ്‌റ്റ് ഗ്രിഡ് കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="5524517123096967210">ഫയൽ റീഡുചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ചിത്രം</translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">നില</translation>
 <translation id="7806708061868529807">ഹീബ്രു</translation>
 <translation id="78104721049218340">Kedmanee കീബോർഡ് ഉള്ള തായ്</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
 <translation id="7839804798877833423">ഈ ഫയലുകൾ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">കറ്റക്കാന</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">ഇന്റർനെറ്റ് കണക്ഷനില്ലാതെ ആക്സസ് ചെയ്യാനാകുന്നതിനായി 'എന്റെ ഡ്രൈവ്' എന്നതിലെ നിങ്ങളുടെ ഫയലുകൾ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കും.</translation>
 <translation id="7925247922861151263">AAA പരിശോധന പരാജയപ്പെട്ടു</translation>
 <translation id="7925686952655276919">സമന്വയത്തിനായി മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കരുത്</translation>
 <translation id="7928710562641958568">ഉപകരണം നീക്കംചെയ്യുക</translation>
+<translation id="7933875256234974853">Drive ഫയലുകൾ സമന്വയിപ്പിക്കാൻ തയ്യാറെടുക്കുന്നു...</translation>
 <translation id="7943385054491506837">യുഎസ് കോൾമാക്ക്</translation>
 <translation id="7953739707111622108">ഈ ഉപകരണത്തിന്റെ ഫയൽ സിസ്റ്റം അംഗീകൃതമല്ലാത്തതിനാൽ ഇത് തുറക്കാനായില്ല.</translation>
 <translation id="7969525169268594403">സ്ലോവേനിയന്‍</translation>
 <translation id="7972920761225148017">ഫ്രഞ്ച് (സ്വിറ്റ്സർലൻഡ്)</translation>
 <translation id="7973962044839454485">തെറ്റായ ഉപയോക്തൃനാമമോ പാസ്‌വേഡോ കാരണം PPP പരിശോധിച്ചുറപ്പിക്കൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7980421588063892270">Colemak കീബോർഡ് ഇംഗ്ലീഷ് (യുഎസ്)</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ഫയലുകൾ സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="8000066093800657092">നെറ്റ്‌വര്‍ക്ക് ഇല്ല</translation>
 <translation id="8008366997883261463">ജാക്ക് റസ്സൽ ടെറിയർ</translation>
 <translation id="8028993641010258682">വലുപ്പം</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">ഇൻസ്‌റ്റലേഷൻ ആരംഭിച്ചു.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ലൂണാർ</translation>
+<translation id="937795003075802289">ഒരു ഫയൽ സമന്വയിപ്പിക്കുന്നു</translation>
 <translation id="938470336146445890">ഒരു ഉപയോക്തൃ സര്‍ട്ടിഫിക്കേറ്റ് ദയവായി ഇന്‍സ്റ്റാള്‍ ചെയ്യുക.</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="943972244133411984">പരിഷ്‌ക്കരിച്ചത്</translation>

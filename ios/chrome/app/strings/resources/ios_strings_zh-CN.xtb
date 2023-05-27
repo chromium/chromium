@@ -313,6 +313,9 @@
 <translation id="2975121486251958312">仅无痕模式可用</translation>
 <translation id="2982481275546140226">清除数据</translation>
 <translation id="298306318844797842">添加付款方式…</translation>
+<translation id="2988274366244053197">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
+
+只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您帐号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="2989805286512600854">在新标签页中打开</translation>
 <translation id="3020183492814296499">快捷方式</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
@@ -379,6 +382,7 @@
 <translation id="3471148582064653480">同步您的密码、历史记录等信息。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
+<translation id="3476450923187944815">访问其他应用的密码。</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步您的标签页…</translation>
 <translation id="3484946776651937681">在“下载内容”中打开</translation>
@@ -650,6 +654,7 @@
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">您已在跟踪此产品。</translation>
+<translation id="5325595483440111327">查看浏览记录。</translation>
 <translation id="5339316356165661760">开启同步功能</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>

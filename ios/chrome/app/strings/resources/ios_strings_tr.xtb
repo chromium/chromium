@@ -315,6 +315,9 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="2975121486251958312">Sadece Gizli Mod Kullanılabilir</translation>
 <translation id="2982481275546140226">Verileri Temizle</translation>
 <translation id="298306318844797842">Ödeme Yöntemi Ekle...</translation>
+<translation id="2988274366244053197">Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
+
+Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Yeni Sekmede Aç</translation>
 <translation id="3020183492814296499">Kısayollar</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
@@ -381,6 +384,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3471148582064653480">Şifrelerinizi, geçmişinizi ve daha fazlasını senkronize edin.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} site veya uygulama için}other{{COUNT} site ve uygulama için}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
+<translation id="3476450923187944815">Başka uygulamalardaki şifrelerinize erişin.</translation>
 <translation id="3478058380795961209">Son Kullanım Ayı</translation>
 <translation id="3482959374254649722">Sekmeleriniz senkronize ediliyor...</translation>
 <translation id="3484946776651937681">İndirilenler'de aç</translation>
@@ -652,6 +656,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318298563956633672">Bu ürünü zaten takip ediyorsunuz.</translation>
+<translation id="5325595483440111327">Tarama geçmişini görüntüleyin.</translation>
 <translation id="5339316356165661760">Senkronizasyonu Aç</translation>
 <translation id="536067926684072644">Yer İşaretlerini Göster</translation>
 <translation id="5360976571138293719">Gizlilik, güvenlik ve veri toplamayla ilgili daha fazla ayar için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" /> konusuna bakın</translation>

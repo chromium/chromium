@@ -294,6 +294,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="124116460088058876">Plus de langues</translation>
 <translation id="1241381048229838873">Afficher tous les favoris</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite rétablir vos paramètres.</translation>
+<translation id="1243002225871118300">Modifier la taille de police et d'affichage</translation>
 <translation id="1243314992276662751">Importer</translation>
 <translation id="1243436884219965846">Vérifier les mots de passe</translation>
 <translation id="1244265436519979884">Restauration Linux…</translation>
@@ -659,6 +660,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1569466257325986920">La prochaine fois que vous modifierez le mot de passe de votre compte Google, vos données locales seront récupérées automatiquement lorsque vous vous serez connecté à ce compte</translation>
 <translation id="1570604804919108255">Réactiver les notifications</translation>
+<translation id="1570990174567554976">Dossier de favoris "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
 <translation id="1571738973904005196">Afficher l'onglet <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invité)</translation>
@@ -706,6 +708,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1604774728851271529">Vous avez besoin d'une connexion réseau pour mettre à niveau Linux. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="1605744057217831567">Voir toutes les données et autorisations des sites</translation>
 <translation id="1606077700029460857">Modifier les paramètres de la souris</translation>
+<translation id="1606307079840340755">Votre fournisseur Passpoint sera supprimé uniquement de cet appareil. Pour modifier votre abonnement, contactez son fournisseur.</translation>
 <translation id="1606566847233779212">Supprimer les sites précis que vous avez ajoutés ?</translation>
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">Utilisateur non affilié au domaine</translation>
@@ -1570,6 +1573,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" /> % terminés</translation>
 <translation id="2318143611928805047">Taille du papier</translation>
 <translation id="2318817390901984578">Pour utiliser des applications Android, rechargez et mettez à jour votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="2319072477089403627">Connexion à votre téléphone Android…</translation>
 <translation id="2319459402137712349">Sélectionnez l'icône Clavier en bas de l'écran ou un champ de texte pour activer le clavier</translation>
 <translation id="2319993584768066746">Photos sur l'écran de connexion</translation>
 <translation id="2322193970951063277">En-têtes et pieds de page</translation>
@@ -2156,6 +2160,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
+<translation id="2808714658215073920">Connexion au Wi-Fi…</translation>
 <translation id="2809586584051668049">ainsi que <ph name="NUMBER_ADDITIONAL_DISABLED" /> autre(s) extension(s)</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2811564570599779918">Réduction du spam et de la fraude</translation>
@@ -2659,6 +2664,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3280243678470289153">Rester dans Chrome</translation>
 <translation id="328119399589609861">Contrôler l'accès de l'appareil au micro, à l'appareil photo, etc.</translation>
 <translation id="3282210178675490297">Partage d'un onglet avec <ph name="APP_NAME" />…</translation>
+<translation id="3283148363895519428">Suivez les instructions affichées sur le téléphone pour poursuivre la configuration. Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
 <translation id="3284050785966252943">Aperçu des métadonnées de saisie automatique</translation>
 <translation id="3285322247471302225">Nouvel ongle&amp;t</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
@@ -2866,6 +2872,13 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="346298925039590474">Ce réseau mobile sera accessible à tous les utilisateurs de cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
 <translation id="346546413339447252">Obtenir des remises pour <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> et d'autres</translation>
+<translation id="3466476162566821406">Suivez les instructions sur votre téléphone pour valider le code. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vous pouvez utiliser votre téléphone pour ajouter les données de votre compte Google et les informations de votre connexion Wi-Fi à votre <ph name="DEVICE_TYPE" />.
+    <ph name="BR" />
+    <ph name="BR" />
+    Visible sur les appareils à proximité avec le nom " <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="3468298837301810372">Libellé</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Outil Sélection</translation>
@@ -3381,6 +3394,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3902789559055749153">Choisissez comment vous voulez la créer pour <ph name="APP_NAME" /></translation>
 <translation id="3903187154317825986">Clavier intégré</translation>
 <translation id="3904326018476041253">Services de localisation</translation>
+<translation id="3905218345729976782">Se connecter au réseau Wi-Fi avec un téléphone Android</translation>
 <translation id="3905761538810670789">Réparer l'application</translation>
 <translation id="3908288065506437185">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3908501907586732282">Activer l'extension</translation>
@@ -3889,6 +3903,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="436926121798828366">Vous pouvez modifier cela à tout moment dans les <ph name="SETTINGS_LINK" /></translation>
 <translation id="4369735607080757018">Seuls quelques types de données sont partagés entre les sites pour mesurer les performances des annonces, comme l'heure à laquelle une annonce vous a été présentée.</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
+<translation id="4373418556073552953">Se connecter à l'aide d'un téléphone Android</translation>
 <translation id="4374805630006466253">Utiliser un autre téléphone ou une autre tablette</translation>
 <translation id="4374831787438678295">Programme d'installation de Linux</translation>
 <translation id="4375035964737468845">Ouvrir les fichiers téléchargés</translation>
@@ -4341,6 +4356,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+Flèche vers le bas pour répondre</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
+<translation id="4774456473286455263">Configurer avec votre téléphone Android</translation>
 <translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
@@ -4661,6 +4677,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5067867186035333991">Demander si l'accès à votre micro est requis sur <ph name="HOST" /></translation>
 <translation id="5068553687099139861">d'afficher les mots de passe</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="506934332411950286">Transfert des informations de connexion Wi-Fi depuis votre téléphone Android</translation>
 <translation id="5070710277167211639">Met à niveau les navigations en HTTPS et vous avertit avant de charger les sites qui ne prennent pas en charge ce protocole</translation>
 <translation id="5070773577685395116">Vous ne l'avez pas reçue ?</translation>
 <translation id="5071295820492622726">Retour aux téléchargements récents</translation>
@@ -4823,6 +4840,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5213114823401215820">Rouvrir le groupe fermé</translation>
 <translation id="5213481667492808996">Votre service de données "<ph name="NAME" />" est disponible</translation>
 <translation id="5213891612754844763">Afficher les paramètres de proxy</translation>
+<translation id="5214639857958972833">Favori "<ph name="BOOKMARK_TITLE" />" créé.</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
@@ -4844,6 +4862,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5236374273162681467">Pour les utiliser facilement sur tous vos appareils, vous pouvez les transférer vers votre compte Google</translation>
 <translation id="523862956770478816">Autorisations liées aux sites</translation>
 <translation id="5239752869099890912">Pour appliquer vos paramètres mis à jour à ce site pour ces extensions, actualisez cette page</translation>
+<translation id="5240931875940563122">Se connecter depuis un Android</translation>
 <translation id="5242724311594467048">Activer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
 <translation id="5244474230056479698">Synchronisation avec <ph name="EMAIL" />…</translation>
@@ -5151,6 +5170,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5511379779384092781">Très léger</translation>
 <translation id="5511823366942919280">Voulez-vous vraiment configurer cet appareil en tant que "requin" ?</translation>
 <translation id="5512739112435045339">Libérez de l'espace sur votre appareil, puis relancez le téléchargement.</translation>
+<translation id="5513807280330619196">Calculatrice</translation>
 <translation id="5514315914873062345">Tabulation</translation>
 <translation id="5517304475148761050">Cette application a besoin d'accéder au Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
@@ -5371,6 +5391,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="571222594670061844">Les sites peuvent afficher les invites de connexion des services d'identité</translation>
 <translation id="5713158217420111469">Connecté à <ph name="DEVICE" /></translation>
 <translation id="5713960379473463904">Style de saisie avec Espace</translation>
+<translation id="5715254110426566593">Steam sera bientôt disponible sur Chromebook. Recherchez les mises à jours pour vérifier si Steam est disponible.</translation>
 <translation id="5715711091495208045">Gestionnaire de plug-ins : "<ph name="PLUGIN_NAME" />"</translation>
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="5719854774000914513">Les sites peuvent demander à se connecter à des périphériques HID</translation>
@@ -5546,6 +5567,13 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="586567932979200359">Vous exécutez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5867841422488265304">Recherchez ou saisissez une adresse Web</translation>
+<translation id="5867855474018538405">Suivez les instructions affichées sur votre téléphone pour scanner le code QR. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.
+    <ph name="BR" />
+    <ph name="BR" />
+    Vous pouvez utiliser votre téléphone pour ajouter les données de votre compte Google et les informations de votre connexion Wi-Fi à votre <ph name="DEVICE_TYPE" />.
+    <ph name="BR" />
+    <ph name="BR" />
+    Visible sur les appareils à proximité avec le nom " <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="5868434909835797817">Le micro est désactivé sur votre appareil</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
@@ -5644,6 +5672,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5949544233750246342">Impossible d'analyser le fichier</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> souhaite utiliser des polices locales</translation>
 <translation id="5951624318208955736">Moniteur</translation>
+<translation id="595262438437661818">Aucune extension n'a besoin d'accéder à ce site</translation>
 <translation id="5953211687820750364">Cette liste est affectée par <ph name="BEGIN_LINK1" />{BrowserSwitcherExternalGreylistUrl}<ph name="END_LINK1" />
           et <ph name="BEGIN_LINK2" />{BrowserSwitcherUrlGreylist}<ph name="END_LINK2" /></translation>
 <translation id="5955282598396714173">Votre mot de passe est arrivé à expiration. Veuillez vous déconnecter, puis vous reconnecter pour le modifier.</translation>
@@ -5752,6 +5781,8 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6052488962264772833">Saisir le code d'accès pour commencer à caster</translation>
 <translation id="6052976518993719690">Autorité de certification SSL</translation>
 <translation id="6053401458108962351">&amp;Effacer les données de navigation…</translation>
+<translation id="6053717018321787060">Il s'agit du compte Google que vous utilisez pour Gmail, YouTube, Chrome et les autres produits Google.
+    Utilisez votre compte pour accéder facilement à vos favoris, fichiers, etc. Si vous n'avez pas de compte, vous pouvez en créer un sur l'écran suivant.</translation>
 <translation id="6054284857788651331">Groupe d'onglets récemment fermés</translation>
 <translation id="6054961935262556546">Modifier la visibilité</translation>
 <translation id="6055171183283175969">Le mot de passe saisi est incorrect.</translation>
@@ -6088,6 +6119,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="634887995541211148">Exécutez Bruschetta sur votre appareil.</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (également appelée "ANSI X9.62 prime256v1, NIST P-256")</translation>
+<translation id="6355395056805388423">Récupération des informations de votre compte Google…</translation>
 <translation id="635609604405270300">N'éteignez pas l'appareil</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. La phrase secrète ne nous est pas envoyée et nous ne la stockons pas. Si vous l'oubliez ou si vous voulez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
@@ -7001,6 +7033,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7159953856712257647">Installée par défaut</translation>
 <translation id="7160182524506337403">Vous pouvez désormais afficher les notifications de votre téléphone</translation>
 <translation id="7163202347044721291">Vérification du code d'activation…</translation>
+<translation id="7165263843655074092">Vous disposez de la protection standard sur cet appareil</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture sur les images, les vidéos et les fichiers audio figurant dans les lieux contrôlés.</translation>
 <translation id="7166815366658507447">Point d'accès activé</translation>
 <translation id="7167327771183668296">Clics automatiques</translation>
@@ -7072,6 +7105,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7228523857728654909">Verrouillage de l'écran et connexion</translation>
 <translation id="7228854227189381547">Ne pas changer</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
+<translation id="7230881857327093958">Les modifications seront appliquées après la configuration</translation>
 <translation id="7231260028442989757">Affichez les notifications de votre téléphone, fermez-les et répondez-y</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
 <translation id="723343421145275488">Rechercher des images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -7679,6 +7713,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7744192722284567281">Détecté lors d'une violation des données</translation>
 <translation id="7744649840067671761">Appuyez sur un nouveau contacteur ou une nouvelle touche du clavier pour commencer l'association.
 Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association.</translation>
+<translation id="7746045113967198252">Agrandissez ou réduisez la taille des éléments à l'écran, y compris la police. Vous pourrez également retrouver cette option plus tard dans Paramètres &gt; Appareil &gt; Écrans.</translation>
 <translation id="7746739418892731373">Ceci est une sélection de photos et vidéos de votre bibliothèque Google Photos. Vous pouvez contrôler ce qui s'affiche sur <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -7732,6 +7767,10 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7784796923038949829">Impossible de lire ou de modifier les données du site</translation>
 <translation id="778480864305029524">Pour utiliser le partage de connexion instantané, activez les notifications pour les services Google Play.</translation>
 <translation id="7785471469930192436">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
+<translation id="7786663536153819505">Suivez les instructions affichées sur votre téléphone pour scanner le code QR. Vérifiez que le Bluetooth est activé sur votre téléphone.
+    <ph name="BR" />
+    <ph name="BR" />
+    Visible sur les appareils à proximité avec le nom "<ph name="QUICK_START_DEVICE_DISPLAY_NAME" />"…</translation>
 <translation id="7786889348652477777">&amp;Actualiser l'application</translation>
 <translation id="7787308148023287649">Afficher sur un autre écran</translation>
 <translation id="7788298548579301890">Une application qui risque de modifier le fonctionnement de Chrome a été ajoutée sur votre ordinateur via un autre programme.
@@ -7751,6 +7790,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7800518121066352902">Rotation &amp;antihoraire</translation>
 <translation id="7801679634091975683">Les modifications que vous apportez ici ne concernent que le navigateur Chrome Lacros. Pour changer les paramètres du navigateur Chrome, ouvrez Chrome et accédez aux paramètres.</translation>
 <translation id="780301667611848630">Non, merci</translation>
+<translation id="7803657407897251194">Pour poursuivre la configuration avec votre appareil Android, connectez votre <ph name="DEVICE_TYPE" /> à un réseau</translation>
 <translation id="7804072833593604762">Onglet fermé</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7805906048382884326">Fermer le conseil</translation>
@@ -8196,6 +8236,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8184288427634747179">Passer à <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plus d'infos</translation>
 <translation id="8184472985242519288">Uniforme</translation>
+<translation id="8186047833733689201">Menu d'accentuation ouvert. Appuyez sur les flèches vers la gauche ou vers la droite ou sur les touches numériques pour naviguer et sur Entrée pour insérer un caractère.</translation>
 <translation id="8186609076106987817">Impossible de trouver le fichier sur le serveur.</translation>
 <translation id="8188389033983459049">Activez le Bluetooth dans les paramètres de votre appareil pour continuer</translation>
 <translation id="8188742492803591566">Saisissez le code d'accès affiché sur le Chromecast ou la télévision pour commencer à caster votre écran.</translation>
@@ -8372,6 +8413,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Pendant 1 heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {HOURS} heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {HOURS} heures, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="8338952601723052325">Site Web du développeur</translation>
+<translation id="8339288417038613756">Taille de police et d'affichage</translation>
 <translation id="833986336429795709">Pour ouvrir ce lien, sélectionner une application</translation>
 <translation id="8340547030807793004">Plus d'actions pour <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examiner <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}one{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}other{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> qui ont envoyé beaucoup de notifications récemment}}</translation>
@@ -8503,6 +8545,7 @@ Si vous choisissez de ne pas partager ces signaux, ce profil sera clôturé.</tr
 <translation id="8449036207308062757">Gérer l'espace de stockage</translation>
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="8451512073679317615">assistant</translation>
+<translation id="8452105022015742247">Transfert des informations de votre compte Google depuis votre téléphone Android</translation>
 <translation id="845702320058262034">Connexion impossible. Assurez-vous que le Bluetooth est activé sur votre téléphone.</translation>
 <translation id="8457451314607652708">Importer les favoris</translation>
 <translation id="8458341576712814616">Raccourci</translation>

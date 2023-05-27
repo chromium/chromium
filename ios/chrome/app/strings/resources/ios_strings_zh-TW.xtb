@@ -313,6 +313,9 @@
 <translation id="2975121486251958312">只能使用無痕模式</translation>
 <translation id="2982481275546140226">清除資料</translation>
 <translation id="298306318844797842">新增付款方式...</translation>
+<translation id="2988274366244053197">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
+
+只有知道通關密語的人才能讀取你加密的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2989805286512600854">在新分頁中開啟</translation>
 <translation id="3020183492814296499">捷徑</translation>
 <translation id="3037605927509011580">糟糕！</translation>
@@ -379,6 +382,7 @@
 <translation id="3471148582064653480">同步處理密碼、歷史記錄等資料。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 個網站或應用程式}other{{COUNT} 個網站和應用程式}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
+<translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
 <translation id="3478058380795961209">到期月份</translation>
 <translation id="3482959374254649722">正在同步處理您的分頁...</translation>
 <translation id="3484946776651937681">在「下載」資料夾開啟</translation>
@@ -650,6 +654,7 @@
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">你已在追蹤這項產品。</translation>
+<translation id="5325595483440111327">查看瀏覽記錄。</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
@@ -746,6 +751,7 @@
 <translation id="595769230373966252">使用「<ph name="SEARCH_PROVIDER" />」搜尋</translation>
 <translation id="5963939892571022323">無法建立醒目顯示文字的連結。</translation>
 <translation id="5965679971710331625">你已登入帳戶</translation>
+<translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
 <translation id="5981230843984570095">關閉所有閒置分頁</translation>
 <translation id="5982717868370722439">將現有資料新增至 <ph name="USER_EMAIL" />。</translation>
@@ -993,6 +999,7 @@
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7438481509621345350">日後開啟新分頁時，你就會看到「<ph name="CHANNEL_NAME" />」的故事。</translation>
 <translation id="7446583256109515732">已取消固定分頁</translation>
+<translation id="7451023311965289370">{count,plural, =1{書籤已儲存到「{title}」}other{書籤已儲存到「{title}」}}</translation>
 <translation id="7454057999980797137">州/縣</translation>
 <translation id="7459628154744868585">強化防護功能已開啟</translation>
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>

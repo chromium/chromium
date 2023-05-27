@@ -1822,7 +1822,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2526590354069164005">Ordenagailua</translation>
 <translation id="2526619973349913024">Bilatu eguneratzeak</translation>
 <translation id="2527167509808613699">Edozein motatako konexioa</translation>
-<translation id="2529887123641260401">Ezarpenak aldatzeko edo konfigurazio-gida berriro irekitzeko, joan Erabilerraztasun-osagarriaren ezarpenak atalera.</translation>
+<translation id="2529887123641260401">Ezarpenak aldatzeko edo konfigurazio-gida berriro irekitzeko, joan erabilerraztasun-osagarriaren ezarpenetara.</translation>
 <translation id="2530166226437958497">Konponbideak</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Arazoren bat izan da eta ezin izan da instalatu <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Laguntza gehiago behar baduzu, joan g.co/flex/InstallErrors helbidera.<ph name="END_PARAGRAPH2" /></translation>

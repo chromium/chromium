@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Сајт на Google</translation>
 <translation id="1853795129690976061">Папкава е споделена со Linux</translation>
 <translation id="1864756863218646478">Не може да се најде датотеката.</translation>
+<translation id="1877377730633446520">За ова ќе биде потребен простор од околу <ph name="REQUIRED_SPACE" />. Во моментов имате слободен простор од <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, поврзи</translation>
 <translation id="1920670151694390848">транслитерација на малајалски</translation>
 <translation id="1920798810075583923">Лубеница</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
 <translation id="2001796770603320721">Управување во Drive</translation>
+<translation id="2004942826429452291">Датотеките ќе се складираат во облакот и на овој Chromebook.</translation>
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
 <translation id="2025955442973426285">тигрејски</translation>
 <translation id="2037845485764049925">руски</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Поставки за уредот</translation>
 <translation id="2084809735218147718">Човек што пее „Благодарам“</translation>
 <translation id="2088690981887365033">VPN-мрежа</translation>
+<translation id="2089751716171649322">Лесно пристапувајте до вашите датотеки на Google Drive кога сте офлајн</translation>
 <translation id="2111134541987263231">Вклучете <ph name="BEGIN_BOLD" />Дозволи во режим „Инкогнито“<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ставки ќе се избришат и нема да може да ги вратите.</translation>
 <translation id="2122305276694332719">Автоматското поврзување на скриена мрежа им овозможува на другите да го видат вашиот уред и некои други мрежни поставки и не се препорачува.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
+<translation id="3501954296166022751">Вашите датотеки на Google Drive се достапни офлајн</translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="3511705761158917664">Се подготвува синхронизација на <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5500122897333236901">Исландски</translation>
 <translation id="5508696409934741614">Точки</translation>
+<translation id="5519161320735100193">Поставки на Google Drive</translation>
 <translation id="5522908512596376669">Списокот со датотеки се смени во преглед на список.</translation>
 <translation id="5524517123096967210">Датотеката не може да се прочита.</translation>
 <translation id="5533102081734025921">Слика: <ph name="IMAGE_TYPE" /></translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7806708061868529807">хебрејски</translation>
 <translation id="78104721049218340">тајландски со тастатура Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Грешка при конфигурирање на мрежата</translation>
 <translation id="7839804798877833423">Земањето на овие датотеки ќе користи приближно <ph name="FILE_SIZE" /> од мобилните податоци.</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7908793776359722643">Форматирањето на партицијата ќе ги избрише сите податоци што се зачувани на неа. Дејството не може да се врати.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Вашите датотеки во „Мој Drive“ автоматски ќе се синхронизираат на вашиот Chromebook за да може да пристапувате до нив без интернет-врска.</translation>
 <translation id="7925247922861151263">AAA-проверката не успеа</translation>
 <translation id="7925686952655276919">Не користи мобилен интернет за синхронизација</translation>
 <translation id="7928710562641958568">Извади уред</translation>
+<translation id="7933875256234974853">Се подготвува за синхронизација на датотеките на Drive…</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Уредов не може да се отвори зашто не се препозна системот на датотеки.</translation>
 <translation id="7969525169268594403">Словенечки</translation>
 <translation id="7972920761225148017">француски (Швајцарија)</translation>
 <translation id="7973962044839454485">PPP автентикацијата не успеа поради неправилно корисничко име и лозинка</translation>
 <translation id="7980421588063892270">англиска (САД) со тастатура Colemak</translation>
+<translation id="7985008041109611710">Се синхронизираат <ph name="NUMBER_OF_FILES_SYNCING" /> датотеки</translation>
 <translation id="8000066093800657092">Нема мрежа</translation>
 <translation id="8008366997883261463">Џек расел териер</translation>
 <translation id="8028993641010258682">Големина</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">Инсталирањето успешно започна.</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219908252191632183">Месечина</translation>
+<translation id="937795003075802289">Се синхронизира 1 датотека</translation>
 <translation id="938470336146445890">Инсталирајте сертификат на корисник.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Изменето од</translation>

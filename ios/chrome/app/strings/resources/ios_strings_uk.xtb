@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">Доступний лише режим анонімного перегляду</translation>
 <translation id="2982481275546140226">Очистити дані</translation>
 <translation id="298306318844797842">Додати спосіб оплати…</translation>
+<translation id="2988274366244053197">Способи оплати й адреси з Google Pay не шифруватимуться. Історія веб-перегляду з Chrome не синхронізуватиметься.
+
+Зашифровані дані може читати лише користувач, який знає вашу парольну фразу. Парольна фраза не надсилається й не зберігається в Google. Якщо ви забули парольну фразу або хочете змінити це налаштування, <ph name="BEGIN_LINK" />очистьте дані Chrome у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Відкрити в новій вкладці</translation>
 <translation id="3020183492814296499">Ярлики</translation>
 <translation id="3037605927509011580">От халепа!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">Синхронізуйте свої паролі, історію тощо.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{для {COUNT} сайту або додатка}one{для {COUNT} сайту й додатка}few{для {COUNT} сайтів і додатків}many{для {COUNT} сайтів і додатків}other{для {COUNT} сайту й додатка}}</translation>
 <translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Отримуйте доступ до своїх паролів в інших додатках.</translation>
 <translation id="3478058380795961209">Місяць закінчення терміну дії</translation>
 <translation id="3482959374254649722">Синхронізація вкладок…</translation>
 <translation id="3484946776651937681">Відкрити в папці "Завантаження"</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318298563956633672">Ви вже відстежуєте цей товар.</translation>
+<translation id="5325595483440111327">Перегляньте історію веб-перегляду.</translation>
 <translation id="5339316356165661760">Увімкнути синхронізацію</translation>
 <translation id="536067926684072644">Показати закладки</translation>
 <translation id="5360976571138293719">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" />.</translation>

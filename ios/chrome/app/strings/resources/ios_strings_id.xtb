@@ -315,6 +315,9 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2975121486251958312">Hanya Mode Samaran yang Tersedia</translation>
 <translation id="2982481275546140226">Hapus Data</translation>
 <translation id="298306318844797842">Tambahkan Metode Pembayaran...</translation>
+<translation id="2988274366244053197">Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
+
+Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Buka di Tab Baru</translation>
 <translation id="3020183492814296499">Pintasan</translation>
 <translation id="3037605927509011580">Yah!</translation>
@@ -381,6 +384,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3471148582064653480">Sinkronkan sandi, histori, dan lainnya.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{untuk {COUNT} situs atau aplikasi}other{untuk {COUNT} situs dan aplikasi}}</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Mengakses sandi Anda di aplikasi lainnya.</translation>
 <translation id="3478058380795961209">Bulan Masa Berlaku Habis</translation>
 <translation id="3482959374254649722">Menyinkronkan tab Anda...</translation>
 <translation id="3484946776651937681">Buka di Download</translation>
@@ -652,6 +656,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda sudah memantau produk ini.</translation>
+<translation id="5325595483440111327">Lihat histori penjelajahan.</translation>
 <translation id="5339316356165661760">Aktifkan Sinkronisasi</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
 <translation id="5360976571138293719">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>

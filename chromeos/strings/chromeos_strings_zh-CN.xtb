@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">桌面</translation>
 <translation id="1018219910092211213">无法解析 DNS</translation>
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022433422498218992">一般控制</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">正在搜寻扫描器</translation>
 <translation id="3226657629376379887">布局操作菜单</translation>
 <translation id="3246869037381808805">系统会自动移除存在时长已超过 1 天的打印任务</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="3268178239013324452">失败 - 机盖未关</translation>
 <translation id="3275729367986477355">头像图片</translation>
 <translation id="3283504360622356314">{0,plural, =1{修改文件}other{修改文件}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">隐私保护屏幕开关</translation>
 <translation id="3639846061339007994">顶部</translation>
 <translation id="3651050199673793219">选择温度单位</translation>
+<translation id="3663574643422533538">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />测试</translation>
 <translation id="370665806235115550">正在加载...</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 触控板</translation>
+<translation id="4113067922640381334">现在，您可以使用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />了</translation>
 <translation id="4117637339509843559">深色模式</translation>
 <translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
 <translation id="4131410914670010031">黑白色</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8593058461203131755">暂停媒体内容</translation>
 <translation id="8620617069779373398">漫游状态</translation>
+<translation id="8626489604350149811">可对“<ph name="APN_NAME" />”执行的更多操作</translation>
 <translation id="86356131183441916">浅紫色</translation>
 <translation id="8651481478098336970">静音</translation>
 <translation id="8655295600908251630">版本</translation>

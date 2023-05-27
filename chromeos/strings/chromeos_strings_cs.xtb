@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">Nelze přeložit název DNS</translation>
 <translation id="1018656279737460067">Zrušeno</translation>
+<translation id="1020274983236703756">Jsou k dispozici exkluzivní položky pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Obecné ovládací prvky</translation>
 <translation id="1022628058306505708">Plynoucí Země</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Vyhledávání skenerů</translation>
 <translation id="3226657629376379887">Nabídka akcí s rozvržením</translation>
 <translation id="3246869037381808805">Tiskové úlohy starší než 1 den budou odstraněny</translation>
+<translation id="3248223063252096240">Exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Tisk selhal – jsou otevřená dvířka</translation>
 <translation id="3275729367986477355">Obrázek avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Upravit soubor}few{Upravit soubory}many{Upravit soubory}other{Upravit soubory}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3639846061339007994">nahoře</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
+<translation id="3663574643422533538">Vybrat umělecké dílo exkluzivní pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3708186454126126312">Dříve připojeno</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
 <translation id="4130035430755296270">Umístěním kurzoru zobrazíte další možnosti rozvržení.</translation>
 <translation id="4131410914670010031">Černobíle</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8593058461203131755">pozastavit médium</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
+<translation id="8626489604350149811">Další akce pro <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Světle fialová</translation>
 <translation id="8651481478098336970">ztlumit hlasitost</translation>
 <translation id="8655295600908251630">Kanál</translation>

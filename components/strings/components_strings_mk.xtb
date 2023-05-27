@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">Дупки</translation>
 <translation id="1446396933673057385">Проверка на точноста</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">Поставките што ги избрал твојот родител сега те штитат на интернет</translation>
 <translation id="1453974140256777690">Текстот што ќе го залепите или приложите се испраќа до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенира за да се провери дали содржи чувствителни податоци.</translation>
 <translation id="1455413310270022028">Гума за бришење</translation>
 <translation id="1459693405370120464">Време</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
 <translation id="1569694109004336106">Google Chrome се обидува да вклучи Windows Hello за пополнување лозинки.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1584492003828271317">Дали дадена реклама ќе биде персонализирана додека прелистувате зависи од поставкава, „Реклами предложени од сајтови“, вашите поставки за колачиња и од тоа дали сајтот што го посетувате ги персонализира рекламите</translation>
@@ -1269,6 +1271,7 @@
 <translation id="410148943680000050">Компјутерско издаваштво</translation>
 <translation id="4103249731201008433">Серискиот број на уредот е неважечки</translation>
 <translation id="4106133539597032659">Копче за создавање сајт, притиснете Enter за да набрзина создадете нов сајт во Google Sites</translation>
+<translation id="4106887816571530227">Не се дозволени вметнати содржини</translation>
 <translation id="4110652170750985508">Преглед на плаќањето</translation>
 <translation id="4111546256784973544">Пејнтбол</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
@@ -1606,6 +1609,7 @@
 <translation id="4876305945144899064">Нема корисничко име</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ниеден}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Пребарување <ph name="TEXT" /></translation>
+<translation id="4877521229462766300">Да се дозволат вметнати содржини?</translation>
 <translation id="4879491255372875719">Автоматски (стандардно)</translation>
 <translation id="4880827082731008257">Историја на пребарување</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -1803,6 +1807,7 @@
 <translation id="5314967030527622926">Производител на брошури</translation>
 <translation id="5316812925700871227">Ротирај налево</translation>
 <translation id="5317780077021120954">Зачувај</translation>
+<translation id="5323043727018853753">Дозволени се вметнати содржини</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> од <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Прелистувачот не е управуван</translation>
 <translation id="5332219387342487447">Метод на испорака</translation>
@@ -2181,6 +2186,7 @@
 <translation id="6306713302480826305">Адресава ќе биде избришана од овој и од другите ваши најавени уреди</translation>
 <translation id="6312113039770857350">Веб-страницата не е достапна</translation>
 <translation id="6316226860534107313">Скутери и мопеди</translation>
+<translation id="6316723751983724988">Ново: тука важат изборите на Family Link за Chrome</translation>
 <translation id="63172326633386613">Управувајте со поставките за пристапност</translation>
 <translation id="6319249456820053699">Камери и камкордери</translation>
 <translation id="6321917430147971392">Проверете ги вашите DNS-поставки</translation>
@@ -2732,6 +2738,7 @@
 <translation id="7598391785903975535">Помалку од <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> моментално не може да го изврши барањето.</translation>
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">Обично безбедно се поврзувате на сајтов, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Вредноста е надвор од опсегот <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Истекува: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги прегледувате и да управувате со вашите лозинки во поставките за Chrome</translation>
@@ -2832,6 +2839,7 @@
 <translation id="7822320754433038727">Ловење и пукање</translation>
 <translation id="782886543891417279">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата за најавување.</translation>
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Подоцна, сајтот што го посетувате може да ги побара вашите теми од Chrome за да ги персонализира рекламите што ги гледате. Chrome споделува до 3 теми додека ви ги штити историјата на прелистувањето и идентитетот.</translation>
@@ -2977,6 +2985,7 @@
 <translation id="8217748145574471584">Човечки ресурси</translation>
 <translation id="8218327578424803826">Доделена локација:</translation>
 <translation id="8228419419708659934">Приказ на две страници</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> сака да пристапи до уред на вашата мрежа:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Спортски игри</translation>

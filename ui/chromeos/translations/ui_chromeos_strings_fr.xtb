@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1853795129690976061">Ce dossier est partagé avec Linux</translation>
 <translation id="1864756863218646478">Fichier introuvable.</translation>
+<translation id="1877377730633446520">Cela utilisera environ <ph name="REQUIRED_SPACE" />. Vous disposez actuellement de <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connexion</translation>
 <translation id="1920670151694390848">Malayalam (translittération)</translation>
 <translation id="1920798810075583923">Pastèque</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
 <translation id="1995337122023280937">Accéder à l'emplacement du fichier</translation>
 <translation id="2001796770603320721">Gérer dans Drive</translation>
+<translation id="2004942826429452291">Les fichiers seront stockés dans le cloud et sur ce Chromebook.</translation>
 <translation id="2009067268969781306">Le formatage d'une clé entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russe</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Paramètres de l'appareil</translation>
 <translation id="2084809735218147718">Dit merci en langue des signes</translation>
 <translation id="2088690981887365033">Réseau VPN</translation>
+<translation id="2089751716171649322">Accéder facilement à vos fichiers Google Drive, même hors connexion</translation>
 <translation id="2111134541987263231">Activez l'option <ph name="BEGIN_BOLD" />Autoriser en navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet à d'autres personnes de voir votre appareil, ainsi que certains paramètres du réseau, ce qui n'est pas recommandé.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erreurs</translation>
+<translation id="3501954296166022751">Vos fichiers Google Drive sont disponibles hors connexion</translation>
 <translation id="3509680540198371098">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3511705761158917664">Préparation de la synchronisation de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="3522708245912499433">Portugais</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5500122897333236901">Islandais</translation>
 <translation id="5508696409934741614">Points</translation>
+<translation id="5519161320735100193">Paramètres Google Drive</translation>
 <translation id="5522908512596376669">Les fichiers s'affichent désormais sous forme de liste.</translation>
 <translation id="5524517123096967210">Impossible de lire le fichier.</translation>
 <translation id="5533102081734025921">Fichier image <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">État</translation>
 <translation id="7806708061868529807">Hébreu</translation>
 <translation id="78104721049218340">Thaï avec clavier Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> To</translation>
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
 <translation id="7839804798877833423">L'opération de récupération de ces fichiers consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Les fichiers présents dans Mon Drive seront automatiquement synchronisés sur votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
 <translation id="7925247922861151263">Échec de la vérification AAA</translation>
 <translation id="7925686952655276919">Ne pas utiliser les données mobiles pour la synchronisation</translation>
 <translation id="7928710562641958568">Éjecter le périphérique</translation>
+<translation id="7933875256234974853">Préparation de la synchronisation des fichiers Drive…</translation>
 <translation id="7943385054491506837">Colemak américain</translation>
 <translation id="7953739707111622108">Impossible d'ouvrir ce périphérique, car son système de fichiers n'est pas reconnu.</translation>
 <translation id="7969525169268594403">Slovène</translation>
 <translation id="7972920761225148017">Français (Suisse)</translation>
 <translation id="7973962044839454485">Échec de l'authentification PPP en raison de la saisie d'un nom d'utilisateur ou d'un mot de passe erronés.</translation>
 <translation id="7980421588063892270">Anglais (États-Unis) avec clavier Colemak</translation>
+<translation id="7985008041109611710">Synchronisation de <ph name="NUMBER_OF_FILES_SYNCING" /> fichiers…</translation>
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Taille</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Installation démarrée avec succès.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Paysage lunaire</translation>
+<translation id="937795003075802289">Synchronisation de 1 fichier</translation>
 <translation id="938470336146445890">Veuillez installer un certificat utilisateur.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="943972244133411984">Modifié par</translation>

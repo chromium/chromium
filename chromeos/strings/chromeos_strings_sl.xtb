@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Namizja</translation>
 <translation id="1018219910092211213">Ni mogoče razrešiti DNS-ja.</translation>
 <translation id="1018656279737460067">Preklicano</translation>
+<translation id="1020274983236703756">Ekskluzivni elementi za <ph name="PRODUCT_NAME" /> so zdaj na voljo</translation>
 <translation id="1022433422498218992">Splošni kontrolniki</translation>
 <translation id="1022628058306505708">Tok Zemlje</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
+<translation id="3248223063252096240">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
 <translation id="3275729367986477355">Slika avatarja</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi datoteko}one{Uredi datoteke}two{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Preklop zaslona za zasebnost</translation>
 <translation id="3639846061339007994">zgoraj</translation>
 <translation id="3651050199673793219">Izbira enote temperature</translation>
+<translation id="3663574643422533538">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Nalaganje ...</translation>
 <translation id="3708186454126126312">Predhodno povezane naprave</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Izberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
+<translation id="4113067922640381334">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Temni način</translation>
 <translation id="4130035430755296270">Premikajte miškin kazalec, če želite več možnosti postavitve.</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Neinicializirano</translation>
 <translation id="8593058461203131755">začasna zaustavitev predstavnosti</translation>
 <translation id="8620617069779373398">Stanje gostovanja</translation>
+<translation id="8626489604350149811">Več dejanj za <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Svetlo vijolična</translation>
 <translation id="8651481478098336970">izklop zvoka</translation>
 <translation id="8655295600908251630">Kanal</translation>

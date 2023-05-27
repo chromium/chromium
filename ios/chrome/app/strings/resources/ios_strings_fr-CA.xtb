@@ -750,6 +750,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Impossible de créer un lien vers l'élément en surbrillance.</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 favori supprimé}one{{count} favoris supprimés}other{{count} favoris supprimés}}</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5981230843984570095">Fermer tous les onglets inactifs</translation>
 <translation id="5982717868370722439">Ajouter les données existantes à <ph name="USER_EMAIL" />.</translation>
@@ -997,6 +998,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="7446583256109515732">Onglet désépinglé</translation>
+<translation id="7451023311965289370">{count,plural, =1{Favori enregistré dans « {title} »}one{Favoris enregistré dans « {title} »}other{Favoris enregistrés dans « {title} »}}</translation>
 <translation id="7454057999980797137">État / Comté</translation>
 <translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>

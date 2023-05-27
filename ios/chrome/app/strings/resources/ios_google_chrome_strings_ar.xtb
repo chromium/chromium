@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="2736805085127235148">‏إنّ إشعارات Chrome غير مفعَّلة حاليًا في إعدادات جهازك.</translation>
 <translation id="2767464022270041271">‏ما مِن كلمات مرور محفوظة. لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند حفظها.</translation>
+<translation id="2840432500933227975">‏افتح إعدادات Chrome على جهاز iOS، ثم انقر على Default Browser App (تطبيق المتصفِّح التلقائي) واختَر Chrome.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة.</translation>
 <translation id="3706101708757577809">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على روابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="3720541637541300822">‏قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
+<translation id="3827545470516145620">يتم توفير حماية أمنية عادية على هذا الجهاز.</translation>
 <translation id="384394811301901750">‏يتعذر على Google Chrome استخدام الكاميرا في الوقت الحالي</translation>
 <translation id="3980220367029651214">‏أنت تجري تبديلاً لحسابات المزامنة من <ph name="USER_EMAIL1" /> إلى <ph name="USER_EMAIL2" />. يتم إدارة بيانات Chrome الحالية من خلال <ph name="DOMAIN" />. سيؤدي ذلك إلى إزالة بياناتك من هذا الجهاز، ولكن ستظل بياناتك في <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chrome.</translation>

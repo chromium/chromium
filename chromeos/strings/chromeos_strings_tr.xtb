@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Masalar</translation>
 <translation id="1018219910092211213">DNS çözümlenemiyor</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> cihazlara özel öğeler artık kullanılabilir</translation>
 <translation id="1022433422498218992">Genel Kontroller</translation>
 <translation id="1022628058306505708">Toprak Kayması</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Tarayıcılar aranıyor</translation>
 <translation id="3226657629376379887">Düzen işlemleri menüsü</translation>
 <translation id="3246869037381808805">1 günden daha eski yazdırma işleri kaldırılır</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> cihazlara özel</translation>
 <translation id="3268178239013324452">İşlem başarısız - Kapak açık</translation>
 <translation id="3275729367986477355">Avatar resmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Dosyayı düzenle}other{Dosyaları düzenle}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Gizlilik ekranını aç/kapat</translation>
 <translation id="3639846061339007994">üst</translation>
 <translation id="3651050199673793219">Bir sıcaklık birimi seçin</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> cihazlara özel poster seçin</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
 <translation id="370665806235115550">Yükleniyor...</translation>
 <translation id="3708186454126126312">Daha önce bağlanılmış cihazlar</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
+<translation id="4113067922640381334">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> erişebilirsiniz</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
 <translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Başlatılmamış</translation>
 <translation id="8593058461203131755">medyayı duraklat</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="86356131183441916">Açık mor</translation>
 <translation id="8651481478098336970">sesi kapat</translation>
 <translation id="8655295600908251630">Kanal</translation>

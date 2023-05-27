@@ -2578,6 +2578,7 @@ Si une extension spécifiée dans cette règle n'est pas installée, la navigati
 <translation id="3339271789059866414">Configure la disponibilité du service proxy du système et les identifiants de proxy pour les services système.
       Si la règle n'est pas définie, le service proxy du système n'est pas disponible.</translation>
 <translation id="334231891933432876">Déconnecter l'utilisateur dès que son compte n'est plus authentifié</translation>
+<translation id="3345323903592385588">Ordre d'affichage de la configuration de VM dans le programme d'installation. Lorsque plusieurs configurations de VM sont spécifiées, celle avec la plus petite valeur display_order s'affiche en haut de la liste. Prend la valeur zéro par défaut.</translation>
 <translation id="3348799281602260763">Si cette règle est activée, les connexions homologues WebRTC peuvent revenir à
       des versions antérieures obsolètes des protocoles TLS/DTLS (DTLS 1.0, TLS 1.0 et TLS 1.1).
       Si cette règle est désactivée ou qu'elle n'est pas configurée, ces versions
@@ -5549,6 +5550,21 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 <translation id="614665605501218241">Autorise les sites listés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée.</translation>
 <translation id="614753473456574270">Ne pas autoriser les utilisateurs à définir un code peu sécurisé</translation>
 <translation id="6150320133676152520">Désactiver l'envoi automatique du code PIN sur l'écran de connexion et de verrouillage</translation>
+<translation id="61518106107420459">Permet d'établir la liste des applications et des extensions qui s'installent de manière autonome, sans aucune intervention de l'utilisateur, et que celui-ci ne peut pas désinstaller ni désactiver. Les autorisations sont accordées implicitement, y compris pour les API d'extension enterprise.deviceAttributes et enterprise.platformKeys (ces deux API ne sont pas disponibles pour les applications et extensions qui ne sont pas installées d'office).
+
+      Si cette règle n'est pas configurée, aucune application ni extension ne s'installe automatiquement, et l'utilisateur peut désinstaller n'importe quelle application ou extension dans <ph name="PRODUCT_NAME" />.
+
+      Cette règle remplace la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si une application ou une extension installée d'office est supprimée de cette liste, <ph name="PRODUCT_NAME" /> la désinstalle automatiquement.
+
+      Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions ne venant pas du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" /> à <ph name="MS_AAD_NAME" /> ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Pour les instances<ph name="MAC_OS_NAME" />, les applis et extensions ne venant pas du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM ou associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Le code source de toute extension peut être modifié par les utilisateurs à l'aide des outils pour les développeurs, ce qui peut entraîner des dysfonctionnements. Si cela pose problème, configurez la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Chaque élément de la règle correspond à une chaîne constituée d'un identifiant d'extension et éventuellement d'une URL de mise à jour séparés par un point-virgule (;). L'identifiant d'extension est la chaîne de 32 lettres figurant, par exemple, sur la page chrome://extensions, lorsque le mode développeur est activé. Si elle est indiquée, l'URL de mise à jour doit renvoyer à un fichier manifeste au format XML (voir https://developer.chrome.com/extensions/autoupdate). Par défaut, l'URL de mise à jour du Chrome Web Store est utilisée. L'URL de mise à jour spécifiée dans cette règle ne sert que pour l'installation initiale. Toute mise à jour ultérieure de l'extension est effectuée avec l'URL indiquée dans le fichier manifeste de l'extension.
+
+       Remarque : cette règle ne s'applique pas en mode navigation privée. Pour en savoir plus sur l'hébergement des extensions, consultez la page https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="6155350825868160236">Autoriser l'utilisateur à choisir si des services Web Google peuvent être utilisés pour corriger les fautes d'orthographe</translation>
 <translation id="6155936611791017817">Définir l'état par défaut du grand curseur sur l'écran de connexion</translation>
 <translation id="6157537876488211233">Liste de règles de contournement de proxy séparées par des virgules</translation>
