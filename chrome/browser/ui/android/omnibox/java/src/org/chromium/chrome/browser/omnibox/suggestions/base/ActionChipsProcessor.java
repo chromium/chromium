@@ -70,11 +70,6 @@ public class ActionChipsProcessor {
         var actionChipList = suggestion.getActions();
         var modelList = new ModelList();
 
-        // The header item increases lead-in padding before the first actual chip is shown.
-        // In default state, the chips will align with the suggestion text, but when scrolled
-        // the chips may show up under the decoration.
-        modelList.add(new ListItem(ActionChipsProperties.ViewType.HEADER, new PropertyModel()));
-
         for (OmniboxAction chip : actionChipList) {
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)

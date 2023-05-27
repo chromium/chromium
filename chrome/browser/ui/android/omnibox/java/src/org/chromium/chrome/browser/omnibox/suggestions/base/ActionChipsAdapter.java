@@ -18,8 +18,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** ModelListAdapter for Omnibox Suggestion Action Chips. */
 public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
     @VisibleForTesting
-    // The 0th element is always the lead-in header.
-    public static final int FIRST_CHIP_INDEX = 1;
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
@@ -56,7 +54,7 @@ public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void selectNextItem() {
         // Rotate: Nothing -> First chip -> ... -> Last chip -> Nothing.
-        var nextItem = FIRST_CHIP_INDEX;
+        var nextItem = 0;
         if (mSelectedItem != RecyclerView.NO_POSITION) nextItem = mSelectedItem + 1;
         if (nextItem >= getItemCount()) nextItem = RecyclerView.NO_POSITION;
         setSelectedItem(nextItem);
@@ -69,7 +67,7 @@ public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
     public void selectPreviousItem() {
         // Rotate: Nothing -> Last chip -> ... -> First chip -> Nothing.
         var prevItem = RecyclerView.NO_POSITION;
-        if (mSelectedItem > FIRST_CHIP_INDEX) prevItem = mSelectedItem - 1;
+        if (mSelectedItem > 0) prevItem = mSelectedItem - 1;
         if (mSelectedItem == RecyclerView.NO_POSITION) prevItem = getItemCount() - 1;
         setSelectedItem(prevItem);
     }
@@ -81,8 +79,7 @@ public class ActionChipsAdapter extends SimpleRecyclerViewAdapter {
      */
     @VisibleForTesting
     public void setSelectedItem(int index) {
-        assert index == RecyclerView.NO_POSITION
-                || (index >= FIRST_CHIP_INDEX && index < getItemCount());
+        assert index >= RecyclerView.NO_POSITION && index < getItemCount();
         assert mLayoutManager != null;
 
         View previousSelectedView = getSelectedView();

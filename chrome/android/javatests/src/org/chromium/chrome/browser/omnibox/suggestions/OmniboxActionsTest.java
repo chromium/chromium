@@ -131,7 +131,7 @@ public class OmniboxActionsTest {
         CriteriaHelper.pollUiThread(() -> {
             var adapter = (ActionChipsAdapter) info.view.getActionChipsView().getAdapter();
             if (adapter.getItemCount() < actionIndex) return false;
-            adapter.setSelectedItem(ActionChipsAdapter.FIRST_CHIP_INDEX + actionIndex);
+            adapter.setSelectedItem(actionIndex);
             return adapter.getSelectedView().performClick();
         });
     }
