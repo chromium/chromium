@@ -43,10 +43,6 @@ class MODULES_EXPORT VideoTrackAdapter
  public:
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
-  // Min delta time between two frames allowed without being dropped if a max
-  // frame rate is specified. Exposed globally for testability.
-  static constexpr int kMinTimeBetweenFramesMs = 5;
-
   VideoTrackAdapter(
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);

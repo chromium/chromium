@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
@@ -57,10 +58,11 @@ namespace {
 const float kFirstFrameTimeoutInFrameIntervals = 100.0f;
 const float kNormalFrameTimeoutInFrameIntervals = 25.0f;
 
-// Min delta time between two frames allowed without being dropped if a max
-// frame rate is specified.
-constexpr base::TimeDelta kMinTimeBetweenFrames =
-    base::Milliseconds(VideoTrackAdapter::kMinTimeBetweenFramesMs);
+// |kMaxDeltaDeviationFactor| is used to determine |max_delta_deviation_| which
+// specifies the allowed deviation from |target_delta_| before dropping a frame.
+// It's set to 20% to be aligned with the previous logic in this file.
+constexpr float kMaxDeltaDeviationFactor = 0.2;
+
 // If the delta between two frames is bigger than this, we will consider it to
 // be invalid and reset the fps calculation.
 constexpr base::TimeDelta kMaxTimeBetweenFrames = base::Milliseconds(1000);
@@ -126,6 +128,20 @@ bool MaybeUpdateFrameRate(ComputedSettings* settings) {
     return true;
   }
   return false;
+}
+
+VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
+    const VideoTrackAdapterSettings& settings) {
+  VideoTrackAdapterSettings new_settings = settings;
+  absl::optional<double> max_fps_override =
+      Platform::Current()->GetWebRtcMaxCaptureFrameRate();
+  if (max_fps_override) {
+    DVLOG(1) << "Overriding max frame rate.  Was="
+             << settings.max_frame_rate().value_or(-1)
+             << ", Now=" << *max_fps_override;
+    new_settings.set_max_frame_rate(*max_fps_override);
+  }
+  return new_settings;
 }
 
 }  // anonymous namespace
@@ -242,10 +258,25 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 
-  VideoTrackAdapterSettings settings_;
-  double measured_input_frame_rate_ = MediaStreamVideoSource::kDefaultFrameRate;
-  base::TimeDelta last_time_stamp_ = base::TimeDelta::Max();
-  double fractional_frames_due_ = 0.0;
+  const VideoTrackAdapterSettings settings_;
+
+  // The target timestamp delta between video frames, corresponding to the max
+  // fps.
+  const absl::optional<base::TimeDelta> target_delta_;
+
+  // The maximum allowed deviation from |target_delta_| before dropping a frame.
+  const absl::optional<base::TimeDelta> max_delta_deviation_;
+
+  // The timestamp of the last delivered video frame.
+  base::TimeDelta timestamp_last_delivered_frame_ = base::TimeDelta::Max();
+
+  // Stores the accumulated difference between |target_delta_| and the actual
+  // timestamp delta between frames that are delivered. Clamped to
+  // [-max_delta_deviation, target_delta_ / 2]. This is used to allow some
+  // frames to be closer than |target_delta_| in order to maintain
+  // |target_delta_| on average. Without it we may end up with an average fps
+  // that is half of max fps.
+  base::TimeDelta accumulated_drift_;
 
   ComputedSettings track_settings_;
   ComputedSettings source_format_settings_;
@@ -259,21 +290,20 @@ VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
     : renderer_task_runner_(reader_task_runner),
       media_stream_video_source_(media_stream_video_source),
-      settings_(settings) {
+      settings_(ReturnSettingsMaybeOverrideMaxFps(settings)),
+      target_delta_(settings_.max_frame_rate()
+                        ? absl::make_optional(base::Seconds(
+                              1.0 / settings_.max_frame_rate().value()))
+                        : absl::nullopt),
+      max_delta_deviation_(target_delta_
+                               ? absl::make_optional(kMaxDeltaDeviationFactor *
+                                                     target_delta_.value())
+                               : absl::nullopt) {
   DVLOG(1) << __func__ << " max_framerate "
            << settings.max_frame_rate().value_or(-1);
   DCHECK(renderer_task_runner_.get());
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   CHECK_NE(0, settings_.max_aspect_ratio());
-
-  absl::optional<double> max_fps_override =
-      Platform::Current()->GetWebRtcMaxCaptureFrameRate();
-  if (max_fps_override) {
-    DVLOG(1) << "Overriding max frame rate.  Was="
-             << settings_.max_frame_rate().value_or(-1)
-             << ", Now=" << *max_fps_override;
-    settings_.set_max_frame_rate(*max_fps_override);
-  }
 }
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::~VideoFrameResolutionAdapter() {
@@ -488,67 +518,40 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
 
   // Never drop frames if the max frame rate has not been specified.
   if (!settings_.max_frame_rate().has_value()) {
-    last_time_stamp_ = frame.timestamp();
+    timestamp_last_delivered_frame_ = frame.timestamp();
     return false;
   }
 
-  const base::TimeDelta delta = (frame.timestamp() - last_time_stamp_);
+  const base::TimeDelta delta =
+      (frame.timestamp() - timestamp_last_delivered_frame_);
 
   // Keep the frame if the time since the last frame is completely off.
   if (delta.is_negative() || delta > kMaxTimeBetweenFrames) {
-    // Reset |last_time_stamp_| and fps calculation.
-    last_time_stamp_ = frame.timestamp();
-    measured_input_frame_rate_ = *settings_.max_frame_rate();
-    fractional_frames_due_ = 0.0;
+    // Reset |timestamp_last_delivered_frame_| and |accumulated_drift|.
+    timestamp_last_delivered_frame_ = frame.timestamp();
+    accumulated_drift_ = base::Milliseconds(0.0);
     return false;
   }
 
-  if (delta < kMinTimeBetweenFrames) {
-    // We have seen video frames being delivered from camera devices back to
-    // back. The simple EMA filter for frame rate calculation is too short to
-    // handle that. https://crbug/394315
-    // TODO(perkj): Can we come up with a way to fix the times stamps and the
-    // timing when frames are delivered so all frames can be used?
-    // The time stamps are generated by Chrome and not the actual device.
-    // Most likely the back to back problem is caused by software and not the
-    // actual camera.
-    *reason = media::VideoCaptureFrameDropReason::
-        kResolutionAdapterTimestampTooCloseToPrevious;
-    return true;
-  }
-
-  last_time_stamp_ = frame.timestamp();
-
-  // Calculate the frame rate from the source using an exponential moving
-  // average (EMA) filter. Use a simple filter with 0.1 weight for the current
-  // sample.
-  double rate_for_current_frame = 1000.0 / delta.InMillisecondsF();
-  measured_input_frame_rate_ =
-      0.1 * rate_for_current_frame + 0.9 * measured_input_frame_rate_;
-
-  // Keep the frame if the input frame rate is lower than the requested frame
-  // rate or if it exceeds the target frame rate by no more than a small amount.
-  if (*settings_.max_frame_rate() + 0.5f > measured_input_frame_rate_) {
-    return false;  // Keep this frame.
-  }
-
-  // At this point, the input frame rate is known to be greater than the maximum
-  // requested frame rate by a potentially large amount. Accumulate the fraction
-  // of a frame that we should keep given the input rate. Drop the frame if a
-  // full frame has not been accumulated yet.
-  fractional_frames_due_ +=
-      *settings_.max_frame_rate() / measured_input_frame_rate_;
-  if (fractional_frames_due_ < 1.0) {
+  DCHECK(target_delta_ && max_delta_deviation_);
+  if (delta < target_delta_.value() - max_delta_deviation_.value() -
+                  accumulated_drift_) {
+    // Drop the frame because the input frame rate is too high.
     *reason = media::VideoCaptureFrameDropReason::
         kResolutionAdapterFrameRateIsHigherThanRequested;
     return true;
   }
 
-  // A full frame is due to be delivered. Keep the frame and remove it
-  // from the accumulator of due frames. The number of due frames stays in the
-  // [0.0, 1.0) range.
-  fractional_frames_due_ -= 1.0;
-
+  // Keep the frame and store the accumulated drift.
+  timestamp_last_delivered_frame_ = frame.timestamp();
+  accumulated_drift_ += delta - target_delta_.value();
+  DCHECK_GE(accumulated_drift_, -max_delta_deviation_.value());
+  // Limit the maximum accumulated drift to half of the target delta. If we
+  // don't do this, it may happen that we output a series of frames too quickly
+  // after a period of no frames. There is no need to actively limit the minimum
+  // accumulated drift because that happens automatically when we drop frames
+  // that are too close in time.
+  accumulated_drift_ = std::min(accumulated_drift_, target_delta_.value() / 2);
   return false;
 }
 
