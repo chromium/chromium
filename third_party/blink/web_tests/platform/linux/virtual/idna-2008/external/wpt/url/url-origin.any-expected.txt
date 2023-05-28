@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 362 tests; 350 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 363 tests; 351 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -333,6 +333,7 @@ FAIL Origin parsing: <blob:file://host/path> without base assert_equals: origin 
 FAIL Origin parsing: <blob:ftp://host/path> without base assert_equals: origin expected "null" but got "ftp://host"
 FAIL Origin parsing: <blob:ws://example.org/> without base assert_equals: origin expected "null" but got "ws://example.org"
 FAIL Origin parsing: <blob:wss://example.org/> without base assert_equals: origin expected "null" but got "wss://example.org"
+PASS Origin parsing: <blob:http%3a//example.org/> without base
 PASS Origin parsing: <non-special:cannot-be-a-base-url-\0~> without base
 PASS Origin parsing: <https://www.example.com/path{path.html?query'=query#fragment<fragment> without base
 PASS Origin parsing: <https://user:pass[@foo/bar> against <http://example.org>

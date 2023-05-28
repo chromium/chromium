@@ -7907,6 +7907,22 @@
     "search": "",
     "hash": ""
   },
+  "Percent-encoded http: in blob:",
+  {
+    "input": "blob:http%3a//example.org/",
+    "base": null,
+    "href": "blob:http%3a//example.org/",
+    "origin": "null",
+    "protocol": "blob:",
+    "username": "",
+    "password": "",
+    "host": "",
+    "hostname": "",
+    "port": "",
+    "pathname": "http%3a//example.org/",
+    "search": "",
+    "hash": ""
+  },
   "Invalid IPv4 radix digits",
   {
     "input": "http://0x7f.0.0.0x7g",
