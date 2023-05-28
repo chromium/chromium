@@ -3496,6 +3496,7 @@ source_set("ash") {
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/hid_detection",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
