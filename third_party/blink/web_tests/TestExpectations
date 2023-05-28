@@ -875,8 +875,6 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 # Passes with the WPT runner but not the internal one. (???)
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Failure Pass ]
 
-# Off-by-one in some components.
-crbug.com/1175040 [ Mac10.15 Release ] external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Failure Pass ]
 
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
@@ -1156,7 +1154,6 @@ crbug.com/694374 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
 crbug.com/722287 crbug.com/886585 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-safe-001.html [ Failure ]
 crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-002.html [ Failure ]
 crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-001.html [ Failure ]
-crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-003.html [ Failure ]
 
 # [css-ui]
 # The `input-security` property not implemented yet.
@@ -6602,8 +6599,6 @@ crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-
 # Re-enable test after adding support for component ads in frame contexts
 crbug.com/1427455 virtual/fenced-frame-mparch/external/wpt/fenced-frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
 
-# Sheriff 2023-03-27
-crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Crash Failure Pass ]
 
 
 # TODO(crbug.com/1428795): Re-enable this test
