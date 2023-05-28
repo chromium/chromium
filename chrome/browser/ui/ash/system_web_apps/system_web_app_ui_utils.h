@@ -70,8 +70,12 @@ struct SystemAppLaunchParams {
 //   - Other unsuitable profiles (e.g. Sign-in profile): Don't launch, and send
 //     a crash report
 //
-// In tests, remember to use content::TestNavigationObserver to wait the
+// In tests, remember to use content::TestNavigationObserver to wait for the
 // navigation.
+//
+// NOTE: LaunchSystemWebAppAsync may have no effect if called before the initial
+// registration of system web apps has completed. To avoid this, first await the
+// ash::SystemWebAppManager::on_apps_synchronized event.
 void LaunchSystemWebAppAsync(
     Profile* profile,
     SystemWebAppType type,
