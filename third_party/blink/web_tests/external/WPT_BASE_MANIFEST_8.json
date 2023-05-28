@@ -272890,11 +272890,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "f870c1680ec5777e3f673d28eae20bd5b908def0",
+     "2c7019a1937f4c361646d0fba0e58db04295b8eb",
      []
     ],
     "mtime.json": [
-     "8f83a160a9ca7c0d435ff096bd07937c081dbba3",
+     "3e8a650b88e50532983cea00308679d9ce067578",
      []
     ]
    },
@@ -312134,7 +312134,7 @@
        []
       ],
       "clip-path-svg-invalidate.html.ini": [
-       "3b8b2259c6085f785bf1d9ebc95d8568830df26c",
+       "326830b521c7479f12a44a37d3733133f3f54ab1",
        []
       ],
       "clip-path-svg-text-backdrop-filter-ref.html": [
@@ -327491,7 +327491,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-003.html.ini": [
-      "a7f8e81851d827783b2e26e6484b419a5e998e91",
+      "0dcf0a35e1ac307ae8911c6855132e3c35bee95c",
       []
      ],
      "preserve3d-and-flattening-z-order-004.html.ini": [
@@ -381038,7 +381038,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "ba3dfaf0c67544bf823049c11c966882e7bba93c",
+     "5f0071d9b73f13b10f5c26893cb0d8fd6bbd17e0",
      []
     ],
     "modulepreload-expected.txt": [
@@ -384411,7 +384411,7 @@
       []
      ],
      "animation-range-visual-test.html.ini": [
-      "441e720c8d178f0c3183a33664d374a379501475",
+      "dbb5570ba3cc4419ee54e8e9b79a0b53c1a951c3",
       []
      ],
      "animation-shorthand-expected.txt": [
@@ -393319,7 +393319,7 @@
       []
      ],
      "percent-encoding.json": [
-      "bd81edbdc35ee3201d781278e64d5ea2db6b160b",
+      "eccd1db62fe60131fb12cbdf8c16e0354bcf7a98",
       []
      ],
      "percent-encoding.py": [
@@ -458800,6 +458800,13 @@
      ],
      "scrollbar-width-008.html": [
       "91e2cc7f064053672747ed6fd31b4a7343697572",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollbar-width-009.html": [
+      "494ffe344693ad80568d4513643e28eae13aad5e",
       [
        null,
        {}
