@@ -55,6 +55,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -883,14 +884,24 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   }
 
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
+
   // We can't use anything other than explicit resolve for swap chain.
-  bool supports_implicit_resolve =
+  bool use_implicit_resolve =
       !using_swap_chain_ && extensions_util_->SupportsExtension(
                                 "GL_EXT_multisampled_render_to_texture");
+
+  const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
+  // With graphite, Skia is not using ANGLE, so ANGLE will never be able to know
+  // when the back buffer is sampled by Skia, so we can't use implicit resolve.
+  use_implicit_resolve =
+      use_implicit_resolve &&
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+          gpu::kGpuFeatureStatusEnabled;
+
   if (webgl_preferences.anti_aliasing_mode == kAntialiasingModeUnspecified) {
     if (use_multisampling) {
       anti_aliasing_mode_ = kAntialiasingModeMSAAExplicitResolve;
-      if (supports_implicit_resolve) {
+      if (use_implicit_resolve) {
         anti_aliasing_mode_ = kAntialiasingModeMSAAImplicitResolve;
       }
     } else {
@@ -899,7 +910,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   } else {
     bool prefer_implicit_resolve = (webgl_preferences.anti_aliasing_mode ==
                                     kAntialiasingModeMSAAImplicitResolve);
-    if (prefer_implicit_resolve && !supports_implicit_resolve) {
+    if (prefer_implicit_resolve && !use_multisampling) {
       DLOG(ERROR) << "Invalid anti-aliasing mode specified.";
       return false;
     }
