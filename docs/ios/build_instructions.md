@@ -481,6 +481,15 @@ If `git --version` reports 2.6 or higher, but below 2.8, you can instead run
 $ git update-index --untracked-cache
 ```
 
+#### Configure git to use fsmonitor
+
+If `git --version` reports 2.37 or higher, use fsmonitor, which will
+significantly speed git:
+
+```shell
+$ git config core.fsmonitor true
+```
+
 ### Xcode license agreement
 
 If you're getting the error
