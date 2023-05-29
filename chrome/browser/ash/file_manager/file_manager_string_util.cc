@@ -1251,7 +1251,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
 
   dict->Set("DRIVE_FS_BULK_PINNING",
-            drive::util::IsDriveFsBulkPinningEnabled());
+            drive::util::IsDriveFsBulkPinningEnabled(profile));
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(

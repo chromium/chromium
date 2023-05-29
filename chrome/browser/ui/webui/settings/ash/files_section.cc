@@ -94,7 +94,7 @@ FilesSection::FilesSection(Profile* profile,
   if (cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
-  if (drive::util::IsDriveFsBulkPinningEnabled()) {
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
     updater.AddSearchTags(GetFilesGoogleDriveSearchConcepts());
   }
 }
@@ -203,7 +203,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   }
 
   html_source->AddBoolean("enableDriveFsBulkPinning",
-                          drive::util::IsDriveFsBulkPinningEnabled());
+                          drive::util::IsDriveFsBulkPinningEnabled(profile()));
 }
 
 void FilesSection::AddHandlers(content::WebUI* web_ui) {

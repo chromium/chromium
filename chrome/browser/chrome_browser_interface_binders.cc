@@ -1438,7 +1438,7 @@ void PopulateChromeWebUIFrameBinders(
         ash::settings::OSSettingsUI>(map);
   }
 
-  if (drive::util::IsDriveFsBulkPinningEnabled()) {
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::settings::google_drive::mojom::PageHandlerFactory,
         ash::settings::OSSettingsUI>(map);

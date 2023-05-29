@@ -375,10 +375,10 @@ class DriveIntegrationService::PreferenceWatcher
   using NetworkState = ash::NetworkState;
   using PortalState = NetworkState::PortalState;
 
-  explicit PreferenceWatcher(PrefService* pref_service)
-      : pref_service_(pref_service) {
-    DCHECK(pref_service);
-    pref_change_registrar_.Init(pref_service);
+  explicit PreferenceWatcher(Profile* profile)
+      : profile_(profile), pref_service_(profile->GetPrefs()) {
+    DCHECK(pref_service_);
+    pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         prefs::kDisableDrive,
         base::BindRepeating(&PreferenceWatcher::OnPreferenceChanged,
@@ -393,7 +393,8 @@ class DriveIntegrationService::PreferenceWatcher
           base::BindRepeating(&PreferenceWatcher::ToggleLocalMirroring,
                               weak_ptr_factory_.GetWeakPtr()));
     }
-    if (util::IsDriveFsBulkPinningEnabled()) {
+
+    if (util::IsDriveFsBulkPinningEnabled(profile_)) {
       pref_change_registrar_.Add(
           prefs::kDriveFsBulkPinningEnabled,
           base::BindRepeating(&PreferenceWatcher::ToggleBulkPinning,
@@ -515,7 +516,8 @@ class DriveIntegrationService::PreferenceWatcher
     }
   }
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<const Profile, ExperimentalAsh> profile_;
+  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<DriveIntegrationService, ExperimentalAsh> integration_service_ =
       nullptr;
@@ -766,8 +768,7 @@ DriveIntegrationService::DriveIntegrationService(
        base::WithBaseSyncPrimitives()});
 
   if (util::IsDriveAvailableForProfile(profile)) {
-    preference_watcher_ =
-        std::make_unique<PreferenceWatcher>(profile->GetPrefs());
+    preference_watcher_ = std::make_unique<PreferenceWatcher>(profile);
     preference_watcher_->SetIntegrationService(this);
   }
 
@@ -1033,7 +1034,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
     LOG(WARNING) << "DriveFS data directory '" << data_dir
                  << "' was missing and got created again";
 
-    if (util::IsDriveFsBulkPinningEnabled()) {
+    if (util::IsDriveFsBulkPinningEnabled(profile_)) {
       VLOG(1) << "Displaying system notification";
       // Show system notification.
       file_manager::SystemNotificationManager snm(profile_);
@@ -1186,7 +1187,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   }
 
   // Enable bulk-pinning if the feature is enabled.
-  if (util::IsDriveFsBulkPinningEnabled()) {
+  if (util::IsDriveFsBulkPinningEnabled(profile_)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!pin_manager_);
     pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
@@ -1333,7 +1334,7 @@ void DriveIntegrationService::ToggleBulkPinning() {
 
 void DriveIntegrationService::GetTotalPinnedSize(
     base::OnceCallback<void(int64_t)> callback) {
-  if (!util::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
+  if (!util::IsDriveFsBulkPinningEnabled(profile_) || !IsMounted() ||
       !GetDriveFsInterface()) {
     std::move(callback).Run(-1);
     return;
@@ -1354,7 +1355,7 @@ void DriveIntegrationService::GetTotalPinnedSize(
 
 void DriveIntegrationService::ClearOfflineFiles(
     base::OnceCallback<void(drive::FileError)> callback) {
-  if (!util::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
+  if (!util::IsDriveFsBulkPinningEnabled(profile_) || !IsMounted() ||
       !GetDriveFsInterface()) {
     std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
     return;

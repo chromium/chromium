@@ -227,7 +227,7 @@ std::string Redact(const base::FilePath& path) {
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetPreferencesFunction::Run() {
   api::file_manager_private::Preferences result;
-  Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const service = profile->GetPrefs();
   auto* drive_integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -237,7 +237,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
                          !drive_integration_service->mount_failed();
   result.cellular_disabled =
       service->GetBoolean(drive::prefs::kDisableDriveOverCellular);
-  if (drive::util::IsDriveFsBulkPinningEnabled()) {
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
     result.drive_fs_bulk_pinning_enabled =
         service->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
   }
@@ -271,14 +271,14 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   PrefService* const service = profile->GetPrefs();
 
   if (params->change_info.cellular_disabled) {
     service->SetBoolean(drive::prefs::kDisableDriveOverCellular,
                         *params->change_info.cellular_disabled);
   }
-  if (drive::util::IsDriveFsBulkPinningEnabled() &&
+  if (drive::util::IsDriveFsBulkPinningEnabled(profile) &&
       params->change_info.drive_fs_bulk_pinning_enabled) {
     service->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                         *params->change_info.drive_fs_bulk_pinning_enabled);

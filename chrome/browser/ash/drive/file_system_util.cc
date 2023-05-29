@@ -20,6 +20,7 @@
 #include "base/strings/escape.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -118,7 +119,12 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
   return IsDriveAvailableForProfile(profile);
 }
 
-bool IsDriveFsBulkPinningEnabled() {
+bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
+  DCHECK(profile);
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    return false;
+  }
+
   // TODO(b/279872186): Prior to M117 and only on canary builds the feature
   // should be enabled by the feature management module OR a direct feature
   // flag. After M117 these 2 flags should be required to enable the feature.
@@ -127,6 +133,7 @@ bool IsDriveFsBulkPinningEnabled() {
                ash::features::kFeatureManagementDriveFsBulkPinning) ||
            base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
   }
+
   return ash::features::IsDriveFsBulkPinningEnabled();
 }
 

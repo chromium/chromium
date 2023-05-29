@@ -437,7 +437,7 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   // shows these folders as available offline, return these items as pinned and
   // available offline. This should not include shortcuts and only cover
   // directories that are parented at "My drive" (e.g. no Shared drives).
-  if (drive::util::IsDriveFsBulkPinningEnabled() &&
+  if (drive::util::IsDriveFsBulkPinningEnabled(running_profile_) &&
       IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
       IsDirectoryUnderMyDrive(metadata, relative_path_) &&
       !metadata->shortcut_details) {
