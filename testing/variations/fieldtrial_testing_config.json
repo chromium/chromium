@@ -7077,20 +7077,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Compact_Horizontal_20230316",
-                    "params": {
-                        "DiscoverFeedTopSyncPromoStyle": "2",
-                        "autodismissImpressions": "3"
-                    },
-                    "enable_features": [
-                        "EnableDiscoverFeedTopSyncPromo"
-                    ]
-                },
-                {
-                    "name": "Enabled_Compact_Vertical_20230316",
+                    "name": "Launched_Vertical_6Impressions",
                     "params": {
                         "DiscoverFeedTopSyncPromoStyle": "3",
-                        "autodismissImpressions": "3"
+                        "autodismissImpressions": "6"
                     },
                     "enable_features": [
                         "EnableDiscoverFeedTopSyncPromo"
