@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class Document;
 class Element;
 class CSSValue;
 
@@ -18,13 +19,22 @@ struct TimelineOffset {
   using NamedRange = V8TimelineRange::Enum;
 
   TimelineOffset() = default;
-  TimelineOffset(NamedRange name, Length offset) : name(name), offset(offset) {}
+  TimelineOffset(NamedRange name,
+                 Length offset,
+                 absl::optional<String> style_dependent_offset = absl::nullopt)
+      : name(name),
+        offset(offset),
+        style_dependent_offset(style_dependent_offset) {}
+
+  bool UpdateOffset(Element* element, CSSValue* value);
 
   NamedRange name = NamedRange::kNone;
   Length offset = Length::Fixed();
+  absl::optional<String> style_dependent_offset;
 
   bool operator==(const TimelineOffset& other) const {
-    return name == other.name && offset == other.offset;
+    return name == other.name && offset == other.offset &&
+           style_dependent_offset == other.style_dependent_offset;
   }
 
   bool operator!=(const TimelineOffset& other) const {
@@ -43,6 +53,13 @@ struct TimelineOffset {
       const V8UnionStringOrTimelineRangeOffset* range_offset,
       double default_percent,
       ExceptionState& exception_state);
+
+  // A length is style dependent if using a font relative or viewport relative
+  // unit. We also classify all styles involving calc or var as style dependent.
+  // A style-dependent value needs to be re-resolved after a style change.
+  static bool IsStyleDependent(const CSSValue* value);
+
+  static CSSValue* ParseOffset(Document* document, String css_text);
 
   static Length ResolveLength(Element* element, const CSSValue* value);
 

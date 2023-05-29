@@ -2385,6 +2385,24 @@ void Animation::UpdateAutoAlignedStartTime() {
 
 bool Animation::OnValidateSnapshot(bool snapshot_changed) {
   bool needs_update = snapshot_changed;
+
+  // Update style-dependent range offsets.
+  bool range_changed = false;
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
+    if (keyframe_effect->target()) {
+      if (style_dependent_range_start_) {
+        DCHECK(range_start_);
+        range_changed |= range_start_->UpdateOffset(
+            keyframe_effect->target(), style_dependent_range_start_);
+      }
+      if (style_dependent_range_end_) {
+        DCHECK(range_end_);
+        range_changed |= range_end_->UpdateOffset(keyframe_effect->target(),
+                                                  style_dependent_range_end_);
+      }
+    }
+  }
+
   bool needs_new_start_time = false;
   switch (CalculateAnimationPlayState()) {
     case kIdle:
@@ -2409,14 +2427,15 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
         needs_update = true;
       }
       needs_new_start_time =
-          auto_align_start_time_ && (!start_time_ || snapshot_changed);
+          auto_align_start_time_ &&
+          (!start_time_ || snapshot_changed || range_changed);
       break;
 
     default:
       NOTREACHED();
   }
 
-  if (snapshot_changed || needs_new_start_time) {
+  if (snapshot_changed || needs_new_start_time || range_changed) {
     InvalidateNormalizedTiming();
   }
 
@@ -2451,6 +2470,42 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
   return !needs_update;
 }
 
+void Animation::SetRangeStartInternal(
+    const absl::optional<TimelineOffset>& range_start) {
+  auto_align_start_time_ = true;
+  if (range_start_ != range_start) {
+    range_start_ = range_start;
+    if (range_start_ && range_start_->style_dependent_offset) {
+      style_dependent_range_start_ = TimelineOffset::ParseOffset(
+          GetDocument(), range_start_->style_dependent_offset.value());
+    } else {
+      style_dependent_range_start_ = nullptr;
+    }
+    OnRangeUpdate();
+  }
+}
+
+void Animation::SetRangeEndInternal(
+    const absl::optional<TimelineOffset>& range_end) {
+  auto_align_start_time_ = true;
+  if (range_end_ != range_end) {
+    range_end_ = range_end;
+    if (range_end_ && range_end_->style_dependent_offset) {
+      style_dependent_range_end_ = TimelineOffset::ParseOffset(
+          GetDocument(), range_end_->style_dependent_offset.value());
+    } else {
+      style_dependent_range_end_ = nullptr;
+    }
+    OnRangeUpdate();
+  }
+}
+
+void Animation::SetRange(const absl::optional<TimelineOffset>& range_start,
+                         const absl::optional<TimelineOffset>& range_end) {
+  SetRangeStartInternal(range_start);
+  SetRangeEndInternal(range_end);
+}
+
 void Animation::OnRangeUpdate() {
   // Change in animation range has no effect unless using a scroll-timeline.
   if (!IsA<ScrollSnapshotTimeline>(timeline_.Get())) {
@@ -2459,8 +2514,7 @@ void Animation::OnRangeUpdate() {
 
   // Force recalculation of the intrinsic iteration duration.
   InvalidateNormalizedTiming();
-
-  if (!auto_align_start_time_) {
+  if (PendingInternal()) {
     return;
   }
 
@@ -3182,6 +3236,8 @@ void Animation::Trace(Visitor* visitor) const {
   visitor->Trace(finished_promise_);
   visitor->Trace(ready_promise_);
   visitor->Trace(compositor_animation_);
+  visitor->Trace(style_dependent_range_start_);
+  visitor->Trace(style_dependent_range_end_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
