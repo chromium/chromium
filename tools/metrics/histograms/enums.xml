@@ -52602,6 +52602,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="32" label="Bug1234857"/>
   <int value="33" label="FileSystemAccessPermissionRequest"/>
   <int value="34" label="CreateFencedFrame"/>
+  <int value="35" label="kIndexedDBEvent"/>
+  <int value="36" label="kIndexedDBTransactionIsAcquiringLocks"/>
+  <int value="37" label="kIndexedDBTransactionIsBlockingOthers"/>
 </enum>
 
 <enum name="InactiveTabsThresholdSettingType">
