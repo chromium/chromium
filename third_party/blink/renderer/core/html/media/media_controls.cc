@@ -31,11 +31,11 @@ AtomicString MediaControls::GetSizingCSSClass(
     MediaControlsSizingClass sizing_class) {
   switch (sizing_class) {
     case MediaControlsSizingClass::kSmall:
-      return kMediaControlsSizingSmallCSSClass;
+      return AtomicString(kMediaControlsSizingSmallCSSClass);
     case MediaControlsSizingClass::kMedium:
-      return kMediaControlsSizingMediumCSSClass;
+      return AtomicString(kMediaControlsSizingMediumCSSClass);
     case MediaControlsSizingClass::kLarge:
-      return kMediaControlsSizingLargeCSSClass;
+      return AtomicString(kMediaControlsSizingLargeCSSClass);
   }
 
   NOTREACHED();

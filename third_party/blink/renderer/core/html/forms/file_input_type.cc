@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
@@ -351,8 +352,8 @@ void FileInputType::CreateShadowSubtree() {
   // The file input element is presented to AX as one node with the role button,
   // instead of the individual button and text nodes. That's the reason we hide
   // the shadow root elements of the file input in the AX tree.
-  button->setAttribute(html_names::kAriaHiddenAttr, "true");
-  span->setAttribute(html_names::kAriaHiddenAttr, "true");
+  button->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
+  span->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
 
   UpdateView();
 }

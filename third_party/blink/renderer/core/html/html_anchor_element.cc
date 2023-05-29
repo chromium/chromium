@@ -369,12 +369,15 @@ void HTMLAnchorElement::SetRel(const AtomicString& value) {
   link_relations_ = 0;
   SpaceSplitString new_link_relations(value.LowerASCII());
   // FIXME: Add link relations as they are implemented
-  if (new_link_relations.Contains("noreferrer"))
+  if (new_link_relations.Contains(AtomicString("noreferrer"))) {
     link_relations_ |= kRelationNoReferrer;
-  if (new_link_relations.Contains("noopener"))
+  }
+  if (new_link_relations.Contains(AtomicString("noopener"))) {
     link_relations_ |= kRelationNoOpener;
-  if (new_link_relations.Contains("opener"))
+  }
+  if (new_link_relations.Contains(AtomicString("opener"))) {
     link_relations_ |= kRelationOpener;
+  }
 }
 
 const AtomicString& HTMLAnchorElement::GetName() const {

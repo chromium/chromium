@@ -213,8 +213,9 @@ void HTMLFormControlElement::SetAutofillSection(const WebString& section) {
 
 bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, values,
-                      ({"username", "new-password", "current-password", "url",
-                        "email", "impp"}));
+                      ({AtomicString("username"), AtomicString("new-password"),
+                        AtomicString("current-password"), AtomicString("url"),
+                        AtomicString("email"), AtomicString("impp")}));
   const AtomicString& autocomplete =
       FastGetAttribute(html_names::kAutocompleteAttr);
   if (autocomplete.IsNull())

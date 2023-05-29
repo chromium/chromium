@@ -92,9 +92,14 @@ bool CustomElement::IsHyphenatedSpecElementName(const AtomicString& name) {
   // first.
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, hyphenated_spec_element_names,
                       ({
-                          "annotation-xml", "color-profile", "font-face",
-                          "font-face-src", "font-face-uri", "font-face-format",
-                          "font-face-name", "missing-glyph",
+                          AtomicString("annotation-xml"),
+                          AtomicString("color-profile"),
+                          AtomicString("font-face"),
+                          AtomicString("font-face-src"),
+                          AtomicString("font-face-uri"),
+                          AtomicString("font-face-format"),
+                          AtomicString("font-face-name"),
+                          AtomicString("missing-glyph"),
                       }));
   return hyphenated_spec_element_names.Contains(name);
 }

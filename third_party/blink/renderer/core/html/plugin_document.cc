@@ -106,8 +106,13 @@ void PluginDocumentParser::CreateDocumentStructure() {
     return;  // runScriptsAtDocumentElementAvailable can detach the frame.
 
   auto* body = MakeGarbageCollected<HTMLBodyElement>(*GetDocument());
-  body->setAttribute(html_names::kStyleAttr,
-                     "height: 100%; width: 100%; overflow: hidden; margin: 0");
+  body->SetInlineStyleProperty(CSSPropertyID::kHeight, 100.0,
+                               CSSPrimitiveValue::UnitType::kPercentage);
+  body->SetInlineStyleProperty(CSSPropertyID::kWidth, 100.0,
+                               CSSPrimitiveValue::UnitType::kPercentage);
+  body->SetInlineStyleProperty(CSSPropertyID::kOverflow, CSSValueID::kHidden);
+  body->SetInlineStyleProperty(CSSPropertyID::kMargin, 0.0,
+                               CSSPrimitiveValue::UnitType::kPixels);
   body->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
                                *cssvalue::CSSColor::Create(background_color_));
   root_element->AppendChild(body);
@@ -117,11 +122,13 @@ void PluginDocumentParser::CreateDocumentStructure() {
     return;
   }
 
+  AtomicString hundred_percent("100%");
+  AtomicString plugin("plugin");
   embed_element_ = MakeGarbageCollected<HTMLEmbedElement>(*GetDocument());
-  embed_element_->setAttribute(html_names::kWidthAttr, "100%");
-  embed_element_->setAttribute(html_names::kHeightAttr, "100%");
-  embed_element_->setAttribute(html_names::kNameAttr, "plugin");
-  embed_element_->setAttribute(html_names::kIdAttr, "plugin");
+  embed_element_->setAttribute(html_names::kWidthAttr, hundred_percent);
+  embed_element_->setAttribute(html_names::kHeightAttr, hundred_percent);
+  embed_element_->setAttribute(html_names::kNameAttr, plugin);
+  embed_element_->setAttribute(html_names::kIdAttr, plugin);
   embed_element_->setAttribute(html_names::kSrcAttr,
                                AtomicString(GetDocument()->Url().GetString()));
   embed_element_->setAttribute(html_names::kTypeAttr,

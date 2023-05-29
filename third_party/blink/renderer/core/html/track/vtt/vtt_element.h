@@ -69,14 +69,14 @@ class VTTElement final : public Element {
 
   static const QualifiedName& VoiceAttributeName() {
     DEFINE_STATIC_LOCAL(QualifiedName, voice_attr,
-                        (g_null_atom, "voice", g_null_atom));
+                        (g_null_atom, AtomicString("voice"), g_null_atom));
     return voice_attr;
   }
 
   static const QualifiedName& LangAttributeName() {
-    DEFINE_STATIC_LOCAL(QualifiedName, voice_attr,
-                        (g_null_atom, "lang", g_null_atom));
-    return voice_attr;
+    DEFINE_STATIC_LOCAL(QualifiedName, attr,
+                        (g_null_atom, AtomicString("lang"), g_null_atom));
+    return attr;
   }
 
   const TextTrack* GetTrack() const { return track_; }

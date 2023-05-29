@@ -370,12 +370,12 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kDraggableAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kDraggableAttribute);
-    if (EqualIgnoringASCIICase(value, "true")) {
+    if (EqualIgnoringASCIICase(value, keywords::kTrue)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kElement);
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kUserSelect,
                                               CSSValueID::kNone);
-    } else if (EqualIgnoringASCIICase(value, "false")) {
+    } else if (EqualIgnoringASCIICase(value, keywords::kFalse)) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserDrag, CSSValueID::kNone);
     }
@@ -1151,7 +1151,7 @@ void HTMLElement::setHidden(
   switch (value->GetContentType()) {
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::kBoolean:
       if (value->GetAsBoolean()) {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       } else {
         removeAttribute(html_names::kHiddenAttr);
       }
@@ -1160,18 +1160,18 @@ void HTMLElement::setHidden(
       if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
               GetExecutionContext()) &&
           EqualIgnoringASCIICase(value->GetAsString(), "until-found")) {
-        setAttribute(html_names::kHiddenAttr, "until-found");
+        setAttribute(html_names::kHiddenAttr, AtomicString("until-found"));
       } else if (value->GetAsString() == "") {
         removeAttribute(html_names::kHiddenAttr);
       } else {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       }
       break;
     case V8UnionBooleanOrStringOrUnrestrictedDouble::ContentType::
         kUnrestrictedDouble:
       double double_value = value->GetAsUnrestrictedDouble();
       if (double_value && !std::isnan(double_value)) {
-        setAttribute(html_names::kHiddenAttr, "");
+        setAttribute(html_names::kHiddenAttr, g_empty_atom);
       } else {
         removeAttribute(html_names::kHiddenAttr);
       }
@@ -2310,7 +2310,8 @@ bool HTMLElement::draggable() const {
 }
 
 void HTMLElement::setDraggable(bool value) {
-  setAttribute(html_names::kDraggableAttr, value ? "true" : "false");
+  setAttribute(html_names::kDraggableAttr,
+               value ? keywords::kTrue : keywords::kFalse);
 }
 
 bool HTMLElement::spellcheck() const {
@@ -2318,7 +2319,8 @@ bool HTMLElement::spellcheck() const {
 }
 
 void HTMLElement::setSpellcheck(bool enable) {
-  setAttribute(html_names::kSpellcheckAttr, enable ? "true" : "false");
+  setAttribute(html_names::kSpellcheckAttr,
+               enable ? keywords::kTrue : keywords::kFalse);
 }
 
 void HTMLElement::click() {
@@ -2365,7 +2367,7 @@ bool HTMLElement::translate() const {
 }
 
 void HTMLElement::setTranslate(bool enable) {
-  setAttribute(html_names::kTranslateAttr, enable ? "yes" : "no");
+  setAttribute(html_names::kTranslateAttr, AtomicString(enable ? "yes" : "no"));
 }
 
 // Returns the conforming 'dir' value associated with the state the attribute is

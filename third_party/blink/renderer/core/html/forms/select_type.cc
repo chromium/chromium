@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -301,7 +302,7 @@ bool MenuListSelectType::HandlePopupOpenKeyboardEvent() {
 void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   Document& doc = select_->GetDocument();
   Element* inner_element = MakeGarbageCollected<MenuListInnerElement>(doc);
-  inner_element->setAttribute(html_names::kAriaHiddenAttr, "true");
+  inner_element->setAttribute(html_names::kAriaHiddenAttr, keywords::kTrue);
   // Make sure InnerElement() always has a Text node.
   inner_element->appendChild(Text::Create(doc, g_empty_string));
   root.insertBefore(inner_element, root.firstChild());

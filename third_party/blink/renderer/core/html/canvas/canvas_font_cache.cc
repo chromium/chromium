@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
@@ -23,16 +24,16 @@ const unsigned CanvasFontCacheHardMaxFonts = 250;
 const unsigned CanvasFontCacheHardMaxFontsLowEnd = 20;
 const unsigned CanvasFontCacheHiddenMaxFonts = 1;
 const int defaultFontSize = 10;
-const char defaultFontFamily[] = "sans-serif";
 }
 
 namespace blink {
 
 CanvasFontCache::CanvasFontCache(Document& document)
     : document_(&document), pruning_scheduled_(false) {
+  const AtomicString& default_font_family = font_family_names::kSansSerif;
   FontFamily font_family;
-  font_family.SetFamily(defaultFontFamily,
-                        FontFamily::InferredTypeFor(defaultFontFamily));
+  font_family.SetFamily(default_font_family,
+                        FontFamily::InferredTypeFor(default_font_family));
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);
   default_font_description.SetSpecifiedSize(defaultFontSize);

@@ -28,6 +28,7 @@ bool HTMLMediaElementControlsList::ValidateTokenValue(
     const AtomicString& token_value,
     ExceptionState&) const {
   for (const char* supported_token : kSupportedTokens) {
+    // TODO(crbug.com/1444094): Avoid AtomicString-char[] comparisons.
     if (token_value == supported_token)
       return true;
   }
@@ -35,19 +36,19 @@ bool HTMLMediaElementControlsList::ValidateTokenValue(
 }
 
 bool HTMLMediaElementControlsList::ShouldHideDownload() const {
-  return contains(kNoDownload);
+  return contains(AtomicString(kNoDownload));
 }
 
 bool HTMLMediaElementControlsList::ShouldHideFullscreen() const {
-  return contains(kNoFullscreen);
+  return contains(AtomicString(kNoFullscreen));
 }
 
 bool HTMLMediaElementControlsList::ShouldHidePlaybackRate() const {
-  return contains(kNoPlaybackRate);
+  return contains(AtomicString(kNoPlaybackRate));
 }
 
 bool HTMLMediaElementControlsList::ShouldHideRemotePlayback() const {
-  return contains(kNoRemotePlayback);
+  return contains(AtomicString(kNoRemotePlayback));
 }
 
 bool HTMLMediaElementControlsList::CanShowAllControls() const {
