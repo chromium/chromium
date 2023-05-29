@@ -1763,6 +1763,10 @@ BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCorrectFloatExtensionTestForWebGL,
+             "CorrectFloatExtensionTestForWebGL",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSplitUserMediaQueues,
              "SplitUserMediaQueues",
              base::FEATURE_ENABLED_BY_DEFAULT);
