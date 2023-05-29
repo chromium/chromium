@@ -63,6 +63,16 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
   EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
 }
 
+TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsTrueForNonGameBorealisApp) {
+  EXPECT_TRUE(IsNonGameBorealisApp(
+      "borealis_anon:org.chromium.guest_os.borealis.xid.100"));
+}
+
+TEST_F(BorealisUtilTest, IsNonGameBorealisAppReturnsFalseForGames) {
+  EXPECT_FALSE(
+      IsNonGameBorealisApp("borealis_anon:org.chromium.guest_os.borealis.app"));
+}
+
 TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
   TestingProfile profile;
 

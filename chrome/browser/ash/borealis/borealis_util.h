@@ -68,6 +68,10 @@ void FeedbackFormUrl(Profile* const profile,
                      const std::string& window_title,
                      base::OnceCallback<void(GURL)> url_callback);
 
+// Returns true if it's a non game borealis app (e.g. Steam client).
+// Note that this does not check if the app is from the Borealis VM.
+bool IsNonGameBorealisApp(const std::string& app_id);
+
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.
 bool IsExternalURLAllowed(const GURL& url);

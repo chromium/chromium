@@ -155,6 +155,19 @@ absl::optional<int> GetBorealisAppId(const aura::Window* window) {
   return absl::nullopt;
 }
 
+bool IsNonGameBorealisApp(const std::string& app_id) {
+  if (app_id.find(kIgnoredAppIdPrefix) != std::string::npos ||
+      app_id == kClientAppId) {
+    return true;
+  }
+
+  if (app_id == kZenityId || app_id == kSteamClientId ||
+      app_id == kSteamBigPictureId) {
+    return true;
+  }
+  return false;
+}
+
 void FeedbackFormUrl(Profile* const profile,
                      const std::string& app_id,
                      const std::string& window_title,
@@ -163,14 +176,7 @@ void FeedbackFormUrl(Profile* const profile,
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
 
   // Exclude windows that aren't games.
-  if (app_id.find(kIgnoredAppIdPrefix) != std::string::npos ||
-      app_id == kClientAppId) {
-    std::move(url_callback).Run(GURL());
-    return;
-  }
-
-  if (app_id == kZenityId || app_id == kSteamClientId ||
-      app_id == kSteamBigPictureId) {
+  if (IsNonGameBorealisApp(app_id)) {
     std::move(url_callback).Run(GURL());
     return;
   }
