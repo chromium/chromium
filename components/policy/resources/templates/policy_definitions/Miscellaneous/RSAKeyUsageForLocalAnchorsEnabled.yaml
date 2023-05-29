@@ -1,4 +1,4 @@
-caption: Check RSA key usage for server certicates issued by local trust anchors
+caption: Check RSA key usage for server certificates issued by local trust anchors
 default: null
 desc: |-
   The X.509 key usage extension declares how the key in a certificate may be
