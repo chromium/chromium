@@ -1549,7 +1549,9 @@ void BrowserManager::ResumeLaunch() {
     LOG(WARNING) << "Lacros is not enabled for the current user. Terminating "
                     "pre-launched instance";
     unload_requested_ = true;
-    lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
+    if (lacros_process_.IsValid()) {
+      lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
+    }
     return;
   }
 
