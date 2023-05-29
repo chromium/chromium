@@ -1154,6 +1154,13 @@ void WebTransport::Init(const String& url_for_diagnostics,
                         ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::Init() url=" << url_for_diagnostics
            << " this=" << this;
+  // This is an intentional spec violation due to our limited support for
+  // detached realms.
+  if (!script_state_->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Frame is detached.");
+    return;
+  }
   if (!url_.IsValid()) {
     // Do not use `url_` in the error message, since we want to display the
     // original URL and not the canonicalized version stored in `url_`.
