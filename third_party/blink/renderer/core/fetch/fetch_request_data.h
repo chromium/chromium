@@ -183,6 +183,14 @@ class CORE_EXPORT FetchRequestData final
     attribution_reporting_eligibility_ = eligibility;
   }
 
+  base::UnguessableToken ServiceWorkerRaceNetworkRequestToken() const {
+    return service_worker_race_network_request_token_;
+  }
+  void SetServiceWorkerRaceNetworkRequestToken(
+      const base::UnguessableToken& token) {
+    service_worker_race_network_request_token_ = token;
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -242,6 +250,11 @@ class CORE_EXPORT FetchRequestData final
   HeapMojoRemote<network::mojom::blink::URLLoaderFactory> url_loader_factory_;
   base::UnguessableToken window_id_;
   Member<ExecutionContext> execution_context_;
+
+  // A token set only when the fetch request is initiated with ServiceWorker
+  // RaceNetworkRequest(crbug.com/1420517). When the request is cloned, this
+  // member shouldn't be copied to the new request.
+  base::UnguessableToken service_worker_race_network_request_token_;
 };
 
 }  // namespace blink

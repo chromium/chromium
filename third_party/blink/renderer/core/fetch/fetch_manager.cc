@@ -850,6 +850,9 @@ void FetchManager::Loader::PerformHTTPFetch() {
 
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 
+  request.SetServiceWorkerRaceNetworkRequestToken(
+      fetch_request_data_->ServiceWorkerRaceNetworkRequestToken());
+
   // "3. Append `Host`, ..."
   // FIXME: Implement this when the spec is fixed.
 

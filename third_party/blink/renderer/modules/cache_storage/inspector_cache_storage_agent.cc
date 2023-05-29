@@ -290,7 +290,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
           request->fetch_window_id, request->keepalive, request->is_reload,
           request->is_history_navigation, request->devtools_stack_id,
           request->trust_token_params.Clone(), request->target_address_space,
-          request->attribution_reporting_eligibility);
+          request->attribution_reporting_eligibility,
+          /*service_worker_race_network_request_token=*/absl::nullopt);
       cache_remote_->Match(
           std::move(request), mojom::blink::CacheQueryOptions::New(),
           /*in_related_fetch_event=*/false, /*in_range_fetch_event=*/false,

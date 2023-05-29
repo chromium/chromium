@@ -89,6 +89,10 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int frame_tree_node_id);
 
+  void set_race_network_request_token(base::UnguessableToken token) {
+    race_network_request_token_ = token;
+  }
+
  private:
   class ResponseCallback;
   class URLLoaderAssets;
@@ -140,6 +144,8 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   // event.
   mojo::PendingReceiver<network::mojom::URLLoaderClient>
       preload_url_loader_client_receiver_;
+
+  base::UnguessableToken race_network_request_token_;
 
   // Whether to dispatch an offline-capability-check fetch event.
   const bool is_offline_capability_check_ = false;

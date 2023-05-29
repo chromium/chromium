@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 
+#include "base/unguessable_token.h"
 #include "net/base/request_priority.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -205,6 +206,11 @@ FetchRequestData* FetchRequestData::Create(
   request->SetAttributionReportingEligibility(
       fetch_api_request->attribution_reporting_eligibility);
 
+  if (fetch_api_request->service_worker_race_network_request_token) {
+    request->SetServiceWorkerRaceNetworkRequestToken(
+        fetch_api_request->service_worker_race_network_request_token.value());
+  }
+
   return request;
 }
 
@@ -238,12 +244,18 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->trust_token_params_ = trust_token_params_;
   request->attribution_reporting_eligibility_ =
       attribution_reporting_eligibility_;
+  request->service_worker_race_network_request_token_ =
+      service_worker_race_network_request_token_;
   return request;
 }
 
 FetchRequestData* FetchRequestData::Clone(ScriptState* script_state,
                                           ExceptionState& exception_state) {
   FetchRequestData* request = FetchRequestData::CloneExceptBody();
+  if (request->service_worker_race_network_request_token_) {
+    request->service_worker_race_network_request_token_ =
+        base::UnguessableToken::Null();
+  }
   if (buffer_) {
     BodyStreamBuffer* new1 = nullptr;
     BodyStreamBuffer* new2 = nullptr;

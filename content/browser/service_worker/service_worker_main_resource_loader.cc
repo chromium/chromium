@@ -277,6 +277,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
 
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
+  fetch_dispatcher_->set_race_network_request_token(
+      base::UnguessableToken::Create());
   auto race_network_request_url_loader_client =
       std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
           resource_request_, AsWeakPtr());
