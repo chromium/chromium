@@ -1153,7 +1153,6 @@ crbug.com/694374 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
 
 crbug.com/722287 crbug.com/886585 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-safe-001.html [ Failure ]
 crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-002.html [ Failure ]
-crbug.com/1121601 external/wpt/css/css-align/self-alignment/self-align-safe-unsafe-flex-001.html [ Failure ]
 
 # [css-ui]
 # The `input-security` property not implemented yet.
@@ -1620,7 +1619,6 @@ crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-spelling-error.html [ Failure ]
-crbug.com/1024156 [ Debug Mac12 ] external/wpt/css/css-pseudo/highlight-currentcolor-root-implicit-default-001.html [ Failure ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-currentcolor-root-implicit-default-001.html [ Pass ]
 crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-001.html [ Failure ]
 crbug.com/1147859 [ Mac ] external/wpt/css/css-pseudo/highlight-currentcolor-painting-properties-002.html [ Failure ]
@@ -2905,10 +2903,10 @@ crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scro
 crbug.com/626703 [ Mac13-arm64 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
-crbug.com/626703 [ Mac13-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
+crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
+crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Timeout ]
+crbug.com/626703 [ Mac12 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
@@ -3730,7 +3728,6 @@ crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]
-crbug.com/849694 [ Debug Mac13-arm64 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 crbug.com/849694 [ Mac10.14 Release ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 crbug.com/849694 [ Mac12 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 
@@ -6618,7 +6615,6 @@ crbug.com/1431085 external/wpt/html/semantics/embedded-content/media-elements/lo
 # Sheriff 2023-04-07
 crbug.com/1431236 external/wpt/long-animation-frame/tentative/loaf-user-callback.html [ Failure Pass ]
 crbug.com/1416265 external/wpt/js-self-profiling/class-names.https.html [ Crash Pass ]
-crbug.com/1416265 external/wpt/js-self-profiling/cross-origin-script-no-cors.sub.html [ Crash Pass ]
 crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
 
 # Flake 2023-04-07
@@ -6747,8 +6743,6 @@ crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composit
 # Sheriff 2023-05-09
 crbug.com/1443871 [ Mac10.15 ] virtual/text-antialias/mac-system-ui-weight.html [ Failure ]
 
-# Sheriff 2023-05-11
-crbug.com/1444592 [ Debug Linux ] external/wpt/js-self-profiling/function-anonymous-names.https.html [ Failure ]
 
 # Fails on win-10-rel (only) with no stack trace or other help
 crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass ]
@@ -6756,7 +6750,6 @@ crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass 
 # Sheriff 2023-05-17
 # Fails on various Mac versions
 crbug.com/1368767 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
-crbug.com/1427936 [ Debug Linux ] external/wpt/js-self-profiling/function-declaration-names.https.html [ Crash Pass ]
 
 # Failures on Mac13 2023-05-18
 crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
