@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Жұмыс үстелдері</translation>
 <translation id="1018219910092211213">DNS-ті анықтау мүмкін емес.</translation>
 <translation id="1018656279737460067">Бас тартылды</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> эксклюзивті активтері енді қолжетімді</translation>
 <translation id="1022433422498218992">Жалпы басқару элементтері</translation>
 <translation id="1022628058306505708">Жер ағыны</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> тізбек, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Сканерлер ізделуде</translation>
 <translation id="3226657629376379887">Форматтың әрекеттер мәзірі</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
+<translation id="3248223063252096240">Тек <ph name="PRODUCT_NAME" /> үшін</translation>
 <translation id="3268178239013324452">Сәтсіз: есігі ашық</translation>
 <translation id="3275729367986477355">Аватар суреті</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Құпиялық экранын қосу/өшіру</translation>
 <translation id="3639846061339007994">жоғарғы жақ</translation>
 <translation id="3651050199673793219">Температураның өлшем бірлігін таңдау</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> эксклюзивті афишасын таңдау</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тексерісі</translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">"<ph name="TITLE" />" альбомын таңдаңыз (<ph name="DESC" />).</translation>
 <translation id="4111761024568264522">USB сенсорлық тақтасы</translation>
+<translation id="4113067922640381334">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="4117637339509843559">Қараңғы режим</translation>
 <translation id="4130035430755296270">Тағы басқа формат опцияларын көру үшін курсорды апарыңыз.</translation>
 <translation id="4131410914670010031">Қара мен ақ</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8593058461203131755">мультимедианы кідірту</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> қосымша әрекеттері</translation>
 <translation id="86356131183441916">Ашық күлгін</translation>
 <translation id="8651481478098336970">дыбысты өшіру</translation>
 <translation id="8655295600908251630">Арна</translation>

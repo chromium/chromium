@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Site ng Google</translation>
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
+<translation id="1877377730633446520">Gagamit ito ng humigit-kumulang <ph name="REQUIRED_SPACE" />. May available kang <ph name="FREE_SPACE" /> sa kasalukuyan.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kumonekta</translation>
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
 <translation id="1920798810075583923">Pakwan</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">I-expand ang mga panel ng feedback ng mga file</translation>
 <translation id="1995337122023280937">Pumunta sa lokasyon ng file</translation>
 <translation id="2001796770603320721">Pamahalaan sa Drive</translation>
+<translation id="2004942826429452291">Iso-store ang mga file sa cloud at sa Chromebook na ito.</translation>
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russian</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Mga setting ng device</translation>
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2089751716171649322">Madaling ma-access ang iyong mga file sa Google Drive kapag offline ka</translation>
 <translation id="2111134541987263231">I-on ang <ph name="BEGIN_BOLD" />Payagan sa Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> (na) error.</translation>
+<translation id="3501954296166022751">Available offline ang iyong mga file sa Google Drive</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3511705761158917664">Inihahandang i-sync ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Mga Dot</translation>
+<translation id="5519161320735100193">Mga setting ng Google Drive</translation>
 <translation id="5522908512596376669">Naging list view ang listahan ng file.</translation>
 <translation id="5524517123096967210">Hindi mabasa ang file.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> na larawan</translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7806708061868529807">Hebrew</translation>
 <translation id="78104721049218340">Thai na may Kedmanee keyboard</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Nagkaroon ng error sa pag-configure sa network</translation>
 <translation id="7839804798877833423">Ang pagkuha sa mga file na ito ay gagamit ng humigit-kumulang <ph name="FILE_SIZE" /> (na) mobile data.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Kapag nag-format ng partition, mabubura ang lahat ng data na naka-store dito. Hindi maa-undo ang pagkilos na ito.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Awtomatikong masi-sync sa iyong Chromebook ang mga file mo sa Aking Drive para ma-access mo ang mga ito nang walang koneksyon sa internet.</translation>
 <translation id="7925247922861151263">Nabigo ang pagsusuri sa AAA</translation>
 <translation id="7925686952655276919">Huwag gumamit ng data sa mobile para sa pag-sync</translation>
 <translation id="7928710562641958568">I-eject ang device</translation>
+<translation id="7933875256234974853">Naghahandang mag-sync ng mga file sa Drive...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">Hindi mabuksan ang device na ito dahil hindi nakilala ang filesystem nito.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">Nabigo ang pagpapatotoo sa PPP dahil sa hindi tamang username o password</translation>
 <translation id="7980421588063892270">English (US) na may Colemak keyboard</translation>
+<translation id="7985008041109611710">Nagsi-sync ng <ph name="NUMBER_OF_FILES_SYNCING" /> (na) file</translation>
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8008366997883261463">Aso</translation>
 <translation id="8028993641010258682">Laki</translation>
@@ -1037,6 +1046,7 @@
 <translation id="9213073329713032541">Matagumpay na nasimulan ang pag-install.</translation>
 <translation id="9219103736887031265">Mga Larawan</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">Nagsi-sync ng 1 file</translation>
 <translation id="938470336146445890">Mangyaring mag-install ng certificate ng user.</translation>
 <translation id="939736085109172342">Bagong folder</translation>
 <translation id="943972244133411984">Binago ni</translation>

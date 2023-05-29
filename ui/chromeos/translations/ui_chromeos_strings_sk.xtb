@@ -1012,6 +1012,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8919081441417203123">Dánčina</translation>
 <translation id="8949925099261528566">Pripojené, bez internetu</translation>
 <translation id="8965697826696209160">Nedostatok miesta</translation>
+<translation id="8971742885766657349">Synchronizuje sa – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Čínska klávesnica Pchin-jin (tradičná)</translation>
 <translation id="8998871447376656508">Na Disku Google nie je dostatok voľného priestoru na dokončenie nahrávania.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, ovládané správcom, podrobnosti</translation>

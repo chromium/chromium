@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Работни површини</translation>
 <translation id="1018219910092211213">Не може да се одреди со DNS</translation>
 <translation id="1018656279737460067">Откажано</translation>
+<translation id="1020274983236703756">Сега се достапни ексклузивни средства за <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Општи контроли</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> низи, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -12,7 +13,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
 <translation id="1075811647922107217">Големина на страницата</translation>
-<translation id="1082009148392559545">Се презема заштитникот на екран</translation>
+<translation id="1082009148392559545">Се презема штедачот на екран</translation>
 <translation id="1094693127011229778">IP-адресата не е достапна</translation>
 <translation id="1113892970288677790">Изберете избрани илустрации и слики</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
+<translation id="3248223063252096240">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Неуспешно - вратата е отворена</translation>
 <translation id="3275729367986477355">Слика за аватар</translation>
 <translation id="3283504360622356314">{0,plural, =1{Измени датотека}one{Измени датотеки}other{Измени датотеки}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Вклучи/исклучи заштита на приватноста</translation>
 <translation id="3639846061339007994">најгоре</translation>
 <translation id="3651050199673793219">Изберете температурна единица</translation>
+<translation id="3663574643422533538">Изберете ексклузивен постер за <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Тест за <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
 <translation id="3708186454126126312">Претходно поврзани</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Подлога за допир со USB</translation>
+<translation id="4113067922640381334">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Темен режим</translation>
 <translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
@@ -663,7 +667,7 @@
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6381741036071372448">Тестирајте ја тастатурата</translation>
-<translation id="6382182670717268353">Преглед на заштитник на екран</translation>
+<translation id="6382182670717268353">Преглед на штедач на екран</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
 <translation id="6394634179843537518">Додај датотека</translation>
 <translation id="6401427872449207797">пребарување во прелистувач</translation>
@@ -927,13 +931,14 @@
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Само уште неколку минути…</translation>
 <translation id="8508640263392900755">Детали за APN</translation>
-<translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заштитник на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
+<translation id="8522687886059337719">Сега имате пристап до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />штедач на екран<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
 <translation id="8576249514688522074">Неиницијализирана</translation>
 <translation id="8593058461203131755">паузирање аудиовизуелни содржини</translation>
 <translation id="8620617069779373398">Статус на роаминг</translation>
+<translation id="8626489604350149811">Повеќе дејства за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светловиолетов</translation>
 <translation id="8651481478098336970">исклучи звук</translation>
 <translation id="8655295600908251630">Канал</translation>

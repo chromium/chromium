@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google 網站</translation>
 <translation id="1853795129690976061">此資料夾已經與 Linux 共用</translation>
 <translation id="1864756863218646478">找不到檔案。</translation>
+<translation id="1877377730633446520">這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。你目前的可用空間為 <ph name="FREE_SPACE" />。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，連接</translation>
 <translation id="1920670151694390848">馬拉雅拉姆文 (音譯)</translation>
 <translation id="1920798810075583923">西瓜</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">展開檔案意見面板</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
 <translation id="2001796770603320721">在「雲端硬碟」中管理</translation>
+<translation id="2004942826429452291">檔案會儲存在雲端和這部 Chromebook 中。</translation>
 <translation id="2009067268969781306">格式化硬碟將刪除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
 <translation id="2037845485764049925">俄文</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">裝置設定</translation>
 <translation id="2084809735218147718">寫感謝詞的人</translation>
 <translation id="2088690981887365033">VPN 網絡</translation>
+<translation id="2089751716171649322">在離線狀態下輕鬆存取 Google 雲端硬碟檔案</translation>
 <translation id="2111134541987263231">開啟「允許在無痕模式中執行」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">系統將刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目，而且無法還原。</translation>
 <translation id="2122305276694332719">自動連線至隱藏網絡會讓其他人可查看您的裝置和部分網絡設定，建議您不要啟用此設定。</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">略過</translation>
 <translation id="3486821258960016770">蒙古文</translation>
 <translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
+<translation id="3501954296166022751">你現在可以離線存取 Google 雲端硬碟檔案</translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
 <translation id="3511705761158917664">正在準備同步 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5500122897333236901">冰島文</translation>
 <translation id="5508696409934741614">圓點</translation>
+<translation id="5519161320735100193">Google 雲端硬碟設定</translation>
 <translation id="5522908512596376669">檔案清單改咗做清單檢視模式。</translation>
 <translation id="5524517123096967210">無法讀取檔案。</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 圖片</translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7806708061868529807">希伯來文</translation>
 <translation id="78104721049218340">泰文 (Kedmanee 鍵盤)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">設定網絡時發生錯誤</translation>
 <translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 流動數據流量。</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7908793776359722643">格式化分割將清除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
 <translation id="7925686952655276919">請勿使用流動數據進行同步處理</translation>
 <translation id="7928710562641958568">退出裝置</translation>
+<translation id="7933875256234974853">正在準備同步處理雲端硬碟檔案...</translation>
 <translation id="7943385054491506837">Colemak 美式鍵盤</translation>
 <translation id="7953739707111622108">這部裝置所用的檔案系統無法識別，因此系統無法開啟這部裝置。</translation>
 <translation id="7969525169268594403">斯洛維尼亞文</translation>
 <translation id="7972920761225148017">法文 (瑞士)</translation>
 <translation id="7973962044839454485">使用者名稱或密碼錯誤，導致 PPP 驗證失敗</translation>
 <translation id="7980421588063892270">英文 (美國)，Colemak 鍵盤</translation>
+<translation id="7985008041109611710">正在同步處理 <ph name="NUMBER_OF_FILES_SYNCING" /> 個檔案</translation>
 <translation id="8000066093800657092">沒有網絡</translation>
 <translation id="8008366997883261463">傑克羅素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
@@ -1003,6 +1012,7 @@
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8949925099261528566">已連線，但沒有互聯網</translation>
 <translation id="8965697826696209160">空間不足。</translation>
+<translation id="8971742885766657349">同步緊，完成咗 <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
 <translation id="8998871447376656508">您的「Google 雲端硬碟」沒有足夠空間，無法完成上載。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
@@ -1036,6 +1046,7 @@
 <translation id="9213073329713032541">已成功啟動安裝程序。</translation>
 <translation id="9219103736887031265">圖片</translation>
 <translation id="9219908252191632183">月球表面</translation>
+<translation id="937795003075802289">正在同步處理 1 個檔案</translation>
 <translation id="938470336146445890">請安裝使用者憑證。</translation>
 <translation id="939736085109172342">新增資料夾</translation>
 <translation id="943972244133411984">修改者</translation>

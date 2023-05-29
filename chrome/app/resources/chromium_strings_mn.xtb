@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">Та Chromium руу нэвтэрсэн байна!</translation>
 <translation id="1524282610922162960">Chromium-н таб хуваалцах</translation>
 <translation id="1553461853655228091">Орчин тойрны тань 3D газрын зургийг үүсгэхийн тулд таны камерт хандах зөвшөөрөл Chromium-д шаардлагатай</translation>
+<translation id="1555506416658437797">төлбөрийн хэрэгслийг засна уу.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас шаардаж байна}=1{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
 <translation id="1625909126243026060">Chromium-н нууцлал болон аюулгүй байдлын үндсэн хяналтуудыг шалгана уу</translation>
 <translation id="1632539827495546968">Хэрэв та энэ бүртгэлийг зөвхөн нэг удаа ашиглахыг хүсвэл Chromium хөтчид <ph name="GUEST_LINK_BEGIN" />Зочны горимыг<ph name="GUEST_LINK_END" /> ашиглах боломжтой. Хэрэв та өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл өөрийн <ph name="DEVICE_TYPE" /> дээр <ph name="LINK_BEGIN" />шинэ хүн нэмнэ үү<ph name="LINK_END" />.
@@ -136,6 +137,7 @@
 <translation id="4019629340646866719">ChromiumOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chromium-г сайжруулахад тусална уу</translation>
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
+<translation id="4050599136622776556">Chromium төлбөрийн хэрэгслийг засахаар оролдож байна.</translation>
 <translation id="4148957013307229264">Суулгаж байна...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chromium</translation>
 <translation id="421369550622382712">Chromium-д зориулсан гайхалтай апп, тоглоом, өргөтгөл болон дэлгэцийн зургуудыг олж сонирхоорой.</translation>

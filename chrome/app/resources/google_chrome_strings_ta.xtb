@@ -30,6 +30,7 @@
  தேவை. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="1553358976309200471">Chromeஐப் புதுப்பி</translation>
+<translation id="1555506416658437797">பேமெண்ட் முறைகளை மாற்ற முயல்கிறது.</translation>
 <translation id="1583073672411044740">இந்த Chrome சுயவிவரத்தில் <ph name="EXISTING_USER" /> ஏற்கெனவே உள்நுழைந்துள்ளார். இது <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்குப் புதிய Chrome சுயவிவரத்தை உருவாக்கும்</translation>
 <translation id="1587223624401073077">Google Chrome உங்கள் கேமராவைப் பயன்படுத்துகிறது.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ஆபத்தானது என்பதால் Chrome அதைத் தடுத்துள்ளது.</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">Chromeமால் உங்கள் கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="235650106824528204">இந்தச் சுயவிவரத்தைப் பயன்படுத்தும்போது உருவாக்கப்படும் Chrome தரவு அனைத்தையும் (எ.கா. நீங்கள் உருவாக்கும் புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பிற அமைப்புகள்) பணிக் கணக்கு நிர்வாகி அகற்றலாம். <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">தொடர்க</translation>
+<translation id="2399868464369312507">பேமெண்ட் முறைகளை Google Chrome மாற்ற முயல்கிறது.</translation>
 <translation id="2401189691232800402">ChromeOS சிஸ்டம்</translation>
 <translation id="2467438592969358367">Google Chrome உங்கள் கடவுச்சொற்களை ஏற்ற விரும்புகிறது. இதை அனுமதிக்க, உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="2485422356828889247">நிறுவல் நீக்கு</translation>

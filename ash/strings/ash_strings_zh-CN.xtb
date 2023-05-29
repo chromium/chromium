@@ -29,6 +29,7 @@
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
+<translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1142002900084379065">近期照片</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
@@ -84,12 +85,14 @@
 <translation id="1294929383540927798">更改锁定屏幕通知设置</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
+<translation id="1311294419381837540">您正在投放一个标签页。您可随时暂停或停止投放。</translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
 <translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
 <translation id="1340378040547539434">缩小网页</translation>
 <translation id="1341651618736211726">溢出</translation>
+<translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1360220746312242196">搜索网页时，转到上一个相符的搜索结果</translation>
@@ -197,6 +200,7 @@
 <translation id="1823873187264960516">以太网：<ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">开启位置信息访问权限</translation>
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
+<translation id="183465528887726323">连接到移动网络即可使用热点。</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1862380676329487333">更新并退出</translation>
@@ -282,6 +286,7 @@
 <translation id="2269016722240250274">有一个应用正在使用您的麦克风</translation>
 <translation id="2277103315734023688">快进</translation>
 <translation id="2282073721614284166">在标签页中打开链接</translation>
+<translation id="2284237890386182187">已开启，未连接任何设备</translation>
 <translation id="2292698582925480719">显示比例</translation>
 <translation id="229397294990920565">移动数据网络正在关闭…</translation>
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
@@ -301,9 +306,11 @@
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360398059912971776">电池</translation>
+<translation id="2361210043495191221">开启/关闭 Wi-Fi。<ph name="STATE" />。</translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2367972762794486313">显示应用</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
+<translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
@@ -335,6 +342,7 @@
 <translation id="2514415433888497495">停用<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">解锁窗口</translation>
+<translation id="2528111225373402384">热点设置</translation>
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
 <translation id="2531025035050312891">设备运行缓慢</translation>
 <translation id="254900897760075745">将所选内容复制到剪贴板</translation>
@@ -516,6 +524,7 @@
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3400357268283240774">其他设置</translation>
 <translation id="3405101454990027959">开启麦克风使用权限</translation>
+<translation id="3408735331120433841">您目前正在投放屏幕画面。</translation>
 <translation id="3409584356742878290">显示或隐藏开发者工具检查器</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
@@ -547,6 +556,7 @@
 <translation id="3526440770046466733">在新标签页中打开链接，同时留在当前标签页中</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="3533126039236445965">任务栏中的应用</translation>
+<translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
 <translation id="3546121235777416274">聚焦于画中画窗口</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
@@ -669,6 +679,7 @@
 <translation id="4028481283645788203">需要输入密码以增强安全性</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">您正在共享屏幕</translation>
+<translation id="4049230407053723315">快捷设置</translation>
 <translation id="4057003836560082631">第 <ph name="INDEX" /> 个浏览器标签页，共 <ph name="TOTAL_COUNT" /> 个。<ph name="SITE_TITLE" />，<ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{对 1 个应用关闭}other{对 # 个应用关闭}}</translation>
 <translation id="4066027111132117168">已开启，<ph name="REMAINING_TIME" /></translation>
@@ -706,6 +717,7 @@
 <translation id="4215497585250573029">VPN 设置</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
+<translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="423685346499232137">目前无法复制或粘贴内容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
@@ -756,6 +768,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 条重要通知}other{# 条重要通知}}</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451374464530248585">键盘快捷键“Alt + 向下键”已更改。若要使用 Page Down 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向下键。</translation>
+<translation id="4453876312474547652">按住 Ctrl + V 即可查看剪贴板。若要停用此快捷键，您可前往 chrome://flags（如果使用 Lacros，则前往 os://flags）停用 #clipboard-history-longpress flag。</translation>
 <translation id="4455051983450390249">在 <ph name="DEVICE_TYPE" /> 上查看手机中收到的通知</translation>
 <translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
@@ -835,6 +848,7 @@
 <translation id="4778095205580009397">无法在演示会话中使用 Google 助理。</translation>
 <translation id="4789348252524569426">无法安装语音文件。您的设备需要更新。请重启设备，然后重试。</translation>
 <translation id="478959186716341421">正在投放</translation>
+<translation id="4798622944000246716">您的移动网络不支持热点</translation>
 <translation id="479989351350248267">搜索</translation>
 <translation id="4804818685124855865">断开连接</translation>
 <translation id="4814539958450445987">登录屏幕</translation>
@@ -1138,6 +1152,7 @@
 <translation id="6129953537138746214">空格</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除帐号”对话框</translation>
 <translation id="6141988275892716286">确认下载</translation>
+<translation id="6143578372829139382">分享到 YouTube</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
 <translation id="6156960295318603523">语言设置</translation>
 <translation id="615957422585914272">显示屏幕键盘</translation>
@@ -1199,6 +1214,7 @@
 <translation id="6453179446719226835">语言已更改</translation>
 <translation id="6459472438155181876">正在将屏幕扩展到<ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">图片</translation>
+<translation id="6469104339369989396">开启/关闭热点</translation>
 <translation id="6477681113376365978">无法下载文件</translation>
 <translation id="6482559668224714696">全屏放大镜</translation>
 <translation id="6483727822843292440">从最少使用的窗口逐一浏览窗口</translation>
@@ -1806,6 +1822,7 @@
 <translation id="954052413789300507">空间不足，无法下载“<ph name="FILENAME" />”。请先释放空间。</translation>
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="98120814841227350">转到文档末尾</translation>
+<translation id="987589956647469042">移动流量已开启</translation>
 <translation id="989374776391122812">摄像头和音频控件</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />，<ph name="SUBTEXT" /></translation>

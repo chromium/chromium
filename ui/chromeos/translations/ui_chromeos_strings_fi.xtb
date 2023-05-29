@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
+<translation id="8971742885766657349">Synkronoidaan – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="8998871447376656508">Google Drivessasi ei ole tarpeeksi tilaa latausta varten.</translation>
 <translation id="9003940392834790328">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>

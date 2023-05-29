@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Sajti i Google</translation>
 <translation id="1853795129690976061">Kjo dosje është ndarë me Linux</translation>
 <translation id="1864756863218646478">Ky skedar nuk mund të gjendej.</translation>
+<translation id="1877377730633446520">Kjo do të përdorë rreth <ph name="REQUIRED_SPACE" />. Aktualisht ke <ph name="FREE_SPACE" /> në dispozicion.</translation>
 <translation id="1884013283844450420">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, lidhu</translation>
 <translation id="1920670151694390848">Malajalamisht me transliterim</translation>
 <translation id="1920798810075583923">Shalqi</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
 <translation id="1995337122023280937">Shko te vendndodhja e skedarit</translation>
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
+<translation id="2004942826429452291">Skedarët do të ruhen në renë kompjuterike dhe në këtë Chromebook.</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2037845485764049925">Rusisht</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Cilësimet e pajisjes</translation>
 <translation id="2084809735218147718">Duke nënshkruar me faleminderit</translation>
 <translation id="2088690981887365033">Rrjeti VPN</translation>
+<translation id="2089751716171649322">Qasu me lehtësi te skedarët e tu të "Diskut të Google" kur je jashtë linje</translation>
 <translation id="2111134541987263231">Aktivizo <ph name="BEGIN_BOLD" />Lejo në modalitetin "e fshehtë"<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> artikuj do të fshihen dhe nuk do të mund t'i restaurosh.</translation>
 <translation id="2122305276694332719">Lidhja automatike me një rrjet të fshehtë u lejon të tjerëve të të shohin pajisjen dhe disa prej cilësimeve të rrjetit, dhe nuk rekomandohet.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3486821258960016770">Mongolisht</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> gabime.</translation>
+<translation id="3501954296166022751">Skedarët e tu të "Diskut të Google" janë të disponueshëm jashtë linje</translation>
 <translation id="3509680540198371098">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>
 <translation id="3511705761158917664">Po përgatitet për të sinkronizuar <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="3522708245912499433">Portugalisht</translation>
@@ -569,6 +573,7 @@
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5500122897333236901">Islandisht</translation>
 <translation id="5508696409934741614">Pika</translation>
+<translation id="5519161320735100193">Cilësimet e "Diskut të Google"</translation>
 <translation id="5522908512596376669">Lista e skedarëve ka ndryshuar në pamjen e listës.</translation>
 <translation id="5524517123096967210">Ky skedar nuk mund të lexohej.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> imazh</translation>
@@ -860,6 +865,7 @@
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7806708061868529807">Hebraisht</translation>
 <translation id="78104721049218340">Tajlandisht me tastierë Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
 <translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
@@ -872,15 +878,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatimi i një ndarjeje do të spastrojë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Skedarët e tu te "Disku im" do të sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti.</translation>
 <translation id="7925247922861151263">Kontrolli AAA dështoi</translation>
 <translation id="7925686952655276919">Mos përdor të dhëna celulare për sinkronizim</translation>
 <translation id="7928710562641958568">Nxirr pajisjen</translation>
+<translation id="7933875256234974853">Po përgatitet për të sinkronizuar skedarët e "Diskut"...</translation>
 <translation id="7943385054491506837">Colemak amerikane</translation>
 <translation id="7953739707111622108">Kjo pajisje nuk mund të hapet, sepse sistemi i saj i skedarëve nuk u njoh.</translation>
 <translation id="7969525169268594403">Sllovenisht</translation>
 <translation id="7972920761225148017">Frëngjisht (Zvicër)</translation>
 <translation id="7973962044839454485">Vërtetimi i PPP-së dështoi për shkak të emrit të përdoruesit ose fjalëkalimit të gabuar</translation>
 <translation id="7980421588063892270">Anglisht (SHBA) me tastierë Colemak</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> skedarë po sinkronizohen</translation>
 <translation id="8000066093800657092">Nuk ka rrjet</translation>
 <translation id="8008366997883261463">Qeni</translation>
 <translation id="8028993641010258682">Madhësia</translation>
@@ -1035,6 +1044,7 @@
 <translation id="9213073329713032541">Instalimi filloi me sukses.</translation>
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219908252191632183">Hënor</translation>
+<translation id="937795003075802289">1 skedar po sinkronizohet</translation>
 <translation id="938470336146445890">Instalo një certifikatë përdoruesi.</translation>
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="943972244133411984">Modifikuar nga</translation>

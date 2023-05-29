@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">‏موقع Google</translation>
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
+<translation id="1877377730633446520">سيتم استخدام مساحة تخزين تبلغ <ph name="REQUIRED_SPACE" /> تقريبًا. مساحة التخزين المتوفّرة حاليًا: <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، الاتصال</translation>
 <translation id="1920670151694390848">تحويل صوتي إلى اللغة الماليالامية</translation>
 <translation id="1920798810075583923">بطيخ</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
+<translation id="2004942826429452291">‏سيتم تخزين الملفات في السحابة الإلكترونية وعلى جهاز Chromebook هذا.</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="2025955442973426285">التغرينية</translation>
 <translation id="2037845485764049925">الروسية</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">إعدادات الجهاز</translation>
 <translation id="2084809735218147718">شخص يقول "شكرًا لك" بلغة الإشارة</translation>
 <translation id="2088690981887365033">الشبكة الافتراضية الخاصة</translation>
+<translation id="2089751716171649322">‏الوصول بسهولة إلى ملفات Google Drive بلا إنترنت</translation>
 <translation id="2111134541987263231">تفعيل <ph name="BEGIN_BOLD" />السماح بالإضافة في وضع التصفّح المتخفي<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">سيتم حذف <ph name="NUMBER_OF_ITEMS" /> ملف أو دليل، ولن تتمكّن من استعادتها.</translation>
 <translation id="2122305276694332719">يسمح الاتصال تلقائيًا بشبكة مخفية للمستخدمين الآخرين رؤية جهازك وبعض إعدادات الشبكة، ولا ننصح بذلك.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3486821258960016770">المنغولية</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
+<translation id="3501954296166022751">‏ملفاتك على Google Drive متاحة على جهازك بلا إنترنت.</translation>
 <translation id="3509680540198371098">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3511705761158917664">يجري الإعداد لمزامنة <ph name="NUMBER_OF_ITEMS" /> عنصر…</translation>
 <translation id="3522708245912499433">البرتغالية</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="5500122897333236901">الأيسلندية</translation>
 <translation id="5508696409934741614">نقاط</translation>
+<translation id="5519161320735100193">‏إعدادات Google Drive</translation>
 <translation id="5522908512596376669">تم تغيير قائمة الملفات إلى عرض القائمة.</translation>
 <translation id="5524517123096967210">تعذرت قراءة الملف.</translation>
 <translation id="5533102081734025921">صورة <ph name="IMAGE_TYPE" /></translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7806708061868529807">العبرية</translation>
 <translation id="78104721049218340">‏التايلاندية باستخدام لوحة مفاتيح Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> تيرابايت</translation>
 <translation id="7831491651892296503">حدث خطأ أثناء إعداد الشبكة</translation>
 <translation id="7839804798877833423">سيؤدي جلب هذه الملفات إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">كاتاكانا</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
+<translation id="7920501309908018401">‏ستتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
 <translation id="7925247922861151263">‏تعذّر فحص AAA</translation>
 <translation id="7925686952655276919">عدم استخدام بيانات الجوال للمزامنة</translation>
 <translation id="7928710562641958568">إخراج الجهاز</translation>
+<translation id="7933875256234974853">‏جارٍ الاستعداد لمزامنة ملفات Google Drive…</translation>
 <translation id="7943385054491506837">‏الأمريكية Colemak</translation>
 <translation id="7953739707111622108">لا يمكن فتح الجهاز لعدم التعرف على نظام الملفات.</translation>
 <translation id="7969525169268594403">السلوفينية</translation>
 <translation id="7972920761225148017">الفرنسية (سويسرا)</translation>
 <translation id="7973962044839454485">‏تعذّرت مصادقة PPP نظرًا لوجود خطأ في اسم المستخدم أو كلمة المرور</translation>
 <translation id="7980421588063892270">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Colemak</translation>
+<translation id="7985008041109611710">تجري مزامنة <ph name="NUMBER_OF_FILES_SYNCING" /> ملف</translation>
 <translation id="8000066093800657092">لا شبكة</translation>
 <translation id="8008366997883261463">كلب</translation>
 <translation id="8028993641010258682">الحجم</translation>
@@ -1003,6 +1012,7 @@
 <translation id="8919081441417203123">الدانماركية</translation>
 <translation id="8949925099261528566">تم الاتصال بالشبكة ولكنها غير متصلة بالإنترنت.</translation>
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
+<translation id="8971742885766657349">جارٍ المزامنة - ‫%<ph name="PERCENT" /></translation>
 <translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
 <translation id="8998871447376656508">‏لا تتوفّر مساحة كافية في Google Drive لإكمال التحميل.</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
@@ -1036,6 +1046,7 @@
 <translation id="9213073329713032541">بدأ التثبيت بنجاح.</translation>
 <translation id="9219103736887031265">الصور</translation>
 <translation id="9219908252191632183">قمري</translation>
+<translation id="937795003075802289">تجري مزامنة ملف واحد</translation>
 <translation id="938470336146445890">يُرجى تثبيت شهادة مستخدم.</translation>
 <translation id="939736085109172342">مجلد جديد</translation>
 <translation id="943972244133411984">تم التعديل بواسطة</translation>

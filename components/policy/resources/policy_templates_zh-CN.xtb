@@ -213,6 +213,7 @@
 <translation id="1197437816436565375">您无法强制 Android 应用使用代理。一小部分代理设置已可供 Android 应用使用，此类应用可能会主动选择使用这些设置。有关详情，请参阅 <ph name="PROXY_MODE_POLICY_NAME" /> 政策。</translation>
 <translation id="1198183996903759302">如果此政策设为 True（或者 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 设为 False），网页会无法访问 WebGL API，而且插件会无法使用 Pepper 3D API。
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，而且插件可以使用 Pepper 3D API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
+<translation id="1198458955128279215">使用功能发布计划的默认行为。</translation>
 <translation id="1202216683470826356">在“新标签页”页面上显示卡片</translation>
 <translation id="120314092766637918">如果此政策已启用或未设置，<ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 将为 <ph name="PRODUCT_NAME" /> 控制客户端钓鱼式攻击保护。如果 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 设为 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> 或 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />，客户端钓鱼式攻击保护功能会运行本地模型来检查网页是否为钓鱼式攻击网页。如果模型认为某个网页是钓鱼式攻击网页，<ph name="PRODUCT_NAME" /> 会向 Google 发送请求，以做出最终判定。
 如果停用此政策，客户端钓鱼式攻击保护功能将不会执行任何保护，也不会向 Google 发送数据请求判定。</translation>
@@ -833,6 +834,7 @@
 <translation id="1768225118528727376">向这些网站授予窗口管理权限</translation>
 <translation id="1770071413238151235">12 小时制</translation>
 <translation id="1771024053220392089">停用旧版浏览器支持</translation>
+<translation id="1781225230395284182">在对 beforeunload 事件调用 preventDefault() 时显示取消对话框。</translation>
 <translation id="1781356041596378058">此政策亦用于控制对 Android 开发者选项的访问。如果此政策设为 true，用户将无法访问开发者选项。如果此政策设为 false 或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次 Build 号即可访问开发者选项。</translation>
 <translation id="1787790976045065845">仅当 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> 政策设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> 或 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />，并且通过智能卡验证身份的用户移除该卡时，此政策才会生效。通过设置此政策，您可指定旨在让用户知道系统即将执行的操作的通知应持续显示多少秒。此通知会遮住屏幕上的其他内容。仅当此通知显示完毕后，系统才会执行相应操作。用户只需在此通知显示完毕前重新插入智能卡，便能阻止系统执行该操作。如果此政策设为零，系统将不会显示任何通知，并且会立即执行该操作。</translation>
 <translation id="1793346220873697538">默认停用 PIN 码打印</translation>
@@ -1914,6 +1916,7 @@
 <translation id="2787774054174244402">如果此政策设为 True，用户将无法向外部存储设备写入内容。
 
       除非外部存储设备已被禁用，否则如果您将 ExternalStorageReadOnly 设为 False 或不设置它，用户便能在没有使用防写入保护的外部存储设备上创建和修改文件。（您可以通过将 ExternalStorageDisable 设为 True 来禁用外部存储设备。）</translation>
+<translation id="2788443040242264100">在对 beforeunload 事件调用 preventDefault() 时不显示取消对话框。</translation>
 <translation id="2789742777235177478">限制通过 GAIA（不使用 SAML）验证身份的用户可在锁定屏幕上离线登录的时长</translation>
 <translation id="2796714419743648316">针对应用级使用时限的许可名单</translation>
 <translation id="2801065672151277034">证书管理设置</translation>
@@ -2562,6 +2565,7 @@
 <translation id="3339271789059866414">配置系统代理服务的可用情况以及系统服务的代理凭据。
       如果此政策未设置，系统代理服务将不可用。</translation>
 <translation id="334231891933432876">一旦用户的帐号身份验证失效，就立即强制用户退出登录</translation>
+<translation id="3345323903592385588">虚拟机配置在安装程序中的显示顺序。如果指定了多个虚拟机配置，具有最小 display_order 值的虚拟机配置将显示在列表顶部。默认值为 0。</translation>
 <translation id="3348799281602260763">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
       如果此政策已停用或未设置，这些 TLS/DTLS 版本会被停用。
 
@@ -2690,6 +2694,18 @@
       当此政策不含任何时间范围或未设置时：
       此政策不会阻止任何自动进行的更新检查，但其他政策可能会阻止这类检查。
       截至 M88，只有那些已配置为自动启动型自助服务终端的 <ph name="PRODUCT_OS_NAME" />设备才会启用此功能。其他设备均不受此政策的限制。不过，从 M89 开始，此政策在所有 <ph name="PRODUCT_OS_NAME" />设备上都会处于启用状态。</translation>
+<translation id="3457921137261127955">X.509 密钥用法扩展项声明了可以以何种方式使用证书中的密钥。此类说明可确保不会在非预期的情况下使用证书，从而防止针对 HTTPS 和其他协议的一类跨协议攻击。为了实现这一功能，HTTPS 客户端必须检查服务器证书是否与连接的 TLS 参数匹配。
+
+如果此政策已启用，<ph name="PRODUCT_NAME" /> 将执行此检查。
+这有助于防止攻击者以证书所有者预期之外的方式操控浏览器来解读密钥。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将在协商 TLS 1.2 且使用链接到本地信任锚的 RSA 证书的 HTTPS 连接中跳过此检查。本地信任锚的示例包括政策提供的或用户安装的根证书。在所有其他情况下，无论此政策设置为何，Google Chrome 都会执行此检查。
+
+如果未配置此政策，<ph name="PRODUCT_NAME" /> 的行为将与停用此政策时的行为相同。
+
+此政策旨在供管理员预览未来版本的行为，这些未来版本将默认启用此检查。届时，此政策可暂时供需要更多时间进行更新的管理员继续使用。
+
+未通过此检查的连接将失败并显示错误 ERR_SSL_KEY_USAGE_INCOMPATIBLE。显示此错误的网站可能存在证书配置错误。新型 ECDHE_RSA 加密套件使用“digitalSignature”密钥用法选项，旧版 RSA 解密加密套件则使用“keyEncryptoment”密钥用法选项。如果不确定，管理员应该在用于 HTTPS 的 RSA 证书中同时添加这两种选项。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3461279434465463233">报告电源状态</translation>
 <translation id="3478024346823118645">退出时清除用户数据</translation>
@@ -5897,6 +5913,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
 <translation id="6483115462650732746">在自助服务终端模式下显示悬浮式无障碍功能菜单</translation>
+<translation id="6485036313708130232">控制在对 beforeunload 事件调用 preventDefault 时，是否显示取消确认对话框的新行为</translation>
 <translation id="6489084406497912050">控制用户是否可以添加 Kerberos 帐号。
 
           如果此政策已启用或未设置，用户将可以通过 Kerberos 设置页中的“Kerberos 帐号”设置添加 Kerberos 帐号。用户对自己添加的帐号拥有完全控制权，可以修改或移除这些帐号。
@@ -7175,6 +7192,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7613115815080726221">系统应在设备闲置多久（以毫秒为单位）后采取闲置操作</translation>
 <translation id="7614663184588396421">已停用协议架构的列表</translation>
 <translation id="7616631530432070402">传输层安全协议 (TLS) 中将启用 3DES 加密套件</translation>
+<translation id="7617710923960807616">此政策用于控制当网页对 beforeunload 事件调用 preventDefault 时，系统是否显示确认对话框。<ph name="PRODUCT_NAME" /> 过去不会显示这类对话框，但现在将更改此默认行为。此政策是一种临时的应急方法，旨在提供给特定企业使用，这些企业的网站因这一新行为而损坏，并且需要一段时间才能修复。
+
+如果此政策已启用，当网页对 beforeunload 事件调用 preventDefault 时，系统会显示取消确认对话框。
+
+如果此政策已停用，当网页对 beforeunload 事件调用 preventDefault 时，系统不会显示取消确认对话框。
+
+如果未设置此政策，系统将根据 <ph name="PRODUCT_NAME" /> 功能发布计划使用默认行为。</translation>
 <translation id="761788785484453836">要求为所有网站启用网站隔离</translation>
 <translation id="7620869951155758729">此政策可指定用于生成和验证家长访问码的配置。
 
@@ -7953,6 +7977,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       应以毫秒为单位指定此政策的值。</translation>
 <translation id="8330437518362176921">下载和更新自助服务终端 Chrome 应用时仅使用政策提供的更新网址</translation>
 <translation id="8331479227794770304">启用粘滞键</translation>
+<translation id="8332822245414537447">停用 RSA 密钥用法检查</translation>
 <translation id="8337114537412769126">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索建议时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送建议搜索请求。</translation>
@@ -8239,6 +8264,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。
       如果未设置此政策，则默认情况下，受企业管理的用户无法在 Chrome 操作系统上使用该模式，但在其他操作系统上可以使用，而其他用户在任何操作系统上均可使用。</translation>
+<translation id="862621549134406761">启用 RSA 密钥用法检查</translation>
 <translation id="8626826495474944836">要求为所有网站启用网站隔离功能</translation>
 <translation id="8631314130868563649">停用“用电高峰期切换电源”电源管理政策</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
@@ -8349,6 +8375,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您设置了此政策，用户将无法更改这项功能。如果此政策未设置，用户便可以更改此设置。</translation>
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
+<translation id="8708628595824806312">检查由本地信任锚颁发的服务器证书的 RSA 密钥用法</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
 <translation id="8715181294371649277">启用“安全浏览”功能的实时下载保护服务</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>
@@ -8490,6 +8517,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如果此政策已停用，所有网页上都无法使用 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="8864975621965365890">浏览使用 <ph name="PRODUCT_FRAME_NAME" />呈现的网站时，阻止显示“停止支持”的提示。</translation>
+<translation id="8865404058177794289">为 RSA 密钥用法检查使用默认设置</translation>
 <translation id="8866430022832109569">应用内广告资源报告</translation>
 <translation id="886645881209114007">允许用户在 <ph name="PRODUCT_OS_NAME" />上使用 <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="8867894831390233044">控制用户是否可以进行远程调试。

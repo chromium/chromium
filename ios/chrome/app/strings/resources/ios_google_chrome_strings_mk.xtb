@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome не може да ги провери сите лозинки. Обидете се повторно утре.</translation>
 <translation id="2736805085127235148">Во моментов, известувањата за Chrome се исклучени во вашите поставки за уредот.</translation>
 <translation id="2767464022270041271">Немате зачувани лозинки. Google Password Manager може да ги проверува вашите лозинки кога ги зачувувате.</translation>
+<translation id="2840432500933227975">Отворете „Поставки за Chrome“ на iOS, па допрете на „Стандардна АПЛИКАЦИЈА за прелистување“ и изберете Chrome.</translation>
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Ова значи дека Chrome ќе го бара сајтот за мобилен уред секој пат.</translation>
 <translation id="3706101708757577809">Сега може да го користите Chrome секогаш кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="3720541637541300822">Заклучувај ги картичките „Инкогнито“ кога ќе го затворам Chrome</translation>
+<translation id="3827545470516145620">Добивате стандардна безбедносна заштита на уредов</translation>
 <translation id="384394811301901750">Google Chrome не може да ја користи камерата сега</translation>
 <translation id="3980220367029651214">Ги заменувате сметките за синхронизација од <ph name="USER_EMAIL1" /> на <ph name="USER_EMAIL2" />. Вашите постоечки податоци на Chrome се управувани од <ph name="DOMAIN" />. Ова ќе ги избрише податоците од уредов, но тие ќе останат на <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Вашата организација бара да останете одјавени од Chrome.</translation>

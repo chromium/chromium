@@ -1009,6 +1009,7 @@
 <translation id="8919081441417203123">Дани хэл</translation>
 <translation id="8949925099261528566">Холбогдсон хэдий ч интернэт алга</translation>
 <translation id="8965697826696209160">Хангалттай багтаамж байхгүй байна.</translation>
+<translation id="8971742885766657349">Синк хийж байна - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Хятад (уламжлалт) пиньинь</translation>
 <translation id="8998871447376656508">Таны Google Драйвт байршуулалтыг дуусгах хангалттай сул зай байхгүй байна.</translation>
 <translation id="9003940392834790328">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>

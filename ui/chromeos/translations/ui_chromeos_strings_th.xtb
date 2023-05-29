@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">เดนมาร์ก</translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
 <translation id="8965697826696209160">พื้นที่ไม่เพียงพอ</translation>
+<translation id="8971742885766657349">กำลังซิงค์ - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">พินอินภาษาจีน (ตัวเต็ม)</translation>
 <translation id="8998871447376656508">มีพื้นที่ว่างใน Google ไดรฟ์ไม่เพียงพอที่จะอัปโหลดให้เสร็จสิ้น</translation>
 <translation id="9003940392834790328">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>

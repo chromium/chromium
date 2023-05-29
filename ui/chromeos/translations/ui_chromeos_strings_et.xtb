@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">taani keel</translation>
 <translation id="8949925099261528566">Ühendatud, Interneti-ühendus puudub</translation>
 <translation id="8965697826696209160">Ruumi ei ole piisavalt.</translation>
+<translation id="8971742885766657349">Sünkroonimine – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">hiina (traditsiooniline), Pinyin</translation>
 <translation id="8998871447376656508">Teie Google Drive'is pole üleslaadimise lõpuleviimiseks piisavalt vaba ruumi.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, üksikasjad</translation>

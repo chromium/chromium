@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google 网站</translation>
 <translation id="1853795129690976061">已与 Linux 共享此文件夹</translation>
 <translation id="1864756863218646478">找不到该文件。</translation>
+<translation id="1877377730633446520">这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE" /> 的可用空间。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，连接</translation>
 <translation id="1920670151694390848">马拉雅拉姆语音译</translation>
 <translation id="1920798810075583923">西瓜</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">展开文件反馈面板</translation>
 <translation id="1995337122023280937">转到文件位置</translation>
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
+<translation id="2004942826429452291">文件将同时存储在云端和此 Chromebook 上。</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="2025955442973426285">蒂格尼亚语</translation>
 <translation id="2037845485764049925">俄语</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">设备设置</translation>
 <translation id="2084809735218147718">一个人在用手势表达谢意</translation>
 <translation id="2088690981887365033">VPN 网络</translation>
+<translation id="2089751716171649322">在离线状态下轻松访问您的 Google 云端硬盘文件</translation>
 <translation id="2111134541987263231">开启<ph name="BEGIN_BOLD" />在无痕模式下启用<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 项内容将被删除且无法恢复。</translation>
 <translation id="2122305276694332719">自动连接至隐藏的网络会导致其他人能查看您的设备和一些网络设置，因此我们建议不要这样做。</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3486821258960016770">蒙古语</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
+<translation id="3501954296166022751">您的 Google 云端硬盘文件已可供离线访问</translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3511705761158917664">正在准备同步 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
@@ -565,6 +569,7 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5500122897333236901">冰岛语</translation>
 <translation id="5508696409934741614">圆点</translation>
+<translation id="5519161320735100193">Google 云端硬盘设置</translation>
 <translation id="5522908512596376669">文件列表已切换到列表视图。</translation>
 <translation id="5524517123096967210">无法读取该文件。</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 图片</translation>
@@ -856,6 +861,7 @@
 <translation id="7805768142964895445">状态</translation>
 <translation id="7806708061868529807">希伯来语</translation>
 <translation id="78104721049218340">泰语 Kedmanee 键盘</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">配置网络时出错</translation>
 <translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
@@ -868,15 +874,18 @@
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
 <translation id="7925247922861151263">AAA 检查失败</translation>
 <translation id="7925686952655276919">不使用移动数据进行同步</translation>
 <translation id="7928710562641958568">卸载设备</translation>
+<translation id="7933875256234974853">正在准备同步云端硬盘文件…</translation>
 <translation id="7943385054491506837">美国英语(Colemak)</translation>
 <translation id="7953739707111622108">无法识别此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="7969525169268594403">斯洛维尼亚语</translation>
 <translation id="7972920761225148017">法语（瑞士）</translation>
 <translation id="7973962044839454485">用户名或密码不正确，导致 PPP 身份验证失败</translation>
 <translation id="7980421588063892270">英语（美国）Colemak 键盘</translation>
+<translation id="7985008041109611710">正在同步 <ph name="NUMBER_OF_FILES_SYNCING" /> 个文件</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8008366997883261463">杰克罗素梗犬</translation>
 <translation id="8028993641010258682">大小</translation>
@@ -998,6 +1007,7 @@
 <translation id="8919081441417203123">丹麦语</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8965697826696209160">空间不足。</translation>
+<translation id="8971742885766657349">正在同步 - 已完成 <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="8998871447376656508">您的 Google 云端硬盘中的可用空间不足，无法完成上传。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
@@ -1031,6 +1041,7 @@
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="9219908252191632183">月球表面</translation>
+<translation id="937795003075802289">正在同步 1 个文件</translation>
 <translation id="938470336146445890">请安装用户证书。</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="943972244133411984">修改者</translation>

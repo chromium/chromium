@@ -30,6 +30,7 @@
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
+<translation id="1555506416658437797">редактира начините на плащане.</translation>
 <translation id="1583073672411044740">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
 <translation id="1587325591171447154">Chrome блокира „<ph name="FILE_NAME" />“, тъй като файлът е опасен.</translation>
@@ -81,6 +82,7 @@
 <translation id="234869673307233423">Chrome не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="235650106824528204">Данните в Chrome, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Напред</translation>
+<translation id="2399868464369312507">Google Chrome се опитва да редактира начините на плащане.</translation>
 <translation id="2401189691232800402">Система Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>

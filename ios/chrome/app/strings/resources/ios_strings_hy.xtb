@@ -750,6 +750,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
 <translation id="5965679971710331625">Դուք մուտք եք գործել</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 էջանիշ ջնջվեց}one{{count} էջանիշ ջնջվեց}other{{count} էջանիշ ջնջվեց}}</translation>
 <translation id="5979837087407522202">Գաղտնաբառերի որոնում</translation>
 <translation id="5981230843984570095">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>
 <translation id="5982717868370722439">Առկա տվյալների ավելացում <ph name="USER_EMAIL" /> հաշվում:</translation>
@@ -997,6 +998,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7435356471928173109">Անջատվել է ադմինիստրատորի կողմից</translation>
 <translation id="7438481509621345350">Այժմ, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="CHANNEL_NAME" /> ալիքից։</translation>
 <translation id="7446583256109515732">Ներդիրն ապամրացվեց</translation>
+<translation id="7451023311965289370">{count,plural, =1{Էջանիշը պահվեց այստեղ՝ «{title}»}one{Էջանիշները պահվեցին այստեղ՝ «{title}»}other{Էջանիշները պահվեցին այստեղ՝ «{title}»}}</translation>
 <translation id="7454057999980797137">Նահանգ/շրջան</translation>
 <translation id="7459628154744868585">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="746684838091935575">3. Ընտրեք Chrome-ը։</translation>
