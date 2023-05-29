@@ -46,11 +46,6 @@ extern const char kCompatToolVersionGameMismatch[];
 // form.
 extern const char kDeviceInformationKey[];
 
-// TODO(b/218403711): remove these when insert_coin is deprecated. We only have
-// insert_coin in the short-term until installer UX is finalized.
-extern const char kInsertCoinSuccessMessage[];
-extern const char kInsertCoinRejectMessage[];
-
 struct CompatToolInfo {
   absl::optional<int> game_id;
   std::string proton = "None";

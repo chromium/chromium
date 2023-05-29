@@ -38,9 +38,6 @@ const char kBorealisAppIdRegex[] = "(?:steam:\\/\\/rungameid\\/)(\\d+)";
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 
-const char kInsertCoinSuccessMessage[] = "Success";
-const char kInsertCoinRejectMessage[] = "Coin Invalid";
-
 namespace {
 
 // Base feedback form URL, without query parameters for prefilling.
