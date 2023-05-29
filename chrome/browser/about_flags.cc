@@ -6782,6 +6782,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStartSurfaceWithAccessibilityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceWithAccessibility)},
 
+    {"enable-surface-polish", flag_descriptions::kSurfacePolishName,
+     flag_descriptions::kSurfacePolishDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSurfacePolish)},
+
     {"enable-show-scrollable-mvt-on-ntp",
      flag_descriptions::kShowScrollableMVTOnNTPAndroidName,
      flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,

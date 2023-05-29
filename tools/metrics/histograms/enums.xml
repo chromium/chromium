@@ -63060,6 +63060,7 @@ from previous Chrome versions.
   <int value="114480372" label="DeprecateAltClick:enabled"/>
   <int value="114541256" label="HomepagePromoCard:disabled"/>
   <int value="114657517" label="SecurePaymentConfirmationDebug:disabled"/>
+  <int value="114948617" label="SurfacePolish:enabled"/>
   <int value="115852043"
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:enabled"/>
   <int value="115915570"
@@ -66508,6 +66509,7 @@ from previous Chrome versions.
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
   <int value="1944156526" label="sync-url"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>
+  <int value="1945637293" label="SurfacePolish:disabled"/>
   <int value="1946014982"
       label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>
   <int value="1946358032" label="SwapClankShareHubRows:disabled"/>

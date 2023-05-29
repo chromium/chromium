@@ -317,6 +317,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceSpareTab,
     &kStartSurfaceDisabledFeedImprovement,
     &kStartSurfaceWithAccessibility,
+    &kSurfacePolish,
     &kUmaBackgroundSessions,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
     &kUseLibunwindstackNativeUnwinderAndroid,
@@ -1081,6 +1082,10 @@ BASE_FEATURE(kStartSurfaceDisabledFeedImprovement,
 
 BASE_FEATURE(kStartSurfaceWithAccessibility,
              "StartSurfaceWithAccessibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSurfacePolish,
+             "SurfacePolish",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.

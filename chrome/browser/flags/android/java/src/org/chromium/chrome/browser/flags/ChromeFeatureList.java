@@ -422,6 +422,7 @@ public abstract class ChromeFeatureList {
     public static final String STORE_HOURS = "StoreHoursAndroid";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
+    public static final String SURFACE_POLISH = "SurfacePolish";
     public static final String SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT =
             "SwapPixelFormatToFixConvertFromTranslucent";
     public static final String SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS =
@@ -564,6 +565,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStartSurfaceWithAccessibility =
             new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
+    public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
     public static final CachedFlag sSwapPixelFormatToFixConvertFromTranslucent = new CachedFlag(
             SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
             ChromePreferenceKeys.FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
@@ -646,6 +648,7 @@ public abstract class ChromeFeatureList {
         sStartSurfaceReturnTime,
         sStartSurfaceWithAccessibility,
         sStoreHoursAndroid,
+        sSurfacePolish,
         sSwapPixelFormatToFixConvertFromTranslucent,
         sTabGridLayoutAndroid,
         sTabGroupsAndroid,
