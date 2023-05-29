@@ -1804,6 +1804,25 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
           Parent()->StyleRef().CanContainAbsolutePositionObjects());
 }
 
+const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
+    LayoutBox* below) const {
+  const LayoutObject* maybe_sticky_ancestor = this;
+  while (maybe_sticky_ancestor && maybe_sticky_ancestor != below) {
+    if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
+      return To<LayoutBoxModelObject>(maybe_sticky_ancestor);
+    }
+
+    // We use LocationContainer here to find the nearest sticky ancestor which
+    // shifts the given element's position so that the sticky positioning code
+    // is aware ancestor sticky position shifts.
+    maybe_sticky_ancestor =
+        maybe_sticky_ancestor->IsLayoutInline()
+            ? maybe_sticky_ancestor->Container()
+            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
+  }
+  return nullptr;
+}
+
 gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();

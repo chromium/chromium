@@ -775,20 +775,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           constraint->scroll_container_relative_containing_block_rect =
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
-          if (const PaintLayer* sticky_box_shifting_ancestor =
+          if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
             constraint->nearest_element_shifting_sticky_box =
                 CompositorElementIdFromUniqueObjectId(
-                    sticky_box_shifting_ancestor->GetLayoutObject().UniqueId(),
+                    sticky_box_shifting_ancestor->UniqueId(),
                     CompositorElementIdNamespace::kStickyTranslation);
           }
-          if (const PaintLayer* containing_block_shifting_ancestor =
+          if (const LayoutBoxModelObject* containing_block_shifting_ancestor =
                   layout_constraint
                       ->nearest_sticky_layer_shifting_containing_block) {
             constraint->nearest_element_shifting_containing_block =
                 CompositorElementIdFromUniqueObjectId(
-                    containing_block_shifting_ancestor->GetLayoutObject()
-                        .UniqueId(),
+                    containing_block_shifting_ancestor->UniqueId(),
                     CompositorElementIdNamespace::kStickyTranslation);
           }
           state.sticky_constraint = std::move(constraint);
