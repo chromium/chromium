@@ -174,6 +174,11 @@
   [self.delegate passwordDetailsCoordinatorDidRemove:self];
 }
 
+- (void)dismissPasswordDetailsTableViewController {
+  [self.delegate passwordDetailsCancelButtonWasTapped];
+  [self.delegate passwordDetailsCoordinatorDidRemove:self];
+}
+
 - (void)showPasscodeDialogForReason:(PasscodeDialogReason)reason {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE);
@@ -352,7 +357,7 @@
             self.viewController);
   // For password details opened outside of the settings context.
   if (_context == DetailsContext::kOutsideSettings) {
-    [self passwordDetailsTableViewControllerWasDismissed];
+    [self dismissPasswordDetailsTableViewController];
   } else {
     // For password details opened from the Password Manager in the settings.
     [self.baseNavigationController popViewControllerAnimated:YES];
