@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
 <translation id="1864756863218646478">הקובץ לא נמצא.</translation>
+<translation id="1877377730633446520">זה ישתמש בנפח של <ph name="REQUIRED_SPACE" /> בערך. עכשיו יש מקום פנוי בנפח <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, התחברות</translation>
 <translation id="1920670151694390848">מליאלאם, תעתיק</translation>
 <translation id="1920798810075583923">אבטיח</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
+<translation id="2004942826429452291">‏הקבצים יישמרו בענן וב-Chromebook הזה.</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
 <translation id="2025955442973426285">תיגרינית</translation>
 <translation id="2037845485764049925">רוסית</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">הגדרות המכשיר</translation>
 <translation id="2084809735218147718">חתימת תודה רבה</translation>
 <translation id="2088690981887365033">‏רשת VPN</translation>
+<translation id="2089751716171649322">‏לגשת בקלות לקבצים שלך ב-Google Drive במצב אופליין</translation>
 <translation id="2111134541987263231">מפעילים את האפשרות <ph name="BEGIN_BOLD" />לאפשר במצב פרטי<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">יימחקו <ph name="NUMBER_OF_ITEMS" /> פריטים ולא תהיה אפשרות לשחזר אותם.</translation>
 <translation id="2122305276694332719">חיבור אוטומטי לרשת מוסתרת מאפשר לאחרים לראות את המכשיר שלך וחלק מהגדרות הרשת. האפשרות הזו לא מומלצת.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
+<translation id="3501954296166022751">‏הקבצים ב-Google Drive זמינים במצב אופליין</translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3511705761158917664">בהכנה לסנכרון של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
@@ -574,6 +578,7 @@
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5500122897333236901">איסלנדית</translation>
 <translation id="5508696409934741614">נקודות</translation>
+<translation id="5519161320735100193">‏הגדרות Google Drive</translation>
 <translation id="5522908512596376669">רשימת הקבצים מוצגת עכשיו בתצוגת רשימה.</translation>
 <translation id="5524517123096967210">הקובץ לא ניתן לקריאה.</translation>
 <translation id="5533102081734025921">תמונה בפורמט <ph name="IMAGE_TYPE" /></translation>
@@ -866,6 +871,7 @@
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7806708061868529807">עברית</translation>
 <translation id="78104721049218340">‏תאילנדית עם מקלדת Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7831491651892296503">אירעה שגיאה בהגדרת הרשת</translation>
 <translation id="7839804798877833423">הבאת קבצים אלה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
@@ -878,15 +884,18 @@
 <translation id="7903984238293908205">קאטקאנה</translation>
 <translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט.</translation>
 <translation id="7925247922861151263">‏בדיקת AAA נכשלה</translation>
 <translation id="7925686952655276919">אין להשתמש בנתונים ניידים עבור סנכרון</translation>
 <translation id="7928710562641958568">הוצאת המכשיר</translation>
+<translation id="7933875256234974853">‏בהכנה לסנכרון קובצי Drive…</translation>
 <translation id="7943385054491506837">‏ארה"ב – Colemak</translation>
 <translation id="7953739707111622108">לא ניתן לפתוח מכשיר זה משום שמערכת הקבצים שלו לא זוהתה.</translation>
 <translation id="7969525169268594403">סלובנית</translation>
 <translation id="7972920761225148017">צרפתית (שוויץ)</translation>
 <translation id="7973962044839454485">‏אימות PPP נכשל בשל שם משתמש או סיסמה שגויים</translation>
 <translation id="7980421588063892270">‏מקלדת Colemak באנגלית (US)</translation>
+<translation id="7985008041109611710">סנכרון של <ph name="NUMBER_OF_FILES_SYNCING" /> קבצים</translation>
 <translation id="8000066093800657092">אין רשת</translation>
 <translation id="8008366997883261463">כלב</translation>
 <translation id="8028993641010258682">גודל</translation>
@@ -1041,6 +1050,7 @@
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
+<translation id="937795003075802289">סנכרון של קובץ אחד</translation>
 <translation id="938470336146445890">יש להתקין אישור משתמש.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="943972244133411984">שונה על ידי</translation>
