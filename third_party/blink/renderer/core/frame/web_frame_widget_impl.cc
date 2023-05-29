@@ -2472,7 +2472,7 @@ std::unique_ptr<cc::WebVitalMetrics> WebFrameWidgetImpl::GetWebVitalMetrics() {
 
   base::TimeTicks start = perf.NavigationStartAsMonotonicTime();
   base::TimeTicks largest_contentful_paint =
-      perf.LargestContentfulPaintAsMonotonicTimeForMetrics();
+      perf.LargestContentfulDetailsForMetrics().paint_time;
   if (largest_contentful_paint >= start) {
     metrics->largest_contentful_paint = largest_contentful_paint - start;
     metrics->has_lcp = true;

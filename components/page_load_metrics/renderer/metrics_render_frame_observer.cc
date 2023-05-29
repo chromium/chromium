@@ -622,68 +622,82 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         CreateTimeDeltaFromTimestampsInSeconds(perf.FirstMeaningfulPaint(),
                                                start);
   }
-  if (perf.LargestImagePaintSizeForMetrics() > 0) {
+  blink::LargestContentfulPaintDetailsForReporting
+      largest_contentful_paint_details =
+          perf.LargestContentfulDetailsForMetrics();
+
+  if (largest_contentful_paint_details.image_paint_size > 0) {
     timing->paint_timing->largest_contentful_paint->largest_image_paint_size =
-        perf.LargestImagePaintSizeForMetrics();
+        largest_contentful_paint_details.image_paint_size;
     // Note that size can be nonzero while the time is 0 since a time of 0 is
     // sent when the image is painting. We assign the time even when it is 0 so
     // that it's not ignored, but need to be careful when doing operations on
     // the value.
     timing->paint_timing->largest_contentful_paint->largest_image_paint =
-        perf.LargestImagePaintForMetrics() == 0.0
+        largest_contentful_paint_details.image_paint_time == 0.0
             ? base::TimeDelta()
             : CreateTimeDeltaFromTimestampsInSeconds(
-                  perf.LargestImagePaintForMetrics(), start);
+                  largest_contentful_paint_details.image_paint_time, start);
+
     timing->paint_timing->largest_contentful_paint->type =
         LargestContentfulPaintTypeToUKMFlags(
-            perf.LargestContentfulPaintTypeForMetrics());
+            largest_contentful_paint_details.type);
+
     timing->paint_timing->largest_contentful_paint->image_bpp =
-        perf.LargestContentfulPaintImageBPPForMetrics();
-    if (perf.LargestContentfulPaintImageRequestPriorityForMetrics()) {
+        largest_contentful_paint_details.image_bpp;
+
+    if (largest_contentful_paint_details.image_request_priority.has_value()) {
       timing->paint_timing->largest_contentful_paint
           ->image_request_priority_valid = true;
       timing->paint_timing->largest_contentful_paint
           ->image_request_priority_value =
           blink::WebURLRequest::ConvertToNetPriority(
-              *perf.LargestContentfulPaintImageRequestPriorityForMetrics());
+              largest_contentful_paint_details.image_request_priority.value());
     } else {
       timing->paint_timing->largest_contentful_paint
           ->image_request_priority_valid = false;
     }
 
     // Set largest image load type
-    if (perf.LargestContentfulPaintImageLoadStart().has_value()) {
+    if (largest_contentful_paint_details.image_load_start.has_value()) {
       timing->paint_timing->largest_contentful_paint->largest_image_load_start =
           CreateTimeDeltaFromTimestampsInSeconds(
-              (*perf.LargestContentfulPaintImageLoadStart()).InSecondsF(),
+              (largest_contentful_paint_details.image_load_start.value())
+                  .InSecondsF(),
               start);
     }
-    if (perf.LargestContentfulPaintImageLoadEnd().has_value()) {
+
+    if (largest_contentful_paint_details.image_load_end.has_value()) {
       timing->paint_timing->largest_contentful_paint->largest_image_load_end =
           CreateTimeDeltaFromTimestampsInSeconds(
-              (*perf.LargestContentfulPaintImageLoadEnd()).InSecondsF(), start);
+              (largest_contentful_paint_details.image_load_end.value())
+                  .InSecondsF(),
+              start);
     }
 
     timing->paint_timing->largest_contentful_paint
         ->is_loaded_from_memory_cache =
-        perf.LargestContentfulPaintImageIsLoadedFromMemoryCache();
+        largest_contentful_paint_details.is_loaded_from_memory_cache;
 
     timing->paint_timing->largest_contentful_paint
         ->is_preloaded_with_early_hints =
-        perf.LargestContentfulPaintImageIsPreloadedWithEarlyHints();
+        largest_contentful_paint_details.is_preloaded_with_early_hints;
   }
-  if (perf.LargestTextPaintSizeForMetrics() > 0) {
+  if (largest_contentful_paint_details.text_paint_size > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the
     // same time. This is a renderer side DCHECK to ensure this.
-    DCHECK(perf.LargestTextPaintForMetrics());
+    DCHECK(largest_contentful_paint_details.text_paint_time);
+
     timing->paint_timing->largest_contentful_paint->largest_text_paint =
         CreateTimeDeltaFromTimestampsInSeconds(
-            perf.LargestTextPaintForMetrics(), start);
+            largest_contentful_paint_details.text_paint_time, start);
+
     timing->paint_timing->largest_contentful_paint->largest_text_paint_size =
-        perf.LargestTextPaintSizeForMetrics();
+        largest_contentful_paint_details.text_paint_size;
+
     timing->paint_timing->largest_contentful_paint->type =
         LargestContentfulPaintTypeToUKMFlags(
-            perf.LargestContentfulPaintTypeForMetrics());
+            largest_contentful_paint_details.type);
   }
   // It is possible for a frame to switch from eligible for painting to
   // ineligible for it prior to the first paint. If this occurs, we need to
