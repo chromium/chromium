@@ -235,14 +235,14 @@ def _expand_test_code(code: str) -> str:
     return code
 
 
-class TestType(str, enum.Enum):
+class CanvasType(str, enum.Enum):
     HTML_CANVAS = 'htmlcanvas'
     OFFSCREEN_CANVAS = 'offscreencanvas'
     WORKER = 'worker'
 
 
-def _get_enabled_test_types(test: Mapping[str, Any]) -> Set[TestType]:
-    return {TestType(t.lower()) for t in test.get('canvasType', TestType)}
+def _get_enabled_canvas_types(test: Mapping[str, Any]) -> Set[CanvasType]:
+    return {CanvasType(t.lower()) for t in test.get('canvasType', CanvasType)}
 
 
 @dataclasses.dataclass
@@ -293,19 +293,19 @@ def _render_template(jinja_env: jinja2.Environment,
 
 def _write_reference_test(jinja_env: jinja2.Environment,
                           params: Mapping[str, Any],
-                          enabled_tests: Set[TestType],
+                          enabled_tests: Set[CanvasType],
                           canvas_path: str, offscreen_path: str):
-    if TestType.HTML_CANVAS in enabled_tests:
+    if CanvasType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template("reftest_element.html"),
                              params), 'utf-8')
-    if TestType.OFFSCREEN_CANVAS in enabled_tests:
+    if CanvasType.OFFSCREEN_CANVAS in enabled_tests:
         pathlib.Path(f'{offscreen_path}.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template("reftest_offscreen.html"),
                              params), 'utf-8')
-    if TestType.WORKER in enabled_tests:
+    if CanvasType.WORKER in enabled_tests:
         pathlib.Path(f'{offscreen_path}.w.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template("reftest_worker.html"),
@@ -321,12 +321,12 @@ def _write_reference_test(jinja_env: jinja2.Environment,
                                  params)
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
-    if TestType.HTML_CANVAS in enabled_tests:
+    if CanvasType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}-expected.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template(ref_template_name),
                              ref_params), 'utf-8')
-    if {TestType.OFFSCREEN_CANVAS, TestType.WORKER} & enabled_tests:
+    if {CanvasType.OFFSCREEN_CANVAS, CanvasType.WORKER} & enabled_tests:
         pathlib.Path(f'{offscreen_path}-expected.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template(ref_template_name),
@@ -335,24 +335,24 @@ def _write_reference_test(jinja_env: jinja2.Environment,
 
 def _write_testharness_test(jinja_env: jinja2.Environment,
                             params: Mapping[str, Any],
-                            enabled_tests: Set[TestType],
+                            enabled_tests: Set[CanvasType],
                             canvas_path: str,
                             offscreen_path: str):
     # Create test cases for canvas and offscreencanvas.
-    if TestType.HTML_CANVAS in enabled_tests:
+    if CanvasType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}.html').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template("testharness_element.html"),
                              params), 'utf-8')
 
-    if TestType.OFFSCREEN_CANVAS in enabled_tests:
+    if CanvasType.OFFSCREEN_CANVAS in enabled_tests:
         pathlib.Path(f'{offscreen_path}.html').write_text(
             _render_template(
                 jinja_env,
                 jinja_env.get_template("testharness_offscreen.html"), params),
             'utf-8')
 
-    if TestType.WORKER in enabled_tests:
+    if CanvasType.WORKER in enabled_tests:
         pathlib.Path(f'{offscreen_path}.worker.js').write_text(
             _render_template(jinja_env,
                              jinja_env.get_template("testharness_worker.js"),
@@ -360,7 +360,7 @@ def _write_testharness_test(jinja_env: jinja2.Environment,
 
 
 def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
-                   sub_dir: str, enabled_tests: Set[TestType],
+                   sub_dir: str, enabled_tests: Set[CanvasType],
                    html_canvas_cfg: TestConfig,
                    offscreen_canvas_cfg: TestConfig) -> None:
     _validate_test(test)
@@ -382,14 +382,14 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
                 r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
                 r'\ncr = cairo.Context(surface)', expected)
 
-            if TestType.HTML_CANVAS in enabled_tests:
+            if CanvasType.HTML_CANVAS in enabled_tests:
                 expected_canvas = (
                     expected + "\nsurface.write_to_png('%s.png')\n" %
                     os.path.join(html_canvas_cfg.image_out_dir, sub_dir, name))
                 eval(compile(expected_canvas, '<test %s>' % name, 'exec'), {},
                     {'cairo': cairo})
 
-            if {TestType.OFFSCREEN_CANVAS, TestType.WORKER} & enabled_tests:
+            if {CanvasType.OFFSCREEN_CANVAS, CanvasType.WORKER} & enabled_tests:
                 expected_offscreen = (
                     expected +
                     "\nsurface.write_to_png('%s.png')\n" % os.path.join(
@@ -496,21 +496,21 @@ def genTestUtils_union(NAME2DIRFILE: str) -> None:
             name = test['name']
             print('\r(%s)' % name, ' ' * 32, '\t')
 
-            enabled_test_types = _get_enabled_test_types(test)
+            enabled_canvas_types = _get_enabled_canvas_types(test)
 
             already_tested = used_tests[name].intersection(
-                enabled_test_types)
+                enabled_canvas_types)
             if already_tested:
                 raise InvalidTestDefinitionError(
                     f'Test {name} is defined twice for types {already_tested}')
-            used_tests[name].update(enabled_test_types)
+            used_tests[name].update(enabled_canvas_types)
 
             sub_dir = _get_test_sub_dir(name, name_to_sub_dir)
             _generate_test(
                 test,
                 jinja_env,
                 sub_dir,
-                enabled_test_types,
+                enabled_canvas_types,
                 html_canvas_cfg=TestConfig(
                     out_dir=CANVASOUTPUTDIR,
                     image_out_dir=CANVASIMAGEOUTPUTDIR),
