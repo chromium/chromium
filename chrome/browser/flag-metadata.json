@@ -7390,6 +7390,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "use-android-staging-smds",
+    "owners": [ "cros-connectivity@google.com", "chadduffin"],
+    // This flag is required for cellular tests that involve SM-DS to be able
+    // to test against the Android staging SM-DS.
+    "expiry_milestone": -1
+  },
+  {
     "name": "use-angle",
     "owners": [ "angle-team@google.com" ],
     // This flag is used by certain customers to set ANGLE to use its OpenGL

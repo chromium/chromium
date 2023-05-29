@@ -176,6 +176,9 @@ extern const char kWebFilterInterstitialRefreshDescription[];
 extern const char kUpcomingFollowFeaturesName[];
 extern const char kUpcomingFollowFeaturesDescription[];
 
+extern const char kUseAndroidStagingSmdsName[];
+extern const char kUseAndroidStagingSmdsDescription[];
+
 extern const char kUseStorkSmdsServerAddressName[];
 extern const char kUseStorkSmdsServerAddressDescription[];
 
