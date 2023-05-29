@@ -4,12 +4,14 @@
 
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
@@ -19,6 +21,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/process_manager.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace video_conference {
@@ -30,6 +33,24 @@ VideoConferenceWebApp::~VideoConferenceWebApp() = default;
 void VideoConferenceWebApp::ActivateApp() {
   auto& web_contents = GetWebContents();
   web_contents.GetDelegate()->ActivateContents(&web_contents);
+}
+
+void VideoConferenceWebApp::SetCapturingStatus(VideoConferenceMediaType device,
+                                               bool is_capturing) {
+  // This needs to be called first.
+  vc_ukm_helper_->RegisterCapturingUpdate(device, is_capturing, state_);
+
+  switch (device) {
+    case VideoConferenceMediaType::kCamera:
+      state_.is_capturing_camera = is_capturing;
+      break;
+    case VideoConferenceMediaType::kMicrophone:
+      state_.is_capturing_microphone = is_capturing;
+      break;
+    case VideoConferenceMediaType::kScreen:
+      state_.is_capturing_screen = is_capturing;
+      break;
+  }
 }
 
 VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
@@ -44,10 +65,10 @@ VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
 
   auto* permission_controller =
       web_contents.GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
+  CHECK(permission_controller);
 
   auto* rfh = web_contents.GetPrimaryMainFrame();
-  DCHECK(rfh);
+  CHECK(rfh);
 
   auto camera_status =
       permission_controller->GetPermissionStatusForCurrentDocument(
@@ -93,8 +114,11 @@ VideoConferenceWebApp::VideoConferenceWebApp(
              .last_activity_time = base::Time::Now(),
              .is_capturing_microphone = false,
              .is_capturing_camera = false,
-             .is_capturing_screen = false} {
-  DCHECK(remove_media_app_callback_);
+             .is_capturing_screen = false},
+      vc_ukm_helper_(std::make_unique<VideoConferenceUkmHelper>(
+          ukm::UkmRecorder::Get(),
+          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())) {
+  CHECK(remove_media_app_callback_);
 
   auto* source =
       extensions::ProcessManager::Get(web_contents->GetBrowserContext());

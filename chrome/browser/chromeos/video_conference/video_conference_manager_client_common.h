@@ -8,6 +8,9 @@
 #include <array>
 #include <string>
 
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
+
 namespace video_conference {
 
 // AppIds that we want to skip tracking.
@@ -21,6 +24,23 @@ bool ShouldSkipId(const std::string& id);
 struct VideoConferencePermissions {
   bool has_camera_permission = false;
   bool has_microphone_permission = false;
+};
+
+// Struct holding state relevant to a VC web app.
+struct VideoConferenceWebAppState {
+  const base::UnguessableToken id;
+  base::Time last_activity_time;
+  bool is_capturing_microphone = false;
+  bool is_capturing_camera = false;
+  bool is_capturing_screen = false;
+  bool is_extension = false;
+};
+
+// Video conference media devices.
+enum VideoConferenceMediaType {
+  kCamera,
+  kMicrophone,
+  kScreen,
 };
 
 }  // namespace video_conference

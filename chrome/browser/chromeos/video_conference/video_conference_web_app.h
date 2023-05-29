@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
 #define CHROME_BROWSER_CHROMEOS_VIDEO_CONFERENCE_VIDEO_CONFERENCE_WEB_APP_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace base {
-class Time;
 class UnguessableToken;
 }  // namespace base
 
@@ -37,15 +40,6 @@ class VideoConferenceWebApp
     : public content::WebContentsObserver,
       public content::WebContentsUserData<VideoConferenceWebApp> {
  public:
-  struct State {
-    const base::UnguessableToken id;
-    base::Time last_activity_time;
-    bool is_capturing_microphone = false;
-    bool is_capturing_camera = false;
-    bool is_capturing_screen = false;
-    bool is_extension = false;
-  };
-
   VideoConferenceWebApp(const VideoConferenceWebApp&) = delete;
   VideoConferenceWebApp& operator=(const VideoConferenceWebApp&) = delete;
 
@@ -68,7 +62,11 @@ class VideoConferenceWebApp
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 
-  State& state() { return state_; }
+  // Set capturing status in state for the specified media device. This method
+  // is also responsible for updating data needed for UKM reporting.
+  void SetCapturingStatus(VideoConferenceMediaType device, bool is_capturing);
+
+  VideoConferenceWebAppState& state() { return state_; }
 
  private:
   friend class WebContentsUserData<VideoConferenceWebApp>;
@@ -86,7 +84,8 @@ class VideoConferenceWebApp
   // has been destroyed.
   base::RepeatingCallback<void(const base::UnguessableToken&)>
       remove_media_app_callback_;
-  State state_;
+  VideoConferenceWebAppState state_;
+  std::unique_ptr<VideoConferenceUkmHelper> vc_ukm_helper_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

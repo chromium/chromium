@@ -25727,6 +25727,54 @@ be describing additional metrics about the same event.
   <metric name="Data999"/>
 </event>
 
+<event name="VideoConferencingEvent" singular="True">
+  <owner>sanjeetnd@google.com</owner>
+  <owner>charleszhao@google.com</owner>
+  <summary>
+    Records videoconferencing usage on web apps. Only records for apps which
+    have captured camera, microphone, or screen at least once while open.
+  </summary>
+  <metric name="CameraCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing camera.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="DidCaptureCamera" enum="Boolean">
+    <summary>
+      App captured camera.
+    </summary>
+  </metric>
+  <metric name="DidCaptureMicrophone" enum="Boolean">
+    <summary>
+      App captured microphone.
+    </summary>
+  </metric>
+  <metric name="DidCaptureScreen" enum="Boolean">
+    <summary>
+      App captured screen.
+    </summary>
+  </metric>
+  <metric name="MicrophoneCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing microphone.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="ScreenCaptureDuration">
+    <summary>
+      The total time duration (bucketed) the VC app spent capturing the screen.
+      Duration in units of ms.
+    </summary>
+  </metric>
+  <metric name="TotalDuration">
+    <summary>
+      Duration (bucketed) for which the VC app was open. Duration in units of
+      ms.
+    </summary>
+  </metric>
+</event>
+
 <event name="VirtualKeyboard.Open">
   <owner>shend@chromium.org</owner>
   <summary>

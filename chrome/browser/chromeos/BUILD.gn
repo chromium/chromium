@@ -179,6 +179,8 @@ source_set("chromeos") {
     "video_conference/video_conference_manager_client_common.h",
     "video_conference/video_conference_media_listener.cc",
     "video_conference/video_conference_media_listener.h",
+    "video_conference/video_conference_ukm_helper.cc",
+    "video_conference/video_conference_ukm_helper.h",
     "video_conference/video_conference_web_app.cc",
     "video_conference/video_conference_web_app.h",
 
@@ -279,6 +281,7 @@ source_set("chromeos") {
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/sync_device_info",
+    "//components/ukm",
     "//components/vector_icons",
     "//content/public/common",
     "//crypto",
@@ -476,6 +479,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
     "reporting/network/network_bandwidth_sampler_unittest.cc",
     "reporting/user_reporting_settings_unittest.cc",
+    "video_conference/video_conference_ukm_helper_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
@@ -523,6 +527,7 @@ source_set("unit_tests") {
     "//components/reporting/util:status",
     "//components/reporting/util:test_callbacks_support",
     "//components/strings:components_strings",
+    "//components/ukm",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
