@@ -1057,7 +1057,7 @@
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Переглянути зображення <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
-<translation id="6659594942844771486">Вкладка</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Відкрити в програмі <ph name="APP_NAME" /></translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6672917148207387131">Додати домен <ph name="DOMAIN" /></translation>

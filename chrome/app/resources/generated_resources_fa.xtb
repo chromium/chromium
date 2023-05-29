@@ -399,7 +399,7 @@
 <translation id="133535873114485416">ورودی ترجیحی</translation>
 <translation id="1335929031622236846">دستگاهتان را ثبت‌نام کنید</translation>
 <translation id="1336902454946927954">کلید امنیتی شما قفل شده است زیرا اثر انگشتتان تشخیص داده نشد. برای باز کردن قفل آن، پین را وارد کنید.</translation>
-<translation id="1338631221631423366">درحال مرتبط‌سازی…</translation>
+<translation id="1338631221631423366">درحال جفت کردن…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> می‌خواهد این برنامه را باز کند.</translation>
 <translation id="1338950911836659113">در حال حذف...</translation>
 <translation id="1339009753652684748">‏با گفتن «OK Google» به «دستیار» دسترسی یابید. برای صرفه‌جویی در مصرف باتری، «روشن (توصیه می‌شود)» را انتخاب کنید. «دستیار» تنها زمانی پاسخ می‌دهد که دستگاه شما به برق متصل باشد یا درحال شارژ شدن باشد.</translation>
@@ -2113,7 +2113,7 @@
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">سیم‌کارت</translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
-<translation id="2754226775788136540">درحال جستجوی دستگاه‌های مجهز به «مرتبط‌سازی سریع» که در <ph name="PRIMARY_EMAIL" /> ذخیره شده است</translation>
+<translation id="2754226775788136540">درحال جستجوی دستگاه‌های مجهز به «جفت‌سازی سریع» که در <ph name="PRIMARY_EMAIL" /> ذخیره شده است</translation>
 <translation id="2754825024506485820">‏برنامه‌های موردنیازتان را، از بهره‌وری گرفته تا سرگرمی، در «فروشگاه Google Play» پیدا کنید. هر زمانی بخواهید می‌توانید برنامه‌ها را نصب کنید.</translation>
 <translation id="2755349111255270002">بازنشانی این <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">مدیریت قابلیت‌های دسترس‌پذیری</translation>
@@ -3963,7 +3963,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" />، و <ph name="NUMBER_OF_OTHER_SWITCHES" /> کلید دیگر</translation>
 <translation id="439266289085815679">‏پیکربندی Bluetooth توسط <ph name="USER_EMAIL" /> کنترل می‌شود.</translation>
 <translation id="4392896746540753732">ویرایش فایل پیکربندی</translation>
-<translation id="4393713825278446281">دستگاه‌های «مرتبط‌سازی سریع» ذخیره‌شده در <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">دستگاه‌های «جفت‌سازی سریع» ذخیره‌شده در <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">غیر فعال کردن</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{باز کردن همه}=1{باز کردن نشانک}one{باز کردن همه ({COUNT})}other{باز کردن همه ({COUNT})}}</translation>
 <translation id="4397372003838952832">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در <ph name="GOOGLE_PASSWORD_MANAGER" /> برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
@@ -4761,7 +4761,7 @@
 <translation id="5111692334209731439">مدیر &amp;نشانک</translation>
 <translation id="5111794652433847656">هیچ گذرکلیدی برای <ph name="APP_NAME" /> در این دستگاه وجود ندارد</translation>
 <translation id="5112577000029535889">ابزارهای &amp;برنامه نویس</translation>
-<translation id="511313294362309725">روشن کردن «مرتبط‌سازی سریع»</translation>
+<translation id="511313294362309725">روشن کردن «جفت‌سازی سریع»</translation>
 <translation id="51143538739122961">کلید امنیتی را وارد و لمس کنید</translation>
 <translation id="5115309401544567011">لطفاً <ph name="DEVICE_TYPE" /> خود را به منبع نیرو وصل کنید.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -4987,7 +4987,7 @@
 <translation id="5315738755890845852">آکولاد اضافی: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319359161174645648">‏Google،‏ Chrome را توصیه می‌کند</translation>
-<translation id="5319712128756744240">مرتبط‌سازی دستگاه جدید</translation>
+<translation id="5319712128756744240">جفت کردن دستگاه جدید</translation>
 <translation id="5320135788267874712">نام دستگاه جدید</translation>
 <translation id="532247166573571973">ممکن است سرور در دسترس نباشد. بعداً دوباره امتحان کنید.</translation>
 <translation id="5324300749339591280">فهرست برنامه‌ها</translation>
@@ -5087,7 +5087,7 @@
 <translation id="5413640305322530561">درباره داده‌های استفاده و عیب‌یابی بیشتر بدانید</translation>
 <translation id="5414198321558177633">درحال بازآوری فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5414566801737831689">خواندن نمادهای وب‌سایت‌هایی که بازدید می‌کنید</translation>
-<translation id="5414836363063783498">در حال تأیید...</translation>
+<translation id="5414836363063783498">در حال تأیید کردن…</translation>
 <translation id="5417312524372586921">طرح‌های زمینه مرورگر</translation>
 <translation id="541737483547792035">درشت‌نمایی صفحه‌نمایش</translation>
 <translation id="5419405654816502573">Voice match</translation>
@@ -5620,7 +5620,7 @@
 <translation id="5884474295213649357">‏این برگه به دستگاه USB متصل است.</translation>
 <translation id="5885314688092915589">سازمانتان این نمایه را مدیریت خواهد کرد</translation>
 <translation id="5886009770935151472">انگشت ۱</translation>
-<translation id="5886112770923972514">به‌سرعت دستگاه‌های مجهز به «مرتبط‌سازی سریع» در اطرافتان را راه‌اندازی کنید و به آن‌ها متصل شوید</translation>
+<translation id="5886112770923972514">به‌سرعت دستگاه‌های مجهز به «جفت‌سازی سریع» در اطرافتان را راه‌اندازی کنید و به آن‌ها متصل شوید</translation>
 <translation id="5886384907280980632">اکنون خاموش شود</translation>
 <translation id="5888889603768021126">با این ارائه‌دهنده هویت به سیستم وارد شده‌اید:</translation>
 <translation id="5889282057229379085">‏حداکثر تعداد CA های متوسط: <ph name="NUM_INTERMEDIATE_CA" /></translation>
@@ -6472,7 +6472,7 @@
 <translation id="6644512095122093795">پیشنهاد برای ذخیره رمزهای ورود</translation>
 <translation id="6644513150317163574">‏قالب نشانی وب نامعتبر است. وقتی از اصالت‌سنجی SSO استفاده می‌شود، سرور باید به‌عنوان یک نام میزبان مشخص شود.</translation>
 <translation id="6644846457769259194">درحال به‌روزرسانی دستگاه شما (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6646476869708241165">خاموش کردن «مرتبط‌سازی سریع»</translation>
+<translation id="6646476869708241165">خاموش کردن «جفت‌سازی سریع»</translation>
 <translation id="6647228709620733774">‏نشانی وب ابطال ارائه دهنده مجوز Netscape</translation>
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6647690760956378579">پیش‌نمایش صدای طبیعی</translation>
@@ -6610,7 +6610,7 @@
 <translation id="6775163072363532304">دستگاه‌های دردسترس اینجا نمایش داده می‌شوند.</translation>
 <translation id="677646486571529447">افزودن یادداشت</translation>
 <translation id="6776589734354015877">ویژگی‌های بیشتری دریافت کنید</translation>
-<translation id="6776729248872343918">فعال کردن «مرتبط‌سازی سریع»</translation>
+<translation id="6776729248872343918">فعال کردن «جفت‌سازی سریع»</translation>
 <translation id="677778081766640955">‏برای جابه‌جایی بین کلیدهای F و کنش‌های ChromeOS، کلید را نگه دارید</translation>
 <translation id="6777817260680419853">هدایت کردن مسدود شده است</translation>
 <translation id="6779092717724412415">برای ایجاد بخش برجسته مثل این، نوشتار موردنظر را انتخاب و کلیک راست کنید.</translation>
@@ -7717,7 +7717,7 @@
 <translation id="7730683939467795481">افزونه «<ph name="EXTENSION_NAME" />» این صفحه را تغییر داد</translation>
 <translation id="773511996612364297">نشانه‌های تکیه</translation>
 <translation id="7735165285389721951">‏راه‌اندازی Steam دیگری درحال اجرا است. قبل‌از امتحان دوباره، منتظر بمانید تا این راه‌اندازی تکمیل شود.</translation>
-<translation id="7737115349420013392">درحال مرتبط‌سازی با «<ph name="DEVICE_NAME" />» …</translation>
+<translation id="7737115349420013392">درحال جفت کردن با «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7737203573077018777">دستورالعمل <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> دریافت شده است</translation>
 <translation id="7737846262459425222">‏هر زمان خواستید می‌توانید این گزینه را در «تنظیمات &gt; دستیار Google &gt; اطلاعات روی صفحه» تغییر دهید.</translation>
 <translation id="7737948071472253612">اجازه ندارد از دوربین استفاده کند</translation>
@@ -8330,7 +8330,7 @@
 <translation id="8249615410597138718">ارسال به دستگاه‌هایتان</translation>
 <translation id="8250210000648910632">فضای ذخیره‌سازی پر شده است</translation>
 <translation id="8251441930213048644">بازآوری در همین لحظه</translation>
-<translation id="8251509999076836464">درحال مرتبط‌سازی <ph name="DEVICE_NAME" /></translation>
+<translation id="8251509999076836464">درحال جفت کردن <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">تصویر کوچک حذف شد.</translation>
 <translation id="825238165904109940">همیشه نشانی‌های وب کامل نشان داده شود</translation>
 <translation id="8252569384384439529">درحال بارگذاری…</translation>
@@ -9223,7 +9223,7 @@
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> دیگر پشتیبانی نمی‌شود</translation>
 <translation id="9031549947500880805">‏در Google Drive پشتیبان‌گیری کنید. به‌آسانی داده‌های خود را بازیابی کنید یا هرزمان خواستید دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است.</translation>
 <translation id="9031811691986152304">امتحان مجدد</translation>
-<translation id="9032097289595078011">غیرفعال کردن «مرتبط‌سازی سریع»</translation>
+<translation id="9032097289595078011">غیرفعال کردن «جفت‌سازی سریع»</translation>
 <translation id="9033765790910064284">ادامه درهرصورت</translation>
 <translation id="9033857511263905942">&amp;جای‌گذاری</translation>
 <translation id="903480517321259405">پین را دوباره تایپ کنید</translation>

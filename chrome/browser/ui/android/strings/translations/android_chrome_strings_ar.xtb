@@ -14,7 +14,7 @@
 <translation id="107147699690128016">في حال تغيير امتداد الملف، قد يفتح الملف في تطبيق مختلف ومن المحتمل أن يشكّل خطورة على جهازك.</translation>
 <translation id="1089606299949659462">اكتملت المراجعة</translation>
 <translation id="1095761715416917775">ضمان إمكانية الوصول إلى بيانات المزامنة دائمًا</translation>
-<translation id="1100066534610197918">فتح في علامة تبويب جديدة في مجموعة</translation>
+<translation id="1100066534610197918">الفتح في علامة تبويب جديدة في مجموعة</translation>
 <translation id="1103142993930332957">‏هل تريد المساهمة في تحسين أداء Chrome؟</translation>
 <translation id="1105960400813249514">التقاط الشاشة</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
@@ -27,7 +27,7 @@
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1142732900304639782">عدم اقتراح ترجمة لهذه المواقع الإلكترونية</translation>
-<translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
+<translation id="1145536944570833626">سيتم حذف البيانات الحالية.</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">لا تتوفّر الصفحة بلا اتصال بالإنترنت: <ph name="VIOLATED_URL" /></translation>
@@ -83,7 +83,7 @@
 <translation id="1382912999714108023">ألا تظهر معلومات بطاقتك الحالية؟ يُرجى التواصل مع المصرف الذي تتعامل معه لتعديلها.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384704387250346179">‏ترجمة الصور مع "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> من الأيام</translation>
+<translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> يوم</translation>
 <translation id="13931502444227376">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اسمك وعنوان بريدك الإلكتروني وصورة ملفك الشخصي مع هذا الموقع الإلكتروني. يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">‏يمكنك تغيير رأيك متى شئت من خلال إعدادات Chrome. نجري هذه التجارب بدون إيقاف الإعدادات الحالية لعرض الإعلانات، لذا لن تظهر التغييرات على الفور.</translation>
@@ -216,7 +216,7 @@
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2200113223741723867">إدارة مشاركة بيانات الاستخدام</translation>
 <translation id="2218567645332692482">‏ترقية عمليات التنقّل إلى بروتوكول HTTPS وتحذيرك قبل تحميل المواقع الإلكترونية غير المتوافقة</translation>
-<translation id="2227444325776770048">المتابعة باسم <ph name="USER_FULL_NAME" /></translation>
+<translation id="2227444325776770048">المتابعة بحساب "<ph name="USER_FULL_NAME" />"</translation>
 <translation id="2230777942707397948">نافذة فارغة</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234827758954819389">دليل الخصوصية</translation>
@@ -333,7 +333,7 @@
 <translation id="2886836735871983413">ستظهر هنا قائمة المواقع الإلكترونية أثناء تصفُّحك للويب.</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="2891154217021530873">إيقاف تحميل الصفحة</translation>
-<translation id="2893180576842394309">‏قد تستخدم Google سجلّك لتخصيص البحث وخدمات Google الأخرى.</translation>
+<translation id="2893180576842394309">‏قد تستخدم Google سجلّك لتخصيص محرّك بحث Google وخدماتها الأخرى.</translation>
 <translation id="2900528713135656174">إنشاء حدث</translation>
 <translation id="2901411048554510387">عرض اقتراحات لموقع <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">قائمة بالأجهزة التي يمكن مشاركة علامة تبويب معها، مفتوحة على طول الشاشة.</translation>
@@ -354,7 +354,7 @@
 <translation id="2961210776189273067">العنوان</translation>
 <translation id="296370266220139811">توفير الوقت والانتقال سريعًا</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
-<translation id="2979639724566107830">فتح الإشارة في نافذة جديدة</translation>
+<translation id="2979639724566107830">الفتح في نافذة جديدة</translation>
 <translation id="2981364137500752533">يمكنك فتح 5 نوافذ بحد أقصى.</translation>
 <translation id="2983102365694924129">تستند الإعلانات المقترَحة من مواقع إلكترونية إلى نشاطك على موقع إلكتروني. هذا الإعداد غير مفعَّل.</translation>
 <translation id="2984978667043170458">‏تضمين النص المحيط في عمليات البحث على Google</translation>
@@ -451,7 +451,7 @@
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
 <translation id="3444179773590444986">هل تريد مشاركة ملاحظاتك وآرائك حول وضع "المظهر الداكن" للمواقع الإلكترونية؟</translation>
 <translation id="3452832259067974318">‏لحماية خصوصيتك، لن يملء متصفِّح Chrome تلقائيًا كلمة المرور في هذا الحقل.</translation>
-<translation id="3474624961160222204">المتابعة باسم <ph name="NAME" /></translation>
+<translation id="3474624961160222204">المتابعة بحساب "<ph name="NAME" />"</translation>
 <translation id="3478363558367712427">يمكنك استخدام محرّك بحث آخر.</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
@@ -766,7 +766,7 @@
 <translation id="5122378528687922675">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك (<ph name="PARENT_NAME_1" /> أو <ph name="PARENT_NAME_2" />).</translation>
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
 <translation id="5126510351761255129">التحقق من بطاقتك</translation>
-<translation id="5132942445612118989">مزامنة كلمات المرور والسجلّ والمزيد على جميع الأجهزة</translation>
+<translation id="5132942445612118989">يمكنك مزامنة كلمات المرور والسجلّ وغير ذلك على جميع الأجهزة.</translation>
 <translation id="5139940364318403933">‏التعرّف على كيفية استخدام Google Drive</translation>
 <translation id="5142281402488957685">للاطّلاع على قصص جديدة، اسحب للأسفل لإعادة تحميل المحتوى.</translation>
 <translation id="5152843274749979095">ليس هناك أي تطبيق مثبّت متوافق</translation>
@@ -1049,7 +1049,7 @@
 <translation id="6633067410344541938">فتح علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="6636623428211296678">يمكنك التعرّف على المزيد من الإعدادات أدناه أو إنهاء المراجعة الآن.</translation>
 <translation id="663674369910034433">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK1" />المزامنة<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />خدمات Google<ph name="END_LINK2" />.</translation>
-<translation id="6637100877383020115">‏للمساعدة على تحسين التطبيق، يرسل Chrome بيانات الاستخدام والأعطال إلى Google. <ph name="BEGIN_UMA_LINK" />إدارة<ph name="END_UMA_LINK" /></translation>
+<translation id="6637100877383020115">‏للمساعدة في تحسين التطبيق، يرسل Chrome بيانات الاستخدام والأعطال إلى Google. <ph name="BEGIN_UMA_LINK" />إدارة<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">حظر ملفات تعريف الارتباط طوال الوقت</translation>
 <translation id="6641780377503683465">إزالة <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">محو</translation>
@@ -1106,7 +1106,7 @@
 <translation id="6869056123412990582">جهاز كمبيوتر</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="6883204995689174413">مشاركة</translation>
-<translation id="688738109438487280">يمكنك إضافة البيانات الحالية إلى <ph name="TO_ACCOUNT" />.</translation>
+<translation id="688738109438487280">ستتم إضافة البيانات الحالية إلى <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">فتح القفل لنسخ كلمة المرور</translation>
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6900532703269623216">حماية مُحسّنة</translation>

@@ -628,7 +628,7 @@
 <translation id="3898464793473355515">स्क्रिन घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="3899995891769452915">आवाज मार्फत इनपुट</translation>
 <translation id="3900355044994618856">तपाईंको सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुने छ</translation>
-<translation id="3901991538546252627"><ph name="NAME" /> मा जडान हुँदै</translation>
+<translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3922427723338465344">{0,plural, =1{१ मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# मिनेटभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="3923494859158167397">कुनै पनि मोबाइल नेटवर्क सेटअप गरिएको छैन</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, कार्यक्रमहरू लोड गरिँदै छन्।</translation>

@@ -41,7 +41,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1202892408424955784">Productos que sigues</translation>
 <translation id="1204037785786432551">Descargar enlace</translation>
 <translation id="1204692632633423444">Botón de acción de Chrome: <ph name="ACTION" /></translation>
-<translation id="1206892813135768548">Copiar texto de enlace</translation>
+<translation id="1206892813135768548">Copiar texto del enlace</translation>
 <translation id="1209206284964581585">Ocultar por ahora</translation>
 <translation id="1227058898775614466">Historial de navegación</translation>
 <translation id="1231733316453485619">¿Activar la sincronización?</translation>
@@ -557,7 +557,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="409109920254068737">Puedes usar esta tablet para iniciar sesión en el dispositivo donde se muestra este código QR.</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4096227151372679484">Flujo para guardar marcador abierto a media altura</translation>
-<translation id="4101475238162928417">Sincroniza para recibir tus contraseñas, marcadores, etc., en tus otros dispositivos</translation>
+<translation id="4101475238162928417">Activa la sincronización para recibir tus contraseñas, marcadores, etc., en tus otros dispositivos</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -592,7 +592,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Licencias de software libre</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
-<translation id="4269820728363426813">Copiar la dirección del enlace</translation>
+<translation id="4269820728363426813">Copiar dirección del enlace</translation>
 <translation id="4283102315569707115">¿Solicitar sitio para ordenadores de forma predeterminada?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nueva pestaña de Incógnito</translation>
