@@ -94,6 +94,7 @@
     'on-primary': {
       light: '$cros.ref.primary100',
       dark:  '$cros.ref.primary20',
+      generate_per_mode: true,
     },
     /* If this is changed, please also update SampleColorScheme */
     'primary-container': {
