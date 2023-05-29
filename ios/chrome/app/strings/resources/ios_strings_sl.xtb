@@ -925,6 +925,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="681368974849482173">Item created</translation>
 <translation id="6822587385560699678">Če je vklopljeno, se gesla shranjujejo v računu <ph name="ACCOUNT" />. Če je izklopljeno, se gesla shranjujejo samo v tej napravi.</translation>
 <translation id="6831043979455480757">Prevedi</translation>
+<translation id="6839843088069935119">{count,plural, =1{Zaznamek je shranjen v »{title}«. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}two{Zaznamka sta shranjena v »{title}«. Shranjena sta samo v tej napravi.}few{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="6842136130964845393">Če želite poskrbeti, da boste vedno lahko dostopali do shranjenih gesel, potrdite, da ste to vi.</translation>
 <translation id="6851516051005285358">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6852222216891664518">Zapri pripeti zavihek</translation>

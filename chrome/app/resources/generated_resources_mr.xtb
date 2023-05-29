@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">हे एक्सटेंशन साइटवरील तुमचा डेटा वाचेल आणि बदलेल. एक्सटेंशन कोणत्या साइट फॉलो करते हे तुम्ही नियंत्रित करू शकता.</translation>
 <translation id="1007057452468855774">Google Play Store सुरू करा</translation>
 <translation id="1008186147501209563">बुकमार्क एक्सपोर्ट करा</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> हे तुम्ही कसे साइन इन केले ते लक्षात ठेवते आणि शक्य असेल तेव्हा आपोआप साइन इन करते. बंद असताना, तुम्हाला प्रत्येक वेळी कंफर्मेशनसाठी विचारले जाईल.</translation>
 <translation id="1008557486741366299">सध्या नाही</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही दोन महिन्यांमध्ये भेट न दिलेल्या साइटवरील परवानग्या काढून टाकल्या आहेत}other{तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही दोन महिन्यांमध्ये भेट न दिलेल्या साइटवरील परवानग्या काढून टाकल्या आहेत}}</translation>
 <translation id="1009663062402466586">गेम नियंत्रणे आता उपलब्ध आहेत</translation>
@@ -1478,6 +1479,7 @@
 <translation id="2241053333139545397">अनेक वेबसाइटवर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2241634353105152135">फक्त एकदाच</translation>
 <translation id="2242687258748107519">फाईल माहिती</translation>
+<translation id="2243452222143104807">इनॅक्टिव्ह टॅब</translation>
 <translation id="2245603955208828424">आयटम प्रत्येक अक्षरानुसार पाहण्यासाठी अ‍ॅरो की वापरा</translation>
 <translation id="2246129643805925002">तुम्हाला नवीनतम वैशिष्ट्ये देण्यासाठी आणि सुरक्षिततेसंबंधित सुधारणा करण्याकरिता तुमचे <ph name="DEVICE_TYPE" /> आपोआप बॅकग्राउंडमध्ये अपडेट होते. तुम्ही सेटिंग्ज मध्ये अपडेट प्राधान्यांचे पुनरावलोकन करू शकता.</translation>
 <translation id="2246549592927364792">Google वरून इमेज वर्णन मिळवायचे आहे का?</translation>
@@ -1939,6 +1941,7 @@
 <translation id="2616008379779647117">कॅप्‍शनची भाषा</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा आणि बदला</translation>
 <translation id="2618797463720777311">Nearby सह शेअरिंग सेट करा</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही.</translation>
 <translation id="2620245777360407679">डिव्हाइस सध्या हॉटस्पॉटशी कनेक्ट केलेली आहेत</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -3873,6 +3876,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल करत आहे...</translation>
 <translation id="4326146840124313313">Chrome ची सर्वात मजबूत सुरक्षा धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करण्यासाठी बरेच काही करते</translation>
 <translation id="4326484226728068206">तुमच्या कार्टमधील <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> कडील <ph name="DISCOUNT_TEXT" /> आयटम, <ph name="RELATIVE_TIME" /> पाहिले</translation>
+<translation id="4328507707463585900">हा टॅब <ph name="MEMORY_USAGE" /> वापरत आहे</translation>
 <translation id="4330191372652740264">बर्फाचे पाणी</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> कधीही भाषांतरित करू नका</translation>
 <translation id="4332976768901252016">पालक नियंत्रणे सेट करा</translation>
@@ -6177,6 +6181,7 @@
 <translation id="6384275966486438344">आपल्या शोध सेटिंग्ज यावर बदला: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{नाव नसलेला गट - एक टॅब}other{नाव नसलेला गट - # टॅब}}</translation>
 <translation id="6385149369087767061">इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा</translation>
+<translation id="6385382178401976503">कार्ड: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">चेतावणी - तपशीलवार लॉगिंग सुरू केलेले आहे; खालील लॉगमध्ये URL किंवा इतर संवेदनशील माहितीचा समावेश असू शकतो. कृपया परीक्षण करा आणि ही माहिती सबमिट करण्यासाठी तुमची हरकत नसल्याची खात्री करा.</translation>
 <translation id="6387674443318562538">उभे विभाजित करा</translation>
 <translation id="6388429472088318283">भाषा शोधा</translation>
@@ -7422,6 +7427,7 @@
 <translation id="7475671414023905704">Netscape पासवर्ड URL गमावली</translation>
 <translation id="7476454130948140105">अपडेटसाठी बॅटरी खूप कमी (<ph name="BATTERY_PERCENT" />%) आहे</translation>
 <translation id="7476989672001283112">आपोआप ब्लॉक केलेले <ph name="PERMISSION" /> आणि आणखी <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">उच्च मेमरी वापर: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">या पेजसाठी QR कोड तयार करा</translation>
 <translation id="7477793887173910789">व्हिडिओ पहा आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7478069565037869084">अंतर आहे</translation>
@@ -8186,6 +8192,7 @@
 <translation id="8113476325385351118">या साइटला MIDI डिव्हाइसचे पूर्ण नियंत्रण असण्यापासून ब्लॉक करणे पुढे सुरू ठेवा</translation>
 <translation id="8115139559594092084">तुमच्या Google Drive मधून</translation>
 <translation id="8116972784401310538">&amp;बुकमार्क व्यवस्थापक</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> हे तुम्ही कसे साइन इन केले ते लक्षात ठेवते आणि शक्य असेल तेव्हा आपोआप साइन इन करते. बंद असताना, तुम्हाला प्रत्येक वेळी कंफर्मेशनसाठी विचारले जाईल.</translation>
 <translation id="8118362518458010043">Chrome ने बंद केले आहे. हे एक्स्टेंशन असुरक्षित असू शकते.</translation>
 <translation id="8118488170956489476">तुमच्या संस्थेद्वारे तुमचा <ph name="BEGIN_LINK" />ब्राउझर व्यवस्थापित केलेला आहे<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">डिस्प्ले रिफ्रेश रेट</translation>
@@ -8939,6 +8946,7 @@
 <translation id="8771300903067484968">पेज बॅकग्राउंड सुरू करा डीफॉल्ट बॅकग्राउंडवर रीसेट केले गेले आहे.</translation>
 <translation id="8773280816776735812">IBAN मूल्य दाखवा</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेव्ह करा</translation>
+<translation id="8774286683882091094">इनॲक्टिव्ह टॅब सेव्ह करत आहे: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">रिस्टोअर करण्याची खात्री करा</translation>
 <translation id="8774934320277480003">शीर्ष समास</translation>
 <translation id="8775144690796719618">चुकीची URL</translation>
@@ -9216,6 +9224,7 @@
 <translation id="9013037634206938463">Linux इंस्टॉल करण्यासाठी <ph name="INSTALL_SIZE" /> मोकळ्या जागेची आवश्यकता आहे. मोकळी जागा वाढवण्यासाठी, तुमच्या डिव्हाइसमधून फाइल हटवा.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
 <translation id="901668144954885282">Google Drive वर बॅकअप घ्या</translation>
+<translation id="90181708067259747">एक्स्पायरीची तारीख: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>
 <translation id="9019062154811256702">ऑटोफिल सेटिंग्ज वाचा आणि बदला</translation>
 <translation id="9019894137004772119">स्थान वापरा. स्थान परवानगी असलेल्या अ‍ॅप्स आणि सेवांना तुमच्या डिव्हाइसचे स्थान वापरू द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थानावर आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते.</translation>

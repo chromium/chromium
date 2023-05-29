@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Това разширение може да чете и променя данните ви на сайтовете. Можете да контролирате кои сайтове да са достъпни за него.</translation>
 <translation id="1007057452468855774">Включване на Google Play Магазин</translation>
 <translation id="1008186147501209563">Експортиране на отметки</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> помни как сте влезли в профила си и след това автоматично влиза в него, когато е възможно. Ако настройката е изключена, всеки път ще се иска потвърждение от вас.</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{За да защитим данните ви, премахнахме разрешенията за сайт, който не сте посещавали от 2 месеца}other{За да защитим данните ви, премахнахме разрешенията за сайтовете, които не сте посещавали от 2 месеца}}</translation>
 <translation id="1009663062402466586">Вече се предлагат контроли за игри</translation>
@@ -1475,6 +1476,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2241053333139545397">Четене и промяна на данните ви в няколко уебсайта.</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2242687258748107519">Информация за файла</translation>
+<translation id="2243452222143104807">Неактивен раздел</translation>
 <translation id="2245603955208828424">Използвайте клавишите със стрелки, за да се придвижвате в елементите буква по буква</translation>
 <translation id="2246129643805925002">Устройството ви <ph name="DEVICE_TYPE" /> се актуализира автоматично на заден план, за да получавате най-новите функции и подобрения в сигурността. Можете да прегледате предпочитанията за актуализациите в настройките.</translation>
 <translation id="2246549592927364792">Да се изтеглят ли от Google описания за изображенията?</translation>
@@ -1936,6 +1938,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2616008379779647117">Език на надписите</translation>
 <translation id="2616366145935564096">Четене и промяна на данните ви в/ъв <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Настройване на функцията „Споделяне наблизо“</translation>
+<translation id="261953424982546039">Chrome и експерименталните функции…</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> не може да се изтегли по сигурен начин.</translation>
 <translation id="2620245777360407679">Устройства, свързани понастоящем с точката за достъп</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -3873,6 +3876,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> се деинсталира...</translation>
 <translation id="4326146840124313313">Най-високото ниво на сигурност на Chrome прави повече, за да ви предпази от опасни уебсайтове, изтегляния и разширения</translation>
 <translation id="4326484226728068206">Артикули в кошницата ви: <ph name="DISCOUNT_TEXT" /> от <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледани <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Този раздел използва <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Ледена вода</translation>
 <translation id="4330387663455830245">Никога да не се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Настройване на родителските контроли</translation>
@@ -6177,6 +6181,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6384275966486438344">Променете настройките си за търсене на: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Група без име – 1 раздел}other{Група без име – # раздела}}</translation>
 <translation id="6385149369087767061">Свържете се с интернет и опитайте отново</translation>
+<translation id="6385382178401976503">Карта: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Предупреждение: Подробното записване в регистрационни файлове е активирано. Файловете по-долу може да съдържат URL адреси или друга поверителна информация. Моля, прегледайте тези данни и се уверете, че изпращането им не ви притеснява.</translation>
 <translation id="6387674443318562538">Вертикално разделяне</translation>
 <translation id="6388429472088318283">Търсене в езиците</translation>
@@ -7422,6 +7427,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7475671414023905704">URL адрес за изгубена парола на Netscape</translation>
 <translation id="7476454130948140105">Батерията е твърде изтощена (<ph name="BATTERY_PERCENT" />%) за стартиране на актуализацията</translation>
 <translation id="7476989672001283112">Автоматично са блокирани „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Голямо количество използвана памет: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Създаване на QR код за тази страница</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7478069565037869084">Голямо</translation>
@@ -8188,6 +8194,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8113476325385351118">Пълният контрол над MIDI устройствата да продължи да е блокиран за този сайт</translation>
 <translation id="8115139559594092084">От профила ви в Google Диск</translation>
 <translation id="8116972784401310538">&amp;Диспечер на отметките</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> помни как сте влезли в профила си и след това автоматично влиза в него, когато е възможно. Ако настройката е изключена, всеки път ще се иска потвърждение от вас.</translation>
 <translation id="8118362518458010043">Деактивирано от Chrome. Това разширение може да е опасно.</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Браузърът се управлява<ph name="END_LINK" /> от организацията ви</translation>
 <translation id="8118515372935001629">Честота на опресняване на дисплея</translation>
@@ -8941,6 +8948,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>
 <translation id="8773280816776735812">Показване на стойността на IBAN</translation>
 <translation id="8773302562181397928">Запазване на <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Икономисана памет от неактивните раздели: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Потвърждаване на възстановяването</translation>
 <translation id="8774934320277480003">Горно поле</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
@@ -9217,6 +9225,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9013037634206938463">За инсталирането на Linux трябва да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
 <translation id="9014206344398081366">Урок за ChromeVox</translation>
 <translation id="901668144954885282">Създаване на резервно копие в Google Диск</translation>
+<translation id="90181708067259747">Дата на валидност: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Инсталирането завърши</translation>
 <translation id="9019062154811256702">Четене и промяна на настройките за автоматично попълване</translation>
 <translation id="9019894137004772119">Използване на местоположението. Позволете на приложенията и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение за достъп. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>

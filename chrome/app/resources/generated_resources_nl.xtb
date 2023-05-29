@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
 <translation id="1008186147501209563">Bookmarks exporteren</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
 <translation id="1008557486741366299">Niet nu</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Ter bescherming van je gegevens zijn de rechten verwijderd voor een site die je al 2 maanden niet hebt bezocht}other{Ter bescherming van je gegevens zijn de rechten verwijderd voor sites die je al 2 maanden niet hebt bezocht}}</translation>
 <translation id="1009663062402466586">Gamebediening nu beschikbaar</translation>
@@ -1467,6 +1468,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2241053333139545397">Je gegevens lezen en wijzigen op een aantal websites</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2242687258748107519">Bestandsinformatie</translation>
+<translation id="2243452222143104807">Inactief tabblad</translation>
 <translation id="2245603955208828424">Gebruik de pijltoetsen om per letter door items te navigeren.</translation>
 <translation id="2246129643805925002">Je <ph name="DEVICE_TYPE" /> wordt automatisch op de achtergrond geüpdatet zodat je over de nieuwste functies en beveiligingsverbeteringen beschikt. Je kunt de updatevoorkeuren bekijken via Instellingen.</translation>
 <translation id="2246549592927364792">Afbeeldingsbeschrijvingen ophalen van Google?</translation>
@@ -1925,6 +1927,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2616008379779647117">Taal van ondertiteling</translation>
 <translation id="2616366145935564096">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Dichtbij delen instellen</translation>
+<translation id="261953424982546039">Chrome &amp;Labs…</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
 <translation id="2620245777360407679">Apparaten die momenteel zijn verbonden met een hotspot</translation>
 <translation id="2620436844016719705">Systeem</translation>
@@ -3860,6 +3863,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> verwijderen...</translation>
 <translation id="4326146840124313313">De krachtigste beveiliging van Chrome doet meer om je te beschermen tegen gevaarlijke websites, downloads en extensies</translation>
 <translation id="4326484226728068206">Artikelen in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
+<translation id="4328507707463585900">Dit tabblad gebruikt <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">IJswater</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nooit vertalen</translation>
 <translation id="4332976768901252016">Ouderlijk toezicht instellen</translation>
@@ -6157,6 +6161,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6384275966486438344">Je zoekinstellingen wijzigen in: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
 <translation id="6385149369087767061">Maak verbinding met internet en probeer het opnieuw</translation>
+<translation id="6385382178401976503">Kaart <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Waarschuwing: Gedetailleerde logboekregistratie staat aan. De onderstaande logboeken kunnen URL's of andere gevoelige informatie bevatten. Check de informatie om te zien of je akkoord gaat met het indienen van deze informatie.</translation>
 <translation id="6387674443318562538">Verticaal splitsen</translation>
 <translation id="6388429472088318283">Zoek in talen</translation>
@@ -7400,6 +7405,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7475671414023905704">URL van verloren Netscape-wachtwoord</translation>
 <translation id="7476454130948140105">Batterij niet voldoende opgeladen voor update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere automatisch geblokkeerd</translation>
+<translation id="7477599578899108080">Intensief geheugengebruik: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">QR-code maken voor deze pagina</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
 <translation id="7478069565037869084">Veel ruimte</translation>
@@ -8164,6 +8170,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8113476325385351118">Volledig beheer van MIDI-apparaten blijven blokkeren voor deze site</translation>
 <translation id="8115139559594092084">Vanaf je Google Drive</translation>
 <translation id="8116972784401310538">&amp;Bladwijzerbeheer</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthoudt hoe je bent ingelogd en logt je automatisch in als dat mogelijk is. Als dit uitstaat, wordt je elke keer om bevestiging gevraagd.</translation>
 <translation id="8118362518458010043">Uitgezet door Chrome. Deze extensie kan onveilig zijn.</translation>
 <translation id="8118488170956489476">Je <ph name="BEGIN_LINK" />browser wordt beheerd<ph name="END_LINK" /> door je organisatie</translation>
 <translation id="8118515372935001629">Vernieuwingssnelheid van scherm</translation>
@@ -8918,6 +8925,7 @@ Als je ervoor kiest geen signalen te delen, wordt dit profiel gesloten.</transla
 <translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
 <translation id="8773280816776735812">IBAN-waarde tonen</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> opslaan</translation>
+<translation id="8774286683882091094">Besparingen dankzij inactieve tabbladen: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Herstel bevestigen</translation>
 <translation id="8774934320277480003">Marge bovenkant</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
@@ -9194,6 +9202,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="9013037634206938463">Er is <ph name="INSTALL_SIZE" /> vrije opslagruimte vereist om Linux te installeren. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="9014206344398081366">ChromeVox-tutorial</translation>
 <translation id="901668144954885282">Back-up maken in Google Drive</translation>
+<translation id="90181708067259747">Vervaldatum: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">De installatie is voltooid</translation>
 <translation id="9019062154811256702">Instellingen voor 'Automatisch invullen' lezen en wijzigen</translation>
 <translation id="9019894137004772119">Gebruik de locatie. Apps en services met locatierechten mogen de locatie van je apparaat gebruiken. Google kan periodiek locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.</translation>

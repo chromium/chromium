@@ -920,6 +920,7 @@
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6822587385560699678">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="6831043979455480757">翻訳</translation>
+<translation id="6839843088069935119">{count,plural, =1{ブックマークを「{title}」に保存しました。保存されるのは、このデバイスのみです。}other{ブックマークを「{title}」に保存しました。保存されるのは、このデバイスのみです。}}</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
 <translation id="6852222216891664518">固定タブを閉じる</translation>

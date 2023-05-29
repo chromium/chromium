@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Tämä laajennus voi lukea ja muuttaa dataasi sivustoilla. Sinä päätät, mille sivustoille laajennuksella on pääsy.</translation>
 <translation id="1007057452468855774">Laita Google Play Kauppa päälle</translation>
 <translation id="1008186147501209563">Vie kirjanmerkkejä</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> muistaa, miten olet kirjautunut sisään ja kirjaa sinut automaattisesti sisään, jos mahdollista. Jos tämä ei ole päällä, sinua pyydetään aina vahvistamaan kirjautuminen.</translation>
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Datasi suojaamiseksi luvat on poistettu sivustolta, jolla et ole käynyt kahteen kuukauteen}other{Datasi suojaamiseksi luvat on poistettu sivustoilta, joilla et ole käynyt kahteen kuukauteen}}</translation>
 <translation id="1009663062402466586">Peliohjaimet nyt käytettävissä</translation>
@@ -1478,6 +1479,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2241053333139545397">lukea ja muuttaa tietojasi useilla eri sivustoilla</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2242687258748107519">Tiedoston tiedot</translation>
+<translation id="2243452222143104807">Ei-aktiivinen välilehti</translation>
 <translation id="2245603955208828424">Siirry kohteesta toiseen kirjain kerrallaan nuolinäppäimillä</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> päivittyy automaattisesti taustalla, jotta saat uusimmat ominaisuudet ja tietoturvaparannukset. Voit tarkistaa päivitysvalinnat asetuksista.</translation>
 <translation id="2246549592927364792">Käytetäänkö Googlen kuvaselityksiä?</translation>
@@ -1939,6 +1941,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2616008379779647117">Tekstityksen kieli</translation>
 <translation id="2616366145935564096">lukea ja muuttaa tietojasi sivustossa <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Lähijakamisen käyttöönotto</translation>
+<translation id="261953424982546039">Chrome Labs…</translation>
 <translation id="2620215283731032047">Tiedostoa (<ph name="FILE_NAME" />) ei voi ladata turvallisesti.</translation>
 <translation id="2620245777360407679">Hotspotiin yhdistetyt laitteet</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
@@ -3872,6 +3875,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4325237902968425115">Poistetaan <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Chromen tehokkain suojaus suojaa sinua entistä paremmin vaarallisilta sivustoilta, latauksilta ja laajennuksilta</translation>
 <translation id="4326484226728068206">Ostoskorissasi olevat tuotteet <ph name="DISCOUNT_TEXT" />, myyjä <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, katsottu <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Tällä välilehdellä on käytössä <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Jäävesi</translation>
 <translation id="4330387663455830245">Älä koskaan käännä kieltä <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Lapsilukon määritys</translation>
@@ -6175,6 +6179,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6384275966486438344">Ota käyttöön seuraava hakukone: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nimetön ryhmä – 1 välilehti}other{Nimetön ryhmä – # välilehteä}}</translation>
 <translation id="6385149369087767061">Muodosta internetyhteys ja yritä uudelleen</translation>
+<translation id="6385382178401976503">Kortti: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Varoitus: Yksityiskohtaiset lokit ovat käytössä. Alla olevat lokit voivat sisältää URL-osoitteita tai muita arkaluontoisia tietoja. Tarkista tiedot ja varmista, että haluat lähettää ne.</translation>
 <translation id="6387674443318562538">Pystysuuntainen jako</translation>
 <translation id="6388429472088318283">Hae kieliä</translation>
@@ -7420,6 +7425,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7475671414023905704">Netscapen unohtunut salasana -URL</translation>
 <translation id="7476454130948140105">Akun varaus ei riitä päivittämiseen (<ph name="BATTERY_PERCENT" /> %).</translation>
 <translation id="7476989672001283112">Estetty automaattisesti: <ph name="PERMISSION" /> ja <ph name="COUNT" /> muuta</translation>
+<translation id="7477599578899108080">Korkea muistin käyttö: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Luo QR-koodi tälle sivulle</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
 <translation id="7478069565037869084">Leveä</translation>
@@ -8185,6 +8191,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8113476325385351118">Estä tältä sivustolta MIDI-laitteiden täysi käyttöoikeus myös jatkossa</translation>
 <translation id="8115139559594092084">Google Drivestasi</translation>
 <translation id="8116972784401310538">&amp;Kirjanmerkkien hallinta</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> muistaa, miten olet kirjautunut sisään ja kirjaa sinut automaattisesti sisään, jos mahdollista. Jos tämä ei ole päällä, sinua pyydetään aina vahvistamaan kirjautuminen.</translation>
 <translation id="8118362518458010043">Chrome on poistanut tämän laajennuksen käytöstä, sillä se ei välttämättä ole turvallinen.</translation>
 <translation id="8118488170956489476">Organisaatiosi <ph name="BEGIN_LINK" />ylläpitää selainta<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">Näytön päivitysväli</translation>
@@ -8938,6 +8945,7 @@ Jos et jaa signaaleja, tämä profiili suljetaan.</translation>
 <translation id="8771300903067484968">Aloitussivun taustakuvaksi on palautettu oletustaustakuva.</translation>
 <translation id="8773280816776735812">Näytä IBAN-arvo</translation>
 <translation id="8773302562181397928">Tallenna <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Muistin säästöt ei-aktiivisella välilehdellä: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Vahvista palautus</translation>
 <translation id="8774934320277480003">Yläreuna</translation>
 <translation id="8775144690796719618">Virheellinen URL-osoite</translation>
@@ -9214,6 +9222,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9013037634206938463">Linuxin käyttöön tarvitaan <ph name="INSTALL_SIZE" /> vapaata tilaa. Lisää vapaata tilaa poistamalla laitteelta tiedostoja.</translation>
 <translation id="9014206344398081366">ChromeVox-ohje</translation>
 <translation id="901668144954885282">Varmuuskopioi Google Driveen</translation>
+<translation id="90181708067259747">Viimeinen voimassaolopäivä: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Asennus valmis</translation>
 <translation id="9019062154811256702">Lukea ja muokata automaattisen täytön asetuksia.</translation>
 <translation id="9019894137004772119">Käytä sijaintia. Salli laitteesi sijainnin käyttäminen sovelluksille ja palveluille, joilla on sijaintilupa. Google voi ajoittain kerätä sijaintitietoja ja käyttää niitä ei-yksilöivästi sijainnin tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen.</translation>

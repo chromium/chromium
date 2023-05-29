@@ -1295,6 +1295,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4150099059797363385">Envelope Chinese no.4</translation>
 <translation id="4151403195736952345">Use global default (Detect)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}other{Page {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome will now verify it's you before filling in payment methods. You can update this at any time in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165986682804962316">Site settings</translation>

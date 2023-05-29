@@ -1295,6 +1295,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4150099059797363385">Koperta chińska nr 4</translation>
 <translation id="4151403195736952345">Użyj globalnego ustawienia domyślnego (Wykrywaj)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Strona 1}few{Strona {COUNT}}many{Strona {COUNT}}other{Strona {COUNT}}}</translation>
+<translation id="4154277373259957087">Teraz przed wypełnieniem form płatności Chrome będzie weryfikować Twoją tożsamość. Aby to zmienić, w dowolnym momencie otwórz <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Odciski cyfrowe</translation>
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>

@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Ta razširitev lahko bere in spreminja vaše podatke na spletnih mestih. Nadzirate lahko, do katerih spletnih mest lahko razširitev dostopa.</translation>
 <translation id="1007057452468855774">Vklopi Trgovino Google Play</translation>
 <translation id="1008186147501209563">Izvoz zaznamkov</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> si zapomni način vaše prijave in vas samodejno prijavi, ko je to mogoče. Če je ta možnost izklopljena, boste vsakič pozvani k potrditvi.</translation>
 <translation id="1008557486741366299">Ne zdaj</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Zaradi zaščite podatkov so bila za spletno mesto, ki ga niste obiskali dva meseca, odstranjena dovoljenja.}one{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih niste obiskali dva meseca.}two{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih niste obiskali dva meseca.}few{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih niste obiskali dva meseca.}other{Zaradi zaščite podatkov so bila odstranjena dovoljenja za spletna mesta, ki jih niste obiskali dva meseca.}}</translation>
 <translation id="1009663062402466586">Zdaj so na voljo kontrolniki za igre</translation>
@@ -1482,6 +1483,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2241053333139545397">Branje in spreminjanje vaših podatkov na več spletnih mestih</translation>
 <translation id="2241634353105152135">Samo enkrat</translation>
 <translation id="2242687258748107519">Podatki o datoteki</translation>
+<translation id="2243452222143104807">Neaktiven zavihek</translation>
 <translation id="2245603955208828424">Uporabite puščične tipke za pomikanje med elementi po črkah.</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> se samodejno posodobi v ozadju ter tako prejmete najnovejše funkcije in izboljšave varnosti. Nastavitve posodabljanja si lahko ogledate v nastavitvah.</translation>
 <translation id="2246549592927364792">Želite pridobivati opise slik iz Googla?</translation>
@@ -1943,6 +1945,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2616008379779647117">Jezik podnapisov</translation>
 <translation id="2616366145935564096">Branje in spreminjanje vaših podatkov na spletnem mestu <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Nastavitev funkcije Deljenje v bližini</translation>
+<translation id="261953424982546039">Chrome &amp;Labs ...</translation>
 <translation id="2620215283731032047">Datoteke <ph name="FILE_NAME" /> ni mogoče varno prenesti.</translation>
 <translation id="2620245777360407679">Naprave, ki so trenutno povezane z dostopno točko</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -3879,6 +3882,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4325237902968425115">Odmeščanje aplikacije <ph name="LINUX_APP_NAME" /> …</translation>
 <translation id="4326146840124313313">Chromova najmočnejša zaščita vas bolje varuje pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="4326484226728068206">Izdelki v vozičku <ph name="DISCOUNT_TEXT" /> od trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, ogledani <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Ta zavihek uporablja <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Voda z ledom</translation>
 <translation id="4330387663455830245">Nikoli ne prevedi iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Nastavitev starševskega nadzora</translation>
@@ -6184,6 +6188,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6384275966486438344">Sprememba nastavitev iskanja na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana skupina – 1 zavihek}one{Neimenovana skupina – # zavihek}two{Neimenovana skupina – # zavihka}few{Neimenovana skupina – # zavihki}other{Neimenovana skupina – # zavihkov}}</translation>
 <translation id="6385149369087767061">Vzpostavite internetno povezavo in poskusite znova</translation>
+<translation id="6385382178401976503">Kartica: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Opozorilo: Omogočeno je podrobno zapisovanje v dnevnik. Dnevniki lahko vključujejo URL-je ali druge občutljive podatke. Preglejte te podatke in se prepričajte, ali je pošiljanje za vas sprejemljivo.</translation>
 <translation id="6387674443318562538">Razdeli navpično</translation>
 <translation id="6388429472088318283">Iskanje jezikov</translation>
@@ -7435,6 +7440,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7475671414023905704">Spletni naslov izgubljenega Netscapeovega gesla</translation>
 <translation id="7476454130948140105">Akumulator ima premalo energije za posodobitev (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Samodejno blokirano: <ph name="PERMISSION" /> in še <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Visoka uporaba pomnilnika: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Ustvari kodo QR za to stran</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
 <translation id="7478069565037869084">Široko</translation>
@@ -8201,6 +8207,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8113476325385351118">Še naprej prepreči temu spletnemu popoln nadzor nad napravami MIDI</translation>
 <translation id="8115139559594092084">Iz Googla Drive</translation>
 <translation id="8116972784401310538">&amp;Upravitelj zaznamkov</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> si zapomni način vaše prijave in vas samodejno prijavi, ko je to mogoče. Če je ta možnost izklopljena, boste vsakič pozvani k potrditvi.</translation>
 <translation id="8118362518458010043">Razširitev je onemogočil Chrome, ker morda ni varna.</translation>
 <translation id="8118488170956489476">Vaš <ph name="BEGIN_LINK" />brskalnik upravlja<ph name="END_LINK" /> organizacija</translation>
 <translation id="8118515372935001629">Hitrost osveževanja zaslona</translation>
@@ -8954,6 +8961,7 @@ Signali naprave lahko vključujejo podatke o brskalniku, operacijskem sistemu, n
 <translation id="8771300903067484968">Ozadje začetne strani je ponastavljeno na privzeto ozadje.</translation>
 <translation id="8773280816776735812">Pokaži vrednost številke IBAN</translation>
 <translation id="8773302562181397928">Shranjevanje tiskalnika <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Prihranek neaktivnega zavihka: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Potrdite obnovitev</translation>
 <translation id="8774934320277480003">Zgornji rob</translation>
 <translation id="8775144690796719618">Neveljaven URL</translation>
@@ -9233,6 +9241,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="9013037634206938463">Če želite namestiti Linux, potrebujete <ph name="INSTALL_SIZE" /> nezasedenega prostora. Če želite povečati nezasedeni prostor, izbrišite datoteke iz naprave.</translation>
 <translation id="9014206344398081366">Vadnica za ChromeVox</translation>
 <translation id="901668144954885282">Varnostno kopiranje v Google Drive</translation>
+<translation id="90181708067259747">Datum poteka veljavnosti: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Namestitev je dokončana</translation>
 <translation id="9019062154811256702">Branje in spreminjanje nastavitev samodejnega izpolnjevanja</translation>
 <translation id="9019894137004772119">Uporaba lokacije. Aplikacijam in storitvam z dovoljenjem za lokacijo dovolite uporabo lokacije vaše naprave. Google morda redno pridobiva podatke o lokaciji in te podatke anonimno uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije.</translation>

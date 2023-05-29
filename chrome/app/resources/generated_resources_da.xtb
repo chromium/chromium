@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Denne udvidelse kan læse og ændre dine data på websites. Du kan styre, hvilke websites udvidelsen kan få adgang til.</translation>
 <translation id="1007057452468855774">Aktivér Google Play Butik</translation>
 <translation id="1008186147501209563">Eksportér bogmærker</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> husker, hvordan du loggede ind, og logger dig automatisk ind, når det er muligt. Når funktionen er slået fra, bliver du bedt om en bekræftelse hver gang.</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{For at beskytte dine data blev tilladelserne fjernet fra et website, som du ikke har besøgt i 2 måneder}one{For at beskytte dine data blev tilladelserne fjernet fra et website, som du ikke har besøgt i 2 måneder}other{For at beskytte dine data blev tilladelserne fjernet fra websites, som du ikke har besøgt i 2 måneder}}</translation>
 <translation id="1009663062402466586">Spilindstillinger er nu tilgængelige</translation>
@@ -1480,6 +1481,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2241053333139545397">Læse og redigere dine data på en række websites</translation>
 <translation id="2241634353105152135">Kun én gang</translation>
 <translation id="2242687258748107519">Filoplysninger</translation>
+<translation id="2243452222143104807">Inaktiv fane</translation>
 <translation id="2245603955208828424">Brug piletasterne til at gå fra element til element efter bogstav</translation>
 <translation id="2246129643805925002">Opdateringen af <ph name="DEVICE_TYPE" /> foregår automatisk i baggrunden for at give dig de nyeste funktioner og sikkerhedsforbedringer. Du kan se præferencer for opdateringer i Indstillinger.</translation>
 <translation id="2246549592927364792">Vil du hente billedbeskrivelser fra Google?</translation>
@@ -1941,6 +1943,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2616008379779647117">Sprog for undertekster</translation>
 <translation id="2616366145935564096">Læse og redigere dine data på <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Konfigurer Deling tæt på</translation>
+<translation id="261953424982546039">Chrome og Labs…</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke downloades sikkert.</translation>
 <translation id="2620245777360407679">Enheder, der i øjeblikket er forbundet til et hotspot</translation>
 <translation id="2620436844016719705">System</translation>
@@ -3877,6 +3880,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4325237902968425115">Afinstallerer <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Chromes stærkeste sikkerhedsfunktioner gør mere for at beskytte dig mod skadelige websites, downloads og udvidelser</translation>
 <translation id="4326484226728068206">Du har varer i din kurv fra <ph name="MERCHANT_NAME" /> med <ph name="DISCOUNT_TEXT" />, som du har set på <ph name="MERCHANT_DOMAIN" /> <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Denne fane bruger <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Isvand</translation>
 <translation id="4330387663455830245">Oversæt aldrig <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Konfigurer børnesikring</translation>
@@ -6180,6 +6184,7 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
 <translation id="6384275966486438344">Skifte dine søgeindstillinger til: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unavngivet gruppe – 1 fane}one{Unavngivet gruppe – # fane}other{Unavngivet gruppe – # faner}}</translation>
 <translation id="6385149369087767061">Opret forbindelse til internettet, og prøv igen</translation>
+<translation id="6385382178401976503">Betalingskort: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Advarsel! Detaljeret logging er aktiveret. Loggerne nedenfor indeholder muligvis webadresser eller andre følsomme oplysninger. Gennemse loggerne, så du er sikker på, at du gerne vil indsende disse oplysninger.</translation>
 <translation id="6387674443318562538">Opdel lodret</translation>
 <translation id="6388429472088318283">Søg efter sprog</translation>
@@ -7427,6 +7432,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7475671414023905704">Netscape-webadresse til mistet adgangskode</translation>
 <translation id="7476454130948140105">Batteriniveauet er for lavt til at opdatere (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Browseren blokerede automatisk <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere</translation>
+<translation id="7477599578899108080">Højt hukommelsesforbrug: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Opret en QR-kode for denne side</translation>
 <translation id="7477793887173910789">Styr din musik, dine videoer og meget mere</translation>
 <translation id="7478069565037869084">Store mellemrum</translation>
@@ -8192,6 +8198,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8113476325385351118">Bloker fortsat dette website, så det ikke kan få fuld kontrol over MIDI-enheder</translation>
 <translation id="8115139559594092084">Fra Google Drev</translation>
 <translation id="8116972784401310538">&amp;Bogmærkeadministrator</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> husker, hvordan du loggede ind, og logger dig automatisk ind, når det er muligt. Når funktionen er slået fra, bliver du bedt om en bekræftelse hver gang.</translation>
 <translation id="8118362518458010043">Deaktiveret af Chrome. Denne udvidelse er muligvis ikke sikker.</translation>
 <translation id="8118488170956489476">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af din organisation</translation>
 <translation id="8118515372935001629">Opdateringshastighed for display</translation>
@@ -8946,6 +8953,7 @@ Hvis du vælger ikke at dele signaler, lukkes denne profil.</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
 <translation id="8773280816776735812">Vis IBAN-værdi</translation>
 <translation id="8773302562181397928">Gem <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Hukommelse sparet for inaktive faner: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
@@ -9223,6 +9231,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9013037634206938463">Du skal have <ph name="INSTALL_SIZE" /> ledig plads for at installere Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
 <translation id="9014206344398081366">ChromeVox-selvstudie</translation>
 <translation id="901668144954885282">Sikkerhedskopiér til Google Drev</translation>
+<translation id="90181708067259747">Udløbsdato: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>
 <translation id="9019062154811256702">Læse og redigere indstillinger for autofyld</translation>
 <translation id="9019894137004772119">Brug lokation. Tillad, at apps og tjenester med adgangstilladelse til lokation kan bruge din enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>

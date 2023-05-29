@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">To rozszerzenie może odczytywać i zmieniać Twoje dane na stronach. Możesz określić, do których stron rozszerzenie ma dostęp.</translation>
 <translation id="1007057452468855774">Włącz Sklep Google Play</translation>
 <translation id="1008186147501209563">Eksportuj zakładki</translation>
+<translation id="1008261151167010035">Aplikacja <ph name="BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Aby chronić Twoje dane, usunęliśmy uprawnienia witryny, której od 2 miesięcy nie odwiedzasz}few{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}many{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}other{Aby chronić Twoje dane, usunęliśmy uprawnienia witryn, których od 2 miesięcy nie odwiedzasz}}</translation>
 <translation id="1009663062402466586">Opcje gry są już dostępne</translation>
@@ -1465,6 +1466,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2241053333139545397">Odczytywanie i modyfikowanie Twoich danych na wielu stronach</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2242687258748107519">Informacje o pliku</translation>
+<translation id="2243452222143104807">Karta nieaktywna</translation>
 <translation id="2245603955208828424">Używaj klawiszy strzałek, aby przechodzić między elementami litera po literze</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> aktualizuje się automatycznie w tle, dzięki czemu możesz korzystać z najnowszych funkcji i ulepszeń zabezpieczeń. Ustawienia aktualizacji możesz sprawdzić w Ustawieniach.</translation>
 <translation id="2246549592927364792">Pobierać opisy obrazów z Google?</translation>
@@ -1912,6 +1914,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2616008379779647117">Język napisów</translation>
 <translation id="2616366145935564096">Odczytywanie i modyfikowanie Twoich danych na: <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Konfigurowanie Udostępniania w pobliżu</translation>
+<translation id="261953424982546039">&amp;Laboratorium Chrome...</translation>
 <translation id="2620215283731032047">Nie można pobrać pliku <ph name="FILE_NAME" /> w bezpieczny sposób.</translation>
 <translation id="2620245777360407679">Urządzenia połączone z hotspotem</translation>
 <translation id="2620436844016719705">System</translation>
@@ -3848,6 +3851,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4325237902968425115">Odinstalowuję aplikację <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Najsilniejsze zabezpieczenia Chrome skuteczniej chronią Cię przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
 <translation id="4326484226728068206">Produkty w koszyku ze zniżką <ph name="DISCOUNT_TEXT" /> od sprzedawcy <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, wyświetlone <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Ta karta wykorzystuje <ph name="MEMORY_USAGE" /> pamięci</translation>
 <translation id="4330191372652740264">Woda z lodem</translation>
 <translation id="4330387663455830245">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Konfigurowanie kontroli rodzicielskiej</translation>
@@ -6149,6 +6153,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6384275966486438344">Zmiana ustawień wyszukiwania na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez nazwy – 1 karta}few{Grupa bez nazwy – # karty}many{Grupa bez nazwy – # kart}other{Grupa bez nazwy – # karty}}</translation>
 <translation id="6385149369087767061">Połącz się z internetem i spróbuj ponownie</translation>
+<translation id="6385382178401976503">Karta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Ostrzeżenie: masz włączone szczegółowe zapisywanie w dzienniku. Dzienniki poniżej mogą zawierać adresy URL lub inne poufne informacje. Przejrzyj te dane i upewnij się, że chcesz je przesłać.</translation>
 <translation id="6387674443318562538">Podziel pionowo</translation>
 <translation id="6388429472088318283">Wyszukaj języki</translation>
@@ -7395,6 +7400,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7475671414023905704">Adres URL utraconego hasła firmy Netscape</translation>
 <translation id="7476454130948140105">Poziom naładowania baterii (<ph name="BATTERY_PERCENT" />%) jest za niski, by zainstalować aktualizację</translation>
 <translation id="7476989672001283112">Automatycznie zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Duże wykorzystanie pamięci: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
 <translation id="7478069565037869084">Szeroko</translation>
@@ -8161,6 +8167,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8113476325385351118">Nadal nie zezwalaj tej stronie na pełną kontrolę nad urządzeniami MIDI</translation>
 <translation id="8115139559594092084">Z Twojego Dysku Google</translation>
 <translation id="8116972784401310538">&amp;Menedżer zakładek</translation>
+<translation id="8118276691321086429">Aplikacja <ph name="PASSWORD_MANAGER_BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="8118362518458010043">Wyłączone przez Chrome. To rozszerzenie może być niebezpieczne.</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Przeglądarka jest zarządzana<ph name="END_LINK" /> przez Twoją organizację</translation>
 <translation id="8118515372935001629">Częstotliwość odświeżania wyświetlacza</translation>
@@ -8912,6 +8919,7 @@ Jeśli nie zdecydujesz się udostępniać sygnałów, ten profil zostanie zamkni
 <translation id="8771300903067484968">Na stronie startowej zostało przywrócone domyślne tło.</translation>
 <translation id="8773280816776735812">Pokaż numer IBAN</translation>
 <translation id="8773302562181397928">Zapisz drukarkę <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Oszczędność dzięki nieaktywnym kartom: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Potwierdzenie przywrócenia danych</translation>
 <translation id="8774934320277480003">Górny margines</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
@@ -9190,6 +9198,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9013037634206938463">Do korzystania z Linuksa wymagane jest <ph name="INSTALL_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="9014206344398081366">Samouczek ChromeVox</translation>
 <translation id="901668144954885282">Tworzenie kopii zapasowej na Dysku Google</translation>
+<translation id="90181708067259747">Data ważności: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalacja ukończona</translation>
 <translation id="9019062154811256702">Odczytywanie i zmienianie ustawień autouzupełniania</translation>
 <translation id="9019894137004772119">Używaj lokalizacji. Zezwól na używanie lokalizacji Twojego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług.</translation>

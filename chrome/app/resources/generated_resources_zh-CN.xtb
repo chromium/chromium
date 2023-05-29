@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">此扩展程序可读取和更改您的网站数据。您可以控制此扩展程序能访问哪些网站。</translation>
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{为了保护您的数据，对于这个您在 2 个月内未访问过的网站，系统已将其权限撤消}other{为了保护您的数据，对于这些您在 2 个月内未访问过的网站，系统已将其权限撤消}}</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
@@ -1460,6 +1461,7 @@
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2242687258748107519">文件信息</translation>
+<translation id="2243452222143104807">闲置标签页</translation>
 <translation id="2245603955208828424">使用箭头键可在各项内容之间逐字母移动</translation>
 <translation id="2246129643805925002">您的 <ph name="DEVICE_TYPE" /> 会自动在后台更新，以便为您提供最新的功能和安全性方面的改进。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="2246549592927364792">要从 Google 获取图片说明吗？</translation>
@@ -1917,6 +1919,7 @@
 <translation id="2616008379779647117">字幕语言</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
+<translation id="261953424982546039">Chrome 实验室(&amp;L)…</translation>
 <translation id="2620215283731032047">无法安全地下载“<ph name="FILE_NAME" />”。</translation>
 <translation id="2620245777360407679">目前与热点连接的设备</translation>
 <translation id="2620436844016719705">系统</translation>
@@ -3852,6 +3855,7 @@
 <translation id="4325237902968425115">正在卸载 <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4326484226728068206">您的购物车中有多件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">此标签页正在使用 <ph name="MEMORY_USAGE" /> 内存</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
@@ -6149,6 +6153,7 @@
 <translation id="6384275966486438344">将您的搜索设置更改为：<ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
 <translation id="6385149369087767061">请连接到互联网，然后重试</translation>
+<translation id="6385382178401976503">银行卡：<ph name="CARD" /></translation>
 <translation id="6385994920693662133">警告 - 详细记录功能已启用。以下日志中可能会包含网址或其他敏感信息。请检查并确保您同意提交这些信息。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜索语言</translation>
@@ -7394,6 +7399,7 @@
 <translation id="7475671414023905704">Netscape 忘了密码网址</translation>
 <translation id="7476454130948140105">电量太低 (<ph name="BATTERY_PERCENT" />%)，无法更新</translation>
 <translation id="7476989672001283112">已自动禁用“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
+<translation id="7477599578899108080">内存用量高：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">为此页面创建二维码</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
 <translation id="7478069565037869084">宽</translation>
@@ -8160,6 +8166,7 @@
 <translation id="8113476325385351118">继续禁止此网站完全控制 MIDI 设备</translation>
 <translation id="8115139559594092084">来自您的 Google 云端硬盘</translation>
 <translation id="8116972784401310538">书签管理器(&amp;B)</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
 <translation id="8118488170956489476">您的<ph name="BEGIN_LINK" />浏览器由所属组织管理<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">显示屏刷新频率</translation>
@@ -8913,6 +8920,7 @@
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
 <translation id="8773280816776735812">显示 IBAN 值</translation>
 <translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">闲置标签页已节省的内存：<ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
@@ -9189,6 +9197,7 @@
 <translation id="9013037634206938463">安装 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="9014206344398081366">ChromeVox 教程</translation>
 <translation id="901668144954885282">备份到 Google 云端硬盘</translation>
+<translation id="90181708067259747">失效日期：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安装完成</translation>
 <translation id="9019062154811256702">读取和更改自动填充设置</translation>
 <translation id="9019894137004772119">使用位置信息。允许具有位置权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>

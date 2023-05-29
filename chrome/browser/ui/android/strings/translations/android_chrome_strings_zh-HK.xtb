@@ -17,7 +17,7 @@
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
-<translation id="1108214977745280468">查看網頁洞察資訊</translation>
+<translation id="1108214977745280468">查看網頁分析資料</translation>
 <translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1110914759170138831">已縮短突顯文字長度</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
@@ -67,7 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="1311657260431405215">此二維條碼不是網址：<ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
-<translation id="131655401280401879">如果日後移除設定檔鎖定，系統會清除已儲存的資訊。</translation>
+<translation id="131655401280401879">如果日後移除個人檔案鎖定，系統會清除已儲存的資料。</translation>
 <translation id="1320912611264252795">書籤儲存流程宜家顯示喺成個畫面</translation>
 <translation id="1327257854815634930">導覽記錄開咗</translation>
 <translation id="1331212799747679585">無法更新 Chrome。其他選項</translation>
@@ -181,7 +181,7 @@
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
 <translation id="2009341475524975924">為評估廣告效益，網站之間可以分享特定類型的資料，例如系統向您顯示廣告的時段。</translation>
-<translation id="201060170519281460">設定檔鎖定功能可確保你在車上的資訊安全無虞，包括已同步的密碼和付款等。</translation>
+<translation id="201060170519281460">個人檔案鎖定功能可確保您在車上的資料安全，包括已同步的密碼和付款等。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
@@ -259,7 +259,7 @@
 <translation id="250020030759455918">您可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料</translation>
 <translation id="2510106555128151389">正在安裝「<ph name="WEBAPK_NAME" />」…</translation>
 <translation id="2513403576141822879">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
-<translation id="2517113738956581680">完整大小功能表</translation>
+<translation id="2517113738956581680">完整大小工作表</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2523184218357549926">將您瀏覽的網頁網址傳送給 Google</translation>
 <translation id="2527209463677295330">加入網頁上的更多文字，可能會找到更相關的結果</translation>
@@ -284,7 +284,7 @@
 Private State Token 能夠改善網絡上的私隱，而且系統無法透過信任憑證來識別您的身分。</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
-<translation id="2589302627584222634">建立設定檔鎖定</translation>
+<translation id="2589302627584222634">建立個人檔案鎖定</translation>
 <translation id="2593272815202181319">等寬</translation>
 <translation id="2603212228005142861">登入即可管理偏好設定</translation>
 <translation id="260403163289591229">追蹤中</translation>
@@ -547,7 +547,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4035877632587724847">不允許</translation>
 <translation id="4036177530563778041">輕鬆繼續未完成的操作</translation>
 <translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
-<translation id="4044708993631234325">底部功能表</translation>
+<translation id="4044708993631234325">底部工作表</translation>
 <translation id="4045764304651014138">使用情況資料</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
@@ -849,7 +849,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="564667659802381754">私隱權指南 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5655963694829536461">搜尋您的下載內容</translation>
-<translation id="5657871969392618475">你的資訊受到設定檔鎖定功能保護</translation>
+<translation id="5657871969392618475">您的資料受個人檔案鎖定功能保護</translation>
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5665379678064389456">在「<ph name="APP_NAME" />」中建立活動</translation>
 <translation id="5683547024293500885">Chrome 無法檢查更新</translation>
@@ -912,7 +912,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5966233851250124270">Chrome 會記住您的選擇</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
-<translation id="5985186846584605773">為車輛建立設定檔鎖定</translation>
+<translation id="5985186846584605773">為汽車建立個人檔案鎖定</translation>
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
@@ -1141,7 +1141,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7105047059074518658">登入即可讓跨裝置瀏覽更順暢</translation>
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
-<translation id="7116420572655804716">如要在車上同步處理資訊並確保資料安全無虞，你必須在安全性設定中建立「設定檔鎖定」。每次進入車輛時，都必須輸入驗證碼或密碼。</translation>
+<translation id="7116420572655804716">如要在車上同步資料並確保資料安全，您必須在安全性設定中建立「個人檔案鎖定」。每次進入汽車時，都需要輸入驗證碼或密碼。</translation>
 <translation id="7116588989735740310">如要重溫您在其他裝置上瀏覽過的網站，請同步分頁和記錄</translation>
 <translation id="7130504491556983216">在您瀏覽網絡同時，系統會於此處顯示興趣清單</translation>
 <translation id="7138678301420049075">其他</translation>
@@ -1564,7 +1564,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="932327136139879170">首頁</translation>
 <translation id="938850635132480979">錯誤：<ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
-<translation id="950679278154734362">如要在車上同步處理資訊並確保資料安全無虞，你必須建立設定檔鎖定。每次進入車輛時，都必須輸入驗證碼或密碼。</translation>
+<translation id="950679278154734362">如要在車上同步資料並確保資料安全，您必須建立個人檔案鎖定。每次進入汽車時，都需要輸入驗證碼或密碼。</translation>
 <translation id="95817756606698420">Chrome 可在中國使用「搜狗」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />搜尋內容。您可以在「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」中變更此設定。</translation>
 <translation id="962979164594783469">安裝此應用程式</translation>
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>

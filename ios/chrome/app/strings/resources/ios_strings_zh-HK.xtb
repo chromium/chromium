@@ -381,7 +381,7 @@
 <translation id="3464194322481586217">無法追蹤價格。</translation>
 <translation id="3469166899695866866">要停止下載嗎？</translation>
 <translation id="3470502288861289375">複製中…</translation>
-<translation id="3471148582064653480">同步處理密碼、歷史記錄等資料。</translation>
+<translation id="3471148582064653480">同步密碼、記錄等資料。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{來自 {COUNT} 個網站或應用程式}other{來自 {COUNT} 個網站或應用程式}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3476450923187944815">存取其他應用程式的密碼。</translation>
