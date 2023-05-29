@@ -40,7 +40,7 @@ int64_t TimeValToMicroseconds(const struct timeval& tv) {
   return ret;
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 static const rlim_t kSystemDefaultMaxFds = 8192;
@@ -104,7 +104,7 @@ void IncreaseFdLimitTo(unsigned int max_descriptors) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 namespace {
