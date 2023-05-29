@@ -780,6 +780,27 @@ bool CompositorAnimations::ConvertTimingForCompositor(
                       : timing.fill_mode;
   out.iteration_start = timing.iteration_start;
 
+  // Verify that timing calculations will be correct in gfx::KeyframeModel,
+  // which uses times in base::TimeDelta rather than AnimationTimeDelta.
+  // AnimationTimeDelta is backed by a double or int64 depending on the compile
+  // options. base::TimeDelta is backed by an int64. Thus, base::TimeDelta
+  // saturates at a much lower time delta. The largest quantity worked with
+  // is the active duration or scaled active duration depending on the magnitude
+  // of the playback rate. If this value cannot be expressed in int64, then we
+  // cannot composite the animation.
+  if (animation_playback_rate < 0) {
+    AnimationTimeDelta active_duration =
+        out.scaled_duration * out.adjusted_iteration_count;
+    if (std::abs(animation_playback_rate) < 1) {
+      active_duration /= std::abs(animation_playback_rate);
+    }
+    // base::TimeDelta ticks are in microseconds.
+    if (active_duration.InSecondsF() >
+        std::numeric_limits<int64_t>::max() / 1e6) {
+      return false;
+    }
+  }
+
   DCHECK_GT(out.scaled_duration, AnimationTimeDelta());
   DCHECK(out.adjusted_iteration_count > 0 ||
          out.adjusted_iteration_count ==
