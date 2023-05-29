@@ -6948,13 +6948,15 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Set up our form data.
   FormData form;
   test::CreateTestAddressFormData(&form);
-  form.fields[3].value = u"Enter your address";
+  FormFieldData* addr1_field = form.FindFieldByName(u"addr1");
+  ASSERT_TRUE(addr1_field != nullptr);
+  addr1_field->value = u"Enter your address";
 
   FormsSeen({form});
 
   // Fill the form.
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
+  FillAutofillFormDataAndSaveResults(form, *addr1_field, kElvisProfileGuid,
                                      &response_data);
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
@@ -6974,9 +6976,10 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
 
   // Convert the state field to a <select> popup, to make sure that we only
   // reject default values for text fields.
-  ASSERT_TRUE(form.fields[6].name == u"state");
-  form.fields[6].form_control_type = "select-one";
-  form.fields[6].value = base::UTF8ToUTF16(kElvisAddressFillData.state);
+  FormFieldData* state_field = form.FindFieldByName(u"state");
+  ASSERT_TRUE(state_field != nullptr);
+  state_field->form_control_type = "select-one";
+  state_field->value = base::UTF8ToUTF16(kElvisAddressFillData.state);
 
   FormsSeen({form});
 
@@ -6990,6 +6993,51 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
   EXPECT_EQ(u"Tennessee",
             personal_data().last_save_imported_profile()->GetRawInfo(
                 ADDRESS_HOME_STATE));
+}
+
+// Test that we save form data when a non-country, non-state <select> in the
+// form contains the default value.
+TEST_F(BrowserAutofillManagerTest,
+       FormSubmittedNonAddressSelectWithDefaultValue) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  // Remove phonenumber field.
+  auto phonenumber_it =
+      base::ranges::find(form.fields, u"phonenumber", &FormFieldData::name);
+  ASSERT_TRUE(phonenumber_it != form.fields.end());
+  form.fields.erase(phonenumber_it);
+
+  // Insert country code and national phone number fields.
+  FormFieldData country_code_field;
+  test::CreateTestFormField("Country Code", "countrycode", "1", "text",
+                            "tel-country-code", &country_code_field);
+  country_code_field.form_control_type = "select-one";
+  form.fields.push_back(country_code_field);
+
+  FormFieldData phonenumber_field;
+  test::CreateTestFormField("Phone Number", "phonenumber", "", "text",
+                            "tel-national", &phonenumber_field);
+  form.fields.push_back(phonenumber_field);
+
+  FormsSeen({form});
+
+  // Fill the form.
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(form, form.fields[3], kElvisProfileGuid,
+                                     &response_data);
+
+  FormSubmitted(response_data);
+
+  // Value of country code field should have been saved.
+  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  std::u16string formatted_phone_number =
+      personal_data().last_save_imported_profile()->GetRawInfo(
+          PHONE_HOME_WHOLE_NUMBER);
+  std::u16string phone_number_numbers_only;
+  base::RemoveChars(formatted_phone_number, u"+- ", &phone_number_numbers_only);
+  EXPECT_TRUE(base::StartsWith(phone_number_numbers_only, u"1"));
 }
 
 struct ProfileMatchingTypesTestCase {
