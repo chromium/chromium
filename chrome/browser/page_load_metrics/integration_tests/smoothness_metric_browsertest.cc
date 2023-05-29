@@ -35,7 +35,7 @@ bool ExtractUKMSmoothnessMetric(const ukm::TestUkmRecorder& ukm_recorder,
 
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, BasicSmoothnessAverage) {
   LoadHTML(R"HTML(<div id='animate' style='width: 20px; height: 20px'></div>
-    <img src="images/green-16x16.png"></img>
+    <img src="images/lcp-16x16.png"></img>
     <script>
       runtest = async() => {
         const promise = new Promise(resolve => {

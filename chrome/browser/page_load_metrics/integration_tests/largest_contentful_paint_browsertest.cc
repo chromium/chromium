@@ -173,11 +173,11 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   std::sort(candidate_events.begin(), candidate_events.end(),
             compare_candidate_index);
 
-  // LCP_0 uses green-16x16.png, of size 16 x 16.
+  // LCP_0 uses lcp-16x16.png, of size 16 x 16.
   ValidateTraceEventHasCorrectCandidateSize(16 * 16, *candidate_events[0]);
-  // LCP_1 uses blue96x96.png, of size 96 x 96.
+  // LCP_1 uses lcp-96x96.png, of size 96 x 96.
   ValidateTraceEventHasCorrectCandidateSize(96 * 96, *candidate_events[1]);
-  // LCP_2 uses green-256x256.png, of size 16 x 16.
+  // LCP_2 uses lcp-256x256.png, of size 16 x 16.
   ValidateTraceEventHasCorrectCandidateSize(256 * 256, *candidate_events[2]);
 
   ValidateTraceEventBreakdownTimings(*candidate_events[0],
@@ -221,13 +221,13 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-  EXPECT_EQ(EvalJs(sub, "test_step_1()").value.GetString(), "green-16x16.png");
+  EXPECT_EQ(EvalJs(sub, "test_step_1()").value.GetString(), "lcp-16x16.png");
 
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(100, 100));
 
-  EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "green-16x16.png");
+  EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "lcp-16x16.png");
 }
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
@@ -704,7 +704,7 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_PNG) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kPNG;
-  std::string imgSrc = "images/blue.png";
+  std::string imgSrc = "images/lcp-133x106.png";
   TestImage(imgSrc, flag_set);
 }
 
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
   std::string text =
       "This is a text that is larger and comes before an image. The "
       "LargestContentfulPaintType should be those of a text element.";
-  std::string imgSrc = "images/green-2x2.png";
+  std::string imgSrc = "images/lcp-2x2.png";
 
   // The larger element comes first so 1 LCP entry is expected.
   TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, flag_set);
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
   std::string text =
       "This is a text that is larger and comes after an image. The "
       "LargestContentfulPaintType should be those of a text element.";
-  std::string imgSrc = "images/green-2x2.png";
+  std::string imgSrc = "images/lcp-2x2.png";
 
   // The larger element comes later so 2 LCP entries are expected.
   TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, flag_set);
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LCPBreakdownTimings) {
 
   Load("/lcp_breakdown_timings.html");
 
-  std::string url = "/images/green-16x16.png";
+  std::string url = "/images/lcp-16x16.png";
   std::string element_id = "image";
   EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                    content::JsReplace("addImage($1, $2)", url, element_id))
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   Load("/lcp_breakdown_timings.html");
 
-  const std::string url1 = "/images/green-16x16.png";
+  const std::string url1 = "/images/lcp-16x16.png";
   const std::string element_id1 = "image";
 
   EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
