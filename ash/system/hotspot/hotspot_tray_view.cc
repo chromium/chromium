@@ -9,8 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/hotspot/hotspot_icon.h"
-#include "ash/system/hotspot/hotspot_icon_animation.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,7 +59,6 @@ HotspotTrayView::HotspotTrayView(Shelf* shelf) : TrayItemView(shelf) {
 
 HotspotTrayView::~HotspotTrayView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
 }
 
 const char* HotspotTrayView::GetClassName() const {
@@ -114,33 +112,25 @@ void HotspotTrayView::UpdateIconVisibilityAndTooltip() {
 }
 
 void HotspotTrayView::UpdateIconImage() {
-  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
-      hotspot_icon::GetIconForHotspot(state_), cros_tokens::kCrosSysOnSurface,
-      kUnifiedTrayIconSize));
-}
-
-void HotspotTrayView::HotspotIconChanged() {
-  UpdateIconImage();
+  SkColor color;
+  if (chromeos::features::IsJellyEnabled()) {
+    color = GetColorProvider()->GetColor(cros_tokens::kCrosSysPrimary);
+  } else {
+    color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+  }
+  image_view()->SetImage(
+      gfx::CreateVectorIcon(kHotspotOnIcon, kUnifiedTrayIconSize, color));
 }
 
 void HotspotTrayView::OnGetHotspotInfo(HotspotInfoPtr hotspot_info) {
-  if (hotspot_info->state == HotspotState::kDisabled) {
+  if (hotspot_info->state != HotspotState::kEnabled) {
     SetVisible(false);
     return;
   }
 
   SetVisible(true);
   tooltip_ = ComputeHotspotTooltip(hotspot_info->client_count);
-
-  if (hotspot_info->state == HotspotState::kEnabling) {
-    Shell::Get()->hotspot_icon_animation()->AddObserver(this);
-  } else if (state_ == HotspotState::kEnabling) {
-    Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
-  }
-  if (state_ != hotspot_info->state) {
-    state_ = hotspot_info->state;
-    UpdateIconImage();
-  }
 }
 
 }  // namespace ash

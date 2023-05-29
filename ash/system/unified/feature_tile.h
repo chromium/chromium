@@ -124,7 +124,6 @@ class ASH_EXPORT FeatureTile : public views::Button {
 
  private:
   friend class BluetoothFeaturePodControllerTest;
-  friend class HotspotFeaturePodControllerTest;
   friend class NotificationCounterViewTest;
 
   // views::View:

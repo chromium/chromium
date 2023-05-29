@@ -135,7 +135,6 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
-#include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
@@ -1572,7 +1571,6 @@ void Shell::Init(
   }
 
   if (features::IsHotspotEnabled()) {
-    hotspot_icon_animation_ = std::make_unique<HotspotIconAnimation>();
     hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
   }
 

@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_HOTSPOT_HOTSPOT_DETAILED_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/hotspot/hotspot_icon_animation_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,8 +27,7 @@ class Switch;
 // This class defines both the interface used to interact with the detailed
 // Hotspot page within the quick settings. This class includes the declaration
 // for the delegate interface it uses to propagate user interactions.
-class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
-                                       public HotspotIconAnimationObserver {
+class ASH_EXPORT HotspotDetailedView : public TrayDetailedView {
  public:
   METADATA_HEADER(HotspotDetailedView);
 
@@ -55,9 +53,6 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
   void CreateExtraTitleRowButtons() override;
-
-  // HotspotIconAnimationObserver:
-  void HotspotIconChanged() override;
 
  private:
   friend class HotspotDetailedViewControllerTest;
@@ -85,16 +80,12 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView,
   // Handles toggling Hotspot via the UI to `new_state`.
   void ToggleHotspot(bool new_state);
 
-  void UpdateIcon();
   void UpdateToggleState(
       const hotspot_config::mojom::HotspotState& state,
       const hotspot_config::mojom::HotspotAllowStatus& allow_status);
   void UpdateSubText(const hotspot_config::mojom::HotspotInfoPtr& hotspot_info);
   void UpdateExtraIcon(
       const hotspot_config::mojom::HotspotAllowStatus& allow_status);
-
-  hotspot_config::mojom::HotspotState state_ =
-      hotspot_config::mojom::HotspotState::kDisabled;
 
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 

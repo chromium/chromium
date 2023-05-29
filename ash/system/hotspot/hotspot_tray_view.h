@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/hotspot/hotspot_icon_animation_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -23,7 +22,6 @@ namespace ash {
 class ASH_EXPORT HotspotTrayView
     : public TrayItemView,
       public SessionObserver,
-      public HotspotIconAnimationObserver,
       public hotspot_config::mojom::CrosHotspotConfigObserver {
  public:
   explicit HotspotTrayView(Shelf* shelf);
@@ -52,9 +50,6 @@ class ASH_EXPORT HotspotTrayView
   // mojom::CrosHotspotConfigObserver:
   void OnHotspotInfoChanged() override;
 
-  // HotspotIconAnimationObserver:
-  void HotspotIconChanged() override;
-
   void OnGetHotspotInfo(hotspot_config::mojom::HotspotInfoPtr hotspot_info);
 
   void UpdateIconImage();
@@ -62,9 +57,6 @@ class ASH_EXPORT HotspotTrayView
 
   // The tooltip and accessible name string used for the icon.
   std::u16string tooltip_;
-
-  hotspot_config::mojom::HotspotState state_ =
-      hotspot_config::mojom::HotspotState::kDisabled;
 
   mojo::Remote<hotspot_config::mojom::CrosHotspotConfig>
       remote_cros_hotspot_config_;
