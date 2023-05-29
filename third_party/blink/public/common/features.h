@@ -1152,6 +1152,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
 // hopping through the IO thread first.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
 
+// Permissions Policies support subdomain wildcards when the non-wildcard
+// portion of the domain is at least eTLD+1. If this flag is on, the eTLD+1
+// restriction is lifted and wildcards are supported in the port and scheme.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSPWildcardsInPermissionsPolicies);
+
 }  // namespace features
 }  // namespace blink
 

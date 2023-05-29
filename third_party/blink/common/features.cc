@@ -1891,5 +1891,9 @@ BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCSPWildcardsInPermissionsPolicies,
+             "CSPWildcardsInPermissionsPolicies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

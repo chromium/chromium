@@ -38,6 +38,10 @@ class BLINK_COMMON_EXPORT
                                    origin_with_possible_wildcards) {
     return origin_with_possible_wildcards.csp_source.is_host_wildcard;
   }
+  static bool is_port_wildcard(const blink::OriginWithPossibleWildcards&
+                                   origin_with_possible_wildcards) {
+    return origin_with_possible_wildcards.csp_source.is_port_wildcard;
+  }
 
   static bool Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
                    blink::OriginWithPossibleWildcards* out);
