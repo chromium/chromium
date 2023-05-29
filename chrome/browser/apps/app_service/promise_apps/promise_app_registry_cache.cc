@@ -62,16 +62,16 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   // Retrieve the current promise app state.
   apps::PromiseApp* state = FindPromiseApp(delta->package_id);
 
+  for (auto& observer : observers_) {
+    observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
+  }
+
   if (state) {
     // Update the existing promise app if it exists.
     PromiseAppUpdate::Merge(state, delta.get());
   } else {
     // Add the promise app instance to the cache if it isn't registered yet.
     promise_app_map_[delta->package_id] = delta->Clone();
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnPromiseAppUpdate(PromiseAppUpdate(state, delta.get()));
   }
 
   update_in_progress_ = false;
