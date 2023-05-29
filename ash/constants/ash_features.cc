@@ -819,7 +819,7 @@ BASE_FEATURE(kExoConsumedByImeByFlag,
 // Enables using an extended Wayland API for ConfirmCompositionText.
 BASE_FEATURE(kExoExtendedConfirmComposition,
              "ExoExtendedConfirmComposition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to check KeyEvent flag to see if the event is consumed by IME
 // or not (=decides using heuristics based on key code etc.).
