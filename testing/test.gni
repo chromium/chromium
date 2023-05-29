@@ -395,13 +395,6 @@ template("test") {
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
 
-        if (_add_unwind_tables_in_apk) {
-          # Remove -gz if present, as dump_syms does not support it.
-          # Add and then remove because "-=" removes all, but errors if none are found.
-          configs += [ "//build/config:compress_debug_sections" ]
-          configs -= [ "//build/config:compress_debug_sections" ]
-        }
-
         forward_variables_from(
             invoker,
             "*",
