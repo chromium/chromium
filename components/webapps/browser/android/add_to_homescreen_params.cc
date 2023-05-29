@@ -12,8 +12,13 @@ AddToHomescreenParams::AddToHomescreenParams() = default;
 AddToHomescreenParams::~AddToHomescreenParams() = default;
 
 std::string AddToHomescreenParams::GetAppIdentifier() {
-  return native_app_data.is_null() ? shortcut_info->url.spec()
-                                   : native_app_package_name;
+  if (app_type == AddToHomescreenParams::AppType::NATIVE) {
+    return native_app_package_name;
+  }
+  // TODO(crbug.com/1447006): shortcut_info shouldn't be null unless
+  // app_type is NATIVE.
+  DUMP_WILL_BE_CHECK(shortcut_info);
+  return shortcut_info ? shortcut_info->url.spec() : "";
 }
 
 bool AddToHomescreenParams::HasMaskablePrimaryIcon() {
