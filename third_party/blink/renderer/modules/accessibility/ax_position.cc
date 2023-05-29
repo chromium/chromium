@@ -265,12 +265,15 @@ const AXPosition AXPosition::FromPosition(
     // subtract the text offset of our |container| from the beginning of the
     // same formatting context.
     int container_offset = container->TextOffsetInFormattingContext(0);
-    int text_offset =
-        static_cast<int>(
-            container_offset_mapping
-                ->GetTextContentOffset(parent_anchored_position)
-                .value_or(static_cast<unsigned int>(container_offset))) -
-        container_offset;
+    absl::optional<unsigned> content_offset =
+        container_offset_mapping->GetTextContentOffset(
+            parent_anchored_position);
+    int text_offset = 0;
+    if (content_offset.has_value()) {
+      text_offset = ax_position.AdjustContentOffsetForNonContiguousMappings(
+                        container_offset_mapping, content_offset.value()) -
+                    container_offset;
+    }
     DCHECK_GE(text_offset, 0);
     ax_position.text_offset_or_child_index_ = text_offset;
     ax_position.affinity_ = affinity;
@@ -1002,6 +1005,34 @@ String AXPosition::ToString() const {
   builder.Append(container_object_->ToString());
   builder.AppendFormat(", %d", ChildIndex());
   return builder.ToString();
+}
+
+int AXPosition::AdjustContentOffsetForNonContiguousMappings(
+    const NGOffsetMapping* mapping,
+    int content_offset) const {
+  if (!mapping) {
+    return content_offset;
+  }
+
+  String text = mapping->GetText();
+  int count = 0;
+  unsigned previous_content_end = 0;
+  for (auto unit : mapping->GetUnits()) {
+    if (unit.TextContentStart() > static_cast<unsigned>(content_offset)) {
+      break;
+    }
+
+    // There should not be multiple contiguous break opportunities for which
+    // there is no associated mapping unit (e.g. the `wbr` element has a unit).
+    if (unit.TextContentStart() != previous_content_end &&
+        text[previous_content_end] == kZeroWidthSpaceCharacter) {
+      count++;
+    }
+
+    previous_content_end = unit.TextContentEnd();
+  }
+
+  return content_offset - count;
 }
 
 // static

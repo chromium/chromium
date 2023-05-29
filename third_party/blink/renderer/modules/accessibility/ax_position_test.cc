@@ -640,6 +640,37 @@ TEST_F(AccessibilityTest, AXPositionFromDOMPositionWithWhiteSpace) {
   EXPECT_EQ(nullptr, ax_position_before_white_space.ChildAfterTreePosition());
 }
 
+TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespace) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div" style="white-space: pre-wrap;">   Bar</div>
+    )HTML");
+
+  const Node* text = GetElementById("div")->firstChild();
+  ASSERT_NE(nullptr, text);
+  EXPECT_TRUE(text->IsTextNode());
+  EXPECT_EQ(6U, text->textContent().length());
+
+  const Position position_at_start(*text, 0);
+  const auto ax_position_at_start = AXPosition::FromPosition(position_at_start);
+  EXPECT_TRUE(ax_position_at_start.IsTextPosition());
+  EXPECT_EQ(0, ax_position_at_start.TextOffset());
+
+  // If we didn't adjust for the break opportunity, the accessible text offset
+  // would be 4 instead of 3.
+  const Position position_after_white_space(*text, 3);
+  const auto ax_position_after_white_space =
+      AXPosition::FromPosition(position_after_white_space);
+  EXPECT_TRUE(ax_position_after_white_space.IsTextPosition());
+  EXPECT_EQ(3, ax_position_after_white_space.TextOffset());
+
+  // If we didn't adjust for the break opportunity, the accessible text offset
+  // would be 7 instead of 6.
+  const Position position_at_end(*text, 6);
+  const auto ax_position_at_end = AXPosition::FromPosition(position_at_end);
+  EXPECT_TRUE(ax_position_at_end.IsTextPosition());
+  EXPECT_EQ(6, ax_position_at_end.TextOffset());
+}
+
 //
 // Test affinity.
 // We need to distinguish between the caret at the end of one line and the
