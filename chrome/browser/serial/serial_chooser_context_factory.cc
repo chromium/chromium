@@ -20,7 +20,7 @@ SerialChooserContextFactory::SerialChooserContextFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-SerialChooserContextFactory::~SerialChooserContextFactory() {}
+SerialChooserContextFactory::~SerialChooserContextFactory() = default;
 
 KeyedService* SerialChooserContextFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
@@ -29,7 +29,8 @@ KeyedService* SerialChooserContextFactory::BuildServiceInstanceFor(
 
 // static
 SerialChooserContextFactory* SerialChooserContextFactory::GetInstance() {
-  return base::Singleton<SerialChooserContextFactory>::get();
+  static base::NoDestructor<SerialChooserContextFactory> instance;
+  return instance.get();
 }
 
 // static
