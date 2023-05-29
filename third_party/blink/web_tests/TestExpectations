@@ -1507,6 +1507,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-09
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-091.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-092.xht [ Failure ]
 crbug.com/958381 [ Mac ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
+crbug.com/1449411 [ Mac ] virtual/text-antialias/word-break-soft-hyphen.html [ Failure Pass ]
 crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
 crbug.com/958381 [ Debug Mac12 ] fragmentation/single-line-cells-paginated-with-text.html [ Failure ]
 
