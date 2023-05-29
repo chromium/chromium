@@ -13,7 +13,7 @@ class BrowserContext;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 class HttpsEngagementService;
@@ -31,7 +31,7 @@ class HttpsEngagementServiceFactory : public ProfileKeyedServiceFactory {
       const HttpsEngagementServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<HttpsEngagementServiceFactory>;
+  friend base::NoDestructor<HttpsEngagementServiceFactory>;
 
   HttpsEngagementServiceFactory();
   ~HttpsEngagementServiceFactory() override;
