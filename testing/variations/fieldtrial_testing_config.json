@@ -8083,6 +8083,21 @@
             ]
         }
     ],
+    "LoadNotificationsForSameDocumentNavigations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230519",
+                    "enable_features": [
+                        "LoadNotificationsForSameDocumentNavigations"
+                    ]
+                }
+            ]
+        }
+    ],
     "LockProfileCookieDatabase": [
         {
             "platforms": [
