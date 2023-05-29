@@ -32,8 +32,11 @@ void EnsureAllChildrenAreVisible(ui::Layer* layer) {
 }  // namespace
 
 WindowMirrorView::WindowMirrorView(aura::Window* source,
-                                   bool show_non_client_view)
-    : source_(source), show_non_client_view_(show_non_client_view) {
+                                   bool show_non_client_view,
+                                   bool sync_bounds)
+    : source_(source),
+      show_non_client_view_(show_non_client_view),
+      sync_bounds_(sync_bounds) {
   source_->AddObserver(this);
   DCHECK(source);
 }
@@ -127,7 +130,7 @@ ui::Layer* WindowMirrorView::GetMirrorLayerForTesting() {
 }
 
 void WindowMirrorView::InitLayerOwner() {
-  layer_owner_ = wm::MirrorLayers(source_, /*sync_bounds=*/false);
+  layer_owner_ = wm::MirrorLayers(source_, sync_bounds_);
   layer_owner_->root()->SetOpacity(1.f);
 
   SetPaintToLayer();
