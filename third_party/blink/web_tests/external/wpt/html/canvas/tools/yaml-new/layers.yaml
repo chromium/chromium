@@ -127,7 +127,7 @@
   reference: |
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg"
-            width="200" height="200"
+            width="{{ size[0] }}" height="{{ size[1] }}"
             color-interpolation-filters="sRGB">
         <filter id="filter" x="-100%" y="-100%" width="300%" height="300%">
           <feColorMatrix
@@ -148,8 +148,8 @@
       </svg>`;
 
     const img = new Image();
-    img.width = 200;
-    img.height = 200;
+    img.width = {{ size[0] }};
+    img.height = {{ size[1] }};
     img.onload = () => {
       ctx.fillStyle = 'rgba(0, 0, 255, 1)';
 
@@ -324,11 +324,11 @@
       flush_canvas: createImageBitmap(canvas);
     drawImage:
       flush_canvas: |-
-        const canvas2 = new OffscreenCanvas(200, 200);
+        const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
         const ctx2 = canvas2.getContext('2d');
         ctx2.drawImage(canvas, 0, 0);
     getImageData:
-      flush_canvas: ctx.getImageData(0, 0, 200, 200);
+      flush_canvas: ctx.getImageData(0, 0, {{ size[0] }}, {{ size[1] }});
     requestAnimationFrame:
       canvasType: ['HTMLCanvas']
       test_type: "promise"
@@ -336,7 +336,7 @@
         await new Promise(resolve => requestAnimationFrame(resolve));
     putImageData:
       flush_canvas: |-
-        const canvas2 = new OffscreenCanvas(200, 200);
+        const canvas2 = new OffscreenCanvas({{ size[0] }}, {{ size[1] }});
         const ctx2 = canvas2.getContext('2d');
         ctx.putImageData(ctx2.getImageData(0, 0, 1, 1), 0, 0);
     toBlob:

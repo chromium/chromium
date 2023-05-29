@@ -274,39 +274,63 @@ def _validate_test(test: Mapping[str, Any]):
             'can\'t both be specified at the same time.')
 
 
+def _render_template(jinja_env: jinja2.Environment,
+                     template: jinja2.Template,
+                     params: Mapping[str, Any]) -> str:
+    """Renders the specified jinja template.
+
+    The template is repetitively rendered until no more changes are observed.
+    This allows for template parameters to refer to other template parameters.
+    """
+    rendered = template.render(params)
+    previous = ''
+    while rendered != previous:
+        previous = rendered
+        template = jinja_env.from_string(rendered)
+        rendered = template.render(params)
+    return rendered
+
+
 def _write_reference_test(jinja_env: jinja2.Environment,
                           params: Mapping[str, Any],
                           enabled_tests: Set[TestType],
                           canvas_path: str, offscreen_path: str):
     if TestType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}.html').write_text(
-            jinja_env.get_template("reftest_element.html").render(params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template("reftest_element.html"),
+                             params), 'utf-8')
     if TestType.OFFSCREEN_CANVAS in enabled_tests:
         pathlib.Path(f'{offscreen_path}.html').write_text(
-            jinja_env.get_template("reftest_offscreen.html").render(params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template("reftest_offscreen.html"),
+                             params), 'utf-8')
     if TestType.WORKER in enabled_tests:
         pathlib.Path(f'{offscreen_path}.w.html').write_text(
-            jinja_env.get_template("reftest_worker.html").render(params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template("reftest_worker.html"),
+                             params), 'utf-8')
 
     js_ref = params.get('reference', '')
     html_ref = params.get('html_reference', '')
     ref_params = dict(params)
     ref_params.update({
         'is_test_reference': True,
-        'code': jinja_env.from_string(js_ref or html_ref).render(params)
+        'code': _render_template(jinja_env,
+                                 jinja_env.from_string(js_ref or html_ref),
+                                 params)
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
     if TestType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}-expected.html').write_text(
-            jinja_env.get_template(ref_template_name).render(ref_params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template(ref_template_name),
+                             ref_params), 'utf-8')
     if {TestType.OFFSCREEN_CANVAS, TestType.WORKER} & enabled_tests:
         pathlib.Path(f'{offscreen_path}-expected.html').write_text(
-            jinja_env.get_template(ref_template_name).render(ref_params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template(ref_template_name),
+                             ref_params), 'utf-8')
 
 
 def _write_testharness_test(jinja_env: jinja2.Environment,
@@ -317,18 +341,22 @@ def _write_testharness_test(jinja_env: jinja2.Environment,
     # Create test cases for canvas and offscreencanvas.
     if TestType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}.html').write_text(
-            jinja_env.get_template("testharness_element.html").render(params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template("testharness_element.html"),
+                             params), 'utf-8')
 
     if TestType.OFFSCREEN_CANVAS in enabled_tests:
         pathlib.Path(f'{offscreen_path}.html').write_text(
-            jinja_env.get_template("testharness_offscreen.html").render(
-                params), 'utf-8')
+            _render_template(
+                jinja_env,
+                jinja_env.get_template("testharness_offscreen.html"), params),
+            'utf-8')
 
     if TestType.WORKER in enabled_tests:
         pathlib.Path(f'{offscreen_path}.worker.js').write_text(
-            jinja_env.get_template("testharness_worker.js").render(params),
-            'utf-8')
+            _render_template(jinja_env,
+                             jinja_env.get_template("testharness_worker.js"),
+                             params), 'utf-8')
 
 
 def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
@@ -383,7 +411,12 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
         'expected_img': expected_img
     })
 
-    params['code'] = jinja_env.from_string(params['code']).render(params)
+    # Render the code on its own, as it could contain templating. The code
+    # must be rendered separately so that it could be indented as a whole into
+    # the final template.
+    params['code'] = _render_template(jinja_env,
+                                      jinja_env.from_string(params['code']),
+                                      params)
 
     canvas_path = os.path.join(html_canvas_cfg.out_dir, sub_dir, name)
     offscreen_path = os.path.join(offscreen_canvas_cfg.out_dir, sub_dir, name)
