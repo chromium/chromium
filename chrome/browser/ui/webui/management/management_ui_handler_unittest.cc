@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include <map>
 #include <memory>
 #include <set>
@@ -21,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -103,10 +103,6 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/device_signals/core/browser/mock_user_permission_service.h"  // nogncheck
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_test_helper.h"
@@ -240,17 +236,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
 
   policy::PolicyService* GetPolicyService() override { return policy_service_; }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  device_signals::UserPermissionService* GetUserPermissionService() override {
-    return user_permission_service_;
-  }
-
-  void SetUserPermissionService(
-      device_signals::UserPermissionService* user_permission_service) {
-    user_permission_service_ = user_permission_service;
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(policy::DeviceCloudPolicyManagerAsh*,
               GetDeviceCloudPolicyManager,
@@ -266,9 +251,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
   raw_ptr<policy::PolicyService> policy_service_ = nullptr;
   bool update_required_eol_ = false;
   std::string device_domain = "devicedomain.com";
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  raw_ptr<device_signals::UserPermissionService> user_permission_service_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 };
 
 // We need to use a different base class for ChromeOS and non ChromeOS case.
@@ -529,9 +511,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     base::Value::Dict data =
         handler_.GetContextualManagedDataForTesting(profile_.get());
     ExtractContextualSourceUpdate(data);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    handler_.SetUserPermissionService(&mock_user_permission_service_);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   }
 
   bool GetManaged() const { return extracted_.managed; }
@@ -640,9 +619,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::ScopedLacrosServiceTestHelper scoped_lacros_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  device_signals::MockUserPermissionService mock_user_permission_service_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   TestManagementUIHandler handler_;
 };
 
@@ -1312,11 +1288,6 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
 }
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  SetUpProfileAndHandler();
-  EXPECT_CALL(mock_user_permission_service_, CanCollectSignals())
-      .WillOnce(Return(device_signals::UserPermission::kGranted));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   policy::PolicyMap chrome_policies;
   const policy::PolicyNamespace chrome_policies_namespace =
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
@@ -1324,13 +1295,11 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
       .WillRepeatedly(ReturnRef(chrome_policies));
   SetPolicyValue(policy::key::kCloudReportingEnabled, true, chrome_policies);
 
-  std::set<std::string> expected_messages = {
+  const std::set<std::string> expected_messages = {
       kManagementExtensionReportMachineName, kManagementExtensionReportUsername,
       kManagementExtensionReportVersion,
       kManagementExtensionReportExtensionsPlugin};
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  expected_messages.insert(kManagementDeviceSignalsDisclosure);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetExtensionReportingInfo(),
                       expected_messages);
 }
