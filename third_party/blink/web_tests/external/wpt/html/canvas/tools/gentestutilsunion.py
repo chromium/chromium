@@ -291,12 +291,12 @@ def _write_reference_test(jinja_env: jinja2.Environment,
             jinja_env.get_template("reftest_worker.html").render(params),
             'utf-8')
 
-    js_ref = params.get('reference')
-    html_ref = params.get('html_reference')
+    js_ref = params.get('reference', '')
+    html_ref = params.get('html_reference', '')
     ref_params = dict(params)
     ref_params.update({
         'is_test_reference': True,
-        'code': js_ref or html_ref
+        'code': jinja_env.from_string(js_ref or html_ref).render(params)
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
     if TestType.HTML_CANVAS in enabled_tests:
@@ -383,6 +383,8 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
         'expected_img': expected_img
     })
 
+    params['code'] = jinja_env.from_string(params['code']).render(params)
+
     canvas_path = os.path.join(html_canvas_cfg.out_dir, sub_dir, name)
     offscreen_path = os.path.join(offscreen_canvas_cfg.out_dir, sub_dir, name)
     if 'manual' in test:
@@ -456,12 +458,6 @@ def genTestUtils_union(NAME2DIRFILE: str) -> None:
             test = original_test.copy()
             if variant_name or variant_params:
                 test['name'] += '.' + variant_name
-                test['code'] = test['code'] % variant_params
-                if 'reference' in test:
-                    test['reference'] = test['reference'] % variant_params
-                if 'html_reference' in test:
-                    test['html_reference'] = (
-                        test['html_reference'] % variant_params)
                 test.update(variant_params)
 
             name = test['name']
