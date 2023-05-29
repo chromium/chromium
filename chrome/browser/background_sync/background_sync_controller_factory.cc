@@ -20,7 +20,8 @@ BackgroundSyncControllerImpl* BackgroundSyncControllerFactory::GetForProfile(
 // static
 BackgroundSyncControllerFactory*
 BackgroundSyncControllerFactory::GetInstance() {
-  return base::Singleton<BackgroundSyncControllerFactory>::get();
+  static base::NoDestructor<BackgroundSyncControllerFactory> instance;
+  return instance.get();
 }
 
 BackgroundSyncControllerFactory::BackgroundSyncControllerFactory()

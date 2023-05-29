@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_CONTROLLER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BackgroundSyncControllerImpl;
@@ -22,7 +22,7 @@ class BackgroundSyncControllerFactory : public ProfileKeyedServiceFactory {
       const BackgroundSyncControllerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<BackgroundSyncControllerFactory>;
+  friend base::NoDestructor<BackgroundSyncControllerFactory>;
 
   BackgroundSyncControllerFactory();
   ~BackgroundSyncControllerFactory() override;
