@@ -52,6 +52,8 @@ class PromiseAppUpdate {
   raw_ptr<const PromiseApp> delta_ = nullptr;
 };
 
+std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_UPDATE_H_

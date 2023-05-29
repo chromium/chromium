@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "components/services/app_service/public/cpp/macros.h"
@@ -94,4 +95,20 @@ bool PromiseAppUpdate::ShouldShowChanged() const {
   RETURN_OPTIONAL_VALUE_CHANGED(should_show);
 }
 
+std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update) {
+  out << "Package_id: " << update.PackageId().ToString() << std::endl;
+  out << "- Name Changed: " << update.NameChanged() << std::endl;
+  out << "- Name: " << update.Name().value_or("N/A") << std::endl;
+  out << "- Progress Changed: " << update.ProgressChanged() << std::endl;
+  out << "- Progress: "
+      << (update.Progress().has_value()
+              ? base::NumberToString(update.Progress().value())
+              : "N/A")
+      << std::endl;
+  out << "- Status Changed: " << update.StatusChanged() << std::endl;
+  out << "- Status: " << EnumToString(update.Status()) << std::endl;
+  out << "- Should Show Changed: " << update.ShouldShowChanged() << std::endl;
+  out << "- Should Show: " << update.ShouldShow() << std::endl;
+  return out;
+}
 }  // namespace apps
