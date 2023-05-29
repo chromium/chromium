@@ -657,6 +657,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.EmptyCandidate"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-01">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records when an empty completion candidate is added to a
+    suggestion generation request to the machine learning service. An empty
+    completion candidate in this context means a candidate with an empty string.
+    This is an invalid state and should never happen. The metric is recorded
+    once per empty candidate found.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
     enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-01">
   <owner>curtismcmullan@google.com</owner>
