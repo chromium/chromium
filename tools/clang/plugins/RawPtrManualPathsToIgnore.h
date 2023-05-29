@@ -46,10 +46,12 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     "net/tools/",
     "chrome/chrome_elf/",
     "chrome/installer/mini_installer/",
+    "testing/platform_test.h",
 
     // DEPS prohibits includes from base/
     "chrome/install_static",
     "net/cert/pki",
+    "sandbox/mac/",
 
     // Exclude pocdll.dll as it doesn't depend on //base and only used for
     // testing.
