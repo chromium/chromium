@@ -881,7 +881,14 @@ BASE_FEATURE(kResamplingScrollEvents,
 
 BASE_FEATURE(kFilteringScrollPrediction,
              "FilteringScrollPrediction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             // TODO(b/284271126): Run the experiment on desktop and enable if
+             // positive.
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kKalmanHeuristics,
              "KalmanHeuristics",
