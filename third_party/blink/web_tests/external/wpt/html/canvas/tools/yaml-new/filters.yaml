@@ -349,7 +349,7 @@
 
 - name: 2d.filter.canvasFilterObject.dropShadow.tentative
   desc: Test CanvasFilter() dropShadow object.
-  size: 520, 420
+  size: [520, 420]
   code: |
     ctx.fillStyle = 'teal';
     ctx.fillRect(0, 0, 520, 50);

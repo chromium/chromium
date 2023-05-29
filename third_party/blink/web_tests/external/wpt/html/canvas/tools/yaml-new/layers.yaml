@@ -1,6 +1,6 @@
 - name: 2d.layer.global-states
   desc: Checks that layers correctly use global render states.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
 
@@ -99,7 +99,7 @@
 
 - name: 2d.layer.global-states.filter
   desc: Checks that layers with filters correctly use global render states.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
 
@@ -167,7 +167,7 @@
 
 - name: 2d.layer.nested
   desc: Tests nested canvas layers.
-  size: 200, 200
+  size: [200, 200]
   code: |
     var circle = new Path2D();
     circle.arc(90, 90, 40, 0, 2 * Math.PI);
@@ -220,7 +220,7 @@
 
 - name: 2d.layer.restore-style
   desc: Test that ensure layers restores style values upon endLayer.
-  size: 200, 200
+  size: [200, 200]
   fuzzy: maxDifference=0-1; totalPixels=0-950
   code: |
     ctx.fillStyle = 'rgba(0,0,255,1)';
@@ -249,7 +249,7 @@
 
 - name: 2d.layer.unclosed
   desc: Check that layers are rendered even if not closed.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -274,7 +274,7 @@
 
 - name: 2d.layer.render-opportunities
   desc: Check that layers state stack is flushed and rebuilt on frame renders.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'purple';
     ctx.fillRect(60, 60, 75, 50);
@@ -351,7 +351,7 @@
 
 - name: 2d.layer.render-opportunities.transferToImageBitmap
   desc: Checks that transferToImageBitmap flushes and rebuilds the state stack.
-  size: 200, 200
+  size: [200, 200]
   canvasType: ['OffscreenCanvas', 'Worker']
   code: |
     ctx.fillStyle = 'purple';
@@ -391,7 +391,7 @@
   desc: >-
     Test to ensure beginlayer works for filter, alpha and shadow, even with
     consecutive layers.
-  size: 500, 500
+  size: [500, 500]
   fuzzy: maxDifference=0-3; totalPixels=0-6318
   code: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
@@ -441,7 +441,7 @@
   desc: >-
     A test to make sure an unmatched endLayer is a no-op and has no effect on
     the code following it.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
     ctx.fillRect(60, 60, 75, 50);
@@ -473,7 +473,7 @@
 
 - name: 2d.layer.endlayer.alone
   desc: A test to make sure a single endLayer with no beginLayer is a no-op.
-  size: 200, 200
+  size: [200, 200]
   code: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
     ctx.fillRect(60, 60, 75, 50);
