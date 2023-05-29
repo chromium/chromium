@@ -16,7 +16,6 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/shelf/shelf_party_feature_pod_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
@@ -706,9 +705,6 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<IMEFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
-  if (base::FeatureList::IsEnabled(features::kShelfParty)) {
-    AddFeaturePodItem(std::make_unique<ShelfPartyFeaturePodController>());
-  }
   if (media::ShouldEnableAutoFraming()) {
     AddFeaturePodItem(std::make_unique<AutozoomFeaturePodController>());
   }
@@ -776,11 +772,6 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   }
   create_tile(std::make_unique<VPNFeaturePodController>(this),
               feature_pod_controllers_, tiles);
-
-  if (base::FeatureList::IsEnabled(features::kShelfParty)) {
-    create_tile(std::make_unique<ShelfPartyFeaturePodController>(),
-                feature_pod_controllers_, tiles);
-  }
   create_tile(std::make_unique<PrivacyScreenFeaturePodController>(),
               feature_pod_controllers_, tiles);
 

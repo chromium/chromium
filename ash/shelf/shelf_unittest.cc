@@ -14,7 +14,6 @@
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_layout_manager.h"
-#include "ash/shelf/shelf_party_feature_pod_controller.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
