@@ -79,7 +79,7 @@ class VideoBitstream final {
   };
 
   VideoBitstream(std::unique_ptr<base::MemoryMappedFile> memory_mapped_file,
-                  const Metadata& metadata);
+                 const Metadata& metadata);
 
   static base::FilePath ResolveFilePath(const base::FilePath& file_path);
   static bool LoadMetadata(const base::FilePath& json_file_path,

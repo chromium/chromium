@@ -24,7 +24,7 @@ namespace media {
 namespace test {
 
 class FrameRendererDummy;
-class Video;
+class VideoBitstream;
 class DecoderWrapper;
 struct DecoderWrapperConfig;
 
@@ -73,7 +73,7 @@ class DecoderListener {
   // called multiple times and needs to be called before Play(). The |video|
   // will not be owned by the video player, the caller should guarantee it
   // outlives the video player.
-  bool Initialize(const Video* video);
+  bool Initialize(const VideoBitstream* video);
   // Play the video asynchronously.
   void Play();
   // Play the video asynchronously. Automatically pause decoding when |event|

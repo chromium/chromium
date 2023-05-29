@@ -147,7 +147,7 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
   return success;
 }
 
-EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
+EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
                                      VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
                         stream.size())),

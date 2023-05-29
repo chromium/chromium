@@ -67,7 +67,7 @@ std::unique_ptr<base::MemoryMappedFile> LoadData(
 // |metadata.|
 // static
 bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
-                                   Metadata& metadata) {
+                                  Metadata& metadata) {
   std::string json_data;
   if (!base::ReadFileToString(json_file_path, &json_data)) {
     return false;
@@ -150,8 +150,8 @@ VideoBitstream::~VideoBitstream() = default;
 VideoBitstream::Metadata::Metadata() = default;
 VideoBitstream::Metadata::~Metadata() = default;
 VideoBitstream::Metadata::Metadata(const Metadata&) = default;
-VideoBitstream::Metadata& VideoBitstream::Metadata::operator=(
-    const Metadata&) = default;
+VideoBitstream::Metadata& VideoBitstream::Metadata::operator=(const Metadata&) =
+    default;
 
 std::unique_ptr<VideoBitstream> VideoBitstream::Create(
     const base::FilePath& file_path,

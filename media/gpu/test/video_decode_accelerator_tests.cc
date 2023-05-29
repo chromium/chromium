@@ -21,7 +21,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_transformation.h"
 #include "media/filters/dav1d_video_decoder.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_file_writer.h"
 #include "media/gpu/test/video_frame_validator.h"
 #include "media/gpu/test/video_player/decoder_listener.h"
@@ -124,7 +124,7 @@ media::test::VideoPlayerTestEnvironment* g_env;
 class VideoDecoderTest : public ::testing::Test {
  public:
   std::unique_ptr<DecoderListener> CreateDecoderListener(
-      const Video* video,
+      const VideoBitstream* video,
       DecoderWrapperConfig config = DecoderWrapperConfig(),
       std::unique_ptr<FrameRendererDummy> frame_renderer =
           FrameRendererDummy::Create()) {
@@ -195,10 +195,7 @@ class VideoDecoderTest : public ::testing::Test {
     // keyframeless resolution changes, see:
     // https://www.webmproject.org/vp9/levels/#test-descriptions.
     config.ignore_resolution_changes_to_smaller_vp9 =
-        base::Contains(base::ToLowerASCII(g_env->Video()->FilePath().value()),
-                       "frm_resize") ||
-        base::Contains(base::ToLowerASCII(g_env->Video()->FilePath().value()),
-                       "sub8x8_sf");
+        g_env->Video()->HasKeyFrameLessResolutionChange();
 #endif
 
     auto video_player = DecoderListener::Create(
@@ -208,8 +205,8 @@ class VideoDecoderTest : public ::testing::Test {
 
     // Increase event timeout when outputting video frames.
     if (g_env->GetFrameOutputMode() != FrameOutputMode::kNone) {
-      video_player->SetEventWaitTimeout(std::max(
-          kDefaultEventWaitTimeout, g_env->Video()->GetDuration() * 10));
+      video_player->SetEventWaitTimeout(
+          std::max(kDefaultEventWaitTimeout, g_env->Video()->Duration() * 10));
     }
     return video_player;
   }
@@ -217,7 +214,7 @@ class VideoDecoderTest : public ::testing::Test {
  private:
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
   // TODO(hiroh): Create model frames once during the test.
-  bool CreateModelFrames(const Video* video) {
+  bool CreateModelFrames(const VideoBitstream* video) {
     if (video->Codec() != VideoCodec::kAV1) {
       LOG(ERROR) << "Frame validation by SSIM is allowed for AV1 streams only";
       return false;
@@ -229,9 +226,8 @@ class VideoDecoderTest : public ::testing::Test {
     VideoDecoderConfig decoder_config(
         video->Codec(), video->Profile(),
         VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
-        kNoTransformation, video->Resolution(), video->VisibleRect(),
-        video->VisibleRect().size(), EmptyExtraData(),
-        EncryptionScheme::kUnencrypted);
+        kNoTransformation, video->Resolution(), gfx::Rect(video->Resolution()),
+        video->Resolution(), EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
     bool init_success = false;
     VideoDecoder::InitCB init_cb = base::BindOnce(
@@ -590,7 +586,7 @@ TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleConcurrentDecodes) {
 
 int main(int argc, char** argv) {
   // Set the default test data path.
-  media::test::Video::SetTestDataPath(media::GetTestDataPath());
+  media::test::VideoBitstream::SetTestDataPath(media::GetTestDataPath());
 
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.

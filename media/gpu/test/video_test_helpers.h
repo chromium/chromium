@@ -103,7 +103,7 @@ class IvfWriter {
 // Helper to extract fragments from encoded video stream.
 class EncodedDataHelper {
  public:
-  EncodedDataHelper(const std::vector<uint8_t>& stream, VideoCodec codec);
+  EncodedDataHelper(base::span<const uint8_t> stream, VideoCodec codec);
   ~EncodedDataHelper();
 
   // Compute and return the next fragment to be sent to the decoder, starting

@@ -18,7 +18,7 @@
 #include "media/base/media_util.h"
 #include "media/base/waiting.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/video_bitstream.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/test_vda_video_decoder.h"
@@ -122,7 +122,7 @@ void DecoderWrapper::WaitForRenderer() {
   frame_renderer_->WaitUntilRenderingDone();
 }
 
-void DecoderWrapper::Initialize(const Video* video) {
+void DecoderWrapper::Initialize(const VideoBitstream* video) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
   DCHECK(video);
 
@@ -188,7 +188,7 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
   done->Signal();
 }
 
-void DecoderWrapper::InitializeTask(const Video* video,
+void DecoderWrapper::InitializeTask(const VideoBitstream* video,
                                     base::WaitableEvent* done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
   DCHECK(state_ == DecoderWrapperState::kUninitialized ||
