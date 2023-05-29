@@ -15,8 +15,7 @@ dictionary PendingBeaconOptions {
 [
   RuntimeEnabled = PendingBeaconAPI,
   Exposed = Window,
-  SecureContext,
-  ImmutablePrototype
+  SecureContext
 ] interface PendingBeacon {
   [Measure] readonly attribute USVString url;
   [Measure] readonly attribute BeaconMethod method;

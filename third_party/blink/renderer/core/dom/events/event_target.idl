@@ -21,8 +21,7 @@
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
 [
-    Exposed=(Window,Worker,AudioWorklet),
-    ImmutablePrototype
+    Exposed=(Window,Worker,AudioWorklet)
 ] interface EventTarget {
     [CallWith=ScriptState] constructor();
     void addEventListener(DOMString type, EventListener? listener, optional (AddEventListenerOptions or boolean) options);
