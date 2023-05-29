@@ -621,6 +621,96 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
       browser_context, url::Origin::Create(non_isolated_sub_origin)));
 }
 
+// A test to verify that an origin with a trailing dot in the domain name
+// doesn't crash when it opts-out of origin isolation when
+// kOriginAgentClusterDefaultEnabled is enabled.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainOptOutDoesNotCrash) {
+  GURL dotted_nonisolated_url(
+      https_server()->GetURL("a.com.", "/isolate_origin"));
+
+  // Set header to opt this domain out of default OriginAgentCluster.
+  SetHeaderValue("?0");
+  EXPECT_TRUE(NavigateToURL(shell(), dotted_nonisolated_url));
+  url::Origin origin(url::Origin::Create(dotted_nonisolated_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+}
+
+// A test to confirm that "a.com." is treated as a separate host (and hence
+// a separate origin) from "a.com". See example at
+// https://url.spec.whatwg.org/#concept-domain.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainIsolatesSeparately1) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com,foo.com)"));
+  GURL isolated_url(https_server()->GetURL("a.com", "/isolate_origin"));
+  GURL dotted_isolated_url(https_server()->GetURL("a.com.", "/isolate_origin"));
+  SetHeaderValue("?1");
+
+  // Create page with sibling iframes.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_EQ(2u, root->child_count());
+  FrameTreeNode* child0_frame_node = root->child_at(0);
+  FrameTreeNode* child1_frame_node = root->child_at(1);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child0_frame_node, isolated_url));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child1_frame_node, dotted_isolated_url));
+
+  url::Origin child0_origin(url::Origin::Create(isolated_url));
+  url::Origin child1_origin(url::Origin::Create(dotted_isolated_url));
+  EXPECT_NE(isolated_url, dotted_isolated_url);
+  EXPECT_NE(child0_origin, child1_origin);
+
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child0_origin));
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child1_origin));
+
+  scoped_refptr<SiteInstanceImpl> child0_site_instance =
+      child0_frame_node->current_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child1_site_instance =
+      child1_frame_node->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(child0_site_instance, child1_site_instance);
+  EXPECT_NE(child0_site_instance->GetProcess(),
+            child1_site_instance->GetProcess());
+}
+
+// A test similar to TrailingDotDomainIsolatesSeparately1, but this time the
+// "a.com" domain does not opt-in via a header, and does not get an origin-
+// keyed process. Thus, it ends up in a separate process from "a.com.".
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       TrailingDotDomainIsolatesSeparately2) {
+  GURL main_frame_url(https_server()->GetURL(
+      "foo.com", "/cross_site_iframe_factory.html?foo.com(foo.com,foo.com)"));
+  GURL non_isolated_url(https_server()->GetURL("a.com", "/title1.html"));
+  GURL dotted_isolated_url(https_server()->GetURL("a.com.", "/isolate_origin"));
+
+  // Create page with sibling iframes.
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_EQ(2u, root->child_count());
+  FrameTreeNode* child0_frame_node = root->child_at(0);
+  FrameTreeNode* child1_frame_node = root->child_at(1);
+  SetHeaderValue("?1");
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child0_frame_node, dotted_isolated_url));
+  SetHeaderValue("");
+  EXPECT_TRUE(NavigateToURLFromRenderer(child1_frame_node, non_isolated_url));
+
+  url::Origin child0_origin(url::Origin::Create(dotted_isolated_url));
+  url::Origin child1_origin(url::Origin::Create(non_isolated_url));
+
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(child0_origin));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(child1_origin));
+
+  scoped_refptr<SiteInstanceImpl> child0_site_instance =
+      child0_frame_node->current_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child1_site_instance =
+      child1_frame_node->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(child0_site_instance, child1_site_instance);
+  EXPECT_NE(child0_site_instance->GetProcess(),
+            child1_site_instance->GetProcess());
+}
+
 // A test to confirm that if an Origin-Agent-Cluster header is encountered (but
 // not committed) as part of a redirect, that it does not opt-in to
 // OriginAgentCluster isolation. The setup in this test is subtle, since in
@@ -702,6 +792,34 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
           static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
                                kRequestedAndOriginKeyed),
           1)));
+}
+
+// A test to ensure that origins whose host has a trailing dot pass the
+// validation checks for explicit opt-ins and opt-outs. This is an
+// `OriginKeyedProcessByDefaultTest` test in order that the explicit opt-out
+// will be tracked. Note: failure for either part of this test will involve
+// crashing on a CHECK in
+// ChildProcessSecurityPolicyImpl::AddOriginIsolationStateForBrowsingInstance():
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       HostWithTrailingDotAllowed) {
+  // Explicit opt-in with a trailing dot.
+  SetHeaderValue("?1");
+  GURL opt_in_url(https_server()->GetURL("opt-in.foo.com.", "/isolate_origin"));
+  url::Origin opt_in_origin(url::Origin::Create(opt_in_url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_in_origin));
+  EXPECT_TRUE(NavigateToURL(shell(), opt_in_url));
+  EXPECT_TRUE(ShouldOriginGetOptInProcessIsolation(opt_in_origin));
+
+  // Explicit opt-out with a trailing dot.
+  SetHeaderValue("?0");
+  GURL opt_out_url(
+      https_server()->GetURL("opt-out.foo.com.", "/isolate_origin"));
+  url::Origin opt_out_origin(url::Origin::Create(opt_out_url));
+
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_out_origin));
+  EXPECT_TRUE(NavigateToURL(shell(), opt_out_url));
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(opt_out_origin));
 }
 
 // A simple test that, when OAC-by-default is enabled with process-isolation, an
