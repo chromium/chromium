@@ -3532,6 +3532,14 @@
       },
     },
   },
+  'pthreadpool_unittests': {
+    'remove_from': [
+      # pthreadpool is not built for ChromeOS currently.
+      'linux-chromeos-dbg',
+      'linux-chromeos-rel',
+      'linux-lacros-tester-rel',
+    ],
+  },
   'sandbox_linux_unittests': {
     'modifications': {
       # If you change this, make similar changes in android-x86-code-coverage below
