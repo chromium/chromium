@@ -32,6 +32,8 @@ import {WaitableEvent} from './waitable_event.js';
 const PRODUCTION = true;
 const GA_ID = PRODUCTION ? 'UA-134822711-1' : 'UA-134822711-2';
 const GA4_ID = PRODUCTION ? 'G-TRQS261G6E' : 'G-J03LBPJBGD';
+const GA4_API_SECRET =
+    PRODUCTION ? '0Ir88y9HQtiwnchvaIzZ3Q' : 'WE_zBPUQTGefdXpHl25-ig';
 
 let baseDimen: Map<number, number|string>|null = null;
 
@@ -204,7 +206,7 @@ export async function initMetrics(): Promise<void> {
 
   await (await getGAHelper())
       .initGA(
-          {gaId: GA_ID, ga4Id: GA4_ID, clientId},
+          {gaId: GA_ID, ga4Id: GA4_ID, clientId, ga4ApiSecret: GA4_API_SECRET},
           Comlink.proxy(setClientId),
       );
   ready.signal();
