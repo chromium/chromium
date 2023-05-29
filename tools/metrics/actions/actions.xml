@@ -37618,6 +37618,15 @@ should be able to be added at any place in this file.
   <affected-action name="Bookmarks.Added"/>
 </action-suffix>
 
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AccountStorage" label="Folder added in account storage."/>
+  <suffix name="LocalStorage"
+      label="Folder added in local storage which is not being synced."/>
+  <suffix name="LocalStorageSyncing"
+      label="Folder added in local storage which is being synced."/>
+  <affected-action name="Bookmarks.FolderAdded"/>
+</action-suffix>
+
 <action-suffix separator="_" ordering="suffix">
   <suffix name="AdaptiveButtonInTopToolbarCustomization_AddToBookmarks"
       label="For AdaptiveButtonInTopToolbarCustomization add to bookmarks

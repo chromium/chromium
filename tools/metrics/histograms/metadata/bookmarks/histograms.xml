@@ -571,20 +571,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.Storage.TimeToLoadAtStartup2" units="ms"
-    expires_after="2023-08-27">
+<histogram name="Bookmarks.Storage.TimeToLoadAtStartup2{StorageState}"
+    units="ms" expires_after="2023-08-27">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>
     Duration of loading the bookmarks file, recorded when the bookmark model is
-    loaded.
+    loaded {StorageState}.
 
     Opening a guest session (guest profile) also causes an emit to this
     histogram even though guest sessions don't typically allow bookmarks. (The
     value emitted is typically zero.) Under certain enterpise configuration,
     guest sessions can have bookmarks.
   </summary>
+  <token key="StorageState">
+    <variant name="" summary="irrespective of storage state"/>
+    <variant name=".AccountStorage" summary="with account storage"/>
+    <variant name=".LocalStorage" summary="with local storage not syncing"/>
+    <variant name=".LocalStorageSyncing" summary="with local storage syncing"/>
+  </token>
 </histogram>
 
 <histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays"
