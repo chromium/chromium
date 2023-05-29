@@ -291,46 +291,59 @@ def _render_template(jinja_env: jinja2.Environment,
     return rendered
 
 
+def _render(jinja_env: jinja2.Environment, template_name: str,
+            params: Mapping[str, Any]):
+    params = dict(params)
+    params.update({
+        # Render the code on its own, as it could contain templates expanding
+        # to multuple lines. This is needed to get proper indentation of the
+        # code in the main template.
+        'code': _render_template(jinja_env,
+                                 jinja_env.from_string(params['code']),
+                                 params)
+    })
+
+    return _render_template(jinja_env, jinja_env.get_template(template_name),
+                            params)
+
+
 def _write_reference_test(jinja_env: jinja2.Environment,
                           params: Mapping[str, Any],
                           enabled_tests: Set[CanvasType],
                           canvas_path: str, offscreen_path: str):
     if CanvasType.HTML_CANVAS in enabled_tests:
+        html_params = dict(params)
+        html_params.update({'canvas_type': CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{canvas_path}.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template("reftest_element.html"),
-                             params), 'utf-8')
+            _render(jinja_env, "reftest_element.html", html_params), 'utf-8')
     if CanvasType.OFFSCREEN_CANVAS in enabled_tests:
+        offscreen_params = dict(params)
+        offscreen_params.update({
+            'canvas_type': CanvasType.OFFSCREEN_CANVAS.value
+        })
         pathlib.Path(f'{offscreen_path}.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template("reftest_offscreen.html"),
-                             params), 'utf-8')
+            _render(jinja_env, "reftest_offscreen.html", offscreen_params),
+            'utf-8')
     if CanvasType.WORKER in enabled_tests:
+        worker_params = dict(params)
+        worker_params.update({'canvas_type': CanvasType.WORKER.value})
         pathlib.Path(f'{offscreen_path}.w.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template("reftest_worker.html"),
-                             params), 'utf-8')
+            _render(jinja_env, "reftest_worker.html", worker_params), 'utf-8')
 
     js_ref = params.get('reference', '')
     html_ref = params.get('html_reference', '')
     ref_params = dict(params)
     ref_params.update({
         'is_test_reference': True,
-        'code': _render_template(jinja_env,
-                                 jinja_env.from_string(js_ref or html_ref),
-                                 params)
+        'code': js_ref or html_ref
     })
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
     if CanvasType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}-expected.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template(ref_template_name),
-                             ref_params), 'utf-8')
+            _render(jinja_env, ref_template_name, ref_params), 'utf-8')
     if {CanvasType.OFFSCREEN_CANVAS, CanvasType.WORKER} & enabled_tests:
         pathlib.Path(f'{offscreen_path}-expected.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template(ref_template_name),
-                             ref_params), 'utf-8')
+            _render(jinja_env, ref_template_name, ref_params), 'utf-8')
 
 
 def _write_testharness_test(jinja_env: jinja2.Environment,
@@ -340,23 +353,27 @@ def _write_testharness_test(jinja_env: jinja2.Environment,
                             offscreen_path: str):
     # Create test cases for canvas and offscreencanvas.
     if CanvasType.HTML_CANVAS in enabled_tests:
+        html_params = dict(params)
+        html_params.update({'canvas_type': CanvasType.HTML_CANVAS.value})
         pathlib.Path(f'{canvas_path}.html').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template("testharness_element.html"),
-                             params), 'utf-8')
+            _render(jinja_env, "testharness_element.html", html_params),
+            'utf-8')
 
     if CanvasType.OFFSCREEN_CANVAS in enabled_tests:
+        offscreen_params = dict(params)
+        offscreen_params.update({
+            'canvas_type': CanvasType.OFFSCREEN_CANVAS.value
+        })
         pathlib.Path(f'{offscreen_path}.html').write_text(
-            _render_template(
-                jinja_env,
-                jinja_env.get_template("testharness_offscreen.html"), params),
+            _render(jinja_env, "testharness_offscreen.html", offscreen_params),
             'utf-8')
 
     if CanvasType.WORKER in enabled_tests:
+        worker_params = dict(params)
+        worker_params.update({'canvas_type': CanvasType.WORKER.value})
         pathlib.Path(f'{offscreen_path}.worker.js').write_text(
-            _render_template(jinja_env,
-                             jinja_env.get_template("testharness_worker.js"),
-                             params), 'utf-8')
+            _render(jinja_env, "testharness_worker.js", worker_params),
+            'utf-8')
 
 
 def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
@@ -410,13 +427,6 @@ def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
         'code': _expand_test_code(test['code']),
         'expected_img': expected_img
     })
-
-    # Render the code on its own, as it could contain templating. The code
-    # must be rendered separately so that it could be indented as a whole into
-    # the final template.
-    params['code'] = _render_template(jinja_env,
-                                      jinja_env.from_string(params['code']),
-                                      params)
 
     canvas_path = os.path.join(html_canvas_cfg.out_dir, sub_dir, name)
     offscreen_path = os.path.join(offscreen_canvas_cfg.out_dir, sub_dir, name)
