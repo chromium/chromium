@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/model/type_entities_count.h"
@@ -47,7 +48,9 @@ class MockSyncService : public SyncService {
   MOCK_METHOD(GoogleServiceAuthError, GetAuthError, (), (const override));
   MOCK_METHOD(base::Time, GetAuthErrorTime, (), (const override));
   MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(bool, IsSyncFeatureDisabledViaDashboard, (), (const override));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
               GetSetupInProgressHandle,
               (),

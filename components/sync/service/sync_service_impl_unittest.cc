@@ -1004,7 +1004,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(service()->IsSyncFeatureDisabledViaDashboard());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_CALL(
       *trusted_vault_client(),

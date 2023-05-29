@@ -61,10 +61,12 @@ void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
   has_sync_consent_ = has_sync_consent;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TestSyncService::SetSyncFeatureDisabledViaDashboard(
     bool disabled_via_dashboard) {
   sync_feature_disabled_via_dashboard_ = disabled_via_dashboard;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TestSyncService::SetPersistentAuthError() {
   transport_state_ = TransportState::PAUSED;
@@ -144,7 +146,9 @@ void TestSyncService::FireSyncCycleCompleted() {
 }
 
 void TestSyncService::SetSyncFeatureRequested() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   sync_feature_disabled_via_dashboard_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 TestSyncUserSettings* TestSyncService::GetUserSettings() {
@@ -199,9 +203,11 @@ bool TestSyncService::RequiresClientUpgrade() const {
          syncer::UPGRADE_CLIENT;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool TestSyncService::IsSyncFeatureDisabledViaDashboard() const {
   return sync_feature_disabled_via_dashboard_;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<SyncSetupInProgressHandle>
 TestSyncService::GetSetupInProgressHandle() {

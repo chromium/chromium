@@ -1196,6 +1196,7 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
   // This can return true only on ChromeOS Ash, upon DISABLE_SYNC_ON_CLIENT.
   // TODO(crbug.com/1443446): A simpler and more robust implementation for this
@@ -1203,6 +1204,7 @@ bool SyncServiceImpl::IsSyncFeatureDisabledViaDashboard() const {
   return user_settings_->IsInitialSyncFeatureSetupComplete() &&
          !IsLocalSyncEnabled() && !IsSyncFeatureConsideredRequested();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SyncServiceImpl::CanConfigureDataTypes(
     bool bypass_setup_in_progress_check) const {
