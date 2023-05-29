@@ -122,8 +122,11 @@ def get_ssh_prefix(host_port_pair: str) -> List[str]:
     """Get the prefix of a barebone ssh command."""
 
     ssh_addr, ssh_port = parse_host_port(host_port_pair)
-    sshconfig = os.path.join(os.path.dirname(__file__), 'sshconfig')
-    return ['ssh', '-F', sshconfig, ssh_addr, '-p', str(ssh_port)]
+    return [
+        'ssh', '-F',
+        os.path.expanduser('~/.fuchsia/sshconfig'), ssh_addr, '-p',
+        str(ssh_port)
+    ]
 
 
 def install_symbols(package_paths: Iterable[str],
