@@ -245,6 +245,10 @@ void PerformanceObserver::observe(const PerformanceObserverInit* observer_init,
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kVisibilityStateObserver);
   }
+  if (filter_options_ & PerformanceEntry::kLongAnimationFrame) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kLongAnimationFrameObserver);
+  }
 
   requires_dropped_entries_ = true;
   if (is_registered_)

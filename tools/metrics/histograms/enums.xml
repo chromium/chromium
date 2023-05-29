@@ -42574,6 +42574,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
   <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
   <int value="4576" label="V8Navigator_GetInterestGroupAdAuctionData_Method"/>
+  <int value="4577" label="LongAnimationFrameObserver"/>
+  <int value="4578" label="LongAnimationFrameRequested"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

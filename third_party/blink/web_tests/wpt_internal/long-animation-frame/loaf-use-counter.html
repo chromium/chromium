@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+const kLongAnimationFrameObserver = 4577;
+const kLongAnimationFrameRequested = 4578;
+
+function clear() {
+  internals.clearUseCounter(document, kLongAnimationFrameObserver);
+  internals.clearUseCounter(document, kLongAnimationFrameRequested);
+}
+
+promise_test(async () => {
+  clear();
+  performance.getEntries();
+  performance.getEntriesByName("long-animation-frame");
+  performance.getEntriesByType("longtask");
+  new PerformanceObserver(() => {}).observe({entryTypes: ["resource"]});
+  assert_false(internals.isUseCounted(document, kLongAnimationFrameObserver));
+  assert_false(internals.isUseCounted(document, kLongAnimationFrameRequested));
+}, "UseCounter for LoAF should not be triggered for non-loaf types");
+
+promise_test(async () => {
+  clear();
+  performance.getEntriesByType("long-animation-frame");
+  assert_false(internals.isUseCounted(document, kLongAnimationFrameObserver));
+  assert_true(internals.isUseCounted(document, kLongAnimationFrameRequested));
+}, "UseCounter for LoAF requested should be triggered at appropriate times");
+
+promise_test(async () => {
+  clear();
+  new PerformanceObserver(() => {}).observe({type: "long-animation-frame"});
+  assert_true(internals.isUseCounted(document, kLongAnimationFrameObserver));
+  assert_false(internals.isUseCounted(document, kLongAnimationFrameRequested));
+}, "UseCounter for LoAF observer should be triggered at appropriate times");
+</script>
+<body>
+  <div id="log"></div>
+</body>
