@@ -427,10 +427,6 @@ Suites.push(new Suite("Basic canvas path suite",
             name: "Canvas ellipses"
         },
         {
-            url: "simple/simple-canvas-paths.html?pathType=spreadSheets",
-            name: "Canvas Spreadsheets"
-        },
-        {
             url: "simple/simple-canvas-paths.html?pathType=lineFill",
             name: "Canvas line path, fill"
         },
