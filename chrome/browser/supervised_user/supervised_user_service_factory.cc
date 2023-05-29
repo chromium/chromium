@@ -65,7 +65,8 @@ SupervisedUserServiceFactory::GetForProfileIfExists(Profile* profile) {
 
 // static
 SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
-  return base::Singleton<SupervisedUserServiceFactory>::get();
+  static base::NoDestructor<SupervisedUserServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -102,7 +103,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
   DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
 }
 
-SupervisedUserServiceFactory::~SupervisedUserServiceFactory() {}
+SupervisedUserServiceFactory::~SupervisedUserServiceFactory() = default;
 
 KeyedService* SupervisedUserServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

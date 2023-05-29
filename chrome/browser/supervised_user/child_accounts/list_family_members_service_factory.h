@@ -6,7 +6,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_LIST_FAMILY_MEMBERS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_LIST_FAMILY_MEMBERS_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -26,7 +26,7 @@ class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactory {
       const ListFamilyMembersServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ListFamilyMembersServiceFactory>;
+  friend base::NoDestructor<ListFamilyMembersServiceFactory>;
 
   ListFamilyMembersServiceFactory();
   ~ListFamilyMembersServiceFactory() override;

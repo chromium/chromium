@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 
@@ -25,8 +25,7 @@ class SupervisedUserSettingsServiceFactory : public SimpleKeyedServiceFactory {
   static SupervisedUserSettingsServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      SupervisedUserSettingsServiceFactory>;
+  friend base::NoDestructor<SupervisedUserSettingsServiceFactory>;
 
   SupervisedUserSettingsServiceFactory();
   ~SupervisedUserSettingsServiceFactory() override;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/supervised_user/child_accounts/family_preferences_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -23,7 +23,8 @@ FamilyPreferencesService* FamilyPreferencesServiceFactory::GetForProfile(
 // static
 FamilyPreferencesServiceFactory*
 FamilyPreferencesServiceFactory::GetInstance() {
-  return base::Singleton<FamilyPreferencesServiceFactory>::get();
+  static base::NoDestructor<FamilyPreferencesServiceFactory> instance;
+  return instance.get();
 }
 
 FamilyPreferencesServiceFactory::FamilyPreferencesServiceFactory()

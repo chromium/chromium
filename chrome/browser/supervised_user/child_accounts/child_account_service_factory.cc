@@ -24,7 +24,8 @@ ChildAccountService* ChildAccountServiceFactory::GetForProfile(
 
 // static
 ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
-  return base::Singleton<ChildAccountServiceFactory>::get();
+  static base::NoDestructor<ChildAccountServiceFactory> instance;
+  return instance.get();
 }
 
 ChildAccountServiceFactory::ChildAccountServiceFactory()

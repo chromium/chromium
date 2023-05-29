@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 
@@ -35,7 +35,7 @@ class SupervisedUserServiceFactory : public ProfileKeyedServiceFactory {
   static KeyedService* BuildInstanceFor(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<SupervisedUserServiceFactory>;
+  friend base::NoDestructor<SupervisedUserServiceFactory>;
 
   SupervisedUserServiceFactory();
   ~SupervisedUserServiceFactory() override;

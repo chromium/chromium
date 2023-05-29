@@ -4,7 +4,7 @@
 
 #include "chrome/browser/supervised_user/child_accounts/list_family_members_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -23,7 +23,8 @@ ListFamilyMembersService* ListFamilyMembersServiceFactory::GetForProfile(
 // static
 ListFamilyMembersServiceFactory*
 ListFamilyMembersServiceFactory::GetInstance() {
-  return base::Singleton<ListFamilyMembersServiceFactory>::get();
+  static base::NoDestructor<ListFamilyMembersServiceFactory> instance;
+  return instance.get();
 }
 
 ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
