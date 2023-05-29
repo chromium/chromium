@@ -64,6 +64,7 @@ class WebappsIconUtils {
   static int GetIdealIconCornerRadiusPxForPromptUI();
 
   static void SetIdealShortcutSizeForTesting(int size);
+  static void SetIconSizesForTesting(std::vector<int> sizes);
 };
 
 }  // namespace webapps
