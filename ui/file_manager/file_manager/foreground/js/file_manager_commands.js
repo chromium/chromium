@@ -1485,11 +1485,6 @@ CommandHandler
  */
 CommandHandler.COMMANDS_['empty-trash'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    const numEntries = fileManager.directoryModel.getFileList().length;
-    if (numEntries === 0) {
-      return;
-    }
-
     fileManager.ui.emptyTrashConfirmDialog.showWithTitle(
         str('CONFIRM_EMPTY_TRASH_TITLE'), str('CONFIRM_EMPTY_TRASH_DESC'),
         () => {
