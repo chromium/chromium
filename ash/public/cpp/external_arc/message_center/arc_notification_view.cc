@@ -28,7 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/painter.h"
+#include "ui/views/view_utils.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ArcNotificationView*)
 
@@ -83,6 +83,18 @@ ArcNotificationView::ArcNotificationView(
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
                      message_center::kNotificationCornerRadius);
+
+  auto* const focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  // Focus control is delegated to its content view if it's available. So we
+  // need to set the focus predicate to let `focus_ring` know the focus change
+  // on the content.
+  focus_ring->SetHasFocusPredicate(
+      base::BindRepeating([](const views::View* view) {
+        const auto* v = views::AsViewClass<ArcNotificationView>(view);
+        CHECK(v);
+        return v->HasFocus();
+      }));
 }
 
 ArcNotificationView::~ArcNotificationView() {
@@ -92,10 +104,12 @@ ArcNotificationView::~ArcNotificationView() {
 
 void ArcNotificationView::OnContentFocused() {
   SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void ArcNotificationView::OnContentBlurred() {
   SchedulePaint();
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 void ArcNotificationView::UpdateWithNotification(
@@ -197,15 +211,6 @@ void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
     return item_->OpenSnooze();
 }
 
-void ArcNotificationView::OnThemeChanged() {
-  message_center::MessageView::OnThemeChanged();
-
-  // TODO(yhanada): Migrate to views::FocusRing to support rounded-corner ring.
-  focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
-      gfx::InsetsF(3));
-}
-
 void ArcNotificationView::OnContainerAnimationEnded() {
   content_view_->OnContainerAnimationEnded();
 }
@@ -251,14 +256,6 @@ void ArcNotificationView::RequestFocus() {
     content_view_->RequestFocus();
   else
     message_center::MessageView::RequestFocus();
-}
-
-void ArcNotificationView::OnPaint(gfx::Canvas* canvas) {
-  MessageView::OnPaint(canvas);
-  if (content_view_->IsFocusable()) {
-    views::Painter::PaintFocusPainter(content_view_, canvas,
-                                      focus_painter_.get());
-  }
 }
 
 bool ArcNotificationView::OnKeyPressed(const ui::KeyEvent& event) {
