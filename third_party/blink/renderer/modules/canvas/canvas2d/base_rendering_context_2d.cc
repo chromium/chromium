@@ -373,9 +373,21 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
       c->save();
     }
 
-    c->setMatrix(SkM44());
-    curr_state->PlaybackClips(c);
-    c->setMatrix(AffineTransformToSkM44(curr_state->GetTransform()));
+    AffineTransform prev_transform =
+        (prev_state != nullptr ? prev_state->GetTransform()
+                               : AffineTransform());
+    if (curr_state->HasClip()) {
+      if (!prev_transform.IsIdentity()) {
+        c->setMatrix(SkM44());
+        prev_transform = AffineTransform();
+      }
+      curr_state->PlaybackClips(c);
+    }
+
+    if (AffineTransform curr_transform = curr_state->GetTransform();
+        prev_transform != curr_transform) {
+      c->setMatrix(AffineTransformToSkM44(curr_transform));
+    }
 
     prev_state = curr_state.Get();
   }
