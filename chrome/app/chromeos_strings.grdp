@@ -6101,7 +6101,7 @@ Permissions you've already given to websites and apps may apply to this account.
     Got it
   </message>
   <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
-    Steam Installer
+    Steam installer
   </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title for installer for Steam (noun, name of app).">
     Welcome to Steam on Chromebook

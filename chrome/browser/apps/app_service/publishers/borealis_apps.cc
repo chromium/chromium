@@ -151,7 +151,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
   auto initial_steam_app = apps::AppPublisher::MakeApp(
       apps::AppType::kBorealis, borealis::kLauncherSearchAppId,
       shown ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
   InitializeApp(*initial_steam_app, shown);
   initial_steam_app->icon_key =

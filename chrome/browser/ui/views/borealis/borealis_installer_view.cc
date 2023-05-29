@@ -126,9 +126,7 @@ BEGIN_METADATA(BorealisInstallerView, TitleLabel, views::Label)
 END_METADATA
 
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
-    : app_name_(l10n_util::GetStringUTF16(IDS_BOREALIS_APP_NAME)),
-      profile_(profile),
-      observation_(this) {
+    : profile_(profile), observation_(this) {
   SetCanMinimize(true);
   set_draggable(true);
   set_margins(gfx::Insets::TLBR(80, 40, 40, 40));

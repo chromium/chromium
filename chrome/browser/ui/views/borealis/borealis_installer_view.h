@@ -105,7 +105,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   void StartInstallation();
 
-  std::u16string app_name_;
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> primary_message_label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> secondary_message_label_ = nullptr;
