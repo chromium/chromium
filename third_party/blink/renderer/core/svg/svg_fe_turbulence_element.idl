@@ -26,7 +26,6 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFETurbulenceElement
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] interface SVGFETurbulenceElement : SVGElement {
     // Turbulence Types

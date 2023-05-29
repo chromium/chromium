@@ -26,7 +26,6 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGComponentTransferFunctionElement
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] interface SVGComponentTransferFunctionElement : SVGElement {
     // Component Transfer Types

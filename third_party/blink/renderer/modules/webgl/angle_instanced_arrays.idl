@@ -31,7 +31,6 @@
 // https://www.khronos.org/registry/webgl/extensions/ANGLE_instanced_arrays/
 
 [
-    DoNotCheckConstants,
     LegacyNoInterfaceObject
 ] interface ANGLEInstancedArrays {
     const unsigned long VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE = 0x88FE;

@@ -5,8 +5,7 @@
 // https://www.khronos.org/registry/webgl/extensions/OVR_multiview2/
 
 [
-    LegacyNoInterfaceObject,
-    DoNotCheckConstants
+    LegacyNoInterfaceObject
 ]
 interface OVRMultiview2 {
     const GLenum FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR = 0x9630;

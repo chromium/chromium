@@ -26,7 +26,6 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEBlendElement
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] interface SVGFEBlendElement : SVGElement {
 

@@ -21,7 +21,6 @@
 // https://dom.spec.whatwg.org/#interface-nodefilter
 
 [
-    DoNotCheckConstants,
     Exposed=Window
 ] callback interface NodeFilter {
     // Constants for acceptNode()

@@ -52,7 +52,7 @@ enum ReferrerPolicy {
     [RuntimeEnabled=PrivateNetworkAccessPermissionPrompt] readonly attribute IPAddressSpace targetAddressSpace;
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
-    [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Request clone();
+    [RaisesException, CallWith=ScriptState, NewObject] Request clone();
 
     [Affects=Everything, RuntimeEnabled=FetchUploadStreaming] readonly attribute ReadableStream? body;
 };

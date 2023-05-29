@@ -23,7 +23,7 @@
     Exposed=Window
 ] interface Text : CharacterData {
     [CallWith=Document] constructor(optional DOMString data = "");
-    [NewObject, DoNotTestNewObject, RaisesException] Text splitText(unsigned long offset);
+    [NewObject, RaisesException] Text splitText(unsigned long offset);
     [MeasureAs=TextWholeText] readonly attribute DOMString wholeText;
 
     // Mixin Slotable
