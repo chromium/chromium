@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/system_entropy.mojom-shared.h"
 
 namespace blink {
 
