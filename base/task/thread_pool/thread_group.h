@@ -84,7 +84,7 @@ class BASE_EXPORT ThreadGroup {
   // Implementations should instantiate a concrete ScopedCommandsExecutor and
   // invoke PushTaskSourceAndWakeUpWorkersImpl().
   virtual void PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource transaction_with_task_source) = 0;
+      RegisteredTaskSourceAndTransaction transaction_with_task_source) = 0;
 
   // Removes all task sources from this ThreadGroup's PriorityQueue and enqueues
   // them in another |destination_thread_group|. After this method is called,
@@ -161,16 +161,16 @@ class BASE_EXPORT ThreadGroup {
     ScopedReenqueueExecutor& operator=(const ScopedReenqueueExecutor&) = delete;
     ~ScopedReenqueueExecutor();
 
-    // A TransactionWithRegisteredTaskSource and the ThreadGroup in which it
+    // A RegisteredTaskSourceAndTransaction and the ThreadGroup in which it
     // should be enqueued.
     void SchedulePushTaskSourceAndWakeUpWorkers(
-        TransactionWithRegisteredTaskSource transaction_with_task_source,
+        RegisteredTaskSourceAndTransaction transaction_with_task_source,
         ThreadGroup* destination_thread_group);
 
    private:
-    // A TransactionWithRegisteredTaskSource and the thread group in which it
+    // A RegisteredTaskSourceAndTransaction and the thread group in which it
     // should be enqueued.
-    absl::optional<TransactionWithRegisteredTaskSource>
+    absl::optional<RegisteredTaskSourceAndTransaction>
         transaction_with_task_source_;
     raw_ptr<ThreadGroup> destination_thread_group_ = nullptr;
   };
@@ -218,7 +218,7 @@ class BASE_EXPORT ThreadGroup {
   void ReEnqueueTaskSourceLockRequired(
       BaseScopedCommandsExecutor* workers_executor,
       ScopedReenqueueExecutor* reenqueue_executor,
-      TransactionWithRegisteredTaskSource transaction_with_task_source)
+      RegisteredTaskSourceAndTransaction transaction_with_task_source)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the next task source from |priority_queue_| if permitted to run and
@@ -233,7 +233,7 @@ class BASE_EXPORT ThreadGroup {
                          TaskSource::Transaction transaction);
   void PushTaskSourceAndWakeUpWorkersImpl(
       BaseScopedCommandsExecutor* executor,
-      TransactionWithRegisteredTaskSource transaction_with_task_source);
+      RegisteredTaskSourceAndTransaction transaction_with_task_source);
 
   // Synchronizes accesses to all members of this class which are neither const,
   // atomic, nor immutable after start. Since this lock is a bottleneck to post

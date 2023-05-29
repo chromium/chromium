@@ -143,7 +143,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   void DidProcessTask(RegisteredTaskSource task_source) override {
     if (task_source) {
       auto task_source_with_transaction =
-          TransactionWithRegisteredTaskSource::FromTaskSource(
+          RegisteredTaskSourceAndTransaction::FromTaskSource(
               std::move(task_source));
       task_source_with_transaction.task_source.WillReEnqueue(
           TimeTicks::Now(), &task_source_with_transaction.transaction);
@@ -225,7 +225,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   // Returns true iff the worker must wakeup, i.e. task source is allowed to run
   // and the worker was not awake.
   bool EnqueueTaskSource(
-      TransactionWithRegisteredTaskSource transaction_with_task_source) {
+      RegisteredTaskSourceAndTransaction transaction_with_task_source) {
     CheckedAutoLock auto_lock(lock_);
     auto sort_key = transaction_with_task_source.task_source->GetSortKey();
     // When moving |task_source| into |priority_queue_|, it may be destroyed

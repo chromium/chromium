@@ -349,21 +349,20 @@ class BASE_EXPORT RegisteredTaskSource {
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a
 // RegisteredTaskSource with an associated Transaction.
-// TODO(crbug.com/839091): Rename to RegisteredTaskSourceAndTransaction.
-struct BASE_EXPORT TransactionWithRegisteredTaskSource {
+struct BASE_EXPORT RegisteredTaskSourceAndTransaction {
  public:
-  TransactionWithRegisteredTaskSource(RegisteredTaskSource task_source_in,
-                                      TaskSource::Transaction transaction_in);
+  RegisteredTaskSourceAndTransaction(RegisteredTaskSource task_source_in,
+                                     TaskSource::Transaction transaction_in);
 
-  TransactionWithRegisteredTaskSource(
-      TransactionWithRegisteredTaskSource&& other) = default;
-  TransactionWithRegisteredTaskSource(
-      const TransactionWithRegisteredTaskSource&) = delete;
-  TransactionWithRegisteredTaskSource& operator=(
-      const TransactionWithRegisteredTaskSource&) = delete;
-  ~TransactionWithRegisteredTaskSource() = default;
+  RegisteredTaskSourceAndTransaction(
+      RegisteredTaskSourceAndTransaction&& other) = default;
+  RegisteredTaskSourceAndTransaction(
+      const RegisteredTaskSourceAndTransaction&) = delete;
+  RegisteredTaskSourceAndTransaction& operator=(
+      const RegisteredTaskSourceAndTransaction&) = delete;
+  ~RegisteredTaskSourceAndTransaction() = default;
 
-  static TransactionWithRegisteredTaskSource FromTaskSource(
+  static RegisteredTaskSourceAndTransaction FromTaskSource(
       RegisteredTaskSource task_source_in);
 
   RegisteredTaskSource task_source;

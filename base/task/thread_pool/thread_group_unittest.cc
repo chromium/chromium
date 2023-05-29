@@ -542,7 +542,7 @@ TEST_F(ThreadGroupTest, ScheduleJobTaskSource) {
       task_tracker_.RegisterTaskSource(std::move(task_source));
   EXPECT_TRUE(registered_task_source);
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           std::move(registered_task_source)));
 
   threads_running.Wait();
@@ -570,13 +570,13 @@ TEST_F(ThreadGroupTest, ScheduleJobTaskSourceMultipleTime) {
       FROM_HERE, {}, &mock_pooled_task_runner_delegate_);
 
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           task_tracker_.RegisterTaskSource(task_source)));
 
   // Enqueuing the task source again shouldn't affect the number of time it's
   // run.
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           task_tracker_.RegisterTaskSource(task_source)));
 
   thread_running.Wait();
@@ -584,7 +584,7 @@ TEST_F(ThreadGroupTest, ScheduleJobTaskSourceMultipleTime) {
 
   // Once the worker task ran, enqueuing the task source has no effect.
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           task_tracker_.RegisterTaskSource(task_source)));
 
   // Flush the task tracker to be sure that no local variables are accessed by
@@ -661,7 +661,7 @@ TEST_F(ThreadGroupTest, JobTaskSourceConcurrencyIncrease) {
   auto registered_task_source = task_tracker_.RegisterTaskSource(task_source);
   EXPECT_TRUE(registered_task_source);
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           std::move(registered_task_source)));
 
   threads_running_a.Wait();
@@ -701,7 +701,7 @@ TEST_F(ThreadGroupTest, ScheduleEmptyJobTaskSource) {
       task_tracker_.RegisterTaskSource(std::move(task_source));
   EXPECT_TRUE(registered_task_source);
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           std::move(registered_task_source)));
 
   // The worker task will never run.
@@ -828,7 +828,7 @@ TEST_F(ThreadGroupTest, JobTaskSourceUpdatePriority) {
   auto registered_task_source = task_tracker_.RegisterTaskSource(task_source);
   EXPECT_TRUE(registered_task_source);
   thread_group_->PushTaskSourceAndWakeUpWorkers(
-      TransactionWithRegisteredTaskSource::FromTaskSource(
+      RegisteredTaskSourceAndTransaction::FromTaskSource(
           std::move(registered_task_source)));
 
   // Wait until |kMaxBestEffort| tasks start running.

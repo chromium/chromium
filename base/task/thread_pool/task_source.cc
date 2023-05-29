@@ -182,7 +182,7 @@ RegisteredTaskSource::RegisteredTaskSource(
     TaskTracker* task_tracker)
     : task_source_(std::move(task_source)), task_tracker_(task_tracker) {}
 
-TransactionWithRegisteredTaskSource::TransactionWithRegisteredTaskSource(
+RegisteredTaskSourceAndTransaction::RegisteredTaskSourceAndTransaction(
     RegisteredTaskSource task_source_in,
     TaskSource::Transaction transaction_in)
     : task_source(std::move(task_source_in)),
@@ -191,12 +191,12 @@ TransactionWithRegisteredTaskSource::TransactionWithRegisteredTaskSource(
 }
 
 // static:
-TransactionWithRegisteredTaskSource
-TransactionWithRegisteredTaskSource::FromTaskSource(
+RegisteredTaskSourceAndTransaction
+RegisteredTaskSourceAndTransaction::FromTaskSource(
     RegisteredTaskSource task_source_in) {
   auto transaction = task_source_in->BeginTransaction();
-  return TransactionWithRegisteredTaskSource(std::move(task_source_in),
-                                             std::move(transaction));
+  return RegisteredTaskSourceAndTransaction(std::move(task_source_in),
+                                            std::move(transaction));
 }
 
 TaskSourceAndTransaction::TaskSourceAndTransaction(

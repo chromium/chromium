@@ -421,7 +421,7 @@ void ThreadGroupImpl::UpdateSortKey(TaskSource::Transaction transaction) {
 }
 
 void ThreadGroupImpl::PushTaskSourceAndWakeUpWorkers(
-    TransactionWithRegisteredTaskSource transaction_with_task_source) {
+    RegisteredTaskSourceAndTransaction transaction_with_task_source) {
   ScopedCommandsExecutor executor(this);
   PushTaskSourceAndWakeUpWorkersImpl(&executor,
                                      std::move(transaction_with_task_source));
@@ -623,11 +623,11 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::DidProcessTask(
   // A transaction to the TaskSource to reenqueue, if any. Instantiated here as
   // |TaskSource::lock_| is a UniversalPredecessor and must always be acquired
   // prior to acquiring a second lock
-  absl::optional<TransactionWithRegisteredTaskSource>
+  absl::optional<RegisteredTaskSourceAndTransaction>
       transaction_with_task_source;
   if (task_source) {
     transaction_with_task_source.emplace(
-        TransactionWithRegisteredTaskSource::FromTaskSource(
+        RegisteredTaskSourceAndTransaction::FromTaskSource(
             std::move(task_source)));
   }
 
