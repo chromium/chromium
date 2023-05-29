@@ -914,10 +914,7 @@ TEST_F(NavigationControllerTest, LoadURL_NewPending) {
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  // After the beforeunload but before it commits...
-  navigation->ReadyToCommit();
-
-  // ... Do a new navigation.
+  // After the navigation starts but before it commits, do a new navigation.
   const GURL kNewURL("http://see");
   NavigationSimulator::NavigateAndCommitFromDocument(kNewURL, main_test_rfh());
 
@@ -1007,7 +1004,7 @@ TEST_F(NavigationControllerTest, LoadURL_PrivilegedPending) {
   // The zeroth entry should be pending.
   auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
       -1, contents(), false /* is_renderer_initiated */);
-  back_navigation->ReadyToCommit();
+  back_navigation->Start();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
   EXPECT_EQ(0, controller.GetPendingEntryIndex());

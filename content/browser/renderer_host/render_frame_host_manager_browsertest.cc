@@ -49,6 +49,7 @@
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1678,16 +1679,11 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerTest,
     DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted1) {
-  if (ShouldCreateNewHostForAllFrames()) {
-    // This test involves starting a navigation while another navigation is
-    // committing, which might lead to deletion of a pending commit RFH, which
-    // will crash when RenderDocument is enabled. Skip the test if so.
-    // TODO(https://crbug.com/1220337): Update this test to work under
-    // navigation queueing, which will prevent the deletion of the pending
-    // commit RFH but still fails because this test actually expects the pending
-    // commit RFH to get deleted.
-    return;
+  if (!AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP() << "This test requires speculative RenderFrameHosts, so skip "
+                    "it when site isolation is turned off";
   }
+
   const std::string kOriginalPath = "/original.html";
   const std::string kFirstRedirectPath = "/redirect1.html";
   const std::string kSecondRedirectPath = "/reidrect2.html";
@@ -1755,40 +1751,39 @@ IN_PROC_BROWSER_TEST_P(
       "Content-Type: text/html; charset=utf-8\r\n"
       "\r\n");
   EXPECT_TRUE(first_reload.WaitForResponse());
-  first_reload.ResumeNavigation();
 
-  // The navigation is ready to commit: it has been handed to the speculative
-  // RenderFrameHost for commit if Site Isolation is enabled, otherwise it
-  // commits in the same RenderFrameHost.
-  RenderFrameHostImpl* speculative_rfh =
-      static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetPrimaryFrameTree()
-          .root()
-          ->render_manager()
-          ->speculative_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    CHECK(speculative_rfh);
-  } else {
-    CHECK(!speculative_rfh);
-  }
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImplWrapper first_speculative_rfh(
+      root->render_manager()->speculative_frame_host());
+  EXPECT_TRUE(first_speculative_rfh.get());
 
   // The user requests a new reload while the previous reload hasn't committed
-  // yet. The navigation start deletes the speculative RenderFrameHost that was
-  // supposed to commit the browser-initiated navigation, unless Site Isolation
-  // is enabled. This should not crash.
+  // yet. This second reload starts immediately after pausing the commit of the
+  // first reload. It might delete the speculative RenderFrameHost that was
+  // supposed to commit the first reload. This should not crash.
   TestNavigationManager second_reload(shell()->web_contents(), kOriginalURL);
+  CommitNavigationPauser commit_pauser(first_speculative_rfh.get());
+  first_reload.ResumeNavigation();
+  commit_pauser.WaitForCommitAndPause();
   shell()->web_contents()->GetController().Reload(
       ReloadType::ORIGINAL_REQUEST_URL, false);
   EXPECT_TRUE(second_reload.WaitForRequestStart());
-  speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
-                        ->GetPrimaryFrameTree()
-                        .root()
-                        ->render_manager()
-                        ->speculative_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_TRUE(speculative_rfh);
+
+  RenderFrameHostImplWrapper second_speculative_rfh(
+      root->render_manager()->speculative_frame_host());
+
+  EXPECT_TRUE(second_speculative_rfh.get());
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // When navigation queueing is enabled, the first speculative RFH is still
+    // kept around as it is pending commit.
+    EXPECT_TRUE(first_speculative_rfh.get());
+    EXPECT_EQ(first_speculative_rfh.get(), second_speculative_rfh.get());
   } else {
-    EXPECT_FALSE(speculative_rfh);
+    // Otherwise, the first speculative RFH will be deleted and replaced by a
+    // new speculative RFH.
+    EXPECT_FALSE(first_speculative_rfh.get());
   }
 
   // The second reload results in a 204.
@@ -1799,12 +1794,17 @@ IN_PROC_BROWSER_TEST_P(
       "Connection: close\r\n"
       "\r\n");
   ASSERT_TRUE(second_reload.WaitForNavigationFinished());
-  speculative_rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
-                        ->GetPrimaryFrameTree()
-                        .root()
-                        ->render_manager()
-                        ->speculative_frame_host();
-  EXPECT_FALSE(speculative_rfh);
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queuing is enabled, the first reload's speculative RFH
+    // will be kept.
+    EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+  } else {
+    // If navigation queueing is turned off, the second reload will delete the
+    // first reload's speculative RFH, and we end up with no speculative RFH
+    // after the second reload commits.
+    EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  }
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
@@ -1824,6 +1824,12 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerTest,
     MAYBE_DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted2) {
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // When navigation queueing is enabled, starting a new navigation won't
+    // delete an existing pending commit RFH, so this test can't run as
+    // intended.
+    return;
+  }
   const std::string kOriginalPath = "/original.html";
   const std::string kRedirectPath = "/redirect.html";
   net::test_server::ControllableHttpResponse original_response1(

@@ -1805,10 +1805,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // a speculative RFH.  So, a speculative main frame being deleted will always
   // pass this condition as well.
   if (was_created && render_view_host_->GetMainRenderFrameHost() != this) {
-    CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
-          lifecycle_state() == LifecycleStateImpl::kPrerendering ||
-          lifecycle_state() == LifecycleStateImpl::kSpeculative)
-        << lifecycle_state();
+    CHECK_NE(lifecycle_state(), LifecycleStateImpl::kActive);
   }
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);

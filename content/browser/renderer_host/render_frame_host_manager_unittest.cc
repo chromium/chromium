@@ -416,7 +416,7 @@ class RenderFrameHostManagerTest
 
     // Simulates request creation that triggers the 1st internal call to
     // GetFrameHostForNavigation.
-    manager->DidCreateNavigationRequest(navigation_request.get());
+    frame_tree_node->TakeNavigationRequest(std::move(navigation_request));
 
     // And also simulates the 2nd and final call to GetFrameHostForNavigation
     // that determines the final frame that will commit the navigation.
@@ -424,7 +424,7 @@ class RenderFrameHostManagerTest
         BrowsingContextGroupSwap::CreateDefault();
     TestRenderFrameHost* frame_host = static_cast<TestRenderFrameHost*>(
         manager
-            ->GetFrameHostForNavigation(navigation_request.get(),
+            ->GetFrameHostForNavigation(frame_tree_node->navigation_request(),
                                         &ignored_bcg_swap_info)
             .value());
     CHECK(frame_host);
@@ -3258,7 +3258,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
           false /* is_pdf */
       );
-  manager->DidCreateNavigationRequest(navigation_request.get());
+  frame_tree_node->TakeNavigationRequest(std::move(navigation_request));
 
   // As the initial RenderFrame was not live, the new RenderFrameHost should be
   // made as active/current immediately along with its WebUI at request time.
@@ -3274,8 +3274,9 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
   BrowsingContextGroupSwap ignored_bcg_swap_info =
       BrowsingContextGroupSwap::CreateDefault();
   EXPECT_EQ(host, manager
-                      ->GetFrameHostForNavigation(navigation_request.get(),
-                                                  &ignored_bcg_swap_info)
+                      ->GetFrameHostForNavigation(
+                          frame_tree_node->navigation_request(),
+                          &ignored_bcg_swap_info)
                       .value());
 
   // No pending RenderFrameHost as the current one should be reused.
