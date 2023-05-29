@@ -90,6 +90,12 @@ class MultiWordSuggester : public Suggester {
     // Captures new suggestion context.
     void UpdateSuggestion(const Suggestion& suggestion);
 
+    // Validates the given suggestion text context with the current surrounding
+    // text, and returns the state of the given suggestion context.
+    MultiWordSuggestionState ValidateSuggestion(
+        const Suggestion& suggestion,
+        const ime::SuggestionsTextContext& context);
+
     // Takes the current suggestion and surrounding text state, and ensures the
     // confirmed length or any other suggestion details are correct.
     void ReconcileSuggestionWithText();

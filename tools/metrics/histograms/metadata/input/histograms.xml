@@ -751,6 +751,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.SuggestionState.{Type}"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-10-08">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records when a new suggestion is found and the system
+    attempts to reconcile it with the text found in the currently focused text
+    input. The histogram records the state of the reconciliation process. This
+    metric is recorded exactly once for every suggestion that goes through this
+    process.
+  </summary>
+  <token key="Type">
+    <variant name="Completion" summary="CompletionSuggestion"/>
+    <variant name="Prediction" summary="PredictionSuggestion"/>
+  </token>
+</histogram>
+
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
     expires_after="2023-05-01">
   <owner>jiwan@google.com</owner>

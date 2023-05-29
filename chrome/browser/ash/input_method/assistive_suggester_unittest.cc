@@ -1138,13 +1138,13 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                                                      TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("h"));
   assistive_suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("he"));
   assistive_suggester_->OnSurroundingTextChanged(u"hel", gfx::Range(3));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("hel"));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
@@ -1169,13 +1169,13 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                                                      TextContext(""));
   assistive_suggester_->OnSurroundingTextChanged(u"h", gfx::Range(1));
   assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions,
-                                                     TextContext(""));
+                                                     TextContext("h"));
   assistive_suggester_->OnSurroundingTextChanged(u"he", gfx::Range(2));
   assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions,
-                                                     TextContext(""));
+                                                     TextContext("he"));
   assistive_suggester_->OnSurroundingTextChanged(u"he ", gfx::Range(3));
   assistive_suggester_->OnExternalSuggestionsUpdated(second_suggestions,
-                                                     TextContext(""));
+                                                     TextContext("he "));
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 2);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
@@ -1192,7 +1192,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, PressingTabShouldAcceptSuggestion) {
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("why ar"));
 
   EXPECT_EQ(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::TAB)),
             AssistiveSuggesterKeyResult::kHandled);
@@ -1208,7 +1208,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, AltPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("why ar"));
 
   EXPECT_EQ(assistive_suggester_->OnKeyEvent(PressKeyWithAlt(ui::DomCode::TAB)),
             AssistiveSuggesterKeyResult::kNotHandled);
@@ -1224,7 +1224,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, CtrlPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("why ar"));
 
   EXPECT_EQ(
       assistive_suggester_->OnKeyEvent(PressKeyWithCtrl(ui::DomCode::TAB)),
@@ -1241,7 +1241,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, ShiftPlusTabShouldNotAcceptSuggestion) {
   assistive_suggester_->OnFocus(5, empty_context);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", gfx::Range(6));
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions,
-                                                     TextContext(""));
+                                                     TextContext("why ar"));
 
   EXPECT_EQ(
       assistive_suggester_->OnKeyEvent(PressKeyWithShift(ui::DomCode::TAB)),

@@ -52178,6 +52178,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Url or App not allowed"/>
 </enum>
 
+<enum name="IMEAssistiveMultiWordSuggestionState">
+  <int value="0" label="Other"/>
+  <int value="1" label="Valid"/>
+  <int value="2" label="StaleAndUserEditedText"/>
+  <int value="3" label="StaleAndUserDeletedText"/>
+  <int value="4" label="StaleAndUserAddedMatchingText"/>
+  <int value="5" label="StaleAndUserAddedDifferentText"/>
+</enum>
+
 <enum name="IMEAssistiveMultiWordSuggestionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Prediction"/>
