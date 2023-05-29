@@ -77,7 +77,7 @@
 <translation id="1067661089446014701">Để tăng mức độ an toàn, bạn có thể mã hoá mật khẩu trên thiết bị trước khi lưu vào Tài khoản Google</translation>
 <translation id="1067922213147265141">Các dịch vụ khác của Google</translation>
 <translation id="106814709658156573">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay ở góc dưới bên trái bàn phím. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> này.</translation>
-<translation id="1069104208554708737">Mã xác thực này sẽ chỉ được lưu trên thiết bị này</translation>
+<translation id="1069104208554708737">Khoá truy cập này sẽ chỉ được lưu trên thiết bị này</translation>
 <translation id="1069355737714877171">Xóa hồ sơ eSIM có tên <ph name="PROFILE_NAME" /></translation>
 <translation id="1069814191880976658">Chọn một màn hình khác</translation>
 <translation id="1070377999570795893">Một chương trình khác trên máy tính của bạn đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.
@@ -2510,7 +2510,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3182749001423093222">Kiểm tra chính tả</translation>
 <translation id="3183139917765991655">Trình nhập hồ sơ</translation>
 <translation id="3183143381919926261">Mạng dữ liệu di động</translation>
-<translation id="3183613134231754987">Mã xác thực này sẽ chỉ được lưu trong Windows Hello. Mã xác thực sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả Cửa sổ ẩn danh.</translation>
+<translation id="3183613134231754987">Khoá truy cập này sẽ chỉ được lưu trong Windows Hello. Khoá truy cập sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả cửa sổ ẩn danh.</translation>
 <translation id="3183944777708523606">Sắp xếp màn hình</translation>
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ứng dụng này đã bị chặn}other{Một số ứng dụng đã bị chặn}}</translation>
@@ -6609,7 +6609,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6943060957016121200">Bật tính năng Chia sẻ Internet tức thì</translation>
 <translation id="6943176775188458830">Hủy in</translation>
 <translation id="6943939122536910181">Đã ngắt kết nối khỏi <ph name="DEVICE" /></translation>
-<translation id="6944708469742828051">Mã xác thực này sẽ chỉ được lưu trong Windows Hello</translation>
+<translation id="6944708469742828051">Khoá truy cập này sẽ chỉ được lưu trong Windows Hello</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="694592694773692225">Đã chặn chuyển hướng trên trang này.</translation>
 <translation id="6947015141909171112">Bạn đang xem các công thức nấu ăn dựa trên Hoạt động tìm kiếm công thức nấu ăn gần đây của bạn.
@@ -8197,7 +8197,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8376137163494131156">Cho chúng tôi biết điều gì đang xảy ra với Google Cast.</translation>
 <translation id="8376384591331888629">Bao gồm cả cookie của bên thứ ba trên trang web này</translation>
 <translation id="8376451933628734023">Nếu ứng dụng web này cố gắng lừa bạn rằng đó là một ứng dụng khác, hãy gỡ cài đặt ứng dụng web đó.</translation>
-<translation id="8377625247046155446">Mã xác thực này sẽ chỉ được lưu trên thiết bị này. Mã xác thực sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả Cửa sổ ẩn danh.</translation>
+<translation id="8377625247046155446">Khoá truy cập này sẽ chỉ được lưu trên thiết bị này. Khoá truy cập sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả cửa sổ ẩn danh.</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8379878387931047019">Thiết bị này không hỗ trợ loại khóa bảo mật mà trang web này yêu cầu</translation>
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
@@ -8384,7 +8384,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
 <translation id="8557180006508471423">Hãy bật "Google Chrome" trong mục cài đặt Dịch vụ vị trí (Location Services) trên máy Mac của bạn</translation>
 <translation id="8557856025359704738">Lượt tải xuống tiếp theo bắt đầu vào <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8559858985063901027">Mã xác thực</translation>
+<translation id="8559858985063901027">Khoá truy cập</translation>
 <translation id="8559961053328923750">Chrome giới hạn tổng lượng dữ liệu mà các trang web có thể chia sẻ thông qua trình duyệt để đo lường hiệu suất quảng cáo</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
 <translation id="8561206103590473338">Voi</translation>
@@ -9071,7 +9071,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
       <ph name="LIST_ITEM" />Chạy công cụ Chẩn đoán kết nối dành cho Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
-<translation id="9166253503936244008">Quét mã QR này bằng thiết bị có mã xác thực bạn muốn sử dụng cho <ph name="APP_NAME" /></translation>
+<translation id="9166253503936244008">Quét mã QR này bằng thiết bị có khoá truy cập bạn muốn sử dụng cho <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Hiện Danh sách đọc</translation>
 <translation id="9167450455589251456">Hồ sơ này không được hỗ trợ</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>

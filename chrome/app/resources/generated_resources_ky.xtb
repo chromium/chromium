@@ -70,7 +70,7 @@
 <translation id="1060292118287751956">Экрандын жаңыртуу жыштыгын аныктайт</translation>
 <translation id="1060570945511946595">Билеттерди тескөө</translation>
 <translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кош келиңиз</translation>
-<translation id="1061373870045429865">Бул шилтеме үчүн QR кодун түзүү</translation>
+<translation id="1061373870045429865">Бул шилтеме үчүн QR кодду түзүү</translation>
 <translation id="1061904396131502319">Тыныгууга убакыт келип калды</translation>
 <translation id="1062628064301375934">Интернетте купуялык деңгээлин жогорулатууга жардам бериңиз</translation>
 <translation id="1067048845568873861">Түзүлгөн</translation>
@@ -271,7 +271,7 @@
 <translation id="1232569758102978740">Аты жок</translation>
 <translation id="1233497634904001272">Сурамды аягына чыгаруу үчүн, коопсуздук ачкычыңызды кайра басып коюңуз.</translation>
 <translation id="1233721473400465416">Тил стандарты</translation>
-<translation id="1234736487471201993">Бул сүрөттүн QR кодун түзүү</translation>
+<translation id="1234736487471201993">Бул сүрөттүн QR кодду түзүү</translation>
 <translation id="1234808891666923653">Кызмат жумушчулары</translation>
 <translation id="1235458158152011030">Белгилүү тармактар</translation>
 <translation id="123578888592755962">Диск толуп калды</translation>
@@ -613,7 +613,7 @@
 <translation id="1543284117603151572">Edge аркылуу импорттолгон</translation>
 <translation id="1544588554445317666">Файлдын аталышын кыскартып же башка папкага сактап көрүңүз</translation>
 <translation id="1545177026077493356">Автоматтык Толук экран режими</translation>
-<translation id="1545749641540134597">QR кодун скандоо</translation>
+<translation id="1545749641540134597">QR кодду скандоо</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" темасы орнотулду</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{Жашыруун терезеңиз кайра ачылбайт.}other{# жашыруун терезеңиз кайра ачылбайт.}}</translation>
 <translation id="1546280085599573572">Бул кеңейтүү Башкы бет баскычы чыкылдатылганда көрүнө турган бетти өзгөрттү.</translation>
@@ -1355,7 +1355,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2162926944953615670">Жеткиликтүү eSIM-карта профилдери жок</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кирүү үчүн Интернетке туташыңыз.</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> жана дагы 1 которгуч</translation>
-<translation id="2165102982098084499">Бул түзмөктөрдү QR кодун скандоо аркылуу туташтырдыңыз.</translation>
+<translation id="2165102982098084499">Бул түзмөктөрдү QR кодду скандоо аркылуу туташтырдыңыз.</translation>
 <translation id="2165177462441582039">Бир объекттен экинчисине өтүү ылдамдыгын тандаңыз</translation>
 <translation id="2166369534954157698">Билимдүүнүн түнү - күн, билимсиздин күнү - түн</translation>
 <translation id="2168454383292731451"><ph name="BEGIN_PARAGRAPH1" />Бул түзмөк (Сериялык номери: <ph name="SERIAL_NUMBER" />) кулпуланды.<ph name="END_PARAGRAPH1" />
@@ -3442,7 +3442,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4010917659463429001">Бардык кыстармаларыңызды мобилдик түзмөгүңүзгө алуу үчүн, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" оңдойсузбу?</translation>
 <translation id="4015163439792426608">Кеңейтүүлөрүңүз барбы? <ph name="BEGIN_LINK" />Кеңейтүүлөрдү башкарыңыз<ph name="END_LINK" />.</translation>
-<translation id="4017225831995090447">Бул шилтеме үчүн QR кодун түзүү</translation>
+<translation id="4017225831995090447">Бул шилтеме үчүн QR кодду түзүү</translation>
 <translation id="4019983356493507433">Кыстармалардын тизмесин түзөтүү</translation>
 <translation id="4020327272915390518">Параметрлер менюсу</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4311,7 +4311,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4827283332383516812">Картаны өчүрүү</translation>
 <translation id="4827675678516992122">Туташпай койду</translation>
 <translation id="4827784381479890589">Chrome серепчисинде жакшыртылган орфографиялык текшерүү (орфографиялык сунуштарды түзүү үчүн текст Google'га жөнөтүлөт)</translation>
-<translation id="4827904420700932487">Бул сүрөттүн QR кодун түзүү</translation>
+<translation id="4827904420700932487">Бул сүрөттүн QR кодду түзүү</translation>
 <translation id="4827970183019354123">URL текшергич</translation>
 <translation id="4828567746430452681">"<ph name="EXTENSION_NAME" />" мындан ары колдоого алынбайт</translation>
 <translation id="482952334869563894"><ph name="VENDOR_ID" /> камсыздаган USB түзмөктөр</translation>
@@ -5385,7 +5385,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="583431638776747">Сайт жеткиликсиз</translation>
 <translation id="5834581999798853053">Болжол менен <ph name="TIME" /> мүнөт калды</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Видео же аудио жаздырылууда</translation>
-<translation id="5835625581856809102"><ph name="APP_NAME" /> үчүн киргизүүчү ачкычты түзгүңүз келген түзмөк менен бул QR кодун скандаңыз</translation>
+<translation id="5835625581856809102"><ph name="APP_NAME" /> үчүн киргизүүчү ачкычты түзгүңүз келген түзмөк менен бул QR кодду скандаңыз</translation>
 <translation id="583673505367439042">Сайттар сиздин уруксатыңыз менен түзмөгүңүздөгү файлдарды жана папкаларды түзөтө алат</translation>
 <translation id="5836999627049108525">Кайсы тилден</translation>
 <translation id="583756221537636748">Кутуча</translation>
@@ -5640,7 +5640,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6059652578941944813">Тастыктама иерархиясы</translation>
 <translation id="6059925163896151826">USB түзмөктөрү</translation>
 <translation id="6061408389284235459">Билдирме <ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлдү</translation>
-<translation id="6063284707309177505">QR кодун түзүү</translation>
+<translation id="6063284707309177505">QR кодду түзүү</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Эскертүү<ph name="END_BOLD" />: Үнү балаңыздыкына окшош же анын үнүн жаздырып алган адам балаңыздын (<ph name="SUPERVISED_USER_NAME" />) маалыматына кире алышы мүмкүн. Батареяны үнөмдөө үчүн балаңыздын (<ph name="SUPERVISED_USER_NAME" />) Жардамчысынын параметрлеринен бул түзмөк кубат булагына туташып турганда гана "Oкей, Google" күйгөндөй кылып жөндөсөңүз болот.</translation>
 <translation id="6064217302520318294">Экран кулпусу</translation>
 <translation id="6065145031947216733">Карап чыккан нерселериңизди ажыратасызбы?</translation>
@@ -5786,7 +5786,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6195693561221576702">Түзмөктү оффлайн демо режиминде жөндөөгө болбойт.</translation>
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" кеңейтүүсү прокси параметрлериңизди көзөмөлдөйт, демек, ал аны өзгөртүп, бузуп же онлайн абалындагы аракеттериңизге көз салып тура алат. Бул эмне болгон өзгөрүү экендигин түшүнбөсөңүз, анын сизге кереги жок болушу мүмкүн.</translation>
-<translation id="6197128521826316819">Бул барактын QR кодун түзүү</translation>
+<translation id="6197128521826316819">Бул барактын QR кодду түзүү</translation>
 <translation id="6198252989419008588">PIN'ди өзгөртүү</translation>
 <translation id="6200047250927636406">Файлды жоюу</translation>
 <translation id="6200151268994853226">Кеңейтүүнү башкаруу</translation>
@@ -5830,7 +5830,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6233154960150021497">Демейки шартта баскычтопту колдонуунун ордуна оозеки кайрылуу</translation>
 <translation id="6234108445915742946">Chrome’дун Тейлөө шарттары 31-марттан кийин өзгөргөнү жатат</translation>
 <translation id="6234474535228214774">Орнотуу күтүүдө</translation>
-<translation id="6235208551686043831">Түзмөктүн камерасы күйгүзүлдү. eSIM-картанын QR кодун камеранын алдына коюңуз.</translation>
+<translation id="6235208551686043831">Түзмөктүн камерасы күйгүзүлдү. eSIM-картанын QR кодду камеранын алдына коюңуз.</translation>
 <translation id="6237474966939441970">Стилус менен эскертме жазуучу колдонмо</translation>
 <translation id="623755660902014047">Окуу режими</translation>
 <translation id="6238767809035845642">Текст башка түзмөктөн бөлүшүлдү</translation>
@@ -7055,7 +7055,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7366316827772164604">Жакын жердеги түзмөктөр изделүүдө...</translation>
 <translation id="7366415735885268578">Сайт кошуу</translation>
 <translation id="7366909168761621528">Серептөө дайындары</translation>
-<translation id="7367714965999718019">QR кодун даярдагыч</translation>
+<translation id="7367714965999718019">QR кодду даярдагыч</translation>
 <translation id="736877393389250337"><ph name="URL" /> шилтемеси <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачылбай койду. Тутумуңуздун администраторуна кайрылыңыз.</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7371490947952970241">Түзмөктөгү негизги Жайгашкан жерди аныктоо кызматы өчүрүлгөндө, бул түзмөктүн жайгашкан жери аныкталбай калат. Ошондой эле Wi Fi, мобилдик тармактарды, жайгашкан жер сенсорлорун жайгаштыруу параметрлеринен өчүрсөңүз болот.</translation>
@@ -7185,7 +7185,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7475671414023905704">Netscape жоголгон сырсөз URL дареги</translation>
 <translation id="7476454130948140105">Жаңыртуу үчүн батареянын кубаты жетишсиз (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Төмөнкүлөр автоматтык түрдө бөгөттөлдү: <ph name="PERMISSION" /> жана дагы <ph name="COUNT" /></translation>
-<translation id="7477748600276493962">Бул барактын QR кодун түзүү</translation>
+<translation id="7477748600276493962">Бул барактын QR кодду түзүү</translation>
 <translation id="7477793887173910789">Музыканы, видеолорду жана башкаларды көзөмөлдөңүз</translation>
 <translation id="7478069565037869084">Тамгалардын аралыгы алыс</translation>
 <translation id="7478485216301680444">Киоск колдонмосу орнотулган жок.</translation>
@@ -7949,7 +7949,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8147900440966275470"><ph name="NUM" /> өтмөк табылды</translation>
 <translation id="8148760431881541277">Кирүүнү чектөө</translation>
 <translation id="8149564499626272569">Телефонуңузду USB кабель менен туташтырып көрүңүз</translation>
-<translation id="815114315010033526">Анын ордуна QR кодун колдонуу</translation>
+<translation id="815114315010033526">Анын ордуна QR кодду колдонуу</translation>
 <translation id="8151638057146502721">Конфигурациялоо</translation>
 <translation id="8154790740888707867">Файл жок</translation>
 <translation id="8154912474061769055">Функциялар көпчүлүк сайттарда иштебеши мүмкүн</translation>
@@ -8832,7 +8832,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8962863356073277855">URL форматы https://www.example.com болушу керек</translation>
 <translation id="8962918469425892674">Бул сайт кыймыл же жарык сенсорлорун колдонуп жатат.</translation>
 <translation id="8965037249707889821">Эски сырсөздү киргизүү</translation>
-<translation id="89667524227025535">Түзмөктөгү камеранын жардамы менен QR кодун скандаңыз же байланыш операторуңуз берген жандандыруу кодун киргизиңиз</translation>
+<translation id="89667524227025535">Түзмөктөгү камеранын жардамы менен QR кодду скандаңыз же байланыш операторуңуз берген жандандыруу кодун киргизиңиз</translation>
 <translation id="8966809848145604011">Башка профилдер</translation>
 <translation id="8966870118594285808">Өтмөктү кокустан жаап алсаңыз, аны кайра ачыңыз</translation>
 <translation id="8967427617812342790">Окуу тизмесине кошуу</translation>
@@ -9070,7 +9070,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
       <ph name="LIST_ITEM" />Chrome туташуу мүчүлүштүктөрүн аныктагычты иштетиңиз
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Сүрөт ичиндеги сүрөт</translation>
-<translation id="9166253503936244008"><ph name="APP_NAME" /> үчүн киргизүүчү ачкыч сакталган түзмөк менен бул QR кодун скандаңыз</translation>
+<translation id="9166253503936244008"><ph name="APP_NAME" /> үчүн киргизүүчү ачкыч сакталган түзмөк менен бул QR кодду скандаңыз</translation>
 <translation id="9167063903968449027">Окуу тизмесин көрсөтүү</translation>
 <translation id="9167450455589251456">Профиль колдоого алынбайт</translation>
 <translation id="9168436347345867845">Азыр эмес</translation>
