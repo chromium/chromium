@@ -45,7 +45,7 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() {}
+UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() = default;
 
 // static
 UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
@@ -56,7 +56,8 @@ UserPolicySigninService* UserPolicySigninServiceFactory::GetForProfile(
 
 // static
 UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
-  return base::Singleton<UserPolicySigninServiceFactory>::get();
+  static base::NoDestructor<UserPolicySigninServiceFactory> instance;
+  return instance.get();
 }
 
 // static

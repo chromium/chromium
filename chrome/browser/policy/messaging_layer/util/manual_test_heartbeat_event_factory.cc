@@ -10,7 +10,8 @@ namespace reporting {
 
 ManualTestHeartbeatEventFactory*
 ManualTestHeartbeatEventFactory::GetInstance() {
-  return base::Singleton<ManualTestHeartbeatEventFactory>::get();
+  static base::NoDestructor<ManualTestHeartbeatEventFactory> instance;
+  return instance.get();
 }
 
 ManualTestHeartbeatEventFactory::ManualTestHeartbeatEventFactory()

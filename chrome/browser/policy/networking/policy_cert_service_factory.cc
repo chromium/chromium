@@ -5,7 +5,7 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 
 #include "base/containers/contains.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -123,7 +123,8 @@ bool PolicyCertServiceFactory::CreateAndStartObservingForProfile(
 
 // static
 PolicyCertServiceFactory* PolicyCertServiceFactory::GetInstance() {
-  return base::Singleton<PolicyCertServiceFactory>::get();
+  static base::NoDestructor<PolicyCertServiceFactory> instance;
+  return instance.get();
 }
 
 PolicyCertServiceFactory::PolicyCertServiceFactory()
@@ -138,7 +139,7 @@ PolicyCertServiceFactory::PolicyCertServiceFactory()
   DependsOn(UserNetworkConfigurationUpdaterFactory::GetInstance());
 }
 
-PolicyCertServiceFactory::~PolicyCertServiceFactory() {}
+PolicyCertServiceFactory::~PolicyCertServiceFactory() = default;
 
 KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

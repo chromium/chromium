@@ -10,7 +10,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 class Profile;
@@ -42,7 +42,7 @@ class PolicyCertServiceFactory : public ProfileKeyedServiceFactory {
   PolicyCertServiceFactory& operator=(const PolicyCertServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PolicyCertServiceFactory>;
+  friend base::NoDestructor<PolicyCertServiceFactory>;
 
   PolicyCertServiceFactory();
   ~PolicyCertServiceFactory() override;
