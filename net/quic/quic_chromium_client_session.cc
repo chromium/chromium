@@ -2129,6 +2129,10 @@ void QuicChromiumClientSession::OnConnectionClosed(
   }
 
   CHECK_EQ(sockets_.size(), packet_readers_.size());
+  // Packet readers must not outlive sockets. Clear them before deleting sockets
+  // below.
+  packet_readers_.clear();
+
   bool socket_found_in_writer = false;
   for (auto& socket : sockets_) {
     socket->Close();
