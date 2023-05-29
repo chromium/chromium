@@ -19,10 +19,6 @@ from util import jar_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
-_SRC_PATH = pathlib.Path(build_utils.DIR_SOURCE_ROOT).resolve()
-sys.path.append(str(_SRC_PATH / 'tools/android/modularization/gn'))
-from dep_operations import NO_VALID_GN_STR
-
 
 def _ShouldIgnoreDep(dep_name: str):
   if 'gen.base_module.R' in dep_name:
@@ -73,24 +69,12 @@ def _GnTargetToBuildFilePath(gn_target: str):
   return os.path.join(ninja_target_name, 'BUILD.gn')
 
 
-def _EnsureDirectClasspathIsComplete(
-    *,
-    input_jar: str,
-    gn_target: str,
-    output_dir: str,
-    sdk_classpath_jars: List[str],
-    direct_classpath_jars: List[str],
-    full_classpath_jars: List[str],
-    full_classpath_gn_targets: List[str],
-    warnings_as_errors: bool,
-):
-  logging.info('Parsing %d direct classpath jars', len(sdk_classpath_jars))
-  sdk_classpath_deps = set()
-  for jar in sdk_classpath_jars:
-    deps = jar_utils.extract_full_class_names_from_jar(
-        build_output_dir=pathlib.Path(output_dir), jar_path=pathlib.Path(jar))
-    sdk_classpath_deps.update(deps)
-
+def _EnsureDirectClasspathIsComplete(*, input_jar: str, gn_target: str,
+                                     output_dir: str,
+                                     direct_classpath_jars: List[str],
+                                     full_classpath_jars: List[str],
+                                     full_classpath_gn_targets: List[str],
+                                     warnings_as_errors: bool):
   logging.info('Parsing %d direct classpath jars', len(direct_classpath_jars))
   direct_classpath_deps = set()
   for jar in direct_classpath_jars:
@@ -116,9 +100,7 @@ def _EnsureDirectClasspathIsComplete(
   # dep_graph.keys() is a list of all the classes in the current input_jar. Skip
   # all of these to avoid checking dependencies in the same target (e.g. A
   # depends on B, but both A and B are in input_jar).
-  # Since the bundle will always have access to classes in the current android
-  # sdk, those should not be considered missing.
-  seen_deps = set(dep_graph.keys()) | sdk_classpath_deps
+  seen_deps = set(dep_graph.keys())
   for dep_from, deps_to in dep_graph.items():
     for dep_to in deps_to - seen_deps:
       if _ShouldIgnoreDep(dep_to):
@@ -129,46 +111,27 @@ def _EnsureDirectClasspathIsComplete(
         missing_targets[missing_target_names][dep_to] = dep_from
 
   if missing_targets:
-
-    def print_and_maybe_exit():
-      print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
-      print(f'Target: {gn_target}')
-      print('Direct classpath is incomplete. To fix, add deps on:')
-      for missing_target_names, data in missing_targets.items():
-        if len(missing_target_names) > 1:
-          print(f' * One of {", ".join(missing_target_names)}')
-        else:
-          print(f' * {missing_target_names[0]}')
-        for missing_class, used_by in data.items():
-          print(f'     ** {missing_class} (needed by {used_by})')
-      if warnings_as_errors:
-        sys.exit(1)
-
-    # TODO(https://crbug.com/1099522): This is better as a GN arg.
-    if os.environ.get('AUTO_ADD_MISSING_DEPS') != '1':
-      print_and_maybe_exit()
-    else:
-      # TODO(https://crbug.com/1099522): This should be generalized into util.
-      build_file_path = _GnTargetToBuildFilePath(gn_target)
+    print('=' * 30 + ' Dependency Checks Failed ' + '=' * 30)
+    print(f'Target: {gn_target}')
+    print('Direct classpath is incomplete. To fix, add deps on:')
+    for missing_target_names, data in missing_targets.items():
+      if len(missing_target_names) > 1:
+        print(f' * One of {", ".join(missing_target_names)}')
+      else:
+        print(f' * {missing_target_names[0]}')
+      for missing_class, used_by in data.items():
+        print(f'     ** {missing_class} (needed by {used_by})')
+    if os.environ.get('AUTO_ADD_MISSING_DEPS') == '1':
       cmd = [
           'tools/android/modularization/gn/dep_operations.py', 'add', '--quiet',
-          '--file', build_file_path, '--target', gn_target, '--deps'
+          '--file',
+          _GnTargetToBuildFilePath(gn_target), '--target', gn_target, '--deps'
       ]
       # For simplicity, always pick the first suggested target.
-      # TODO(https://crbug.com/1099522): Swap deps with preferred deps.
-      missing_deps = [names[0] for names in missing_targets.keys()]
-      cmd += missing_deps
-      try:
-        build_utils.CheckOutput(cmd, cwd=build_utils.DIR_SOURCE_ROOT)
-      except build_utils.CalledProcessError as e:
-        if NO_VALID_GN_STR in e.output:
-          print(f'Unable to add missing dep(s) to {build_file_path}.')
-          print_and_maybe_exit()
-        else:
-          raise
-      else:
-        print(f'Successfully updated {build_file_path} with missing direct '
-              f'deps: {missing_deps}')
+      cmd += [names[0] for names in missing_targets.keys()]
+      build_utils.CheckOutput(cmd, cwd=build_utils.DIR_SOURCE_ROOT)
+    if warnings_as_errors:
+      sys.exit(1)
 
 
 def _AddSwitch(parser, val):
@@ -232,7 +195,6 @@ def main(argv):
         input_jar=args.input_jar,
         gn_target=args.gn_target,
         output_dir=args.chromium_output_dir,
-        sdk_classpath_jars=args.sdk_classpath_jars,
         direct_classpath_jars=args.direct_classpath_jars,
         full_classpath_jars=args.full_classpath_jars,
         full_classpath_gn_targets=args.full_classpath_gn_targets,

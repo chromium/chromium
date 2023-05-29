@@ -16,12 +16,6 @@
 ../../../third_party/colorama/src/colorama/win32.py
 ../../../third_party/colorama/src/colorama/winterm.py
 ../../../tools/android/modularization/convenience/lookup_dep.py
-../../../tools/android/modularization/gn/dep_operations.py
-../../../tools/android/modularization/gn/json_gn_editor.py
-../../../tools/android/modularization/gn/utils.py
-../../../tools/android/python_utils/__init__.py
-../../../tools/android/python_utils/git_metadata_utils.py
-../../../tools/android/python_utils/subprocess_utils.py
 ../../action_helpers.py
 ../../gn_helpers.py
 ../list_java_targets.py
