@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -60,6 +61,11 @@
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
+
+// Enabled-by-default: only used as a kill-switch.
+BASE_FEATURE(kForceSoftwareForLowResolutions,
+             "ForceSoftwareForLowResolutions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
 bool IsRK3399Board() {
@@ -1677,6 +1683,23 @@ int32_t RTCVideoEncoder::InitEncode(
            << ", height=" << codec_settings->height
            << ", startBitrate=" << codec_settings->startBitrate;
 
+  if (impl_) {
+    Release();
+  }
+
+  // Several HW encoders are known to yield worse quality compared to SW
+  // encoders for smaller resolutions such as 180p. (270p should also be a
+  // problem but some HW encoders already fallback for resolutions not divisible
+  // by 4.) At 360p, manual testing suggests HW and SW are roughly on par in
+  // terms of quality.
+  if (base::FeatureList::IsEnabled(kForceSoftwareForLowResolutions) &&
+      codec_settings->height < 360) {
+    LOG(WARNING)
+        << "Fallback to SW due to low resolution being less than 360p ("
+        << codec_settings->width << "x" << codec_settings->height << ")";
+    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+  }
+
   if (profile_ >= media::H264PROFILE_MIN &&
       profile_ <= media::H264PROFILE_MAX &&
       (codec_settings->width % 2 != 0 || codec_settings->height % 2 != 0)) {
@@ -1686,9 +1709,6 @@ int32_t RTCVideoEncoder::InitEncode(
         << "but hardware H.264 encoder only supports even sized frames.";
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
-
-  if (impl_)
-    Release();
 
   has_error_ = false;
 
