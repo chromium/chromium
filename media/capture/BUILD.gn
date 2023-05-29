@@ -271,6 +271,14 @@ component("capture_lib") {
       "video/linux/video_capture_device_linux.cc",
       "video/linux/video_capture_device_linux.h",
     ]
+    deps += [ "//gpu/command_buffer/client" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "video/linux/video_capture_gpu_memory_buffer_manager.cc",
+      "video/linux/video_capture_gpu_memory_buffer_manager.h",
+    ]
   }
 
   if (is_chromeos_ash) {

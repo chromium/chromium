@@ -45,6 +45,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "media/capture/capture_switches.h"
+#include "media/capture/video/linux/video_capture_gpu_memory_buffer_manager.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
@@ -126,7 +127,10 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
   VizGpuContextProvider(std::unique_ptr<viz::Gpu> viz_gpu)
       : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         viz_gpu_(std::move(viz_gpu)) {
-    StartContextProviderIfNeeded();
+    if (StartContextProviderIfNeeded()) {
+      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+          .SetGpuMemoryBufferManager(viz_gpu_->GetGpuMemoryBufferManager());
+    }
   }
   ~VizGpuContextProvider() override {
     // Ensure destroy context provider and not receive callbacks before clear up
@@ -141,16 +145,24 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     context_provider_->RemoveObserver(this);
     context_provider_.reset();
 
-    StartContextProviderIfNeeded();
+    bool success = StartContextProviderIfNeeded();
+    // Clear the GPU memory buffer manager if failed.
+    if (!success) {
+      media::VideoCaptureGpuMemoryBufferManager::GetInstance()
+          .SetGpuMemoryBufferManager(nullptr);
+    }
+
+    // Notify context lost after new context ready.
+    media::VideoCaptureGpuMemoryBufferManager::GetInstance().OnContextLost();
   }
 
  private:
-  void StartContextProviderIfNeeded() {
+  bool StartContextProviderIfNeeded() {
     DCHECK_EQ(context_provider_, nullptr);
     DCHECK(main_task_runner_->BelongsToCurrentThread());
 
     if (!viz_gpu_) {
-      return;
+      return false;
     }
 
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
@@ -160,7 +172,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     }
 
     if (!gpu_channel_host) {
-      return;
+      return false;
     }
 
     scoped_refptr<viz::ContextProvider> context_provider =
@@ -179,11 +191,12 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
         context_provider->BindToCurrentSequence();
     if (context_result != gpu::ContextResult::kSuccess) {
       LOG(ERROR) << "Bind context provider failed.";
-      return;
+      return false;
     }
 
     context_provider->AddObserver(this);
     context_provider_ = std::move(context_provider);
+    return true;
   }
 
   // Task runner for operating |viz_gpu_| and
