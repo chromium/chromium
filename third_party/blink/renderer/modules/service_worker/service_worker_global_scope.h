@@ -335,6 +335,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool SetAttributeEventListener(const AtomicString& event_type,
                                  EventListener* listener) override;
 
+  absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+  FindRaceNetworkRequestURLLoaderFactory(
+      const base::UnguessableToken& token) final;
+
  protected:
   // EventTarget
   bool AddEventListenerInternal(
@@ -736,6 +740,11 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   mojom::blink::AncestorFrameType ancestor_frame_type_;
 
   blink::BlinkStorageKey storage_key_;
+
+  // TODO(crbug.com/918702) WTF::HashMap cannot use base::UnguessableToken as a
+  // key. As a workaround uses WTF::String as a key instead.
+  HashMap<String, mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+      race_network_request_loader_factories_;
 };
 
 template <>

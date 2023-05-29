@@ -1526,6 +1526,14 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
 
   NoteNewFetchEvent(fetch_request);
 
+  if (params->race_network_request_loader_factory &&
+      params->request->service_worker_race_network_request_token) {
+    race_network_request_loader_factories_.insert(
+        String(params->request->service_worker_race_network_request_token
+                   ->ToString()),
+        std::move(params->race_network_request_loader_factory));
+  }
+
   Request* request = Request::Create(
       ScriptController()->GetScriptState(), std::move(params->request),
       Request::ForServiceWorkerFetchEvent::kTrue);
@@ -2684,6 +2692,17 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
         WebFeature::kServiceWorkerEventHandlerModifiedAfterInitialization);
   }
   return WorkerGlobalScope::SetAttributeEventListener(event_type, listener);
+}
+
+absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
+ServiceWorkerGlobalScope::FindRaceNetworkRequestURLLoaderFactory(
+    const base::UnguessableToken& token) {
+  mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> result =
+      race_network_request_loader_factories_.Take(String(token.ToString()));
+  if (result) {
+    return result;
+  }
+  return absl::nullopt;
 }
 
 }  // namespace blink
