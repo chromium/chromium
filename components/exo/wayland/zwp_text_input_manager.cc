@@ -402,6 +402,25 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
+  bool ConfirmComposition(bool keep_selection) override {
+    if (!extended_text_input_) {
+      return false;
+    }
+
+    if (wl_resource_get_version(extended_text_input_) <
+        ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SINCE_VERSION) {
+      return false;
+    }
+
+    zcr_extended_text_input_v1_send_confirm_preedit(
+        extended_text_input_,
+        keep_selection
+            ? ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED
+            : ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT);
+    wl_client_flush(client());
+    return true;
+  }
+
   raw_ptr<wl_resource, ExperimentalAsh> text_input_;
   raw_ptr<wl_resource, ExperimentalAsh> extended_text_input_ = nullptr;
   raw_ptr<wl_resource, ExperimentalAsh> surface_ = nullptr;

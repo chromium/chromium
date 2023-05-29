@@ -30,6 +30,11 @@ COMPONENT_EXPORT(CROSAPI)
 inline constexpr base::StringPiece
     kInputMethodTestCapabilityDeleteSurroundingText = "DeleteSurroundingText";
 
+COMPONENT_EXPORT(CROSAPI)
+inline constexpr base::StringPiece
+    kInputMethodTestCapabilityExtendedConfirmComposition =
+        "ExtendedConfirmComposition";
+
 }  // namespace crosapi
 
 #endif  // CHROMEOS_CROSAPI_CPP_INPUT_METHOD_TEST_INTERFACE_CONSTANTS_H_

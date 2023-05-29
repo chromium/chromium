@@ -43,7 +43,8 @@ bool HasCapability(const base::StringPiece capability) {
   return capability == kInputMethodTestCapabilitySendKeyModifiers ||
          capability == kInputMethodTestCapabilityConfirmComposition ||
          capability == kInputMethodTestCapabilityAlwaysConfirmComposition ||
-         capability == kInputMethodTestCapabilityDeleteSurroundingText;
+         capability == kInputMethodTestCapabilityDeleteSurroundingText ||
+         capability == kInputMethodTestCapabilityExtendedConfirmComposition;
 }
 
 }  // namespace

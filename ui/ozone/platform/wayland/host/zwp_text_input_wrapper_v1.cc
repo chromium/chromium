@@ -129,6 +129,7 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
           &OnAddGrammarFragment,   // extended_text_input_add_grammar_fragment,
           &OnSetAutocorrectRange,  // extended_text_input_set_autocorrect_range,
           &OnSetVirtualKeyboardOccludedBounds,  // extended_text_input_set_virtual_keyboard_occluded_bounds,
+          &OnConfirmPreedit,  // extended_text_input_confirm_preedit,
       };
 
   obj_ = wl::Object<zwp_text_input_v1>(
@@ -511,6 +512,25 @@ void ZWPTextInputWrapperV1::OnSetVirtualKeyboardOccludedBounds(
   auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
   gfx::Rect screen_bounds(x, y, width, height);
   self->client_->OnSetVirtualKeyboardOccludedBounds(screen_bounds);
+}
+
+// static
+void ZWPTextInputWrapperV1::OnConfirmPreedit(
+    void* data,
+    struct zcr_extended_text_input_v1* extended_text_input,
+    uint32_t selection_behavior) {
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  switch (selection_behavior) {
+    case ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_AFTER_PREEDIT:
+      self->client_->OnConfirmPreedit(/*keep_selection=*/false);
+      break;
+    case ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SELECTION_BEHAVIOR_UNCHANGED:
+      self->client_->OnConfirmPreedit(/*keep_selection=*/true);
+      break;
+    default:
+      self->client_->OnConfirmPreedit(/*keep_selection=*/false);
+      break;
+  }
 }
 
 }  // namespace ui

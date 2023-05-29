@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="10">
+  <interface name="zcr_text_input_extension_v1" version="11">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="10">
+  <interface name="zcr_extended_text_input_v1" version="11">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -391,6 +391,22 @@
       </description>
       <arg name="offset_utf16" type="uint"/>
     </request>
+
+    <!-- Version 11 -->
+
+    <enum name="confirm_preedit_selection_behavior" since="11">
+      <description summary="How the selection range is affected by confirm_preedit"></description>
+      <entry name="after_preedit" value="0" summary="The cursor is moved to the end of the committed preedit text, if any."/>
+      <entry name="unchanged" value="1" summary="The selection range is not affected at all."/>
+    </enum>
+
+    <event name="confirm_preedit" since="11">
+      <description summary="Commits the current preedit">
+        Commits the current preedit and modify the selection range according to selection_behavior.
+        Has no effect if there's no preedit text.
+      </description>
+      <arg name="selection_behavior" type="uint" enum="confirm_preedit_selection_behavior" />
+    </event>
 
   </interface>
 </protocol>

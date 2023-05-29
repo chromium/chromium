@@ -49,7 +49,13 @@ struct TestParam {
   // - WaylandKeepSelectionFix (Lacros),
   // - AlwaysConfirmComposition (Ash).
   // - WaylandCancelComposition (Lacros).
+  //
+  // Will not be true if `extended_confirm_composition` is false.
   bool fix_265853952 = false;
+
+  // Enables kExoExtendedConfirmComposition, which uses an extended Wayland API
+  // for ConfirmCompositionText.
+  bool extended_confirm_composition = false;
 };
 
 // Binds an InputMethodTestInterface to Ash-Chrome, which allows these tests to
@@ -544,6 +550,9 @@ class InputMethodLacrosBrowserTest
     if (GetParam().fix_265853952) {
       enabled_ash_features.push_back("AlwaysConfirmComposition");
     }
+    if (GetParam().extended_confirm_composition) {
+      enabled_ash_features.push_back("ExoExtendedConfirmComposition");
+    }
     if (!enabled_ash_features.empty()) {
       StartUniqueAshChrome(
           enabled_ash_features, /*disabled_features=*/{},
@@ -557,10 +566,14 @@ class InputMethodLacrosBrowserTest
   base::test::ScopedFeatureList feature_list_override_;
 };
 
-INSTANTIATE_TEST_SUITE_P(InputMethodLacrosBrowserTestAllParams,
-                         InputMethodLacrosBrowserTest,
-                         ::testing::Values(TestParam{.fix_265853952 = true},
-                                           TestParam{.fix_265853952 = false}));
+INSTANTIATE_TEST_SUITE_P(
+    InputMethodLacrosBrowserTestAllParams,
+    InputMethodLacrosBrowserTest,
+    ::testing::Values(
+        TestParam{.fix_265853952 = true, .extended_confirm_composition = true},
+        TestParam{.fix_265853952 = false, .extended_confirm_composition = true},
+        TestParam{.fix_265853952 = false,
+                  .extended_confirm_composition = false}));
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
@@ -1500,7 +1513,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1526,7 +1540,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1551,7 +1566,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
           {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
-          {kInputMethodTestCapabilityConfirmComposition});
+          {kInputMethodTestCapabilityConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }
@@ -1586,7 +1602,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
            InputMethodTestInterface::MethodMinVersions::
                kWaitForNextSurroundingTextChangeMinVersion},
           {kInputMethodTestCapabilityConfirmComposition,
-           kInputMethodTestCapabilityAlwaysConfirmComposition});
+           kInputMethodTestCapabilityAlwaysConfirmComposition,
+           kInputMethodTestCapabilityExtendedConfirmComposition});
   if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
   }

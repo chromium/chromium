@@ -102,6 +102,7 @@ class MockTextInputDelegate : public TextInput::Delegate {
               SetAutocorrectRange,
               (base::StringPiece16, const gfx::Range&),
               (override));
+  MOCK_METHOD(bool, ConfirmComposition, (bool), (override));
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -248,6 +249,31 @@ class TextInputTestWithConsumedByIme
 };
 
 INSTANTIATE_TEST_SUITE_P(, TextInputTestWithConsumedByIme, ::testing::Bool());
+
+// Test for both kExoExtendedConfirmComposition enabled and disabled.
+class TextInputTestWithExtendedConfirmComposition
+    : public TextInputTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          ash::features::kExoExtendedConfirmComposition);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ash::features::kExoExtendedConfirmComposition);
+    }
+
+    TextInputTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TextInputTestWithExtendedConfirmComposition,
+                         ::testing::Bool());
 
 TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
@@ -533,11 +559,16 @@ TEST_F(TextInputTest, CompositionTextEmpty) {
   text_input()->ClearCompositionText();
 }
 
-TEST_F(TextInputTest, ConfirmCompositionText) {
+TEST_P(TextInputTestWithExtendedConfirmComposition,
+       ConfirmCompositionTextDontKeepSelection) {
   SetCompositionText(u"composition");
 
-  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"composition")))
-      .Times(1);
+  if (GetParam()) {
+    EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/false))
+        .Times(1);
+  } else {
+    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"composition")));
+  }
   const size_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/false);
   EXPECT_EQ(composition_text_length, 11u);
@@ -548,18 +579,23 @@ TEST_F(TextInputTest, ConfirmCompositionText) {
   EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
-TEST_F(TextInputTest, ConfirmCompositionTextKeepSelection) {
+TEST_P(TextInputTestWithExtendedConfirmComposition,
+       ConfirmCompositionTextKeepSelection) {
   constexpr char16_t kCompositionText[] = u"composition";
   SetCompositionText(kCompositionText);
   text_input()->SetEditableSelectionRange(gfx::Range(2, 3));
   text_input()->SetSurroundingText(kCompositionText, 0u, gfx::Range(2, 3),
                                    absl::nullopt, absl::nullopt);
 
-  EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
-                                     gfx::Range(2, 3)))
-      .Times(1);
-  EXPECT_CALL(*delegate(), Commit(base::StringPiece16(kCompositionText)))
-      .Times(1);
+  if (GetParam()) {
+    EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/true))
+        .Times(1);
+  } else {
+    EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
+                                       gfx::Range(2, 3)))
+        .Times(1);
+    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(kCompositionText)));
+  }
   const uint32_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/true);
   EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));

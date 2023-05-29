@@ -1214,6 +1214,28 @@ TEST_F(InputMethodAuraLinuxTest, OnSetVirtualKeyboardOccludedBounds) {
   RemoveLastClient(client.get());
 }
 
+TEST_F(InputMethodAuraLinuxTest, OnConfirmCompositionText) {
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
+
+  input_method_auralinux_->OnPreeditStart();
+  CompositionText comp;
+  comp.text = u"a";
+  input_method_auralinux_->OnPreeditChanged(comp);
+
+  test_result_->ExpectAction("compositionstart");
+  test_result_->ExpectAction("compositionupdate:a");
+  test_result_->Verify();
+
+  input_method_auralinux_->OnConfirmCompositionText(/*keep_selection=*/true);
+
+  test_result_->ExpectAction("compositionend");
+  test_result_->ExpectAction("textinput:a");
+
+  RemoveLastClient(client.get());
+}
+
 TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {
   EXPECT_EQ(input_method_auralinux_->GetVirtualKeyboardController(),
             context_->GetVirtualKeyboardController());
