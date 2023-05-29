@@ -89,10 +89,19 @@ export class EmojiSearch extends PolymerElement {
   }
 
   private onSearch(newSearch: string): void {
-    this.set('searchResults', this.computeLocalSearchResults(newSearch));
-    if (this.gifSupport) {
+    const localSearchResults = this.computeLocalSearchResults(newSearch);
+    if (!this.gifSupport) {
+      this.set('searchResults', localSearchResults);
+    } else {
+      // With GIF support, we will progressively show local search results first
+      // and more online GIFs after. To avoid displaying a "no results" screen in
+      // the middle, we only do this update when local search results are not
+      // empty.
+      if (localSearchResults.length > 0) {
+        this.set('searchResults', localSearchResults);
+      }
       this.computeInitialGifSearchResults(newSearch).then((searchResults) => {
-        this.push('searchResults', ...searchResults);
+        this.set('searchResults', [...localSearchResults, ...searchResults]);
       });
     }
   }
@@ -319,12 +328,16 @@ export class EmojiSearch extends PolymerElement {
     const {status, searchGifs} = await apiProxy.searchGifs(search);
     this.status = status;
     this.nextGifPos = searchGifs.next;
-    searchResults.push({
-      'category': CategoryEnum.GIF,
-      'group': '',
-      'emoji': apiProxy.convertTenorGifsToEmoji(searchGifs),
-      'searchOnly': false,
-    });
+
+    if (searchGifs.results.length > 0) {
+      searchResults.push({
+        'category': CategoryEnum.GIF,
+        'group': '',
+        'emoji': apiProxy.convertTenorGifsToEmoji(searchGifs),
+        'searchOnly': false,
+      });
+    }
+
     return searchResults;
   }
 
@@ -387,12 +400,9 @@ export class EmojiSearch extends PolymerElement {
     return this.$.search.getValue() !== '';
   }
 
-  /**
-   * Display no results if `gifSupport` flag is off and `searchResults` are
-   * empty. If `gifSupport` flag is on it will always have gifs to display.
-   */
-  noResults(searchResults: EmojiGroupData): boolean {
-    return !this.gifSupport && searchResults.length === 0;
+  noResults(status: Status, searchResults: EmojiGroupData): boolean {
+    return (!this.gifSupport || status === Status.kHttpOk) &&
+        searchResults.length === 0;
   }
 
   isGifInErrorState(status: Status, searchResults: EmojiGroupData): boolean {

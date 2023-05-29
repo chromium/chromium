@@ -183,7 +183,7 @@
       </template>
     </div>
     <div class="no-result">
-      <template is="dom-if" if="[[noResults(searchResults)]]">
+      <template is="dom-if" if="[[noResults(status, searchResults)]]">
         <picture>
           <source srcset="no_results_dark.svg"
               media="(prefers-color-scheme: dark)">

@@ -207,4 +207,17 @@ suite('emoji-search-gif', () => {
     assertEmojiImageAlt(rightColResults[4], 'Right 5');
     assertEmojiImageAlt(rightColResults[5], 'Right 6');
   });
+
+  test('Blank search queries should be prevented in API Proxy', async () => {
+    // Given a real API proxy.
+    const apiProxy = new EmojiPickerApiProxyImpl();
+
+    // When blank queries are sent.
+    const {status, searchGifs} = await apiProxy.searchGifs('   ');
+
+    // Then empty result should be returned.
+    assertEquals(status, 0);
+    assertEquals(searchGifs.next, '');
+    assertEquals(searchGifs.results.length, 0);
+  });
 });

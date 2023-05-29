@@ -101,6 +101,18 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
         },
       });
     }
+
+    // Avoid sending blank queries to the backend.
+    if (query.trim().length === 0) {
+      return Promise.resolve({
+        status: Status.kHttpOk,
+        searchGifs: {
+          next: '',
+          results: [],
+        },
+      });
+    }
+
     return this.handler.searchGifs(query, pos || null);
   }
 
