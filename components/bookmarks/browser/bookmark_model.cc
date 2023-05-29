@@ -12,6 +12,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/string_compare.h"
@@ -19,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
@@ -34,6 +37,7 @@
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/browser/url_index.h"
 #include "components/bookmarks/common/bookmark_constants.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -105,6 +109,13 @@ base::FilePath GetStorageFilePath(const base::FilePath& profile_path,
     case StorageType::kAccount:
       return profile_path.Append(kAccountBookmarksFileName);
   }
+}
+
+// Synchronously deletes the account storage file. Should be invoked on a
+// background thread.
+void DeleteAccountStorageFileSynchronously(
+    const base::FilePath& account_storage_file_path) {
+  base::DeleteFile(account_storage_file_path);
 }
 
 }  // namespace
@@ -1019,6 +1030,22 @@ std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
 void BookmarkModel::ClearStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_.reset();
+}
+
+// static
+void BookmarkModel::WipeAccountStorageForRollback(
+    const base::FilePath& profile_path) {
+  CHECK(
+      !base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage));
+  CHECK(base::FeatureList::IsEnabled(
+      bookmarks::kRollbackBookmarksAccountStorage));
+
+  base::FilePath account_storage_path =
+      GetStorageFilePath(profile_path, StorageType::kAccount);
+  base::ThreadPool::PostTask(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&DeleteAccountStorageFileSynchronously,
+                     std::move(account_storage_path)));
 }
 
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
