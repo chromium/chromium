@@ -31,6 +31,11 @@ class ConsentDialogCoordinator : public ConsentRequester {
 
   void RequestConsent(RequestConsentCallback callback) override;
 
+  // Retrieves the domain managing current profile, and formats the body text of
+  // the consent dialog accordingly. If no domain is pulled, default body text
+  // will be used.
+  std::u16string GetDialogBodyText();
+
  private:
   std::unique_ptr<ui::DialogModel> CreateDeviceSignalsConsentDialogModel();
 

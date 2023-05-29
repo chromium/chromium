@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -55,8 +57,7 @@ ConsentDialogCoordinator::CreateDeviceSignalsConsentDialogModel() {
           ui::DialogModelButton::Params().SetLabel(l10n_util::GetStringUTF16(
               IDS_DEVICE_SIGNALS_CONSENT_DIALOG_CANCEL_BUTTON)))
       .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
-      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
-          IDS_DEVICE_SIGNALS_CONSENT_DIALOG_BODY_TEXT, u"example.com")))
+      .AddParagraph(ui::DialogModelLabel(GetDialogBodyText()))
       .Build();
 }
 
@@ -97,6 +98,21 @@ void ConsentDialogCoordinator::RequestConsent(RequestConsentCallback callback) {
       base::BindRepeating(&ConsentDialogCoordinator::OnConsentPreferenceUpdated,
                           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   Show();
+}
+
+std::u16string ConsentDialogCoordinator::GetDialogBodyText() {
+  absl::optional<std::string> manager =
+      chrome::GetAccountManagerIdentity(profile_);
+  if (!manager &&
+      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
+    manager = chrome::GetDeviceManagerIdentity();
+  }
+  return (manager && manager.value().length())
+             ? l10n_util::GetStringFUTF16(
+                   IDS_DEVICE_SIGNALS_CONSENT_DIALOG_BODY_TEXT,
+                   base::UTF8ToUTF16(manager.value()))
+             : l10n_util::GetStringUTF16(
+                   IDS_DEVICE_SIGNALS_CONSENT_DIALOG_DEFAULT_BODY_TEXT);
 }
 
 void ConsentDialogCoordinator::Show() {

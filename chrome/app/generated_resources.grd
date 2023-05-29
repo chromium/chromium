@@ -10926,6 +10926,13 @@ Device signals can include information about your browser, OS, device, installed
 
 If you choose not to share signals, this profile will be closed.
         </message>
+        <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_DEFAULT_BODY_TEXT" desc="Default message for device signals consent dialog when we are unable to retrieve the name of the managing organization.">
+        This profile is managed by your organization. To continue using this managed profile, your organization requires you to share your device signals.
+
+Device signals can include information about your browser, OS, device, installed software, and files.
+
+If you choose not to share signals, this profile will be closed.
+        </message>
       </if>
 
       <!--  Sync Confirmation section of the tab modal signin flow -->
