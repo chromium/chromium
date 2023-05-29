@@ -21,7 +21,8 @@ LocalBinaryUploadServiceFactory::GetForProfile(Profile* profile) {
 // static
 LocalBinaryUploadServiceFactory*
 LocalBinaryUploadServiceFactory::GetInstance() {
-  return base::Singleton<LocalBinaryUploadServiceFactory>::get();
+  static base::NoDestructor<LocalBinaryUploadServiceFactory> instance;
+  return instance.get();
 }
 
 LocalBinaryUploadServiceFactory::LocalBinaryUploadServiceFactory()

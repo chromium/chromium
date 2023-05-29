@@ -22,7 +22,8 @@ RealtimeReportingClient* RealtimeReportingClientFactory::GetForProfile(
 
 // static
 RealtimeReportingClientFactory* RealtimeReportingClientFactory::GetInstance() {
-  return base::Singleton<RealtimeReportingClientFactory>::get();
+  static base::NoDestructor<RealtimeReportingClientFactory> instance;
+  return instance.get();
 }
 
 RealtimeReportingClientFactory::RealtimeReportingClientFactory()

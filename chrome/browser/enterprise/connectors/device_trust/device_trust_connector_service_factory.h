@@ -11,7 +11,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace enterprise_connectors {
@@ -29,8 +29,7 @@ class DeviceTrustConnectorServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      DeviceTrustConnectorServiceFactory>;
+  friend base::NoDestructor<DeviceTrustConnectorServiceFactory>;
 
   friend class DeviceTrustConnectorServiceFactoryBaseTest;
 

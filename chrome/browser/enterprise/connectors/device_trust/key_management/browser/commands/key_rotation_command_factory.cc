@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
@@ -38,7 +38,8 @@ KeyRotationCommandFactory* KeyRotationCommandFactory::GetInstance() {
   if (test_instance.has_value() && test_instance.value()) {
     return test_instance.value();
   }
-  return base::Singleton<KeyRotationCommandFactory>::get();
+  static base::NoDestructor<KeyRotationCommandFactory> instance;
+  return instance.get();
 }
 
 std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand(

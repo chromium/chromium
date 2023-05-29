@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -78,7 +78,8 @@ namespace enterprise_connectors {
 
 // static
 DeviceTrustServiceFactory* DeviceTrustServiceFactory::GetInstance() {
-  return base::Singleton<DeviceTrustServiceFactory>::get();
+  static base::NoDestructor<DeviceTrustServiceFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/system_signals_service_host_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
@@ -52,7 +52,8 @@ std::unique_ptr<device_signals::SettingsClient> CreateSettingsClient() {
 
 // static
 SignalsAggregatorFactory* SignalsAggregatorFactory::GetInstance() {
-  return base::Singleton<SignalsAggregatorFactory>::get();
+  static base::NoDestructor<SignalsAggregatorFactory> instance;
+  return instance.get();
 }
 
 // static

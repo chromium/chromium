@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
@@ -29,7 +29,8 @@ namespace enterprise_connectors {
 // static
 DeviceTrustConnectorServiceFactory*
 DeviceTrustConnectorServiceFactory::GetInstance() {
-  return base::Singleton<DeviceTrustConnectorServiceFactory>::get();
+  static base::NoDestructor<DeviceTrustConnectorServiceFactory> instance;
+  return instance.get();
 }
 
 // static

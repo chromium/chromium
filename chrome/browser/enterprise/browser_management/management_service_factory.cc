@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
