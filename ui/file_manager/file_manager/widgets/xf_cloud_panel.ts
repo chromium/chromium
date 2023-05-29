@@ -324,7 +324,7 @@ function getCSS() {
     }
 
     progress::-webkit-progress-bar {
-      background-color: var(--cros-sys-primary_container);
+      background-color: var(--cros-sys-highlight_shape);
       border-radius: 10px;
     }
 
@@ -343,10 +343,10 @@ function getCSS() {
       background-color: var(--cros-sys-base_elevated);
       border: 0;
       font: var(--cros-button-2-font);
-      height: 52px;
-      padding-bottom: 8px;
+      height: 36px;
+      margin-bottom: 8px;
+      margin-top: 8px;
       padding-inline: 16px;
-      padding-top: 8px;
       text-align: left;
     }
 
