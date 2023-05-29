@@ -273,23 +273,6 @@ void HostResolverSystemTask::StartLookupAttempt() {
   DCHECK(!was_completed());
   ++attempt_number_;
 
-  auto lookup_complete_cb =
-      base::BindOnce(&HostResolverSystemTask::OnLookupComplete,
-                     weak_ptr_factory_.GetWeakPtr(), attempt_number_);
-
-  // If a hook has been installed, call it instead of posting a resolution task
-  // to a worker thread.
-  if (GetSystemDnsResolverOverride()) {
-    GetSystemDnsResolverOverride().Run(hostname_, address_family_, flags_,
-                                       std::move(lookup_complete_cb), network_);
-  } else {
-    base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
-        base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
-                       address_family_, flags_, network_);
-    PostSystemDnsResolutionTaskAndReply(std::move(resolve_cb),
-                                        std::move(lookup_complete_cb));
-  }
-
   net_log_.AddEventWithIntParams(
       NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_STARTED, "attempt_number",
       attempt_number_);
@@ -306,6 +289,25 @@ void HostResolverSystemTask::StartLookupAttempt() {
                        weak_ptr_factory_.GetWeakPtr()),
         params_.unresponsive_delay *
             std::pow(params_.retry_factor, attempt_number_ - 1));
+  }
+
+  auto lookup_complete_cb =
+      base::BindOnce(&HostResolverSystemTask::OnLookupComplete,
+                     weak_ptr_factory_.GetWeakPtr(), attempt_number_);
+
+  // If a hook has been installed, call it instead of posting a resolution task
+  // to a worker thread.
+  if (GetSystemDnsResolverOverride()) {
+    GetSystemDnsResolverOverride().Run(hostname_, address_family_, flags_,
+                                       std::move(lookup_complete_cb), network_);
+    // Do not add code below. `lookup_complete_cb` may have already deleted
+    // `this`.
+  } else {
+    base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
+        base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
+                       address_family_, flags_, network_);
+    PostSystemDnsResolutionTaskAndReply(std::move(resolve_cb),
+                                        std::move(lookup_complete_cb));
   }
 }
 
