@@ -6,11 +6,29 @@ module media.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/video_decoder.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 
-[Native]
-struct VideoDecodeAcceleratorConfig;
+// Mojo version of VideoDecodeAccelerator::Config
+struct VideoDecodeAcceleratorConfig {
+  VideoCodecProfile profile;
+  EncryptionScheme encryption_scheme;
+  mojo_base.mojom.UnguessableToken? cdm_id;
+  bool is_deferred_initialization_allowed;
+  OverlayInfo overlay_info;
+  gfx.mojom.Size initial_expected_coded_size;
+  // TODO(https://crbug.com/1446302): OutputMode was not included in the IPC
+  // version of this serialization. Leave it out for now (to avoid any behavior
+  // changes, but consider reintroducing it).
+  array<VideoPixelFormat> supported_output_formats;
+  array<uint8> sps;
+  array<uint8> pps;
+  VideoColorSpace container_color_space;
+  gfx.mojom.ColorSpace target_color_space;
+  gfx.mojom.HDRMetadata? hdr_metadata;
+};
 
 // Used by media clients to acquire new VideoDecoder instances from the GPU
 // process.

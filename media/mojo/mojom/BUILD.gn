@@ -249,8 +249,19 @@ mojom("mojom") {
           cpp = "::media::VideoDecodeAccelerator::Config"
         },
       ]
-      traits_headers = [ "//media/gpu/ipc/common/media_param_traits.h" ]
-      traits_public_deps = [ "//media/gpu/ipc/common" ]
+      traits_headers = [
+        "video_decode_accelerator_config_mojom_traits.h",
+        "//media/base/ipc/media_param_traits_macros.h",
+        "//media/gpu/ipc/common/media_param_traits.h",
+      ]
+      traits_sources = [ "video_decode_accelerator_config_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
+        "//media/base/ipc",
+        "//media/gpu/ipc/common",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+      ]
     },
     {
       types = [
@@ -844,6 +855,7 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "video_decode_accelerator_config_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",
     "video_frame_metadata_mojom_traits_unittest.cc",
