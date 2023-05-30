@@ -3528,7 +3528,7 @@
 <translation id="3985022125189960801">Вы в любой момент можете убрать сайт из списка заблокированных.</translation>
 <translation id="3987544746655539083">Не сообщать этому сайту, где я нахожусь</translation>
 <translation id="3987938432087324095">Извините, не слышно.</translation>
-<translation id="3987993985790029246">Копировать ссылку</translation>
+<translation id="3987993985790029246">Скопировать ссылку</translation>
 <translation id="3988488665753590964">Настройка отображения цветов на экране</translation>
 <translation id="3988996860813292272">Выбор часового пояса</translation>
 <translation id="399179161741278232">Выполнен импорт</translation>
@@ -6482,7 +6482,7 @@
 <translation id="6655458902729017087">Скрыть аккаунты</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659213950629089752">Масштаб этой страницы изменен расширением "<ph name="NAME" />"</translation>
-<translation id="6659594942844771486">Вкладка</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660819301598582123">Съешь же ещё этих мягких французских булок да выпей чаю.</translation>
 <translation id="666099631117081440">Серверы печати</translation>
 <translation id="6662931079349804328">Корпоративное правило изменилось. Из панели инструментов удалена кнопка экспериментов.</translation>
@@ -8845,7 +8845,7 @@
 <translation id="871515167518607670">Выберите устройство. Чтобы посмотреть страницу, откройте на нем браузер Chrome.</translation>
 <translation id="8715480913140015283">На фоновой вкладке используется камера.</translation>
 <translation id="8716931980467311658">Удалить с устройства <ph name="DEVICE_TYPE" /> все приложения для Linux, а также данные из папки "Файлы Linux"?</translation>
-<translation id="8717864919010420084">Копировать ссылку</translation>
+<translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8718994464069323380">Обнаружен сенсорный экран.</translation>
 <translation id="8719472795285728850">Прослушивание событий расширений…</translation>
 <translation id="8720200012906404956">Идет поиск мобильной сети. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

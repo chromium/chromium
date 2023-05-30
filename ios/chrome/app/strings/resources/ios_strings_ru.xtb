@@ -752,7 +752,7 @@
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
 <translation id="5981230843984570095">Закрыть все неактивные вкладки</translation>
-<translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" /></translation>
+<translation id="5982717868370722439">Объединить сохраненные данные с данными из аккаунта <ph name="USER_EMAIL" /></translation>
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5988097621740394599">Показывать скидки на вкладках</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
@@ -1179,7 +1179,7 @@
 <translation id="868773710103052534">Готово!</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
 <translation id="8703536910991780768">Нет простых паролей</translation>
-<translation id="8717864919010420084">Копировать ссылку</translation>
+<translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8727043961453758442">Максимально эффективная работа с Chrome</translation>

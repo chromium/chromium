@@ -130,7 +130,7 @@
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5613020302032141669">Sol Ok</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 dk.}other{# dk.}}</translation>
-<translation id="5763338081255973061">{DAYS,plural, =0{Bugün etkin}=1{1 gün önce etkindi}other{# gün önce etkindi}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Bugün etkindi}=1{1 gün önce etkindi}other{# gün önce etkindi}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 gün ve }other{# gün ve }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">Resim.</translation>

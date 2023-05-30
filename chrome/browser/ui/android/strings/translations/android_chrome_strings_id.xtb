@@ -557,7 +557,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="409109920254068737">Anda dapat menggunakan tablet ini untuk login di perangkat yang menampilkan kode QR ini.</translation>
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
-<translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark Anda serta data lain di perangkat lainnya</translation>
+<translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark kamu serta data lain di perangkat lainnya</translation>
 <translation id="410351446219883937">Putar otomatis</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
 <translation id="4108314971463891922">Ikuti</translation>
@@ -1349,7 +1349,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8090732854597034573">Jika kamu perlu bantuan, minta kepada orang tuamu</translation>
 <translation id="8100969750121413114">Login untuk mempersonalisasi Chrome Anda</translation>
 <translation id="8103578431304235997">Tab Samaran</translation>
-<translation id="8105613260829665809">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan<ph name="END_TOS_LINK" />.\nUntuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_UMA_LINK" />Kelola<ph name="END_UMA_LINK" /></translation>
+<translation id="8105613260829665809">Dengan melanjutkan, kamu menyetujui <ph name="BEGIN_TOS_LINK" />Persyaratan Layanan<ph name="END_TOS_LINK" />.\nUntuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_UMA_LINK" />Kelola<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8107530384992929318">Tutup opsi pengurutan</translation>
 <translation id="8110024788458304985">Bantu tingkatkan fitur dan performa Chrome</translation>
