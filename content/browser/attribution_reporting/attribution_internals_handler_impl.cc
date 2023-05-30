@@ -373,7 +373,8 @@ void AttributionInternalsHandlerImpl::OnReportSent(
       status = ReportStatus::NewNetworkError(
           net::ErrorToShortString(info.network_error));
       break;
-    case SendResult::Status::kFailedToAssemble:
+    case SendResult::Status::kAssemblyFailure:
+    case SendResult::Status::kTransientAssemblyFailure:
       status = ReportStatus::NewFailedToAssemble(Empty::New());
       break;
   }

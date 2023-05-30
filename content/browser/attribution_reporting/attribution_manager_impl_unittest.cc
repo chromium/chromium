@@ -2524,13 +2524,15 @@ TEST_F(AttributionManagerImplTest, OnReportSent_RecordReportDelay) {
 }
 
 TEST_F(AttributionManagerImplTest,
-       AggregateReportAssemblyFailed_ReportNotSent) {
+       AggregateReportAssemblyFailed_RetriedAndReportNotSent) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
       TestAggregatableSourceProvider().GetBuilder().Build(), kFrameId);
   attribution_manager_->HandleTrigger(
-      DefaultAggregatableTriggerBuilder().Build(), kFrameId);
+      DefaultAggregatableTriggerBuilder().Build(
+          /*generate_event_trigger_data=*/false),
+      kFrameId);
 
   MockAttributionObserver observer;
   base::ScopedObservation<AttributionManager, AttributionObserver> observation(
@@ -2542,13 +2544,30 @@ TEST_F(AttributionManagerImplTest,
       OnReportSent(
           ReportTypeIs(AttributionReport::Type::kAggregatableAttribution),
           /*is_debug_report=*/false,
-          Field(&SendResult::status, SendResult::Status::kFailedToAssemble)));
+          Field(&SendResult::status,
+                SendResult::Status::kTransientAssemblyFailure)));
 
   Checkpoint checkpoint;
   {
     InSequence seq;
     EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(
+              std::move(request), absl::nullopt,
+              AggregationService::AssemblyStatus::kAssemblyFailed);
+        });
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*aggregation_service_, AssembleReport)
+        .WillOnce([](AggregatableReportRequest request,
+                     AggregationService::AssemblyCallback callback) {
+          std::move(callback).Run(
+              std::move(request), absl::nullopt,
+              AggregationService::AssemblyStatus::kAssemblyFailed);
+        });
+    EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(*aggregation_service_, AssembleReport)
         .WillOnce([](AggregatableReportRequest request,
                      AggregationService::AssemblyCallback callback) {
@@ -2564,17 +2583,24 @@ TEST_F(AttributionManagerImplTest,
 
   checkpoint.Call(1);
 
-  // Event-level report was sent.
-  EXPECT_CALL(*report_sender_, SendReport(_, /*is_debug_report=*/false, _));
-
   task_environment_.FastForwardBy(base::Microseconds(1));
+
+  checkpoint.Call(2);
+
+  // First report delay.
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  checkpoint.Call(3);
+
+  // Second report delay.
+  task_environment_.FastForwardBy(base::Minutes(15));
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
-      AssembleAggregatableReportStatus::kAssembleReportFailed, 1);
+      AssembleAggregatableReportStatus::kAssembleReportFailed, 3);
   histograms.ExpectUniqueTimeSample(
       "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
-      kFirstReportingWindow, 1);
+      kFirstReportingWindow, 3);
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully",
       0);

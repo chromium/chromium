@@ -22,9 +22,12 @@ struct SendResult {
     // The report was dropped without ever being sent, e.g. due to embedder
     // disabling the API.
     kDropped,
-    // The report was dropped without ever being sent because assembly failed,
-    // e.g. the aggregation service was unavailable.
-    kFailedToAssemble,
+    // The report was dropped without ever being sent because of unrecoverable
+    // assembly failure, e.g. the aggregation service was unavailable.
+    kAssemblyFailure,
+    // The report was dropped because of transient assembly failure, e.g. the
+    // public key was not fetched.
+    kTransientAssemblyFailure,
   };
 
   explicit SendResult(Status status,

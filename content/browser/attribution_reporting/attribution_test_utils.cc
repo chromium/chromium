@@ -920,8 +920,10 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
       return out << "kFailure";
     case SendResult::Status::kDropped:
       return out << "kDropped";
-    case SendResult::Status::kFailedToAssemble:
-      return out << "kFailedToAssemble";
+    case SendResult::Status::kAssemblyFailure:
+      return out << "kAssemblyFailure";
+    case SendResult::Status::kTransientAssemblyFailure:
+      return out << "kTransientAssemblyFailure";
   }
 }
 

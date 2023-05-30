@@ -217,7 +217,8 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
       return ConversionReportSendOutcome::kFailed;
     case SendResult::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
-    case SendResult::Status::kFailedToAssemble:
+    case SendResult::Status::kAssemblyFailure:
+    case SendResult::Status::kTransientAssemblyFailure:
       return ConversionReportSendOutcome::kFailedToAssemble;
   }
 }
@@ -1091,7 +1092,10 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // from storage.
 
   absl::optional<base::Time> new_report_time;
-  if (info.status == SendResult::Status::kTransientFailure) {
+  // TODO(linnan): Retry on transient assembly failure isn't privacy sensitive,
+  // therefore we could consider subjecting these failures to a different limit.
+  if (info.status == SendResult::Status::kTransientFailure ||
+      info.status == SendResult::Status::kTransientAssemblyFailure) {
     if (absl::optional<base::TimeDelta> delay =
             GetFailedReportDelay(report.failed_send_attempts() + 1)) {
       new_report_time = base::Time::Now() + *delay;
@@ -1173,7 +1177,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAggregationServiceUnavailable);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+                            SendResult(SendResult::Status::kAssemblyFailure));
     return;
   }
 
@@ -1183,7 +1187,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kCreateRequestFailed);
     std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+                            SendResult(SendResult::Status::kAssemblyFailure));
     return;
   }
 
@@ -1204,8 +1208,9 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
   if (!assembled_report.has_value()) {
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAssembleReportFailed);
-    std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kFailedToAssemble));
+    std::move(callback).Run(
+        std::move(report),
+        SendResult(SendResult::Status::kTransientAssemblyFailure));
     return;
   }
 

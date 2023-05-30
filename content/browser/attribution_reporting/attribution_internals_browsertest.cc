@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailedToAssemble));
+      SendResult(SendResult::Status::kAssemblyFailure));
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder(now).BuildStored())
