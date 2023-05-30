@@ -6,6 +6,10 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace partition_alloc::internal::base::mac {
 
 #define PA_CF_CAST_DEFN(TypeCF)                                    \

@@ -286,6 +286,7 @@ component("partition_alloc") {
         "partition_alloc_base/system/sys_info_mac.mm",
       ]
     }
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (use_starscan) {
     if (current_cpu == "x64") {
