@@ -141,6 +141,10 @@ class ExtendedAttribute(object):
             self.syntactic_form))
 
     @property
+    def has_name(self):
+        return self._format == self._FORM_NAMED_ARG_LIST
+
+    @property
     def name(self):
         """
         Returns |Name| for format NamedArgList.  Otherwise, raises a ValueError.

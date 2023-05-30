@@ -16,11 +16,13 @@ validator/framework/target_store.py
 validator/framework/target_type.py
 validator/framework/validator.py
 validator/rules/__init__.py
+validator/rules/extended_attribute_descriptor.py
 validator/rules/rules_attributes.py
 validator/rules/rules_constants.py
 validator/rules/rules_dictionaries.py
 validator/rules/rules_extended_attributes.py
 validator/rules/rules_function_like.py
+validator/rules/supported_extended_attributes.py
 web_idl/__init__.py
 web_idl/argument.py
 web_idl/ast_group.py

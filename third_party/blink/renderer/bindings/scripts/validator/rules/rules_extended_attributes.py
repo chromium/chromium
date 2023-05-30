@@ -8,51 +8,26 @@ violate the rules described in Web IDL https://webidl.spec.whatwg.org/.
 Each rule class must inherit RuleBase.
 """
 
-from validator.framework import target
+from . import supported_extended_attributes
 from validator.framework import RuleBase
-
-_web_idl_extended_attributes_applicable_to_types = [
-    "AllowShared",
-    "Clamp",
-    "EnforceRange",
-    "LegacyNullToEmptyString",
-]
-_blink_specific_extended_attributes_applicable_to_types = [
-    "BufferSourceTypeNoSizeLimit",
-    "FlexibleArrayBufferView",
-    "StringContext",
-    # "TreatNullAs" is the old version of "LegacyNullToEmptyString".
-    "TreatNullAs",
-]
-_extended_attributes_applicable_to_types = (
-    _web_idl_extended_attributes_applicable_to_types +
-    _blink_specific_extended_attributes_applicable_to_types)
+from validator.framework import target
 
 
-class ExtendedAttributesApplicableToTypes(RuleBase):
+class ExtendedAttributesOnNonType(RuleBase):
     def validate(self, assert_, target_object):
-        web_idl_link = "https://webidl.spec.whatwg.org/#extended-attributes-applicable-to-types"
-        for extended_attribute in target_object.extended_attributes.keys():
-            assert_(
-                extended_attribute not in
-                _extended_attributes_applicable_to_types,
-                ("Extended attribute '{}' is applicable to types, "
-                 "but applied in the wrong context. See {}"),
-                extended_attribute, web_idl_link)
+        for ext_attr in target_object.extended_attributes:
+            supported_extended_attributes.validate(assert_, target_object,
+                                                   ext_attr)
 
 
-class ExtendedAttributesApplicableToTypesForIdlType(RuleBase):
+class ExtendedAttributesOnType(RuleBase):
     def validate(self, assert_, target_object):
-        web_idl_link = "https://webidl.spec.whatwg.org/#extended-attributes-applicable-to-types"
-        for annotation in target_object.effective_annotations:
-            assert_(annotation.key in _extended_attributes_applicable_to_types,
-                    ("Extended attribute '{}' is not applicable to types, "
-                     "but applied to a type. See {}"), annotation.key,
-                    web_idl_link)
+        for ext_attr in target_object.effective_annotations:
+            supported_extended_attributes.validate(assert_, target_object,
+                                                   ext_attr)
 
 
 def register_rules(rule_store):
     rule_store.register(target.OBJECTS_WITH_EXTENDED_ATTRIBUTES,
-                        ExtendedAttributesApplicableToTypes())
-    rule_store.register(target.IDL_TYPES,
-                        ExtendedAttributesApplicableToTypesForIdlType())
+                        ExtendedAttributesOnNonType())
+    rule_store.register(target.IDL_TYPES, ExtendedAttributesOnType())
