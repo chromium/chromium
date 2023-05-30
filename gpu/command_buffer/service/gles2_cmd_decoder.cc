@@ -2676,13 +2676,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
   GLenum offscreen_target_depth_format_;
   GLenum offscreen_target_stencil_format_;
   GLsizei offscreen_target_samples_;
-  GLboolean offscreen_target_buffer_preserved_;
 
   GLint max_offscreen_framebuffer_size_;
-
-  // Whether or not offscreen color buffers exist in front/back pairs that
-  // can be swapped.
-  GLboolean offscreen_single_buffer_;
 
   // The saved copy of the backbuffer after a call to SwapBuffers.
   std::unique_ptr<BackTexture> offscreen_saved_color_texture_;
@@ -2690,29 +2685,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // For simplicity, |offscreen_saved_color_texture_| is always bound to
   // |offscreen_saved_frame_buffer_|.
   std::unique_ptr<BackFramebuffer> offscreen_saved_frame_buffer_;
-
-  // When a client requests ownership of the swapped front buffer, all
-  // information is saved in this structure, and |in_use| is set to true. When a
-  // client releases ownership, |in_use| is set to false.
-  //
-  // An instance of this struct, with |in_use| = false may be reused instead of
-  // making a new BackTexture.
-  struct SavedBackTexture {
-    std::unique_ptr<BackTexture> back_texture;
-    bool in_use;
-  };
-  std::vector<SavedBackTexture> saved_back_textures_;
-
-  // If there's a SavedBackTexture that's not in use, takes that. Otherwise,
-  // generates a new back texture.
-  void CreateBackTexture();
-  size_t create_back_texture_count_for_test_ = 0;
-
-  // Releases all saved BackTextures that are not in use by a client.
-  void ReleaseNotInUseBackTextures();
-
-  // Releases all saved BackTextures.
-  void ReleaseAllBackTextures(bool have_context);
 
   // The copy that is used as the destination for multi-sample resolves.
   std::unique_ptr<BackFramebuffer> offscreen_resolved_frame_buffer_;
@@ -3513,9 +3485,7 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       offscreen_target_depth_format_(0),
       offscreen_target_stencil_format_(0),
       offscreen_target_samples_(0),
-      offscreen_target_buffer_preserved_(true),
       max_offscreen_framebuffer_size_(0),
-      offscreen_single_buffer_(false),
       offscreen_saved_color_format_(0),
       offscreen_buffer_should_have_alpha_(false),
       back_buffer_color_format_(0),
@@ -3793,8 +3763,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     } else {
       offscreen_target_samples_ = 0;
     }
-    offscreen_target_buffer_preserved_ = attrib_helper.buffer_preserved;
-    offscreen_single_buffer_ = attrib_helper.single_buffer;
 
     if (gl_version_info().is_es) {
       const bool rgb8_supported = features().oes_rgb8_rgba8;
@@ -4007,7 +3975,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         std::make_unique<BackRenderbuffer>(this);
     offscreen_target_stencil_render_buffer_->Create();
 
-    if (!offscreen_single_buffer_) {
+    if (!attrib_helper.single_buffer) {
       // Create the saved offscreen texture. The target frame buffer is copied
       // here when SwapBuffers is called.
       offscreen_saved_frame_buffer_ = std::make_unique<BackFramebuffer>(this);
@@ -4024,7 +3992,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
                     "Could not allocate offscreen buffer storage.";
       return gpu::ContextResult::kFatalFailure;
     }
-    if (!offscreen_single_buffer_) {
+    if (!attrib_helper.single_buffer) {
       // Allocate the offscreen saved color texture.
       DCHECK(offscreen_saved_color_format_);
       // Use 64x64 instead of 1x1 to handle minimum framebuffer size
@@ -5361,7 +5329,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
     external_default_framebuffer_.reset();
   }
 
-  ReleaseAllBackTextures(have_context);
   if (have_context) {
     if (copy_tex_image_blit_.get()) {
       copy_tex_image_blit_->Destroy();
@@ -5645,52 +5612,6 @@ error::Error GLES2DecoderImpl::HandleDestroyGpuFenceCHROMIUM(
   if (!GetGpuFenceManager()->RemoveGpuFence(gpu_fence_id))
     return error::kInvalidArguments;
   return error::kNoError;
-}
-
-void GLES2DecoderImpl::CreateBackTexture() {
-  for (auto it = saved_back_textures_.begin(); it != saved_back_textures_.end();
-       ++it) {
-    if (it->in_use)
-      continue;
-
-    if (it->back_texture->size() != offscreen_size_)
-      continue;
-    offscreen_saved_color_texture_ = std::move(it->back_texture);
-    offscreen_saved_frame_buffer_->AttachRenderTexture(
-        offscreen_saved_color_texture_.get());
-    saved_back_textures_.erase(it);
-    return;
-  }
-
-  ++create_back_texture_count_for_test_;
-  offscreen_saved_color_texture_ = std::make_unique<BackTexture>(this);
-  offscreen_saved_color_texture_->Create();
-  offscreen_saved_color_texture_->AllocateStorage(
-      offscreen_size_, offscreen_saved_color_format_, false);
-  offscreen_saved_frame_buffer_->AttachRenderTexture(
-      offscreen_saved_color_texture_.get());
-}
-
-void GLES2DecoderImpl::ReleaseNotInUseBackTextures() {
-  for (auto& saved_back_texture : saved_back_textures_) {
-    if (!saved_back_texture.in_use)
-      saved_back_texture.back_texture->Destroy();
-  }
-
-  base::EraseIf(saved_back_textures_,
-                [](const SavedBackTexture& saved_back_texture) {
-                  return !saved_back_texture.in_use;
-                });
-}
-
-void GLES2DecoderImpl::ReleaseAllBackTextures(bool have_context) {
-  for (auto& saved_back_texture : saved_back_textures_) {
-    if (have_context)
-      saved_back_texture.back_texture->Destroy();
-    else
-      saved_back_texture.back_texture->Invalidate();
-  }
-  saved_back_textures_.clear();
 }
 
 bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {

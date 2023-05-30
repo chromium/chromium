@@ -937,11 +937,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   };
   EmulatedDefaultFramebufferFormat emulated_default_framebuffer_format_;
   std::unique_ptr<EmulatedDefaultFramebuffer> emulated_back_buffer_;
-  std::unique_ptr<EmulatedColorBuffer> emulated_front_buffer_;
-  bool offscreen_single_buffer_;
-  bool offscreen_target_buffer_preserved_;
-  std::vector<std::unique_ptr<EmulatedColorBuffer>> in_use_color_textures_;
-  std::vector<std::unique_ptr<EmulatedColorBuffer>> available_color_textures_;
   std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes

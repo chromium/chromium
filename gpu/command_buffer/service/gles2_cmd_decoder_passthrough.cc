@@ -882,8 +882,6 @@ GLES2DecoderPassthroughImpl::GLES2DecoderPassthroughImpl(
       feature_info_(new FeatureInfo(group->feature_info()->workarounds(),
                                     group->gpu_feature_info())),
       emulated_back_buffer_(nullptr),
-      offscreen_single_buffer_(false),
-      offscreen_target_buffer_preserved_(false),
       bound_draw_framebuffer_(0),
       bound_read_framebuffer_(0),
       gpu_decoder_category_(TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
@@ -1247,12 +1245,10 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       std::min(max_2d_texture_size, max_renderbuffer_size_);
 
   if (offscreen_) {
-    offscreen_single_buffer_ = attrib_helper.single_buffer;
-    offscreen_target_buffer_preserved_ = attrib_helper.buffer_preserved;
     const bool multisampled_framebuffers_supported =
         feature_info_->feature_flags().chromium_framebuffer_multisample;
     if (attrib_helper.samples > 0 && attrib_helper.sample_buffers > 0 &&
-        multisampled_framebuffers_supported && !offscreen_single_buffer_) {
+        multisampled_framebuffers_supported && !attrib_helper.single_buffer) {
       GLint max_sample_count = 0;
       api()->glGetIntegervFn(GL_MAX_SAMPLES_EXT, &max_sample_count);
       emulated_default_framebuffer_format_.samples =
@@ -1448,25 +1444,10 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
     emulated_back_buffer_.reset();
   }
 
-  if (emulated_front_buffer_) {
-    emulated_front_buffer_->Destroy(have_context);
-    emulated_front_buffer_.reset();
-  }
-
   if (external_default_framebuffer_) {
     external_default_framebuffer_->Destroy(have_context);
     external_default_framebuffer_.reset();
   }
-
-  for (auto& in_use_color_texture : in_use_color_textures_) {
-    in_use_color_texture->Destroy(have_context);
-  }
-  in_use_color_textures_.clear();
-
-  for (auto& available_color_texture : available_color_textures_) {
-    available_color_texture->Destroy(have_context);
-  }
-  available_color_textures_.clear();
 
   if (gpu_fence_manager_.get()) {
     gpu_fence_manager_->Destroy(have_context);
@@ -1629,14 +1610,6 @@ bool GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer(
                   "were generated.";
     return false;
   }
-
-  // Destroy all the available color textures, they should not be the same size
-  // as the back buffer
-  for (auto& available_color_texture : available_color_textures_) {
-    DCHECK_NE(available_color_texture->size, size);
-    available_color_texture->Destroy(true);
-  }
-  available_color_textures_.clear();
 
   return true;
 }
