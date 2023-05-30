@@ -8,6 +8,7 @@
 #include <gbm.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/mman.h>
 #include <xf86drm.h>
 
 #include <vector>
@@ -139,7 +140,7 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
           gbm_bo_map2(buffer_object_, 0, 0, gbm_bo_get_width(buffer_object_),
                       gbm_bo_get_height(buffer_object_),
                       GBM_BO_TRANSFER_READ_WRITE, &stride, &mapped_data, i);
-      if (!addr) {
+      if (addr == MAP_FAILED) {
         LOG(ERROR) << "Failed to map GpuMemoryBufferImplGbm plane " << i;
         Unmap();
         return false;
