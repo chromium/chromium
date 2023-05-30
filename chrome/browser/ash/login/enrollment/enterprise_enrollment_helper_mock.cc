@@ -4,13 +4,11 @@
 
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
 
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_impl.h"
-
 namespace ash {
 
-EnterpriseEnrollmentHelperMock::EnterpriseEnrollmentHelperMock() {}
+EnterpriseEnrollmentHelperMock::EnterpriseEnrollmentHelperMock() = default;
 
-EnterpriseEnrollmentHelperMock::~EnterpriseEnrollmentHelperMock() {}
+EnterpriseEnrollmentHelperMock::~EnterpriseEnrollmentHelperMock() = default;
 
 EnterpriseEnrollmentHelper::EnrollmentStatusConsumer*
 EnterpriseEnrollmentHelperMock::status_consumer() const {

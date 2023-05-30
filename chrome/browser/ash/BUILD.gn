@@ -1618,8 +1618,6 @@ source_set("ash") {
     "login/enrollment/enrollment_uma.h",
     "login/enrollment/enterprise_enrollment_helper.cc",
     "login/enrollment/enterprise_enrollment_helper.h",
-    "login/enrollment/enterprise_enrollment_helper_impl.cc",
-    "login/enrollment/enterprise_enrollment_helper_impl.h",
     "login/enterprise_user_session_metrics.cc",
     "login/enterprise_user_session_metrics.h",
     "login/error_screens_histogram_helper.cc",
