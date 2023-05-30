@@ -2934,6 +2934,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
         Password Checkup
       </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Addition to the accessibility label for the Password Checkup cell in the Password Manager page when the Password Checkup resulted with no insecure passwords. Meaning that all saved passwords are safe. [iOS only]">
+        No issues found
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_ONGOING" desc="In Title Case: Title for the item in Settings for Password Checkup feature while the checks are running. [CHAR_LIMIT=25] [iOS only]" meaning="In Title Case.">
         Checking Passwords…
       </message>
