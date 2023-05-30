@@ -4614,8 +4614,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
         )"),
         5, /*expected_errors=*/{},
@@ -4636,7 +4636,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5",
-                            "privateAggregation.sendHistogramReport({bucket: "
+                            "privateAggregation.contributeToHistogram({bucket: "
                             "123n, value: 45})"),
         /*expected_score=*/0, /*expected_errors=*/
         {"https://url.test/:4 Uncaught TypeError: The \"private-aggregation\" "
@@ -4662,9 +4662,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram(
+              {bucket: 18446744073709551616n, value: 1});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 18446744073709551616n, value: 2});
         )"),
         5, /*expected_errors=*/{},
@@ -4686,12 +4686,12 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram(
+              {bucket: 18446744073709551616n, value: 1});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 18446744073709551616n, value: 2});
         )"),
         5, /*expected_errors=*/{},
@@ -4703,8 +4703,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         std::move(expected_pa_requests));
   }
 
-  // An unrelated exception after sendHistogramReport and
-  // reportContributionForEvent shouldn't block the reports.
+  // An unrelated exception after contributeToHistogram and
+  // contributeToHistogramOnEvent shouldn't block the reports.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -4712,8 +4712,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
           error;
         )"),
@@ -4745,8 +4745,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         CreateScoreAdScript("5",
                             R"(
             privateAggregation.enableDebugMode({debug_key: 1234n});
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.reportContributionForEvent(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
           )"),
         5, /*expected_errors=*/{},
@@ -4776,8 +4776,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         CreateScoreAdScript("5",
                             R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
         5, /*expected_errors=*/{},
@@ -4814,21 +4814,23 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
       blink::mojom::AggregationServiceMode::kDefault,
       blink::mojom::DebugModeDetails::New());
 
-  // Only sendHistogramReport() is called.
+  // Only contributeToHistogram() is called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
+        R"(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+        )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
 
-  // Only reportContributionForEvent() is called.
+  // Only contributeToHistogramOnEvent() is called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedForEventRequest.Clone());
@@ -4836,7 +4838,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         "5",
         R"(
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_signals_for_winner=*/"5",
@@ -4845,7 +4847,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         /*expected_errors=*/{});
   }
 
-  // Both sendHistogramReport() and reportContributionForEvent() are called.
+  // Both contributeToHistogram() and contributeToHistogramOnEvent() are called.
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -4854,8 +4856,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         "5",
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.reportContributionForEvent(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_signals_for_winner=*/"5",
@@ -4873,12 +4875,14 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
+        R"(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+        )",
         /*expected_signals_for_winner=*/absl::nullopt,
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
-        {"https://url.test/:10 Uncaught TypeError: The \"private-aggregation\" "
+        {"https://url.test/:11 Uncaught TypeError: The \"private-aggregation\" "
          "Permissions Policy denied the method on privateAggregation."});
 
     permissions_policy_state_ =
@@ -4894,7 +4898,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
+        R"(
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+        )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
@@ -4908,7 +4914,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
-        R"(privateAggregation.sendHistogramReport(
+        R"(privateAggregation.contributeToHistogram(
             {bucket: 18446744073709551616n, value: 1});)",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
@@ -4925,9 +4931,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-          privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
-                                                  value: 1});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram(
+              {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
@@ -4935,7 +4941,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         /*expected_errors=*/{});
   }
 
-  // An unrelated exception after sendHistogramReport shouldn't block the report
+  // An unrelated exception after contributeToHistogram shouldn't block the
+  // report
   {
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
@@ -4943,7 +4950,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+          privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           error;
         )",
         /*expected_signals_for_winner=*/absl::nullopt,
@@ -4967,7 +4974,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         "5",
         R"(
             privateAggregation.enableDebugMode({debug_key: 1234n});
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
@@ -4993,8 +5000,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         "5",
         R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
-            privateAggregation.sendHistogramReport(
+            privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
+            privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_signals_for_winner=*/"5",
@@ -5033,9 +5040,9 @@ class SellerWorkletPrivateAggregationDisabledTest : public SellerWorkletTest {
 
 TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
   RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "5",
-          "privateAggregation.sendHistogramReport({bucket: 123n, value: 45})"),
+      CreateScoreAdScript("5",
+                          "privateAggregation.contributeToHistogram({bucket: "
+                          "123n, value: 45})"),
       0, /*expected_errors=*/
       {"https://url.test/:4 Uncaught ReferenceError: privateAggregation is not "
        "defined."},
@@ -5050,7 +5057,7 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
 TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
-      R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
+      R"(privateAggregation.contributeToHistogram({bucket: 123n, value: 45});)",
       /*expected_signals_for_winner=*/absl::nullopt,
       /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},

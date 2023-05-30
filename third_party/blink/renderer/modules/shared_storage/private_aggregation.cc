@@ -59,7 +59,7 @@ void PrivateAggregation::Trace(Visitor* visitor) const {
 }
 
 // TODO(alexmt): Consider merging parsing logic with FLEDGE worklet.
-void PrivateAggregation::sendHistogramReport(
+void PrivateAggregation::contributeToHistogram(
     ScriptState* script_state,
     const PrivateAggregationHistogramContribution* contribution,
     ExceptionState& exception_state) {

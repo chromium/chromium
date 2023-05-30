@@ -59,9 +59,9 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
   // PrivateAggregation IDL
-  void sendHistogramReport(ScriptState*,
-                           const PrivateAggregationHistogramContribution*,
-                           ExceptionState&);
+  void contributeToHistogram(ScriptState*,
+                             const PrivateAggregationHistogramContribution*,
+                             ExceptionState&);
   void enableDebugMode(ScriptState*, ExceptionState&);
   void enableDebugMode(ScriptState*,
                        const PrivateAggregationDebugModeOptions*,

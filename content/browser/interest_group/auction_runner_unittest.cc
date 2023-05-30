@@ -346,10 +346,10 @@ std::string MakeBidScript(const url::Origin& seller,
       }
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
       // Private aggregation requests with non-reserved event types will only be
       // reported for a winning bidder.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 20 + bid});
       return result;
     }
@@ -442,8 +442,8 @@ std::string MakeBidScript(const url::Origin& seller,
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + bid});
     }
   )";
@@ -489,11 +489,11 @@ std::string MakeFilteringBidScript(int bid) {
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
 
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "bid-reject-reason"},
                 value: 0,
               });
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "winning-bid"},
                 value: 2,
               });
@@ -528,7 +528,7 @@ std::string MakeConstBidScript(int bid,
   return base::StringPrintf(R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
                 bucket: {baseValue: "bid-reject-reason"},
                 value: 123,
               });
@@ -682,10 +682,10 @@ std::string MakeDecisionScript(
         forDebuggingOnly.reportAdAuctionWin(
             buildDebugReportUrl(debugWinReportUrl) + bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       // Private aggregation requests with non-reserved event types in a seller
       // script will not be reported.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 50n, value: 60});
 
       adMetadata.fromComponentAuction = true;
@@ -792,10 +792,10 @@ std::string MakeDecisionScript(
         }
         sendReportTo(sendReportUrl + browserSignals.bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
       // Private aggregation requests with non-reserved event types in seller
       // script will not be reported.
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 70n, value: 80});
 
       // Convert the bid back into bidder currency if we're covering that.
@@ -858,7 +858,7 @@ std::string MakeAuctionScriptNoReportUrl(
 
 const char kBasicReportResult[] = R"(
   function reportResult(auctionConfig, browserSignals) {
-    privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+    privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     sendReportTo("https://reporting.example.com/" + browserSignals.bid);
     registerAdBeacon({
       "click": "https://reporting.example.com/" + 2*browserSignals.bid,
@@ -875,7 +875,7 @@ std::string MakeAuctionScriptReject2(
     const std::string& reject_reason = "not-available") {
   constexpr char kAuctionScriptRejects2[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       if (bid === 2)
         return {desirability: -1, rejectReason: '%s'};
       let convertedBid = auctionConfig.sellerCurrency ? bid * 10 : undefined;
@@ -3812,11 +3812,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 1 + 1000 * inBid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
@@ -3835,11 +3835,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 12 + 1000 * browserSignals.bid,
       });
@@ -3850,11 +3850,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
     const inOffset = %d;
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 1 + 1000 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 2 + 1000 * bid,
       });
@@ -3877,11 +3877,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 12 + 1000 * browserSignals.bid,
       });
@@ -3989,11 +3989,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 1 + 1000 * inBid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
@@ -4012,11 +4012,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 12 + 1000 * browserSignals.bid,
       });
@@ -4027,11 +4027,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
     const inOffset = %d;
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 1 + 1000 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 2 + 1000 * bid,
       });
@@ -4054,11 +4054,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
           '&bid=' + browserSignals.bid;
       sendReportTo(sendReportUrl);
 
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: inOffset + 11 + 1000 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: inOffset + 12 + 1000 * browserSignals.bid,
       });
@@ -4263,7 +4263,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
     const suffix = "%s";
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                       browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
         bucket: {baseValue: "bid-reject-reason"},
         value: 123 + bid,
       });
@@ -4376,15 +4376,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   const char kBidScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                           trustedBiddingSignals, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
       if (browserSignals.seller == "https://component.seller1.test") {
-        privateAggregation.reportContributionForEvent(
+        privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 21});
         return {ad: [], bid: 1, render: "https://component1-bid.test/",
                 allowComponentAuction: true};
       }
       if (browserSignals.seller == "https://component.seller2.test") {
-        privateAggregation.reportContributionForEvent(
+        privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 10n, value: 23});
         return {ad: [], bid: 3, render: "https://component2-bid.test/",
                 allowComponentAuction: true};
@@ -4398,8 +4398,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + browserSignals.bid});
     }
   )";
@@ -4408,7 +4408,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // on bid and seller, to make sure correct values are plumbed through.
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       if (auctionConfig.seller == "https://adstuff.publisher1.com")
         return {desirability: 20 + bid, allowComponentAuction: true};
       if (auctionConfig.seller == "https://component.seller2.test")
@@ -4422,7 +4422,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2*browserSignals.desirability,
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     }
   )";
 
@@ -4673,7 +4673,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
         return {ad: [], bid: 2, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
@@ -4684,7 +4684,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
     }
   )";
 
@@ -4692,7 +4692,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // top-level seller signals are null.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -4703,7 +4703,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
         "click": auctionConfig.seller + "/" +
                    (browserSignals.topLevelSellerSignals === null),
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
     }
   )";
 
@@ -4711,7 +4711,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // value.
   const std::string kTopLevelSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -4720,7 +4720,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2 * browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
       // Note that there's no return value here.
     }
   )";
@@ -4811,7 +4811,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   // it interpreted the incoming bid as 20 in sellerCurrency.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent("reserved.loss", {
+      privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "bid-reject-reason"},
               value: 123,
       });
@@ -11915,8 +11915,8 @@ TEST_F(
   }
 }
 
-// An auction with two successful bids. sendHistogramReport() and
-// reportContributionForEvent() are both called in all of generateBid(),
+// An auction with two successful bids. contributeToHistogram() and
+// contributeToHistogramOnEvent() are both called in all of generateBid(),
 // scoreAd(), reportWin() and reportResult().
 TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
   const char kBidScript[] = R"(
@@ -11924,63 +11924,63 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 10n, value: 20});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 11n, value: 21});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 12n, value: 22});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 100n, value: 200});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 101n, value: 201});
       return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 30n, value: 40});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 31n, value: 41});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 32n, value: 42});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 300n, value: 400});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 301n, value: 401});
     }
   )";
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 50n, value: 60});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 51n, value: 61});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 52n, value: 62});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 500n, value: 600});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 501n, value: 601});
       return {desirability: 2 * bid, allowComponentAuction: true};
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogram({bucket: 7n, value: 8});
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.always', {bucket: 70n, value: 80});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.win', {bucket: 71n, value: 81});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'reserved.loss', {bucket: 72n, value: 82});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'arbitrary', {bucket: 700n, value: 800});
-      privateAggregation.reportContributionForEvent(
+      privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 701n, value: 801});
     }
   )";
@@ -12063,15 +12063,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
         value: 2 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
@@ -12080,16 +12080,16 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0,
                  offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 13 + 100 * browserSignals.bid,
       });
@@ -12102,15 +12102,15 @@ TEST_F(AuctionRunnerTest,
       if (auctionConfig.sellerCurrency) {
         convertedBid = 10*bid;
       }
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 22 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
@@ -12123,15 +12123,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 31 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 32 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 33 + 100 * browserSignals.bid,
       });
@@ -12232,15 +12232,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
         value: 2 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
@@ -12249,16 +12249,16 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 11 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid', scale: 1.0,
                  offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 13 + 100 * browserSignals.bid,
       });
@@ -12271,15 +12271,15 @@ TEST_F(AuctionRunnerTest,
       if (auctionConfig.sellerCurrency) {
         convertedBid = 10*bid;
       }
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid'},
         value: 21 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 22 + 100 * bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 23 + 100 * bid,
       });
@@ -12287,15 +12287,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'winning-bid'},
         value: 31 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 32 + 100 * browserSignals.bid,
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'bid-reject-reason'},
         value: 33 + 100 * browserSignals.bid,
       });
@@ -12398,15 +12398,15 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(1 + 100 * bid),
         value: {baseValue: 'winning-bid', scale: 1.0, offset: 0},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(2 + 100 * bid),
         value: {baseValue: 'highest-scoring-other-bid', scale: 1.0},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(3 + 100 * bid),
         value: {baseValue: 'bid-reject-reason', offset: 0},
       });
@@ -12415,15 +12415,15 @@ TEST_F(AuctionRunnerTest,
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(11 + 100 * browserSignals.bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(12 + 100 * browserSignals.bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(13 + 100 * browserSignals.bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12432,15 +12432,15 @@ TEST_F(AuctionRunnerTest,
 
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(21 + 100 * bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(22 + 100 * bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(23 + 100 * bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12449,15 +12449,15 @@ TEST_F(AuctionRunnerTest,
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(31 + 100 * browserSignals.bid),
         value: {baseValue: 'winning-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.win', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.win', {
         bucket: BigInt(32 + 100 * browserSignals.bid),
         value: {baseValue: 'highest-scoring-other-bid'},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: BigInt(33 + 100 * browserSignals.bid),
         value: {baseValue: 'bid-reject-reason'},
       });
@@ -12526,21 +12526,21 @@ TEST_F(AuctionRunnerTest,
 
   const char kBidScript[] = R"(
     const bid = %d;
-    function reportContributionForEvent() {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+    function contributeToHistogramOnEvent() {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 2.1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 2.1, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 0, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 0, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -200, offset: 10n},
         value: 1,
       });
@@ -12549,44 +12549,44 @@ TEST_F(AuctionRunnerTest,
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
       return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
     }
   )";
 
   const std::string kSellerScript = R"(
-    function reportContributionForEvent() {
-      privateAggregation.reportContributionForEvent('reserved.always', {
+    function contributeToHistogramOnEvent() {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 2.1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 2.1, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: 0, offset: 10n},
         value: {baseValue: 'winning-bid', scale: 0, offset: 20},
       });
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -1, offset: 10n},
         value: {baseValue: 'winning-bid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
-      privateAggregation.reportContributionForEvent('reserved.always', {
+      privateAggregation.contributeToHistogramOnEvent('reserved.always', {
         bucket: {baseValue: 'winning-bid', scale: -200, offset: 10n},
         value: 1,
       });
     }
 
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
       return bid;
     }
 
     function reportResult(auctionConfig, browserSignals) {
-      reportContributionForEvent();
+      contributeToHistogramOnEvent();
     }
   )";
 
@@ -16735,11 +16735,11 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
       std::string(R"(
         function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
-          privateAggregation.reportContributionForEvent("reserved.loss", {
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "bid-reject-reason"},
               value: 0,
             });
-          privateAggregation.reportContributionForEvent("reserved.loss", {
+          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
               bucket: {baseValue: "winning-bid"},
               value: 2,
             });

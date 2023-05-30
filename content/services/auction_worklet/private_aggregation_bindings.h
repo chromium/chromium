@@ -45,9 +45,9 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   TakePrivateAggregationRequests();
 
  private:
-  static void SendHistogramReport(
+  static void ContributeToHistogram(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void ReportContributionForEvent(
+  static void ContributeToHistogramOnEvent(
       const v8::FunctionCallbackInfo<v8::Value>& args);
   static void EnableDebugMode(const v8::FunctionCallbackInfo<v8::Value>& args);
 

@@ -6765,8 +6765,8 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-  privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -6855,7 +6855,7 @@ function generateBid(
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return bid;
 }
 )";
@@ -6939,7 +6939,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7045,8 +7045,8 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7099,12 +7099,12 @@ function scoreAd(
 }
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationExtensionsUseCounterNotLoggedOnSendHistogramReport) {
+       PrivateAggregationExtensionsUseCounterNotLoggedOnContributeToHistogram) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7165,7 +7165,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({});
+  privateAggregation.contributeToHistogram({});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7216,7 +7216,7 @@ function scoreAd(
       .Times(0);
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
-  // There should've been a sendHistogramReport() error.
+  // There should've been a contributeToHistogram() error.
   EXPECT_EQ(auction_result, absl::nullopt);
 }
 
@@ -7228,9 +7228,9 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 1n, value: 2});
-  privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 3n, value: 4});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7238,9 +7238,9 @@ function generateBid(
   constexpr char kDecisionScript[] = R"(
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
-  privateAggregation.reportContributionForEvent("reserved.win",
-                                                {bucket: 7n, value: 8});
+  privateAggregation.contributeToHistogram({bucket: 5n, value: 6});
+  privateAggregation.contributeToHistogramOnEvent("reserved.win",
+                                                  {bucket: 7n, value: 8});
   return bid;
 }
 )";
@@ -7304,7 +7304,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -7347,7 +7347,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
