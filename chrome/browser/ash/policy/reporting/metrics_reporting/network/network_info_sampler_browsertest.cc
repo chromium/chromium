@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordNetworkInterface));
 
-  test::MockClock::Get().Advance(metrics::InitDelayParam::Get());
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertNetworkInterfaces(devices, &observer);
 }
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordNetworkInterface));
 
-  test::MockClock::Get().Advance(metrics::InitDelayParam::Get());
+  test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertNetworkInterfaces(devices, &observer);
 }
 

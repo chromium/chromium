@@ -37,19 +37,6 @@ const base::TimeDelta GetDefaultEventCheckingRate(
 }
 
 // static
-base::TimeDelta InitDelayParam::init_delay = base::Minutes(1);
-
-// static
-void InitDelayParam::SetForTesting(const base::TimeDelta& delay) {
-  InitDelayParam::init_delay = delay;
-}
-
-// static
-const base::TimeDelta InitDelayParam::Get() {
-  return InitDelayParam::init_delay;
-}
-
-// static
 // 5 seconds is what was recommended by the upstream maintainer of FWUPD
 base::TimeDelta PeripheralCollectionDelayParam::collection_delay_ =
     base::Seconds(5);
