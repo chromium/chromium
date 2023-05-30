@@ -467,7 +467,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'cros_components_revision': 'c2b4d02b1506d39603ca7046df05fc68ebc649e1',
+  'cros_components_revision': 'e1776717ee64b77dcf245afee259bb8dc529b5e3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
