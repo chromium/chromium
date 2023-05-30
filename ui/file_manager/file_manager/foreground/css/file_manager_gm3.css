@@ -279,10 +279,11 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
 
 html[dir='rtl'] #directory-tree .tree-row > .file-row > .align-right-icon {
   left: -12px; /* Same as padding inline end of side nav. */
+  right: unset;
 }
 
 #directory-tree .tree-row > .file-row > .external-link-icon iron-icon {
-  padding: 6px;
+  padding: 10px;
 }
 
 #directory-tree .tree-row > .file-row > .root-eject {
@@ -314,6 +315,14 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   --ink-color: var(--cros-sys-ripple_neutral_on_prominent);
 }
 /* Can be removed after new directory replacement. -- END */
+
+#directory-tree xf-tree-item > input::selection {
+  background-color: var(--cros-sys-highlight_text);
+}
+
+#directory-tree xf-tree-item > .external-link-icon iron-icon {
+  padding: 10px;
+}
 
 /* Splitter. */
 /* Prevent the sudden flickering when opening the Files app. "div.splitter" is

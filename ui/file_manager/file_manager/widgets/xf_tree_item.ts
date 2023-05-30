@@ -39,8 +39,8 @@ export class XfTreeItem extends XfBase {
   @property({type: Boolean, reflect: true}) selected = false;
   /** Indicate if a tree item has been expanded or not. */
   @property({type: Boolean, reflect: true}) expanded = false;
-  /** Indicate if a tree item is in editing mode (rename) or not. */
-  @property({type: Boolean, reflect: true}) editing = false;
+  /** Indicate if a tree item is in renaming mode or not. */
+  @property({type: Boolean, reflect: true}) renaming = false;
 
   /**
    * A tree item will have children if the child tree items have been inserted
@@ -206,7 +206,8 @@ export class XfTreeItem extends XfBase {
             type=${ifDefined(this.iconSet ? undefined : this.icon)}
             .iconSet=${this.iconSet}
           ></xf-icon>
-          ${this.renderTreeLabel()}
+          <span class="tree-label" id="tree-label">${this.label || ''}</span>
+          <slot name="rename"></slot>
           <slot name="trailingIcon"></slot>
         </div>
         <ul
@@ -217,19 +218,6 @@ export class XfTreeItem extends XfBase {
         </ul>
       </li>
     `;
-  }
-
-  private renderTreeLabel() {
-    if (this.editing) {
-      // The render of <input> for renaming is handled by
-      // `DirectoryTreeNamingController`.
-      return html``;
-    }
-    return html`
-    <span
-      class="tree-label"
-      id="tree-label"
-    >${this.label || ''}</span>`;
   }
 
   override connectedCallback() {
@@ -383,7 +371,7 @@ function getCSS() {
       border-radius: 20px 0 0 20px;
     }
 
-    :host(:not([selected]):not([disabled]):not([editing]))
+    :host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:hover {
       background-color: var(--cros-ripple-color);
     }
@@ -398,7 +386,7 @@ function getCSS() {
       pointer-events: none;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:hover):active {
       background-color: var(--cros-ripple-color);
     }
@@ -412,7 +400,7 @@ function getCSS() {
       cursor: default;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:active):hover {
       background-color: unset;
     }
@@ -468,6 +456,26 @@ function getCSS() {
       white-space: pre;
     }
 
+    /** input is attached by DirectoryTreeNamingController. */
+    slot[name="rename"]::slotted(input) {
+      background-color: var(--cros-bg-color);
+      border: none;
+      border-radius: 2px;
+      caret-color: var(--cros-textfield-cursor-color-focus);
+      color: var(--cros-text-color-primary);
+      margin: 0 10px;
+      outline: 2px solid var(--cros-focus-ring-color);
+      overflow: hidden;
+    }
+
+    :host([renaming]) slot[name="rename"]::slotted(input) {
+      display: block;
+    }
+
+    :host([renaming]) .tree-label {
+      display: none;
+    }
+
     paper-ripple {
       display: none;
     }
@@ -486,16 +494,48 @@ function getCSS() {
       display: block;
     }
 
-    slot[name="trailingIcon"]::slotted(*) {
-      height: 20px;
-      margin: 0;
-      width: 20px;
+    /* Trailing icon styles. */
+    slot[name="trailingIcon"]::slotted(.align-right-icon) {
+      --iron-icon-height: 20px;
+      --iron-icon-width: 20px;
+      border-radius: 16px;
+      border-style: none;
+      box-sizing: border-box;
+      flex: none;
+      height: 32px;
+      left: 1px;
+      position: relative;
+      right: 1px;
+      width: 32px;
+      z-index: 1;
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject) {
+      --text-color: currentColor;
+      --hover-bg-color: var(--cros-ripple-color);
+      min-width: 32px;
+      padding: 0;
+    }
+
+    :host-context(html.col-resize) slot[name="trailingIcon"]::slotted(.root-eject:hover) {
+      --hover-bg-color: none;
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject:focus) {
+      border: 1px solid var(--cros-focus-ring-color);
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject:active) {
+      --ink-color: var(--cros-ripple-color);
+      border-width: 0;
     }
   `;
 
   const refresh23Style = css`
     :host {
       --xf-tree-item-indent: ${TREE_ITEM_INDENT};
+      display: block;
+      margin-top: 8px;
     }
 
     ul {
@@ -530,13 +570,13 @@ function getCSS() {
       cursor: pointer;
       display: flex;
       height: 40px;
-      margin: 8px 0;
+      padding-inline-end: 12px;
       position: relative;
       user-select: none;
       white-space: nowrap;
     }
 
-    :host(:not([selected]):not([disabled]):not([editing]))
+    :host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:hover {
       background-color: var(--cros-sys-hover_on_subtle);
     }
@@ -557,7 +597,7 @@ function getCSS() {
       z-index: 2;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:hover):active {
       background-color: var(--cros-sys-hover_on_subtle);
     }
@@ -566,7 +606,7 @@ function getCSS() {
       cursor: default;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([editing]))
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
         li:not(:focus-visible) .tree-row:not(:active):hover {
       background-color: unset;
     }
@@ -614,7 +654,7 @@ function getCSS() {
     .tree-label {
       display: block;
       flex: auto;
-      font-weight: 500;
+      font: var(--cros-button-2-font);
       margin-inline-end: 2px;
       margin-inline-start: 8px;
       min-width: 0;
@@ -623,12 +663,38 @@ function getCSS() {
       white-space: pre;
     }
 
+    /** input is attached by DirectoryTreeNamingController. */
+    slot[name="rename"]::slotted(input) {
+      background-color: var(--cros-sys-app_base);
+      border-radius: 4px;
+      border: none;
+      color: var(--cros-sys-on_surface);
+      display: none;
+      height: 20px;
+      margin: 0 10px;
+      outline: 2px solid var(--cros-sys-focus_ring);
+      overflow: hidden;
+      padding: 1px 8px;
+    }
+
+    :host([renaming]) slot[name="rename"]::slotted(input) {
+      display: block;
+    }
+
+    :host([renaming]) .tree-label {
+      display: none;
+    }
+
+    :host([selected]) slot[name="rename"]::slotted(input) {
+      outline: 2px solid var(--cros-sys-inverse_primary);
+    }
+
     paper-ripple {
       border-radius: 20px;
       color: var(--cros-sys-ripple_primary);
     }
 
-    /* We need to ensure that even empty labels take up space */
+    /* We need to ensure that even empty labels take up space. */
     .tree-label:empty::after {
       content: ' ';
       white-space: pre;
@@ -642,12 +708,63 @@ function getCSS() {
       display: block;
     }
 
-    slot[name="trailingIcon"]::slotted(*) {
-      height: 20px;
-      margin: 0;
-      width: 20px;
+    /* Trailing icon styles. */
+    slot[name="trailingIcon"]::slotted(.align-right-icon) {
+      --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+      --iron-icon-height: 20px;
+      --iron-icon-width: 20px;
+      -ripple-opacity: 100%;
+      border: none;
+      border-radius: 20px;
+      box-sizing: border-box;
+      height: 40px;
+      position: relative;
+      right: -12px; /* Same as padding inline end of tree row. */
+      width: 40px;
+      z-index: 1;
     }
-    `;
+
+    :host-context([dir="rtl"]) slot[name="trailingIcon"]::slotted(.align-right-icon) {
+      left: -12px; /* Same as padding inline end of tree row. */
+      right: unset;
+    }
+
+    slot[name="trailingIcon"]::slotted(.external-link-icon iron-icon) {
+      padding: 6px;
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject) {
+      --text-color: currentColor;
+      --hover-bg-color: var(--cros-sys-hover_on_subtle);
+      min-width: 32px;
+      padding: 0;
+    }
+
+    :host([selected]) slot[name="trailingIcon"]::slotted(.root-eject) {
+      --hover-bg-color: var(--cros-sys-hover_on_prominent);
+    }
+
+    :host-context(html.col-resize) slot[name="trailingIcon"]::slotted(.root-eject:hover) {
+      --hover-bg-color: none;
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject:focus) {
+      outline: 2px solid var(--cros-sys-focus_ring);
+      outline-offset: 2px;
+    }
+
+    :host([selected]) slot[name="trailingIcon"]::slotted(.root-eject:focus) {
+      outline: 2px solid var(--cros-sys-inverse_primary);
+    }
+
+    slot[name="trailingIcon"]::slotted(.root-eject:active) {
+      --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+    }
+
+    :host([selected]) slot[name="trailingIcon"]::slotted(.root-eject:active) {
+      --ink-color: var(--cros-sys-ripple_neutral_on_prominent);
+    }
+  `;
 
   return [
     addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
