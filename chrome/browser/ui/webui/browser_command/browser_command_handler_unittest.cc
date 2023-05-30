@@ -74,6 +74,11 @@ class TestCommandHandler : public BrowserCommandHandler {
     // be executed in a unittest.
   }
 
+  void OpenPasswordManager() override {
+    // The functionality of opening the password manager is removed, as it
+    // cannot be executed in a unittest.
+  }
+
   user_education::TutorialService* GetTutorialService() override {
     return tutorial_service_;
   }
@@ -192,6 +197,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, NavigateToURL, (const GURL&, WindowOpenDisposition));
 
   MOCK_METHOD(void, OpenFeedbackForm, ());
+
+  MOCK_METHOD(void, OpenPasswordManager, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -524,10 +531,7 @@ TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {
   info->meta_key = true;
   // The OpenPassswordManager command opens a new settings window with the
   // password manager and the correct disposition.
-  EXPECT_CALL(*command_handler_,
-              NavigateToURL(
-                  GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
-                  DispositionFromClick(*info)));
+  EXPECT_CALL(*command_handler_, OpenPasswordManager());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPasswordManager, std::move(info)));
 }
 
