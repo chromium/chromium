@@ -9,7 +9,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
@@ -74,9 +74,9 @@ base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     const DlpFileDestination& destination,
     dlp::FileAction action) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyDialog>(std::move(callback),
-                                          confidential_files, destination,
-                                          action, /*parent=*/nullptr),
+      std::make_unique<FilesPolicyWarnDialog>(std::move(callback),
+                                              confidential_files, destination,
+                                              action, /*parent=*/nullptr),
       /*context=*/nullptr, /*parent=*/nullptr);
   ShowWidget(widget);
   return widget->GetWeakPtr();

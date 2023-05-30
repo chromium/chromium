@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -39,47 +38,28 @@ class FilesPolicyDialog : public PolicyDialogBase {
   METADATA_HEADER(FilesPolicyDialog);
 
   FilesPolicyDialog() = delete;
-  // TODO(b/283785160): Remove after migrating to the new UI for files.
-  FilesPolicyDialog(OnDlpRestrictionCheckedCallback callback,
-                    const std::vector<DlpConfidentialFile>& files,
+  FilesPolicyDialog(size_t file_count,
                     DlpFileDestination destination,
                     dlp::FileAction action,
                     gfx::NativeWindow modal_parent);
-  // `callback` and `policy` are required only for kWarning `type`.
-  FilesPolicyDialog(FilesDialogType type,
-                    absl::optional<Policy> policy,
-                    absl::optional<OnDlpRestrictionCheckedCallback> callback,
-                    const std::vector<DlpConfidentialFile>& files,
-                    DlpFileDestination destination,
-                    dlp::FileAction action,
-                    gfx::NativeWindow modal_parent);
-
   FilesPolicyDialog(const FilesPolicyDialog& other) = delete;
   FilesPolicyDialog& operator=(const FilesPolicyDialog& other) = delete;
   ~FilesPolicyDialog() override;
 
+ protected:
+  DlpFileDestination destination_;
+  dlp::FileAction action_;
+
  private:
   // PolicyDialogBase overrides:
   void AddGeneralInformation() override;
-  void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
   std::u16string GetCancelButton() override;
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
 
-  // Called from the error dialog's "Cancel" button.
-  // Opens the help page for policy/-ies that blocked the file action.
-  void OpenHelpPage();
-
-  // Called from the error dialog's "OK" button.
-  // Dismisses the dialog.
-  void Dismiss();
-
-  FilesDialogType type_;
-  absl::optional<Policy> policy_;
-  std::vector<DlpConfidentialFile> files_;
-  DlpFileDestination destination_;
-  dlp::FileAction action_;
+  // Number of files listed in the dialog.
+  size_t file_count_;
 
   base::WeakPtrFactory<FilesPolicyDialog> weak_factory_{this};
 };

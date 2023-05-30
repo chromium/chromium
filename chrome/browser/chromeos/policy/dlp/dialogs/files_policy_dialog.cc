@@ -79,85 +79,27 @@ const std::u16string GetDestination(DlpFileDestination destination) {
 }
 }  // namespace
 
-FilesPolicyDialog::FilesPolicyDialog(
-    OnDlpRestrictionCheckedCallback callback,
-    const std::vector<DlpConfidentialFile>& files,
-    DlpFileDestination destination,
-    dlp::FileAction action,
-    gfx::NativeWindow modal_parent)
-    : type_(FilesDialogType::kWarning),  // default
-      policy_(Policy::kDlp),             // default
-      files_(std::move(files)),
-      destination_(destination),
-      action_(action) {
-  SetOnDlpRestrictionCheckedCallback(std::move(callback));
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
-
-  AddGeneralInformation();
-  MaybeAddConfidentialRows();
-}
-
-FilesPolicyDialog::FilesPolicyDialog(
-    FilesDialogType type,
-    absl::optional<Policy> policy,
-    absl::optional<OnDlpRestrictionCheckedCallback> callback,
-    const std::vector<DlpConfidentialFile>& files,
-    DlpFileDestination destination,
-    dlp::FileAction action,
-    gfx::NativeWindow modal_parent)
-    : type_(type),
-      policy_(policy),
-      files_(std::move(files)),
-      destination_(destination),
-      action_(action) {
+FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
+                                     DlpFileDestination destination,
+                                     dlp::FileAction action,
+                                     gfx::NativeWindow modal_parent)
+    : destination_(destination), action_(action), file_count_(file_count) {
   // TODO(b/279397364): Confirm behavior if we cannot open Files App.
   ui::ModalType modal =
       modal_parent ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_SYSTEM;
   SetModalType(modal);
-
-  switch (type_) {
-    case FilesDialogType::kWarning:
-      DCHECK(policy.has_value());
-      DCHECK(callback.has_value());
-      SetOnDlpRestrictionCheckedCallback(std::move(callback.value()));
-      break;
-    case FilesDialogType::kError:
-      SetAcceptCallback(base::BindOnce(&FilesPolicyDialog::Dismiss,
-                                       weak_factory_.GetWeakPtr()));
-      SetCancelCallback(base::BindOnce(&FilesPolicyDialog::OpenHelpPage,
-                                       weak_factory_.GetWeakPtr()));
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
 
   // TODO(b/283786807): Use type & policy for computing the strings.
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
   AddGeneralInformation();
-  MaybeAddConfidentialRows();
 }
 
 FilesPolicyDialog::~FilesPolicyDialog() = default;
 
 void FilesPolicyDialog::AddGeneralInformation() {
   SetupUpperPanel(GetTitle(), GetMessage());
-}
-
-void FilesPolicyDialog::MaybeAddConfidentialRows() {
-  if (files_.empty()) {
-    return;
-  }
-
-  SetupScrollView();
-  for (const DlpConfidentialFile& file : files_) {
-    AddConfidentialRow(file.icon, file.title);
-  }
 }
 
 std::u16string FilesPolicyDialog::GetOkButton() {
@@ -198,23 +140,23 @@ std::u16string FilesPolicyDialog::GetTitle() {
           IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
     case dlp::FileAction::kUpload:
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, files_.size());
+          IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, file_count_);
     case dlp::FileAction::kCopy:
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_COPY_WARN_TITLE, files_.size());
+          IDS_POLICY_DLP_FILES_COPY_WARN_TITLE, file_count_);
     case dlp::FileAction::kMove:
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, files_.size());
+          IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, file_count_);
     case dlp::FileAction::kOpen:
     case dlp::FileAction::kShare:
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, files_.size());
+          IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, file_count_);
     case dlp::FileAction::kTransfer:
     case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                      // Set proper text when file
                                      // action is unknown
       return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, files_.size());
+          IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, file_count_);
   }
 }
 
@@ -255,18 +197,9 @@ std::u16string FilesPolicyDialog::GetMessage() {
       break;
   }
   return base::ReplaceStringPlaceholders(
-      l10n_util::GetPluralStringFUTF16(message_id, files_.size()),
+      l10n_util::GetPluralStringFUTF16(message_id, file_count_),
       destination_str,
       /*offset=*/nullptr);
-}
-
-void FilesPolicyDialog::OpenHelpPage() {
-  // TODO(b/283786134): Implementation.
-}
-
-void FilesPolicyDialog::Dismiss() {
-  GetWidget()->CloseWithReason(
-      views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 BEGIN_METADATA(FilesPolicyDialog, PolicyDialogBase)

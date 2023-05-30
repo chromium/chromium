@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_error_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -121,11 +123,26 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
     gfx::NativeWindow modal_parent) {
   // TODO(b/282664769): Pass correct values. These should be stored by
   // task_id.
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyDialog>(
-          base::DoNothing(), std::vector<DlpConfidentialFile>(),
-          DlpFileDestination(""), dlp::FileAction::kCopy, modal_parent),
-      /*context=*/nullptr, /*parent=*/modal_parent);
+  views::Widget* widget;
+  switch (type) {
+    case FilesDialogType::kUnknown:
+      LOG(WARNING) << "Unknown FilesDialogType passed";
+      return;
+    case FilesDialogType::kWarning:
+      widget = views::DialogDelegate::CreateDialogWidget(
+          std::make_unique<FilesPolicyWarnDialog>(
+              base::DoNothing(), std::vector<DlpConfidentialFile>(),
+              DlpFileDestination(""), dlp::FileAction::kCopy, modal_parent),
+          /*context=*/nullptr, /*parent=*/modal_parent);
+      break;
+    case FilesDialogType::kError:
+      widget = views::DialogDelegate::CreateDialogWidget(
+          std::make_unique<FilesPolicyErrorDialog>(
+              std::map<DlpConfidentialFile, Policy>(), DlpFileDestination(""),
+              dlp::FileAction::kCopy, modal_parent),
+          /*context=*/nullptr, /*parent=*/modal_parent);
+      break;
+  }
   widget->Show();
   // TODO(ayaelattar): Timeout after total 5 minutes.
 }
