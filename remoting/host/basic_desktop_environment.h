@@ -47,6 +47,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
+  std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
+      base::RepeatingCallback<void(webrtc::ScreenId)> callback) override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
       override;

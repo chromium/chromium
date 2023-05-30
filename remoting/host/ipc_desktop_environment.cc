@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
@@ -82,6 +83,12 @@ IpcDesktopEnvironment::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
   return desktop_session_proxy_->CreateKeyboardLayoutMonitor(
       std::move(callback));
+}
+
+std::unique_ptr<ActiveDisplayMonitor>
+IpcDesktopEnvironment::CreateActiveDisplayMonitor(
+    ActiveDisplayMonitor::Callback callback) {
+  return nullptr;
 }
 
 std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer() {

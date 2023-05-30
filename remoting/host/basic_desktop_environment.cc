@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/client_session_control.h"
@@ -153,6 +154,12 @@ std::unique_ptr<KeyboardLayoutMonitor>
 BasicDesktopEnvironment::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
   return KeyboardLayoutMonitor::Create(std::move(callback), input_task_runner_);
+}
+
+std::unique_ptr<ActiveDisplayMonitor>
+BasicDesktopEnvironment::CreateActiveDisplayMonitor(
+    ActiveDisplayMonitor::Callback callback) {
+  return ActiveDisplayMonitor::Create(ui_task_runner_, std::move(callback));
 }
 
 std::unique_ptr<FileOperations>

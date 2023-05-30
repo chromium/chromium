@@ -258,6 +258,8 @@ static_library("common") {
     "action_executor.cc",
     "action_message_handler.cc",
     "action_message_handler.h",
+    "active_display_monitor.cc",
+    "active_display_monitor.h",
     "audio_capturer.cc",
     "audio_silence_detector.cc",
     "audio_volume_filter.cc",
@@ -715,6 +717,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_active_display_monitor.cc",
+    "fake_active_display_monitor.h",
     "fake_desktop_environment.cc",
     "fake_desktop_environment.h",
     "fake_host_extension.cc",

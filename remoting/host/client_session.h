@@ -57,6 +57,7 @@
 
 namespace remoting {
 
+class ActiveDisplayMonitor;
 class AudioStream;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
@@ -269,6 +270,10 @@ class ClientSession : public protocol::HostStub,
                              bool& mouse_button_down,
                              protocol::ObservingInputFilter::Event event);
 
+  // Sends the new active display to the client. Called by ActiveDisplayMonitor
+  // whenever the screen id associated with the active window changes.
+  void OnActiveDisplayChanged(webrtc::ScreenId display);
+
   raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
@@ -418,6 +423,8 @@ class ClientSession : public protocol::HostStub,
 
   mojo::ReceiverSet<mojom::ChromotingSessionServices>
       session_services_receivers_;
+
+  std::unique_ptr<ActiveDisplayMonitor> active_display_monitor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

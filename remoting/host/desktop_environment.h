@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace webrtc {
 class DesktopCapturer;
@@ -22,6 +23,7 @@ class MouseCursorMonitor;
 namespace remoting {
 
 class ActionExecutor;
+class ActiveDisplayMonitor;
 class AudioCapturer;
 class ClientSessionControl;
 class ClientSessionEvents;
@@ -61,6 +63,8 @@ class DesktopEnvironment {
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)>
           callback) = 0;
+  virtual std::unique_ptr<ActiveDisplayMonitor> CreateActiveDisplayMonitor(
+      base::RepeatingCallback<void(webrtc::ScreenId)> callback) = 0;
   virtual std::unique_ptr<FileOperations> CreateFileOperations() = 0;
   virtual std::unique_ptr<UrlForwarderConfigurator>
   CreateUrlForwarderConfigurator() = 0;

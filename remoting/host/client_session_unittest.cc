@@ -30,6 +30,7 @@
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/fake_message_pipe.h"
@@ -84,6 +85,10 @@ MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
     }
   }
   return true;
+}
+
+MATCHER_P(ScreenIdMatches, expected_id, "") {
+  return arg.screen_id() == expected_id;
 }
 
 protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
@@ -832,6 +837,26 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
                    ->options()
                    .desktop_capture_options()
                    ->detect_updated_region());
+}
+
+TEST_F(ClientSessionTest, ActiveDisplayMessageSent) {
+  EXPECT_CALL(client_stub_, SetActiveDisplay(ScreenIdMatches(kDisplay1Id)));
+
+  // The ActiveDisplayMonitor only gets created after negotiating this
+  // capability with the client.
+  desktop_environment_factory_->set_capabilities(
+      protocol::kMultiStreamCapability);
+  CreateClientSession();
+  ConnectClientSession();
+
+  protocol::Capabilities client_capabilities;
+  client_capabilities.set_capabilities(protocol::kMultiStreamCapability);
+  client_session_->SetCapabilities(client_capabilities);
+
+  auto monitor = desktop_environment_factory_->last_desktop_environment()
+                     ->last_active_display_monitor();
+  ASSERT_TRUE(monitor);
+  monitor->SetActiveDisplay(static_cast<webrtc::ScreenId>(kDisplay1Id));
 }
 
 // Display selection behaves quite differently if capturing of the full desktop
