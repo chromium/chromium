@@ -34,6 +34,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "crypto/rsa_private_key.h"
@@ -1265,6 +1266,69 @@ TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKey) {
   SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead, &is_tls13,
                           cipher_suite);
   EXPECT_TRUE(is_aead);
+}
+
+namespace {
+
+// Helper that wraps an underlying SSLPrivateKey to allow the test to
+// do some work immediately before a `Sign()` operation is performed.
+class SSLPrivateKeyHook : public SSLPrivateKey {
+ public:
+  SSLPrivateKeyHook(scoped_refptr<SSLPrivateKey> private_key,
+                    base::RepeatingClosure on_sign)
+      : private_key_(std::move(private_key)), on_sign_(std::move(on_sign)) {}
+
+  // SSLPrivateKey implementation.
+  std::string GetProviderName() override {
+    return private_key_->GetProviderName();
+  }
+  std::vector<uint16_t> GetAlgorithmPreferences() override {
+    return private_key_->GetAlgorithmPreferences();
+  }
+  void Sign(uint16_t algorithm,
+            base::span<const uint8_t> input,
+            SignCallback callback) override {
+    on_sign_.Run();
+    private_key_->Sign(algorithm, input, std::move(callback));
+  }
+
+ private:
+  ~SSLPrivateKeyHook() override = default;
+
+  const scoped_refptr<SSLPrivateKey> private_key_;
+  const base::RepeatingClosure on_sign_;
+};
+
+}  // namespace
+
+// Verifies that if the client disconnects while during private key signing then
+// the disconnection is correctly reported to the `Handshake()` completion
+// callback, with `ERR_CONNECTION_CLOSED`.
+// This is a regression test for crbug.com/1449461.
+TEST_F(SSLServerSocketTest,
+       HandshakeServerSSLPrivateKeyDisconnectDuringSigning_ReturnsError) {
+  auto on_sign = base::BindLambdaForTesting([&]() {
+    client_socket_->Disconnect();
+    ASSERT_FALSE(client_socket_->IsConnected());
+  });
+  server_ssl_private_key_ = base::MakeRefCounted<SSLPrivateKeyHook>(
+      std::move(server_ssl_private_key_), on_sign);
+  ASSERT_NO_FATAL_FAILURE(CreateContextSSLPrivateKey());
+  ASSERT_NO_FATAL_FAILURE(CreateSockets());
+
+  TestCompletionCallback handshake_callback;
+  int server_ret = server_socket_->Handshake(handshake_callback.callback());
+  ASSERT_EQ(server_ret, net::ERR_IO_PENDING);
+
+  TestCompletionCallback connect_callback;
+  client_socket_->Connect(connect_callback.callback());
+
+  // If resuming the handshake after private-key signing is not handled
+  // correctly as per crbug.com/1449461 then the test will hang and timeout
+  // at this point, due to the server-side completion callback not being
+  // correctly invoked.
+  server_ret = handshake_callback.GetResult(server_ret);
+  EXPECT_EQ(server_ret, net::ERR_CONNECTION_CLOSED);
 }
 
 // Verifies that non-ECDHE ciphers are disabled when using SSLPrivateKey as the
