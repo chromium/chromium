@@ -1073,7 +1073,7 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
 
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
     EXPECT_EQ(ET_TOUCH_MOVED, event->type());
-    EXPECT_EQ(gfx::Point(50, -1000).ToString(),
+    EXPECT_EQ(gfx::Point(50, -10).ToString(),
               event->AsTouchEvent()->location().ToString());
   });
   SendDndLeave();
