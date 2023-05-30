@@ -1112,7 +1112,8 @@ void WebViewGuest::WillAttachToEmbedder() {
 }
 
 bool WebViewGuest::RequiresSslInterstitials() const {
-  return !AreWebviewMPArchBehaviorsEnabled(browser_context());
+  // Some enterprise workflows rely on clicking through self-signed cert errors.
+  return true;
 }
 
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(
