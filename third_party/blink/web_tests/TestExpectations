@@ -6787,3 +6787,5 @@ crbug.com/1449347 http/tests/devtools/persistence/persistence-sync-content-nodej
 crbug.com/1449192 virtual/text-antialias/font-initial.html [ Failure Pass ]
 crbug.com/1449390 virtual/text-antialias/font-stretch.html [ Failure Pass ]
 crbug.com/1449445 virtual/text-antialias/font-weight.html [ Failure Pass ]
+
+crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
