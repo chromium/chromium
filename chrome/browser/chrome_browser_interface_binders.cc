@@ -749,10 +749,6 @@ void BindMediaFoundationRendererNotifierHandler(
 void BindScreenAIAnnotator(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<screen_ai::mojom::ScreenAIAnnotator> receiver) {
-  // TODO(https://crbug.com/1278249): After user settings are added, add extra
-  // checking here to ensure the service is bound only when user has explicitly
-  // requested it.
-
   content::BrowserContext* browser_context =
       frame_host->GetProcess()->GetBrowserContext();
 
@@ -764,9 +760,6 @@ void BindScreen2xMainContentExtractor(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
         receiver) {
-  // TODO(https://crbug.com/1278249): After user settings are added, add extra
-  // checking here to ensure the service is bound only when user has explicitly
-  // requested it.
   screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
       frame_host->GetProcess()->GetBrowserContext())
       ->BindMainContentExtractor(std::move(receiver));
