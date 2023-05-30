@@ -119,7 +119,11 @@ void OpenerHeuristicTabHelper::DidOpenRequestedURL(
     return;
   }
 
-  CHECK_EQ(web_contents()->GetPrimaryMainFrame(), source_render_frame_host);
+  if (source_render_frame_host != web_contents()->GetPrimaryMainFrame()) {
+    // Not sure exactly when this happens, but it seems to involve devtools.
+    // Cf. crbug.com/1448789
+    return;
+  }
 
   if (disposition != WindowOpenDisposition::NEW_POPUP) {
     // Ignore if not a popup.
