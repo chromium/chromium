@@ -163,7 +163,9 @@ int ChromeViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
     // TODO(robliao): Annotate this task with .WithCOM() once supported.
     // https://crbug.com/662122
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&GetAppbarAutohideEdgesOnWorkerThread, monitor),
         base::BindOnce(&ChromeViewsDelegate::OnGotAppbarAutohideEdges,
                        weak_factory_.GetWeakPtr(), std::move(callback), monitor,
