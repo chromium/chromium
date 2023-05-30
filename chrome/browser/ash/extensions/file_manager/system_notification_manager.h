@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -294,8 +295,15 @@ class SystemNotificationManager {
   using BulkPinStage = file_manager_private::BulkPinStage;
   BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
 
+  // Number of times the Google Drive settings page was opened from a system
+  // notification. Used in tests.
+  int drive_settings_open_count_ = 0;
+
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(SystemNotificationManagerTest,
+                           BulkPinningNotification);
 };
 
 }  // namespace file_manager

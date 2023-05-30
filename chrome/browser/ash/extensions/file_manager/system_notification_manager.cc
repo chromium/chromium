@@ -513,10 +513,11 @@ void SystemNotificationManager::HandleBulkPinningNotificationClick(
   if (button_index.has_value()) {
     VLOG(1) << "Click on button #" << *button_index;
     DCHECK_EQ(*button_index, 0);
+    drive_settings_open_count_++;
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
   } else {
-    VLOG(1) << "Click on notification";
+    VLOG(1) << "Click on notification body";
   }
 
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,

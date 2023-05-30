@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -129,6 +130,17 @@ class TestNotificationPlatformBridgeDelegator
     it->second->Click(button_index, absl::nullopt);
   }
 
+  // Clicks a notification body.
+  void ClickNotification(const std::string& notification_id) {
+    const auto it = delegates_.find(notification_id);
+    if (it == delegates_.end()) {
+      LOG(ERROR) << "Cannot find delegate " << notification_id;
+      return;
+    }
+
+    it->second->Click(absl::nullopt, absl::nullopt);
+  }
+
  private:
   // Notification IDs.
   std::set<std::string> notification_ids_;
@@ -164,6 +176,12 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
   // Hard set to disabled for the ExternalStorageDisabled test to work.
   bool IsExternalStorageDisabled() override { return true; }
 };
+
+constexpr char kDevicePath[] = "/device/test";
+constexpr char kMountPath[] = "/mnt/media/sda1";
+std::u16string kRemovableDeviceTitle = u"Removable device detected";
+
+}  // namespace
 
 class SystemNotificationManagerTest
     : public io_task::IOTaskController::Observer,
@@ -288,10 +306,6 @@ class SystemNotificationManagerTest
 
   base::WeakPtrFactory<SystemNotificationManagerTest> weak_ptr_factory_{this};
 };
-
-constexpr char kDevicePath[] = "/device/test";
-constexpr char kMountPath[] = "/mnt/media/sda1";
-std::u16string kRemovableDeviceTitle = u"Removable device detected";
 
 TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
   base::HistogramTester histogram_tester;
@@ -1210,6 +1224,138 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
 
 std::u16string kGoogleDrive = u"Google Drive";
 
+// Tests the bulk-pinning notifications.
+TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
+  using List = base::Value::List;
+  const base::StringPiece event_name = "unused-event-name";
+
+  // Event with no args should be ignored.
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name, List()));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  file_manager_private::BulkPinProgress progress;
+
+  // Handle an unparsable event.
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space without going through syncing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Syncing.
+  progress.stage = BULK_PIN_STAGE_SYNCING;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after syncing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Get the strings for the displayed notification.
+  const std::string notification_id = "drive-bulk-pinning-error";
+  Strings strings = bridge_->GetStrings(notification_id);
+  EXPECT_EQ(strings.title, u"Sync error");
+  EXPECT_EQ(
+      strings.message,
+      u"We couldn't sync all of your My Drive files because you don't have "
+      u"enough storage available. Files that were already synced will stay "
+      u"available offline, but automatic syncing has been turned off.");
+  EXPECT_THAT(strings.buttons, ElementsAre(u"Settings"));
+
+  // Click the notification body.
+  bridge_->ClickNotification(notification_id);
+
+  // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+  EXPECT_EQ(0, notification_manager_->drive_settings_open_count_);
+
+  // Not enough space without going through syncing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Syncing.
+  progress.stage = BULK_PIN_STAGE_SYNCING;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be no notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+
+  // Not enough space after syncing phase.
+  progress.stage = BULK_PIN_STAGE_NOT_ENOUGH_SPACE;
+  notification_manager_->HandleEvent(
+      Event(FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS, event_name,
+            List().Append(progress.ToValue())));
+
+  // There should be one notification.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(1u, notification_count_);
+
+  // Click the notification button #0.
+  bridge_->ClickButton(notification_id, 0);
+
+  // The notification should have been closed.
+  display_service_->GetDisplayed(
+      BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
+               weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_EQ(0u, notification_count_);
+  EXPECT_EQ(1, notification_manager_->drive_settings_open_count_);
+}
+
 // Tests all the various error notifications.
 TEST_F(SystemNotificationManagerTest, Errors) {
   // Build a Drive sync error object.
@@ -1603,5 +1749,4 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
   EXPECT_EQ(strings.message, u"Making 10 files available offline");
 }
 
-}  // namespace
 }  // namespace file_manager
