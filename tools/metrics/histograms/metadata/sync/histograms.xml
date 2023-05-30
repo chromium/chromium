@@ -278,7 +278,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.CommitResponseForUnknownEntity" enum="SyncModelTypes"
-    expires_after="2023-06-30">
+    expires_after="2023-12-15">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -912,7 +912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeOrphanMetadata.{Operation}"
-    enum="SyncModelTypes" expires_after="2023-07-05">
+    enum="SyncModelTypes" expires_after="2023-12-15">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
