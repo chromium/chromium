@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// The <code>chrome.webAuthenticationProxy</code>. API lets remote desktop
+// The <code>chrome.webAuthenticationProxy</code> API lets remote desktop
 // software running on a remote host intercept Web Authentication API
 // (WebAuthn) requests in order to handle them on a local client.
 namespace webAuthenticationProxy {
