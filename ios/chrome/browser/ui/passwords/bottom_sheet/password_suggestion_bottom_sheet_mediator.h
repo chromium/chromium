@@ -65,6 +65,10 @@ class GURL;
 // Logs bottom sheet exit reasons, like dismissal or using a password.
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason;
 
+// Set vector of credentials that is used for testing.
+- (void)setCredentialsForTesting:
+    (std::vector<password_manager::CredentialUIEntry>)credentials;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_

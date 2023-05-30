@@ -205,6 +205,11 @@ using ReauthenticationEvent::kSuccess;
                                 exitReason);
 }
 
+- (void)setCredentialsForTesting:
+    (std::vector<password_manager::CredentialUIEntry>)credentials {
+  _credentials = credentials;
+}
+
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<PasswordSuggestionBottomSheetConsumer>)consumer {
@@ -267,10 +272,13 @@ using ReauthenticationEvent::kSuccess;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    web::WebFrame* frame =
-        feature->GetWebFramesManager(activeWebState)->GetFrameWithId(_frameId);
-    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-        ->DetachListenersAndRefocus(frame);
+    web::WebFramesManager* framesManager =
+        feature->GetWebFramesManager(activeWebState);
+    if (framesManager) {
+      web::WebFrame* frame = framesManager->GetFrameWithId(_frameId);
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+          ->DetachListenersAndRefocus(frame);
+    }
   }
 }
 
