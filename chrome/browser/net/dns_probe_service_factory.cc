@@ -401,7 +401,8 @@ DnsProbeService* DnsProbeServiceFactory::GetForContext(
 }
 
 DnsProbeServiceFactory* DnsProbeServiceFactory::GetInstance() {
-  return base::Singleton<DnsProbeServiceFactory>::get();
+  static base::NoDestructor<DnsProbeServiceFactory> instance;
+  return instance.get();
 }
 
 DnsProbeServiceFactory::DnsProbeServiceFactory()
@@ -415,7 +416,7 @@ DnsProbeServiceFactory::DnsProbeServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-DnsProbeServiceFactory::~DnsProbeServiceFactory() {}
+DnsProbeServiceFactory::~DnsProbeServiceFactory() = default;
 
 KeyedService* DnsProbeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

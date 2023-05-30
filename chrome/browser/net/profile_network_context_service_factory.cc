@@ -29,7 +29,8 @@ ProfileNetworkContextServiceFactory::GetForContext(
 
 ProfileNetworkContextServiceFactory*
 ProfileNetworkContextServiceFactory::GetInstance() {
-  return base::Singleton<ProfileNetworkContextServiceFactory>::get();
+  static base::NoDestructor<ProfileNetworkContextServiceFactory> instance;
+  return instance.get();
 }
 
 ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
@@ -57,7 +58,8 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 }
 
-ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() {}
+ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =
+    default;
 
 KeyedService* ProfileNetworkContextServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
