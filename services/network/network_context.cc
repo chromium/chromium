@@ -110,6 +110,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
+#include "services/network/public/cpp/thread_delegate.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -818,7 +819,9 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
 
   auto callback = base::BindOnce(&NetworkContext::OnRCMDisconnect,
                                  base::Unretained(this), ptr.get());
-  ptr->InstallReceiver(std::move(receiver), std::move(callback));
+  ptr->InstallReceiver(std::move(receiver),
+                       ThreadDelegate::GetHighPriorityTaskRunner(),
+                       std::move(callback));
   restricted_cookie_managers_.insert(std::move(ptr));
 }
 

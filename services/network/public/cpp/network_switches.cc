@@ -114,4 +114,8 @@ const char kUseFirstPartySet[] = "use-first-party-set";
 // https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
+// Enables running high priority tasks in the network services using
+// ThreadDelegate::GetHighPriorityTaskRunner().
+const char kNetworkServiceScheduler[] = "network-service-scheduler";
+
 }  // namespace network::switches
