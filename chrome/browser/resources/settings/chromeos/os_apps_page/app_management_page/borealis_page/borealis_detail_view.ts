@@ -23,7 +23,7 @@ const BOREALIS_CLIENT_APP_ID = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 const AppManagementBorealisDetailViewElementBase =
     AppManagementStoreMixin(PolymerElement);
 
-class AppManagementBorealisDetailViewElement extends
+export class AppManagementBorealisDetailViewElement extends
     AppManagementBorealisDetailViewElementBase {
   static get is() {
     return 'app-management-borealis-detail-view';
