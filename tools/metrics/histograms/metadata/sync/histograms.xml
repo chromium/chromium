@@ -1324,8 +1324,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncedHistoryFaviconAvailability.{RequestOrigin}"
-    enum="FaviconAvailabilityStatus" expires_after="2023-07-10">
+    enum="FaviconAvailabilityStatus" expires_after="2024-07-10">
   <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Records the availability status (local, sync or non-available) for favicons
