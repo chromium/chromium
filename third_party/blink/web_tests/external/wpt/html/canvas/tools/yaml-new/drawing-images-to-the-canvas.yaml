@@ -187,19 +187,6 @@
     }), 500);
   expected: green
 
-- name: 2d.drawImage.animated.apng
-  desc: drawImage() of an APNG with no poster frame draws the first frame
-  canvasType: ['HTMLCanvas']
-  images:
-  - anim-gr.png
-  code: |
-    deferTest();
-    step_timeout(t.step_func_done(function () {
-        ctx.drawImage(document.getElementById('anim-gr.png'), 0, 0);
-        @assert pixel 50,25 ==~ 0,255,0,255;
-    }), 500);
-  expected: green
-
 # TODO: drawImage shadows
 
 - name: 2d.drawImage.3arg
@@ -569,18 +556,6 @@
     const bitmap = await createImageBitmap(blob);
     ctx.drawImage(bitmap, 0, 0);
     _assertPixelApprox(canvas, 50,25, 0,255,0,255, 2);
-  expected: green
-
-- name: 2d.drawImage.animated.poster
-  desc: drawImage() of an APNG draws the poster frame
-  test_type: promise
-  code: |
-    const response = await fetch('/images/anim-poster-gr.png');
-    const blob = await response.blob();
-    const bitmap = await createImageBitmap(blob);
-
-    ctx.drawImage(bitmap, 0, 0);
-    @assert pixel 50,25 ==~ 0,255,0,255; @moz-todo
   expected: green
 
 - name: 2d.drawImage.path
