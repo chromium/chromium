@@ -76,6 +76,7 @@
   on-contextmenu="handleContextMenu"
   on-mouseleave="handleMouseLeave"
   style$="[[getStyles(item)]]">
+
   <img data-index$="[[index]]"
     class$="[[getImageClassName(loading)]]"
     is="cr-auto-img"
@@ -85,7 +86,10 @@
     on-mouseenter="handleMouseEnter"
     on-focus="handleFocus"
     on-click="handleClick"
-    on-load="handleLoad">
+    on-keydown="handleKeydown"
+    on-load="handleLoad"
+    role="button"
+    tabindex="0">
 
   <template is="dom-if" if="[[showClearButton]]">
     <button class="emoji-image-clear" on-click="handleClear">

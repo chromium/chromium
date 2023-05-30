@@ -52,6 +52,49 @@ export class EmojiImageComponent extends PolymerElement {
     this.emojiClick(event);
   }
 
+  private findSiblingEmojiImageByIndex(index: number):
+      EmojiImageComponent|null {
+    // The shadow root of emoji-group.
+    const parentShadowRoot = this.shadowRoot!.host.getRootNode() as ShadowRoot;
+
+    for (const emojiImage of parentShadowRoot.querySelectorAll('emoji-image')) {
+      if (emojiImage.index === index) {
+        return emojiImage;
+      }
+    }
+
+    return null;
+  }
+
+  private handleKeydown(event: KeyboardEvent): void {
+    // The img element where the keyboard event is triggered.
+    const target = event.target as HTMLImageElement;
+
+    // Triggers click event to insert the current GIF image.
+    if (event.code === 'Enter') {
+      event.stopPropagation();
+      target.click();
+      return;
+    }
+
+    // Moves focus to the correct sibling.
+    if (event.code === 'Tab') {
+      const siblingIndex = this.index + (event.shiftKey ? -1 : +1);
+      const sibling = this.findSiblingEmojiImageByIndex(siblingIndex);
+
+      if (sibling !== null) {
+        event.preventDefault();
+        event.stopPropagation();
+        sibling.focus();
+        return;
+      }
+    }
+  }
+
+  override focus() {
+    this.shadowRoot?.querySelector('img')?.focus();
+  }
+
   private handleLoad(): void {
     this.loading = false;
   }
