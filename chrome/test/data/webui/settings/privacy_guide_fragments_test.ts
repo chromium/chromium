@@ -632,6 +632,7 @@ suite('CompletionFragmentTests', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
     });
   });
 
@@ -720,6 +721,7 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
     });
   });
 
@@ -756,3 +758,35 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
         subheader.innerText);
   });
 });
+
+
+suite(
+    'CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled', function() {
+      let fragment: PrivacyGuideCompletionFragmentElement;
+
+      suiteSetup(function() {
+        loadTimeData.overrideValues({
+          isPrivacySandboxRestricted: true,
+          isPrivacySandboxRestrictedNoticeEnabled: true,
+        });
+      });
+
+      setup(function() {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        fragment = document.createElement('privacy-guide-completion-fragment');
+        document.body.appendChild(fragment);
+
+        return flushTasks();
+      });
+
+      teardown(function() {
+        fragment.remove();
+        // The browser instance is shared among the tests, hence the route needs
+        // to be reset between tests.
+        Router.getInstance().navigateTo(routes.BASIC);
+      });
+
+      test('privacySandboxRowVisibility', function() {
+        assertTrue(isChildVisible(fragment, '#privacySandboxRow'));
+      });
+    });
