@@ -161,9 +161,6 @@ using ::views::Border;
 using ::views::LabelButtonBorder;
 using ::views::MenuButton;
 
-// Margin around the content.
-constexpr int kBookmarkBarHorizontalMargin = 8;
-
 // Used to globally disable rich animations.
 bool animations_enabled = true;
 
@@ -855,6 +852,21 @@ void BookmarkBarView::GetAnchorPositionForButton(
     *anchor = Position::kTopLeft;
 }
 
+int BookmarkBarView::GetLeadingMargin() const {
+  static constexpr int kBookmarksBarLeadingMarginPreRefresh = 8;
+  static constexpr int kBookmarksBarLeadingMarginWithoutSavedTabGroups = 6;
+  static constexpr int kBookmarksBarLeadingMarginWithSavedTabGroups = 12;
+
+  if (!features::IsChromeRefresh2023()) {
+    return kBookmarksBarLeadingMarginPreRefresh;
+  }
+  if (saved_tab_groups_separator_view_ &&
+      saved_tab_groups_separator_view_->GetVisible()) {
+    return kBookmarksBarLeadingMarginWithSavedTabGroups;
+  }
+  return kBookmarksBarLeadingMarginWithoutSavedTabGroups;
+}
+
 views::MenuItemView* BookmarkBarView::GetMenu() {
   return bookmark_menu_ ? bookmark_menu_->menu() : nullptr;
 }
@@ -915,7 +927,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   // button, by which one can access all the Bookmark Bar items, and the "Other
   // Bookmarks" folder, along with appropriate margins and button padding.
   // It should also contain the Managed Bookmarks folder, if it is visible.
-  int width = kBookmarkBarHorizontalMargin;
+  int width = GetLeadingMargin();
 
   int height = GetLayoutConstant(BOOKMARK_BAR_HEIGHT);
 
@@ -956,8 +968,9 @@ void BookmarkBarView::Layout() {
   if (!bookmark_model_)
     return;
 
-  int x = kBookmarkBarHorizontalMargin;
-  int width = View::width() - 2 * kBookmarkBarHorizontalMargin;
+  int x = GetLeadingMargin();
+  static constexpr int kBookmarkBarTrailingMargin = 8;
+  int width = View::width() - x - kBookmarkBarTrailingMargin;
 
   const int button_height = GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT);
 
@@ -997,7 +1010,7 @@ void BookmarkBarView::Layout() {
   const int bookmark_bar_button_padding =
       GetLayoutConstant(BOOKMARK_BAR_BUTTON_PADDING);
 
-  int max_x = kBookmarkBarHorizontalMargin + width - overflow_pref.width() -
+  int max_x = GetLeadingMargin() + width - overflow_pref.width() -
               bookmarks_separator_pref.width();
   if (other_bookmarks_button_->GetVisible()) {
     max_x -= other_bookmarks_pref.width() + bookmark_bar_button_padding;
@@ -1158,7 +1171,7 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
       else if (apps_page_shortcut_->GetVisible())
         x = apps_page_shortcut_->bounds().right();
       else
-        x = kBookmarkBarHorizontalMargin;
+        x = GetLeadingMargin();
     } else {
       x = bookmark_buttons_[index]->x();
     }
