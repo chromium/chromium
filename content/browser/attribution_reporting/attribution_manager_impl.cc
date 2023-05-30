@@ -956,6 +956,15 @@ void AttributionManagerImpl::GetAllDataKeys(
 void AttributionManagerImpl::RemoveAttributionDataByDataKey(
     const DataKey& data_key,
     base::OnceClosure callback) {
+  auto barrier = base::BarrierClosure(2, std::move(callback));
+  callback = barrier;
+
+  os_level_manager_->ClearData(
+      /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
+      /*origins=*/{data_key.reporting_origin()},
+      /*domains=*/{}, BrowsingDataFilterBuilder::Mode::kDelete,
+      /*delete_rate_limit_data=*/true, std::move(barrier));
+
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)
       .Then(std::move(callback).Then(

@@ -1051,6 +1051,31 @@ TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
+TEST_F(AttributionManagerImplTest, RemoveDataKeyFromBrowserAndOs) {
+  const auto origin = *SuitableOrigin::Deserialize("https://example.test");
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetReportingOrigin(origin).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin).Build(), kFrameId);
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  AttributionManager::DataKey data_key(*origin);
+  EXPECT_CALL(*os_level_manager_,
+              ClearData(/*delete_begin=*/base::Time::Min(),
+                        /*delete_end=*/base::Time::Max(),
+                        /*origins=*/std::set<url::Origin>({*origin}),
+                        /*domain*/ std::set<std::string>(),
+                        /*mode=*/BrowsingDataFilterBuilder::Mode::kDelete,
+                        /*delete_rate_limit_data=*/true, _));
+
+  base::RunLoop run_loop;
+  attribution_manager_->RemoveAttributionDataByDataKey(data_key,
+                                                       run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_THAT(StoredReports(), IsEmpty());
+}
+
 TEST_F(AttributionManagerImplTest, HandleOsSource) {
   AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state(
       AttributionOsLevelManager::ApiState::kEnabled);
