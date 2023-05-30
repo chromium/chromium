@@ -4,7 +4,6 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
@@ -39,7 +38,8 @@ FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
 // static
 FirstPartySetsPolicyServiceFactory*
 FirstPartySetsPolicyServiceFactory::GetInstance() {
-  return base::Singleton<FirstPartySetsPolicyServiceFactory>::get();
+  static base::NoDestructor<FirstPartySetsPolicyServiceFactory> instance;
+  return instance.get();
 }
 
 void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
