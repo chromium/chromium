@@ -24,6 +24,8 @@ class EmbeddedPolicyTestServer;
 
 namespace ash {
 
+class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting;
+
 // This test mixin covers setting up EmbeddedPolicyTestServer and adding a
 // command-line flag to use it. Please see SetUp function for default settings.
 // Server is started after SetUp execution.
@@ -150,6 +152,9 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
  private:
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_test_server_;
   base::flat_set<Capabilities> capabilities_;
+
+  std::unique_ptr<ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting>
+      attestation_flow_override_;
 };
 
 }  // namespace ash

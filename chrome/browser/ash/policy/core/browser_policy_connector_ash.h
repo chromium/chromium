@@ -23,9 +23,6 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
-namespace attestation {
-class AttestationFlow;
-}
 class InstallAttributes;
 }  // namespace ash
 
@@ -187,19 +184,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return device_cert_provisioning_scheduler_.get();
   }
 
-  // Returns a pointer to the attestation flow to be used during enrollment. The
-  // only reason for this member and getter to exist is that sometimes fake
-  // attestation flow is needed for testing.
-  // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
-  // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
-  ash::attestation::AttestationFlow* GetAttestationFlow() const {
-    return attestation_flow_.get();
-  }
-
-  // Sets the attestation flow for testing.
-  void SetAttestationFlowForTesting(
-      std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow);
-
   // Returns device's market segment.
   MarketSegment GetEnterpriseMarketSegment() const;
 
@@ -308,13 +292,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // RequiredClientCertificateForDevice device policy.
   std::unique_ptr<ash::cert_provisioning::CertProvisioningScheduler>
       device_cert_provisioning_scheduler_;
-
-  // Attestation flow to be used during enrollment. The only reason for this
-  // member and getter to exist is that sometimes fake attestation flow is
-  // needed for testing.
-  // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
-  // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
-  std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
 };

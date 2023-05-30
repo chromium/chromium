@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 class GoogleServiceAuthError;
@@ -21,12 +21,19 @@ class EnrollmentStatus;
 
 namespace ash {
 
+namespace attestation {
+class AttestationFlow;
+}
+
 // This class is capable to enroll the device into enterprise domain, using
 // either a profile containing authentication data or OAuth token.
 // It can also clear an authentication data from the profile and revoke tokens
 // that are not longer needed.
 class EnrollmentLauncher {
  public:
+  using AttestationFlowFactory = base::RepeatingCallback<
+      std::unique_ptr<ash::attestation::AttestationFlow>()>;
+
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
   enum OtherError {
@@ -137,6 +144,20 @@ class EnrollmentLauncher {
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
   static EnrollmentLauncher* mock_enrollment_helper_;
+};
+
+class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting {
+ public:
+  explicit ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting(
+      EnrollmentLauncher::AttestationFlowFactory testing_factory);
+  ~ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting();
+
+  ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting(
+      const ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting&) =
+      delete;
+  ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting& operator=(
+      const ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting&) =
+      delete;
 };
 
 }  // namespace ash

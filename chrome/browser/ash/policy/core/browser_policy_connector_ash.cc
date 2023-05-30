@@ -22,7 +22,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -62,7 +61,6 @@
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -107,11 +105,6 @@ MarketSegment TranslateMarketSegment(
   return MarketSegment::UNKNOWN;
 }
 
-std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
-  return std::make_unique<ash::attestation::AttestationFlowAdaptive>(
-      std::make_unique<ash::attestation::AttestationCAClient>());
-}
-
 }  // namespace
 
 // static
@@ -122,8 +115,7 @@ BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner() {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
-    : attestation_flow_(CreateAttestationFlow()) {
+BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh() {
   DCHECK(ash::InstallAttributes::IsInitialized());
 
   // DBusThreadManager or DeviceSettingsService may be
@@ -445,11 +437,6 @@ MarketSegment BrowserPolicyConnectorAsh::GetEnterpriseMarketSegment() const {
 ProxyPolicyProvider*
 BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
   return global_user_cloud_policy_provider_;
-}
-
-void BrowserPolicyConnectorAsh::SetAttestationFlowForTesting(
-    std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow) {
-  attestation_flow_ = std::move(attestation_flow);
 }
 
 // static

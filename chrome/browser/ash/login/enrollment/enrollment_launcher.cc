@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -53,6 +56,19 @@ namespace {
 
 // The OAuth token consumer name.
 const char kOAuthConsumerName[] = "enterprise_enrollment";
+
+base::NoDestructor<EnrollmentLauncher::AttestationFlowFactory>
+    g_testing_attestation_flow_factory;
+
+std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
+  if (!g_testing_attestation_flow_factory->is_null()) {
+    CHECK_IS_TEST();
+    return g_testing_attestation_flow_factory->Run();
+  }
+
+  return std::make_unique<ash::attestation::AttestationFlowAdaptive>(
+      std::make_unique<ash::attestation::AttestationCAClient>());
+}
 
 // A helper class that takes care of asynchronously revoking a given token.
 class TokenRevoker : public GaiaAuthConsumer {
@@ -160,6 +176,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   std::unique_ptr<policy::PolicyOAuth2TokenFetcher> oauth_fetcher_;
 
   // Non-nullptr from DoEnroll till OnEnrollmentFinished.
+  std::unique_ptr<attestation::AttestationFlow> attestation_flow_;
   std::unique_ptr<policy::EnrollmentHandler> enrollment_handler_;
 
   base::WeakPtrFactory<EnrollmentLauncherImpl> weak_ptr_factory_{this};
@@ -248,18 +265,17 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
   LOG(WARNING) << "Enroll with token type: "
                << static_cast<int>(auth_data.token_type());
   auth_data_ = std::move(auth_data);
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   // If an enrollment domain is already fixed in install attributes and
   // re-enrollment happens via login, domains need to be equal.
   // If there is a mismatch between domain set in install attributes and
   // auto re-enrollment domain provided by the server, policy validation will
   // fail later in the process.
-  if (connector->IsCloudManaged() && !enrolling_user_domain_.empty() &&
+  if (InstallAttributes::Get()->IsCloudManaged() &&
+      !enrolling_user_domain_.empty() &&
       !enrollment_config_.is_mode_attestation() &&
-      connector->GetEnterpriseEnrollmentDomain() != enrolling_user_domain_) {
+      InstallAttributes::Get()->GetDomain() != enrolling_user_domain_) {
     LOG(ERROR) << "Trying to re-enroll to a different domain than "
-               << connector->GetEnterpriseEnrollmentDomain();
+               << InstallAttributes::Get()->GetDomain();
     UMA(policy::kMetricEnrollmentPrecheckDomainMismatch);
     if (oauth_status_ != OAUTH_NOT_STARTED) {
       oauth_status_ = OAUTH_FINISHED;
@@ -268,15 +284,14 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
     return;
   }
 
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+
   connector->ScheduleServiceInitialization(0);
 
   DCHECK(!enrollment_handler_);
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
-  // Obtain attestation_flow from the connector because it can be fake
-  // attestation flow for testing.
-  attestation::AttestationFlow* attestation_flow =
-      connector->GetAttestationFlow();
   // DeviceDMToken callback is empty here because for device policies this
   // DMToken is already provided in the policy fetch requests.
   auto client = policy::CreateDeviceCloudPolicyClientAsh(
@@ -285,9 +300,12 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
       g_browser_process->shared_url_loader_factory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
 
+  attestation_flow_ = CreateAttestationFlow();
+
   enrollment_handler_ = std::make_unique<policy::EnrollmentHandler>(
       policy_manager->device_store(), InstallAttributes::Get(),
-      connector->GetStateKeysBroker(), attestation_flow, std::move(client),
+      connector->GetStateKeysBroker(), attestation_flow_.get(),
+      std::move(client),
       policy::BrowserPolicyConnectorAsh::CreateBackgroundTaskRunner(),
       enrollment_config_, license_type_, auth_data_.Clone(),
       InstallAttributes::Get()->GetDeviceId(),
@@ -388,6 +406,7 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   // handler here as it does not do anything after that callback in
   // |EnrollmentHandler::ReportResult()|.
   enrollment_handler_.reset();
+  attestation_flow_.reset();
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
@@ -668,6 +687,20 @@ void EnrollmentLauncher::set_status_consumer(
     EnrollmentStatusConsumer* status_consumer) {
   DCHECK(status_consumer);
   status_consumer_ = status_consumer;
+}
+
+ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting::
+    ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting(
+        EnrollmentLauncher::AttestationFlowFactory testing_factory) {
+  CHECK_IS_TEST();
+  CHECK(g_testing_attestation_flow_factory->is_null())
+      << "Only one override allowed";
+  *g_testing_attestation_flow_factory = std::move(testing_factory);
+}
+
+ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting::
+    ~ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting() {
+  g_testing_attestation_flow_factory->Reset();
 }
 
 }  // namespace ash
