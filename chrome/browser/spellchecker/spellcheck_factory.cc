@@ -24,7 +24,8 @@ SpellcheckService* SpellcheckServiceFactory::GetForContext(
 
 // static
 SpellcheckServiceFactory* SpellcheckServiceFactory::GetInstance() {
-  return base::Singleton<SpellcheckServiceFactory>::get();
+  static base::NoDestructor<SpellcheckServiceFactory> instance;
+  return instance.get();
 }
 
 SpellcheckServiceFactory::SpellcheckServiceFactory()
@@ -40,7 +41,7 @@ SpellcheckServiceFactory::SpellcheckServiceFactory()
   // DependsOn(RequestContextFactory::GetInstance());
 }
 
-SpellcheckServiceFactory::~SpellcheckServiceFactory() {}
+SpellcheckServiceFactory::~SpellcheckServiceFactory() = default;
 
 KeyedService* SpellcheckServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
