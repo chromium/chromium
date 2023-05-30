@@ -29,7 +29,8 @@ SystemWebAppManager* SystemWebAppManagerFactory::GetForProfile(
 
 // static
 SystemWebAppManagerFactory* SystemWebAppManagerFactory::GetInstance() {
-  return base::Singleton<SystemWebAppManagerFactory>::get();
+  static base::NoDestructor<SystemWebAppManagerFactory> instance;
+  return instance.get();
 }
 
 // static

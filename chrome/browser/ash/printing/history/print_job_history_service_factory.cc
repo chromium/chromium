@@ -28,7 +28,8 @@ PrintJobHistoryService* PrintJobHistoryServiceFactory::GetForBrowserContext(
 
 // static
 PrintJobHistoryServiceFactory* PrintJobHistoryServiceFactory::GetInstance() {
-  return base::Singleton<PrintJobHistoryServiceFactory>::get();
+  static base::NoDestructor<PrintJobHistoryServiceFactory> instance;
+  return instance.get();
 }
 
 PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
@@ -45,7 +46,7 @@ PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
   DependsOn(PrintJobReportingServiceFactory::GetInstance());
 }
 
-PrintJobHistoryServiceFactory::~PrintJobHistoryServiceFactory() {}
+PrintJobHistoryServiceFactory::~PrintJobHistoryServiceFactory() = default;
 
 KeyedService* PrintJobHistoryServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -41,7 +41,8 @@ SmbService* SmbServiceFactory::FindExisting(content::BrowserContext* context) {
 }
 
 SmbServiceFactory* SmbServiceFactory::GetInstance() {
-  return base::Singleton<SmbServiceFactory>::get();
+  static base::NoDestructor<SmbServiceFactory> instance;
+  return instance.get();
 }
 
 SmbServiceFactory::SmbServiceFactory()

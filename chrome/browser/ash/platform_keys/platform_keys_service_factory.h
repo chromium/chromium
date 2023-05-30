@@ -10,7 +10,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace ash {
@@ -54,7 +54,7 @@ class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
   void SetTestingMode(bool is_testing_mode);
 
  private:
-  friend struct base::DefaultSingletonTraits<PlatformKeysServiceFactory>;
+  friend base::NoDestructor<PlatformKeysServiceFactory>;
 
   PlatformKeysServiceFactory();
   PlatformKeysServiceFactory(const PlatformKeysServiceFactory&) = delete;

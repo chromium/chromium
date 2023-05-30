@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_FACTORY_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace context {
@@ -28,7 +28,7 @@ class UsersPrivateDelegateFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<UsersPrivateDelegateFactory>;
+  friend base::NoDestructor<UsersPrivateDelegateFactory>;
 
   UsersPrivateDelegateFactory();
   ~UsersPrivateDelegateFactory() override;

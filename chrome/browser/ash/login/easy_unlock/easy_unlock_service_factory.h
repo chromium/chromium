@@ -14,7 +14,7 @@ class BrowserContext;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace ash {
@@ -37,7 +37,7 @@ class EasyUnlockServiceFactory : public ProfileKeyedServiceFactory {
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<EasyUnlockServiceFactory>;
+  friend base::NoDestructor<EasyUnlockServiceFactory>;
 
   EasyUnlockServiceFactory();
   ~EasyUnlockServiceFactory() override;

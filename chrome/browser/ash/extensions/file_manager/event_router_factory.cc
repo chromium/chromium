@@ -25,7 +25,8 @@ EventRouter* EventRouterFactory::GetForProfile(Profile* profile) {
 
 // static
 EventRouterFactory* EventRouterFactory::GetInstance() {
-  return base::Singleton<EventRouterFactory>::get();
+  static base::NoDestructor<EventRouterFactory> instance;
+  return instance.get();
 }
 
 EventRouterFactory::EventRouterFactory()

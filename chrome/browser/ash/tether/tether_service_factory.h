@@ -14,7 +14,7 @@ class BrowserContext;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace ash {
@@ -32,7 +32,7 @@ class TetherServiceFactory : public ProfileKeyedServiceFactory {
   TetherServiceFactory& operator=(const TetherServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<TetherServiceFactory>;
+  friend base::NoDestructor<TetherServiceFactory>;
 
   TetherServiceFactory();
   ~TetherServiceFactory() override;

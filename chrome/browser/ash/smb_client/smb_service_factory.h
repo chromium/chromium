@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -31,7 +31,7 @@ class SmbServiceFactory : public ProfileKeyedServiceFactory {
   SmbServiceFactory& operator=(const SmbServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SmbServiceFactory>;
+  friend base::NoDestructor<SmbServiceFactory>;
 
   SmbServiceFactory();
   ~SmbServiceFactory() override;

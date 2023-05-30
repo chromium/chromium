@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash::personalization_app {
@@ -24,7 +24,7 @@ class PersonalizationAppManagerFactory : public ProfileKeyedServiceFactory {
       const PersonalizationAppManagerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PersonalizationAppManagerFactory>;
+  friend base::NoDestructor<PersonalizationAppManagerFactory>;
 
   PersonalizationAppManagerFactory();
   ~PersonalizationAppManagerFactory() override;

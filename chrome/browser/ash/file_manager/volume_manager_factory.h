@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -40,7 +40,7 @@ class VolumeManagerFactory : public ProfileKeyedServiceFactory {
 
  private:
   // For Singleton.
-  friend struct base::DefaultSingletonTraits<VolumeManagerFactory>;
+  friend base::NoDestructor<VolumeManagerFactory>;
 
   VolumeManagerFactory();
   ~VolumeManagerFactory() override;

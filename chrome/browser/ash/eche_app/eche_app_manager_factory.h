@@ -7,8 +7,8 @@
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -138,7 +138,7 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
   EcheAppManagerFactory& operator=(const EcheAppManagerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<EcheAppManagerFactory>;
+  friend base::NoDestructor<EcheAppManagerFactory>;
   friend class EcheAppManagerFactoryTest;
 
   EcheAppManagerFactory();

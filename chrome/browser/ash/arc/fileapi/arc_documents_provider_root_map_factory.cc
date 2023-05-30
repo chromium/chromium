@@ -37,7 +37,8 @@ ArcDocumentsProviderRootMapFactory::~ArcDocumentsProviderRootMapFactory() =
 // static
 ArcDocumentsProviderRootMapFactory*
 ArcDocumentsProviderRootMapFactory::GetInstance() {
-  return base::Singleton<ArcDocumentsProviderRootMapFactory>::get();
+  static base::NoDestructor<ArcDocumentsProviderRootMapFactory> instance;
+  return instance.get();
 }
 
 KeyedService* ArcDocumentsProviderRootMapFactory::BuildServiceInstanceFor(

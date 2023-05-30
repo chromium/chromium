@@ -18,7 +18,8 @@ PluginVmInstaller* PluginVmInstallerFactory::GetForProfile(Profile* profile) {
 
 // static
 PluginVmInstallerFactory* PluginVmInstallerFactory::GetInstance() {
-  return base::Singleton<PluginVmInstallerFactory>::get();
+  static base::NoDestructor<PluginVmInstallerFactory> instance;
+  return instance.get();
 }
 
 PluginVmInstallerFactory::PluginVmInstallerFactory()

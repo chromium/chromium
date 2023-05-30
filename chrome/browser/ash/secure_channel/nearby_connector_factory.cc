@@ -23,7 +23,8 @@ NearbyConnector* NearbyConnectorFactory::GetForProfile(Profile* profile) {
 
 // static
 NearbyConnectorFactory* NearbyConnectorFactory::GetInstance() {
-  return base::Singleton<NearbyConnectorFactory>::get();
+  static base::NoDestructor<NearbyConnectorFactory> instance;
+  return instance.get();
 }
 
 NearbyConnectorFactory::NearbyConnectorFactory()

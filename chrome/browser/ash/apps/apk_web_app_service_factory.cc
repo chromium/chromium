@@ -25,7 +25,8 @@ ApkWebAppService* ApkWebAppServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 ApkWebAppServiceFactory* ApkWebAppServiceFactory::GetInstance() {
-  return base::Singleton<ApkWebAppServiceFactory>::get();
+  static base::NoDestructor<ApkWebAppServiceFactory> instance;
+  return instance.get();
 }
 
 ApkWebAppServiceFactory::ApkWebAppServiceFactory()
@@ -41,7 +42,7 @@ ApkWebAppServiceFactory::ApkWebAppServiceFactory()
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 }
 
-ApkWebAppServiceFactory::~ApkWebAppServiceFactory() {}
+ApkWebAppServiceFactory::~ApkWebAppServiceFactory() = default;
 
 KeyedService* ApkWebAppServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

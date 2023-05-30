@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -32,7 +32,7 @@ class NearbyPresenceServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<NearbyPresenceServiceFactory>;
+  friend base::NoDestructor<NearbyPresenceServiceFactory>;
 
   NearbyPresenceServiceFactory();
   ~NearbyPresenceServiceFactory() override;

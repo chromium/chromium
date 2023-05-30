@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_FACTORY_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class AppSyncUIState;
@@ -22,7 +22,7 @@ class AppSyncUIStateFactory : public ProfileKeyedServiceFactory {
   static AppSyncUIStateFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<AppSyncUIStateFactory>;
+  friend base::NoDestructor<AppSyncUIStateFactory>;
 
   AppSyncUIStateFactory();
   ~AppSyncUIStateFactory() override;

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -35,7 +35,7 @@ class OfflineSigninLimiterFactory : public ProfileKeyedServiceFactory {
   static void SetClockForTesting(base::Clock* clock);
 
  private:
-  friend struct base::DefaultSingletonTraits<OfflineSigninLimiterFactory>;
+  friend base::NoDestructor<OfflineSigninLimiterFactory>;
 
   OfflineSigninLimiterFactory();
   ~OfflineSigninLimiterFactory() override;

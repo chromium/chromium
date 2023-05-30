@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DEVICE_SYNC_DEVICE_SYNC_CLIENT_FACTORY_H_
 #define CHROME_BROWSER_ASH_DEVICE_SYNC_DEVICE_SYNC_CLIENT_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -27,7 +27,7 @@ class DeviceSyncClientFactory : public ProfileKeyedServiceFactory {
   DeviceSyncClientFactory& operator=(const DeviceSyncClientFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<DeviceSyncClientFactory>;
+  friend base::NoDestructor<DeviceSyncClientFactory>;
 
   DeviceSyncClientFactory();
   ~DeviceSyncClientFactory() override;

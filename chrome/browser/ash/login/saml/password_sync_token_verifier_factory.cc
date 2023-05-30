@@ -18,7 +18,8 @@ namespace ash {
 // static
 PasswordSyncTokenVerifierFactory*
 PasswordSyncTokenVerifierFactory::GetInstance() {
-  return base::Singleton<PasswordSyncTokenVerifierFactory>::get();
+  static base::NoDestructor<PasswordSyncTokenVerifierFactory> instance;
+  return instance.get();
 }
 
 // static

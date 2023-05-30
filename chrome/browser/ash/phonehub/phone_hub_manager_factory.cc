@@ -76,7 +76,8 @@ PhoneHubManager* PhoneHubManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 PhoneHubManagerFactory* PhoneHubManagerFactory::GetInstance() {
-  return base::Singleton<PhoneHubManagerFactory>::get();
+  static base::NoDestructor<PhoneHubManagerFactory> instance;
+  return instance.get();
 }
 
 PhoneHubManagerFactory::PhoneHubManagerFactory()

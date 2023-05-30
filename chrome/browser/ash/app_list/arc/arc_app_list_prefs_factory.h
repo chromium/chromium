@@ -10,7 +10,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "ash/components/arc/session/connection_holder.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ArcAppListPrefs;
@@ -27,7 +27,7 @@ class ArcAppListPrefsFactory : public ProfileKeyedServiceFactory {
   void RecreateServiceInstanceForTesting(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<ArcAppListPrefsFactory>;
+  friend base::NoDestructor<ArcAppListPrefsFactory>;
 
   ArcAppListPrefsFactory();
   ArcAppListPrefsFactory(const ArcAppListPrefsFactory&) = delete;

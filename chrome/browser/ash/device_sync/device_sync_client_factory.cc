@@ -127,7 +127,7 @@ DeviceSyncClientFactory::DeviceSyncClientFactory()
   }
 }
 
-DeviceSyncClientFactory::~DeviceSyncClientFactory() {}
+DeviceSyncClientFactory::~DeviceSyncClientFactory() = default;
 
 // static
 DeviceSyncClient* DeviceSyncClientFactory::GetForProfile(Profile* profile) {
@@ -139,7 +139,8 @@ DeviceSyncClient* DeviceSyncClientFactory::GetForProfile(Profile* profile) {
 
 // static
 DeviceSyncClientFactory* DeviceSyncClientFactory::GetInstance() {
-  return base::Singleton<DeviceSyncClientFactory>::get();
+  static base::NoDestructor<DeviceSyncClientFactory> instance;
+  return instance.get();
 }
 
 KeyedService* DeviceSyncClientFactory::BuildServiceInstanceFor(

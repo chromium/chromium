@@ -24,7 +24,7 @@ OAuth2LoginManagerFactory::OAuth2LoginManagerFactory()
   DependsOn(AccountReconcilorFactory::GetInstance());
 }
 
-OAuth2LoginManagerFactory::~OAuth2LoginManagerFactory() {}
+OAuth2LoginManagerFactory::~OAuth2LoginManagerFactory() = default;
 
 // static
 OAuth2LoginManager* OAuth2LoginManagerFactory::GetForProfile(Profile* profile) {
@@ -34,7 +34,8 @@ OAuth2LoginManager* OAuth2LoginManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 OAuth2LoginManagerFactory* OAuth2LoginManagerFactory::GetInstance() {
-  return base::Singleton<OAuth2LoginManagerFactory>::get();
+  static base::NoDestructor<OAuth2LoginManagerFactory> instance;
+  return instance.get();
 }
 
 KeyedService* OAuth2LoginManagerFactory::BuildServiceInstanceFor(

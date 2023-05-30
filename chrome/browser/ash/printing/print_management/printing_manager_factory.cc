@@ -26,7 +26,8 @@ PrintingManager* PrintingManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 PrintingManagerFactory* PrintingManagerFactory::GetInstance() {
-  return base::Singleton<PrintingManagerFactory>::get();
+  static base::NoDestructor<PrintingManagerFactory> instance;
+  return instance.get();
 }
 
 PrintingManagerFactory::PrintingManagerFactory()

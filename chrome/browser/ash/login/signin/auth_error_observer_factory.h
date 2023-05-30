@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -29,7 +29,7 @@ class AuthErrorObserverFactory : public ProfileKeyedServiceFactory {
   AuthErrorObserverFactory& operator=(const AuthErrorObserverFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<AuthErrorObserverFactory>;
+  friend base::NoDestructor<AuthErrorObserverFactory>;
 
   AuthErrorObserverFactory();
   ~AuthErrorObserverFactory() override;

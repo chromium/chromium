@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -31,7 +31,7 @@ class ServiceFactory : public ProfileKeyedServiceFactory {
   ServiceFactory& operator=(const ServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ServiceFactory>;
+  friend base::NoDestructor<ServiceFactory>;
 
   ServiceFactory();
   ~ServiceFactory() override;

@@ -45,7 +45,8 @@ SecurityTokenSessionControllerFactory::GetForBrowserContext(
 // static
 SecurityTokenSessionControllerFactory*
 SecurityTokenSessionControllerFactory::GetInstance() {
-  return base::Singleton<SecurityTokenSessionControllerFactory>::get();
+  static base::NoDestructor<SecurityTokenSessionControllerFactory> instance;
+  return instance.get();
 }
 
 KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(

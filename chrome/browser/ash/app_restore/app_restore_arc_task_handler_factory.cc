@@ -23,7 +23,8 @@ AppRestoreArcTaskHandler* AppRestoreArcTaskHandlerFactory::GetForProfile(
 // static
 AppRestoreArcTaskHandlerFactory*
 AppRestoreArcTaskHandlerFactory::GetInstance() {
-  return base::Singleton<AppRestoreArcTaskHandlerFactory>::get();
+  static base::NoDestructor<AppRestoreArcTaskHandlerFactory> instance;
+  return instance.get();
 }
 
 AppRestoreArcTaskHandlerFactory::AppRestoreArcTaskHandlerFactory()

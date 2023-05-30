@@ -28,7 +28,7 @@ SigninErrorNotifierFactory::SigninErrorNotifierFactory()
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 
-SigninErrorNotifierFactory::~SigninErrorNotifierFactory() {}
+SigninErrorNotifierFactory::~SigninErrorNotifierFactory() = default;
 
 // static
 SigninErrorNotifier* SigninErrorNotifierFactory::GetForProfile(
@@ -39,7 +39,8 @@ SigninErrorNotifier* SigninErrorNotifierFactory::GetForProfile(
 
 // static
 SigninErrorNotifierFactory* SigninErrorNotifierFactory::GetInstance() {
-  return base::Singleton<SigninErrorNotifierFactory>::get();
+  static base::NoDestructor<SigninErrorNotifierFactory> instance;
+  return instance.get();
 }
 
 KeyedService* SigninErrorNotifierFactory::BuildServiceInstanceFor(

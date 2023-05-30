@@ -14,7 +14,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -35,7 +35,7 @@ class SyncAppsyncServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SyncAppsyncServiceFactory>;
+  friend base::NoDestructor<SyncAppsyncServiceFactory>;
 
   SyncAppsyncServiceFactory();
   ~SyncAppsyncServiceFactory() override;

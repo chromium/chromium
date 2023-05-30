@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/sync/sync_appsync_service_factory.h"
 
 #include "base/check_is_test.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/sync/sync_appsync_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -22,7 +22,8 @@ SyncAppsyncService* SyncAppsyncServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 SyncAppsyncServiceFactory* SyncAppsyncServiceFactory::GetInstance() {
-  return base::Singleton<SyncAppsyncServiceFactory>::get();
+  static base::NoDestructor<SyncAppsyncServiceFactory> instance;
+  return instance.get();
 }
 
 SyncAppsyncServiceFactory::SyncAppsyncServiceFactory()

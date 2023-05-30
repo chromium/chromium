@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -32,7 +32,8 @@ KerberosCredentialsManager* KerberosCredentialsManagerFactory::Get(
 // static
 KerberosCredentialsManagerFactory*
 KerberosCredentialsManagerFactory::GetInstance() {
-  return base::Singleton<KerberosCredentialsManagerFactory>::get();
+  static base::NoDestructor<KerberosCredentialsManagerFactory> instance;
+  return instance.get();
 }
 
 KerberosCredentialsManagerFactory::KerberosCredentialsManagerFactory()

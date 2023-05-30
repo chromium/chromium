@@ -56,8 +56,9 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::GetForBrowserContext(
 // static
 UserPrivateTokenKeyPermissionsManagerServiceFactory*
 UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance() {
-  return base::Singleton<
-      UserPrivateTokenKeyPermissionsManagerServiceFactory>::get();
+  static base::NoDestructor<UserPrivateTokenKeyPermissionsManagerServiceFactory>
+      instance;
+  return instance.get();
 }
 
 UserPrivateTokenKeyPermissionsManagerServiceFactory::

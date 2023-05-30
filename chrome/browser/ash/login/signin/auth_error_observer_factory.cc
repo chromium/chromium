@@ -37,7 +37,8 @@ AuthErrorObserver* AuthErrorObserverFactory::GetForProfile(Profile* profile) {
 
 // static
 AuthErrorObserverFactory* AuthErrorObserverFactory::GetInstance() {
-  return base::Singleton<AuthErrorObserverFactory>::get();
+  static base::NoDestructor<AuthErrorObserverFactory> instance;
+  return instance.get();
 }
 
 KeyedService* AuthErrorObserverFactory::BuildServiceInstanceFor(

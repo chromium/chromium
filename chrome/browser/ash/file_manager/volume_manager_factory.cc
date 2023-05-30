@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
@@ -23,7 +23,8 @@ VolumeManager* VolumeManagerFactory::Get(content::BrowserContext* context) {
 }
 
 VolumeManagerFactory* VolumeManagerFactory::GetInstance() {
-  return base::Singleton<VolumeManagerFactory>::get();
+  static base::NoDestructor<VolumeManagerFactory> instance;
+  return instance.get();
 }
 
 bool VolumeManagerFactory::ServiceIsCreatedWithBrowserContext() const {

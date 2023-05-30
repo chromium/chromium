@@ -19,7 +19,8 @@ ArcVpnProviderManager* ArcVpnProviderManagerFactory::GetForBrowserContext(
 
 // static
 ArcVpnProviderManagerFactory* ArcVpnProviderManagerFactory::GetInstance() {
-  return base::Singleton<ArcVpnProviderManagerFactory>::get();
+  static base::NoDestructor<ArcVpnProviderManagerFactory> instance;
+  return instance.get();
 }
 
 ArcVpnProviderManagerFactory::ArcVpnProviderManagerFactory()
@@ -36,7 +37,7 @@ ArcVpnProviderManagerFactory::ArcVpnProviderManagerFactory()
   DependsOn(ArcAppListPrefsFactory::GetInstance());
 }
 
-ArcVpnProviderManagerFactory::~ArcVpnProviderManagerFactory() {}
+ArcVpnProviderManagerFactory::~ArcVpnProviderManagerFactory() = default;
 
 KeyedService* ArcVpnProviderManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

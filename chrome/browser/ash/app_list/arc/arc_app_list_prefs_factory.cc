@@ -23,7 +23,8 @@ ArcAppListPrefs* ArcAppListPrefsFactory::GetForBrowserContext(
 
 // static
 ArcAppListPrefsFactory* ArcAppListPrefsFactory::GetInstance() {
-  return base::Singleton<ArcAppListPrefsFactory>::get();
+  static base::NoDestructor<ArcAppListPrefsFactory> instance;
+  return instance.get();
 }
 
 // static

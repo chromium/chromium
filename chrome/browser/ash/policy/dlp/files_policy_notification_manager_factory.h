@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace policy {
@@ -30,8 +30,7 @@ class FilesPolicyNotificationManagerFactory
       content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      FilesPolicyNotificationManagerFactory>;
+  friend base::NoDestructor<FilesPolicyNotificationManagerFactory>;
 
   FilesPolicyNotificationManagerFactory();
   ~FilesPolicyNotificationManagerFactory() override;
