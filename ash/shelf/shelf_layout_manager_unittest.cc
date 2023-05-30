@@ -4272,15 +4272,8 @@ class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
  public:
   QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {}
   ~QuickActionShowBubbleTest() override = default;
-  // ShelfLayoutManagerTestBase:
-  void SetUp() override {
-    ShelfLayoutManagerTestBase::SetUp();
-    scoped_features_.InitAndEnableFeature(
-        app_list_features::kQuickActionShowBubbleLauncher);
-  }
 
  private:
-  base::test::ScopedFeatureList scoped_features_;
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
 };
 

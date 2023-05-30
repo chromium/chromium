@@ -6297,12 +6297,6 @@ const char kProductivityLauncherImageSearchDescription[] =
     "To evaluate the viability of image search as part of Productivity "
     "Launcher Search.";
 
-const char kQuickActionShowBubbleLauncherName[] =
-    "Swipe to show bubble launcher";
-const char kQuickActionShowBubbleLauncherDescription[] =
-    "Enables a fling gesture or mouse scroll from the shelf to show the bubble "
-    "launcher.";
-
 const char kAppListDragAndDropRefactorName[] =
     "Drag and drop refactor in launcher";
 const char kAppListDragAndDropRefactorDescription[] =

@@ -1018,8 +1018,7 @@ void ShelfLayoutManager::ProcessScrollOffset(int offset,
     return;
   }
 
-  if (app_list_features::IsQuickActionShowBubbleLauncherEnabled() &&
-      !IsLocationInBubbleLauncherShowBounds(event.root_location())) {
+  if (!IsLocationInBubbleLauncherShowBounds(event.root_location())) {
     return;
   }
 
@@ -1044,9 +1043,6 @@ void ShelfLayoutManager::ProcessScrollEventFromShelf(ui::ScrollEvent* event) {
 }
 
 bool ShelfLayoutManager::IsBubbleLauncherShowOnGestureScrollAvailable() {
-  if (!app_list_features::IsQuickActionShowBubbleLauncherEnabled())
-    return false;
-
   if (!state_.IsShelfVisible())
     return false;
 

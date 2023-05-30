@@ -1570,9 +1570,6 @@ extern const char kQuickDimDescription[];
 extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingName[];
 extern const char kQuickIntensiveWakeUpThrottlingAfterLoadingDescription[];
 
-extern const char kQuickActionShowBubbleLauncherName[];
-extern const char kQuickActionShowBubbleLauncherDescription[];
-
 extern const char kQuickDeleteForAndroidName[];
 extern const char kQuickDeleteForAndroidDescription[];
 

@@ -31,10 +31,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowContinueSection);
 // Enables iconified text and inline icons in launcher search.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kSearchResultInlineIcon);
 
-// Enables a fling gesture or mouse scroll from the shelf to show the bubble
-// launcher.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kQuickActionShowBubbleLauncher);
-
 // Enable shortened search result update animations when in progress animations
 // are interrupted by search model updates.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
@@ -52,7 +48,6 @@ ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
-ASH_PUBLIC_EXPORT bool IsQuickActionShowBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();

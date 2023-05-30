@@ -26,9 +26,6 @@ BASE_FEATURE(kForceShowContinueSection,
 BASE_FEATURE(kSearchResultInlineIcon,
              "SearchResultInlineIcon",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kQuickActionShowBubbleLauncher,
-             "QuickActionShowBubbleLauncher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicSearchUpdateAnimation,
              "DynamicSearchUpdateAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -54,10 +51,6 @@ bool IsAppListLaunchRecordingEnabled() {
 bool IsSearchResultInlineIconEnabled() {
   // Inline Icons are only supported for categorical search.
   return base::FeatureList::IsEnabled(kSearchResultInlineIcon);
-}
-
-bool IsQuickActionShowBubbleLauncherEnabled() {
-  return base::FeatureList::IsEnabled(kQuickActionShowBubbleLauncher);
 }
 
 bool IsDynamicSearchUpdateAnimationEnabled() {
