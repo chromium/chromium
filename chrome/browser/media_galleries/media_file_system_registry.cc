@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
