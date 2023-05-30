@@ -90,6 +90,7 @@ public class GeolocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
+    @DisabledTest(message = "https://crbug.com/1449975")
     public void testGeolocationWatchDialog() throws Exception {
         runTest("initiate_watchPosition()", 2, true, true);
     }
