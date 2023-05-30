@@ -5,6 +5,7 @@
 #include "ui/events/event_utils.h"
 
 #include <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
@@ -16,8 +17,13 @@
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
+#include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace ui {
 
@@ -293,7 +299,7 @@ uint16_t TextFromNative(const PlatformEvent& platform_event) {
     text = @"\x9";
 
   uint16_t return_value;
-  [text getCharacters:&return_value];
+  [text getCharacters:&return_value range:NSMakeRange(0, 1)];
   return return_value;
 }
 
@@ -314,7 +320,7 @@ uint16_t UnmodifiedTextFromNative(const PlatformEvent& platform_event) {
     text = @"\x9";
 
   uint16_t return_value;
-  [text getCharacters:&return_value];
+  [text getCharacters:&return_value range:NSMakeRange(0, 1)];
   return return_value;
 }
 

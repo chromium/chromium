@@ -6,9 +6,6 @@
 #define UI_EVENTS_TEST_COCOA_TEST_EVENT_UTILS_H_
 
 #import <Cocoa/Cocoa.h>
-#import <objc/objc-class.h>
-
-#include <utility>
 
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -42,13 +39,11 @@ NSEvent* LeftMouseDownAtPointInWindow(NSPoint point, NSWindow* window);
 
 // Return a mouse down and an up event with the given |clickCount| at
 // |view|'s midpoint.
-std::pair<NSEvent*, NSEvent*> MouseClickInView(NSView* view,
-                                               NSUInteger clickCount);
+NSArray<NSEvent*>* MouseClickInView(NSView* view, NSUInteger clickCount);
 
 // Return a right mouse down and an up event with the given |clickCount| at
 // |view|'s midpoint.
-std::pair<NSEvent*, NSEvent*> RightMouseClickInView(NSView* view,
-                                                    NSUInteger clickCount);
+NSArray<NSEvent*>* RightMouseClickInView(NSView* view, NSUInteger clickCount);
 
 // Creates a test scroll event. |has_precise_deltas| determines the value of
 // -[NSEvent hasPreciseScrollingDeltas] - usually NO for a mouse wheel and YES

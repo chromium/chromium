@@ -20,6 +20,10 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 namespace {
@@ -36,7 +40,7 @@ class EventsMacTest : public CocoaTest {
   EventsMacTest& operator=(const EventsMacTest&) = delete;
 
   gfx::Point Flip(gfx::Point window_location) {
-    NSRect window_frame = [test_window() frame];
+    NSRect window_frame = test_window().frame;
     CGFloat content_height =
         NSHeight([test_window() contentRectForFrameRect:window_frame]);
     window_location.set_y(content_height - window_location.y());
@@ -86,7 +90,7 @@ class EventsMacTest : public CocoaTest {
   const gfx::Point default_location_ = gfx::Point(10, 20);
 };
 
-// Trackpad scroll sequences below determined empirically on OSX 10.11 (linking
+// Trackpad scroll sequences below determined empirically on OS X 10.11 (linking
 // to 10.10 SDK), and dumping out with NSLog in -[NSView scrollWheel:]. First
 // created using a Magic Trackpad 2 on a MacPro. See the Trackpad* test cases
 // below for example event streams.
@@ -94,55 +98,64 @@ NSArray* EventsMacTest::TrackpadScrollSequence(bool initial_rest,
                                                int32_t delta_y,
                                                int32_t momentum_delta_y) {
   int32_t delta_x = 0;  // Just test vertical scrolling for now.
-  base::scoped_nsobject<NSMutableArray> events([[NSMutableArray alloc] init]);
+  NSMutableArray* events = [NSMutableArray array];
 
   // Resting part.
   if (initial_rest) {
     // MayBegin always has a zero delta.
     [events addObject:cocoa_test_event_utils::TestScrollEvent(
-        Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-        NSEventPhaseMayBegin, NSEventPhaseNone)];
+                          Flip(default_location_).ToCGPoint(), test_window(),
+                          delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                          NSEventPhaseMayBegin, NSEventPhaseNone)];
     if (delta_y == 0) {
       // Rest and release: event gets cancelled.
       DCHECK_EQ(0, momentum_delta_y);  // Pretty sure this is impossible.
       [events addObject:cocoa_test_event_utils::TestScrollEvent(
-          Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-          NSEventPhaseCancelled, NSEventPhaseNone)];
-      return events.autorelease();
+                            Flip(default_location_).ToCGPoint(), test_window(),
+                            delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                            NSEventPhaseCancelled, NSEventPhaseNone)];
+      return events;
     }
   }
 
   // With or without a rest, a begin is sent. It can have a non-zero
   // deviceDeltaY but regular deltaY is always 0.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseBegan, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseBegan, NSEventPhaseNone)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, delta_y,
-      true, NSEventPhaseChanged, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, delta_y,
+                        /*has_precise_deltas=*/true, NSEventPhaseChanged,
+                        NSEventPhaseNone)];
 
   // With or without momentum, an end is sent for the non-momentum part.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseEnded, NSEventPhaseNone)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseEnded, NSEventPhaseNone)];
 
   if (momentum_delta_y == 0)
-    return events.autorelease();
+    return events;
 
   // Flick part. Basically the same, but with phase and momentumPhase swapped.
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseNone, NSEventPhaseBegan)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseBegan)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x,
-      momentum_delta_y, true, NSEventPhaseNone, NSEventPhaseChanged)];
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, momentum_delta_y, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseChanged)];
 
   [events addObject:cocoa_test_event_utils::TestScrollEvent(
-      Flip(default_location_).ToCGPoint(), test_window(), delta_x, 0, true,
-      NSEventPhaseNone, NSEventPhaseEnded)];
-  return events.autorelease();
+                        Flip(default_location_).ToCGPoint(), test_window(),
+                        delta_x, /*delta_y=*/0, /*has_precise_deltas=*/true,
+                        NSEventPhaseNone, NSEventPhaseEnded)];
+  return events;
 }
 
 }  // namespace
@@ -306,9 +319,9 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
                           NSWindowStyleMaskResizable;
 
   // First check that the window provided by ui::CocoaTest is how we think.
-  DCHECK_EQ(NSWindowStyleMaskBorderless, [test_window() styleMask]);
-  [test_window() setStyleMask:style_mask];
-  DCHECK_EQ(style_mask, [test_window() styleMask]);
+  DCHECK_EQ(NSWindowStyleMaskBorderless, test_window().styleMask);
+  test_window().styleMask = style_mask;
+  DCHECK_EQ(style_mask, test_window().styleMask);
 
   // EventLocationFromNative should behave the same as the ButtonEvents test.
   NSEvent* event =
@@ -331,7 +344,7 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
                              location:NSMakePoint(0, 0)  // Bottom-left corner.
                         modifierFlags:0
                             timestamp:0
-                         windowNumber:[test_window() windowNumber]
+                         windowNumber:test_window().windowNumber
                               context:nil
                           eventNumber:0
                            clickCount:0
@@ -345,7 +358,7 @@ TEST_F(EventsMacTest, NativeTitlebarEventLocation) {
   // toolkit-views coordinate system.
   int height_change = NSHeight(frame_rect) - kTestHeight;
   EXPECT_GT(height_change, 0);
-  [test_window() setStyleMask:NSWindowStyleMaskBorderless];
+  test_window().styleMask = NSWindowStyleMaskBorderless;
   [test_window() setFrame:frame_rect display:YES];
   EXPECT_EQ(gfx::Point(0, kTestHeight + height_change),
             gfx::ToFlooredPoint(
@@ -434,7 +447,7 @@ TEST_F(EventsMacTest, MouseWheelScroll) {
 //     {deviceD,d}elta{X,Y,Z}=0 count:0 phase=Cancelled momentumPhase=None.
 TEST_F(EventsMacTest, TrackpadRestRelease) {
   NSArray* ns_events = TrackpadScrollSequence(true, 0, 0);
-  ASSERT_EQ(2u, [ns_events count]);
+  ASSERT_EQ(2u, ns_events.count);
   EXPECT_TRUE([ns_events[0] hasPreciseScrollingDeltas]);
 
   ui::ScrollEvent rest((base::apple::OwnedNSEvent(ns_events[0])));
@@ -466,7 +479,7 @@ TEST_F(EventsMacTest, TrackpadScrollThenRest) {
   int32_t delta_y = 21;
 
   NSArray* ns_events = TrackpadScrollSequence(false, delta_y, 0);
-  ASSERT_EQ(3u, [ns_events count]);
+  ASSERT_EQ(3u, ns_events.count);
 
   ui::ScrollEvent begin((base::apple::OwnedNSEvent(ns_events[0])));
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, begin.momentum_phase());
@@ -489,7 +502,7 @@ TEST_F(EventsMacTest, TrackpadRestThenScrollThenRest) {
   int32_t delta_y = 21;
 
   NSArray* ns_events = TrackpadScrollSequence(true, delta_y, 0);
-  ASSERT_EQ(4u, [ns_events count]);
+  ASSERT_EQ(4u, ns_events.count);
 
   ui::ScrollEvent rest((base::apple::OwnedNSEvent(ns_events[0])));
   EXPECT_EQ(ui::EventMomentumPhase::MAY_BEGIN, rest.momentum_phase());
@@ -527,7 +540,7 @@ TEST_F(EventsMacTest, TrackpadScrollThenFlick) {
   int32_t momentum_delta_y = 33;
 
   NSArray* ns_events = TrackpadScrollSequence(false, delta_y, momentum_delta_y);
-  ASSERT_EQ(6u, [ns_events count]);
+  ASSERT_EQ(6u, ns_events.count);
 
   // Non-momentum part.
   {
