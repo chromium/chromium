@@ -10,7 +10,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }
 
 namespace autofill {
@@ -31,7 +31,7 @@ class AutofillOfferManagerFactory : public ProfileKeyedServiceFactory {
   static AutofillOfferManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<AutofillOfferManagerFactory>;
+  friend base::NoDestructor<AutofillOfferManagerFactory>;
 
   AutofillOfferManagerFactory();
   ~AutofillOfferManagerFactory() override;

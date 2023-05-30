@@ -4,7 +4,7 @@
 
 #include "chrome/browser/autofill/iban_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/iban_manager.h"
@@ -19,7 +19,8 @@ IBANManager* IBANManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 IBANManagerFactory* IBANManagerFactory::GetInstance() {
-  return base::Singleton<IBANManagerFactory>::get();
+  static base::NoDestructor<IBANManagerFactory> instance;
+  return instance.get();
 }
 
 IBANManagerFactory::IBANManagerFactory()

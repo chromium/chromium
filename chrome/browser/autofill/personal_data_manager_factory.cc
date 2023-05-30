@@ -4,7 +4,7 @@
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -52,7 +52,8 @@ PersonalDataManager* PersonalDataManagerFactory::GetForBrowserContext(
 
 // static
 PersonalDataManagerFactory* PersonalDataManagerFactory::GetInstance() {
-  return base::Singleton<PersonalDataManagerFactory>::get();
+  static base::NoDestructor<PersonalDataManagerFactory> instance;
+  return instance.get();
 }
 
 PersonalDataManagerFactory::PersonalDataManagerFactory()
