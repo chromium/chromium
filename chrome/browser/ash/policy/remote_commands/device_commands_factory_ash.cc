@@ -8,7 +8,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_crd_availability_info_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_status_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
@@ -95,7 +95,7 @@ void DeviceCommandsFactoryAsh::set_commands_for_testing(
 DeviceCommandStartCrdSessionJob::Delegate*
 DeviceCommandsFactoryAsh::GetCrdHostDelegate() {
   if (!crd_host_delegate_) {
-    crd_host_delegate_ = std::make_unique<CrdHostDelegate>();
+    crd_host_delegate_ = std::make_unique<CrdAdminSessionController>();
   }
   return crd_host_delegate_.get();
 }

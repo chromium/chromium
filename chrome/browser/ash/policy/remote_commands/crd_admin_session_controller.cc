@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/remote_commands/crd_host_delegate.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 
 #include <iomanip>
 #include <ostream>
@@ -31,14 +31,15 @@ namespace {
 
 // Default implementation of the `RemotingService`, which will contact the real
 // remoting service.
-class DefaultRemotingService : public CrdHostDelegate::RemotingServiceProxy {
+class DefaultRemotingService
+    : public CrdAdminSessionController::RemotingServiceProxy {
  public:
   DefaultRemotingService() = default;
   DefaultRemotingService(const DefaultRemotingService&) = delete;
   DefaultRemotingService& operator=(const DefaultRemotingService&) = delete;
   ~DefaultRemotingService() override = default;
 
-  // `CrdHostDelegate::RemotingService` implementation:
+  // `CrdAdminSessionController::RemotingService` implementation:
   void StartSession(remoting::mojom::SupportSessionParamsPtr params,
                     const remoting::ChromeOsEnterpriseParams& enterprise_params,
                     StartSessionCallback callback) override {
@@ -68,7 +69,7 @@ std::ostream& operator<<(
 
 }  // namespace
 
-class CrdHostDelegate::CrdHostSession
+class CrdAdminSessionController::CrdHostSession
     : public remoting::mojom::SupportHostObserver {
  public:
   CrdHostSession(const SessionParameters& parameters,
@@ -83,7 +84,8 @@ class CrdHostDelegate::CrdHostSession
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() override = default;
 
-  void Start(CrdHostDelegate::RemotingServiceProxy& remoting_service) {
+  void Start(
+      CrdAdminSessionController::RemotingServiceProxy& remoting_service) {
     CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
 
     remoting_service.StartSession(
@@ -215,26 +217,26 @@ class CrdHostDelegate::CrdHostSession
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
 };
 
-CrdHostDelegate::CrdHostDelegate()
-    : CrdHostDelegate(std::make_unique<DefaultRemotingService>()) {}
+CrdAdminSessionController::CrdAdminSessionController()
+    : CrdAdminSessionController(std::make_unique<DefaultRemotingService>()) {}
 
-CrdHostDelegate::CrdHostDelegate(
+CrdAdminSessionController::CrdAdminSessionController(
     std::unique_ptr<RemotingServiceProxy> remoting_service)
     : remoting_service_(std::move(remoting_service)) {}
 
-CrdHostDelegate::~CrdHostDelegate() = default;
+CrdAdminSessionController::~CrdAdminSessionController() = default;
 
-bool CrdHostDelegate::HasActiveSession() const {
+bool CrdAdminSessionController::HasActiveSession() const {
   return active_session_ != nullptr;
 }
 
-void CrdHostDelegate::TerminateSession(base::OnceClosure callback) {
+void CrdAdminSessionController::TerminateSession(base::OnceClosure callback) {
   CRD_DVLOG(3) << "Terminating CRD session";
   active_session_ = nullptr;
   std::move(callback).Run();
 }
 
-void CrdHostDelegate::StartCrdHostAndGetCode(
+void CrdAdminSessionController::StartCrdHostAndGetCode(
     const SessionParameters& parameters,
     AccessCodeCallback success_callback,
     ErrorCallback error_callback,

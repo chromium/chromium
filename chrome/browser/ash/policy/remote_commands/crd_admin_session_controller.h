@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_HOST_DELEGATE_H_
-#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_HOST_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
 
 #include <memory>
 
@@ -14,10 +14,12 @@
 
 namespace policy {
 
-// Delegate that will start a session with the CRD native host.
+// Controller that owns the admin initiated CRD session (if any).
+//
 // Will keep the session alive and active as long as this class lives.
 // Deleting this class object will forcefully interrupt the active CRD session.
-class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
+class CrdAdminSessionController
+    : public DeviceCommandStartCrdSessionJob::Delegate {
  public:
   // Proxy class to establish a connection with the Remoting service.
   // Overwritten in unittests to inject a test service.
@@ -36,12 +38,13 @@ class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
         StartSessionCallback callback) = 0;
   };
 
-  CrdHostDelegate();
-  explicit CrdHostDelegate(
+  CrdAdminSessionController();
+  explicit CrdAdminSessionController(
       std::unique_ptr<RemotingServiceProxy> remoting_service);
-  CrdHostDelegate(const CrdHostDelegate&) = delete;
-  CrdHostDelegate& operator=(const CrdHostDelegate&) = delete;
-  ~CrdHostDelegate() override;
+  CrdAdminSessionController(const CrdAdminSessionController&) = delete;
+  CrdAdminSessionController& operator=(const CrdAdminSessionController&) =
+      delete;
+  ~CrdAdminSessionController() override;
 
   // DeviceCommandStartCrdSessionJob::Delegate implementation:
   bool HasActiveSession() const override;
@@ -61,4 +64,4 @@ class CrdHostDelegate : public DeviceCommandStartCrdSessionJob::Delegate {
 };
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_HOST_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
