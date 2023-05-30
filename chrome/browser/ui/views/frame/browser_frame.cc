@@ -483,6 +483,13 @@ void BrowserFrame::SelectNativeTheme() {
   // Select between regular and Linux toolkit themes.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
+  // Use the regular NativeTheme instance if running incognito mode, regardless
+  // of system theme (gtk, qt etc).
+  if (IsIncognitoBrowser()) {
+    SetNativeTheme(native_theme);
+    return;
+  }
+
 #if BUILDFLAG(IS_LINUX)
   const auto* linux_ui_theme =
       ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
