@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+import {SDKTestRunner} from 'sdk_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests scripts panel file selectors.\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
-  await TestRunner.loadTestModule('sdk_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe(
       'resources/post-message-listener.html', {name: 'childframe'});

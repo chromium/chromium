@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that DOM Mutation Observers do not attempt to deliver mutation records while the debugger is paused.Bug 105810\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var setup = 'window.testDiv = document.createElement(\'div\');\n' +
