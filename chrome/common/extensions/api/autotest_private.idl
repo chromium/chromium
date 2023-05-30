@@ -278,6 +278,7 @@ namespace autotestPrivate {
   // A mapping of crosapi::BrowserManager::State
   enum LacrosState {
     NotInitialized,
+    Reloading,
     Mounting,
     Unavailable,
     Stopped,

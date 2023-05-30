@@ -406,6 +406,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // for user session.
     NOT_INITIALIZED,
 
+    // Lacros-chrome is reloading, because the wrong version was
+    // pre-launched at login screen.
+    RELOADING,
+
     // User session started, and now it's mounting lacros-chrome.
     MOUNTING,
 
@@ -599,6 +603,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // killing the process.
   void HandleLacrosChromeTermination(base::TimeDelta timeout);
 
+  // Reload and possibly relaunch Lacros.
+  void HandleReload();
+
   // Called as soon as the login prompt is visible.
   void OnLoginPromptVisible();
 
@@ -725,6 +732,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Lacros after terminating it in case pre-loading at login screen
   // was unnecessary (e.g. because the user doesn't have Lacros enabled).
   bool unload_requested_ = false;
+
+  // Tracks whether reloading Lacros was requested. Used to reload the right
+  // Lacros selection (rootfs/stateful) in case the wrong version was pre-loaded
+  // at login screen.
+  bool reload_requested_ = false;
 
   // Tracks whether BrowserManager should attempt to load a newer lacros-chrome
   // browser version (if an update is possible and a new version is available).
