@@ -2195,6 +2195,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.PeripheralReadErrorLatencyMs" units="ms"
+    expires_after="2024-03-01">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The amount of wall time in milliseconds taken to fail a read of the battery
+    capacity of a peripheral.
+  </summary>
+</histogram>
+
+<histogram name="Power.PeripheralReadLatencyMs" units="ms"
+    expires_after="2024-03-01">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    The amount of wall time in milliseconds taken to complete a read of the
+    battery capacity of a peripheral.
+  </summary>
+</histogram>
+
 <histogram name="Power.PowerButtonAcknowledgmentDelay" units="ms"
     expires_after="M100">
   <owner>puthik@chromium.org</owner>
