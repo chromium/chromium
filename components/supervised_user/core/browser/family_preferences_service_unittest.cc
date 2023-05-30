@@ -6,7 +6,7 @@
 
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/supervised_user/core/browser/proto/kids_chrome_management_test_utils.h"
+#include "components/supervised_user/core/browser/kids_chrome_management_test_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"

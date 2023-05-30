@@ -10,12 +10,3 @@ proto_library("proto") {
     "kidschromemanagement_messages.proto",
   ]
 }
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "kids_chrome_management_test_utils.cc",
-    "kids_chrome_management_test_utils.h",
-  ]
-  deps = [ ":proto" ]
-}

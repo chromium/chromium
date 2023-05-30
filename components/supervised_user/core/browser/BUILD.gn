@@ -129,10 +129,13 @@ source_set("test_support") {
   sources = [
     "fetcher_config_test_utils.cc",
     "fetcher_config_test_utils.h",
+    "kids_chrome_management_test_utils.cc",
+    "kids_chrome_management_test_utils.h",
   ]
   deps = [
     ":fetcher",
     "//base",
+    "//components/supervised_user/core/browser/proto",
     "//net/traffic_annotation",
     "//url",
   ]
@@ -169,7 +172,6 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings:components_strings_grit",
     "//components/supervised_user/core/browser/proto",
-    "//components/supervised_user/core/browser/proto:test_support",
     "//components/supervised_user/core/common",
     "//components/sync:test_support",
     "//services/network:test_support",
