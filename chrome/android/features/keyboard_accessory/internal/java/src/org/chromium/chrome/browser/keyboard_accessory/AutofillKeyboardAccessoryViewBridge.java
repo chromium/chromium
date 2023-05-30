@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.PopupItemId;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -152,7 +153,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      *                 unfocused fields of the form. If {@see label} is empty, then this must be
      *                 empty too.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
-     * @param suggestionId Identifier for the suggestion type.
+     * @param popupItemId Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
      *         suggestion.
@@ -161,15 +162,15 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, int iconId, int suggestionId, boolean isDeletable,
-            String featureForIPH, GURL customIconUrl) {
+            String label, String sublabel, int iconId, @PopupItemId int popupItemId,
+            boolean isDeletable, String featureForIPH, GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         array[index] = new AutofillSuggestion.Builder()
                                .setLabel(label)
                                .setSubLabel(sublabel)
                                .setIconId(drawableId)
                                .setIsIconAtStart(false)
-                               .setSuggestionId(suggestionId)
+                               .setPopupItemId(popupItemId)
                                .setIsDeletable(isDeletable)
                                .setIsMultiLineLabel(false)
                                .setIsBoldLabel(false)
