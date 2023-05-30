@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "build/buildflag.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -207,8 +208,8 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
 }
 #endif
 
-// TODO (hitawala): Add support for multiplanar formats.
-wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
+wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
+                                 int plane_index) {
   if (format.is_single_plane()) {
     switch (format.resource_format()) {
       case viz::ResourceFormat::RGBA_8888:
@@ -246,12 +247,27 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     }
     return wgpu::TextureFormat::Undefined;
   }
+
+  // TODO(crbug.com/1445450): Add support for other multiplane formats.
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    // kNV12 creates a separate image per plane and returns the single planar
+    // equivalents.
+    // TODO(crbug.com/1449108): The above reasoning does not hold unilaterally
+    // on Android, and this function will need more information to determine the
+    // correct operation to take on that platform.
+#if BUILDFLAG(IS_ANDROID)
+    CHECK(0);
+#endif
+    return plane_index == 0 ? wgpu::TextureFormat::R8Unorm
+                            : wgpu::TextureFormat::RG8Unorm;
+  }
+
   NOTREACHED();
   return wgpu::TextureFormat::Undefined;
 }
 
-WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
+WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
+  return static_cast<WGPUTextureFormat>(ToDawnFormat(format, plane_index));
 }
 
 skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
@@ -286,7 +302,7 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
 #if BUILDFLAG(SKIA_USE_DAWN)
     // TODO(crbug.com/1445450): Add support for multiplanar formats, passing
     // |plane_index|.
-    wgpu::TextureFormat wgpu_format = ToDawnFormat(format);
+    wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
     if (wgpu_format != wgpu::TextureFormat::Undefined) {
       skgpu::graphite::DawnTextureInfo dawn_texture_info;
       dawn_texture_info.fSampleCount = 1;

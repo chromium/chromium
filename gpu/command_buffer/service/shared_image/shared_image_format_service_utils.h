@@ -96,13 +96,13 @@ GPU_GLES2_EXPORT VkFormat ToVkFormat(viz::SharedImageFormat format,
 
 // Following functions return the appropriate WebGPU/Dawn format for a
 // SharedImageFormat.
-// TODO (hitawala): Add support for multiplanar formats.
 // Returns wgpu::TextureFormat format for given `format`.
-GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
-    viz::SharedImageFormat format);
+GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
+                                                  int plane_index = 0);
 // Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
 // WGPUTextureFormat instead.
-GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format,
+                                                int plane_index = 0);
 
 // Following function return the appropriate Metal format for a
 // SharedImageFormat.
