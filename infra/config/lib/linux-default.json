@@ -23,6 +23,7 @@
     "chromeos-arm-generic-dbg": "Ubuntu-22.04",
     "chromeos-arm-generic-rel": "Ubuntu-22.04",
     "chromeos-arm64-generic-rel": "Ubuntu-22.04",
+    "chromeos-jacuzzi-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
