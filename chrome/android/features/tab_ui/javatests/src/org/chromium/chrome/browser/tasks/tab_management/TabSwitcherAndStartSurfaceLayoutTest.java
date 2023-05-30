@@ -1613,6 +1613,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
             "/thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    @DisabledTest(message = "https://crbug.com/1449985")
     public void testTabGroupManualSelection_AfterReviewTabSuggestion(
             boolean isStartSurfaceRefactorEnable) throws InterruptedException {
         // clang-format on
