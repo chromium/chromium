@@ -599,10 +599,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   TileManager* tile_manager() { return &tile_manager_; }
 
   const RasterCapabilities& raster_caps() const { return raster_caps_; }
-  void GetGpuRasterizationCapabilities(bool* gpu_rasterization_enabled,
-                                       bool* gpu_rasterization_supported,
-                                       bool* can_use_msaa,
-                                       bool* supports_disable_msaa);
+  void GetGpuRasterizationCapabilities(RasterCapabilities& gpu_raster_caps);
   bool use_gpu_rasterization() const {
     return raster_caps().use_gpu_rasterization;
   }

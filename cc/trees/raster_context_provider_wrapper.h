@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "cc/cc_export.h"
+#include "cc/trees/raster_capabilities.h"
 #include "third_party/skia/include/core/SkColorType.h"
 
 namespace viz {
@@ -49,7 +50,9 @@ class CC_EXPORT RasterContextProviderWrapper
   // This should only be called from a thread which can use the underlying
   // context. It's responsibility of the caller to ensure the context is bound
   // to the current thread.
-  GpuImageDecodeCache& GetGpuImageDecodeCache(SkColorType color_type);
+  GpuImageDecodeCache& GetGpuImageDecodeCache(
+      SkColorType color_type,
+      const RasterCapabilities& raster_caps);
 
  private:
   friend class base::RefCountedThreadSafe<RasterContextProviderWrapper>;
@@ -70,17 +73,9 @@ class CC_EXPORT RasterContextProviderWrapper
   // A filter that will be used by GpuImageDecodeCache instances.
   const raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
-  // If the feature is disabled, GetGpuImageDecodeCache mustn't be called.
-  const bool gpu_rasterization_enabled_;
-  // Oop raster must always be supported to be able to use the
-  // GpuImageDecodeCache.
-  const bool supports_oop_raster_;
-
   // The following are passed to GpuImageDecodeCache instances:
   // The budget size in bytes of decoded image working set.
   const size_t max_working_set_bytes_;
-  // The maximum size (either width or height) that any texture can be.
-  const size_t max_texture_size_;
 
   // Protects access to |gpu_image_decode_cache_map_|.
   base::Lock lock_;

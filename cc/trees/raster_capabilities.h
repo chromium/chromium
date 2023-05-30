@@ -17,7 +17,7 @@ enum class GpuRasterizationStatus {
 
 struct CC_EXPORT RasterCapabilities {
   RasterCapabilities() = default;
-  RasterCapabilities(const RasterCapabilities& other) = delete;
+  RasterCapabilities(const RasterCapabilities& other) = default;
   RasterCapabilities& operator=(const RasterCapabilities& other) = delete;
   ~RasterCapabilities() = default;
 
