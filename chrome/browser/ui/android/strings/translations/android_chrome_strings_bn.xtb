@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">গ্রুপে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="1103142993930332957">Chrome উন্নত করতে সাহায্য করবেন?</translation>
 <translation id="1105960400813249514">স্ক্রিন ক্যাপচার</translation>
+<translation id="1108214977745280468">পৃষ্ঠার ইনসাইট দেখুন</translation>
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1110914759170138831">হাইলাইট সংক্ষিপ্ত করা হয়েছে</translation>
 <translation id="1111673857033749125">আপনার অন্যান্য ডিভাইসে সেভ করা বুকমার্কগুলি এখানে দেখা যাবে।</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> থেকে পাঠানো হয়েছে</translation>
 <translation id="1311657260431405215">এই QR কোডটি কোনও ইউআরএল নয়: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">পরে 'প্রোফাইল লক' সরিয়ে দিলে, আপনার সেভ করা তথ্য মুছে ফেলা হবে।</translation>
 <translation id="1320912611264252795">বুকমার্ক সেভ ফ্লো ফোল্ডার পূর্ণ উচ্চতায় খোলা হয়েছে</translation>
 <translation id="1327257854815634930">নেভিগেশনের ইতিহাস খোলা হয়েছে</translation>
 <translation id="1331212799747679585">Chrome আপডেট হচ্ছে না। আরও বিকল্প</translation>
@@ -179,6 +181,7 @@
 <translation id="1995884366040846621">চালিয়ে যেতে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> আপনার নাম, ইমেল আইডি ও প্রোফাইল ছবি এই সাইটের সাথে শেয়ার করবে। এই সাইটের <ph name="BEGIN_LINK1" />গোপনীয়তা নীতি<ph name="END_LINK1" /> দেখুন।</translation>
 <translation id="200114059308480249">Google searches-এ কোনও কিছু সার্চ করার সময় সার্চের সাথে মেলে এমন টেক্সট অন্তর্ভুক্ত করবেন?</translation>
 <translation id="2009341475524975924">বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করতে, সাইটের মধ্যে সীমিত ধরনের ডেটা শেয়ার করা যেতে পারে, যেমন দিনের কোন সময় আপনাকে বিজ্ঞাপন দেখানো হয়েছিল।</translation>
+<translation id="201060170519281460">'প্রোফাইল লক' গাড়ির মধ্যে আপনার তথ্য সুরক্ষিত রাখে। এর মধ্যে সিঙ্ক করা পাসওয়ার্ড, পেমেন্ট এবং আরও অনেক কিছু অন্তর্ভুক্ত।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{#টি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="2021896219286479412">পূর্ণ স্ক্রিন সাইট নিয়ন্ত্রণ</translation>
 <translation id="2038563949887743358">ডেস্কটপ সাইটের অনুরোধ চালু করুন</translation>
@@ -256,6 +259,7 @@
 <translation id="250020030759455918">আপনি Chrome-এ <ph name="SITE_NAME" /> সাইটে নিজের সাইন-ইন স্ট্যাটাস, ব্রাউজিং ডেটা ও সাইট ডেটা দেখতে পাবেন</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ইনস্টল করা হচ্ছে…</translation>
 <translation id="2513403576141822879">আপনার গোপনীয়তা, নিরাপত্তা এবং ডেটা সংগ্রহের সাথে সম্পর্কযুক্ত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক এবং Google পরিষেবাগুলি<ph name="END_LINK" /> দেখুন</translation>
+<translation id="2517113738956581680">ফুল-সাইজ শিট</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2523184218357549926">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়</translation>
 <translation id="2527209463677295330">কোনও পৃষ্ঠার টেক্সটে আরও শব্দ যোগ করলে, আপনি হয়ত আরও ভাল ফলাফল দেখতে পারবেন</translation>
@@ -280,6 +284,7 @@
 ব্যক্তিগত স্টেট টোকেন, ওয়েবে আপনার গোপনীয়তার দিকটি উন্নত করে এবং আপনার ব্যক্তিগত পরিচয় খোঁজার জন্য ব্যবহার করা যাবে না।</translation>
 <translation id="2581165646603367611">এটা কুকিজ, ক্যাশে, এবং সাইটের সেই সব ডেটা যা Chrome গুরুত্বপূর্ণ মনে করে না সেগুলিকে সাফ করবে।</translation>
 <translation id="2587052924345400782">নতুন ভার্সন উপলভ্য</translation>
+<translation id="2589302627584222634">'প্রোফাইল লক' তৈরি করুন</translation>
 <translation id="2593272815202181319">মোনোস্পেস</translation>
 <translation id="2603212228005142861">আপনার পছন্দগুলি ম্যানেজ করতে সাইন-ইন করুন</translation>
 <translation id="260403163289591229">ফলো করছেন</translation>
@@ -544,6 +549,7 @@
 <translation id="4035877632587724847">অনুমতি দেবেন না</translation>
 <translation id="4036177530563778041">যেখানে শেষ করেছেন সেখান থেকে সহজেই শুরু করুন</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর সাথে <ph name="SITE_ETLD_PLUS_ONE" /> ব্যবহার করা চালিয়ে যান</translation>
+<translation id="4044708993631234325">স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="4045764304651014138">ব্যবহারের ডেটা</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
@@ -845,6 +851,7 @@
 <translation id="564667659802381754"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> 'গোপনীয়তা সংক্রান্ত গাইড'</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5655963694829536461">আপনার ডাউনলোডগুলি খুঁজুন</translation>
+<translation id="5657871969392618475">প্রোফাইল লকের মাধ্যমে আপনার চ্যানেল সুরক্ষিত আছে</translation>
 <translation id="5659593005791499971">ইমেল আইডি</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" /> এ ইভেন্ট তৈরি করুন</translation>
 <translation id="5683547024293500885">কোনও আপডেট আছে কিনা, Chrome তা চেক করে দেখতে পারছে না</translation>
@@ -907,6 +914,7 @@
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5966233851250124270">Chrome আপনার পছন্দ মনে রাখবে</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
+<translation id="5985186846584605773">আপনার গাড়ির জন্য 'প্রোফাইল লক' তৈরি করুন</translation>
 <translation id="5995726099713306770">পৃষ্ঠাটি আবার ডাউনলোড করবেন?</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
@@ -1135,6 +1143,7 @@
 <translation id="7088681679121566888">Chrome আপ-টু-ডেট আছে</translation>
 <translation id="7105047059074518658">ডিভাইস জুড়ে সহজে ব্রাউজ করার জন্য সাইন-ইন করুন</translation>
 <translation id="7106762743910369165">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে</translation>
+<translation id="7116420572655804716">গাড়ির সাথে আপনার তথ্য সিঙ্ক করতে এবং ডেটা সুরক্ষিত রাখতে, নিরাপত্তা সেটিংস থেকে আপনাকে অবশ্যই একটি 'প্রোফাইল লক' তৈরি করতে হবে। প্রতিবার গাড়িতে প্রবেশ করার সময় আপনাকে একটি কোড বা পাসওয়ার্ড ব্যবহার করতে হবে।</translation>
 <translation id="7116588989735740310">অন্য ডিভাইসে আপনার দেখা সাইটে ফিরে যেতে, আপনার ট্যাব ও ইতিহাস সিঙ্ক করুন</translation>
 <translation id="7130504491556983216">আপনি ওয়েব ব্রাউজ করার সাথে সাথে আগ্রহের একটি তালিকা এখানে দেখা যাবে</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
@@ -1356,6 +1365,7 @@
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8209050860603202033">ছবি খুলুন</translation>
 <translation id="8210770465353466621">আপনি নিজের ট্যাবগুলি এখানে খুঁজে পাবেন</translation>
+<translation id="8215740705341534369">সাইড শিট</translation>
 <translation id="8218622182176210845">আপনার অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="8221401890884589479">আপনি চান না এমন সাইটগুলি ব্লক করতে পারবেন। এছাড়াও তালিকা থেকে ৩০ দিনের পুরনো সাইট Chrome অটোমেটিক মুছে দেয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">ফিড কার্ডের মেনু</translation>
@@ -1556,6 +1566,7 @@
 <translation id="932327136139879170">হোম</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
+<translation id="950679278154734362">গাড়ির সাথে আপনার তথ্য সিঙ্ক করতে এবং ডেটা সুরক্ষিত রাখতে, আপনাকে অবশ্যই একটি 'প্রোফাইল লক' তৈরি করতে হবে। প্রতিবার গাড়িতে প্রবেশ করার সময় আপনাকে একটি কোড বা পাসওয়ার্ড ব্যবহার করতে হবে।</translation>
 <translation id="95817756606698420">Chrome, চীনে সার্চের জন্য <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> কে ব্যবহার করতে পারে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি পরিবর্তন করতে পারেন।</translation>
 <translation id="962979164594783469">এই অ্যাপ ইনস্টল করুন</translation>
 <translation id="96681097142096641">'রিডার' মোডে পৃষ্ঠাটি দেখতে চান?</translation>

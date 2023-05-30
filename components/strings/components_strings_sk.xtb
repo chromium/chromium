@@ -1291,6 +1291,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4150099059797363385">Čínska obálka č. 4</translation>
 <translation id="4151403195736952345">Použiť globálne predvolené nastavenie (zistiť)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. strana}few{{COUNT}. strana}many{{COUNT}. strana}other{{COUNT}. strana}}</translation>
+<translation id="4154277373259957087">Chrome teraz pred vyplnením spôsobov platby overí vašu totožnosť. Môžete to kedykoľvek aktualizovať v sekcii <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Odtlačky</translation>
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>

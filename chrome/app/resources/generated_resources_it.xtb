@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Questa estensione può leggere e modificare i tuoi dati sui siti. Sei tu controllare a quali siti può accedere l'estensione.</translation>
 <translation id="1007057452468855774">Attiva il Google Play Store</translation>
 <translation id="1008186147501209563">Esporta preferiti</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> memorizza il metodo di accesso e, se possibile, ti consente di accedere automaticamente. Se questa opzione è disattivata, ti verrà chiesta una conferma ogni volta.</translation>
 <translation id="1008557486741366299">Non adesso</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da un sito che non hai visitato per 2 mesi}other{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni da siti che non hai visitato per 2 mesi}}</translation>
 <translation id="1009663062402466586">Sono disponibili i controlli per i giochi</translation>
@@ -1467,6 +1468,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2241053333139545397">Leggere e modificare i tuoi dati su una serie di siti web</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2242687258748107519">Info sul file</translation>
+<translation id="2243452222143104807">Scheda non attiva</translation>
 <translation id="2245603955208828424">Usa i tasti freccia per spostarti tra gli elementi lettera per lettera</translation>
 <translation id="2246129643805925002">Il tuo <ph name="DEVICE_TYPE" /> si aggiorna automaticamente in background per offrirti le funzionalità e i miglioramenti della sicurezza più recenti. Puoi rivedere le preferenze relative agli aggiornamenti in Impostazioni.</translation>
 <translation id="2246549592927364792">Vuoi recuperare le descrizioni delle immagini da Google?</translation>
@@ -1925,6 +1927,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2616008379779647117">Lingua sottotitoli</translation>
 <translation id="2616366145935564096">Leggere e modificare i tuoi dati su <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configura Condivisione nelle vicinanze</translation>
+<translation id="261953424982546039">Chrome &amp; Labs...</translation>
 <translation id="2620215283731032047">Impossibile scaricare <ph name="FILE_NAME" /> in modo sicuro.</translation>
 <translation id="2620245777360407679">Dispositivi attualmente connessi all'hotspot</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -3861,6 +3864,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4325237902968425115">Disinstallazione di <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">La più efficace misura di sicurezza di Chrome ti protegge da siti web, download ed estensioni pericolosi</translation>
 <translation id="4326484226728068206">Articoli nel carrello <ph name="DISCOUNT_TEXT" /> da <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizzati <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Questa scheda utilizza <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Acqua con ghiaccio</translation>
 <translation id="4330387663455830245">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configura il Controllo genitori</translation>
@@ -6160,6 +6164,7 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6384275966486438344">Modifica delle impostazioni di ricerca per: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Gruppo senza nome - 1 scheda}other{Gruppo senza nome - # schede}}</translation>
 <translation id="6385149369087767061">Connettiti a Internet e riprova</translation>
+<translation id="6385382178401976503">Scheda: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Avviso: è attiva la funzione di registrazione dettagliata. I log indicati di seguito potrebbero includere URL o altre informazioni sensibili. Controlla e assicurati di voler inviare tali dati.</translation>
 <translation id="6387674443318562538">Divisione in verticale</translation>
 <translation id="6388429472088318283">Cerca lingue</translation>
@@ -7405,6 +7410,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7475671414023905704">URL password persa Netscape</translation>
 <translation id="7476454130948140105">Livello della batteria troppo basso per eseguire l'aggiornamento (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Autorizzazioni bloccate automaticamente: <ph name="PERMISSION" /> e altre <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Memoria utilizzata elevata: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Crea codice QR per questa pagina</translation>
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7478069565037869084">Larga</translation>
@@ -8171,6 +8177,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8113476325385351118">Continua a impedire a questo sito di avere il controllo totale dei dispositivi MIDI</translation>
 <translation id="8115139559594092084">Dal tuo Google Drive</translation>
 <translation id="8116972784401310538">Gestione &amp;Preferiti</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> memorizza il metodo di accesso e, se possibile, ti consente di accedere automaticamente. Se questa opzione è disattivata, ti verrà chiesta una conferma ogni volta.</translation>
 <translation id="8118362518458010043">Estensione disattivata da Chrome perché potrebbe non essere sicura.</translation>
 <translation id="8118488170956489476">Il tuo <ph name="BEGIN_LINK" />browser è gestito<ph name="END_LINK" /> dalla tua organizzazione</translation>
 <translation id="8118515372935001629">Frequenza di aggiornamento del display</translation>
@@ -8924,6 +8931,7 @@ Se scegli di non condividere gli indicatori, questo profilo verrà chiuso.</tran
 <translation id="8771300903067484968">Lo sfondo della pagina iniziale è stato reimpostato allo sfondo predefinito.</translation>
 <translation id="8773280816776735812">Mostra valore IBAN</translation>
 <translation id="8773302562181397928">Salva <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Risparmio scheda non attivo: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Conferma il ripristino</translation>
 <translation id="8774934320277480003">Margine superiore</translation>
 <translation id="8775144690796719618">URL non valido</translation>
@@ -9200,6 +9208,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="9014206344398081366">Tutorial di ChromeVox</translation>
 <translation id="901668144954885282">Backup su Google Drive</translation>
+<translation id="90181708067259747">Data di scadenza: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installazione completata</translation>
 <translation id="9019062154811256702">Lettura e modifica delle impostazioni di Compilazione automatica</translation>
 <translation id="9019894137004772119">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>

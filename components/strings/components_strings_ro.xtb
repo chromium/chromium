@@ -1295,6 +1295,7 @@
 <translation id="4150099059797363385">Plic chinezesc 4</translation>
 <translation id="4151403195736952345">Folosește global în mod prestabilit (detectează)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Pagina 1}few{Pagina {COUNT}}other{Pagina {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome îți va confirma identitatea înainte să completeze metodele de plată. Poți actualiza oricând opțiunea în <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Amprente digitale</translation>
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>

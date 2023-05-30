@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Ekstensi ini dapat membaca dan mengubah data Anda di situs. Anda dapat mengontrol situs mana yang dapat diakses ekstensi ini.</translation>
 <translation id="1007057452468855774">Aktifkan Google Play Store</translation>
 <translation id="1008186147501209563">Ekspor bookmark</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> mengingat cara Anda login dan otomatis membuat Anda login jika memungkinkan. Saat nonaktif, Anda akan selalu dimintai konfirmasi.</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}other{Untuk melindungi data Anda, izin telah dihapus dari situs yang tidak Anda buka dalam 2 bulan}}</translation>
 <translation id="1009663062402466586">Kontrol game kini tersedia</translation>
@@ -1479,6 +1480,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2241053333139545397">Membaca dan mengubah data Anda di sejumlah situs web</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2242687258748107519">Info File</translation>
+<translation id="2243452222143104807">Tab tidak aktif</translation>
 <translation id="2245603955208828424">Gunakan tombol panah untuk berpindah-pindah item huruf demi huruf</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> Anda akan otomatis diupdate di latar belakang untuk memberi Anda fitur dan peningkatan keamanan terbaru. Anda dapat meninjau preferensi update di Setelan.</translation>
 <translation id="2246549592927364792">Dapatkan deskripsi gambar dari Google?</translation>
@@ -1940,6 +1942,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2616008379779647117">Bahasa teks</translation>
 <translation id="2616366145935564096">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Menyiapkan Berbagi Langsung</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman.</translation>
 <translation id="2620245777360407679">Perangkat yang saat ini terhubung ke hotspot</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -3876,6 +3879,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4325237902968425115">Meng-uninstal <ph name="LINUX_APP_NAME" />...</translation>
 <translation id="4326146840124313313">Keamanan terkuat Chrome melakukan lebih banyak hal untuk melindungi Anda dari situs, download, dan ekstensi berbahaya</translation>
 <translation id="4326484226728068206">Item di keranjang <ph name="DISCOUNT_TEXT" /> dari <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, dilihat <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Tab ini menggunakan <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Air es</translation>
 <translation id="4330387663455830245">Jangan Pernah Terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Menyiapkan Kontrol Orang Tua</translation>
@@ -6179,6 +6183,7 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
 <translation id="6384275966486438344">Ubah setelan penelusuran Anda menjadi: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grup tanpa nama - 1 tab}other{Grup tanpa nama - # tab}}</translation>
 <translation id="6385149369087767061">Sambungkan ke internet dan coba lagi</translation>
+<translation id="6385382178401976503">Kartu: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Peringatan - Logging mendetail diaktifkan; log di bawah dapat berisi URL atau informasi sensitif lainnya. Tinjau dan pastikan apakah Anda ingin mengirim informasi ini.</translation>
 <translation id="6387674443318562538">Pisahkan Vertikal</translation>
 <translation id="6388429472088318283">Bahasa penelusuran</translation>
@@ -7423,6 +7428,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">Baterai terlalu lemah untuk mengupdate (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Otomatis memblokir <ph name="PERMISSION" /> dan <ph name="COUNT" /> lainnya</translation>
+<translation id="7477599578899108080">Penggunaan memori tinggi: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Buat Kode QR untuk halaman ini</translation>
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
 <translation id="7478069565037869084">Lebar</translation>
@@ -8189,6 +8195,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8113476325385351118">Terus blokir situs ini agar tidak memiliki kontrol penuh atas perangkat MIDI</translation>
 <translation id="8115139559594092084">Dari Google Drive Anda</translation>
 <translation id="8116972784401310538">&amp;Pengelola bookmark</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mengingat cara Anda login dan otomatis membuat Anda login jika memungkinkan. Saat nonaktif, Anda akan selalu dimintai konfirmasi.</translation>
 <translation id="8118362518458010043">Dinonaktifkan oleh Chrome. Ekstensi ini mungkin tidak aman.</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Browser dikelola<ph name="END_LINK" /> oleh organisasi Anda</translation>
 <translation id="8118515372935001629">Rasio refresh layar</translation>
@@ -8942,6 +8949,7 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="8771300903067484968">Latar belakang halaman awal telah direset ke latar belakang default.</translation>
 <translation id="8773280816776735812">Tampilkan nilai IBAN</translation>
 <translation id="8773302562181397928">Simpan <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Penghematan tab tidak aktif: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Konfirmasikan Pemulihan</translation>
 <translation id="8774934320277480003">Batas atas</translation>
 <translation id="8775144690796719618">URL tidak valid</translation>
@@ -9218,6 +9226,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9013037634206938463">Perlu ruang kosong sebesar <ph name="INSTALL_SIZE" /> untuk menginstal Linux. Untuk menambah ruang kosong, hapus file dari perangkat Anda.</translation>
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
 <translation id="901668144954885282">Cadangkan ke Google Drive</translation>
+<translation id="90181708067259747">Tanggal habis masa berlaku: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Penginstalan selesai</translation>
 <translation id="9019062154811256702">Membaca dan mengubah setelan IsiOtomatis</translation>
 <translation id="9019894137004772119">Gunakan lokasi. Izinkan aplikasi dan layanan yang memiliki izin akses lokasi untuk menggunakan lokasi perangkat Anda. Google dapat mengumpulkan data lokasi secara berkala dan menggunakan data ini secara anonim untuk meningkatkan akurasi lokasi dan layanan berdasarkan lokasi.</translation>

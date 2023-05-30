@@ -119,7 +119,9 @@
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
+<translation id="1836553715834333258">Couleur du système</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
+<translation id="1840474674287087346">Couleur du bureau</translation>
 <translation id="1851218745569890714">Visioconférence</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Flèche vers le bas</translation>
@@ -422,6 +424,7 @@
 <translation id="4454245904991689773">Enregistrer dans</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
+<translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
 <translation id="4511264077854731334">Portail</translation>
@@ -500,6 +503,7 @@
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Affichez des photos, l'heure, la météo ou les actualités sur l'écran de veille.</translation>
+<translation id="5035083460461104704">Couleur du thème</translation>
 <translation id="5038292761217083259">clavier multicolore</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
@@ -815,6 +819,7 @@
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
+<translation id="7633068090678117093">Image de fond</translation>
 <translation id="7648838807254605802">Latence élevée des requêtes HTTPS</translation>
 <translation id="765159867434478292">Fractionner</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
@@ -981,6 +986,7 @@
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
+<translation id="8944651180182756621">Couleur du Lanceur d'applications</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8957423540740801332">droite</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
@@ -1014,6 +1020,7 @@
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9161276708550942948">espace</translation>
 <translation id="9173638680043580060">Moins d'une minute restante</translation>
+<translation id="9174334653006917325">Couleur de l'UI</translation>
 <translation id="917720651393141712">Tester</translation>
 <translation id="9188992814426075118">Votre clavier peut être automatiquement assorti à votre fond d'écran</translation>
 <translation id="9189000703457422362">Impossible de se connecter à ce réseau avec des APN détectés automatiquement. Pour en savoir plus, contactez votre opérateur mobile.</translation>

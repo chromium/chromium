@@ -1295,6 +1295,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4150099059797363385">Kineska koverta br. 4</translation>
 <translation id="4151403195736952345">Koristi globalnu podrazumevanu vrednost (Otkrivaj)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stranica}one{{COUNT}. stranica}few{{COUNT}. stranica}other{{COUNT}. stranica}}</translation>
+<translation id="4154277373259957087">Chrome će sada potvrditi da ste to vi pre nego što unese načine plaćanja. To možete da ažurirate u svakom trenutku u odeljku <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Otisci</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4165986682804962316">Podešavanja sajta</translation>

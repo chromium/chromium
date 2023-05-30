@@ -26,7 +26,7 @@
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Yeni sekme oluştur.</translation>
 <translation id="1126809382673880764">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Gmail ve Arama gibi diğer Google hizmetlerinde, mümkün olduğunda Güvenli Tarama korumasından yararlanmaya devam edersiniz.</translation>
-<translation id="1145536944570833626">Mevcut verileri silin.</translation>
+<translation id="1145536944570833626">Mevcut veriler silinir.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olarak oturum açıldı</translation>
 <translation id="1154984953698510061">Diğer Sekmeleri Göster</translation>
 <translation id="1161340988127985692">Diğer Uygulamalardaki Bağlantıları Gizli Modda Açma İsteğinde Bulunma</translation>
@@ -925,6 +925,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="681368974849482173">Öğe oluşturuldu</translation>
 <translation id="6822587385560699678">Bu ayar etkinken şifreler <ph name="ACCOUNT" /> hesabına kaydedilir. Devre dışı bırakıldığında şifreler yalnızca bu cihaza kaydedilir.</translation>
 <translation id="6831043979455480757">Çevir</translation>
+<translation id="6839843088069935119">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi. Yalnızca bu cihaza kaydedilir.}other{Yer işaretleri "{title}" konumuna kaydedildi. Yalnızca bu cihaza kaydedilir.}}</translation>
 <translation id="6842136130964845393">Kayıtlı şifrelerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="6851516051005285358">Masaüstü Sitesi İste</translation>
 <translation id="6852222216891664518">Sabit Sekmeyi Kapat</translation>

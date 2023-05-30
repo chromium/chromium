@@ -1295,6 +1295,7 @@
 <translation id="4150099059797363385">Chinese #4 စာအိတ်</translation>
 <translation id="4151403195736952345">အလုံးစုံဆိုင်ရာ မူလပုံစံကို အသုံးပြုပါ (ထောက်လှမ်းပါ)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{စာမျက်နှာ ၁}other{စာမျက်နှာ {COUNT}}}</translation>
+<translation id="4154277373259957087">ငွေပေးချေနည်းလမ်းများ မဖြည့်သွင်းမီ Chrome က သင်ဖြစ်ကြောင်း ယခု စိစစ်ပါမည်။ ၎င်းကို <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> တွင် အချိန်မရွေး အပ်ဒိတ်လုပ်နိုင်သည်။</translation>
 <translation id="4154664944169082762">လက်ဗွေများ</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>

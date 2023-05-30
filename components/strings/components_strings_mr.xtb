@@ -1294,6 +1294,7 @@
 <translation id="4150099059797363385">एन्व्हलप चायनीज #४</translation>
 <translation id="4151403195736952345">जागतिक डीफॉल्‍ट (शोधणे) वापरा</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज एक}other{पेज {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
 <translation id="4154664944169082762">बोटाचा ठसा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
@@ -2142,7 +2143,7 @@
 <translation id="61877208875190028">महिलांचे कपडे</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
-<translation id="6196640612572343990">तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
+<translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6197648101609735209">८९ x ८९ मिमी</translation>
 <translation id="6203231073485539293">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>

@@ -925,6 +925,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="681368974849482173">Položka byla vytvořena</translation>
 <translation id="6822587385560699678">Když je tato funkce zapnutá, hesla se ukládají do účtu <ph name="ACCOUNT" />. Když je tato funkce vypnutá, hesla se ukládají pouze do tohoto zařízení.</translation>
 <translation id="6831043979455480757">Přeložit</translation>
+<translation id="6839843088069935119">{count,plural, =1{Záložka byla uložena do „{title}“. Je uložena pouze na tomto zařízení.}few{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}many{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}other{Záložky byly uloženy do složky „{title}“. Jsou uloženy pouze na tomto zařízení.}}</translation>
 <translation id="6842136130964845393">Aby bylo zajištěno, že budete mít vždy přístup k uloženým heslům, ověřte svoji totožnost</translation>
 <translation id="6851516051005285358">Verze webu pro počítače</translation>
 <translation id="6852222216891664518">Zavřít připnutou kartu</translation>

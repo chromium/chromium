@@ -1295,6 +1295,7 @@
 <translation id="4150099059797363385">Κινεζικός φάκελος #4</translation>
 <translation id="4151403195736952345">Χρήση καθολικής προεπιλογής (Εντοπισμός)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Σελίδα 1}other{Σελίδα {COUNT}}}</translation>
+<translation id="4154277373259957087">Το Chrome θα επαληθεύσει τώρα την ταυτότητά σας πριν τη συμπλήρωση των τρόπων πληρωμής. Μπορείτε να ενημερώσετε αυτήν τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Αποτυπώματα</translation>
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>

@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur des sites. Vous pouvez contrôler à quels sites l'extension peut accéder.</translation>
 <translation id="1007057452468855774">Activer Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Afin de protéger vos données, les autorisations ont été retirées pour un site que vous n'avez pas visité depuis deux mois}one{Afin de protéger vos données, les autorisations ont été retirées pour ce site que vous n'avez pas visité depuis deux mois}other{Afin de protéger vos données, les autorisations ont été retirées pour ces sites que vous n'avez pas visités depuis deux mois}}</translation>
 <translation id="1009663062402466586">Commandes de jeu maintenant accessibles</translation>
@@ -1465,6 +1466,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2241053333139545397">Accéder à vos données sur un certain nombre de sites Web et les modifier</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2242687258748107519">Information sur le fichier</translation>
+<translation id="2243452222143104807">Onglet inactif</translation>
 <translation id="2245603955208828424">Utilisez les touches fléchées pour parcourir les éléments lettre par lettre</translation>
 <translation id="2246129643805925002">Votre <ph name="DEVICE_TYPE" /> se met automatiquement à jour en arrière-plan pour vous offrir les dernières fonctionnalités et améliorations de sécurité. Vous pouvez examiner vos préférences de mise à jour dans les paramètres.</translation>
 <translation id="2246549592927364792">Télécharger les descriptions d'image de Google?</translation>
@@ -1923,6 +1925,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2616008379779647117">Langue des sous-titres</translation>
 <translation id="2616366145935564096">Accéder à vos données sur <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2618797463720777311">Configurer le partage à proximité</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire.</translation>
 <translation id="2620245777360407679">Appareils actuellement connectés au point d'accès sans fil</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -3848,6 +3851,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4325237902968425115">Désinstallation de l'application <ph name="LINUX_APP_NAME" /> en cours…</translation>
 <translation id="4326146840124313313">La sécurité la plus puissante de Chrome en fait plus pour vous protéger contre les sites Web, les téléchargements et les extensions dangereux</translation>
 <translation id="4326484226728068206">Articles dans votre panier <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, vus <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Cet onglet utilise <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Eau glacée</translation>
 <translation id="4330387663455830245">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configurer les contrôles parentaux</translation>
@@ -6132,6 +6136,7 @@ Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses 
 <translation id="6384275966486438344">Changer vos paramètres de recherche à : <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Groupe sans nom : 1 onglet}one{Groupe sans nom : # onglet}other{Groupe sans nom : # onglets}}</translation>
 <translation id="6385149369087767061">Connectez-vous à Internet et réessayez</translation>
+<translation id="6385382178401976503">Carte : <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Avertissement : La création de journaux détaillés est activée. Les journaux ci-dessous peuvent contenir des URL ou d'autres éléments d'information confidentielle. Veuillez examiner les données incluses et confirmer que vous consentez à leur envoi.</translation>
 <translation id="6387674443318562538">Séparation verticale</translation>
 <translation id="6388429472088318283">Rechercher des langues</translation>
@@ -7377,6 +7382,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7476454130948140105">Pile trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Autorisations bloquées automatiquement : <ph name="PERMISSION" /> et <ph name="COUNT" /> autres</translation>
+<translation id="7477599578899108080">Utilisation élevée de la mémoire : <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Créer un code QR pour cette page</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
 <translation id="7478069565037869084">Lettres espacées</translation>
@@ -8136,6 +8142,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8113476325385351118">Continuer à empêcher ce site d'obtenir le plein contrôle de vos appareils MIDI</translation>
 <translation id="8115139559594092084">À partir de votre compte Google Disque</translation>
 <translation id="8116972784401310538">&amp;Gestionnaire de favoris</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="8118515372935001629">Fréquence d'actualisation de l'affichage</translation>
@@ -8885,6 +8892,7 @@ Si vous choisissez de ne pas partager les signaux, ce profil sera fermé.</trans
 <translation id="8771300903067484968">L'arrière-plan de la page d'accueil a été réinitialisé à sa valeur par défaut.</translation>
 <translation id="8773280816776735812">Afficher la valeur IBAN</translation>
 <translation id="8773302562181397928">Enregistrer <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Économies sur les onglets inactifs : <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
@@ -9162,6 +9170,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> d'espace libre est nécessaire pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="9014206344398081366">Tutoriel de ChromeVox</translation>
 <translation id="901668144954885282">Sauvegarder sur Google Disque</translation>
+<translation id="90181708067259747">Date d'expiration : <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="9019062154811256702">Consulter et modifier les paramètres de remplissage automatique</translation>
 <translation id="9019894137004772119">Utiliser la localisation. Permettez aux applications et aux services munis de l'autorisation de localisation d'utiliser la position de votre appareil. Google peut collecter périodiquement des données de localisation et les utiliser de manière anonyme afin d'améliorer la précision et les services de localisation.</translation>

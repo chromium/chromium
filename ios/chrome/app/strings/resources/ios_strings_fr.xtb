@@ -381,6 +381,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3464194322481586217">Impossible de suivre le prix.</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement ?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
+<translation id="3471148582064653480">Synchronisez vos mots de passe, votre historique et plus encore.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou appli}one{pour {COUNT} site ou appli}other{pour {COUNT} sites ou applis}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applications.</translation>
@@ -402,6 +403,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3565207542107370586">Effacer les données de navigation…</translation>
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
+<translation id="3577555362230509265">Utilisez Chrome dans d'autres applis.</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
@@ -923,6 +925,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Lorsqu'elle est désactivée, ils ne sont enregistrés que sur cet appareil.</translation>
 <translation id="6831043979455480757">Traduire</translation>
+<translation id="6839843088069935119">{count,plural, =1{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}one{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}other{Favoris enregistrés dans "{title}". Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="6842136130964845393">Pour toujours avoir accès à vos mots de passe enregistrés, confirmez votre identité</translation>
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6852222216891664518">Fermer l'onglet épinglé</translation>

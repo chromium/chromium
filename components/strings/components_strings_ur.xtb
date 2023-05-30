@@ -1297,6 +1297,7 @@
 <translation id="4150099059797363385">‏Chinese #4 لفافہ</translation>
 <translation id="4151403195736952345">عالمی ڈیفالٹ استعمال کریں (پتا لگائیں)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{صفحہ 1}other{صفحہ {COUNT}}}</translation>
+<translation id="4154277373259957087">‏Chrome اب ادائیگی کے طریقے پُر کرنے سے پہلے تصدیق کرے گا کہ یہ آپ ہی ہیں۔ آپ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> میں اسے کسی بھی وقت اپ ڈیٹ کر سکتے ہیں۔</translation>
 <translation id="4154664944169082762">فنگر پرنٹس</translation>
 <translation id="4159784952369912983">جامنی</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
@@ -1860,6 +1861,7 @@
 <translation id="5471337644440862957">مزاحیہ فلمیں</translation>
 <translation id="5481076368049295676">یہ مواد آپ کے آلہ پر آپ کی معلومات چوری کرنے والا یا اس کو حذف کرنے والا خطرناک سافٹ ویئر انسٹال کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">درست پتہ شامل کریں</translation>
+<translation id="5483838506518938965">آپ پوری طرح سے تیار ہیں</translation>
 <translation id="5485973315555778056">کلاؤڈ مشین</translation>
 <translation id="5487426985799386720">غذا اور مشروب</translation>
 <translation id="5490432419156082418">پتے وغیرہ</translation>

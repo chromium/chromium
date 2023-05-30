@@ -1295,6 +1295,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4150099059797363385">Koevert Chinees #4</translation>
 <translation id="4151403195736952345">Gebruik globale verstek (Bespeur)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Bladsy 1}other{Bladsy {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome sal nou verifieer dat dit jy is voordat betaalmetodes ingevul word. Jy kan dit enige tyd in <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> opdateer.</translation>
 <translation id="4154664944169082762">Vingerafdrukke</translation>
 <translation id="4159784952369912983">Pers</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>

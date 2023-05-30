@@ -1295,6 +1295,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4150099059797363385">Kinesisk konvolutt nr. 4</translation>
 <translation id="4151403195736952345">Bruk global standard (oppdag)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Side 1}other{Side {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome kommer nå til å bekrefte at det er deg, før betalingsmåter fylles ut. Du kan oppdatere dette når som helst i <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Fingeravtrykk</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>

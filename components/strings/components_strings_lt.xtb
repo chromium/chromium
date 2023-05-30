@@ -1296,6 +1296,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4150099059797363385">Nr. 4 kinietiškas vokas</translation>
 <translation id="4151403195736952345">Naudoti visuotinį numatytąjį nustatymą (nustatyti)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 psl.}one{{COUNT} psl.}few{{COUNT} psl.}many{{COUNT} psl.}other{{COUNT} psl}}</translation>
+<translation id="4154277373259957087">Dabar „Chrome“ patvirtins jūsų tapatybę prieš užpildydama mokėjimo metodus. Tai galite bet kada atnaujintI <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Pirštų atspaudai</translation>
 <translation id="4159784952369912983">Violetinė</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>

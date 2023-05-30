@@ -1295,6 +1295,7 @@
 <translation id="4150099059797363385">Кинеска коверта бр. 4</translation>
 <translation id="4151403195736952345">Користи глобалну подразумевану вредност (Откривај)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. страница}one{{COUNT}. страница}few{{COUNT}. страница}other{{COUNT}. страница}}</translation>
+<translation id="4154277373259957087">Chrome ће сада потврдити да сте то ви пре него што унесе начине плаћања. То можете да ажурирате у сваком тренутку у одељку <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Отисци</translation>
 <translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>

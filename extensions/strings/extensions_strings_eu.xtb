@@ -13,7 +13,7 @@
 <translation id="2350172092385603347">Kokapena erabili da baina ez da "default_locale" elementua zehaztua manifestuan.</translation>
 <translation id="2576842806987913196">Badago izen hori duen CRX fitxategi bat.</translation>
 <translation id="2785530881066938471">Ezin izan da kargatu "<ph name="RELATIVE_PATH" />" fitxategia edukiaren scripta dela-eta. Ez du erabiltzen UTF-8 kodeketa.</translation>
-<translation id="2903070246402204397">Administratzaileak <ph name="EXTENSION_NAME" /> blokeatu du (luzapenaren IDa: "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
+<translation id="2903070246402204397">Administratzaileak <ph name="EXTENSION_NAME" /> blokeatu du (luzapenaren identifikatzailea: "<ph name="EXTENSION_ID" />"). <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Ezin izan da paketea instalatu: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="3144135466825225871">Ezin izan da crx fitxategia ordeztu. Begiratu fitxategia nonbait erabiltzen ari den.</translation>

@@ -1295,6 +1295,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4150099059797363385">Kitajska kuverta št. 4</translation>
 <translation id="4151403195736952345">Globalno uporabi privzete nastavitve (zaznavanje)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stran}one{{COUNT}. stran}two{{COUNT}. stran}few{{COUNT}. stran}other{{COUNT}. stran}}</translation>
+<translation id="4154277373259957087">Chrome bo zdaj preveril vašo identiteto, preden vnesete podatke o plačilnih sredstvih. To lahko kadar koli posodobite v <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Prstni odtisi</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>

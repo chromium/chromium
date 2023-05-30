@@ -1295,6 +1295,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4150099059797363385">Koverta Chinese #4</translation>
 <translation id="4151403195736952345">Koristi globalnu zadanu postavku (otkrij)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1. stranica}one{{COUNT}. stranica}few{{COUNT}. stranica}other{{COUNT}. stranica}}</translation>
+<translation id="4154277373259957087">Chrome će sada potvrditi da ste to vi prije nego što unesete načine plaćanja. To možete ažurirati bilo kada u <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Digitalni otisci</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>

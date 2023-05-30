@@ -925,6 +925,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6822587385560699678">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="ACCOUNT" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="6831043979455480757">Përkthe</translation>
+<translation id="6839843088069935119">{count,plural, =1{Faqeshënuesi u ruajt te "{title}". Ai ruhet vetëm në këtë pajisje.}other{Faqeshënuesit u ruajtën te "{title}". Ata ruhen vetëm te kjo pajisje.}}</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
 <translation id="6851516051005285358">Kërko sajtin për desktop</translation>
 <translation id="6852222216891664518">Mbyll skedën e gozhduar</translation>

@@ -1295,6 +1295,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
 <translation id="4151403195736952345">Gamitin ang pangkalahatang default (Tukuyin)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
+<translation id="4154277373259957087">Ive-verify na ngayon ng Chrome na ikaw ito bago punan ang mga paraan ng pagbabayad. Puwede mo itong i-update anumang oras sa <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Mga fingerprint</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
