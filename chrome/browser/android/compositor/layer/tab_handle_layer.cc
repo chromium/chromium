@@ -160,7 +160,7 @@ void TabHandleLayer::SetProperties(
                               tab_handle_resource->padding().right();
   const float padding_left = tab_handle_resource->padding().x();
 
-  float close_width = close_button_->bounds().width();
+  float close_width = close_button_->bounds().width() - close_button_padding;
 
   // If close button is not shown, fill
   // the remaining space with the title text
@@ -213,10 +213,9 @@ void TabHandleLayer::SetProperties(
 
     int title_x = is_rtl ? padding_left + close_width : padding_left;
     title_x += is_rtl ? 0 : content_offset_x;
-    title_layer->setBounds(gfx::Size(width - padding_right - padding_left -
-                                         close_width - content_offset_x +
-                                         close_button_padding,
-                                     height));
+    title_layer->setBounds(gfx::Size(
+        width - padding_right - padding_left - close_width - content_offset_x,
+        height));
     if (foreground_) {
       title_x += original_x;
       title_y += original_y;
@@ -233,7 +232,6 @@ void TabHandleLayer::SetProperties(
     close_button_->SetIsDrawable(false);
   } else {
     close_button_->SetIsDrawable(true);
-    const float close_max_width = close_button_->bounds().width();
     int close_y;
     float close_y_offset_mid =
         (tab_handle_resource->padding().y() + height) / 2 -
@@ -251,10 +249,8 @@ void TabHandleLayer::SetProperties(
     } else {
       close_y = close_y_offset_mid;
     }
-    int close_x =
-        is_rtl ? padding_left - close_max_width + close_width -
-                     close_button_padding
-               : width - padding_right - close_width + close_button_padding;
+    int close_x = is_rtl ? padding_left - close_button_padding
+                         : width - padding_right - close_width;
     if (foreground_) {
       close_y += original_y;
       close_x += original_x;
