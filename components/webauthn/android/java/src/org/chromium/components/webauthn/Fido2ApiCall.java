@@ -71,6 +71,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int METHOD_BROWSER_SIGN = 5413;
     public static final int METHOD_BROWSER_ISUVPAA = 5416;
     public static final int METHOD_BROWSER_GETCREDENTIALS = 5430;
+    public static final int METHOD_BROWSER_HYBRID_SIGN = 5442;
 
     public static final int METHOD_APP_REGISTER = 5407;
     public static final int METHOD_APP_SIGN = 5408;
@@ -80,6 +81,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int TRANSACTION_SIGN = IBinder.FIRST_CALL_TRANSACTION + 1;
     public static final int TRANSACTION_ISUVPAA = IBinder.FIRST_CALL_TRANSACTION + 2;
     public static final int TRANSACTION_GETCREDENTIALS = IBinder.FIRST_CALL_TRANSACTION + 3;
+    public static final int TRANSACTION_HYBRID_SIGN = IBinder.FIRST_CALL_TRANSACTION + 4;
 
     private static final String TAG = "Fido2ApiCall";
 

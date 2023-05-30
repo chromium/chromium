@@ -68,6 +68,11 @@ void OnWebAuthnCredentialSelected(
                      credential_id.size()));
 }
 
+void OnHybridAssertionInvoked(
+    const base::android::JavaRef<jobject>& jcallback) {
+  base::android::RunRunnableAndroid(jcallback);
+}
+
 static jlong JNI_WebAuthnBrowserBridge_CreateNativeWebAuthnBrowserBridge(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jbridge) {
@@ -87,7 +92,8 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
     const base::android::JavaParamRef<jobjectArray>& credentials,
     const base::android::JavaParamRef<jobject>& jframe_host,
     jboolean is_conditional_request,
-    const base::android::JavaParamRef<jobject>& jcallback) const {
+    const base::android::JavaParamRef<jobject>& jget_assertion_callback,
+    const base::android::JavaParamRef<jobject>& jhybrid_callback) const {
   auto* client = components::WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
@@ -99,20 +105,30 @@ void WebAuthnBrowserBridge::OnCredentialsDetailsListReceived(
       !content::WebContents::FromRenderFrameHost(render_frame_host)) {
     std::vector<uint8_t> credential_id = {};
     base::android::RunObjectCallbackAndroid(
-        jcallback, base::android::ToJavaByteArray(
-                       base::android::AttachCurrentThread(),
-                       credential_id.data(), credential_id.size()));
+        jget_assertion_callback,
+        base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                       credential_id.data(),
+                                       credential_id.size()));
     return;
   }
 
   std::vector<device::DiscoverableCredentialMetadata> credentials_metadata;
   ConvertJavaCredentialArrayToMetadataVector(env, credentials,
                                              &credentials_metadata);
+
+  base::RepeatingCallback<void()> hybrid_callback;
+  if (jhybrid_callback != nullptr) {
+    hybrid_callback = base::BindRepeating(
+        &OnHybridAssertionInvoked,
+        base::android::ScopedJavaGlobalRef<jobject>(env, jhybrid_callback));
+  }
+
   client->OnWebAuthnRequestPending(
       render_frame_host, credentials_metadata, is_conditional_request,
-      base::BindRepeating(
-          &OnWebAuthnCredentialSelected,
-          base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
+      base::BindRepeating(&OnWebAuthnCredentialSelected,
+                          base::android::ScopedJavaGlobalRef<jobject>(
+                              env, jget_assertion_callback)),
+      std::move(hybrid_callback));
 }
 
 void TriggerFullRequest(

@@ -37,7 +37,8 @@ class WebAuthnClientAndroid {
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       bool is_conditional_request,
       base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
-          callback) = 0;
+          getAssertionCallback,
+      base::RepeatingCallback<void()> hybridCallback) = 0;
 
   // Closes an outstanding conditional UI request, so passkeys will no longer be
   // displayed through autofill.

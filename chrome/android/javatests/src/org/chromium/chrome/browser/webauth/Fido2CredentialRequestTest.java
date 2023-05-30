@@ -36,6 +36,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -83,6 +84,7 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -295,16 +297,19 @@ public class Fido2CredentialRequestTest {
     }
 
     private static class MockBrowserBridge extends WebAuthnBrowserBridge {
+        public enum CallbackInvocationType { IMMEDIATE_GET_ASSERTION, IMMEDIATE_HYBRID, DELAYED }
         private byte[] mSelectedCredentialId;
         private List<WebAuthnCredentialDetails> mExpectedCredentialList;
-        private boolean mInvokeCallbackImmediately = true;
-        private Callback<byte[]> mCallback;
+        private CallbackInvocationType mInvokeCallbackImmediately =
+                CallbackInvocationType.IMMEDIATE_GET_ASSERTION;
+        private Callback<byte[]> mGetAssertionCallback;
+        private Runnable mHybridCallback;
         private int mCleanupCalled;
 
         @Override
         public void onCredentialsDetailsListReceived(RenderFrameHost frameHost,
                 List<WebAuthnCredentialDetails> credentialList, boolean isConditionalRequest,
-                Callback<byte[]> callback) {
+                Callback<byte[]> getAssertionCallback, Runnable hybridCallback) {
             Assert.assertEquals(mExpectedCredentialList.size(), credentialList.size());
             for (int i = 0; i < credentialList.size(); i++) {
                 Assert.assertEquals(
@@ -317,10 +322,15 @@ public class Fido2CredentialRequestTest {
                         mExpectedCredentialList.get(0).mUserId, credentialList.get(0).mUserId);
             }
 
-            mCallback = callback;
+            mGetAssertionCallback = getAssertionCallback;
+            mHybridCallback = hybridCallback;
 
-            if (mInvokeCallbackImmediately) {
-                invokeCallback();
+            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_GET_ASSERTION) {
+                invokeGetAssertionCallback();
+            }
+
+            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_HYBRID) {
+                invokeHybridCallback();
             }
         }
 
@@ -338,13 +348,13 @@ public class Fido2CredentialRequestTest {
             mExpectedCredentialList = credentialList;
         }
 
-        public void setInvokeCallbackImmediately(boolean invokeImmediately) {
-            mInvokeCallbackImmediately = invokeImmediately;
+        public void setInvokeCallbackImmediately(CallbackInvocationType type) {
+            mInvokeCallbackImmediately = type;
         }
 
-        public void invokeCallback() {
+        public void invokeGetAssertionCallback() {
             if (mSelectedCredentialId != null) {
-                mCallback.onResult(mSelectedCredentialId);
+                mGetAssertionCallback.onResult(mSelectedCredentialId);
                 return;
             }
 
@@ -354,12 +364,16 @@ public class Fido2CredentialRequestTest {
              * which normally would imply an error response.
              */
             if (mExpectedCredentialList.isEmpty()) {
-                mCallback.onResult(new byte[0]);
+                mGetAssertionCallback.onResult(new byte[0]);
                 return;
             }
 
             /* Return the first ID in the list if one has not been explicitly set. */
-            mCallback.onResult(mExpectedCredentialList.get(0).mCredentialId);
+            mGetAssertionCallback.onResult(mExpectedCredentialList.get(0).mCredentialId);
+        }
+
+        public void invokeHybridCallback() {
+            mHybridCallback.run();
         }
 
         public int getCleanupCalledCount() {
@@ -440,6 +454,10 @@ public class Fido2CredentialRequestTest {
     private boolean gmsVersionSupported() {
         return PackageUtils.getPackageVersion(GOOGLE_PLAY_SERVICES_PACKAGE)
                 >= AuthenticatorImpl.GMSCORE_MIN_VERSION;
+    }
+
+    private boolean gmsVersionSupportsHybridClient() {
+        return PackageUtils.getPackageVersion(GOOGLE_PLAY_SERVICES_PACKAGE) >= 231206000;
     }
 
     @Test
@@ -1571,7 +1589,8 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertion_conditionalUi_cancelWhileWaitingForSelection() {
         mMockBrowserBridge.setExpectedCredentialDetailsList(Arrays.asList(
                 new WebAuthnCredentialDetails[] {Fido2ApiTestHelper.getCredentialDetails()}));
-        mMockBrowserBridge.setInvokeCallbackImmediately(false);
+        mMockBrowserBridge.setInvokeCallbackImmediately(
+                MockBrowserBridge.CallbackInvocationType.DELAYED);
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         mRequestOptions.isConditional = true;
 
@@ -1678,7 +1697,7 @@ public class Fido2CredentialRequestTest {
 
         // Select credential again, and provide a success response this time.
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        mMockBrowserBridge.invokeCallback();
+        mMockBrowserBridge.invokeGetAssertionCallback();
         mCallback.blockUntilCalled();
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
@@ -1807,6 +1826,35 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertArrayEquals(mCallback.getGetMatchingCredentialIdsResponse().toArray(),
                 new byte[][] {{1, 2, 3}});
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_conditionalUiHybrid_success() {
+        Assume.assumeTrue(gmsVersionSupportsHybridClient());
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI, true);
+        FeatureList.setTestValues(testValues);
+        mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
+        mMockBrowserBridge.setExpectedCredentialDetailsList(
+                Arrays.asList(Fido2ApiTestHelper.getCredentialDetails()));
+        mMockBrowserBridge.setInvokeCallbackImmediately(
+                MockBrowserBridge.CallbackInvocationType.IMMEDIATE_HYBRID);
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.isConditional = true;
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
+        Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+        Assert.assertEquals(mMockBrowserBridge.getCleanupCalledCount(), 1);
     }
 
     private static class TestParcelable implements Parcelable {

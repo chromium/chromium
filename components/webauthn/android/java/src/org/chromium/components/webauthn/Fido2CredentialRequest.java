@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.Task;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
@@ -85,6 +86,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             "android.credentials.CreateCredentialException.TYPE_USER_CANCELED";
     static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_USER_CANCEL =
             "android.credentials.GetCredentialException.TYPE_USER_CANCELED";
+    public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
 
     private static Boolean sIsCredManEnabled;
 
@@ -457,9 +459,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         if (!isConditionalRequest && discoverableCredentials.isEmpty()) {
             mConditionalUiState = ConditionalUiState.NONE;
             // When no passkeys are present for a non-conditional request, pass the request
-            // through to GMSCore. It will show an error message to the user. If at some point in
-            // the future GMSCore supports passkeys from other devices, this will also allow it to
-            // initiate a cross-device flow.
+            // through to GMSCore. It will show an error message to the user, but can offer the
+            // user alternatives to use external passkeys.
             maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
             return;
         }
@@ -468,12 +469,20 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mBrowserBridge = new WebAuthnBrowserBridge();
         }
 
+        Runnable hybridCallback = null;
+        if (isHybridClientApiAvailable()) {
+            hybridCallback = ()
+                    -> dispatchHybridGetAssertionRequest(
+                            options, callerOriginString, clientDataHash);
+        }
+
         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
         mBrowserBridge.onCredentialsDetailsListReceived(mFrameHost, discoverableCredentials,
                 isConditionalRequest,
                 (selectedCredentialId)
                         -> maybeDispatchGetAssertionRequest(
-                                options, callerOriginString, clientDataHash, selectedCredentialId));
+                                options, callerOriginString, clientDataHash, selectedCredentialId),
+                hybridCallback);
     }
 
     private void maybeDispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
@@ -526,6 +535,31 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 options, Uri.parse(callerOriginString), clientDataHash, /*tunnelId=*/null, args);
         Task<PendingIntent> task = call.run(
                 Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
+        task.addOnSuccessListener(this::onGotPendingIntent);
+        task.addOnFailureListener(this::onBinderCallException);
+    }
+
+    private void dispatchHybridGetAssertionRequest(PublicKeyCredentialRequestOptions options,
+            String callerOriginString, byte[] clientDataHash) {
+        assert mConditionalUiState == ConditionalUiState.NONE
+                || mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM
+                || mConditionalUiState == ConditionalUiState.WAITING_FOR_SELECTION;
+
+        if (mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM) {
+            Log.e(TAG, "Received a second credential selection while the first still in progress.");
+            return;
+        }
+        mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
+
+        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
+        Parcel args = call.start();
+        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
+        args.writeStrongBinder(result);
+        args.writeInt(1); // This indicates that the following options are present.
+        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+                options, Uri.parse(callerOriginString), clientDataHash, /*tunnelId=*/null, args);
+        Task<PendingIntent> task = call.run(Fido2ApiCall.METHOD_BROWSER_HYBRID_SIGN,
+                Fido2ApiCall.TRANSACTION_HYBRID_SIGN, args, result);
         task.addOnSuccessListener(this::onGotPendingIntent);
         task.addOnFailureListener(this::onBinderCallException);
     }
@@ -1245,6 +1279,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private void notifyBrowserOnCredManClosed(boolean success) {
         if (mConditionalUiState == ConditionalUiState.NONE) return;
         mBrowserBridge.onCredManUiClosed(mFrameHost, success);
+    }
+
+    private boolean isHybridClientApiAvailable() {
+        return PackageUtils.getPackageVersion("com.google.android.gms")
+                >= GMSCORE_MIN_VERSION_HYBRID_API
+                && DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
     }
 
     @VisibleForTesting

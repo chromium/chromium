@@ -24,6 +24,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnHybridLinkWithoutNotifications,
     &kGenericSensorExtraClasses,
     &device::kWebAuthnHybridLinkWithoutNotifications,
+    &device::kWebAuthnAndroidHybridClientUi,
 };
 
 // TODO(crbug.com/1060097): Removethis once a generalized FeatureList exists.

@@ -110,7 +110,8 @@ class ChromeWebAuthnCredentialsDelegateTest
         main_rfh(), creds, /*is_conditional_request=*/true,
         base::BindRepeating(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*hybrid_callback=*/base::RepeatingClosure());
 #endif
   }
 

@@ -55,8 +55,11 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     content::RenderFrameHost* frame_host,
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     bool is_conditional_request,
-    base::RepeatingCallback<void(const std::vector<uint8_t>& id)> callback) {
-  webauthn_account_selection_callback_ = std::move(callback);
+    base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
+        get_assertion_callback,
+    base::RepeatingClosure hybrid_callback) {
+  get_assertion_callback_ = std::move(get_assertion_callback);
+  hybrid_callback_ = std::move(hybrid_callback);
 
   std::vector<PasskeyCredential> display_credentials;
   base::ranges::transform(
@@ -103,13 +106,13 @@ void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
   }
 
   conditional_request_in_progress_ = false;
-  webauthn_account_selection_callback_.Reset();
+  get_assertion_callback_.Reset();
 }
 
 void WebAuthnRequestDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
-  if (webauthn_account_selection_callback_) {
-    webauthn_account_selection_callback_.Run(user_id);
+  if (get_assertion_callback_) {
+    get_assertion_callback_.Run(user_id);
   }
 }
 
