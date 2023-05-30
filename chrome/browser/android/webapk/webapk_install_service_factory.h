@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_INSTALL_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class WebApkInstallService;
@@ -23,7 +23,7 @@ class WebApkInstallServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<WebApkInstallServiceFactory>;
+  friend base::NoDestructor<WebApkInstallServiceFactory>;
 
   WebApkInstallServiceFactory();
   ~WebApkInstallServiceFactory() override;

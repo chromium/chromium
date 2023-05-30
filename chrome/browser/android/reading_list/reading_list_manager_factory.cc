@@ -12,7 +12,8 @@
 
 // static
 ReadingListManagerFactory* ReadingListManagerFactory::GetInstance() {
-  return base::Singleton<ReadingListManagerFactory>::get();
+  static base::NoDestructor<ReadingListManagerFactory> instance;
+  return instance.get();
 }
 
 // static
