@@ -2076,14 +2076,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.IOSPolicies" units="units" expires_after="M85">
-  <owner>mnissler@chromium.org</owner>
-  <summary>
-    Number of policies loaded at startup on iOS, and when a change is detected
-    at runtime.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
     enum="BooleanSuccess" expires_after="2023-12-31">
   <owner>mpetrisor@chromium.org</owner>

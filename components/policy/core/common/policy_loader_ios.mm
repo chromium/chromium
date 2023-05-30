@@ -13,7 +13,6 @@
 #import "base/json/json_reader.h"
 #import "base/location.h"
 #import "base/mac/foundation_util.h"
-#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -67,10 +66,6 @@ PolicyBundle PolicyLoaderIOS::Load() {
   NSDictionary* configuration = [[NSUserDefaults standardUserDefaults]
       dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
   LoadNSDictionaryToPolicyBundle(configuration, &bundle);
-
-  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
-  size_t count = bundle.Get(chrome_ns).size();
-  UMA_HISTOGRAM_COUNTS_100("Enterprise.IOSPolicies", count);
 
   if (HasPlatformPolicyKey()) {
     // Set a shorter reload interval when the browser is managed by the
