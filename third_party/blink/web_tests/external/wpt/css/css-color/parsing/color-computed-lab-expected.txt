@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 104 tests; 92 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 104 tests; 96 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'lab(0 0 0)'
 PASS Property color value 'lab(0 0 0 / 1)'
 PASS Property color value 'lab(0 0 0 / 0.5)'
@@ -44,8 +44,8 @@ PASS Property color value 'oklab(none none none)'
 PASS Property color value 'oklab(0.2 none none / none)'
 PASS Property color value 'oklab(none none none / 0.5)'
 PASS Property color value 'oklab(0 0 0 / none)'
-FAIL Property color value 'lab(20% -50% 90%/0.5)' assert_true: 'lab(20% -50% 90%/0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(20% 70% -80%/0.5)' assert_true: 'oklab(20% 70% -80%/0.5)' is a supported value for color. expected true got false
+PASS Property color value 'lab(20% -50% 90%/0.5)'
+PASS Property color value 'oklab(20% 70% -80%/0.5)'
 FAIL Property color value 'oklab(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got 1
 FAIL Property color value 'oklab(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got 1
 PASS Property color value 'lch(0 0 0deg)'
@@ -100,8 +100,8 @@ PASS Property color value 'oklch(none none none)'
 PASS Property color value 'oklch(0.2 none none / none)'
 PASS Property color value 'oklch(none none none / 0.5)'
 PASS Property color value 'oklch(0 0 0 / none)'
-FAIL Property color value 'lch(20% 80% 10/0.5)' assert_true: 'lch(20% 80% 10/0.5)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(20% 60% 10/0.5)' assert_true: 'oklch(20% 60% 10/0.5)' is a supported value for color. expected true got false
+PASS Property color value 'lch(20% 80% 10/0.5)'
+PASS Property color value 'oklch(20% 60% 10/0.5)'
 FAIL Property color value 'oklch(calc(NaN) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got 1
 FAIL Property color value 'oklch(calc(0 / 0) 0 0)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 0.0001, expected 0 but got 1
 Harness: the test ran to completion.
