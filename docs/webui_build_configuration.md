@@ -390,7 +390,7 @@ generate_grd("build_grd") {
   input_files = [ "my_webui.html" ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":build_ts" ]
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   # Or, configure statically the manifest file name:
   # manifest_files = [ "$target_gen_dir/build_ts.manifest" ]
   grd_prefix = "my_webui"
@@ -744,7 +744,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "my_debug_page_index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
 
 # Create the pak, header, and resource map files.
@@ -827,7 +827,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "my_debug_page_index.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+  manifest_files = filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
 
 # Create the pak, header, and resource map files.

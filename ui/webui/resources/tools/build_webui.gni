@@ -374,7 +374,7 @@ template("build_webui") {
     merge_js_source_maps("merge_source_maps") {
       deps = [ ":build_ts" ]
       manifest_files =
-          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
       js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
       sources = []
@@ -466,11 +466,11 @@ template("build_webui") {
     } else if (enable_source_maps) {
       deps += [ ":merge_source_maps" ]
       manifest_files += filter_include(get_target_outputs(":merge_source_maps"),
-                                       [ "*_manifest.json" ])
+                                       [ "*.manifest" ])
     } else {
       deps += [ ":build_ts" ]
       manifest_files +=
-          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+          filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
     }
 
     if (defined(invoker.extra_grdp_deps)) {

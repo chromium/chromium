@@ -188,7 +188,7 @@ generate_grd("build_grdp") {
   } else {
     deps += [ ":build_ts" ]
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "mojo"

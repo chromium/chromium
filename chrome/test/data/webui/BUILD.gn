@@ -600,5 +600,5 @@ generate_grd("build_grd") {
   }
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
