@@ -1424,7 +1424,7 @@ BASE_FEATURE(kLacrosProfileBackwardMigration,
 // possible.
 BASE_FEATURE(kLanguagePacksInOobe,
              "LanguagePacksInOobe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
