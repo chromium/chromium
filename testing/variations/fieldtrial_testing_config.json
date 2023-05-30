@@ -10604,6 +10604,22 @@
             ]
         }
     ],
+    "PrivacyHub": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230530_Dogfood",
+                    "enable_features": [
+                        "CrosPrivacyHub"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyHubBetaStudy": [
         {
             "platforms": [
@@ -10621,12 +10637,6 @@
                     "name": "Enabled_20230101_Dogfood",
                     "enable_features": [
                         "CrosPrivacyHubV0"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230530_Dogfood",
-                    "enable_features": [
-                        "CrosPrivacyHub"
                     ]
                 }
             ]
