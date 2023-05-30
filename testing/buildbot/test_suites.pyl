@@ -130,6 +130,19 @@
           'skia_gold_test',
         ],
       },
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_desktop_smoke_tests',
+        'args': [
+          '--target-platform=android',
+        ],
+        'mixins': [
+          'skia_gold_test',
+        ],
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
     },
 
     'android_isolated_scripts': {
