@@ -8,17 +8,40 @@ import UIKit
 /// Controller backed by SpotlightLogger known items, with filter function.
 class ItemsController {
 
+  var query: CSSearchQuery? = nil
+  var allItems = [CSSearchableItem]()
+
   func filteredItems(with filter: String? = nil, limit: Int? = nil) -> [CSSearchableItem] {
-    let filtered = knownItems.filter { $0.contains(filter) }
+    let filtered = allItems.filter { $0.contains(filter) }
     if let limit = limit {
       return Array(filtered.prefix(through: limit))
     } else {
       return filtered
     }
   }
-  private lazy var knownItems: [CSSearchableItem] = {
-    return SpotlightLogger.shared().knownIndexedItems() ?? []
-  }()
+
+  func fetchAllItems(completionHandler: @escaping () -> Void) {
+    self.allItems = []
+    let queryString = "title == *"
+    let attributes = [
+      "uniqueIdentifier",
+      "title", "domain", "id", "URL", "description",
+      "thumbnail data", "displayName", "keywords",
+      "contentType", "domainIdentifier", "identifier", "rankingHint",
+    ]
+    self.query = CSSearchQuery(
+      queryString: queryString,
+      attributes: attributes)
+    self.query?.foundItemsHandler = { (items: [CSSearchableItem]) -> Void in
+      self.allItems.append(contentsOf: items)
+    }
+    self.query?.completionHandler = { (error: Error?) -> Void in
+      DispatchQueue.main.async {
+        completionHandler()
+      }
+    }
+    self.query?.start()
+  }
 }
 
 /// Displays a list of all searchable items from the spotlight logger.
@@ -44,6 +67,10 @@ class SpotlightDebuggerAllItemsViewController: UIViewController {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     collectionView.deselectAllItems(animated: animated)
+    itemsController.fetchAllItems {
+      // Reload data by executing an empty filter query.
+      self.performQuery(with: "")
+    }
   }
 }
 
@@ -165,5 +192,4 @@ extension CSSearchableItem {
       || (domainIdentifier?.lowercased().contains(lowercasedFilter) ?? false)
       || uniqueIdentifier.lowercased().contains(lowercasedFilter)
   }
-
 }

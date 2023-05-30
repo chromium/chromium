@@ -120,10 +120,6 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         case DonatedItemsRow:
           content.text = @"Donated items";
-          content.secondaryText =
-              [NSString stringWithFormat:@"Total count: %ld",
-                                         [SpotlightLogger sharedLogger]
-                                             .knownIndexedItems.count];
           content.image = DefaultSymbolWithPointSize(
               @"square.stack.3d.down.right", kSymbolAccessoryPointSize);
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
