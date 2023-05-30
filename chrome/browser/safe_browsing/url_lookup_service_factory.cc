@@ -39,7 +39,8 @@ RealTimeUrlLookupService* RealTimeUrlLookupServiceFactory::GetForProfile(
 // static
 RealTimeUrlLookupServiceFactory*
 RealTimeUrlLookupServiceFactory::GetInstance() {
-  return base::Singleton<RealTimeUrlLookupServiceFactory>::get();
+  static base::NoDestructor<RealTimeUrlLookupServiceFactory> instance;
+  return instance.get();
 }
 
 RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()

@@ -31,7 +31,8 @@ AdvancedProtectionStatusManagerFactory::GetForProfile(Profile* profile) {
 // static
 AdvancedProtectionStatusManagerFactory*
 AdvancedProtectionStatusManagerFactory::GetInstance() {
-  return base::Singleton<AdvancedProtectionStatusManagerFactory>::get();
+  static base::NoDestructor<AdvancedProtectionStatusManagerFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -53,7 +54,7 @@ AdvancedProtectionStatusManagerFactory::AdvancedProtectionStatusManagerFactory()
 }
 
 AdvancedProtectionStatusManagerFactory::
-    ~AdvancedProtectionStatusManagerFactory() {}
+    ~AdvancedProtectionStatusManagerFactory() = default;
 
 KeyedService* AdvancedProtectionStatusManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

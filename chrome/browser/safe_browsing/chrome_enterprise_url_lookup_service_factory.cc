@@ -38,8 +38,9 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(
 // static
 ChromeEnterpriseRealTimeUrlLookupServiceFactory*
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance() {
-  return base::Singleton<
-      ChromeEnterpriseRealTimeUrlLookupServiceFactory>::get();
+  static base::NoDestructor<ChromeEnterpriseRealTimeUrlLookupServiceFactory>
+      instance;
+  return instance.get();
 }
 
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -35,7 +35,7 @@ class TailoredSecurityServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
  private:
-  friend struct base::DefaultSingletonTraits<TailoredSecurityServiceFactory>;
+  friend base::NoDestructor<TailoredSecurityServiceFactory>;
 
   // BrowserContextKeyedServiceFactory:
   bool ServiceIsCreatedWithBrowserContext() const override;

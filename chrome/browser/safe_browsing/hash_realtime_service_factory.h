@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_HASH_REALTIME_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_HASH_REALTIME_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -37,7 +37,7 @@ class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<HashRealTimeServiceFactory>;
+  friend base::NoDestructor<HashRealTimeServiceFactory>;
 
   HashRealTimeServiceFactory();
   ~HashRealTimeServiceFactory() override = default;

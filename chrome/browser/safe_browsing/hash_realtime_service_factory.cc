@@ -27,7 +27,8 @@ HashRealTimeService* HashRealTimeServiceFactory::GetForProfile(
 
 // static
 HashRealTimeServiceFactory* HashRealTimeServiceFactory::GetInstance() {
-  return base::Singleton<HashRealTimeServiceFactory>::get();
+  static base::NoDestructor<HashRealTimeServiceFactory> instance;
+  return instance.get();
 }
 
 HashRealTimeServiceFactory::HashRealTimeServiceFactory()

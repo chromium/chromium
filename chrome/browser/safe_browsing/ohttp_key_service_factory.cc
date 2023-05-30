@@ -24,7 +24,8 @@ OhttpKeyService* OhttpKeyServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 OhttpKeyServiceFactory* OhttpKeyServiceFactory::GetInstance() {
-  return base::Singleton<OhttpKeyServiceFactory>::get();
+  static base::NoDestructor<OhttpKeyServiceFactory> instance;
+  return instance.get();
 }
 
 OhttpKeyServiceFactory::OhttpKeyServiceFactory()
