@@ -250,7 +250,14 @@ void CoreOobe::UpdateUiInitState(CoreOobeView::UiState state) {
       // Execute deferred JavaScript in the CoreHandler first.
       ExecutePendingCalls();
       // Call AllowJavascript() on all handlers.
-      LoginDisplayHost::default_host()->GetOobeUI()->InitializeHandlers();
+      if (LoginDisplayHost::default_host() &&
+          LoginDisplayHost::default_host()->GetOobeUI()) {
+        LoginDisplayHost::default_host()->GetOobeUI()->InitializeHandlers();
+      } else {
+        LOG(ERROR)
+            << "OOBE: Not initializing handlers because LoginDisplayHost or "
+               "OobeUI does not exist!";
+      }
       break;
   }
 }
