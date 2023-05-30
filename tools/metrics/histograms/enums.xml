@@ -91728,6 +91728,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="User pasted something on the page and the warning was shown."/>
 </enum>
 
+<enum name="SafeBrowsingEnhancedProtegoPingType">
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="None"/>
+  <int value="2" label="WithToken"/>
+  <int value="3" label="WithoutToken"/>
+</enum>
+
 <enum name="SafeBrowsingHPRTOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Parse response error"/>
