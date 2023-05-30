@@ -17,7 +17,6 @@ namespace apps {
 
 struct ComponentFileContents {
   std::string app_with_locale_pb;
-  std::string deduplication_pb;
 };
 
 // The AppProvisioningDataManager parses the updates received from the Component
@@ -31,8 +30,6 @@ class AppProvisioningDataManager {
    public:
     virtual void OnAppWithLocaleListUpdated(
         const proto::AppWithLocaleList& app_with_locale_list) {}
-    virtual void OnDuplicatedGroupListUpdated(
-        const proto::DuplicatedGroupList& duplicated_group_list) {}
   };
 
   static AppProvisioningDataManager* Get();
@@ -70,7 +67,6 @@ class AppProvisioningDataManager {
 
   // The latest app data. Starts out as null.
   std::unique_ptr<proto::AppWithLocaleList> app_with_locale_list_;
-  std::unique_ptr<proto::DuplicatedGroupList> duplicated_group_list_;
 
   base::ObserverList<Observer> observers_;
 

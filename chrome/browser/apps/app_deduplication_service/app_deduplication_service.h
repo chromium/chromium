@@ -51,14 +51,6 @@ class AppDeduplicationService : public KeyedService,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  friend class AppDeduplicationServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
-                           OnDuplicatedGroupListUpdated);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
-                           ExactDuplicateAllInstalled);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
-
   friend class AppDeduplicationServiceAlmanacTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            DeduplicateDataToEntries);
@@ -86,10 +78,6 @@ class AppDeduplicationService : public KeyedService,
   // A call is only made to the server if there is a difference of over 24 hours
   // between now and the time stored in the server pref.
   void StartLoginFlow();
-
-  // AppProvisioningDataManager::Observer:
-  void OnDuplicatedGroupListUpdated(
-      const proto::DuplicatedGroupList& duplicated_apps_map) override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
