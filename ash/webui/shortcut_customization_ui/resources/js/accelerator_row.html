@@ -55,7 +55,7 @@
   <th id="descriptionText" scope="row">[[description]]</th>
   <td>
     <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
-      <template is="dom-repeat" items="[[getFilteredAccelerators(acceleratorInfos)]]">
+      <template is="dom-repeat" items="[[acceleratorInfos]]">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
             action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
             show-edit-icon="true">

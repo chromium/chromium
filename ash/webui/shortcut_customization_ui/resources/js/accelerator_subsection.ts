@@ -115,8 +115,9 @@ export class AcceleratorSubsectionElement extends
                   // necessary keys aren't available on the keyboard.
                   return !(
                       accel.type === AcceleratorType.kDefault &&
-                      accel.state ===
-                          AcceleratorState.kDisabledByUnavailableKeys);
+                      (accel.state === AcceleratorState.kDisabledByUser ||
+                       accel.state ===
+                           AcceleratorState.kDisabledByUnavailableKeys));
                 });
         // Do not hide empty accelerator rows if customization is enabled.
         if (isCustomizationDisabled()) {
