@@ -1683,9 +1683,18 @@
     "label": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
     "type": "console_test_launcher",
   },
+  "test_env_py_unittests": {
+    "label": "//testing:test_env_py_unittests",
+    "type": "generated_script",
+  },
   "test_serde_json_lenient": {
     "label": "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
     "type": "console_test_launcher",
+  },
+  "testing_pytype": {
+    "label": "//testing:testing_pytype",
+    "type": "script",
+    "script": "//testing/run_pytype.py",
   },
   "touch_to_fill_junit_tests": {
     "label": "//chrome/browser/touch_to_fill/android:touch_to_fill_junit_tests",
@@ -1735,11 +1744,6 @@
   "ui_touch_selection_unittests": {
     "label": "//ui/touch_selection:ui_touch_selection_unittests",
     "type": "windowed_test_launcher",
-  },
-  "testing_pytype": {
-    "label": "//testing:testing_pytype",
-    "type": "script",
-    "script": "//testing/run_pytype.py",
   },
   "unit_tests": {
     "label": "//chrome/test:unit_tests",
@@ -2012,6 +2016,10 @@
       "--test-launcher-jobs=1",
       "--enable-pixel-output-in-tests",
     ],
+  },
+  "xvfb_py_unittests": {
+    "label": "//testing:xvfb_py_unittests",
+    "type": "generated_script",
   },
   "zlib_unittests": {
     "label": "//third_party/zlib:zlib_unittests",

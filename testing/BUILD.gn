@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
+import("//testing/test.gni")
 
 # Used by linux-gcc-rel to ensure gcc doesn't choke on clang-only flags.
 if (!is_clang) {
@@ -31,6 +32,35 @@ group("test_scripts_shared") {
     "//testing/xvfb.py",
     "//testing/scripts/common.py",
   ]
+}
+
+script_test("test_env_py_unittests") {
+  script = "//testing/scripts/run_isolated_script_test.py"
+  args = [
+    "@WrappedPath(" +
+        rebase_path("//testing/test_env_unittest.py", root_build_dir) + ")",
+    "--script-type=bare",
+  ]
+  data = [
+    "//testing/test_env_test_script.py",
+    "//testing/test_env_unittest.py",
+    "//testing/test_env_user_script.py",
+  ]
+  data_deps = [ ":test_scripts_shared" ]
+}
+
+script_test("xvfb_py_unittests") {
+  script = "//testing/scripts/run_isolated_script_test.py"
+  args = [
+    "@WrappedPath(" +
+        rebase_path("//testing/xvfb_unittest.py", root_build_dir) + ")",
+    "--script-type=bare",
+  ]
+  data = [
+    "//testing/xvfb_test_script.py",
+    "//testing/xvfb_unittest.py",
+  ]
+  data_deps = [ ":test_scripts_shared" ]
 }
 
 group("run_perf_test") {

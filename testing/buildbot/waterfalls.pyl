@@ -4881,7 +4881,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
+          'isolated_scripts': 'chromium_linux_rel_isolated_scripts_once',
         },
       },
       'Linux Tests (Wayland)': {
@@ -4997,7 +4997,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
         },
       },
       'Mac12 Tests (dbg)': {
@@ -6219,7 +6219,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
         },
       },
       'Win10 Tests x64 (dbg)': {

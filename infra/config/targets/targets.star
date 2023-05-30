@@ -2055,6 +2055,11 @@ targets.console_test_launcher(
     label = "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",
 )
 
+targets.generated_script(
+    name = "test_env_py_unittests",
+    label = "//testing:test_env_py_unittests",
+)
+
 targets.console_test_launcher(
     name = "test_serde_json_lenient",
     label = "//build/rust/tests/test_serde_json_lenient:test_serde_json_lenient",
@@ -2066,6 +2071,12 @@ targets.console_test_launcher(
 #     label = "//content/test:test_buildbucket_api_gpu_use_cases",
 #     script = "//testing/scripts/test_buildbucket_api_gpu_use_cases.py",
 # )
+
+targets.script(
+    name = "testing_pytype",
+    label = "//testing:testing_pytype",
+    script = "//testing/run_pytype.py",
+)
 
 targets.generated_script(
     name = "touch_to_fill_junit_tests",
@@ -2124,12 +2135,6 @@ targets.generated_script(
 targets.windowed_test_launcher(
     name = "ui_touch_selection_unittests",
     label = "//ui/touch_selection:ui_touch_selection_unittests",
-)
-
-targets.script(
-    name = "testing_pytype",
-    label = "//testing:testing_pytype",
-    script = "//testing/run_pytype.py",
 )
 
 targets.windowed_test_launcher(
@@ -2452,6 +2457,11 @@ targets.windowed_test_launcher(
         "--test-launcher-jobs=1",
         "--enable-pixel-output-in-tests",
     ],
+)
+
+targets.generated_script(
+    name = "xvfb_py_unittests",
+    label = "//testing:xvfb_py_unittests",
 )
 
 targets.console_test_launcher(

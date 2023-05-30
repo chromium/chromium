@@ -1939,6 +1939,20 @@
       },
     },
 
+    # Script tests that only need to run on one builder per desktop platform.
+    'desktop_once_isolated_scripts': {
+      'test_env_py_unittests': {
+        'resultdb': {
+          'enable': True,
+        },
+      },
+      'xvfb_py_unittests': {
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     'devtools_browser_tests' : {
       'devtools_browser_tests': {
         'args': [
@@ -5965,6 +5979,22 @@
       'gpu_dawn_webgpu_blink_web_tests',
     ],
 
+    # Like chromium_linux_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_linux_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_linux_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'linux_specific_chromium_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'pytype_tests',
+      'telemetry_perf_unittests_isolated_scripts',
+      'vulkan_swiftshader_isolated_scripts',
+      'chromium_web_tests_high_dpi_isolated_scripts',
+    ],
+
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -6016,6 +6046,20 @@
       # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
+    # Like chromium_mac_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_mac_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_mac_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'mac_specific_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts',
+    ],
+
     # Pixel tests only enabled on Win 10. So this is
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
     # 'non_android_chromium_gtests_skia_gold'.
@@ -6063,6 +6107,21 @@
 
     'chromium_win_rel_isolated_scripts_code_coverage': [
       'gpu_dawn_webgpu_blink_web_tests',
+    ],
+
+    # Like chromium_win_rel_isolated_scripts above, but includes
+    # desktop_once_isolated_scripts. Note: use
+    # chromium_win_rel_isolated_scripts if you're setting up a new builder.
+    # This group should only be used across ~3 builders.
+    'chromium_win_rel_isolated_scripts_once': [
+      'chromedriver_py_tests_isolated_scripts',
+      'components_perftests_isolated_scripts',
+      'desktop_chromium_isolated_scripts',
+      'desktop_once_isolated_scripts',
+      'mojo_python_unittests_isolated_scripts',
+      'telemetry_desktop_minidump_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts',
+      'win_specific_isolated_scripts',
     ],
 
     'cronet_dbg_isolated_scripts': [
