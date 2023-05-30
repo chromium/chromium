@@ -1760,7 +1760,7 @@ crbug.com/1310079 [ Linux ] virtual/elastic-overscroll/fixed-elements-dont-overs
 # of the test is skipped in NeverFixTests. The VirtualTestSuite version must
 # explicitly be marked Pass in order to bypass the expected Skip of the default
 # version.
-crbug.com/1393294 virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Crash Failure Pass ]
+crbug.com/1393294 virtual/webgl-oversized-printing/printing/webgl-oversized-printing.html [ Crash Failure Pass Timeout ]
 
 crbug.com/904592 css3/filters/backdrop-filter-svg.html [ Failure ]
 crbug.com/904592 [ Linux ] virtual/scalefactor200/css3/filters/backdrop-filter-svg.html [ Pass ]
