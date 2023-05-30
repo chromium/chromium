@@ -403,6 +403,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://slow",
     "chrome://smb-credentials-dialog/",
     "chrome://smb-share-dialog/",
+    "chrome://sys-internals",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
