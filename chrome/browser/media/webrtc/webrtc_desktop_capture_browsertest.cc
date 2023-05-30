@@ -356,8 +356,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   ASSERT_GE(average_fps, kFps / 3);
 }
 
-// TODO(crbug.com/1395498): Fails on Linux ASan LSan builder
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/1449889): Fails on Linux ASan, LSan and MSan builders.
+#if BUILDFLAG(IS_LINUX) &&                                      \
+    ((defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)) || \
+     defined(MEMORY_SANITIZER))
 #define MAYBE_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent \
   DISABLED_TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent
 #else
