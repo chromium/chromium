@@ -12,6 +12,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
+#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/test/ash_test_base.h"
@@ -653,7 +655,6 @@ class TestInputDataProvider : public InputDataProvider {
             widget->GetNativeWindow(),
             std::make_unique<FakeDeviceManager>(),
             std::make_unique<FakeInputDataEventWatcherFactory>(watchers),
-            /*keyboard_input_log_ptr=*/nullptr,
             Shell::Get()->accelerator_controller(),
             event_rewriter_delegate),
         attached_widget_(widget),
@@ -708,6 +709,8 @@ class InputDataProviderTest : public AshTestBase {
     widget_ = CreateTestWidget();
     provider_ = std::make_unique<TestInputDataProvider>(
         widget_.get(), watchers_, event_rewriter_delegate_.get());
+    DiagnosticsLogController::Initialize(
+        std::make_unique<FakeDiagnosticsBrowserDelegate>());
 
     // Apply these early, in SetUp; delaying until
     // FakeInputDeviceInfoHelper::GetDeviceInfo() is not appropriate, as
@@ -2281,9 +2284,9 @@ TEST_F(InputDataProviderTest, KeyboardInputLog) {
   base::FilePath log_path;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
   log_path = temp_dir.GetPath();
-  KeyboardInputLog log(log_path);
   const auto full_log_path = log_path.AppendASCII("keyboard_input.log");
-  provider_->SetLogForTesting(&log);
+  DiagnosticsLogController::Get()->SetKeyboardInputLogForTesting(
+      std::make_unique<KeyboardInputLog>(log_path));
   std::unique_ptr<FakeKeyboardObserver> fake_observer =
       std::make_unique<FakeKeyboardObserver>();
 

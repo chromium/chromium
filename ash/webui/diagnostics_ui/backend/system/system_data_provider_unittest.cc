@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
+#include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/telemetry_log.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/system/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/backend/system/power_manager_client_conversions.h"
@@ -26,6 +29,7 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
@@ -34,6 +38,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash::diagnostics {
 
@@ -572,26 +577,38 @@ struct FakeCpuUsageObserver : public mojom::CpuUsageObserver {
   mojo::Receiver<mojom::CpuUsageObserver> receiver{this};
 };
 
-class SystemDataProviderTest : public testing::Test {
+class SystemDataProviderTest : public AshTestBase {
  public:
-  SystemDataProviderTest() {
-    chromeos::PowerManagerClient::InitializeFake();
+  SystemDataProviderTest() = default;
+
+  SystemDataProviderTest(const SystemDataProviderTest&) = delete;
+  SystemDataProviderTest& operator=(const SystemDataProviderTest&) = delete;
+
+  ~SystemDataProviderTest() override = default;
+
+  void SetUp() override {
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    AshTestBase::SetUp();
+    base::RunLoop().RunUntilIdle();
+
     cros_healthd::FakeCrosHealthd::Initialize();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
+    DiagnosticsLogController::Initialize(
+        std::make_unique<FakeDiagnosticsBrowserDelegate>());
   }
 
-  ~SystemDataProviderTest() override {
+  void TearDown() override {
     system_data_provider_.reset();
     cros_healthd::FakeCrosHealthd::Shutdown();
-    chromeos::PowerManagerClient::Shutdown();
     base::RunLoop().RunUntilIdle();
+    AshTestBase::TearDown();
   }
 
  protected:
   std::unique_ptr<SystemDataProvider> system_data_provider_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 };
 
@@ -1037,8 +1054,8 @@ TEST_F(SystemDataProviderTest, CpuUsageScaledClock) {
 }
 
 TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
-  TelemetryLog log;
-  system_data_provider_ = std::make_unique<SystemDataProvider>(&log);
+  DiagnosticsLogController::Get()->SetTelemetryLogForTesting(
+      std::make_unique<TelemetryLog>());
 
   const std::string expected_board_name = "board_name";
   const std::string expected_marketing_name = "marketing_name";
@@ -1082,7 +1099,8 @@ TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
 
   // Check the contents of the telemetry log
   const std::vector<std::string> log_contents = base::SplitString(
-      log.GetContents(), "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+      DiagnosticsLogController::Get()->GetTelemetryLog().GetContents(), "\n",
+      base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   // Expect one title line and 9 content lines.
   EXPECT_EQ(10u, log_contents.size());

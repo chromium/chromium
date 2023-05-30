@@ -14,6 +14,7 @@
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
@@ -56,16 +57,18 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
            !device_info->event_device_info.HasStylus()));
 }
 
+bool IsLoggingEnabled() {
+  return diagnostics::DiagnosticsLogController::IsInitialized();
+}
+
 }  // namespace
 
 // Escape should be able to close the dialog as long as shortcuts are not
 // blocked. This boolean is updated within |BlockShortcuts|.
 bool InputDataProvider::should_close_dialog_on_escape_ = true;
 
-InputDataProvider::InputDataProvider(aura::Window* window,
-                                     KeyboardInputLog* keyboard_input_log_ptr)
-    : keyboard_input_log_ptr_(keyboard_input_log_ptr),
-      device_manager_(ui::CreateDeviceManager()),
+InputDataProvider::InputDataProvider(aura::Window* window)
+    : device_manager_(ui::CreateDeviceManager()),
       watcher_factory_(std::make_unique<EventWatcherFactoryImpl>()),
       accelerator_controller_(Shell::Get()->accelerator_controller()),
       event_rewriter_delegate_(Shell::Get()
@@ -78,11 +81,9 @@ InputDataProvider::InputDataProvider(
     aura::Window* window,
     std::unique_ptr<ui::DeviceManager> device_manager_for_test,
     std::unique_ptr<EventWatcherFactory> watcher_factory,
-    KeyboardInputLog* keyboard_input_log_ptr,
     AcceleratorControllerImpl* accelerator_controller,
     ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
-    : keyboard_input_log_ptr_(keyboard_input_log_ptr),
-      device_manager_(std::move(device_manager_for_test)),
+    : device_manager_(std::move(device_manager_for_test)),
       watcher_factory_(std::move(watcher_factory)),
       accelerator_controller_(accelerator_controller),
       event_rewriter_delegate_(event_rewriter_delegate) {
@@ -372,7 +373,9 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
   }
 
   if (IsLoggingEnabled()) {
-    keyboard_input_log_ptr_->CreateLogAndRemoveKeyboard(id);
+    DiagnosticsLogController::Get()
+        ->GetKeyboardInputLog()
+        .CreateLogAndRemoveKeyboard(id);
   }
 
   healthd_event_reporter_.ReportKeyboardDiagnosticEvent(id, keyboards_[id]);
@@ -389,10 +392,6 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
 const std::string InputDataProvider::GetKeyboardName(uint32_t id) {
   auto iter = keyboards_.find(id);
   return iter == keyboards_.end() ? "" : iter->second->name;
-}
-
-bool InputDataProvider::IsLoggingEnabled() const {
-  return keyboard_input_log_ptr_ != nullptr;
 }
 
 void InputDataProvider::OnObservedKeyboardInputDisconnect(
@@ -427,7 +426,8 @@ void InputDataProvider::ObserveKeyEvents(
   }
 
   if (IsLoggingEnabled()) {
-    keyboard_input_log_ptr_->AddKeyboard(id, GetKeyboardName(id));
+    DiagnosticsLogController::Get()->GetKeyboardInputLog().AddKeyboard(
+        id, GetKeyboardName(id));
   }
 
   // When keyboard observer remote set is constructed, establish the
@@ -608,7 +608,9 @@ void InputDataProvider::SendInputKeyEvent(uint32_t id,
       keyboards_[id], keyboard_aux_data_[id].get(), key_code, scan_code, down);
 
   if (IsLoggingEnabled()) {
-    keyboard_input_log_ptr_->RecordKeyPressForKeyboard(id, event.Clone());
+    DiagnosticsLogController::Get()
+        ->GetKeyboardInputLog()
+        .RecordKeyPressForKeyboard(id, event.Clone());
   }
 
   healthd_event_reporter_.AddKeyEventForNextReport(id, event);
