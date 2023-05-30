@@ -19,7 +19,8 @@ SessionDataService* SessionDataServiceFactory::GetForProfile(Profile* profile) {
 }
 
 SessionDataServiceFactory* SessionDataServiceFactory::GetInstance() {
-  return base::Singleton<SessionDataServiceFactory>::get();
+  static base::NoDestructor<SessionDataServiceFactory> instance;
+  return instance.get();
 }
 
 SessionDataServiceFactory::SessionDataServiceFactory()

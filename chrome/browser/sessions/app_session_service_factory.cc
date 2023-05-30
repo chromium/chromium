@@ -56,7 +56,8 @@ void AppSessionServiceFactory::ShutdownForProfile(Profile* profile) {
 }
 
 AppSessionServiceFactory* AppSessionServiceFactory::GetInstance() {
-  return base::Singleton<AppSessionServiceFactory>::get();
+  static base::NoDestructor<AppSessionServiceFactory> instance;
+  return instance.get();
 }
 
 AppSessionServiceFactory::AppSessionServiceFactory()

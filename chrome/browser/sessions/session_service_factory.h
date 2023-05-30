@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -58,7 +58,7 @@ class SessionServiceFactory : public ProfileKeyedServiceFactory {
   static SessionServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<SessionServiceFactory>;
+  friend base::NoDestructor<SessionServiceFactory>;
   FRIEND_TEST_ALL_PREFIXES(SessionCrashedInfoBarDelegateUnitTest,
                            DetachingTabWithCrashedInfoBar);
 

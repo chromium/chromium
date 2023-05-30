@@ -30,7 +30,8 @@ ClosedTabCacheService* ClosedTabCacheServiceFactory::GetForProfile(
 }
 
 ClosedTabCacheServiceFactory* ClosedTabCacheServiceFactory::GetInstance() {
-  return base::Singleton<ClosedTabCacheServiceFactory>::get();
+  static base::NoDestructor<ClosedTabCacheServiceFactory> instance;
+  return instance.get();
 }
 
 KeyedService* ClosedTabCacheServiceFactory::BuildServiceInstanceFor(

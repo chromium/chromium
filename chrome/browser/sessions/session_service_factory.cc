@@ -56,7 +56,8 @@ void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
 }
 
 SessionServiceFactory* SessionServiceFactory::GetInstance() {
-  return base::Singleton<SessionServiceFactory>::get();
+  static base::NoDestructor<SessionServiceFactory> instance;
+  return instance.get();
 }
 
 SessionServiceFactory::SessionServiceFactory()
