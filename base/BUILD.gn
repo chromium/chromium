@@ -1302,8 +1302,8 @@ component("base") {
     ]
 
     deps += [
-      "//third_party/android_ndk:cpu_features",
       "//third_party/ashmem",
+      "//third_party/cpu_features:ndk_compat",
     ]
 
     # Needs to be a public config so that dependent targets link against it as

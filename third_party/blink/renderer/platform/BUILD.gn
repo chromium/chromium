@@ -1741,7 +1741,7 @@ component("platform") {
   ]
 
   if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
     sources += [
       "theme/web_theme_engine_android.cc",
       "theme/web_theme_engine_android.h",

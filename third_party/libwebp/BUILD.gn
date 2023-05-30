@@ -187,7 +187,7 @@ static_library("libwebp_dsp") {
   ]
   public_deps = [ ":libwebp_dsp_headers" ]
   if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   if (current_cpu == "x86" || current_cpu == "x64") {
     defines = [

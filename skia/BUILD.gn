@@ -508,7 +508,7 @@ component("skia") {
 
   if (is_android) {
     deps += [
-      "//third_party/android_ndk:cpu_features",
+      "//third_party/cpu_features:ndk_compat",
       "//third_party/expat",
     ]
   }

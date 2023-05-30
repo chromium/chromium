@@ -321,7 +321,7 @@ component("partition_alloc") {
   public_configs = []
   if (is_android) {
     # tagging.cc requires __arm_mte_set_* functions.
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   if (is_fuchsia) {
     deps += [

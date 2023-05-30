@@ -451,7 +451,7 @@ static_library("libvpx") {
     deps += [ ":libvpx_intrinsics_neon" ]
   }
   if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
+    deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
   if (current_cpu == "arm" && arm_assembly_sources != []) {
     deps += [ ":libvpx_assembly_arm" ]

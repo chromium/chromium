@@ -46,7 +46,7 @@ if (is_win) {
     "//media/midi",
     "//net",
     "//skia",
-    "//third_party/android_ndk:cpu_features",
+    "//third_party/cpu_features:ndk_compat",
     "//ui/android",
     "//ui/events",
     "//ui/shell_dialogs",
