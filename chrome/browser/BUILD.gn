@@ -4582,12 +4582,6 @@ static_library("browser") {
     }
 
     if (!is_fuchsia) {
-      sources += [
-        # TODO(b/283125370): Change setup to match content analysis support.
-        "enterprise/connectors/analysis/print_content_analysis_utils.cc",
-        "enterprise/connectors/analysis/print_content_analysis_utils.h",
-      ]
-
       deps += [ "//third_party/crashpad/crashpad/client:common" ]
     }
 
@@ -6764,6 +6758,13 @@ static_library("browser") {
     if (is_android) {
       deps += [ "//components/paint_preview/player/android" ]
     }
+  }
+
+  if (enable_print_content_analysis) {
+    sources += [
+      "enterprise/connectors/analysis/print_content_analysis_utils.cc",
+      "enterprise/connectors/analysis/print_content_analysis_utils.h",
+    ]
   }
 
   if (enable_captive_portal_detection) {
