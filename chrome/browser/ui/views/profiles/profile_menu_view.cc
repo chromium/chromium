@@ -564,8 +564,9 @@ void ProfileMenuView::BuildAutofillButtons() {
                           base::Unretained(this)));
 
   AddShortcutFeatureButton(
-      features::IsChromeRefresh2023() ? kLocationOnChromeRefreshIcon
-                                      : vector_icons::kLocationOnIcon,
+      features::IsChromeRefresh2023()
+          ? vector_icons::kLocationOnChromeRefreshIcon
+          : vector_icons::kLocationOnIcon,
       l10n_util::GetStringUTF16(IDS_PROFILES_ADDRESSES_LINK),
       base::BindRepeating(&ProfileMenuView::OnAddressesButtonClicked,
                           base::Unretained(this)));

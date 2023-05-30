@@ -324,7 +324,7 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
                                      ui::kColorMenuIcon, kDefaultIconSize));
   AddItemWithStringIdAndIcon(
       IDC_SHOW_ADDRESSES, IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-      ui::ImageModel::FromVectorIcon(kLocationOnChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnChromeRefreshIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 }
 
