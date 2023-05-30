@@ -224,6 +224,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     Params& SetId(ElementIdentifier id);
     Params& SetLabel(std::u16string label);
     Params& SetStyle(absl::optional<ButtonStyle> style);
+    Params& SetEnabled(bool is_enabled);
 
     Params& AddAccelerator(Accelerator accelerator);
 
@@ -234,6 +235,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     ElementIdentifier id_;
     std::u16string label_;
     absl::optional<ButtonStyle> style_;
+    bool is_enabled_ = true;
     base::flat_set<Accelerator> accelerators_;
   };
 
@@ -256,6 +258,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
       base::PassKey<DialogModelHost>) const {
     return style_;
   }
+  bool is_enabled(base::PassKey<DialogModelHost>) const { return is_enabled_; }
   void OnPressed(base::PassKey<DialogModelHost>, const Event& event);
 
  private:
@@ -263,6 +266,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
 
   const std::u16string label_;
   const absl::optional<ButtonStyle> style_;
+  const bool is_enabled_;
   // The button callback gets called when the button is activated. Whether
   // that happens on key-press, release, etc. is implementation (and platform)
   // dependent.

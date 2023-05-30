@@ -206,6 +206,12 @@ DialogModelButton::Params& DialogModelButton::Params::SetStyle(
   return *this;
 }
 
+DialogModelButton::Params& DialogModelButton::Params::SetEnabled(
+    bool is_enabled) {
+  is_enabled_ = is_enabled;
+  return *this;
+}
+
 DialogModelButton::Params& DialogModelButton::Params::AddAccelerator(
     Accelerator accelerator) {
   accelerators_.insert(std::move(accelerator));
@@ -224,6 +230,7 @@ DialogModelButton::DialogModelButton(
                        params.accelerators_),
       label_(std::move(params.label_)),
       style_(params.style_),
+      is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {
   DCHECK(callback_);
 }
