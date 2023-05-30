@@ -168,6 +168,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     friend class AddressPoolManager;
+    friend void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption);
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
   };
 

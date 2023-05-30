@@ -58,7 +58,9 @@ void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation) {
 
   AddressPoolManager::Pool* pool =
       AddressPoolManager::GetInstance().GetPool(kThreadIsolatedPoolHandle);
-  WriteProtectThreadIsolatedVariable(thread_isolation, *pool, sizeof(Lock));
+  WriteProtectThreadIsolatedVariable(
+      thread_isolation, *pool,
+      offsetof(AddressPoolManager::Pool, alloc_bitset_));
 
   uint16_t* pkey_reservation_offset_table =
       GetReservationOffsetTable(kThreadIsolatedPoolHandle);
