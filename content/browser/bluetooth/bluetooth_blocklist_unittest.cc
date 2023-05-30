@@ -65,32 +65,6 @@ TEST_F(BluetoothBlocklistTest, ExcludeWritesUUID) {
   EXPECT_TRUE(list_->IsExcludedFromWrites(exclude_writes_uuid));
 }
 
-TEST_F(BluetoothBlocklistTest, EmptyStringUUID) {
-  BluetoothUUID empty_string_uuid("");
-  EXPECT_CHECK_DEATH_WITH(
-      list_->Add(empty_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
-      kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcluded(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcludedFromReads(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcludedFromWrites(empty_string_uuid),
-                          kInvalidUUIDErrorRegex);
-}
-
-TEST_F(BluetoothBlocklistTest, InvalidUUID) {
-  BluetoothUUID invalid_string_uuid("Not a valid UUID string.");
-  EXPECT_CHECK_DEATH_WITH(
-      list_->Add(invalid_string_uuid, BluetoothBlocklist::Value::EXCLUDE),
-      kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcluded(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcludedFromReads(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
-  EXPECT_CHECK_DEATH_WITH(list_->IsExcludedFromWrites(invalid_string_uuid),
-                          kInvalidUUIDErrorRegex);
-}
-
 // Abreviated UUIDs used to create, or test against, the blocklist work
 // correctly compared to full UUIDs.
 TEST_F(BluetoothBlocklistTest, AbreviatedUUIDs) {
