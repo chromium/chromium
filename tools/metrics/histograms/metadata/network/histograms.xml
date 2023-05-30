@@ -4110,55 +4110,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.MemoryCache.BlockedByRequestHeaderReason"
-    enum="NetworkServiceMemoryCacheBlockedByRequestHeaderReason"
-    expires_after="2023-08-28">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a reason why a request cannot be served from the in-memory cache due
-    to request header checks. Recorded when the in-memory cache tries to serve a
-    stored response.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.MemoryCache.ContentLength.{RequestDestination}"
-    units="bytes" expires_after="2023-07-10">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Size of a response body that is going to be stored to the network service
-    in-memory cache. Recorded before a response is going to be stored to the
-    in-memory cache. If the size is larger than a configurable limit, the
-    response won't be stored in the in-memory cache. This histogram is recorded
-    for {RequestDestination}.
-  </summary>
-  <token key="RequestDestination" variants="NetworkRequestDestination"/>
-</histogram>
-
-<histogram name="NetworkService.MemoryCache.EntryStatus"
-    enum="NetworkServiceMemoryCacheEntryStatus" expires_after="2023-07-18">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records whether an HTTP response is served from the in-memory cache in the
-    network service. Recorded when the network service starts a network request
-    and the request satisfies preconditions. Preconditions include: CORS checks
-    passed, the request was a valid GET request, and the request didn't force
-    network access etc. See NetworkServiceMemoryCache::CanServe() for details.
-  </summary>
-</histogram>
-
-<histogram name="NetworkService.MemoryCache.FreshnessAtStore" units="seconds"
-    expires_after="2023-07-10">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records freshness of a response when it is going to be stored into the
-    in-memory cache. The range is from 1 seconds to 864000 seconds (10 days).
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.NetworkLoaderCompletionTime.{Source}"
     units="ms" expires_after="2024-05-30">
   <owner>bashi@chromium.org</owner>

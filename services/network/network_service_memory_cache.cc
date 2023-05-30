@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -95,23 +94,6 @@ const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxTotalSize{
 const base::FeatureParam<int> kNetworkServiceMemoryCacheMaxPerEntrySize{
     &features::kNetworkServiceMemoryCache, "max_per_entry_size",
     4 * 1024 * 1024};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class EntryStatus {
-  kNotInCache = 0,
-  kStale = 1,
-  kUsed = 2,
-  kVaryMismatch = 3,
-  kBlockedByRequestHeaders = 4,
-  kBlockedServiceWorkerOriginatedRequest_Deprecated = 5,
-  kMaxValue = kBlockedServiceWorkerOriginatedRequest_Deprecated,
-};
-
-void RecordEntryStatus(EntryStatus result) {
-  base::UmaHistogramEnumeration("NetworkService.MemoryCache.EntryStatus",
-                                result);
-}
 
 absl::optional<std::string> GenerateCacheKeyForResourceRequest(
     const ResourceRequest& resource_request,
@@ -398,24 +380,6 @@ void NetworkServiceMemoryCache::StoreResponse(
     return;
   }
 
-  base::UmaHistogramCustomCounts(
-      base::StrCat(
-          {"NetworkService.MemoryCache.ContentLength.",
-           RequestDestinationToStringForHistogram(request_destination)}),
-      base::saturated_cast<base::Histogram::Sample>(data.size()),
-      /*min=*/1, /*exclusive_max=*/50000000,
-      /*buckets=*/50);
-
-  // Record fresness of the response in seconds.
-  const int64_t freshness_in_seconds = lifetimes.freshness.InSeconds();
-  constexpr int kMinSeconds = 1;
-  constexpr int kMaxSeconds = 60 * 60 * 24 * 10;  // 10 days.
-  base::UmaHistogramCustomCounts(
-      "NetworkService.MemoryCache.FreshnessAtStore",
-      base::saturated_cast<base::Histogram::Sample>(freshness_in_seconds),
-      kMinSeconds, kMaxSeconds,
-      /*buckets=*/50);
-
   auto prev = entries_.Peek(cache_key);
   if (prev != entries_.end()) {
     DCHECK_GE(total_bytes_, prev->second->content->size());
@@ -474,17 +438,12 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
 
   auto it = entries_.Peek(*cache_key);
   if (it == entries_.end()) {
-    RecordEntryStatus(EntryStatus::kNotInCache);
     return absl::nullopt;
   }
 
   absl::optional<BlockedByRequestHeaderReason> blocked_by_headers =
       CheckSpecialRequestHeaders(resource_request.headers);
   if (blocked_by_headers.has_value()) {
-    RecordEntryStatus(EntryStatus::kBlockedByRequestHeaders);
-    base::UmaHistogramEnumeration(
-        "NetworkService.MemoryCache.BlockedByRequestHeaderReason",
-        *blocked_by_headers);
     return absl::nullopt;
   }
 
@@ -513,20 +472,17 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   if (!MatchVaryHeader(
           resource_request, it->second->vary_data, *response->headers,
           network_context_->url_request_context()->enable_brotli())) {
-    RecordEntryStatus(EntryStatus::kVaryMismatch);
     return absl::nullopt;
   }
 
   net::ValidationType validation_type = response->headers->RequiresValidation(
       response->request_time, response->response_time, GetCurrentTime());
   if (validation_type != net::VALIDATION_NONE) {
-    RecordEntryStatus(EntryStatus::kStale);
     // The cached response is stale, erase it from the in-memory cache.
     EraseEntry(it);
     return absl::nullopt;
   }
 
-  RecordEntryStatus(EntryStatus::kUsed);
   return std::move(*cache_key);
 }
 
