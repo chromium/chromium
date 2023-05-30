@@ -673,6 +673,10 @@ if (is_android) {
         configs -= [ "//build/config/win:console" ]
         configs += [ "//build/config/win:windowed" ]
       }
+
+      # Increase the initial stack size. The default is 1MB, this is 8MB.
+      # This matches the chrome.exe.
+      ldflags = [ "/STACK:0x800000" ]
     }
 
     if (is_win) {
