@@ -19,12 +19,14 @@
 
 namespace base::test {
 
+using QueryResult = std::vector<std::vector<std::string>>;
+
 std::unique_ptr<perfetto::TracingSession> StartTrace(
     const StringPiece& category_filter_string);
 
 std::vector<char> StopTrace(std::unique_ptr<perfetto::TracingSession> session);
 
-base::expected<TestTraceProcessorImpl::QueryResult, std::string> RunQuery(
+base::expected<QueryResult, std::string> RunQuery(
     const std::string& query,
     const std::vector<char>& trace);
 

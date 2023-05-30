@@ -11,6 +11,7 @@
 #include <memory>
 #include "test_trace_processor_export.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace perfetto::trace_processor {
 struct Config;
@@ -34,7 +35,8 @@ class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessorImpl {
 
   // Runs the sql query on the parsed trace and returns the result as a
   // vector of strings.
-  QueryResult ExecuteQuery(const std::string& sql) const;
+  absl::variant<QueryResult, std::string> ExecuteQuery(
+      const std::string& sql) const;
 
  private:
   std::unique_ptr<perfetto::trace_processor::Config> config_;
