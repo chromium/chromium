@@ -150,6 +150,20 @@ bool DoesInsecureContentSettingDisableUpgrading(const GURL& url,
 #endif
 }
 
+// Check for net errors that should not result in an HTTPS-First Mode
+// interstitial. These cover cases where the error is most likely related to the
+// local network conditions or a transient error, where it is more useful to
+// show the user a network error page than the HTTPS-First Mode interstitial.
+// (Or, in the case of HTTPS Upgrades, we don't want to fallback and allowlist
+// the hostname yet -- instead we want to show the network error page and then
+// retry the HTTPS upgrade again later.)
+bool IsHttpsFirstModeExemptedError(int error) {
+  return net::IsHostnameResolutionError(error) ||
+         error == net::ERR_NETWORK_CHANGED ||
+         error == net::ERR_INTERNET_DISCONNECTED ||
+         error == net::ERR_ADDRESS_UNREACHABLE;
+}
+
 }  // namespace
 
 using RequestHandler = HttpsUpgradesInterceptor::RequestHandler;
@@ -232,6 +246,23 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
   }
 
+  StatefulSSLHostStateDelegate* state =
+      static_cast<StatefulSSLHostStateDelegate*>(
+          profile->GetSSLHostStateDelegate());
+  auto* storage_partition =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+
+  // Set up the interstitial state before checking any exclusions to upgrades,
+  // as some may depend on this being configured.
+  interstitial_state_ = std::make_unique<
+      security_interstitials::https_only_mode::HttpInterstitialState>();
+  interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
+  // StatefulSSLHostStateDelegate can be null during tests.
+  if (state && state->IsHttpsEnforcedForHost(
+                   tentative_resource_request.url.host(), storage_partition)) {
+    interstitial_state_->enabled_by_engagement_heuristic = true;
+  }
+
   // Exclude HTTPS URLs.
   if (tentative_resource_request.url.SchemeIs(url::kHttpsScheme)) {
     RecordNavigationRequestSecurityLevel(
@@ -255,21 +286,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
         NavigationRequestSecurityLevel::kLocalhost);
     std::move(callback).Run({});
     return;
-  }
-
-  StatefulSSLHostStateDelegate* state =
-      static_cast<StatefulSSLHostStateDelegate*>(
-          profile->GetSSLHostStateDelegate());
-  auto* storage_partition =
-      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
-
-  interstitial_state_ = std::make_unique<
-      security_interstitials::https_only_mode::HttpInterstitialState>();
-  interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
-  // StatefulSSLHostStateDelegate can be null during tests.
-  if (state && state->IsHttpsEnforcedForHost(
-                   tentative_resource_request.url.host(), storage_partition)) {
-    interstitial_state_->enabled_by_engagement_heuristic = true;
   }
 
   // Don't exclude local-network requests (for now) but record metrics for them.
@@ -383,8 +399,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Then check whether the host has been allowlisted by the user (or by a
   // previous upgrade attempt failing).
   // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
-  // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
-  // downgrade Page Info.
+  // allowlist entries.
   // TODO(crbug.com/1394910): Move this to a helper function `IsAllowlisted()`,
   // especially once this gets more complicated for HFM vs. Upgrades.
   StatefulSSLHostStateDelegate* state =
@@ -528,7 +543,6 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     bool* skip_other_interceptors,
     bool* will_return_unsafe_redirect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // When an upgraded navigation fails, this method creates a loader to trigger
   // the fallback to HTTP.
   //
@@ -561,6 +575,21 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // non-main frames.
   // This is a fix for crbug.com/1441276.
   if (!interstitial_state_ || !request.is_outermost_main_frame) {
+    return false;
+  }
+
+  // If the navigation resulted in an exempted transient network error, don't
+  // intercept the failure and allow the normal net error page to trigger. Set
+  // the exempt-error flag so if the net error page is reloaded we can try
+  // continuing with the upgrade (and fallback to the original URL if the
+  // transient network error goes away and the navigation fails).
+  // Currently this is only done if the HTTPS-First Mode interstitial is
+  // enabled, because otherwise these would cause the interstitial to be shown
+  // which is confusing. HTTPS-Upgrades will silently fall back to HTTP for
+  // these errors.
+  if (IsInterstitialEnabled(*interstitial_state_) &&
+      IsHttpsFirstModeExemptedError(status.error_code)) {
+    tab_helper->set_is_exempt_error(true);
     return false;
   }
 

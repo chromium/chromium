@@ -51,6 +51,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
@@ -894,6 +895,120 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeNetError, 1);
+}
+
+// If the upgraded HTTPS URL is not available due to a potentially-transient
+// exempted net error (here a DNS resolution error), show the regular net error
+// page instead of the HTTPS-First Mode interstitial. If the network conditions
+// change such that the network error no longer triggers, reloading the tab
+// should continue the upgraded navigation, which will fail and trigger fallback
+// to HTTP. (Regression test for crbug.com/1277211.)
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       ExemptNetErrorOnUpgrade_ShouldNotFallback) {
+  // This test is only interesting when HTTPS-First Mode is enabled.
+  if (!IsHttpsFirstModePrefEnabled()) {
+    return;
+  }
+
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  {
+    // Set up an interceptor that will return ERR_NAME_NOT_RESOLVED. Navigating
+    // to the HTTP URL should get upgraded to HTTPS, but fail with a net error
+    // page on the HTTPS URL.
+    auto dns_failure_interceptor =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](content::URLLoaderInterceptor::RequestParams* params) {
+              params->client->OnComplete(network::URLLoaderCompletionStatus(
+                  net::ERR_NAME_NOT_RESOLVED));
+              return true;
+            }));
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+    EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+    // Reload the tab. The net error should still be showing as the navigation
+    // still results in ERR_NAME_NOT_RESOLVED.
+    content::TestNavigationObserver nav_observer(contents, 1);
+    contents->GetController().Reload(content::ReloadType::NORMAL,
+                                     /*check_for_repost=*/false);
+    nav_observer.Wait();
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+    EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  }
+
+  // Interceptor is now out of scope and no longer applies. Reload the tab and
+  // the upgraded navigation should continue, fail due to the bad HTTPS on the
+  // server, and fall back to HTTP.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  contents->GetController().Reload(content::ReloadType::NORMAL,
+                                   /*check_for_repost=*/false);
+  nav_observer.Wait();
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    ASSERT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+    ProceedThroughInterstitial(contents);
+  }
+
+  // Should now be on the HTTP URL and it should be allowlisted.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
+}
+
+// Test that if one site redirects to a non-existent site, that we show the
+// regular net error page instead of the HTTPS-First Mode interstitial.
+// (Regression test for crbug.com/1277211.)
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       RedirectToNonexistentSite_ShouldNotInterstitial) {
+  // This test is only interesting when HTTPS-First Mode is enabled.
+  if (!IsHttpsFirstModePrefEnabled()) {
+    return;
+  }
+
+  std::string nonexistent_domain = "nonexistentsite.com";
+  GURL nonexistent_http_url =
+      http_server()->GetURL(nonexistent_domain, "/simple.html");
+  GURL nonexistent_https_url =
+      https_server()->GetURL(nonexistent_domain, "/simple.html");
+  std::string www_redirect_path =
+      base::StrCat({"/server-redirect?", nonexistent_http_url.spec()});
+  GURL redirecting_https_url =
+      https_server()->GetURL("foo.com", www_redirect_path);
+  GURL redirecting_http_url =
+      http_server()->GetURL("foo.com", www_redirect_path);
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up an interceptor that will return ERR_NAME_NOT_RESOLVED for
+  // nonexistentsite.com.
+  auto dns_failure_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(
+          base::BindLambdaForTesting(
+              [nonexistent_domain](
+                  content::URLLoaderInterceptor::RequestParams* params) {
+                if (params->url_request.url.host() == nonexistent_domain) {
+                  params->client->OnComplete(network::URLLoaderCompletionStatus(
+                      net::ERR_NAME_NOT_RESOLVED));
+                  return true;
+                }
+                return false;
+              }));
+
+  // Navigating to the HTTP URL should get upgraded to HTTPS, but fail with a
+  // net error page on the HTTPS URL.
+  EXPECT_FALSE(content::NavigateToURL(contents, redirecting_http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+  EXPECT_EQ(url::kHttpsScheme, contents->GetLastCommittedURL().scheme());
+  EXPECT_EQ(nonexistent_domain, contents->GetLastCommittedURL().host());
 }
 
 // Navigations in subframes should not get upgraded by HTTPS-Only Mode. They

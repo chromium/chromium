@@ -5,7 +5,9 @@
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/reload_type.h"
 
 HttpsOnlyModeTabHelper::~HttpsOnlyModeTabHelper() = default;
 
@@ -15,9 +17,19 @@ void HttpsOnlyModeTabHelper::DidStartNavigation(
   // across navigations and handles clearing them separately. Only reset if
   // the HFMv2 implementation is being used to avoid interfering with HFMv1.
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
-    set_fallback_url(GURL());
-    set_is_navigation_fallback(false);
-    set_is_navigation_upgraded(false);
+    // If the user was on an exempt net error and the tab was reloaded, only
+    // reset the exempt error state, but keep the upgrade state so the reload
+    // will result in continuing to attempt the upgraded navigation (and if it
+    // later fails, the fallback will be to the original fallback URL).
+    bool should_maintain_upgrade_state =
+        is_exempt_error() &&
+        navigation_handle->GetReloadType() != content::ReloadType::NONE;
+    set_is_exempt_error(false);
+    if (!should_maintain_upgrade_state) {
+      set_fallback_url(GURL());
+      set_is_navigation_fallback(false);
+      set_is_navigation_upgraded(false);
+    }
   }
 }
 
