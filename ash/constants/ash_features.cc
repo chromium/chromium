@@ -1361,7 +1361,7 @@ BASE_FEATURE(kJapaneseFunctionRow,
 // dialog should be checked by default.
 BASE_FEATURE(kKerberosRememberPasswordByDefault,
              "KerberosRememberPasswordByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
