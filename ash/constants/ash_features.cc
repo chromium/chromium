@@ -1332,7 +1332,7 @@ BASE_FEATURE(kInstantTethering,
 // Controls the launched locales.
 BASE_FEATURE(kInternalServerSideSpeechRecognition,
              "InternalServerSideSpeechRecognition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature overrides the `InternalServerSideSpeechRecognition` that is exposed
 // via chrome://flags. This flag is used as a kill switch to disable the feature
