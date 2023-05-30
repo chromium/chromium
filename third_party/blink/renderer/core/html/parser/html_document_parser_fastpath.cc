@@ -734,6 +734,8 @@ class HTMLFastPathParser {
           UNLIKELY(*pos_ == '\0')) {
         return Fail(HtmlFastPathResult::kFailedParsingCharacterReference);
       }
+      // Note: the fast path will only parse `;`-terminated character
+      // references, and will fail (above) on others, e.g. `A&ampB`.
       if (ConsumeNext() == ';') {
         break;
       }
