@@ -92,10 +92,10 @@ void RecursivelyGenerateFrameEntries(
         state.initiator_base_url_string) {
       GURL initiator_base_url_from_state =
           GURL(UTF16ToUTF8(state.initiator_base_url_string.value()));
+      // If `state.initiator_base_url_string` has a value, it should be
+      // non-empty. But it's easiest and safest to just check, as opposed to
+      // using a CHECK.
       if (!initiator_base_url_from_state.is_empty()) {
-        // TODO(crbug.com/1356658): refactor the uses of
-        // `state.initiator_base_url_string` so they store nullopt instead of
-        // empty strings.
         initiator_base_url = initiator_base_url_from_state;
       }
     }
@@ -183,6 +183,7 @@ void RecursivelyGenerateFrameState(
   state->document_sequence_number =
       node->frame_entry->document_sequence_number();
   state->initiator_origin = node->frame_entry->initiator_origin();
+  // Note: If UrlToOptionalString16 receives an empty GURL, it returns nullopt.
   state->initiator_base_url_string = UrlToOptionalString16(
       node->frame_entry->initiator_base_url().value_or(GURL::EmptyGURL()));
 

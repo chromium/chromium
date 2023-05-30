@@ -61,7 +61,82 @@ class BaseUrlLegacyBehaviorIframeTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-};  // class NewBaseUrlLegacyBehaviorIframeTest
+};  // class BaseUrlLegacyBehaviorIframeTest
+
+// A class for tests that should run both with and without the new BaseURL
+// inheritance behavior.
+class BaseUrlInheritanceIframeTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  BaseUrlInheritanceIframeTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kNewBaseUrlInheritanceBehavior, GetParam());
+  }
+
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+  void StartEmbeddedServer() {
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};  // class BaseUrlInheritanceIframeTest
+
+// A test to make sure that restoring a session history entry that was saved
+// with an about:blank subframe never results in an initiator_base_url of
+// an empty string. absl::nullopt is expected instead of an empty GURL with
+// legacy base url behavior, or the non-empty initiator base url in the
+// new base url inheritance mode. This test runs in both modes.
+IN_PROC_BROWSER_TEST_P(BaseUrlInheritanceIframeTest,
+                       BaseURLFromSessionHistoryIsNulloptNotEmptyString) {
+  StartEmbeddedServer();
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  // Navigate child to about:blank.
+  {
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child, "location.href = 'about:blank';"));
+    iframe_observer.Wait();
+  }
+  GURL child_frame_url = child->current_frame_host()->GetLastCommittedURL();
+
+  // Save the page state.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  blink::PageState page_state = entry->GetPageState();
+
+  // Decode the page state so we can inspect what base url value it contains.
+  blink::ExplodedPageState exploded_page_state;
+  ASSERT_TRUE(
+      blink::DecodePageState(page_state.ToEncodedData(), &exploded_page_state));
+  EXPECT_EQ(1U, exploded_page_state.top.children.size());
+  if (GetParam()) {
+    // Make sure the about:blank child has the correct initiator_base_url.
+    GURL initiator_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    EXPECT_TRUE(exploded_page_state.top.children[0]
+                    .initiator_base_url_string.has_value());
+    EXPECT_EQ(
+        base::UTF8ToUTF16(initiator_url.spec()),
+        exploded_page_state.top.children[0].initiator_base_url_string.value());
+  } else {
+    // Make sure the about:blank child has nullopt, and not an empty string, for
+    // the initiator_base_url.
+    EXPECT_EQ(absl::nullopt,
+              exploded_page_state.top.children[0].initiator_base_url_string);
+  }
+}
 
 // A test to make sure that restoring a session history entry that was saved
 // while the new behavior was enabled doesn't hit any CHECKs if it's restored
@@ -2415,6 +2490,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "isolated" : "non_isolated";
+                         });
+INSTANTIATE_TEST_SUITE_P(All,
+                         BaseUrlInheritanceIframeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "new_base_url_inheritance_behavior"
+                                      : "legacy_base_url_inheritance_behavior";
                          });
 INSTANTIATE_TEST_SUITE_P(All,
                          BaseUrlInheritanceBehaviorEnterprisePolicyTest,
