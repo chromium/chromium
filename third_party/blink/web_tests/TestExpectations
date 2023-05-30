@@ -2897,10 +2897,10 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/threaded-prefer-compositing/external/wp
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
+crbug.com/626703 [ Mac12 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac12-arm64 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
-crbug.com/626703 [ Mac13-arm64 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
+crbug.com/626703 [ Mac13-arm64 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
 crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
@@ -3031,7 +3031,6 @@ crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/opaque-ad-sizes-special-cases.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/lna-workers-enabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Win11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/lna-permission/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/lna-workers-disabled/external/wpt/fetch/local-network-access/iframe.tentative.https.window.html [ Timeout ]
@@ -3516,8 +3515,6 @@ crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-radiu
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
-crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
-crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure Pass ]
 
@@ -5366,8 +5363,6 @@ crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollect
 
 # Sheriff 2021-11-29
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
-crbug.com/1239485 [ Debug Mac12 ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
-crbug.com/1239485 [ Debug Mac13-arm64 ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
 crbug.com/1239485 [ Mac Release ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
 
 # Sheriff 2021-12-01
@@ -6763,8 +6758,6 @@ crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.
 crbug.com/1446742 [ Debug Linux ] fast/canvas/canvas-drawImage-svg.html [ Failure ]
 
 crbug.com/1447239 virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
-crbug.com/1447531 [ Mac10.13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass Timeout ]
-crbug.com/1447531 [ Mac10.14 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass ]
 crbug.com/1447244 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
 
 crbug.com/1377004 [ Mac ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Failure Pass Timeout ]

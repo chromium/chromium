@@ -149,7 +149,6 @@ crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-
 crbug.com/1229701 [ Mac10.15 Release ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1229701 [ Mac11 Release ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1229701 [ Mac12 ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
-crbug.com/1229701 [ Mac12-arm64 Release ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1229701 [ Release Win ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1300409 http/tests/inspector-protocol/network/websocket/offline-no-send.js [ Slow ]
 crbug.com/1280873 http/tests/inspector-protocol/network/xhr-cors-preflight-redirect-failure.js [ Slow ]
@@ -846,7 +845,6 @@ crbug.com/1048204 external/wpt/selection/idlharness.window.html [ Slow ]
 crbug.com/1047818 external/wpt/css/css-masking/idlharness.html [ Slow ]
 
 # This test contains a slow loading image that results in timeouts.
-crbug.com/853360 [ Debug Mac12 ] http/tests/misc/slow-loading-image-in-pattern.html [ Slow ]
 crbug.com/853360 [ Mac Release ] http/tests/misc/slow-loading-image-in-pattern.html [ Slow ]
 
 crbug.com/1066517 http/tests/websocket/workers/worker-reload.html [ Slow ]
@@ -1172,7 +1170,6 @@ crbug.com/1044459 [ Mac11 Release ] http/tests/devtools/elements/edit/set-outer-
 crbug.com/1044459 [ Mac12 Release ] http/tests/devtools/elements/edit/set-outer-html-for-xhtml.js [ Slow ]
 crbug.com/1044459 [ Release Win ] http/tests/devtools/elements/edit/set-outer-html-for-xhtml.js [ Slow ]
 crbug.com/1044506 [ Release Win ] http/tests/devtools/tracing-model-storage.js [ Slow ]
-crbug.com/1044506 [ Mac10.15 Release ] http/tests/devtools/tracing-model-storage.js [ Slow ]
 crbug.com/1044506 [ Mac11 Release ] http/tests/devtools/tracing-model-storage.js [ Slow ]
 crbug.com/1044506 [ Mac12 Release ] http/tests/devtools/tracing-model-storage.js [ Slow ]
 crbug.com/1044516 [ Linux Release ] http/tests/devtools/elements/edit/undo-set-outer-html-2.js [ Slow ]
