@@ -25,6 +25,8 @@
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
+  /* TODO(crbug.com/1422119): Refactor the Avatar Button colors as Profile */ \
+  /* Menu Button colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \
   E_CPONLY(kColorAvatarButtonHighlightSyncPaused) \
@@ -291,6 +293,11 @@
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
+  /* Profile Menu colors. */ \
+  E_CPONLY(kColorProfileMenuHeaderBackground) \
+  E_CPONLY(kColorProfileMenuHeaderLabel) \
+  E_CPONLY(kColorProfileMenuIconButton) \
+  E_CPONLY(kColorProfileMenuIconButtonBackground) \
   /* Profiles colors. */ \
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \

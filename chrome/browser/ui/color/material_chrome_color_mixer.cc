@@ -42,6 +42,15 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // make themes work with the feature.
   ApplyDefaultChromeRefreshToolbarColors(mixer, key);
 
+  // The colors for the Profile Menu with the material design should be applied
+  // regardless of whether a custom theme is enabled.
+  // TODO(tluk): Factor the always-applied material color definitions into a
+  // separate file.
+  mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorProfileMenuIconButton] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorProfileMenuIconButtonBackground] = {ui::kColorSysTonalContainer};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }
