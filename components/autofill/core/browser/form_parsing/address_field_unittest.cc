@@ -144,18 +144,6 @@ TEST_P(AddressFieldTest, ParseLandmark) {
   ClassifyAndVerify();
 }
 
-// Tests that between streets field is correctly classified.
-TEST_P(AddressFieldTest, ParseBetweenStreets) {
-  // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableSupportForBetweenStreets);
-
-  AddTextFormFieldData("entre-calle", "Entre calle",
-                       ADDRESS_HOME_BETWEEN_STREETS);
-  ClassifyAndVerify();
-}
-
 TEST_P(AddressFieldTest, ParseCity) {
   AddTextFormFieldData("city", "City", ADDRESS_HOME_CITY);
   ClassifyAndVerify();
@@ -202,8 +190,7 @@ TEST_P(AddressFieldTest,
   // TODO(crbug.com/1157405): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillEnableDependentLocalityParsing,
-                            features::kAutofillEnableSupportForLandmark,
-                            features::kAutofillEnableSupportForBetweenStreets},
+                            features::kAutofillEnableSupportForLandmark},
                            {});
 
   AddTextFormFieldData("neighborhood", "Neighborhood",
@@ -213,8 +200,6 @@ TEST_P(AddressFieldTest,
   AddTextFormFieldData("country", "Country", ADDRESS_HOME_COUNTRY);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
-  AddTextFormFieldData("entre-calle", "Entre calle",
-                       ADDRESS_HOME_BETWEEN_STREETS);
   ClassifyAndVerify();
 }
 
