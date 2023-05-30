@@ -222,6 +222,11 @@ class FakeNavigation : public DIPSNavigationHandle {
   const GURL& GetPreviousPrimaryMainFrameURL() const override {
     return previous_url_;
   }
+  // TODO (crbug.com/1442658): Add support for simulating opening a link in a
+  // new tab.
+  const GURL GetInitiator() const override {
+    return previous_url_.is_empty() ? GURL("about:blank") : previous_url_;
+  }
   const std::vector<GURL>& GetRedirectChain() const override { return chain_; }
 
   raw_ptr<DIPSBounceDetector> detector_;
@@ -448,6 +453,37 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server) {
   EXPECT_EQ(stateful_bounce_count(), 2);
 }
 
+TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_OnStartUp) {
+  StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kRead)
+      .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://d.test")
+      .AccessCookie(CookieOperation::kRead)
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://e.test")
+      .Finish(true);
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/3] blank -> b.test/ (Read) -> e.test/"),
+                           ("[2/3] blank -> c.test/ (Write) -> e.test/"),
+                           ("[3/3] blank -> d.test/ (ReadWrite) -> e.test/")));
+
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(
+                  MakeBounceTuple("http://b.test", mocked_bounce_time,
+                                  /*stateful=*/false),
+                  MakeBounceTuple("http://c.test", mocked_bounce_time,
+                                  /*stateful=*/true),
+                  MakeBounceTuple("http://d.test", mocked_bounce_time,
+                                  /*stateful=*/true)));
+}
+
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Server_LateNotification) {
   NavigateTo("http://a.test", kWithUserGesture);
   StartNavigation("http://b.test", kWithUserGesture)
@@ -500,6 +536,25 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client) {
               testing::UnorderedElementsAre(MakeBounceTuple(
                   "http://b.test", mocked_bounce_time, /*stateful=*/false)));
   EXPECT_EQ(stateful_bounce_count(), 0);
+}
+
+TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_OnStartUp) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kRead);
+  AccessClientCookie(CookieOperation::kChange);
+  AdvanceDIPSTime(dips::kClientBounceDetectionTimeout.Get() - base::Seconds(1));
+  NavigateTo("http://b.test", kNoUserGesture);
+
+  auto mocked_bounce_time = GetCurrentTime();
+
+  EndPendingRedirectChain();
+
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/1] blank -> a.test/ (ReadWrite) -> b.test/")));
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::UnorderedElementsAre(MakeBounceTuple(
+                  "http://a.test", mocked_bounce_time, /*stateful=*/true)));
 }
 
 TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_MergeCookies) {

@@ -37,6 +37,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::NavigationHandle;
 
@@ -430,6 +431,13 @@ class DIPSNavigationHandleImpl : public DIPSNavigationHandle {
     return handle_->GetPreviousPrimaryMainFrameURL();
   }
 
+  const GURL GetInitiator() const override {
+    return (!handle_->GetInitiatorOrigin().has_value() ||
+            handle_->GetInitiatorOrigin().value().opaque())
+               ? GURL("about:blank")
+               : handle_->GetInitiatorOrigin().value().GetURL();
+  }
+
   const std::vector<GURL>& GetRedirectChain() const override {
     return handle_->GetRedirectChain();
   }
@@ -465,7 +473,9 @@ void DIPSBounceDetector::DidStartNavigation(
   if (navigation_handle->HasUserGesture() || timedout ||
       !client_detection_state_.has_value()) {
     server_bounce_detection_state->navigation_start =
-        delegate_->GetLastCommittedURL();
+        delegate_->GetLastCommittedURL().is_empty()
+            ? navigation_handle->GetInitiator()
+            : delegate_->GetLastCommittedURL();
     return;
   }
 

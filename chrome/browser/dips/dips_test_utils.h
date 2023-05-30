@@ -218,4 +218,29 @@ class ScopedInitDIPSFeature {
       override_profile_selections_for_dips_cleanup_service_;
 };
 
+// Waits for a window to open.
+class OpenedWindowObserver : public content::WebContentsObserver {
+ public:
+  explicit OpenedWindowObserver(content::WebContents* web_contents,
+                                WindowOpenDisposition open_disposition);
+
+  void Wait() { run_loop_.Run(); }
+  content::WebContents* window() { return window_; }
+
+ private:
+  // WebContentsObserver overrides:
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
+
+  const WindowOpenDisposition open_disposition_;
+  raw_ptr<content::WebContents> window_ = nullptr;
+  base::RunLoop run_loop_;
+};
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_TEST_UTILS_H_

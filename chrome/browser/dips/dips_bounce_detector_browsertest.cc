@@ -49,7 +49,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using base::Bucket;
 using content::CookieAccessDetails;
@@ -378,6 +378,26 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     // The image must cause a cookie access, or else this will hang.
     observer.Wait();
+  }
+
+  // Open a link to the given URL in a new tab and return the new tab's
+  // WebContents.
+  base::expected<WebContents*, std::string> OpenInNewTab(
+      WebContents* original_tab,
+      const GURL& url) {
+    OpenedWindowObserver tab_observer(
+        original_tab, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    if (!content::ExecJs(
+            original_tab,
+            content::JsReplace("window.open($1, '_blank');", url))) {
+      return base::unexpected("window.open failed");
+    }
+    tab_observer.Wait();
+
+    // Wait for the new tab to finish navigating.
+    content::WaitForLoadStop(tab_observer.window());
+
+    return tab_observer.window();
   }
 
   // Perform a browser-based navigation to terminate the current redirect chain.
@@ -1177,6 +1197,112 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
               ElementsAre(("[1/1] a.test/title1.html -> "
                            "b.test/cross-site/c.test/title1.html (None) -> "
                            "c.test/title1.html")));
+}
+
+// Verifies server redirects that occur while opening a link in a new tab are
+// properly detected.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       OpenServerRedirectURLInNewTab) {
+  WebContents* original_tab = chrome_test_utils::GetActiveWebContents(this);
+  GURL original_tab_url(
+      embedded_test_server()->GetURL("a.test", "/title1.html"));
+  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+
+  // Open a server-redirecting link in a new tab.
+  GURL new_tab_url(embedded_test_server()->GetURL(
+      "b.test", "/cross-site-with-cookie/c.test/title1.html"));
+  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
+  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+
+  // Verify the tab is different from the original and at the correct URL.
+  EXPECT_NE(*maybe_new_tab, original_tab);
+  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("c.test", "/title1.html"));
+
+  std::vector<std::string> redirects;
+  DIPSWebContentsObserver* tab_web_contents_observer =
+      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+  tab_web_contents_observer->SetRedirectChainHandlerForTesting(
+      base::BindRepeating(&AppendRedirects, &redirects));
+
+  EndRedirectChain();
+
+  EXPECT_THAT(redirects,
+              ElementsAre((
+                  "[1/1] a.test/ -> " /* Note: the URL's path is lost here. */
+                  "b.test/cross-site-with-cookie/c.test/title1.html (Write) -> "
+                  "c.test/title1.html")));
+}
+
+// Verifies client redirects that occur while opening a link in a new tab are
+// properly detected.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       OpenClientRedirectURLInNewTab) {
+  WebContents* original_tab = chrome_test_utils::GetActiveWebContents(this);
+  GURL original_tab_url(
+      embedded_test_server()->GetURL("a.test", "/title1.html"));
+  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+
+  // Open link in a new tab.
+  GURL new_tab_url(embedded_test_server()->GetURL("b.test", "/title1.html"));
+  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
+  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+
+  // Verify the tab is different from the original and at the correct URL.
+  EXPECT_NE(original_tab, *maybe_new_tab);
+  ASSERT_EQ(new_tab_url, (*maybe_new_tab)->GetLastCommittedURL());
+
+  std::vector<std::string> redirects;
+  DIPSWebContentsObserver* tab_web_contents_observer =
+      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+  tab_web_contents_observer->SetRedirectChainHandlerForTesting(
+      base::BindRepeating(&AppendRedirects, &redirects));
+
+  // Navigate without a click (i.e. by C-redirecting) to c.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      *maybe_new_tab,
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+  EndRedirectChain();
+
+  EXPECT_THAT(
+      redirects,
+      ElementsAre(("[1/1] a.test/ -> " /* Note: the URL's path is lost here. */
+                   "b.test/title1.html (None) -> "
+                   "c.test/title1.html")));
+}
+
+// Verifies the start URL of a redirect chain started by opening a link in a new
+// tab is handled correctly, when that start page has an opaque origin.
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       OpenRedirectURLInNewTab_OpaqueOriginInitiator) {
+  WebContents* original_tab = chrome_test_utils::GetActiveWebContents(this);
+  GURL original_tab_url("data:text/html,<html></html>");
+  ASSERT_TRUE(content::NavigateToURL(original_tab, original_tab_url));
+
+  // Open a server-redirecting link in a new tab.
+  GURL new_tab_url(embedded_test_server()->GetURL(
+      "b.test", "/cross-site-with-cookie/c.test/title1.html"));
+  auto maybe_new_tab = OpenInNewTab(original_tab, new_tab_url);
+  ASSERT_TRUE(maybe_new_tab.has_value()) << maybe_new_tab.error();
+
+  // Verify the tab is different from the original and at the correct URL.
+  EXPECT_NE(*maybe_new_tab, original_tab);
+  ASSERT_EQ((*maybe_new_tab)->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("c.test", "/title1.html"));
+
+  std::vector<std::string> redirects;
+  DIPSWebContentsObserver* tab_web_contents_observer =
+      DIPSWebContentsObserver::FromWebContents(*maybe_new_tab);
+  tab_web_contents_observer->SetRedirectChainHandlerForTesting(
+      base::BindRepeating(&AppendRedirects, &redirects));
+
+  EndRedirectChain();
+
+  EXPECT_THAT(redirects,
+              ElementsAre((
+                  "[1/1] blank -> "
+                  "b.test/cross-site-with-cookie/c.test/title1.html (Write) -> "
+                  "c.test/title1.html")));
 }
 
 class DIPSBounceTrackingDevToolsIssueTest

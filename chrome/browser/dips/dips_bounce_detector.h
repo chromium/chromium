@@ -195,6 +195,11 @@ class DIPSNavigationHandle {
   // content::NavigationHandle::HasUserGesture(): it returns true if the
   // navigation was not renderer-initiated.
   virtual bool HasUserGesture() const = 0;
+  //  This method doesn't have a direct equivalent in content::NavigationHandle,
+  //  as it relies on GetInitiatorOrigin(), but returns what is effectively a
+  //  base URL. Also, this returns `about:blank` if the initiator origin is
+  //  unspecified or opaque.
+  virtual const GURL GetInitiator() const = 0;
 
   // Get a SourceId of type REDIRECT_ID for the index'th URL in the redirect
   // chain.
