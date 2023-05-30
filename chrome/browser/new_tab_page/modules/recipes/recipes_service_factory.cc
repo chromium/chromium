@@ -19,7 +19,8 @@ RecipesService* RecipesServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 RecipesServiceFactory* RecipesServiceFactory::GetInstance() {
-  return base::Singleton<RecipesServiceFactory>::get();
+  static base::NoDestructor<RecipesServiceFactory> instance;
+  return instance.get();
 }
 
 RecipesServiceFactory::RecipesServiceFactory()

@@ -19,7 +19,8 @@ ChromeColorsService* ChromeColorsFactory::GetForProfile(Profile* profile) {
 
 // static
 ChromeColorsFactory* ChromeColorsFactory::GetInstance() {
-  return base::Singleton<ChromeColorsFactory>::get();
+  static base::NoDestructor<ChromeColorsFactory> instance;
+  return instance.get();
 }
 
 ChromeColorsFactory::ChromeColorsFactory()
@@ -35,7 +36,7 @@ ChromeColorsFactory::ChromeColorsFactory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-ChromeColorsFactory::~ChromeColorsFactory() {}
+ChromeColorsFactory::~ChromeColorsFactory() = default;
 
 KeyedService* ChromeColorsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -18,7 +18,8 @@ DriveService* DriveServiceFactory::GetForProfile(Profile* profile) {
 }
 
 DriveServiceFactory* DriveServiceFactory::GetInstance() {
-  return base::Singleton<DriveServiceFactory>::get();
+  static base::NoDestructor<DriveServiceFactory> instance;
+  return instance.get();
 }
 
 DriveServiceFactory::DriveServiceFactory()

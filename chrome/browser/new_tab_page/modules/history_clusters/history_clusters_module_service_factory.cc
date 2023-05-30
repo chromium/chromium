@@ -23,7 +23,8 @@ HistoryClustersModuleServiceFactory::GetForProfile(Profile* profile) {
 
 HistoryClustersModuleServiceFactory*
 HistoryClustersModuleServiceFactory::GetInstance() {
-  return base::Singleton<HistoryClustersModuleServiceFactory>::get();
+  static base::NoDestructor<HistoryClustersModuleServiceFactory> instance;
+  return instance.get();
 }
 
 HistoryClustersModuleServiceFactory::HistoryClustersModuleServiceFactory()

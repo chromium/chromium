@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_CHROME_COLORS_CHROME_COLORS_FACTORY_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_CHROME_COLORS_CHROME_COLORS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -27,7 +27,7 @@ class ChromeColorsFactory : public ProfileKeyedServiceFactory {
   ChromeColorsFactory& operator=(const ChromeColorsFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ChromeColorsFactory>;
+  friend base::NoDestructor<ChromeColorsFactory>;
 
   ChromeColorsFactory();
   ~ChromeColorsFactory() override;

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class PhotosService;
@@ -18,7 +18,7 @@ class PhotosServiceFactory : ProfileKeyedServiceFactory {
   PhotosServiceFactory(const PhotosServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PhotosServiceFactory>;
+  friend base::NoDestructor<PhotosServiceFactory>;
   PhotosServiceFactory();
   ~PhotosServiceFactory() override;
 

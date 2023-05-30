@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_RECIPES_RECIPES_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_RECIPES_RECIPES_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -20,7 +20,7 @@ class RecipesServiceFactory : public ProfileKeyedServiceFactory {
   RecipesServiceFactory(const RecipesServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<RecipesServiceFactory>;
+  friend base::NoDestructor<RecipesServiceFactory>;
 
   RecipesServiceFactory();
   ~RecipesServiceFactory() override;
