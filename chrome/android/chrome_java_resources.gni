@@ -570,6 +570,7 @@ chrome_java_resources = [
   "java/res/layout/optional_toolbar_button.xml",
   "java/res/layout/os_version_unsupported_text.xml",
   "java/res/layout/other_forms_of_history_dialog.xml",
+  "java/res/layout/page_insights_hub_container.xml",
   "java/res/layout/password_generation_dialog.xml",
   "java/res/layout/password_generation_popup_explanation.xml",
   "java/res/layout/password_manager_dialog.xml",

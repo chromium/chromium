@@ -261,7 +261,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         } else if (id == R.id.page_insights_id) {
-            // TODO(b/282739536): Open PageInsights Hub.
+            assert mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator() != null;
+            mBaseCustomTabRootUiCoordinator.getPageInsightsCoordinator().launch();
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

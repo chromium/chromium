@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Miscellaneous -->
     <dimen name="action_bar_shadow_height">10dp</dimen>
+    <dimen name="bottom_sheet_corner_radius">16dp</dimen>
     <dimen name="card_padding">16dp</dimen>
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>

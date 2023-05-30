@@ -170,7 +170,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,
                 () -> mDelegateFactory.getEphemeralTabCoordinator(), mBackPressManager,
-                () -> mTabController);
+                () -> mTabController, this::isPageInsightsHubEnabled);
         // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }
