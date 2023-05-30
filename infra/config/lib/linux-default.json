@@ -19,6 +19,7 @@
     "chromeos-amd64-generic-cfi-thin-lto-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-dbg": "Ubuntu-22.04",
     "chromeos-amd64-generic-lacros-dbg": "Ubuntu-22.04",
+    "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
