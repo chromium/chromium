@@ -1893,10 +1893,11 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-              viz::BufferFormat(gmb_si_format.resource_format()),
+              viz::SinglePlaneSharedImageFormatToBufferFormat(gmb_si_format),
               ContextProvider()->GetCapabilities())) {
         gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-            size, viz::BufferFormat(gmb_si_format.resource_format()),
+            size,
+            viz::SinglePlaneSharedImageFormatToBufferFormat(gmb_si_format),
             buffer_usage, gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
           gpu_memory_buffer->SetColorSpace(color_space_);

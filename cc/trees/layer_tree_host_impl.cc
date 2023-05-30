@@ -4670,8 +4670,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()),
-          caps);
+          gfx::BufferUsage::SCANOUT,
+          viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
   } else {
     shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);

@@ -81,7 +81,8 @@ namespace {
 bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
   const gfx::Size size(info.width(), info.height());
   const gfx::BufferFormat buffer_format =
-      viz::BufferFormat(viz::SkColorTypeToResourceFormat(info.colorType()));
+      viz::SinglePlaneSharedImageFormatToBufferFormat(
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType()));
   return gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format) &&
          gpu::IsImageFromGpuMemoryBufferFormatSupported(buffer_format, caps);
 }

@@ -20,6 +20,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -88,11 +89,10 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
                                       .size();
 
     return fast_ink_internal::CreateGpuBuffer(
-        buffer_size,
-        gfx::BufferUsageAndFormat(
-            gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-            viz::BufferFormat(fast_ink_internal::kFastInkSharedImageFormat
-                                  .resource_format())));
+        buffer_size, gfx::BufferUsageAndFormat(
+                         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+                         viz::SinglePlaneSharedImageFormatToBufferFormat(
+                             fast_ink_internal::kFastInkSharedImageFormat)));
   }
 
   UiResourceManager resource_manager_;

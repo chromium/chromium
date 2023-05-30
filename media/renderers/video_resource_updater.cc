@@ -530,8 +530,8 @@ class VideoResourceUpdater::HardwarePlaneResource
     if (overlay_candidate_) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target_ = gpu::GetBufferTextureTarget(
-          gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()),
-          caps);
+          gfx::BufferUsage::SCANOUT,
+          SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
     auto* sii = SharedImageInterface();
     mailbox_ = sii->CreateSharedImage(

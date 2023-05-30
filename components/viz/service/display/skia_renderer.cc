@@ -3697,7 +3697,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   }
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
-  overlay->format = BufferFormat(buffer_format.resource_format());
+  overlay->format = SinglePlaneSharedImageFormatToBufferFormat(buffer_format);
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)

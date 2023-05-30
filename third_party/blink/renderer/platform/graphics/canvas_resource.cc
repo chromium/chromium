@@ -259,7 +259,8 @@ viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
 }
 
 gfx::BufferFormat CanvasResource::GetBufferFormat() const {
-  return viz::BufferFormat(GetSharedImageFormat().resource_format());
+  return viz::SinglePlaneSharedImageFormatToBufferFormat(
+      GetSharedImageFormat());
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {

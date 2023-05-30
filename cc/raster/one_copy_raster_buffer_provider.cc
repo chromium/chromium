@@ -26,6 +26,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -325,7 +326,8 @@ void OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   if (!staging_buffer->gpu_memory_buffer) {
     staging_buffer->gpu_memory_buffer =
         gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-            staging_buffer->size, BufferFormat(format.resource_format()),
+            staging_buffer->size,
+            viz::SinglePlaneSharedImageFormatToBufferFormat(format),
             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
             shutdown_event_);
   }

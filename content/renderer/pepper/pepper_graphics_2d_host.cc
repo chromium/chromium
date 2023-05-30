@@ -664,7 +664,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     if (overlays_supported) {
       texture_target = gpu::GetBufferTextureTarget(
           gfx::BufferUsage::SCANOUT,
-          viz::BufferFormat(format.resource_format()),
+          viz::SinglePlaneSharedImageFormatToBufferFormat(format),
           main_thread_context_->ContextCapabilities());
     }
 

@@ -31,13 +31,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataType(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLDataFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int GLInternalFormat(ResourceFormat format);
 
-// Returns the pixel format of the resource when mapped into client-side memory.
-// Returns a default value when IsGpuMemoryBufferFormatSupported() returns false
-// for a given format, as in this case the resource will not be mapped into
-// client-side memory, and the returned value is not used.
-VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat BufferFormat(
-    ResourceFormat format);
-
 // |use_angle_rgbx_format| should be true when the GL_ANGLE_rgbx_internal_format
 // extension is available.
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
