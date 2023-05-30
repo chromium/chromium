@@ -4815,57 +4815,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "absl_hardening_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "absl_hardening_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -4913,58 +4862,6 @@
         },
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "angle_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "angle_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/angle/src/tests:angle_unittests/",
-        "use_isolated_scripts_api": true,
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -5021,57 +4918,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "base_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "base_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -5119,57 +4965,6 @@
         },
         "test_id_prefix": "ninja://base:base_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "blink_common_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "blink_common_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -5225,57 +5020,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "blink_fuzzer_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "blink_fuzzer_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -5323,57 +5067,6 @@
         },
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "blink_heap_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "blink_heap_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -5429,57 +5122,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "blink_platform_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "blink_platform_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -5527,57 +5169,6 @@
         },
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "blink_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "blink_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -5633,57 +5224,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "boringssl_crypto_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "boringssl_crypto_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -5731,57 +5271,6 @@
         },
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "boringssl_ssl_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "boringssl_ssl_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -5837,57 +5326,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "capture_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "capture_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://media/capture:capture_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -5935,57 +5373,6 @@
         },
         "test_id_prefix": "ninja://media/capture:capture_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "cast_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "cast_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://media/cast:cast_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -6041,57 +5428,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "cc_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "cc_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://cc:cc_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -6139,57 +5475,6 @@
         },
         "test_id_prefix": "ninja://cc:cc_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "color_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "color_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/color:color_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -6245,57 +5530,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "components_browsertests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "components_browsertests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components:components_browsertests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -6343,57 +5577,6 @@
         },
         "test_id_prefix": "ninja://components:components_browsertests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "components_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "components_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -6449,57 +5632,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "content_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "content_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:content_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -6547,57 +5679,6 @@
         },
         "test_id_prefix": "ninja://content/test:content_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "crashpad_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "crashpad_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -6653,57 +5734,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "crypto_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "crypto_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://crypto:crypto_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -6751,57 +5781,6 @@
         },
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "device_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "device_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://device:device_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -6857,57 +5836,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "display_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "display_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/display:display_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -6955,57 +5883,6 @@
         },
         "test_id_prefix": "ninja://ui/display:display_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "events_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "events_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/events:events_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -7061,57 +5938,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gcm_unit_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gcm_unit_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -7159,57 +5985,6 @@
         },
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gfx_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gfx_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -7265,57 +6040,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gin_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gin_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://gin:gin_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -7363,57 +6087,6 @@
         },
         "test_id_prefix": "ninja://gin:gin_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gl_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gl_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/gl:gl_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -7469,57 +6142,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "google_apis_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "google_apis_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -7567,57 +6189,6 @@
         },
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gpu_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gpu_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://gpu:gpu_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -7673,57 +6244,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "gwp_asan_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gwp_asan_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -7771,57 +6291,6 @@
         },
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "ipc_tests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ipc_tests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ipc:ipc_tests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -7877,57 +6346,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "latency_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "latency_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/latency:latency_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -7975,57 +6393,6 @@
         },
         "test_id_prefix": "ninja://ui/latency:latency_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "libjingle_xmpp_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "libjingle_xmpp_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -8081,57 +6448,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "liburlpattern_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "liburlpattern_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -8179,57 +6495,6 @@
         },
         "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "media_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "media_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://media:media_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -8285,57 +6550,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "midi_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "midi_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://media/midi:midi_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -8383,57 +6597,6 @@
         },
         "test_id_prefix": "ninja://media/midi:midi_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "mojo_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "mojo_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://mojo:mojo_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -8489,57 +6652,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "net_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "net_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -8587,57 +6699,6 @@
         },
         "test_id_prefix": "ninja://net:net_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "perfetto_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "perfetto_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -8693,57 +6754,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "printing_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "printing_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://printing:printing_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -8791,57 +6801,6 @@
         },
         "test_id_prefix": "ninja://printing:printing_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "services_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "services_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -8897,57 +6856,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "shell_dialogs_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "shell_dialogs_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -8995,57 +6903,6 @@
         },
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "skia_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "skia_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -9101,57 +6958,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "sql_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "sql_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://sql:sql_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -9199,57 +7005,6 @@
         },
         "test_id_prefix": "ninja://sql:sql_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "storage_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "storage_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://storage:storage_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -9305,57 +7060,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "ui_base_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ui_base_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -9403,57 +7107,6 @@
         },
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "ui_touch_selection_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ui_touch_selection_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -9509,57 +7162,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "url_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "url_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://url:url_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -9607,57 +7209,6 @@
         },
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "viz_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "viz_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://components/viz:viz_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [
@@ -9713,57 +7264,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "wtf_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "wtf_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone X",
           "--version",
           "16.2",
@@ -9811,57 +7311,6 @@
         },
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/",
         "variant_id": "iPhone X 16.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro (12.9-inch) (3rd generation)",
-          "--version",
-          "16.2",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "14c18",
-          "--xctest"
-        ],
-        "isolate_name": "zlib_unittests",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "zlib_unittests iPad Pro (12.9-inch) (3rd generation) 16.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:3e597065cb23c1fe03aeb2ebd792d83e0709c5c2"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "os": "Mac-12|Mac-13"
-            }
-          ],
-          "named_caches": [
-            {
-              "name": "xcode_ios_14c18",
-              "path": "Xcode.app"
-            },
-            {
-              "name": "runtime_ios_16_2",
-              "path": "Runtime-ios-16.2"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/",
-        "variant_id": "iPad Pro (12.9-inch) (3rd generation) 16.2"
       },
       {
         "args": [

@@ -7064,7 +7064,6 @@
     'ios_blink_dbg_tests': {
       'ios_blink_tests': {
         'variants': [
-          'SIM_IPAD_PRO_3RD_GEN_16_2',
           'SIM_IPHONE_X_16_2',
         ]
       },
