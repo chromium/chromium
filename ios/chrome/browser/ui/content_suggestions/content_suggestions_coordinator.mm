@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -413,6 +414,10 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                 action:nil
                  style:UIAlertActionStyleCancel];
   [_actionSheetCoordinator start];
+}
+
+- (void)setUpListViewHeightDidChange {
+  [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
 #pragma mark - SetUpList Helpers
