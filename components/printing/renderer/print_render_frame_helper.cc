@@ -1032,13 +1032,11 @@ void PrepareFrameAndViewForPrint::CopySelectionIfNeeded(
 
 void PrepareFrameAndViewForPrint::CopySelection(
     const WebPreferences& preferences) {
-  ResizeForPrinting();
   std::string html;
   ComputeScalingAndPrintParams(frame(), selection_only_print_params_, &html,
                                /*is_pdf=*/false,
                                /*ignore_css_margins=*/false,
                                /*fit_to_page=*/false);
-  RestoreSize();
 
   // Save the URL before `frame_` gets reset below.
   GURL original_url = frame()->GetDocument().Url();
