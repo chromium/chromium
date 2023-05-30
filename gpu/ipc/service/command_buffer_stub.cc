@@ -159,16 +159,6 @@ void CommandBufferStub::ExecuteDeferredRequest(
       OnDestroyTransferBuffer(params.get_destroy_transfer_buffer());
       break;
 
-    case mojom::DeferredCommandBufferRequestParams::Tag::kTakeFrontBuffer:
-      OnTakeFrontBuffer(params.get_take_front_buffer());
-      break;
-
-    case mojom::DeferredCommandBufferRequestParams::Tag::kReturnFrontBuffer: {
-      OnReturnFrontBuffer(params.get_return_front_buffer()->mailbox,
-                          params.get_return_front_buffer()->is_lost);
-      break;
-    }
-
     case mojom::DeferredCommandBufferRequestParams::Tag::
         kSetDefaultFramebufferSharedImage: {
       OnSetDefaultFramebufferSharedImage(

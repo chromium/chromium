@@ -438,14 +438,6 @@ union DeferredCommandBufferRequestParams {
   // Destroys a transfer buffer identified by this ID.
   int32 destroy_transfer_buffer;
 
-  // Takes the front buffer into a mailbox. Allows another context to draw the
-  // output of this context.
-  // NOTE: This exists only to support PNaCl.
-  Mailbox take_front_buffer;
-
-  // See ReturnFrontBufferParams.
-  ReturnFrontBufferParams return_front_buffer;
-
   // Allows to attach SharedImage to default framebuffer of this context.
   // NOTE: Used only for PNaCL.
   SetDefaultFramebufferSharedImageParams set_default_framebuffer_shared_image;
@@ -504,17 +496,6 @@ struct AsyncFlushParams {
   int32 put_offset;
   uint32 flush_id;
   array<SyncToken> sync_token_fences;
-};
-
-// Returns a front buffer taken via TakeFrontBufferParams in a previous
-// DeferredRequest. This allows it to be reused.
-// NOTE: This exists only to support PNaCl.
-struct ReturnFrontBufferParams {
-  // The mailbox which last took the front buffer in question.
-  Mailbox mailbox;
-
-  // Indicates that the resource was lost and should be destroyed.
-  bool is_lost;
 };
 
 // Sets SharedImage mailbox and other framebuffer params to the default

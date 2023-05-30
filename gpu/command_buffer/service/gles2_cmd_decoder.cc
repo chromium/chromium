@@ -688,8 +688,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void Destroy(bool have_context) override;
   void SetSurface(const scoped_refptr<gl::GLSurface>& surface) override;
   void ReleaseSurface() override;
-  void TakeFrontBuffer(const Mailbox& mailbox) override;
-  void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
   void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                         int samples,
                                         bool preserve,
@@ -2715,9 +2713,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   // Releases all saved BackTextures.
   void ReleaseAllBackTextures(bool have_context);
-
-  size_t GetSavedBackTextureCountForTest() override;
-  size_t GetCreatedBackTextureCountForTest() override;
 
   // The copy that is used as the destination for multi-sample resolves.
   std::unique_ptr<BackFramebuffer> offscreen_resolved_frame_buffer_;
@@ -5608,60 +5603,6 @@ void GLES2DecoderImpl::SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
   RestoreCurrentFramebufferBindings();
 }
 
-void GLES2DecoderImpl::TakeFrontBuffer(const Mailbox& mailbox) {
-  if (offscreen_single_buffer_) {
-    mailbox_manager()->ProduceTexture(
-        mailbox, offscreen_target_color_texture_->texture_ref()->texture());
-    return;
-  }
-
-  if (!offscreen_saved_color_texture_.get()) {
-    DLOG(ERROR) << "Called TakeFrontBuffer on a non-offscreen context";
-    return;
-  }
-
-  mailbox_manager()->ProduceTexture(
-      mailbox, offscreen_saved_color_texture_->texture_ref()->texture());
-
-  // Save the BackTexture and TextureRef. There's no need to update
-  // |offscreen_saved_frame_buffer_| since CreateBackTexture() will take care of
-  // that.
-  SavedBackTexture save;
-  save.back_texture.swap(offscreen_saved_color_texture_);
-  save.in_use = true;
-  saved_back_textures_.push_back(std::move(save));
-
-  CreateBackTexture();
-}
-
-void GLES2DecoderImpl::ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {
-  TextureBase* texture = mailbox_manager()->ConsumeTexture(mailbox);
-  mailbox_manager()->TextureDeleted(texture);
-
-  if (offscreen_single_buffer_)
-    return;
-
-  for (auto it = saved_back_textures_.begin(); it != saved_back_textures_.end();
-       ++it) {
-    if (texture != it->back_texture->texture_ref()->texture())
-      continue;
-
-    if (is_lost || it->back_texture->size() != offscreen_size_) {
-      if (is_lost)
-        it->back_texture->Invalidate();
-      else
-        it->back_texture->Destroy();
-      saved_back_textures_.erase(it);
-      return;
-    }
-
-    it->in_use = false;
-    return;
-  }
-
-  DLOG(ERROR) << "Attempting to return a frontbuffer that was not saved.";
-}
-
 error::Error GLES2DecoderImpl::HandleCreateGpuFenceINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -5750,14 +5691,6 @@ void GLES2DecoderImpl::ReleaseAllBackTextures(bool have_context) {
       saved_back_texture.back_texture->Invalidate();
   }
   saved_back_textures_.clear();
-}
-
-size_t GLES2DecoderImpl::GetSavedBackTextureCountForTest() {
-  return saved_back_textures_.size();
-}
-
-size_t GLES2DecoderImpl::GetCreatedBackTextureCountForTest() {
-  return create_back_texture_count_for_test_;
 }
 
 bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
@@ -5905,11 +5838,9 @@ error::Error GLES2DecoderImpl::HandleResizeCHROMIUM(
 
   bool is_offscreen = !!offscreen_target_frame_buffer_.get();
   if (is_offscreen) {
-    if (!ResizeOffscreenFramebuffer(gfx::Size(width, height))) {
-      LOG(ERROR) << "GLES2DecoderImpl: Context lost because "
-                 << "ResizeOffscreenFramebuffer failed.";
-      return error::kLostContext;
-    }
+    // We don't support Resize on the offscreen contexts.
+    LOG(ERROR) << "Resize called for the offscreen context";
+    return error::kUnknownCommand;
   } else {
     if (!surface_->Resize(gfx::Size(width, height), scale_factor, color_space,
                           !!has_alpha)) {
@@ -16647,89 +16578,10 @@ void GLES2DecoderImpl::DoSwapBuffers(uint64_t swap_id, GLbitfield flags) {
         is_offscreen ? offscreen_size_ : surface_->GetSize());
   }
 
-  // If offscreen then don't actually SwapBuffers to the display. Just copy
-  // the rendered frame to another frame buffer.
   if (is_offscreen) {
-    TRACE_EVENT2("gpu", "Offscreen",
-        "width", offscreen_size_.width(), "height", offscreen_size_.height());
-
-    if (offscreen_single_buffer_)
-      return;
-
-    if (offscreen_size_ != offscreen_saved_color_texture_->size()) {
-      // Workaround for NVIDIA driver bug on OS X; crbug.com/89557,
-      // crbug.com/94163. TODO(kbr): figure out reproduction so Apple will
-      // fix this.
-      if (workarounds().needs_offscreen_buffer_workaround) {
-        offscreen_saved_frame_buffer_->Create();
-        api()->glFinishFn();
-      }
-
-      // The size has changed, so none of the cached BackTextures are useful
-      // anymore.
-      ReleaseNotInUseBackTextures();
-
-      // Allocate the offscreen saved color texture.
-      DCHECK(offscreen_saved_color_format_);
-      offscreen_saved_color_texture_->AllocateStorage(
-          offscreen_size_, offscreen_saved_color_format_, false);
-
-      offscreen_saved_frame_buffer_->AttachRenderTexture(
-          offscreen_saved_color_texture_.get());
-      if (offscreen_size_.width() != 0 && offscreen_size_.height() != 0) {
-        if (offscreen_saved_frame_buffer_->CheckStatus() !=
-            GL_FRAMEBUFFER_COMPLETE) {
-          LOG(ERROR) << "GLES2DecoderImpl::ResizeOffscreenFramebuffer failed "
-                     << "because offscreen saved FBO was incomplete.";
-          MarkContextLost(error::kUnknown);
-          group_->LoseContexts(error::kUnknown);
-          return;
-        }
-
-        // Clear the offscreen color texture.
-        // TODO(piman): Is this still necessary?
-        {
-          ScopedFramebufferBinder binder(this,
-                                         offscreen_saved_frame_buffer_->id());
-          api()->glClearColorFn(0, 0, 0, BackBufferAlphaClearColor());
-          state_.SetDeviceColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-          state_.SetDeviceCapabilityState(GL_SCISSOR_TEST, false);
-          ClearDeviceWindowRectangles();
-          api()->glClearFn(GL_COLOR_BUFFER_BIT);
-          RestoreClearState();
-        }
-      }
-    }
-
-    if (offscreen_size_.width() == 0 || offscreen_size_.height() == 0)
-      return;
-    ScopedGLErrorSuppressor suppressor("GLES2DecoderImpl::DoSwapBuffers",
-                                       error_state_.get());
-
-    if (IsOffscreenBufferMultisampled()) {
-      // For multisampled buffers, resolve the frame buffer.
-      ScopedResolvedFramebufferBinder binder(this, true, false);
-    } else {
-      ScopedFramebufferBinder binder(this,
-                                     offscreen_target_frame_buffer_->id());
-
-      if (offscreen_target_buffer_preserved_) {
-        // Copy the target frame buffer to the saved offscreen texture.
-        offscreen_saved_color_texture_->Copy();
-      } else {
-        offscreen_saved_color_texture_.swap(offscreen_target_color_texture_);
-        offscreen_target_frame_buffer_->AttachRenderTexture(
-            offscreen_target_color_texture_.get());
-        offscreen_saved_frame_buffer_->AttachRenderTexture(
-            offscreen_saved_color_texture_.get());
-      }
-
-      // Ensure the side effects of the copy are visible to the parent
-      // context. There is no need to do this for ANGLE because it uses a
-      // single underlying device/context for all contexts.
-      if (!gl_version_info().is_angle)
-        api()->glFlushFn();
-    }
+    // We don't support SwapBuffers on the offscreen contexts.
+    LOG(ERROR) << "SwapBuffers called for the offscreen context";
+    return;
   } else if (supports_async_swap_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "gpu", "AsyncSwapBuffers",

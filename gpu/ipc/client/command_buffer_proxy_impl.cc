@@ -559,39 +559,6 @@ void CommandBufferProxyImpl::OnReturnData(const std::vector<uint8_t>& data) {
   }
 }
 
-void CommandBufferProxyImpl::TakeFrontBuffer(const gpu::Mailbox& mailbox) {
-  CheckLock();
-  base::AutoLock lock(last_state_lock_);
-  if (last_state_.error != gpu::error::kNoError)
-    return;
-
-  // TakeFrontBuffer should be a deferred message so that it's sequenced
-  // correctly with respect to preceding ReturnFrontBuffer messages.
-  last_flush_id_ = channel_->EnqueueDeferredMessage(
-      mojom::DeferredRequestParams::NewCommandBufferRequest(
-          mojom::DeferredCommandBufferRequest::New(
-              route_id_,
-              mojom::DeferredCommandBufferRequestParams::NewTakeFrontBuffer(
-                  mailbox))));
-}
-
-void CommandBufferProxyImpl::ReturnFrontBuffer(const gpu::Mailbox& mailbox,
-                                               const gpu::SyncToken& sync_token,
-                                               bool is_lost) {
-  CheckLock();
-  base::AutoLock lock(last_state_lock_);
-  if (last_state_.error != gpu::error::kNoError)
-    return;
-
-  last_flush_id_ = channel_->EnqueueDeferredMessage(
-      mojom::DeferredRequestParams::NewCommandBufferRequest(
-          mojom::DeferredCommandBufferRequest::New(
-              route_id_,
-              mojom::DeferredCommandBufferRequestParams::NewReturnFrontBuffer(
-                  mojom::ReturnFrontBufferParams::New(mailbox, is_lost)))),
-      {sync_token});
-}
-
 void CommandBufferProxyImpl::SetDefaultFramebufferSharedImage(
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token,

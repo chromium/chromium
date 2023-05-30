@@ -1593,67 +1593,6 @@ void GLES2DecoderPassthroughImpl::SetDefaultFramebufferSharedImage(
   }
 }
 
-void GLES2DecoderPassthroughImpl::TakeFrontBuffer(const Mailbox& mailbox) {
-  if (offscreen_single_buffer_) {
-    DCHECK(emulated_back_buffer_->color_texture != nullptr);
-    mailbox_manager_->ProduceTexture(
-        mailbox, emulated_back_buffer_->color_texture->texture.get());
-    return;
-  }
-
-  if (!emulated_front_buffer_) {
-    DLOG(ERROR) << "Called TakeFrontBuffer on a non-offscreen context";
-    return;
-  }
-
-  mailbox_manager_->ProduceTexture(mailbox,
-                                   emulated_front_buffer_->texture.get());
-  in_use_color_textures_.push_back(std::move(emulated_front_buffer_));
-  emulated_front_buffer_ = nullptr;
-
-  if (available_color_textures_.empty()) {
-    // Create a new color texture to use as the front buffer
-    emulated_front_buffer_ = std::make_unique<EmulatedColorBuffer>(this);
-    emulated_front_buffer_->Resize(emulated_back_buffer_->size);
-    create_color_buffer_count_for_test_++;
-  } else {
-    emulated_front_buffer_ = std::move(available_color_textures_.back());
-    available_color_textures_.pop_back();
-  }
-}
-
-void GLES2DecoderPassthroughImpl::ReturnFrontBuffer(const Mailbox& mailbox,
-                                                    bool is_lost) {
-  TextureBase* texture = mailbox_manager_->ConsumeTexture(mailbox);
-  mailbox_manager_->TextureDeleted(texture);
-
-  if (offscreen_single_buffer_) {
-    return;
-  }
-
-  auto it = in_use_color_textures_.begin();
-  while (it != in_use_color_textures_.end()) {
-    if ((*it)->texture == texture) {
-      break;
-    }
-    it++;
-  }
-  if (it == in_use_color_textures_.end()) {
-    DLOG(ERROR) << "Attempting to return a frontbuffer that was not saved.";
-    return;
-  }
-
-  if (is_lost) {
-    (*it)->texture->MarkContextLost();
-    (*it)->Destroy(false);
-  } else if ((*it)->size != emulated_back_buffer_->size) {
-    (*it)->Destroy(true);
-  } else {
-    available_color_textures_.push_back(std::move(*it));
-  }
-  in_use_color_textures_.erase(it);
-}
-
 bool GLES2DecoderPassthroughImpl::ResizeOffscreenFramebuffer(
     const gfx::Size& size) {
   DCHECK(offscreen_);
@@ -1900,14 +1839,6 @@ void GLES2DecoderPassthroughImpl::RestoreAllAttributes() const {}
 void GLES2DecoderPassthroughImpl::SetIgnoreCachedStateForTest(bool ignore) {}
 
 void GLES2DecoderPassthroughImpl::SetForceShaderNameHashingForTest(bool force) {
-}
-
-size_t GLES2DecoderPassthroughImpl::GetSavedBackTextureCountForTest() {
-  return in_use_color_textures_.size() + available_color_textures_.size();
-}
-
-size_t GLES2DecoderPassthroughImpl::GetCreatedBackTextureCountForTest() {
-  return create_color_buffer_count_for_test_;
 }
 
 gpu::QueryManager* GLES2DecoderPassthroughImpl::GetQueryManager() {

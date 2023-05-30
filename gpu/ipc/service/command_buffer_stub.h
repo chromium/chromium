@@ -228,8 +228,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,
                          BindMediaReceiverCallback callback) override;
 
-  virtual void OnTakeFrontBuffer(const Mailbox& mailbox) {}
-  virtual void OnReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) {}
   virtual void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                                   int samples_count,
                                                   bool preserve,

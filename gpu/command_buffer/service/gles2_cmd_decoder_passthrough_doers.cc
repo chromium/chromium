@@ -3982,51 +3982,9 @@ error::Error GLES2DecoderPassthroughImpl::DoBindVertexArrayOES(GLuint array) {
 error::Error GLES2DecoderPassthroughImpl::DoSwapBuffers(uint64_t swap_id,
                                                         GLbitfield flags) {
   if (offscreen_) {
-    if (offscreen_single_buffer_) {
-      return error::kNoError;
-    }
-
-    DCHECK(emulated_back_buffer_);
-
-    // Make sure the emulated front buffer is allocated and the correct size
-    if (emulated_front_buffer_ &&
-        emulated_front_buffer_->size != emulated_back_buffer_->size) {
-      emulated_front_buffer_->Destroy(true);
-      emulated_front_buffer_ = nullptr;
-    }
-
-    if (emulated_front_buffer_ == nullptr) {
-      if (!available_color_textures_.empty()) {
-        emulated_front_buffer_ = std::move(available_color_textures_.back());
-        available_color_textures_.pop_back();
-      } else {
-        emulated_front_buffer_ = std::make_unique<EmulatedColorBuffer>(this);
-        emulated_front_buffer_->Resize(emulated_back_buffer_->size);
-      }
-    }
-
-    DCHECK_EQ(emulated_front_buffer_->size, emulated_back_buffer_->size);
-
-    if (emulated_default_framebuffer_format_.samples > 0) {
-      // Resolve the multisampled renderbuffer into the emulated_front_buffer_
-      emulated_back_buffer_->Blit(emulated_front_buffer_.get());
-    } else {
-      DCHECK(emulated_back_buffer_->color_texture != nullptr);
-      // If the offscreen buffer should be preserved, copy the old backbuffer
-      // into the new one
-      if (offscreen_target_buffer_preserved_) {
-        emulated_back_buffer_->Blit(emulated_front_buffer_.get());
-      }
-
-      // Swap the front and back buffer textures and update the framebuffer
-      // attachment.
-      std::unique_ptr<EmulatedColorBuffer> old_front_buffer =
-          std::move(emulated_front_buffer_);
-      emulated_front_buffer_ =
-          emulated_back_buffer_->SetColorBuffer(std::move(old_front_buffer));
-    }
-
-    return error::kNoError;
+    // We don't support SwapBuffers on the offscreen contexts.
+    LOG(ERROR) << "SwapBuffers called for the offscreen context";
+    return error::kUnknownCommand;
   }
 
   client()->OnSwapBuffers(swap_id, flags);
@@ -4185,11 +4143,9 @@ error::Error GLES2DecoderPassthroughImpl::DoResizeCHROMIUM(
   gfx::Size safe_size(std::clamp(width, 1U, kMaxDimension),
                       std::clamp(height, 1U, kMaxDimension));
   if (offscreen_) {
-    if (!ResizeOffscreenFramebuffer(safe_size)) {
-      LOG(ERROR) << "GLES2DecoderPassthroughImpl: Context lost because "
-                 << "ResizeOffscreenFramebuffer failed.";
-      return error::kLostContext;
-    }
+    // We don't support resize of offscreen contexts.
+    LOG(ERROR) << "Resize called for the offscreen context";
+    return error::kUnknownCommand;
   } else {
     if (!surface_->Resize(safe_size, scale_factor, color_space, !!alpha)) {
       LOG(ERROR)

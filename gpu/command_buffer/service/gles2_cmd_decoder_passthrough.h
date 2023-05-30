@@ -210,10 +210,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // The decoder should not be used until a new surface is set.
   void ReleaseSurface() override;
 
-  void TakeFrontBuffer(const Mailbox& mailbox) override;
-
-  void ReturnFrontBuffer(const Mailbox& mailbox, bool is_lost) override;
-
   void SetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                         int samples,
                                         bool preserve,
@@ -267,8 +263,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   void SetIgnoreCachedStateForTest(bool ignore) override;
   void SetForceShaderNameHashingForTest(bool force) override;
-  size_t GetSavedBackTextureCountForTest() override;
-  size_t GetCreatedBackTextureCountForTest() override;
 
   // Gets the QueryManager for this context.
   QueryManager* GetQueryManager() override;
@@ -948,7 +942,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool offscreen_target_buffer_preserved_;
   std::vector<std::unique_ptr<EmulatedColorBuffer>> in_use_color_textures_;
   std::vector<std::unique_ptr<EmulatedColorBuffer>> available_color_textures_;
-  size_t create_color_buffer_count_for_test_ = 0;
   std::unique_ptr<GLES2ExternalFramebuffer> external_default_framebuffer_;
 
   // Maximum 2D resource sizes for limiting offscreen framebuffer sizes
