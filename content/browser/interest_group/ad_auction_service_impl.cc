@@ -421,7 +421,8 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
         ukm::SourceIdObj::FromInt64(render_frame_host().GetPageUkmSourceId()),
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-        /*factory_override=*/nullptr);
+        /*factory_override=*/nullptr,
+        /*navigation_response_task_runner=*/nullptr);
 
     render_frame_host()
         .GetStoragePartition()

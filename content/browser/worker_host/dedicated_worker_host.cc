@@ -554,7 +554,8 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,
       bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, &factory_params->factory_override);
+      /*disable_secure_dns=*/nullptr, &factory_params->factory_override,
+      /*navigation_response_task_runner=*/nullptr);
 
   devtools_instrumentation::WillCreateURLLoaderFactory(
       ancestor_render_frame_host, /*is_navigation=*/false,

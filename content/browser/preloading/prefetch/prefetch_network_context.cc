@@ -201,7 +201,8 @@ void PrefetchNetworkContext::CreateNewURLLoaderFactory(
       ukm::SourceIdObj::FromInt64(
           referring_render_frame_host->GetPageUkmSourceId()),
       &pending_receiver, &header_client, &bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      /*navigation_response_task_runner=*/nullptr);
 
   if (header_client.is_valid()) {
     factory_params->header_client = std::move(header_client);

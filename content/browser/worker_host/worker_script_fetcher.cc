@@ -430,7 +430,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
         /* TODO(https://crbug.com/1103288): The UKM ID could be computed */
         ukm::kInvalidSourceIdObj, &default_factory_receiver,
         &factory_params->header_client, &bypass_redirect_checks,
-        nullptr /* disable_secure_dns */, &factory_params->factory_override);
+        nullptr /* disable_secure_dns */, &factory_params->factory_override,
+        /*navigation_response_task_runner=*/nullptr);
     factory_bundle_for_browser_info->set_bypass_redirect_checks(
         bypass_redirect_checks);
 

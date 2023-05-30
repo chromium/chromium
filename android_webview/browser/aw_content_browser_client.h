@@ -218,7 +218,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
           header_client,
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override) override;
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override;
   uint32_t GetWebSocketOptions(content::RenderFrameHost* frame) override;
   bool WillCreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,

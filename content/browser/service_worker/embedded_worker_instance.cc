@@ -865,7 +865,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
       factory_type, origin, absl::nullopt /* navigation_id */,
       ukm::kInvalidSourceIdObj, &default_factory_receiver,
       &factory_params->header_client, &bypass_redirect_checks,
-      nullptr /* disable_secure_dns */, &factory_params->factory_override);
+      nullptr /* disable_secure_dns */, &factory_params->factory_override,
+      /*navigation_response_task_runner=*/nullptr);
   devtools_instrumentation::WillCreateURLLoaderFactoryForServiceWorker(
       rph, routing_id, &factory_params->factory_override);
 

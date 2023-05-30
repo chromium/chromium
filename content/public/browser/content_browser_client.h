@@ -1652,6 +1652,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // is nullptr by default, and the embedder can elect to set
   // |*factory_override| to a valid override.
   //
+  // |navigation_response_task_runner| is a task runner that may be used for
+  // navigation request blocking tasks. Null when the URLLoaderFactory is not
+  // being created for a navigation request.
+  //
   // Always called on the UI thread.
   virtual bool WillCreateURLLoaderFactory(
       BrowserContext* browser_context,
@@ -1666,7 +1670,8 @@ class CONTENT_EXPORT ContentBrowserClient {
           header_client,
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override);
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner);
 
   // Returns true when the embedder wants to intercept a websocket connection.
   virtual bool WillInterceptWebSocket(RenderFrameHost* frame);

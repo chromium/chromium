@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/test/url_loader_interceptor.h"
 
 #include "base/command_line.h"
@@ -171,7 +172,9 @@ class TestBrowserClientWithHeaderClient
           header_client,
       bool* bypass_redirect_checks,
       bool* disable_secure_dns,
-      network::mojom::URLLoaderFactoryOverridePtr* factory_override) override {
+      network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
+      override {
     if (header_client) {
       receivers_.Add(this, header_client->InitWithNewPipeAndPassReceiver());
     }

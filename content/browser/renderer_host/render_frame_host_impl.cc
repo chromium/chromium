@@ -9736,7 +9736,8 @@ void RenderFrameHostImpl::CommitNavigation(
           subresource_loader_factories_config.ukm_source_id(),
           &factory_receiver, /*header_client=*/nullptr,
           /*bypass_redirect_checks=*/nullptr,
-          /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+          /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+          /*navigation_response_task_runner=*/nullptr);
       mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
           CreateWebUIURLLoaderFactory(this, effective_scheme, {}));
       direct_factory_for_webui->Clone(std::move(factory_receiver));
@@ -10828,7 +10829,7 @@ void RenderFrameHostImpl::WillCreateURLLoaderFactory(
       ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
       request_initiator, /*navigation_id=*/absl::nullopt, ukm_source_id,
       factory_receiver, header_client, bypass_redirect_checks,
-      disable_secure_dns, factory_override);
+      disable_secure_dns, factory_override, /*navigation_task_runner=*/nullptr);
 
   // Keep DevTools proxy last, i.e. closest to the network.
   devtools_instrumentation::WillCreateURLLoaderFactory(

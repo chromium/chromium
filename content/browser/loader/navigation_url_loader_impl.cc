@@ -1363,7 +1363,9 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-        /*factory_override=*/nullptr);
+        /*factory_override=*/nullptr,
+        content::GetUIThreadTaskRunner(
+            {content::BrowserTaskType::kNavigationNetworkResponse}));
 
     mojo::Remote<network::mojom::URLLoaderFactory> direct_factory_for_webui(
         CreateWebUIURLLoaderFactory(frame_tree_node->current_frame_host(),
@@ -1460,7 +1462,9 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       &factory_receiver, &header_client, bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
   if (devtools_instrumentation::WillCreateURLLoaderFactory(
           frame_tree_node->current_frame_host(), /*is_navigation=*/true,
           /*is_download=*/false, &factory_receiver,
@@ -1690,7 +1694,9 @@ void NavigationURLLoaderImpl::
       ukm::SourceIdObj::FromInt64(ukm_source_id_), &factory_receiver,
       /*header_client=*/nullptr,
       /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
-      /*factory_override=*/nullptr);
+      /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
 
   // TODO(lukasza, jam): It is unclear why FileURLLoaderFactory is the only
   // non-http factory that allows DevTools intereception.  For comparison all

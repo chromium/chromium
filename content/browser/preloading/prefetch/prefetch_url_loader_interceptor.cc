@@ -189,7 +189,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
       navigation_request->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(navigation_request->GetNextPageUkmSourceId()),
       &pending_receiver, /*header_client=*/nullptr, &bypass_redirect_checks,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      /*navigation_response_task_runner=*/nullptr);
 
   // Bind the (possibly proxied) mojo pipe to the URL loader factory that will
   // serve the prefetched data.

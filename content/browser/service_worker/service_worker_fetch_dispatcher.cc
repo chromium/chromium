@@ -342,7 +342,9 @@ void CreateNetworkFactoryForNavigationPreload(
       ukm::SourceIdObj::FromInt64(
           frame_tree_node.navigation_request()->GetNextPageUkmSourceId()),
       &receiver, &header_client, &bypass_redirect_checks_unused,
-      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
+      content::GetUIThreadTaskRunner(
+          {content::BrowserTaskType::kNavigationNetworkResponse}));
 
   // Make the network factory.
   NavigationURLLoaderImpl::CreateURLLoaderFactoryWithHeaderClient(

@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -139,7 +141,9 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
            header_client,
        bool* bypass_redirect_checks,
        bool* disable_secure_dns,
-       network::mojom::URLLoaderFactoryOverridePtr* factory_override),
+       network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+       scoped_refptr<base::SequencedTaskRunner>
+           navigation_response_task_runner),
       (override));
 
  private:
@@ -448,7 +452,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .WillOnce(testing::Return(false));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
@@ -524,7 +528,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .WillOnce(testing::Return(false));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
@@ -605,7 +609,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .WillOnce(testing::Return(false));
 
   // No cookies are copied for prefetches where |use_isolated_network_context|
@@ -888,7 +892,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .WillOnce(testing::Return(false));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
@@ -1085,7 +1089,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .Times(2)
       .WillRepeatedly(testing::Return(false));
 
@@ -1196,7 +1200,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           ukm::SourceIdObj::FromInt64(
               navigation_request()->GetNextPageUkmSourceId()),
           testing::NotNull(), testing::IsNull(), testing::NotNull(),
-          testing::IsNull(), testing::IsNull()))
+          testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .Times(2)
       .WillRepeatedly(testing::Return(false));
 

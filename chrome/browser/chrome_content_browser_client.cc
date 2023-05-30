@@ -5943,7 +5943,8 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
         header_client,
     bool* bypass_redirect_checks,
     bool* disable_secure_dns,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
   bool use_proxy = false;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -5958,7 +5959,7 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
         web_request_api->MaybeProxyURLLoaderFactory(
             browser_context, frame, render_process_id, type,
             std::move(navigation_id), ukm_source_id, factory_receiver,
-            header_client, request_initiator);
+            header_client, navigation_response_task_runner, request_initiator);
     if (bypass_redirect_checks)
       *bypass_redirect_checks = use_proxy_for_web_request;
     use_proxy |= use_proxy_for_web_request;
