@@ -67,7 +67,7 @@ absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
     return absl::Uint128Low64(maybe_debug_key.value());
   }
 
-  *error_out = "debug_key must be a BigInt";
+  *error_out = "debugKey must be a BigInt";
   return absl::nullopt;
 }
 
@@ -228,7 +228,8 @@ void ParseAndApplyEnableDebugModeArguments(
     }
 
     v8::Local<v8::Value> js_debug_key;
-    if (!dict.Get("debug_key", &js_debug_key)) {
+
+    if (!dict.Get("debugKey", &js_debug_key)) {
       // Propagate any exception
       return;
     }

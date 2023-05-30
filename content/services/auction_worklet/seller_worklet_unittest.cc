@@ -4744,7 +4744,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5",
                             R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.enableDebugMode({debugKey: 1234n});
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
             privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
@@ -4973,7 +4973,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         "5",
         R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.enableDebugMode({debugKey: 1234n});
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",

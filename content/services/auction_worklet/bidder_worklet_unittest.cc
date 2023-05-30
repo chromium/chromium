@@ -6909,7 +6909,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.enableDebugMode({debugKey: 1234n});
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
@@ -7201,7 +7201,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.enableDebugMode({debugKey: 1234n});
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
