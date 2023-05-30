@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, MAYBE_MoveToAnotherScreen) {
     for (const display::Display& target_display : displays) {
       for (const char* url : {".", "about:blank"}) {
         const std::string open_script = content::JsReplace(
-            "w = open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+            "w = open($1, '', 'left=$2,top=$3,width=200,height=200')", url,
             opener_display_center.x() - 100, opener_display_center.y() - 100);
         Browser* popup = OpenPopup(browser(), open_script);
         EXPECT_EQ(opener_display, GetDisplayNearestBrowser(popup));
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest, CrossOriginIFrame) {
       for (const display::Display& target_display : displays) {
         for (const char* url : {".", "about:blank"}) {
           const std::string open_script = content::JsReplace(
-              "w = open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+              "w = open($1, '', 'left=$2,top=$3,width=200,height=200')", url,
               target_display.work_area().x(), target_display.work_area().y());
           Browser* popup = OpenPopup(cross_origin_iframe, open_script);
           display::Display popup_display = GetDisplayNearestBrowser(popup);
