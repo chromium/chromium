@@ -37,6 +37,7 @@ class VideoFrame;
 
 namespace content {
 
+class FrameTreeNode;
 class DevToolsAgentHostImpl;
 class DevToolsVideoConsumer;
 class DevToolsIOContext;
@@ -48,7 +49,9 @@ namespace protocol {
 
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
-  CONTENT_EXPORT explicit TracingHandler(DevToolsIOContext* io_context);
+  enum TargetType { kBrowser, kTab, kFrame };
+  CONTENT_EXPORT TracingHandler(TargetType target_type,
+                                DevToolsIOContext* io_context);
 
   TracingHandler(const TracingHandler&) = delete;
   TracingHandler& operator=(const TracingHandler&) = delete;
@@ -63,6 +66,10 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   // DevToolsDomainHandler implementation.
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
+  void ConnectWebContents(WebContents* web_contents);
+  void DisconnectWebContents();
+  void WillInitiatePrerender(FrameTreeNode* ftn);
+
   void Wire(UberDispatcher* dispatcher) override;
   Response Disable() override;
 
@@ -147,6 +154,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
                                   bool proto_format,
                                   perfetto::BackendType tracing_backend);
 
+  TargetType target_type_;
+  WebContents* web_contents_;
   std::unique_ptr<base::RepeatingTimer> buffer_usage_poll_timer_;
 
   std::unique_ptr<Tracing::Frontend> frontend_;

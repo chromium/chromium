@@ -43,6 +43,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
+#include "devtools_agent_host_impl.h"
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -92,6 +93,23 @@ void DispatchToAgents(int frame_tree_node_id,
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (ftn)
     DispatchToAgents(ftn, method, std::forward<Args>(args)...);
+}
+
+template <typename Handler, typename... MethodArgs, typename... Args>
+void DispatchToAgents(WebContents* web_contents,
+                      void (Handler::*method)(MethodArgs...),
+                      Args&&... args) {
+  auto agent_host = DevToolsAgentHost::GetForTab(web_contents);
+  if (agent_host) {
+    DispatchToAgents(static_cast<DevToolsAgentHostImpl*>(agent_host.get()),
+                     method, std::forward<Args>(args)...);
+  }
+  if (content::DevToolsAgentHost::HasFor(web_contents)) {
+    DispatchToAgents(
+        static_cast<DevToolsAgentHostImpl*>(
+            content::DevToolsAgentHost::GetOrCreateFor(web_contents).get()),
+        method, std::forward<Args>(args)...);
+  }
 }
 
 std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
@@ -1268,10 +1286,11 @@ void DidCreateProcessForAuctionWorklet(RenderFrameHostImpl* owner,
   // TracingHandler lives on the very root, not local root.
   // TODO(morlovich): This may not be right for fenced frames, though
   // that should not currently matter.
-  FrameTreeNode* node = owner->GetMainFrame()->frame_tree_node();
-  if (!node)
+  WebContents* web_contents = WebContents::FromRenderFrameHost(owner);
+  if (!web_contents) {
     return;
-  DispatchToAgents(node, &protocol::TracingHandler::AddProcess, pid);
+  }
+  DispatchToAgents(web_contents, &protocol::TracingHandler::AddProcess, pid);
 }
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,

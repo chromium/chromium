@@ -373,7 +373,10 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       session->GetClient()->MayReadLocalFiles());
   session->CreateAndAddHandler<protocol::SecurityHandler>();
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
-    session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());
+    auto* tracing_handler =
+        session->CreateAndAddHandler<protocol::TracingHandler>(
+            protocol::TracingHandler::kFrame, GetIOContext());
+    tracing_handler->ConnectWebContents(web_contents());
   }
   session->CreateAndAddHandler<protocol::LogHandler>();
   session->CreateAndAddHandler<protocol::FedCmHandler>();
@@ -690,6 +693,9 @@ void RenderFrameDevToolsAgentHost::DidCreateFencedFrame(
 void RenderFrameDevToolsAgentHost::DisconnectWebContents() {
   WebContentsObserver::Observe(nullptr);
   navigation_requests_.clear();
+  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
+    tracing->DisconnectWebContents();
+  }
   SetFrameTreeNode(nullptr);
   // UpdateFrameHost may destruct |this|.
   scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
@@ -703,6 +709,9 @@ void RenderFrameDevToolsAgentHost::ConnectWebContents(WebContents* wc) {
       static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
   DCHECK(host);
   WebContentsObserver::Observe(wc);
+  for (auto* tracing : protocol::TracingHandler::ForAgentHost(this)) {
+    tracing->ConnectWebContents(wc);
+  }
   SetFrameTreeNode(host->frame_tree_node());
   UpdateFrameHost(host);
   // UpdateFrameHost may destruct |this|.

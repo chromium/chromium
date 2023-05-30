@@ -1,0 +1,6 @@
+Test that prerender page is included in the trace events
+Recording started
+Tracing complete
+Got prerender frame: true
+Got parse prerender HTML: true
+

@@ -149,3 +149,5 @@ crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Time
 # reenable print ref tests
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]
+
+crbug.com/1444753 http/tests/inspector-protocol/tracing/prerender.js [ Skip ]
