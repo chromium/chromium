@@ -275,8 +275,11 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
   if (!entry)
     return;
 
-  for (auto& observer : observers_)
-    observer.ReadingListWillRemoveEntry(this, url);
+  if (!suppress_deletions_batch_updates_notifications_) {
+    for (auto& observer : observers_) {
+      observer.ReadingListWillRemoveEntry(this, url);
+    }
+  }
 
   std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
       storage_layer_->EnsureBatchCreated();
@@ -290,9 +293,11 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
 
   entries_.erase(url);
 
-  for (auto& observer : observers_) {
-    observer.ReadingListDidRemoveEntry(this, url);
-    observer.ReadingListDidApplyChanges(this);
+  if (!suppress_deletions_batch_updates_notifications_) {
+    for (auto& observer : observers_) {
+      observer.ReadingListDidRemoveEntry(this, url);
+      observer.ReadingListDidApplyChanges(this);
+    }
   }
 }
 
@@ -582,7 +587,8 @@ ReadingListModelImpl::BeginBatchUpdatesWithSyncMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto token = std::make_unique<ScopedReadingListBatchUpdateImpl>(this);
   ++current_batch_updates_count_;
-  if (current_batch_updates_count_ == 1) {
+  if (current_batch_updates_count_ == 1 &&
+      !suppress_deletions_batch_updates_notifications_) {
     for (auto& observer : observers_) {
       observer.ReadingListModelBeganBatchUpdates(this);
     }
@@ -646,8 +652,15 @@ void ReadingListModelImpl::StoreLoaded(
   DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
   loaded_ = true;
 
-  sync_bridge_.ModelReadyToSync(/*model=*/this,
-                                std::move(result_or_error.value().second));
+  {
+    // In rare cases, ModelReadyToSync() leads to the deletion of all local
+    // entries. Such deletions should not be propagated to observers, because
+    // ReadingListModelLoaded hasn't been broadcasted yet.
+    base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+        &suppress_deletions_batch_updates_notifications_, true);
+    sync_bridge_.ModelReadyToSync(/*model=*/this,
+                                  std::move(result_or_error.value().second));
+  }
 
   base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
                                unread_entry_count_);
@@ -664,7 +677,8 @@ void ReadingListModelImpl::EndBatchUpdates() {
   DCHECK(IsPerformingBatchUpdates());
   DCHECK(current_batch_updates_count_ > 0);
   --current_batch_updates_count_;
-  if (current_batch_updates_count_ == 0) {
+  if (current_batch_updates_count_ == 0 &&
+      !suppress_deletions_batch_updates_notifications_) {
     for (auto& observer : observers_) {
       observer.ReadingListModelCompletedBatchUpdates(this);
     }

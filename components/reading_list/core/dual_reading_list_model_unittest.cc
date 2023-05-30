@@ -13,6 +13,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -189,11 +190,9 @@ class DualReadingListModelTest : public testing::Test {
         /*initial_account_entries_builders=*/{});
   }
 
-  bool ResetStorageAndMimicSignedInSyncDisabled(
+  bool TriggerStorageLoadCompletionSignedInSyncDisabled(
       std::vector<TestEntryBuilder> initial_local_entries_builders = {},
       std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
-    ResetStorage();
-
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
     sync_pb::ModelTypeState state;
     state.set_initial_sync_state(
@@ -215,6 +214,14 @@ class DualReadingListModelTest : public testing::Test {
                std::move(initial_local_entries)) &&
            account_model_storage_ptr_->TriggerLoadCompletion(
                std::move(initial_account_entries), std::move(metadata_batch));
+  }
+
+  bool ResetStorageAndMimicSignedInSyncDisabled(
+      std::vector<TestEntryBuilder> initial_local_entries_builders = {},
+      std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
+    ResetStorage();
+    return TriggerStorageLoadCompletionSignedInSyncDisabled(
+        initial_local_entries_builders, initial_account_entries_builders);
   }
 
   bool ResetStorageAndMimicSyncEnabled(
@@ -274,6 +281,27 @@ TEST_F(DualReadingListModelTest, ModelLoadFailure) {
       base::unexpected("Fake error")));
   ASSERT_TRUE(account_model_storage_ptr_->TriggerLoadCompletion());
   EXPECT_FALSE(dual_model_->loaded());
+}
+
+TEST_F(DualReadingListModelTest, MetaDataClearedBeforeModelLoaded) {
+  ResetStorage();
+  static_cast<syncer::ClientTagBasedModelTypeProcessor*>(
+      account_model_ptr_->GetSyncBridgeForTest()->change_processor())
+      ->ClearMetadataWhileStopped();
+
+  EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates).Times(0);
+  EXPECT_CALL(observer_, ReadingListModelCompletedBatchUpdates).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+  EXPECT_CALL(observer_, ReadingListModelLoaded);
+  TriggerStorageLoadCompletionSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())});
+
+  EXPECT_EQ(0ul, account_model_ptr_->size());
+  EXPECT_EQ(0ul, dual_model_->size());
 }
 
 TEST_F(DualReadingListModelTest, ReturnAccountModelSize) {
