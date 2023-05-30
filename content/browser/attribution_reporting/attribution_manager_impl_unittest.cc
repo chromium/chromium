@@ -61,6 +61,7 @@
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/global_routing_id.h"
@@ -2837,6 +2838,24 @@ TEST_F(AttributionManagerImplTest, PendingReportsMetrics_OverLimits) {
   EXPECT_EQ(
       histograms.GetTotalSum(kPendingAndBrowserWentOfflineTimeSinceCreation),
       (base::Seconds(10) * kMaxPendingReportsTimings).InMilliseconds());
+}
+
+TEST_F(AttributionManagerImplTest,
+       RemoveAttributionDataByDataKey_NotifiesObservers) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnSourcesChanged);
+  EXPECT_CALL(observer, OnReportsChanged);
+
+  base::RunLoop run_loop;
+  attribution_manager_->RemoveAttributionDataByDataKey(
+      AttributionDataModel::DataKey(
+          url::Origin::Create(GURL("https://x.test"))),
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 class AttributionManagerImplDebugReportTest
