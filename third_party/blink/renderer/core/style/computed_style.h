@@ -881,7 +881,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // font-palette
-  FontPalette* FontPalette() const {
+  blink::FontPalette* FontPalette() const {
     return GetFontDescription().GetFontPalette();
   }
 
