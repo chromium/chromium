@@ -20,3 +20,9 @@ def get_class():
             raise e
 
     return config_class
+
+
+def get_invoker_class():
+    """Returns the subclass of |invoker.Interface| to use."""
+    from signing.standard_invoker import Invoker
+    return Invoker

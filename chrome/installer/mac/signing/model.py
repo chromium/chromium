@@ -383,11 +383,8 @@ class Distribution(object):
                              self).packaging_basename
 
         return DistributionCodeSignConfig(
-            **pick(base_config, ('identity', 'installer_identity',
-                                 'notary_user', 'notary_password',
-                                 'notary_asc_provider', 'notary_team_id',
-                                 'codesign_requirements_basic',
-                                 'notarization_tool')))
+            **pick(base_config, ('invoker', 'identity', 'installer_identity',
+                                 'codesign_requirements_basic')))
 
 
 class Paths(object):

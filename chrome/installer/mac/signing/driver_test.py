@@ -162,8 +162,9 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
 
     def test_notarize_specific(self, sign_all, **kwargs):
         driver.main([
@@ -174,8 +175,9 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.NOWAIT, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
 
     def test_notarize_missing_args(self, sign_all, **kwargs):
         with self.assertRaises(SystemExit):
@@ -210,8 +212,12 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
         self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
-        self.assertEquals('Notary-User', config.notary_user)
-        self.assertEquals('@env:NOTARY', config.notary_password)
-        self.assertEquals('Team1', config.notary_team_id)
+        self.assertEquals('Notary-User', config.invoker.notarizer._notary_user)
+        self.assertEquals('@env:NOTARY',
+                          config.invoker.notarizer._notary_password)
+        self.assertEquals('Team1',
+                          config.invoker.notarizer._notarizer._notary_team_id)
         self.assertEquals(model.NotarizationTool.NOTARYTOOL,
                           config.notarization_tool)
+        self.assertEquals(model.NotarizationTool.NOTARYTOOL,
+                          config.invoker.notarizer.notarization_tool)
