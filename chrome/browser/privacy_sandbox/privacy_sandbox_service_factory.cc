@@ -4,7 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -23,7 +23,8 @@
 #endif
 
 PrivacySandboxServiceFactory* PrivacySandboxServiceFactory::GetInstance() {
-  return base::Singleton<PrivacySandboxServiceFactory>::get();
+  static base::NoDestructor<PrivacySandboxServiceFactory> instance;
+  return instance.get();
 }
 
 PrivacySandboxService* PrivacySandboxServiceFactory::GetForProfile(

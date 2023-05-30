@@ -4,7 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_delegate.h"
@@ -14,7 +14,8 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 
 PrivacySandboxSettingsFactory* PrivacySandboxSettingsFactory::GetInstance() {
-  return base::Singleton<PrivacySandboxSettingsFactory>::get();
+  static base::NoDestructor<PrivacySandboxSettingsFactory> instance;
+  return instance.get();
 }
 
 privacy_sandbox::PrivacySandboxSettings*

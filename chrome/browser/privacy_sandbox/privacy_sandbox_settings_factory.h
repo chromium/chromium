@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_FACTORY_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -21,7 +21,7 @@ class PrivacySandboxSettingsFactory : public ProfileKeyedServiceFactory {
       Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<PrivacySandboxSettingsFactory>;
+  friend base::NoDestructor<PrivacySandboxSettingsFactory>;
   PrivacySandboxSettingsFactory();
   ~PrivacySandboxSettingsFactory() override = default;
 
