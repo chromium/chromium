@@ -2025,6 +2025,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     // Typed http URLs don't opt out of upgrades in HFM.
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
   } else {
+    histograms()->ExpectTotalCount(kNavigationRequestSecurityLevelHistogram, 1);
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kExplicitHttpScheme, 1);
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
   }
 }
