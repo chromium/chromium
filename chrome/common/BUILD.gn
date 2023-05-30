@@ -18,9 +18,17 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
+fuzzer_test("ini_parser_fuzzer") {
+  sources = [ "ini_parser_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//chrome/common:ini_parser",
+  ]
+}
 grit("resources") {
   source = "common_resources.grd"
   defines = chrome_grit_defines
