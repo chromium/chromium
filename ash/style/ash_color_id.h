@@ -30,6 +30,7 @@ namespace ash {
   E_CPONLY(kColorAshControlBackgroundColorWarning) \
   E_CPONLY(kColorAshControlBackgroundColorPositive) \
   E_CPONLY(kColorAshFocusAuraColor) \
+  E_CPONLY(kColorAshSecondaryButtonBackgroundColor)\
   /* Content layer colors. */ \
   E_CPONLY(kColorAshScrollBarColor) \
   E_CPONLY(kColorAshSeparatorColor) \

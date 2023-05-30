@@ -110,6 +110,8 @@ void AddControlsColors(ui::ColorMixer& mixer,
   mixer[kColorAshFocusAuraColor] =
       ui::SetAlpha(cros_tokens::kColorProminent, 0x3D);
   mixer[ui::kColorAshFocusRing] = {cros_tokens::kColorProminent};
+  mixer[kColorAshSecondaryButtonBackgroundColor] =
+      ui::SetAlpha(cros_tokens::kCrosRefPrimary70, kSecondToneOpacity);
 }
 
 // Mappings the Content layer colors for Material 2.
