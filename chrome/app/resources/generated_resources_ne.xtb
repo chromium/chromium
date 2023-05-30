@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">यो विस्तारले साइटहरूमा तपाईंको डेटा पढ्न र परिवर्तन गर्न सक्छ। तपाईं यो विस्तारले कुन कुन साइटहरूमाथि पहुँच राख्न सक्छ भन्ने कुरा नियन्त्रण गर्न सक्नुहुन्छ।</translation>
 <translation id="1007057452468855774">Google Play स्टोर अन गर्नुहोस्</translation>
 <translation id="1008186147501209563">पुस्तक चिन्हहरू निर्यात गर्नुहोस्</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> ले तपाईंले कसरी साइन इन गर्नुभयो भन्ने कुरा याद गर्छ र सम्भव हुँदा तपाईंलाई स्वतः साइन इन गराउँछ। यो सुविधा अफ भएका बेलामा तपाईंलाई हरेक पटक पुष्टि गर्न लगाइने छ।</translation>
 <translation id="1008557486741366299">अहिले होइन</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{तपाईंका डेटाको सुरक्षार्थ तपाईंले २ महिनादेखि नखोलेको साइटलाई दिइएका अनुमति रद्द गरिएका छन्}other{तपाईंका डेटाको सुरक्षार्थ तपाईंले २ महिनादेखि नखोलेका साइटहरूलाई दिइएका अनुमति रद्द गरिएका छन्}}</translation>
 <translation id="1009663062402466586">गेम कन्ट्रोलहरू अब उपलब्ध छन्</translation>
@@ -224,6 +225,7 @@
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> मा</translation>
 <translation id="1183237619868651138">स्थानीय क्यासमा <ph name="EXTERNAL_CRX_FILE" /> स्थापना गर्न सक्दैन।</translation>
 <translation id="1185924365081634987">यो नेटवर्क त्रुटिलाई सच्याउनको लागि तपाईंले <ph name="GUEST_SIGNIN_LINK_START" />अतिथीको रूपमा ब्राउज<ph name="GUEST_SIGNIN_LINK_END" /> गर्ने प्रयास पनि गर्न सक्नुहुन्छ।</translation>
+<translation id="1187692277738768150">तपाईंले यो पासवर्ड प्रयोग गर्दा वा सेभ गर्दा:</translation>
 <translation id="1187722533808055681">निष्क्रिय वेक अपहरू</translation>
 <translation id="1188807932851744811">लग अपलोड गरिएन।</translation>
 <translation id="1190086046506744802">लाइनहरूका बिचमा अत्यन्तै धेरै स्पेस छ</translation>
@@ -239,6 +241,7 @@
 <translation id="1195447618553298278">अज्ञात त्रुटि:</translation>
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
+<translation id="1197185198920566650">यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
 <translation id="1197199342062592414">सुरु गरुम</translation>
 <translation id="11978075283960463">एपमा भण्डारण गरिएको डेटा: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">डिएक्टिभेट गर्नुहोस्</translation>
@@ -1463,6 +1466,7 @@
 <translation id="2241053333139545397">पढ्नुहोस् र वेबसाइटहरूमा डाटा परिवर्तन गर्नुहोस्</translation>
 <translation id="2241634353105152135">एकपटक मात्र</translation>
 <translation id="2242687258748107519">फाइल जानकारी</translation>
+<translation id="2243452222143104807">निष्क्रिय ट्याब</translation>
 <translation id="2245603955208828424">एक एक अक्षर गरेर यताउता सार्न एरो कि प्रयोग गर्नुहोस्</translation>
 <translation id="2246129643805925002">तपाईंलाई नवीनतम सुविधा उपलब्ध गराउन र सुरक्षासम्बन्धी सुधारहरू गर्नका लागि तपाईंको <ph name="DEVICE_TYPE" /> ब्याकग्राउन्डमा स्वतः अपडेट हुन्छ। तपाईं सेटिङमा गई अपडेटसम्बन्धी प्राथमिकताहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="2246549592927364792">Google बाट छविका विवरणहरू प्राप्त गर्ने हो?</translation>
@@ -1490,6 +1494,7 @@
 <translation id="2263679799334060788">हामी तपाईंको प्रतिक्रियाको सहायताले Google Cast को गुणस्तर सुधार्न सक्छौँ र तपाईंको प्रतिक्रियाको सह्राना गर्छौँ। Cast सम्बन्धी समस्याहरू निवारण गर्न मद्दत प्राप्त गर्नका लागि कृपया <ph name="BEGIN_LINK" />मद्दत केन्द्र<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="2266957463645820432">USB मार्फत IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ब्लुतुथ असक्षम गरियो</translation>
+<translation id="2269895253281481171">यो डिभाइस कहिल्यै जोखिममा परेमा तपाईंलाई सूचित गरिने छ</translation>
 <translation id="2270450558902169558">कुनै पनि यन्त्रमार्फत डोमेन <ph name="DOMAIN" /> मा डेटा सेयर गर्नुहोस्</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />तपाईंले यो OS इन्स्टल गर्नुभयो भने <ph name="BEGIN_BOLD" />तपाईंको हार्ड ड्राइभमा भएका सबै डेटा मेटाइने छन्<ph name="END_BOLD" />। यो OS इन्स्टल गर्नुअघि आफ्नो डेटा ब्याकअप गर्न नभुल्नुहोस्।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />इन्स्टल गर्ने प्रक्रिया थालिसकेपछि उक्त प्रक्रिया रद्द गर्न मिल्दैन।<ph name="END_PARAGRAPH2" /></translation>
@@ -1921,6 +1926,7 @@
 <translation id="2616008379779647117">क्याप्सनको भाषा</translation>
 <translation id="2616366145935564096">पढ्नुहोस् र आफ्नो डेटा <ph name="WEBSITE_1" /> मा परिवर्तन गर्नुहोस्</translation>
 <translation id="2618797463720777311">नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षित रूपमा डाउनलोड गर्न सकिएन।</translation>
 <translation id="2620245777360407679">हाल हटस्पटमा कनेक्ट भएका डिभाइसहरू</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -3821,6 +3827,7 @@
 <translation id="429234155571566255">हालसालै हेरिएका यी पाकविधिहरू</translation>
 <translation id="4295072614469448764">यो एप तपाईंको टर्मिनलमा उपलब्ध छ। तपाईंको लन्चरमा कुनै आइकन पनि हुन सक्छ।</translation>
 <translation id="4295979599050707005">तपाईंको खाता <ph name="USER_EMAIL" /> Chrome तथा Google Play का वेबसाइट, एप र विस्तारहरूमा प्रयोग गर्न सकिने कुरा पुष्टि गर्न कृपया फेरि साइन इन गर्नुहोस्। तपाईं यो खाता हटाउन पनि सक्नुहुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" /> ले इन्स्टल र स्ट्रिम गरेका एपहरू</translation>
 <translation id="4297219207642690536">पुनः सुरु गरी रिसेट गर्नुहोस्</translation>
 <translation id="4297813521149011456">डिस्प्ले रोटेसन</translation>
 <translation id="4299022904780065004">नयाँ &amp;इन्कोग्निटो विन्डो</translation>
@@ -3854,6 +3861,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> को स्थापना रद्द गर्दै...</translation>
 <translation id="4326146840124313313">Chrome को सबैभन्दा भरपर्दो सुरक्षा सुविधाले तपाईंलाई खतरनाक वेबसाइट, डाउनलोड तथा एक्स्टेन्सनहरूबाट थप सुरक्षित राख्छ</translation>
 <translation id="4326484226728068206">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएका <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> का वस्तुहरू <ph name="RELATIVE_TIME" /> हेरिए</translation>
+<translation id="4328507707463585900">यो ट्याबले <ph name="MEMORY_USAGE" /> प्रयोग गरिरहेको छ</translation>
 <translation id="4330191372652740264">बरफ जस्तो चिसो पानी</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> लाई कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="4332976768901252016">अभिभावकीय नियन्त्रणहरू सेट अप गर्नुहोस्</translation>
@@ -5457,6 +5465,7 @@
 <translation id="5780973441651030252">प्रक्रिया प्राथमिकता</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> का रूपमा सिंक गर्नुहोस्</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> लाई आदेशहरू पठाउनुहोस्‌</translation>
+<translation id="5782040878821624922">यो पासवर्ड सबै डिभाइसमा उपलब्ध छ</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5785583009707899920">Chrome को फाइलका उपयोगिताहरू</translation>
@@ -6154,6 +6163,7 @@
 <translation id="6384275966486438344">तपाईंको खोज सेटिङहरूलाई यसमा परिवर्तन गर्नुहोस्: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{नाम नभएको समूह - १ ट्याब}other{नाम नभएको समूह - # वटा ट्याब}}</translation>
 <translation id="6385149369087767061">इन्टरनेटमा कनेक्ट गरी फेरि प्रयास गर्नुहोस्</translation>
+<translation id="6385382178401976503">कार्ड: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">चेतावनी - विस्तृत लग गर्ने सुविधा अन गरिएका हुनाले तलका लगहरूमा URL वा अन्य संवेदनशील जानकारी समावेश हुन पनि सक्छ। कृपया यो जानकारीको समीक्षा गर्नुहोस् र तपाईंलाई सो जानकारी पेस गर्दा कुनै समस्या हुँदैन भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="6387674443318562538">ठाडो रूपमा विभाजन गर्नुहोस्</translation>
 <translation id="6388429472088318283">भाषाहरू खोज्नुहोस्</translation>
@@ -7399,6 +7409,7 @@
 <translation id="7475671414023905704">नेटस्केप हराएको पासवर्ड युआरएल</translation>
 <translation id="7476454130948140105">अद्यावधिक गर्न ब्याट्रीको स्तर अत्यन्तै कम छ (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> सम्बन्धी अनुमति र अन्य <ph name="COUNT" /> वटा अनुमति स्वतः ब्लक गरिएका छन्</translation>
+<translation id="7477599578899108080">मेमोरीको उच्च प्रयोग: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">यो पेजको लागि QR कोड सिर्जना गर्नुहोस्</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="7478069565037869084">अक्षरहरूका बिचमा धेरै स्पेस छ</translation>
@@ -8131,6 +8142,7 @@
 <translation id="8086610718778464681">Linux एप तथा फाइलहरू ब्याकअप गर्न सकिएन</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यो फाइल इन्क्रिप्ट गरिएको छ। यसका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}other{यीमध्ये केही फाइलहरू इन्क्रिप्ट गरिएका छन्। यिनका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}}</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
+<translation id="8089547136368562137">यो पासवर्ड Google को सर्वश्रेष्ठ प्रविधिहरूले सुरक्षित गरिन्छ</translation>
 <translation id="8090234456044969073">तपाइँको सबैभन्दा धेरै भ्रमण गरिएका वेबसाइटहरूको सूची पढ्नुहोस्</translation>
 <translation id="8090513782447872344">तपाईं पछि जुनसुकै बेला यहाँ आएर यो "गोपनीयतासम्बन्धी गाइड" फेरि हेर्न सक्नुहुन्छ</translation>
 <translation id="809312780580957751">यो डिभाइसमा Steam इन्स्टल गर्न मिल्दैन</translation>
@@ -8164,6 +8176,7 @@
 <translation id="8113476325385351118">यो साइटलाई MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्न नपाउने गरी ब्लक गरिराख्नुहोस्</translation>
 <translation id="8115139559594092084">तपाईंको Google Drive बाट</translation>
 <translation id="8116972784401310538">&amp;बुकमार्क व्यवस्थापक</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> ले तपाईंले कसरी साइन इन गर्नुभयो भन्ने कुरा याद गर्छ र सम्भव हुँदा तपाईंलाई स्वतः साइन इन गराउँछ। यो सुविधा अफ भएका बेलामा तपाईंलाई हरेक पटक पुष्टि गर्न लगाइने छ।</translation>
 <translation id="8118362518458010043">Chrome द्वारा असक्षम पारिएको। यो विस्तार असुरक्षित हुनसक्छ।</translation>
 <translation id="8118488170956489476">तपाईंको संगठनले तपाईंको <ph name="BEGIN_LINK" />ब्राउजरको व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">डिस्प्ले रिफ्रेस हुने दर</translation>
@@ -8916,6 +8929,7 @@
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
 <translation id="8773280816776735812">IBAN नम्बर देखाइयोस्</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
+<translation id="8774286683882091094">निष्क्रिय ट्याबहरूबाट भएको मेमोरीको बचत: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
@@ -9192,6 +9206,7 @@
 <translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
+<translation id="90181708067259747">म्याद सकिने मिति: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">स्थापना गर्ने कार्य सम्पन्न भयो</translation>
 <translation id="9019062154811256702">स्वतः भरण सेटिङहरू पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="9019894137004772119">लोकेसन सर्भिस प्रयोग गर्नुहोस्। लोकेसन सर्भिस प्रयोग गर्ने अनुमति भएका एप र सेवाहरूलाई तपाईंको डिभाइसको स्थानसम्बन्धी जानकारी प्रयोग गर्न दिनुहोस्। Google ले आवधिक रूपमा स्थानसम्बन्धी डेटा सङ्कलन गर्न र स्थानसम्बन्धी जानकारीको सटीकता र स्थानमा आधारित सेवाहरूमा सुधार ल्याउन व्यक्तिगत पहिचान नखुल्ने गरी उक्त डेटा प्रयोग गर्न सक्छ।</translation>

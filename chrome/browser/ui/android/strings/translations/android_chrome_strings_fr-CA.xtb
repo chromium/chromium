@@ -142,6 +142,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglet(s)</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1754404134430936718">Texte copié</translation>
+<translation id="1757620656501361327">Mise à jour du gestionnaire de mots de passe Google</translation>
 <translation id="1778457539567749232">Marquer comme non lu</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1791662854739702043">Module installé</translation>
@@ -753,6 +754,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="504456571576643789">Points à prendre en compte</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />D'autres formes d'activités<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
+<translation id="5062960805900435602">La mise à jour sur la fusion des mots de passe est fermée</translation>
 <translation id="5091199029769593641">Vous verrez bientôt des histoires de <ph name="SITE_NAME" /> lorsque vous ouvrez un nouvel onglet. Les sites que vous suivez sont enregistrés dans votre compte Google. Vous pouvez les gérer dans les paramètres de Découvertes.</translation>
 <translation id="5091249083535528968">Données d'utilisation étendues</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -802,6 +804,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5361107212971249203">texte</translation>
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
 <translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Mot de passe fort suggéré. Clavier masqué.</translation>
 <translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site.</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vérification...</translation>
@@ -1160,6 +1163,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7217781228893594884">Les onglets de navigation privée se verrouilleront lorsque vous quitterez Chrome</translation>
 <translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
+<translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
 <translation id="7242755609445462077">Mise en évidence stylisée <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Placez votre téléphone près de l'ordinateur</translation>

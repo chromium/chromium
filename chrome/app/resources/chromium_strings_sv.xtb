@@ -19,6 +19,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
 <translation id="1524282610922162960">Dela en flik i Chromium</translation>
 <translation id="1553461853655228091">Du behöver ge Chromium behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
+<translation id="1555506416658437797">redigera betalningsmetoder.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas}=1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Om du bara vill använda det här kontot en enda gång kan du använda <ph name="GUEST_LINK_BEGIN" />gästläget<ph name="GUEST_LINK_END" /> i webbläsaren Chromium. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -138,6 +139,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4019629340646866719">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Hjälp oss att förbättra Chromium genom att rapportera dina <ph name="BEGIN_LINK" />aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
+<translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chromium</translation>
 <translation id="421369550622382712">Upptäck fantastiska appar, spel, tillägg och teman för Chromium.</translation>

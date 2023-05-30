@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">Група ўкладак – Колькасць: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Адкрытыя ўкладкі</translation>
 <translation id="1754404134430936718">Тэкст скапіраваны</translation>
+<translation id="1757620656501361327">Паведамленне Менеджара пароляў Google</translation>
 <translation id="1778457539567749232">Пазначыць як непрачытанае</translation>
 <translation id="1779766957982586368">Закрыць акно</translation>
 <translation id="1791662854739702043">Усталявана</translation>
@@ -753,6 +754,7 @@
 <translation id="504456571576643789">Інфармацыя для разгляду</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Іншыя дзеянні<ph name="END_LINK1" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
 <translation id="506254248375231072">Няма ўкладак</translation>
+<translation id="5062960805900435602">Паведамленне пра аб'яднанне пароляў закрыта</translation>
 <translation id="5091199029769593641">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта <ph name="SITE_NAME" />. Сайты, на якія вы падпісаны, захоўваюцца ў вашым Уліковым запісе Google. Кіраваць імі можна ў наладах Рэкамендацый.</translation>
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
@@ -802,6 +804,7 @@
 <translation id="5361107212971249203">тэкст</translation>
 <translation id="5368227114232678694">Для прыватнага прагляду вэб-старонак на гэтай прыладзе выкарыстоўвайце рэжым інкогніта</translation>
 <translation id="5375577065097716013">Шукаць праз Аб'ектыў <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Прапанаваны надзейны пароль. Клавіятура схавана.</translation>
 <translation id="5401851137404501592">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам.</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
@@ -1160,6 +1163,7 @@
 <translation id="7217781228893594884">Пры закрыцці Chrome укладкі ў рэжыме інкогніта будуць блакіравацца</translation>
 <translation id="7222235798733126207">Абмежаваны абмен данымі паміж сайтамі</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Чакаецца 1 спампоўка}one{Чакаецца # спампоўка}few{Чакаецца # спампоўкі}many{Чакаецца # спамповак}other{Чакаецца # спампоўкі}}</translation>
+<translation id="72415438529550637">Прапанова пароля закрыта.</translation>
 <translation id="7242755609445462077">Стылізаванае вылучанае змесціва (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Праверце, ці ўключана на прыладзе "<ph name="TARGET_DEVICE_NAME" />" сінхранізацыя ў браўзеры Chrome</translation>
 <translation id="7252076891734325316">Размясціце тэлефон каля камп’ютара</translation>

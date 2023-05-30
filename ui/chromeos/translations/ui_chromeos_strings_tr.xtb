@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">Danca</translation>
 <translation id="8949925099261528566">Bağlı, internet yok</translation>
 <translation id="8965697826696209160">Yeterli alan yok.</translation>
+<translation id="8971742885766657349">Senkronize ediliyor - %<ph name="PERCENT" /></translation>
 <translation id="8997962250644902079">Çince (Geleneksel) Pinyin</translation>
 <translation id="8998871447376656508">Google Drive'ınızda yükleme işlemini tamamlayacak kadar yeterli boş alan yok.</translation>
 <translation id="9003940392834790328">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>

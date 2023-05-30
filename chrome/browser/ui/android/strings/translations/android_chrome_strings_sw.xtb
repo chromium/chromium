@@ -142,6 +142,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="1750259112639922169">Kikundi cha vichupo - vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1754404134430936718">Maandishi Yamenakiliwa</translation>
+<translation id="1757620656501361327">Sasisho la Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="1778457539567749232">Tia alama kuwa hujasoma</translation>
 <translation id="1779766957982586368">Funga dirisha</translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
@@ -754,6 +755,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="504456571576643789">Mambo ya kuzingatia</translation>
 <translation id="5054455334322721892">Huenda <ph name="BEGIN_LINK1" />aina nyingine za shughuli<ph name="END_LINK1" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="506254248375231072">Hakuna vichupo</translation>
+<translation id="5062960805900435602">Taarifa kuhusu kuunganisha nenosiri imefungwa</translation>
 <translation id="5091199029769593641">Hivi karibuni, utaona hadithi kutoka <ph name="SITE_NAME" /> unapofungua kichupo kipya. Tovuti unazofuatilia huhifadhiwa katika akaunti yako ya Google. Unaweza kuzidhibiti katika mipangilio ya Dokezo.</translation>
 <translation id="5091249083535528968">Data ya ziada ya matumizi</translation>
 <translation id="509429900233858213">Hitilafu fulani imetokea.</translation>
@@ -803,6 +805,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5361107212971249203">ujumbe</translation>
 <translation id="5368227114232678694">Ili uvinjari kwa faragha kwenye kifaa hiki, jaribu kutumia hali fiche</translation>
 <translation id="5375577065097716013">Tafuta picha ukitumia Lenzi ya Google <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Nenosiri thabiti limependekezwa. Kibodi imefichwa.</translation>
 <translation id="5401851137404501592">Ili uendelee, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> itashiriki jina, anwani ya barua pepe, pamoja na picha yako ya wasifu na tovuti hii.</translation>
 <translation id="5409881200985013443">Ungependa kutuma <ph name="ONE_TIME_CODE" /> kwenye <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Inathibitisha...</translation>
@@ -1161,6 +1164,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7217781228893594884">Vichupo fiche vitafungwa utakapoondoka kwenye Chrome</translation>
 <translation id="7222235798733126207">Ushiriki uliodhibitiwa kati ya tovuti</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Inasubiri kupakua faili 1}other{Inasubri kupakua faili #}}</translation>
+<translation id="72415438529550637">Pendekezo la nenosiri limefungwa.</translation>
 <translation id="7242755609445462077">Maandishi yaliyoangaziwa yenye mitindo <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Hakikisha kuwa umewasha kipengele cha usawazishaji katika <ph name="TARGET_DEVICE_NAME" /> kwenye Chrome</translation>
 <translation id="7252076891734325316">Weka simu yako karibu na kompyuta</translation>

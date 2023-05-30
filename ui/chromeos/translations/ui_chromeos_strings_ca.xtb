@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">Danès</translation>
 <translation id="8949925099261528566">Connectat, sense Internet</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
+<translation id="8971742885766657349">S'està sincronitzant - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Xinès tradicional (pinyin)</translation>
 <translation id="8998871447376656508">No hi ha prou espai lliure a Google Drive per completar la pujada.</translation>
 <translation id="9003940392834790328">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, gestionada per l'administrador, detalls</translation>

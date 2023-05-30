@@ -142,6 +142,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1750259112639922169">Grup de pestanyes: <ph name="TAB_COUNT" /> pestanyes</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
 <translation id="1754404134430936718">Text copiat</translation>
+<translation id="1757620656501361327">Actualització del gestor de contrasenyes de Google</translation>
 <translation id="1778457539567749232">Marca com a no llegit</translation>
 <translation id="1779766957982586368">Tanca la finestra</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
@@ -754,6 +755,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="504456571576643789">Aspectes que cal tenir en compte</translation>
 <translation id="5054455334322721892">És possible que es desin <ph name="BEGIN_LINK1" />altres tipus d'activitats<ph name="END_LINK1" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="506254248375231072">No hi ha cap pestanya</translation>
+<translation id="5062960805900435602">L'actualització sobre la combinació de contrasenyes s'ha tancat</translation>
 <translation id="5091199029769593641">Aviat, quan obris una pestanya nova, veuràs històries de: <ph name="SITE_NAME" />. Els llocs web que segueixes es desen al teu Compte de Google. Pots gestionar-los a la configuració de Discover.</translation>
 <translation id="5091249083535528968">Dades d'ús ampliades</translation>
 <translation id="509429900233858213">S'ha produït un error.</translation>
@@ -803,6 +805,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5361107212971249203">el text</translation>
 <translation id="5368227114232678694">Per navegar de manera privada en aquest dispositiu, prova el mode d'incògnit</translation>
 <translation id="5375577065097716013">Cerca la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">S'ha suggerit una contrasenya segura. El teclat està amagat.</translation>
 <translation id="5401851137404501592">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà el teu nom, la teva adreça electrònica i la teva foto de perfil amb aquest lloc web.</translation>
 <translation id="5409881200985013443">Vols enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">S'està verificant...</translation>
@@ -1161,6 +1164,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7217781228893594884">Les pestanyes d'incògnit es bloquejaran quan surtis de Chrome</translation>
 <translation id="7222235798733126207">Compartició limitada entre llocs web</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 baixada pendent}other{# baixades pendents}}</translation>
+<translation id="72415438529550637">El suggeriment de contrasenya s'ha tancat.</translation>
 <translation id="7242755609445462077">Marca estilitzada el dia <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Comprova que <ph name="TARGET_DEVICE_NAME" /> tingui la sincronització activada a Chrome</translation>
 <translation id="7252076891734325316">Acosta el telèfon a l'ordinador</translation>

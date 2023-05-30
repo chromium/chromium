@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">Група картички - <ph name="TAB_COUNT" /> картички</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
 <translation id="1754404134430936718">Текстот е копиран</translation>
+<translation id="1757620656501361327">Известување за Google Password Manager</translation>
 <translation id="1778457539567749232">Обележи како непрочитано</translation>
 <translation id="1779766957982586368">Затвори го прозорецот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">Нешта што треба да се земат предвид</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="506254248375231072">Нема картички</translation>
+<translation id="5062960805900435602">Известувањето за спојување лозинки е затворено</translation>
 <translation id="5091199029769593641">Наскоро ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Сајтовите што ги следите се зачувуваат во сметката на Google. Може да управувате со нив во поставките за Discover.</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">текст</translation>
 <translation id="5368227114232678694">За приватно пребарување на уредов, испробајте го „Инкогнито“</translation>
 <translation id="5375577065097716013">Пребарај слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Предложена е силна лозинка. Тастатурата е скриена.</translation>
 <translation id="5401851137404501592">За да продолжите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ќе ги сподели вашето име, адресата на е-пошта и профилната слика со сајтов.</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">Картичките „Инкогнито“ ќе се заклучат кога ќе излезете од Chrome</translation>
 <translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
+<translation id="72415438529550637">Предлогот за лозинка е затворен.</translation>
 <translation id="7242755609445462077">Стилизирано нагласување <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Проверете дали синхронизацијата во Chrome е вклучена за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Ставете го телефонот близу до компјутерот</translation>

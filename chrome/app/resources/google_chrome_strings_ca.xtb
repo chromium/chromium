@@ -30,6 +30,7 @@
  amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
+<translation id="1555506416658437797">editar les formes de pagament.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chrome. Es crearà un perfil de Chrome nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome està utilitzant la càmera.</translation>
 <translation id="1587325591171447154">Chrome ha bloquejat <ph name="FILE_NAME" /> perquè és perillós.</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">Chrome no pot comprovar les teves contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="235650106824528204">L'administrador del perfil de treball pot suprimir qualsevol dada de Chrome que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="2399868464369312507">Google Chrome està provant d'editar les formes de pagament.</translation>
 <translation id="2401189691232800402">Sistema Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome vol exportar les teves contrasenyes. Escriu la contrasenya de Windows per permetre-ho.</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>

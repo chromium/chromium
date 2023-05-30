@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4040350669425716613">ကောလိပ်နှင့် တက္ကသိုလ်များ</translation>
 <translation id="4047351652147966654">၁၈ x ၂၄ လက်မ</translation>
+<translation id="404831776305217138">ID “<ph name="EXTENSION_ID" />” ပါသော နောက်ဆက်တွဲအတွက် အပ်ဒိတ် URL သည် မမှန်ပါ (သို့) ပံ့ပိုးမထားသော စနစ်ကို သုံးထားသည်။ ပံ့ပိုးထားသော စနစ်များ- <ph name="HTTP_SCHEME" />၊ <ph name="HTTPS_SCHEME" /> နှင့် <ph name="FILE_SCHEME" />။</translation>
 <translation id="4050392779074832022">၎င်းကို Google ထုတ်ကုန်များတွင် သုံးနိုင်မည်</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">ဒရာမာရုပ်ရှင်များ</translation>
 <translation id="6573200754375280815">ညာဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6576181918031900030">စတင်ကာစ်လုပ်ရန်</translation>
+<translation id="6578434528542148658">နောက်ဆက်တွဲ ID မမှန်ပါ။</translation>
 <translation id="657902945730878902">ပုံဆွဲခြင်းနှင့် ဆေးခြယ်ခြင်း</translation>
 <translation id="6579630537141957243">MIDI ကိရိယာကို ချိတ်ဆက်မလား။</translation>
 <translation id="6579990219486187401">ပန်းရောင်ဖျော့</translation>

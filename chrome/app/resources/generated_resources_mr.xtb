@@ -304,6 +304,7 @@
 <translation id="1243436884219965846">पासवर्डचे परीक्षण करा</translation>
 <translation id="1244265436519979884">Linux रिस्टोअर सध्या प्रगतीपथावर आहे</translation>
 <translation id="1244303850296295656">एक्स्टेंशन एरर</translation>
+<translation id="1244917379075403655">“सेटिंग्ज” वर क्लिक करा</translation>
 <translation id="1245628370644070008">स्थानिक डेटा रिकव्हरी</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इंस्टॉल करता आली नाही: इमेज URL ने <ph name="HTTP_ERROR" /> हा एरर कोड दाखवला. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1247372569136754018">मायक्रोफोन (अंतर्गत)</translation>
@@ -1451,6 +1452,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;एक ओळ दाखवलेली नाही&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ओळी दाखवलेल्या नाहीत&gt;}}</translation>
 <translation id="2218019600945559112">माउस आणि टचपॅड</translation>
 <translation id="2218515861914035131">साधा मजकूर म्हणून पेस्ट करा</translation>
+<translation id="2219007152108311874">भेट देताना प्रत्येक वेळी विचारा</translation>
 <translation id="2220409419896228519">तुमच्या आवडत्या Google Apps वर बुकमार्क जोडा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
@@ -1938,6 +1940,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2611776654555141051">आयत टूल</translation>
 <translation id="2612676031748830579">कार्ड नंबर</translation>
+<translation id="2612685984116544489">जास्त प्रमाणात मेमरीची बचत</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> वर कोणत्याही एक्स्टेंशनना अनुमती देऊ नका</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> संपादित करता येईल</translation>
 <translation id="2616008379779647117">कॅप्‍शनची भाषा</translation>
@@ -2474,6 +2477,7 @@
 <translation id="3060952009917586498">डिव्हाइसची भाषा बदला. सध्याची भाषा <ph name="LANGUAGE" /> आहे.</translation>
 <translation id="3060987956645097882">आम्हाला तुमच्या फोनसह कनेक्शन साधता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3061302636956643119">प्रक्रिया करण्यासाठी मजकूर Google कडे पाठवला जाईल.</translation>
+<translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="3064871050034234884">साइट साउंड प्ले करू शकतात</translation>
 <translation id="3065041951436100775">टॅबने नष्ट केलेला अभिप्राय</translation>
 <translation id="3065522099314259755">कीबोर्ड रिपीट लेटन्सी</translation>
@@ -2635,6 +2639,7 @@
 <translation id="3233271424239923319">Linux अ‍ॅप्स आणि फायलींचा बॅकअप घ्या</translation>
 <translation id="3234251228180563751">वापरकर्ता नावामध्ये १००० पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
+<translation id="3236322872705622658">खूप जास्त प्रमाणात मेमरीची बचत</translation>
 <translation id="3238192140106069382">कनेक्ट करत आहे आणि पडताळणी करत आहे</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> साठी वेळ मर्यादा काढली</translation>
 <translation id="3241638166094654466">प्रत्येक रेषेतील सेल:</translation>
@@ -2866,6 +2871,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ला <ph name="FILENAME" /> पाहता येईल</translation>
 <translation id="3445047461171030979">Google Assistant ची झटपट उत्तरे</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
+<translation id="3445315354416458913">मध्यम प्रमाणात मेमरीची बचत</translation>
 <translation id="344537926140058498">या फाइलमध्ये संवेदनशील किंवा धोकादायक आशय असल्याने, तुमच्या संस्थेने ती ब्लॉक केली. तिच्या मालकाला ती दुरुस्त करण्यास सांगा.</translation>
 <translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
 <translation id="3446274660183028131">Windows इंस्टॉल करण्यासाठी कृपया Parallels Desktop लाँच करा.</translation>
@@ -2940,6 +2946,7 @@
 <translation id="3496995426334945408">व्हिडिओ गेम किंवा वेब फॉर्म यांसारखी सुसंवादी वैशिष्ट्ये दाखवण्यासाठी साइट सामान्यपणे JavaScript वापरतात</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> चे USB डिव्हाइस (उत्पादन <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">डूडल शेअर करा</translation>
+<translation id="3497915391670770295">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3500417806337761827">शेअर माउंट करताना एरर आली. खूप जास्त SMB शेअर आधीच माउंट केले गेले आहेत.</translation>
 <translation id="3503995387997205657">तुम्ही तुमची आधीची अ‍ॅप्स रिस्टोअर करू शकता</translation>
 <translation id="3505100368357440862">खरेदीशी संबंधित शिफारशी</translation>
@@ -3026,6 +3033,7 @@
 <translation id="3587438013689771191">याबद्दल अधिक जाणून घ्या: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">सर्व</translation>
 <translation id="3588790464166520201">पेमेंट हँडलर इंस्टॉल करण्याची अनुमती आहे</translation>
+<translation id="358966288223211204">खूप जास्त प्रमाणात मेमरीची बचत</translation>
 <translation id="3589766037099229847">असुरक्षित आशय ब्लॉक केला</translation>
 <translation id="3590194807845837023">प्रोफाईल अनलॉक करा आणि रीलाँच करा</translation>
 <translation id="3590295622232282437">व्यवस्थापित केलेल्या सेशनमध्ये एंटर करत आहे.</translation>
@@ -3506,6 +3514,7 @@
 <translation id="397703832102027365">पूर्ण करीत आहे...</translation>
 <translation id="3977145907578671392">काही साइटवरील वैशिष्ट्ये कदाचित गुप्त मोडमध्ये काम करणार नाहीत</translation>
 <translation id="3977886311744775419">या नेटवर्क प्रकारावर आपोआप अपडेट डाउनलोड होत नाहीत पण तुम्ही मॅन्युअली अपडेट पाहू शकता.</translation>
+<translation id="3978325380690188371">ChromeVox सुरू असते, तेव्हा स्टिकी की उपलब्ध नसते</translation>
 <translation id="3979395879372752341">नवीन एक्स्टेंशन जोडले (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> सुरू करा</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> साठी <ph name="DEVICE_NAME" /> म्हणून जवळपासच्या डिव्हाइसना दृश्यमान...</translation>
@@ -3892,6 +3901,7 @@
 <translation id="434198521554309404">जलद. सुरक्षित. सोपे.</translation>
 <translation id="4343250402091037179">विशिष्ट साइट किंवा Chrome चा भाग शोधण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा.</translation>
 <translation id="434404122609091467">तुमच्या सध्याच्या सेवा पुरवठादारासोबत</translation>
+<translation id="4345457680916430965"><ph name="APP" /> मध्ये उघडा</translation>
 <translation id="4345587454538109430">कॉंफिगर करा...</translation>
 <translation id="4345732373643853732">सर्व्हरला वापर कर्ता नाव माहीत नाही</translation>
 <translation id="4348426576195894795">हे खाते हटवल्यामुळे, या खात्यासह साइन इन केलेली कोणतीही Chrome प्रोफाइलदेखील हटवली जातील</translation>
@@ -4084,6 +4094,7 @@
 <translation id="450552327874992444">शब्द आधीच जोडला आहे</translation>
 <translation id="4507128560633489176">डेटा साफ केला.</translation>
 <translation id="4507373251891673233">तुम्ही <ph name="HOST" /> वरील सर्व एक्स्टेंशन ब्लॉक केली आहेत</translation>
+<translation id="4507401683427517298">“शॉर्टकट जोडा” वर क्लिक करा</translation>
 <translation id="4508032221004253235">हे स्थान परवानगी असलेल्या अ‍ॅप्स आणि वेबसाइटना व ChromeOS ला तुमच्या Wi-Fi किंवा मोबाइल नेटवर्कद्वारे निर्धारित केलेले स्थान वापरण्याची अनुमती देते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">प्रवेशयोग्यता सेटिंग्ज</translation>
 <translation id="4508765956121923607">स्त्रो&amp;त पहा</translation>
@@ -4532,6 +4543,7 @@
 <translation id="4893336867552636863">हे या डिव्‍हाइस वरून तुमचा ब्राउझिंग डेटा कायमचा हटवेल.</translation>
 <translation id="4893454800196085005">चांगली आहे - डीव्हीडी</translation>
 <translation id="4893522937062257019">लॉक स्क्रीनवर</translation>
+<translation id="4895799941222633551">शॉर्टकट तयार करा...</translation>
 <translation id="4898011734382862273">सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" प्रमाणन अधिकृतता प्रस्तुत करते</translation>
 <translation id="4899052647152077033">रंग इन्व्हर्ट करा</translation>
 <translation id="4899696330053002588">यामध्ये जाहिराती आहेत</translation>
@@ -4628,6 +4640,7 @@
 <translation id="4992458225095111526">Powerwash ची पुष्टी करा</translation>
 <translation id="4992473555164495036">तुमच्या ॲडमिनिस्ट्रेटरने उपलब्ध इनपुट पद्धती मर्यादित केल्या आहेत.</translation>
 <translation id="4994426888044765950">तुम्ही की धरून ठेवल्यास, कीचा वर्ण रिपीट होईल</translation>
+<translation id="4994719343483700883">मध्यम प्रमाणात मेमरीची बचत</translation>
 <translation id="4994754230098574403">सेट अप करीत आहे</translation>
 <translation id="4995293419989417004">जाहिरातीच्या विषयांबद्दल अधिक जाणून घ्या</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{No <ph name="VM_TYPE" /> VMs found}=1{एक <ph name="VM_TYPE" /> VM आढळला: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> VM आढळले: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4635,6 +4648,7 @@
 <translation id="4998430619171209993">सुरू</translation>
 <translation id="4999804342505941663">व्यत्यय आणू नका सुरू करा</translation>
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
+<translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5006118752738286774">दोन वर्षांपूर्वी</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
@@ -4806,6 +4820,7 @@
 <translation id="5156638757840305347">तो दिसतो किंवा हलतो तेव्हा कर्सर हायलाइट केला जातो</translation>
 <translation id="5157250307065481244">साइटचे तपशील पहा</translation>
 <translation id="5157635116769074044">स्टार्ट स्क्रीनवर हे पेज पिन करा...</translation>
+<translation id="5157701529792771331">कॅप्शन आपोआप भाषांतरित करते</translation>
 <translation id="5158206172605340248">अ‍ॅक्सेंटच्या खुणांचा मेनू डिसमिस केला आहे.</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
 <translation id="5159419673777902220">तुमच्या पालकाने एक्स्टेंशन परवानग्या बंद केल्या आहेत</translation>
@@ -5026,6 +5041,7 @@
 <translation id="5359910752122114278">एक परिणाम</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> टॅब</translation>
 <translation id="5360150013186312835">टूलबारमध्ये दर्शवा</translation>
+<translation id="5362064243740598112">कमी प्रमाणात मेमरीची बचत</translation>
 <translation id="5362741141255528695">खासगी की फाइल निवडा.</translation>
 <translation id="5363109466694494651">Powerwash करा आणि परत करा</translation>
 <translation id="5365881113273618889">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा राइट अ‍ॅक्सेस द्यायचा आहे का?</translation>
@@ -5090,6 +5106,7 @@
 <translation id="5420438158931847627">मजकूर आणि इमेजचे शार्पनेस निर्धारित करते</translation>
 <translation id="5422781158178868512">सॉरी, तुमचे बाह्य स्टोरेज डिव्हाइस ओळखता आले नाही.</translation>
 <translation id="5423505005476604112">Crostini</translation>
+<translation id="5423753908060469325">शॉर्टकट तयार करा...</translation>
 <translation id="5423829801105537712">साधारण स्पेल चेक</translation>
 <translation id="5425042808445046667">डाउनलोड करायला सुरुवात करा</translation>
 <translation id="5425863515030416387">डिव्हाइसेसवर स्वयंचलितपणे साइन इन करा</translation>
@@ -5526,6 +5543,7 @@
 <translation id="5810809306422959727">हे खाते पालक नियंत्रणांसाठी पात्र नाही</translation>
 <translation id="5811614940486072060">ही फाइल सामान्यतः डाउनलोड केली जात नाही आणि ती धोकादायक असू शकते</translation>
 <translation id="5812674658566766066">सर्व विस्‍तृत करा</translation>
+<translation id="5814764845837381214">कमी प्रमाणात मेमरीची बचत</translation>
 <translation id="5815645614496570556">X.400 पत्ता</translation>
 <translation id="5816434091619127343">विनंती केलेले प्रिंटर बदल प्रिंटरला वापरता न येण्याजोगा बनवतील.</translation>
 <translation id="581659025233126501">सिंक सुरू करा</translation>
@@ -5861,6 +5879,7 @@
 <translation id="6086846494333236931">तुमच्या ॲडमिनिस्ट्रेटरद्वारे इंस्टॉल केले</translation>
 <translation id="6087746524533454243">ब्राउझरच्या पेजविषयी माहिती शोधत आहात का? भेट द्या</translation>
 <translation id="6087960857463881712">छान चेहरा</translation>
+<translation id="6088475950266477163">सेटिंग्ज</translation>
 <translation id="608912389580139775">हे पेज तुमच्या वाचन सूचीमध्ये जोडण्यासाठी, बुकमार्क आयकनवर क्लिक करा</translation>
 <translation id="6090760257419195752">डिसमिस केलेल्या चेतावण्या</translation>
 <translation id="6091761513005122595">शेअर यशस्वीरीत्‍‍‍‍या माउंट केले आहे.</translation>
@@ -6238,6 +6257,7 @@
 <translation id="6434104957329207050">पॉइंट स्कॅन करण्याची गती</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6434325376267409267">तुम्ही <ph name="APP_NAME" /> वापरण्यापूर्वी तुमचे डिव्हाइस अपडेट केले जाणे आवश्यक आहे.</translation>
+<translation id="6435339218366409950">कॅप्शन भाषांतरित करायची आहेत ती भाषा निवडा</translation>
 <translation id="6436164536244065364">वेब स्टोअर मध्‍ये पहा</translation>
 <translation id="6436610005579237680">तुमच्यासाठी खास तयार केलेले प्रतिसाद मिळवण्यासाठी, तुम्ही प्रश्न विचारता तेव्हा Google Assistant ला तुमच्या स्क्रीनवर काय आहे याचा स्क्रीनशॉट अ‍ॅक्सेस करू द्या. Assistant हे प्ले होणाऱ्या गाण्यांबद्दलची किंवा व्हिडिओबद्दलची माहितीदेखील वापरू शकते.</translation>
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" हे एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केले आहे</translation>
@@ -7056,6 +7076,7 @@
 <translation id="7141105143012495934">तुमचे खाते तपशील प्राप्त करणे शक्य झाले नसल्याने साइन-इन अयशस्वी झाले. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
 <translation id="7141844554192012199">तपासणी</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
+<translation id="7144856456372460176"><ph name="APP" /> इंस्टॉल करा...</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7148426638542880639">साइट या कदाचित तुमच्या अपेक्षेनुसार काम करणार नाहीत. तुम्ही भेट देता त्या साइटबद्दलची माहिती तुमच्या डिव्हाइसवर तुम्हाला ठेवायची नसल्यास, हा पर्याय निवडा.</translation>
 <translation id="7149839598364933473">हे डिव्हाइस <ph name="DEVICE_OS" /> डिव्हाइसमध्ये रूपांतरित करा.</translation>
@@ -7351,6 +7372,7 @@
 <translation id="7411614333737930931">कृपया तुमचे डिव्हाइस रीस्टार्ट करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7412226954991670867">GPU मेमरी</translation>
+<translation id="7412494426921990001">Chrome मेनूवर क्लिक करा</translation>
 <translation id="7414464185801331860">१८x</translation>
 <translation id="7415454883318062233">सेटअप पूर्ण झाले</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> चे पुनरावलोकन करा</translation>
@@ -7439,6 +7461,7 @@
 <translation id="7481358317100446445">तयार</translation>
 <translation id="748138892655239008">सर्टिफिकेट मूळ प्रतिबंध</translation>
 <translation id="7483145199632798061">Chrome Refresh 2023</translation>
+<translation id="748385830131645364">जास्त प्रमाणात मेमरीची बचत</translation>
 <translation id="7484645889979462775">या साइटसाठी कधीही नाही</translation>
 <translation id="7487141338393529395">वर्धित केलेले स्पेल चेक सुरू करा</translation>
 <translation id="7487969577036436319">कोणतेही घटक इंस्टॉल केलेले नाहीत</translation>
@@ -7863,6 +7886,7 @@
 <translation id="7842062217214609161">शॉर्टकट नाही</translation>
 <translation id="7842692330619197998">तुम्हाला नवीन खाते तयार करण्याची गरज असल्यास g.co/ChromeEnterpriseAccount ला भेट द्या.</translation>
 <translation id="784273751836026224">Linux अनइंस्टॉल करा</translation>
+<translation id="784475655832336580">ChromeVox सुरू असते, तेव्हा कीबोर्ड फोकस वापरून आयटम हायलाइट करणे उपलब्ध नसते</translation>
 <translation id="7844992432319478437">फरक अपडेट करत आहे</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> वर स्विच करण्यासाठी Ctrl + Alt + S प्रेस करा</translation>
@@ -8717,6 +8741,7 @@
 <translation id="8581809080475256101">पुढे जाण्‍यासाठी प्रेस करा, इतिहास पाहण्‍यासाठी काँटेक्स्ट मेनूवर जा</translation>
 <translation id="8584280235376696778">नवीन टॅबमध्ये व्हिडिओ &amp;उघडा</translation>
 <translation id="8584427708066927472">या डिव्हाइसवरून पासवर्ड हटवला गेला</translation>
+<translation id="858451212965845553">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> या वापर पेजवर <ph name="USAGE" /> असा वापर असलेली HID डिव्हाइस</translation>
 <translation id="8585480574870650651">Crostini काढून टाका</translation>
 <translation id="8585841788766257444">खाली सूचीबद्ध केलेल्या साइट डीफॉल्टऐवजी कस्टम सेटिंग्ज फॉलो करतात</translation>

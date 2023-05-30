@@ -142,6 +142,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1750259112639922169">Gruppo di schede - <ph name="TAB_COUNT" /> schede</translation>
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1754404134430936718">Testo copiato</translation>
+<translation id="1757620656501361327">Aggiornamento di Gestore delle password di Google</translation>
 <translation id="1778457539567749232">Segna come da leggere</translation>
 <translation id="1779766957982586368">Chiudi finestra</translation>
 <translation id="1791662854739702043">Installato</translation>
@@ -754,6 +755,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="504456571576643789">Aspetti da considerare</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Altri tipi di attività<ph name="END_LINK1" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="506254248375231072">Nessuna scheda</translation>
+<translation id="5062960805900435602">Aggiornamento sull'unione delle password chiuso</translation>
 <translation id="5091199029769593641">A breve vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
 <translation id="5091249083535528968">Dati completi sull'utilizzo</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
@@ -803,6 +805,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5361107212971249203">testo</translation>
 <translation id="5368227114232678694">Per navigare in privato su questo dispositivo, prova la modalità in incognito</translation>
 <translation id="5375577065097716013">Cerca immagine con Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">È stata suggerita una password efficace. Tastiera nascosta.</translation>
 <translation id="5401851137404501592">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito.</translation>
 <translation id="5409881200985013443">Vuoi inviare <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifica in corso…</translation>
@@ -1161,6 +1164,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7217781228893594884">Le schede di navigazione in incognito verranno bloccate quando uscirai da Chrome</translation>
 <translation id="7222235798733126207">Condivisione tra siti limitata</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
+<translation id="72415438529550637">Il suggerimento per la password è chiuso.</translation>
 <translation id="7242755609445462077">Evidenziazione stilizzata: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assicurati che in Chrome sia attiva la sincronizzazione di <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Avvicina il telefono al computer</translation>

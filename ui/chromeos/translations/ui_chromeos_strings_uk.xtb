@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">Данська</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8965697826696209160">Недостатньо місця.</translation>
+<translation id="8971742885766657349">Синхронізація – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Китайська (традиційна), піньїнь</translation>
 <translation id="8998871447376656508">Не вдалося завершити завантаження. На Google Диску недостатньо вільного місця.</translation>
 <translation id="9003940392834790328">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>

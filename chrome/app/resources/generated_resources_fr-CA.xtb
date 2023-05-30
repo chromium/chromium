@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Cette extension peut lire et modifier vos données sur des sites. Vous pouvez contrôler à quels sites l'extension peut accéder.</translation>
 <translation id="1007057452468855774">Activer Google Play Store</translation>
 <translation id="1008186147501209563">Exporter les favoris</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="1008557486741366299">Pas maintenant</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{Afin de protéger vos données, les autorisations ont été retirées pour un site que vous n'avez pas visité depuis deux mois}one{Afin de protéger vos données, les autorisations ont été retirées pour ce site que vous n'avez pas visité depuis deux mois}other{Afin de protéger vos données, les autorisations ont été retirées pour ces sites que vous n'avez pas visités depuis deux mois}}</translation>
 <translation id="1009663062402466586">Commandes de jeu maintenant accessibles</translation>
@@ -226,6 +227,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1181366777303791449">sur <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Impossible d'installer <ph name="EXTERNAL_CRX_FILE" /> dans le cache local.</translation>
 <translation id="1185924365081634987">Vous pouvez également essayer de <ph name="GUEST_SIGNIN_LINK_START" />naviguer en tant qu'invité<ph name="GUEST_SIGNIN_LINK_END" /> pour corriger cette erreur réseau.</translation>
+<translation id="1187692277738768150">Lorsque vous utilisez et enregistrez ce mot de passe :</translation>
 <translation id="1187722533808055681">Sorties de veille</translation>
 <translation id="1188807932851744811">Le journal n'a pas été téléversé.</translation>
 <translation id="1190086046506744802">Très grand interligne</translation>
@@ -242,6 +244,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1195447618553298278">Erreur inconnue.</translation>
 <translation id="1195558154361252544">Les notifications sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1197185198920566650">Il sera enregistré dans le <ph name="GOOGLE_PASSWORD_MANAGER" /> pour <ph name="EMAIL" />.</translation>
 <translation id="1197199342062592414">C'est parti</translation>
 <translation id="11978075283960463">Données stockées dans l'application : <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Désactiver</translation>
@@ -1464,6 +1467,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2241053333139545397">Accéder à vos données sur un certain nombre de sites Web et les modifier</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2242687258748107519">Information sur le fichier</translation>
+<translation id="2243452222143104807">Onglet inactif</translation>
 <translation id="2245603955208828424">Utilisez les touches fléchées pour parcourir les éléments lettre par lettre</translation>
 <translation id="2246129643805925002">Votre <ph name="DEVICE_TYPE" /> se met automatiquement à jour en arrière-plan pour vous offrir les dernières fonctionnalités et améliorations de sécurité. Vous pouvez examiner vos préférences de mise à jour dans les paramètres.</translation>
 <translation id="2246549592927364792">Télécharger les descriptions d'image de Google?</translation>
@@ -1491,6 +1495,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2263679799334060788">Nous vous remercions de vos commentaires, qui vont nous aider à améliorer la technologie Google Cast. Pour obtenir de l'aide avec la résolution de problèmes liés à la diffusion, veuillez vous reporter au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2268130516524549846">La connectivité Bluetooth est désactivée</translation>
+<translation id="2269895253281481171">Vous serez averti si jamais il est à risque</translation>
 <translation id="2270450558902169558">Échanger des données avec n'importe quel appareil du domaine <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />L'installation <ph name="BEGIN_BOLD" />effacera l'ensemble des données présentes sur votre disque dur<ph name="END_BOLD" />. Assurez-vous que vos données sont sauvegardées.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Une fois que l'installation a commencé, elle ne peut pas être annulée.<ph name="END_PARAGRAPH2" /></translation>
@@ -1922,6 +1927,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2616008379779647117">Langue des sous-titres</translation>
 <translation id="2616366145935564096">Accéder à vos données sur <ph name="WEBSITE_1" /> et les modifier</translation>
 <translation id="2618797463720777311">Configurer le partage à proximité</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire.</translation>
 <translation id="2620245777360407679">Appareils actuellement connectés au point d'accès sans fil</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -3811,6 +3817,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="429234155571566255">ces recettes récemment consultées</translation>
 <translation id="4295072614469448764">L'application est disponible dans votre terminal. Une icône peut également être disponible dans votre lanceur d'applications.</translation>
 <translation id="4295979599050707005">Veuillez vous connecter à nouveau pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et dans Google Play. Vous pouvez aussi supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304">Applications installées et diffusées depuis <ph name="APP_NAME" /></translation>
 <translation id="4297219207642690536">Redémarrer et réinitialiser</translation>
 <translation id="4297813521149011456">Orientation de l'écran</translation>
 <translation id="4299022904780065004">Nouvelle &amp;fenêtre de navigation privée</translation>
@@ -3844,6 +3851,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4325237902968425115">Désinstallation de l'application <ph name="LINUX_APP_NAME" /> en cours…</translation>
 <translation id="4326146840124313313">La sécurité la plus puissante de Chrome en fait plus pour vous protéger contre les sites Web, les téléchargements et les extensions dangereux</translation>
 <translation id="4326484226728068206">Articles dans votre panier <ph name="DISCOUNT_TEXT" /> de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, vus <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Cet onglet utilise <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Eau glacée</translation>
 <translation id="4330387663455830245">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configurer les contrôles parentaux</translation>
@@ -5440,6 +5448,7 @@ Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses 
 <translation id="5780973441651030252">Priorité de processus</translation>
 <translation id="5781092003150880845">Synchroniser en tant que <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Envoyer des commandes à <ph name="EXTENSION_NAME" /></translation>
+<translation id="5782040878821624922">Il est disponible sur n'importe quel appareil</translation>
 <translation id="5782227691023083829">Traduction en cours…</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5785583009707899920">Utilitaires de fichiers Chrome</translation>
@@ -6127,6 +6136,7 @@ Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses 
 <translation id="6384275966486438344">Changer vos paramètres de recherche à : <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Groupe sans nom : 1 onglet}one{Groupe sans nom : # onglet}other{Groupe sans nom : # onglets}}</translation>
 <translation id="6385149369087767061">Connectez-vous à Internet et réessayez</translation>
+<translation id="6385382178401976503">Carte : <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Avertissement : La création de journaux détaillés est activée. Les journaux ci-dessous peuvent contenir des URL ou d'autres éléments d'information confidentielle. Veuillez examiner les données incluses et confirmer que vous consentez à leur envoi.</translation>
 <translation id="6387674443318562538">Séparation verticale</translation>
 <translation id="6388429472088318283">Rechercher des langues</translation>
@@ -7372,6 +7382,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7475671414023905704">URL de mot de passe perdu Netscape</translation>
 <translation id="7476454130948140105">Pile trop faible pour la mise à jour (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Autorisations bloquées automatiquement : <ph name="PERMISSION" /> et <ph name="COUNT" /> autres</translation>
+<translation id="7477599578899108080">Utilisation élevée de la mémoire : <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Créer un code QR pour cette page</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
 <translation id="7478069565037869084">Lettres espacées</translation>
@@ -8098,6 +8109,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8086610718778464681">Impossible de sauvegarder les applications et les fichiers Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
+<translation id="8089547136368562137">Il est protégé par la meilleure technologie de Google</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous visitez le plus</translation>
 <translation id="8090513782447872344">Vous pouvez revenir à tout moment pour consulter le guide à nouveau</translation>
 <translation id="809312780580957751">Steam n'a pas pu être installé sur cet appareil</translation>
@@ -8131,6 +8143,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8113476325385351118">Continuer à empêcher ce site d'obtenir le plein contrôle de vos appareils MIDI</translation>
 <translation id="8115139559594092084">À partir de votre compte Google Disque</translation>
 <translation id="8116972784401310538">&amp;Gestionnaire de favoris</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118488170956489476">Votre <ph name="BEGIN_LINK" />navigateur est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="8118515372935001629">Fréquence d'actualisation de l'affichage</translation>
@@ -8879,6 +8892,7 @@ Si vous choisissez de ne pas partager les signaux, ce profil sera fermé.</trans
 <translation id="8771300903067484968">L'arrière-plan de la page d'accueil a été réinitialisé à sa valeur par défaut.</translation>
 <translation id="8773280816776735812">Afficher la valeur IBAN</translation>
 <translation id="8773302562181397928">Enregistrer <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Économies sur les onglets inactifs : <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
@@ -9156,6 +9170,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> d'espace libre est nécessaire pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="9014206344398081366">Tutoriel de ChromeVox</translation>
 <translation id="901668144954885282">Sauvegarder sur Google Disque</translation>
+<translation id="90181708067259747">Date d'expiration : <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Installation terminée</translation>
 <translation id="9019062154811256702">Consulter et modifier les paramètres de remplissage automatique</translation>
 <translation id="9019894137004772119">Utiliser la localisation. Permettez aux applications et aux services munis de l'autorisation de localisation d'utiliser la position de votre appareil. Google peut collecter périodiquement des données de localisation et les utiliser de manière anonyme afin d'améliorer la précision et les services de localisation.</translation>

@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">ट्याब समूह - <ph name="TAB_COUNT" /> वटा ट्याब</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="1754404134430936718">पाठ कपी गरियो</translation>
+<translation id="1757620656501361327">Google पासवर्ड म्यानेजरसम्बन्धी अद्यावधिक जानकारी</translation>
 <translation id="1778457539567749232">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
@@ -753,6 +754,7 @@
 <translation id="504456571576643789">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="5054455334322721892">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK1" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK1" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="506254248375231072">कुनै पनि ट्याब छैन</translation>
+<translation id="5062960805900435602">पासवर्ड मर्ज गर्ने सुविधा बन्द भएका बारेमा अद्यावधिक जानकारी</translation>
 <translation id="5091199029769593641">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> का लेखहरू देखाइने छन्। तपाईंले फलो गर्ने साइटहरू तपाईंको Google खातामा सेभ गरिन्छन्। तपाईं Discover सम्बन्धी सेटिङमा गई ती साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="5091249083535528968">प्रयोगसम्बन्धी थप डेटा</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
@@ -802,6 +804,7 @@
 <translation id="5361107212971249203">टेक्स्ट</translation>
 <translation id="5368227114232678694">तपाईं यो डिभाइसमार्फत गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्कोग्निटो मोड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">भरपर्दो पासवर्ड पासवर्ड हाल्न सिफारिस गरिएको छ। किबोर्ड लुकाइएको छ।</translation>
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि यो साइटसँग तपाईंको नाम, इमेल ठेगाना र प्रोफाइल फोटो सेयर गर्ने छ।</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
@@ -1160,6 +1163,7 @@
 <translation id="7217781228893594884">तपाईं Chrome बाट बाहिरिँदा इन्कोग्निटो ट्याबहरू लक गरिने छन्</translation>
 <translation id="7222235798733126207">साइटहरूका बिचमा सीमित जानकारीको आदानप्रदान</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{१ डाउनलोड विचारधीन छ}other{# डाउनलोडहरू विचारधीन छन्}}</translation>
+<translation id="72415438529550637">पासवर्ड सिफारिस गर्ने सुविधा बन्द गरिएको छ।</translation>
 <translation id="7242755609445462077">शैलीबद्ध हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> को Chrome मा सिंक सुविधा सक्रिय गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7252076891734325316">आफ्नो फोन कम्प्युटरको छेउमा राख्नुहोस्</translation>

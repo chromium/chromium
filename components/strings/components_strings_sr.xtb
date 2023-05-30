@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4040350669425716613">Колеџи и универзитети</translation>
 <translation id="4047351652147966654">18×24 in</translation>
+<translation id="404831776305217138">URL ажурирања за додатак са ИД-ом <ph name="EXTENSION_ID" /> је неважећи или користи неподржану шему. Подржане шеме су: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Моћи ћете да је користите у свим Google производима</translation>
 <translation id="405399507749852140">Добијајте обавештења када се цена снизи на било ком сајту</translation>
 <translation id="4056223980640387499">Сепија</translation>
@@ -2292,6 +2293,7 @@
 <translation id="6569366777234823130">Драме</translation>
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
 <translation id="6576181918031900030">Започни пребацивање</translation>
+<translation id="6578434528542148658">Неважећи ИД додатка.</translation>
 <translation id="657902945730878902">Цртање и бојење</translation>
 <translation id="6579630537141957243">Желите да повежете MIDI уређај?</translation>
 <translation id="6579990219486187401">Светлорозе</translation>

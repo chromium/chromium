@@ -29,6 +29,7 @@
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1555506416658437797">編輯付款方式。</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chrome 封鎖。</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">Chrome 無法檢查你的密碼，請稍後再試。</translation>
 <translation id="235650106824528204">凡是在使用這個資料夾期間產生的 Chrome 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2399868464369312507">Google Chrome 正在嘗試編輯付款方式。</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
 <translation id="2467438592969358367">Google Chrome 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
 <translation id="2485422356828889247">解除安裝</translation>

@@ -17,6 +17,7 @@
 <translation id="1414495520565016063">আপনি Chromium এ প্রবেশ করেছেন!</translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
 <translation id="1553461853655228091">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chromium-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
+<translation id="1555506416658437797">পেমেন্ট পদ্ধতি এডিট করুন।</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chromium আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="1625909126243026060">Chromium-এ মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
 <translation id="1632539827495546968">শুধু একবারের জন্য এই অ্যাকাউন্ট ব্যবহার করলে, আপনি Chromium ব্রাউজার থেকে <ph name="GUEST_LINK_BEGIN" />গেস্ট মোড<ph name="GUEST_LINK_END" /> ব্যবহার করতে পারবেন। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
@@ -136,6 +137,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromiumOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chromium-কে আরও ভালো করে তুলতে সাহায্য করুন</translation>
 <translation id="4050175100176540509">গুরুত্বপূর্ণ নিরাপত্তা উন্নতি এবং নতুন বৈশিষ্ট্যগুলি সর্বশেষ ভার্সনে উপলভ্য।</translation>
+<translation id="4050599136622776556">Chromium পেমেন্ট পদ্ধতি এডিট করার চেষ্টা করছে।</translation>
 <translation id="4148957013307229264">ইনস্টল হচ্ছে...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chromium</translation>
 <translation id="421369550622382712">Chromium-এর জন্য খুব ভালো অ্যাপ্লিকেশান, গেম, এক্সটেনশন এবং থিমসমূহ আবিষ্কার করুন৷</translation>

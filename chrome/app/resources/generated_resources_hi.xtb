@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">यह एक्सटेंशन साइटों पर आपका डेटा पढ़ सकता है और बदल सकता है. आप यह नियंत्रित कर सकते हैं कि एक्सटेंशन किन साइटों को ऐक्सेस करे.</translation>
 <translation id="1007057452468855774">Google Play Store चालू करें</translation>
 <translation id="1008186147501209563">बुकमार्क निर्यात करें</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> याद रखता है कि आपने कैसे साइन इन किया था और जब भी संभव होता है, वह आपको अपने-आप साइन कर देता है. इस सुविधा के बंद होने पर, आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="1008557486741366299">अभी नहीं</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{आपने पिछले दो महीने से इस साइट का इस्तेमाल नहीं किया है, इसलिए इस साइट को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}one{आपने पिछले दो महीने से इस साइट का इस्तेमाल नहीं किया है, इसलिए इस साइट को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}other{आपने पिछले दो महीने से इन साइटों का इस्तेमाल नहीं किया है, इसलिए इन साइटों को दी गई अनुमतियां हटा दी गई हैं. ऐसा आपके डेटा को सुरक्षित रखने के लिए किया गया है}}</translation>
 <translation id="1009663062402466586">गेम के कंट्रोल अब उपलब्ध हैं</translation>
@@ -228,6 +229,7 @@
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> पर</translation>
 <translation id="1183237619868651138">स्‍थानीय कैश में <ph name="EXTERNAL_CRX_FILE" /> को इंस्‍टॉल नहीं किया जा सका.</translation>
 <translation id="1185924365081634987">इस नेटवर्क गड़बड़ी को ठीक करने के लिए आप <ph name="GUEST_SIGNIN_LINK_START" />अतिथि के रूप में ब्राउज़ करें<ph name="GUEST_SIGNIN_LINK_END" /> को भी आज़मा सकते हैं.</translation>
+<translation id="1187692277738768150">इस पासवर्ड का इस्तेमाल करने और उसे सेव करने पर:</translation>
 <translation id="1187722533808055681">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
 <translation id="1188807932851744811">लॉग अपलोड नहीं किया गया.</translation>
 <translation id="1190086046506744802">लाइनों के बीच बहुत ज़्यादा जगह खाली है</translation>
@@ -244,6 +246,7 @@
 <translation id="1195447618553298278">अज्ञात गड़बड़ी.</translation>
 <translation id="1195558154361252544">जिन साइट को आप फ़ॉलो करते हैं उन्हें छोड़कर सभी साइट के लिए सूचनाएं अपने आप बंद हो गई हैं</translation>
 <translation id="1197088940767939838">नारंगी</translation>
+<translation id="1197185198920566650"><ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
 <translation id="1197199342062592414">आइए प्रारंभ करें</translation>
 <translation id="11978075283960463">ऐप्लिकेशन में सेव डेटा का साइज़: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">बंद करें</translation>
@@ -1479,6 +1482,7 @@
 <translation id="2241053333139545397">कई वेबसाइटों पर अपना डेटा पढ़ें और बदलें</translation>
 <translation id="2241634353105152135">बस एक बार</translation>
 <translation id="2242687258748107519">फ़ाइल जानकारी</translation>
+<translation id="2243452222143104807">इनऐक्टिव टैब</translation>
 <translation id="2245603955208828424">आइटम के एक-एक अक्षर पर जाने के लिए, ऐरो वाले बटनों का इस्तेमाल करें</translation>
 <translation id="2246129643805925002">आपका <ph name="DEVICE_TYPE" /> बैकग्राउंड में अपने-आप अपडेट हो जाता है. इससे, आपको नई सुविधाएं और सुरक्षा से जुड़े अपडेट मिलते रहते हैं. सेटिंग में जाकर, अपडेट से जुड़ी प्राथमिकताओं की समीक्षा की जा सकती है.</translation>
 <translation id="2246549592927364792">क्या Google से इमेज की जानकारी चाहते हैं?</translation>
@@ -1509,6 +1513,7 @@
     सहायता केंद्र<ph name="END_LINK" /> देखें.</translation>
 <translation id="2266957463645820432">यूएसबी पर IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम किया गया</translation>
+<translation id="2269895253281481171">जनरेट और सेव किए गए पासवर्ड पर खतरा होने पर आपको सूचना दी जाएगी</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> डोमेन के किसी भी डिवाइस से डेटा का लेन-देन करें</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />इंस्टॉल करने पर, <ph name="BEGIN_BOLD" />आपकी हार्ड ड्राइव का सारा डेटा हमेशा के लिए मिटा दिया जाएगा<ph name="END_BOLD" />. पक्का करें कि आपके डेटा का बैक अप ले लिया गया है.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />इंस्टॉल करना शुरू करने के बाद, रद्द नहीं किया जा सकता.<ph name="END_PARAGRAPH2" /></translation>
@@ -1940,6 +1945,7 @@
 <translation id="2616008379779647117">कैप्शन की भाषा:</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> पर मौजूद आपका डेटा पढ़ और बदल सकता है</translation>
 <translation id="2618797463720777311">आस-पास शेयर करने की सुविधा सेट अप करें</translation>
+<translation id="261953424982546039">Chrome और लैब...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> को सुरक्षित रूप से डाउनलोड नहीं किया जा सकता.</translation>
 <translation id="2620245777360407679">वे डिवाइस जो फ़िलहाल हॉटस्पॉट से कनेक्ट हैं</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -3839,6 +3845,7 @@
 <translation id="429234155571566255">वे रेसिपी जो हाल में देखी गई हैं</translation>
 <translation id="4295072614469448764">ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध है. आपके 'लॉन्चर' में एक आइकॉन भी मौजूद हो सकता है.</translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" /> से इंस्टॉल और स्ट्रीम किए गए ऐप्लिकेशन</translation>
 <translation id="4297219207642690536">रीस्टार्ट करें और रीसेट करें</translation>
 <translation id="4297813521149011456">डिसप्ले का घुमाव</translation>
 <translation id="4299022904780065004">नई गुप्त विंडो</translation>
@@ -3872,6 +3879,7 @@
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल हो रहा है...</translation>
 <translation id="4326146840124313313">Chrome की सबसे मज़बूत सुरक्षा की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4326484226728068206">आपके कार्ट में मौजूद आइटम के लिए <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> पर <ph name="DISCOUNT_TEXT" /> मिल रहा है, <ph name="RELATIVE_TIME" /> देखा गया</translation>
+<translation id="4328507707463585900">यह टैब <ph name="MEMORY_USAGE" /> का इस्तेमाल कर रहा है</translation>
 <translation id="4330191372652740264">आइस वॉटर</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> का कभी अनुवाद ना करें</translation>
 <translation id="4332976768901252016">माता-पिता के नियंत्रण सेट अप करें</translation>
@@ -5476,6 +5484,7 @@
 <translation id="5780973441651030252">प्राथमिकता संसाधित करें</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> के रूप में सिंक करें</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> को आदेश भेजें</translation>
+<translation id="5782040878821624922">यह सभी डिवाइसों पर उपलब्ध है</translation>
 <translation id="5782227691023083829">अनुवाद हो रहा है...</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
 <translation id="5785583009707899920">Chrome की फ़ाइल सुविधाएं</translation>
@@ -6174,6 +6183,7 @@
 <translation id="6384275966486438344">अपनी खोज सेटिंग इसमें बदलें: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{ऐसा ग्रुप जिसका नाम नहीं है - 1 टैब}one{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}other{ऐसा ग्रुप जिसका नाम नहीं है - # टैब}}</translation>
 <translation id="6385149369087767061">इंटरनेट से जोड़ें और फिर से कोशिश करें</translation>
+<translation id="6385382178401976503">कार्ड: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">चेतावनी - ज़्यादा जानकारी वाली लॉगिंग चालू है; नीचे दिए गए लॉग में यूआरएल या दूसरी संवेदनशील जानकारी शामिल हो सकती है. कृपया समीक्षा करें और पक्का करें कि यह जानकारी देने में आपको कोई परेशानी नहीं है.</translation>
 <translation id="6387674443318562538">वर्टिकल (ऊपर से नीचे की ओर) रूप से छोटे-छोटे हिस्सों में बांटें यानी स्प्लिट करें</translation>
 <translation id="6388429472088318283">भाषाएं खोजें</translation>
@@ -7420,6 +7430,7 @@
 <translation id="7475671414023905704">Netscape खोए पासवर्ड का URL</translation>
 <translation id="7476454130948140105">अपडेट करने के लिए बैटरी बहुत कम है (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> के साथ-साथ <ph name="COUNT" /> और सेटिंग को अपने-आप ब्लॉक किया गया</translation>
+<translation id="7477599578899108080">ज़्यादा मेमोरी का इस्तेमाल: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">इस पेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="7477793887173910789">अपने संगीत और वीडियो के साथ दूसरी चीज़ें नियंत्रित करें</translation>
 <translation id="7478069565037869084">बहुत ज़्यादा जगह</translation>
@@ -8152,6 +8163,7 @@
 <translation id="8086610718778464681">Linux के ऐप्लिकेशन और फ़ाइलों का बैक अप नहीं लिया जा सकता</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.}one{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}other{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}}</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
+<translation id="8089547136368562137">इसे Google की सबसे अच्छी टेक्नोलॉजी से सुरक्षित किया गया है</translation>
 <translation id="8090234456044969073">अपनी सबसे ज़्यादा देखी गई वेबसाइटों की सूची पढ़ें</translation>
 <translation id="8090513782447872344">आपके पास, इस जानकारी को किसी भी समय देखने का विकल्प होता है</translation>
 <translation id="809312780580957751">इस डिवाइस पर Steam इंस्टॉल नहीं किया जा सका</translation>
@@ -8185,6 +8197,7 @@
 <translation id="8113476325385351118">इस साइट को, MIDI डिवाइस का पूरा कंट्रोल रखने से रोकना जारी रखें</translation>
 <translation id="8115139559594092084">आपकी Google Drive से</translation>
 <translation id="8116972784401310538">&amp;बुकमार्क मैनेजर</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> याद रखता है कि आपने कैसे साइन इन किया था और जब भी संभव होता है, वह आपको अपने-आप साइन कर देता है. इस सुविधा के बंद होने पर, आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
 <translation id="8118362518458010043">Chrome ने बंद किया. यह एक्सटेंशन असुरक्षित हो सकता है.</translation>
 <translation id="8118488170956489476">आपका संगठन आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता<ph name="END_LINK" /> है</translation>
 <translation id="8118515372935001629">डिसप्ले की रीफ़्रेश दर</translation>
@@ -8937,6 +8950,7 @@
 <translation id="8771300903067484968">स्टार्ट पेज के बैकग्राउंड को डिफ़ॉल्ट बैकग्राउंड पर रीसेट कर दिया गया है.</translation>
 <translation id="8773280816776735812">IBAN की वैल्यू दिखाएं</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> को सेव करें</translation>
+<translation id="8774286683882091094">इनऐक्टिव टैब से हुई मेमोरी की बचत: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">बहाल करने की पुष्टि करें</translation>
 <translation id="8774934320277480003">शीर्ष हाशिया</translation>
 <translation id="8775144690796719618">गलत यूआरएल</translation>
@@ -9214,6 +9228,7 @@
 <translation id="9013037634206938463">Linux को इंस्टॉल करने के लिए, कम से कम <ph name="INSTALL_SIZE" /> खाली जगह होनी चाहिए. खाली जगह बढ़ाने के लिए अपने डिवाइस से फ़ाइलें मिटाएं.</translation>
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
 <translation id="901668144954885282">'Google डिस्क' में बैक अप लें</translation>
+<translation id="90181708067259747">खत्म होने की तारीख: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">इंस्टॉल हो गया है</translation>
 <translation id="9019062154811256702">ऑटोमैटिक भरने वाली सेटिंग को पढ़ें और बदलें</translation>
 <translation id="9019894137004772119">जगह की जानकारी इस्तेमाल करें. जगह की जानकारी देखने की अनुमति मांगने वाले ऐप्लिकेशन और सेवाओं को अपने डिवाइस की जगह की जानकारी का इस्तेमाल करने दें. Google समय-समय पर जगह से जुड़ा डेटा इकट्ठा कर सकता है. साथ ही, जगह की जानकारी को ज़्यादा सटीक बनाने और उससे जुड़ी सेवाओं में सुधार के लिए, आपकी पहचान ज़ाहिर किए बगैर यह डेटा इस्तेमाल कर सकता है.</translation>

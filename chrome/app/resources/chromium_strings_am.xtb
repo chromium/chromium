@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">ወደ Chromium ገብተዋል!</translation>
 <translation id="1524282610922162960">የChromium ትር ያጋሩ</translation>
 <translation id="1553461853655228091">Chromium የዙሪያዎ 3ል ካርታ መፍጠር እንዲችል ካሜራዎን የመድረስ ፈቃድ ያስፈልገዋል</translation>
+<translation id="1555506416658437797">የመክፈያ ዘዴዎችን ያርትዑ።</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromiumን ዳግም እንዲያስጀምሩት ይፈልግብዎታል}=1{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromiumን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ ማንነት የማያሳውቅ መስኮት ዳግም አይከፈትም}one{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromiumን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromiumን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
 <translation id="1625909126243026060">በChromium ውስጥ ቁልፍ የግላዊነት እና የደህንነት ቁጥጥሮችን ይገምግሙ</translation>
 <translation id="1632539827495546968">ይህን መለያ አንድ ጊዜ ብቻ መጠቀም ከፈለጉ በChromium አሳሽ ውስጥ <ph name="GUEST_LINK_BEGIN" />የእንግዳ ሁነታ<ph name="GUEST_LINK_END" />ን መጠቀም ይችላሉ። ለሌላ ሰው መለያ ማከል ከፈለጉ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ <ph name="LINK_BEGIN" />አዲስ ሰው ያክሉ<ph name="LINK_END" />።
@@ -138,6 +139,7 @@
 <translation id="4019629340646866719">ChromiumOS እና <ph name="BEGIN_LINK_LINUX_OSS" />የLinux ግንባታ ምህዳር<ph name="END_LINK_LINUX_OSS" /> ሊሠሩ የቻሉት በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />የክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> ነው።</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />የአሁኖቹን ቅንብሮች<ph name="END_LINK" /> ሪፖርት በማድረግ Chromium የተሻለ እንዲሆን ያግዙ</translation>
 <translation id="4050175100176540509">አስፈላጊ የደህንነት ማሻሻያዎች እና አዲስ ባህሪያት በቅርብ ጊዜው ስሪቱ ላይ ይገኛሉ።</translation>
+<translation id="4050599136622776556">Chromium የመክፈያ ዘዴዎችን ለማርትዕ እየሞከረ ነው።</translation>
 <translation id="4148957013307229264">በመጫን ላይ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - በአውታረ መረብ ወደ መለያ መግባት - Chromium</translation>
 <translation id="421369550622382712">ለChromium ምርጥ መተግበሪያዎችን፣ ጨዋታዎችን፣ ቅጥያዎችን እና ገጽታዎችን ያግኙ።</translation>

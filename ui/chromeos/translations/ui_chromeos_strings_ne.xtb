@@ -1011,6 +1011,7 @@
 <translation id="8919081441417203123">ड्यानिस</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8965697826696209160">त्यहाँ उपयुक्त ठाउँ छैन।</translation>
+<translation id="8971742885766657349">सिंक गरिँदै छ - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">चिनियाँ (परम्परागत) पिनयिन</translation>
 <translation id="8998871447376656508">Google Drive मा पर्याप्त खाली ठाउँ नभएकाले अपलोड गर्ने कार्य पूरा गर्न सकिएन।</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क<ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>

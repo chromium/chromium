@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">तपाइँ Chromium मा साइन इन</translation>
 <translation id="1524282610922162960">Chromium को ट्याब सेयर गर्नुहोस्</translation>
 <translation id="1553461853655228091">Chromium लाई तपाईं वरपरको ठाउँको 3D नक्सा बनाउन तपाईंको क्यामेरा प्रयोग गर्ने अनुमति चाहिन्छ</translation>
+<translation id="1555506416658437797">भुक्तानी विधिहरू सम्पादन गर्नुहोस्।</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{तपाईंका व्यवस्थापकका अनुसार तपाईंले यो अद्यावधिक लागू गर्न Chromium पुनः सुरु गर्नु पर्ने हुन्छ}=1{तपाईंका व्यवस्थापकका अनुसार तपाईंले यो अद्यावधिक लागू गर्न Chromium पुनः सुरु गर्नु पर्ने हुन्छ। तपाईंको इन्कोग्निटो विन्डो पुनः खुल्ने छैन।}other{तपाईंका व्यवस्थापकका अनुसार तपाईंले यो अद्यावधिक लागू गर्न Chromium पुनः सुरु गर्नु पर्ने हुन्छ। तपाईंका # वटा इन्कोग्निटो विन्डो पुनः खुल्ने छैनन्।}}</translation>
 <translation id="1625909126243026060">Chromium मा भएका गोपनीयता र सुरक्षासम्बन्धी मुख्य नियन्त्रण सुविधाहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="1632539827495546968">तपाईं यो खाता एक पटक मात्र प्रयोग गर्न चाहनुहुन्छ भने तपाईं Chromium ब्राउजरमार्फत <ph name="GUEST_LINK_BEGIN" />गेस्ट मोड<ph name="GUEST_LINK_END" /> प्रयोग गर्न सक्नुहुन्छ। तपाईं अरू कसैको खाता लिंक गर्न चाहनुहुन्छ भने उहाँलाई <ph name="LINK_BEGIN" />नयाँ व्यक्तिका रूपमा<ph name="LINK_END" /> आफ्नो <ph name="DEVICE_TYPE" /> मा सामेल गराउनुहोस्।
@@ -136,6 +137,7 @@
 <translation id="4019629340646866719">ChromiumOS पनि <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेभलपमेन्ट इनभारमेन्ट<ph name="END_LINK_LINUX_OSS" /> जस्तै अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />हालका सेटिङहरू <ph name="END_LINK" /> को रिपोर्ट गरेर Chromium लाई अझ राम्रो बनाउन मद्दत गर्नुहोस्</translation>
 <translation id="4050175100176540509">नवीनतम संस्करणमा महत्वपूर्ण सुरक्षा सुधारहरू र नयाँ सुविधाहरू उपलब्ध छन्।</translation>
+<translation id="4050599136622776556">Chromium ले भुक्तानी विधिहरू सम्पादन गर्ने प्रयास गर्दै छ।</translation>
 <translation id="4148957013307229264">स्थापना गर्दै...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chromium</translation>
 <translation id="421369550622382712">Chromium का लागि महान एपहरू, खेलहरू, विस्तारहरू र विषयवस्तुहरू पत्ता लगाउनुहोस्।</translation>

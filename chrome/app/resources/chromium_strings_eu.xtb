@@ -19,6 +19,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1414495520565016063">Chromium-en saioa hasi duzu.</translation>
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
 <translation id="1553461853655228091">Chromium-ek kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
+<translation id="1555506416658437797">ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="1625909126243026060">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chromium-en</translation>
 <translation id="1632539827495546968">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chromium arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
@@ -138,6 +139,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="4036079820698952681">Lagundu Chromium hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
+<translation id="4050599136622776556">Chromium-ek ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="4148957013307229264">Instalatzen…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>

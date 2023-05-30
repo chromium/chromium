@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Զուգակցումը շարունակելու համար Google Chrome-ին հասանելի դարձրեք Bluetooth-ը։ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
+<translation id="1555506416658437797">փոփոխել վճարման եղանակները։</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />-ն արդեն մուտք է գործել Chrome-ի այս պրոֆիլը։ <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար կստեղծվի Chrome-ի նոր պրոֆիլ։</translation>
 <translation id="1587223624401073077">Google Chrome-ն օգտագործում է ձեր տեսախցիկը:</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ֆայլը վտանգավոր է, և Chrome-ն արգելափակել է այն։</translation>
@@ -80,6 +81,7 @@
 <translation id="234869673307233423">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="235650106824528204">Աշխատանքային պրոֆիլի ադմինիստրատորը կարող է ջնջել Chrome-ի բոլոր տվյալները, որոնք ստեղծվում են այս պրոֆիլի օգտագործման ընթացքում (օրինակ՝ էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ)։ <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Շարունակել</translation>
+<translation id="2399868464369312507">Google Chrome-ը փորձում է փոփոխել վճարման եղանակները։</translation>
 <translation id="2401189691232800402">ChromeOS համակարգ</translation>
 <translation id="2467438592969358367">Google Chrome-ն ուզում է արտահանել ձեր գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>

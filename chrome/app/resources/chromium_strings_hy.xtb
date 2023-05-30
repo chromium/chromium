@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">Դուք մուտք եք գործել Chromium:</translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
 <translation id="1553461853655228091">Chromium-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն՝ ձեր շրջակայքի եռաչափ քարտեզը ստեղծելու համար։</translation>
+<translation id="1555506416658437797">փոփոխել վճարման եղանակները։</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Թարմացումը կիրառելու համար ադմինիստրատորը պահանջում է վերագործարկել Chromium-ը}=1{Թարմացումը կիրառելու համար ադմինիստրատորը պահանջում է վերագործարկել Chromium-ը։ Ձեր ինկոգնիտո պատուհանը նորից չի բացվի։}one{Թարմացումը կիրառելու համար ադմինիստրատորը պահանջում է վերագործարկել Chromium-ը։ Ձեր # ինկոգնիտո պատուհանը նորից չի բացվի։}other{Թարմացումը կիրառելու համար ադմինիստրատորը պահանջում է վերագործարկել Chromium-ը։ Ձեր # ինկոգնիտո պատուհանները նորից չեն բացվի։}}</translation>
 <translation id="1625909126243026060">Դիտեք գաղտնիության և անվտանգության հիմնական կառավարման տարրերը Chromium-ում։</translation>
 <translation id="1632539827495546968">Եթե ուզում եք այս հաշիվն օգտագործել միայն մեկ անգամ, միացրեք <ph name="GUEST_LINK_BEGIN" />հյուրի ռեժիմը<ph name="GUEST_LINK_END" /> Chromium դիտարկիչում։ Եթե ուզում եք հաշիվ ավելացնել մեկ ուրիշի համար, <ph name="LINK_BEGIN" />ավելացրեք նոր օգտատեր<ph name="LINK_END" /> ձեր <ph name="DEVICE_TYPE" /> սարքում։
@@ -138,6 +139,7 @@
 <translation id="4019629340646866719">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="4036079820698952681">Օգնեք կատարելագործել Chromium-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>
 <translation id="4050175100176540509">Վերջին տարբերակում առկա են անվտանգության կարևոր բարելավումներ և նոր գործառույթներ:</translation>
+<translation id="4050599136622776556">Chromium-ը փորձում է փոփոխել վճարման եղանակները։</translation>
 <translation id="4148957013307229264">Տեղադրում…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Ցանցի մուտքի էջ – Chromium</translation>
 <translation id="421369550622382712">Հավելվածների, խաղերի, ընդլայնումների և թեմաների լայն ընտրանի Chromium-ի համար:</translation>

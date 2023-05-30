@@ -1243,6 +1243,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
 <translation id="4040350669425716613">Høyskoler og universiteter</translation>
 <translation id="4047351652147966654">18 x 24 tommer</translation>
+<translation id="404831776305217138">Oppdateringsnettadressen for utvidelsen med ID-en «<ph name="EXTENSION_ID" />» er ugyldig eller bruker en protokoll som ikke støttes. Disse protokollene støttes: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> og <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Du kan bruke den i alle Google-produkter</translation>
 <translation id="405399507749852140">Få varsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6569366777234823130">Dramafilmer</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
 <translation id="6576181918031900030">Begynn å caste</translation>
+<translation id="6578434528542148658">Ugyldig utvidelses-ID.</translation>
 <translation id="657902945730878902">Tegning og fargelegging</translation>
 <translation id="6579630537141957243">Vil du koble til MIDI-enheten din?</translation>
 <translation id="6579990219486187401">Lys rosa</translation>

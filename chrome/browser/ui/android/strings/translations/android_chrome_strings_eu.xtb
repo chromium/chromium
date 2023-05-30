@@ -142,6 +142,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1750259112639922169">Fitxa taldea (<ph name="TAB_COUNT" /> fitxa)</translation>
 <translation id="17513872634828108">Fitxa irekiak</translation>
 <translation id="1754404134430936718">Kopiatu da testua</translation>
+<translation id="1757620656501361327">Google-ren Pasahitz-kudeatzailea zerbitzuari buruzko informazio eguneratua</translation>
 <translation id="1778457539567749232">Markatu irakurri gabeko gisa</translation>
 <translation id="1779766957982586368">Itxi leihoa</translation>
 <translation id="1791662854739702043">Instalatu da</translation>
@@ -753,6 +754,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="504456571576643789">Kontuan hartu beharrekoak</translation>
 <translation id="5054455334322721892">Litekeena da <ph name="BEGIN_LINK1" />beste jarduera batzuk<ph name="END_LINK1" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.</translation>
 <translation id="506254248375231072">Fitxarik ez</translation>
+<translation id="5062960805900435602">Pasahitzen bateratzeari buruzko informazio eguneratua itxi da</translation>
 <translation id="5091199029769593641">Laster, <ph name="SITE_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean. Jarraitzaile zaituzten webguneak Google-ko kontuan gordetzen dira. Discover-en ezarpenetan kudea ditzakezu webgune horiek.</translation>
 <translation id="5091249083535528968">Erabilera-datu hedatuak</translation>
 <translation id="509429900233858213">Errore bat gertatu da.</translation>
@@ -802,6 +804,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5361107212971249203">testua</translation>
 <translation id="5368227114232678694">Gailu honetan sarea modu pribatuan arakatu nahi baduzu, erabili ezkutuko modua</translation>
 <translation id="5375577065097716013">Bilatu irudia Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Pasahitz konplexu bat iradoki da. Teklatua ezkutatuta dago.</translation>
 <translation id="5401851137404501592">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin.</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> bezeroari bidali nahi diozu <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5414836363063783498">Egiaztatzen…</translation>
@@ -1160,6 +1163,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7217781228893594884">Ezkutuko moduko fitxak blokeatu egingo dira Chrome-tik irteten zarenean</translation>
 <translation id="7222235798733126207">Webguneen artean informazioa partekatzeko aukera mugatua</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Bat deskargatzeko zain}other{# deskargatzeko zain}}</translation>
+<translation id="72415438529550637">Pasahitzaren iradokizuna itxi da.</translation>
 <translation id="7242755609445462077">Nabarmentze estilizatua <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailuak Chrome-ren sinkronizazioa aktibatuta daukala</translation>
 <translation id="7252076891734325316">Jarri telefonoa ordenagailutik gertu</translation>

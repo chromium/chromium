@@ -1245,6 +1245,7 @@
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="4040350669425716613">کالجز اور یونیورسٹیاں</translation>
 <translation id="4047351652147966654">‏‎18 x 24 انچ</translation>
+<translation id="404831776305217138">‏ID "<ph name="EXTENSION_ID" />" کے ساتھ ایکسٹینشن کے لیے اپ ڈیٹ URL غلط ہے یا ایک غیر تعاون یافتہ اسکیم استعمال کرتا ہے۔ تعاون یافتہ اسکیمیں: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" /> اور <ph name="FILE_SCHEME" /> ہیں۔</translation>
 <translation id="4050392779074832022">‏آپ اسے تمام Google پروڈکٹس میں استعمال کر سکیں گے</translation>
 <translation id="405399507749852140">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں</translation>
 <translation id="4056223980640387499">سیپیا</translation>
@@ -2296,6 +2297,7 @@
 <translation id="6569366777234823130">ڈرامہ فلمیں</translation>
 <translation id="6573200754375280815">دائیں طرف دُہرا سوراخ</translation>
 <translation id="6576181918031900030">کاسٹ کرنا شروع کریں</translation>
+<translation id="6578434528542148658">‏غلط ایکسٹینشن ID۔</translation>
 <translation id="657902945730878902">نقاشی اور رنگ آمیزی</translation>
 <translation id="6579630537141957243">‏MIDI آلہ منسلک کریں؟</translation>
 <translation id="6579990219486187401">ہلکا گلابی</translation>

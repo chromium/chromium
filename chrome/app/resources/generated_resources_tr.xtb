@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Bu uzantı, sitelerdeki verilerinizi okuyabilir ve değiştirebilir. Uzantının hangi sitelere erişebileceğini kontrol edebilirsiniz.</translation>
 <translation id="1007057452468855774">Google Play Store'u aç</translation>
 <translation id="1008186147501209563">Yer işaretlerini dışa aktar</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />, nasıl oturum açtığınızı hatırlar ve mümkün olduğunda oturumunuzu otomatik olarak açar. Bu özellik kapalıyken her defasında işlemi onaylamanız istenir.</translation>
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{2 aydır ziyaret etmediğiniz sitenin izinleri, verilerinizi korumak için kaldırıldı}other{2 aydır ziyaret etmediğiniz sitelerin izinleri, verilerinizi korumak için kaldırıldı}}</translation>
 <translation id="1009663062402466586">Oyun denetimleri artık kullanılabilir</translation>
@@ -226,6 +227,7 @@
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> sayfasında</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" /> yerel önbelleğe yüklenemiyor.</translation>
 <translation id="1185924365081634987">Ayrıca, bu ağ hatasını gidermek için <ph name="GUEST_SIGNIN_LINK_START" />misafir olarak göz atmayı<ph name="GUEST_SIGNIN_LINK_END" /> da deneyebilirsiniz.</translation>
+<translation id="1187692277738768150">Bu şifreyi kullanıp kaydettiğinizde:</translation>
 <translation id="1187722533808055681">Boşta kalma uyanmaları</translation>
 <translation id="1188807932851744811">Günlük yüklenmedi.</translation>
 <translation id="1190086046506744802">Çok boşluklu</translation>
@@ -241,6 +243,7 @@
 <translation id="1195447618553298278">Bilinmeyen hata.</translation>
 <translation id="1195558154361252544">Bildirimler, izin verdikleriniz dışındaki tüm siteler için otomatik olarak engellenir</translation>
 <translation id="1197088940767939838">Turuncu</translation>
+<translation id="1197185198920566650"><ph name="EMAIL" /> için <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilir.</translation>
 <translation id="1197199342062592414">Başlayalım</translation>
 <translation id="11978075283960463">Uygulamada depolanan veriler: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Devre dışı bırak</translation>
@@ -1465,6 +1468,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2241053333139545397">Çeşitli web sitelerinde verilerinizi okuma ve değiştirme</translation>
 <translation id="2241634353105152135">Sadece bir defa</translation>
 <translation id="2242687258748107519">Dosya Bilgileri</translation>
+<translation id="2243452222143104807">Sekme etkin değil</translation>
 <translation id="2245603955208828424">Öğelerdeki harfler arasında gezinmek için ok tuşlarını kullanın</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> cihazınız, en son özellikleri ve güvenlik iyileştirmelerini almanız için arka planda otomatik olarak güncellenir. Güncelleme tercihlerini Ayarlar'da inceleyebilirsiniz.</translation>
 <translation id="2246549592927364792">Google'dan resim açıklamaları alınsın mı?</translation>
@@ -1492,6 +1496,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2263679799334060788">Geri bildirimleriniz Google Cast'i iyileştirmemize yardımcı olacağından bizim için çok önemlidir. Yayınlamayla ilgili sorunların giderilmesinde yardım almak için lütfen <ph name="BEGIN_LINK" />yardım merkezine<ph name="END_LINK" /> bakın.</translation>
 <translation id="2266957463645820432">USB üzerinden IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth devre dışı</translation>
+<translation id="2269895253281481171">Riskli olması durumunda bilgilendirilirsiniz</translation>
 <translation id="2270450558902169558"><ph name="DOMAIN" /> alan adındaki herhangi bir cihazla veri alışverişi</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Yükleme işlemi <ph name="BEGIN_BOLD" />sabit diskinizin tamamını silecek<ph name="END_BOLD" />. Verilerinizi yedeklemeyi unutmayın.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Yükleme işlemi, başladıktan sonra iptal edilemez.<ph name="END_PARAGRAPH2" /></translation>
@@ -1922,6 +1927,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2616008379779647117">Altyazı dili</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> web sitesinde verilerinizi okuma ve değiştirme</translation>
 <translation id="2618797463720777311">Yakındakilerle Paylaş kurulumu</translation>
+<translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> güvenli bir şekilde indirilemiyor.</translation>
 <translation id="2620245777360407679">Şu anda hotspot'a bağlı olan cihazlar</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -3822,6 +3828,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="429234155571566255">son görüntülenen bu tarifler</translation>
 <translation id="4295072614469448764">Uygulama sizin terminalinizde mevcut. Ayrıca Başlatıcınızda bir simge olabilir.</translation>
 <translation id="4295979599050707005"><ph name="USER_EMAIL" /> hesabınızın Chrome'da ve Google Play'de web siteleri, uygulamalar ve uzantılarla kullanılabileceğini onaylamak için lütfen tekrar oturum açın. İsterseniz bu hesabı kaldırabilirsiniz. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304"><ph name="APP_NAME" /> uygulamasından yüklenen ve canlı olarak oynatılan uygulamalar</translation>
 <translation id="4297219207642690536">Yeniden başlat ve sıfırla</translation>
 <translation id="4297813521149011456">Ekran döndürme</translation>
 <translation id="4299022904780065004">Yeni &amp;Gizli pencere</translation>
@@ -3855,6 +3862,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> uygulamasının yüklemesi kaldırılıyor...</translation>
 <translation id="4326146840124313313">Chrome’un en güçlü güvenlik özelliği sizi tehlikeli web sitelerinden, indirmelerden ve uzantılardan korumak için daha fazlasını yapar</translation>
 <translation id="4326484226728068206">Alışveriş sepetinizdeki ürünler için <ph name="MERCHANT_NAME" /> (<ph name="MERCHANT_DOMAIN" />) adlı satıcıda <ph name="DISCOUNT_TEXT" /> mevcut. Görüntüleme zamanı: <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Bu sekmede <ph name="MEMORY_USAGE" /> kullanılıyor</translation>
 <translation id="4330191372652740264">Buzlu su</translation>
 <translation id="4330387663455830245">Bu Dili (<ph name="LANGUAGE" />) Asla Çevirme</translation>
 <translation id="4332976768901252016">Ebeveyn Denetimlerini ayarlama</translation>
@@ -5459,6 +5467,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5780973441651030252">Süreç önceliği</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> olarak senkronize et</translation>
 <translation id="5781865261247219930">Komutları <ph name="EXTENSION_NAME" /> uygulamasına gönder</translation>
+<translation id="5782040878821624922">Tüm cihazlarda kullanılabilir</translation>
 <translation id="5782227691023083829">Çevriliyor...</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5785583009707899920">Chrome Dosya Yardımcı Programları</translation>
@@ -6157,6 +6166,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6384275966486438344">Arama ayarlarınızı <ph name="SEARCH_HOST" /> olarak değiştirme</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Adsız grup - 1 sekme}other{Adsız grup - # sekme}}</translation>
 <translation id="6385149369087767061">İnternete bağlanıp tekrar deneyin</translation>
+<translation id="6385382178401976503">Kart: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Uyarı: Ayrıntılı günlük kaydı etkin. Aşağıdaki günlüklerde URL'ler veya diğer hassas bilgiler bulunabilir. Lütfen bu bilgileri inceleyin ve göndermenizde sakınca olmadığından emin olun.</translation>
 <translation id="6387674443318562538">Dikey Böl</translation>
 <translation id="6388429472088318283">Dil ara</translation>
@@ -7401,6 +7411,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7475671414023905704">Netscape Kayıp Şifre URL'si</translation>
 <translation id="7476454130948140105">Pil gücü güncelleme için yeterli değil (%<ph name="BATTERY_PERCENT" />)</translation>
 <translation id="7476989672001283112">Otomatik olarak engellendi: <ph name="PERMISSION" /> ve <ph name="COUNT" /> daha</translation>
+<translation id="7477599578899108080">Yüksek bellek kullanımı: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Bu sayfa için QR kodu oluştur</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
 <translation id="7478069565037869084">Geniş</translation>
@@ -8134,6 +8145,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8086610718778464681">Linux uygulamaları ve dosyaları yedeklenemiyor</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Bu dosya şifrelenmiş. Dosyanın sahibinden şifreyi çözmesini isteyin.}other{Bu dosyaların bazıları şifrelenmiş. Dosyaların sahibinden şifreleri çözmesini isteyin.}}</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
+<translation id="8089547136368562137">Google'ın en iyi yöntemleriyle korunur</translation>
 <translation id="8090234456044969073">En sık ziyaret ettiğiniz web sitelerinin listesini okuma</translation>
 <translation id="8090513782447872344">İstediğiniz zaman geri gelerek tekrar göz atabilirsiniz</translation>
 <translation id="809312780580957751">Steam bu cihaza yüklenemedi</translation>
@@ -8167,6 +8179,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8113476325385351118">Bu sitenin MIDI cihazları üzerinde tam denetime sahip olmasını engellemeye devam et</translation>
 <translation id="8115139559594092084">Google Drive'ınızdan</translation>
 <translation id="8116972784401310538">&amp;Yer imi yöneticisi</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />, nasıl oturum açtığınızı hatırlar ve mümkün olduğunda oturumunuzu otomatik olarak açar. Bu özellik kapalıyken her defasında işlemi onaylamanız istenir.</translation>
 <translation id="8118362518458010043">Chrome tarafından devre dışı bırakıldı. Bu uzantı güvenli olmayabilir.</translation>
 <translation id="8118488170956489476"><ph name="BEGIN_LINK" />Tarayıcınız, kuruluşunuz tarafından yönetilmektedir<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">Ekran yenileme hızı</translation>
@@ -8919,6 +8932,7 @@ Sinyalleri paylaşmamayı seçerseniz bu profil kapatılır.</translation>
 <translation id="8771300903067484968">Başlangıç sayfası arka planı, varsayılan arka plana sıfırlandı.</translation>
 <translation id="8773280816776735812">IBAN değerini göster</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını kaydet</translation>
+<translation id="8774286683882091094">Sekme etkin olmadığında yapılan tasarruf: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Geri Yüklemeyi Onaylayın</translation>
 <translation id="8774934320277480003">Üst kenar boşluğu</translation>
 <translation id="8775144690796719618">Geçersiz URL</translation>
@@ -9195,6 +9209,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="9013037634206938463">Linux'u yüklemek için <ph name="INSTALL_SIZE" /> boş alan olması gerekir. Boş alanı artırmak için cihazdan bazı dosyaları silin.</translation>
 <translation id="9014206344398081366">ChromeVox eğitimi</translation>
 <translation id="901668144954885282">Google Drive'a yedekle</translation>
+<translation id="90181708067259747">Son kullanım tarihi: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Yükleme tamamlandı</translation>
 <translation id="9019062154811256702">Otomatik doldur ayarlarını okuma ve değiştirme</translation>
 <translation id="9019894137004772119">Konumu kullan. Konum izni olan uygulama ve hizmetlerin cihazınızın konumunu kullanmasına izin verin. Google, konum verilerini düzenli olarak toplayabilir ve konum doğruluğu ile konuma dayalı hizmetleri iyileştirmek için bu verileri anonim bir şekilde kullanabilir.</translation>

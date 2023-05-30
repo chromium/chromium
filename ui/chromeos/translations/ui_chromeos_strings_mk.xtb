@@ -1011,6 +1011,7 @@
 <translation id="8919081441417203123">дански</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
+<translation id="8971742885766657349">Се синхронизира - <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">кинески (традиционален) пинјин</translation>
 <translation id="8998871447376656508">Нема доволно слободен простор на вашиот Google Drive за да се заврши прикачувањево.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>

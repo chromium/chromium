@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4040350669425716613">Colegii și universități</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
+<translation id="404831776305217138">Adresa URL pentru actualizarea extensiei cu codul <ph name="EXTENSION_ID" /> nu este validă sau folosește o schemă neacceptată. Schemele acceptate sunt <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> și <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">O vei putea folosi în toate produsele Google</translation>
 <translation id="405399507749852140">Primește alerte dacă prețul scade pe orice site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">Filme de dramă</translation>
 <translation id="6573200754375280815">Perforare dublă în dreapta</translation>
 <translation id="6576181918031900030">Începe să proiectezi conținut</translation>
+<translation id="6578434528542148658">Codul extensiei nu este valid.</translation>
 <translation id="657902945730878902">Desenat și colorat</translation>
 <translation id="6579630537141957243">Conectezi dispozitivul MIDI?</translation>
 <translation id="6579990219486187401">Roz deschis</translation>

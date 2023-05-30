@@ -30,6 +30,7 @@
  vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
+<translation id="1555506416658437797">editar formas de pago.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Se creará un nuevo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome está usando tu cámara.</translation>
 <translation id="1587325591171447154">Chrome bloqueó <ph name="FILE_NAME" /> porque es un archivo peligroso.</translation>
@@ -79,6 +80,7 @@
 <translation id="234869673307233423">Chrome no puede revisar las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2399868464369312507">Google Chrome está intentando editar formas de pago.</translation>
 <translation id="2401189691232800402">Sistema de Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome desea exportar tus contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="2485422356828889247">Desinstalación</translation>

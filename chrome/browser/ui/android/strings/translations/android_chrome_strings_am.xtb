@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">የትር ቡድን - <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="17513872634828108">ትሮችን ክፈት</translation>
 <translation id="1754404134430936718">ጽሁፍ ተገልብጧል</translation>
+<translation id="1757620656501361327">የGoogle የይለፍ ቃል አስተዳዳሪ ዝማኔ</translation>
 <translation id="1778457539567749232">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="1779766957982586368">መስኮት ዝጋ</translation>
 <translation id="1791662854739702043">የተጫነ</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="5054455334322721892">በመለያ ሲገቡ <ph name="BEGIN_LINK1" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK1" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
 <translation id="506254248375231072">ምንም ትሮች የሉም</translation>
+<translation id="5062960805900435602">ስለ የይለፍ ቃል ማዋሃድ ዝማኔ ተዘግቷል</translation>
 <translation id="5091199029769593641">በቅርቡ አዲስ ትር ሲከፍቱ ከ<ph name="SITE_NAME" /> የመጡ ታሪኮችን ይመለከታሉ። እርስዎ የሚከተሏቸው ጣቢያዎች በGoogle መለያዎ ውስጥ ይቀመጣሉ። በምርምር ቅንብሮች ውስጥ ሊያቀናብሯቸው ይችላሉ።</translation>
 <translation id="5091249083535528968">የተራዘመ የአጠቃቀም ውሂብ</translation>
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">ጽሁፍ</translation>
 <translation id="5368227114232678694">በዚህ መሣሪያ ላይ በግል ለማሰስ፣ ማንነት የማያሳውቅን ይሞክሩ</translation>
 <translation id="5375577065097716013">በ Google ሌንስ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ምስል ይፈልጉ</translation>
+<translation id="539881862970320163">ጠንካራ የይለፍ ቃል ተጠቁሟል። ቁልፍ ሰሌዳ ተደብቋል።</translation>
 <translation id="5401851137404501592">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል።</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> በ<ph name="CLIENT_NAME" /> ላይ ያስረክቡ?</translation>
 <translation id="5414836363063783498">በማረጋገጥ ላይ…</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">ከChrome ለቀው ሲወጡ ማንነት የማያሳውቁ ትሮች ይቆለፋሉ</translation>
 <translation id="7222235798733126207">በጣቢያዎች መካከል የተገደበ ማጋራት</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ውርድን በመጠባበቅ ላይ}one{# ውርዶችን በመጠባበቅ ላይ}other{# ውርዶችን በመጠባበቅ ላይ}}</translation>
+<translation id="72415438529550637">የይለፍ ቃል ጥቆማ ተዘግቷል።</translation>
 <translation id="7242755609445462077">ቅጥ ያለው ድምቀት <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> በ Chrome ውስጥ ስምረት እንደበራለት ያረጋግጡ</translation>
 <translation id="7252076891734325316">ስልክዎን ከኮምፒውተሩ አጠገብ ያኑሩ</translation>

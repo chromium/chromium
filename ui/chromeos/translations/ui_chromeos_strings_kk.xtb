@@ -1011,6 +1011,7 @@
 <translation id="8919081441417203123">дат</translation>
 <translation id="8949925099261528566">Қосылған, интернет жоқ</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
+<translation id="8971742885766657349">Синхрондалып жатыр – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Қытай (дәстүрлі, пиньинь)</translation>
 <translation id="8998871447376656508">Жүктеп салуды аяқтау үшін Google Drive-та орын жеткіліксіз.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>

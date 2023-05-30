@@ -1243,6 +1243,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4040350669425716613">Kolleges en universiteite</translation>
 <translation id="4047351652147966654">18x24 dm.</translation>
+<translation id="404831776305217138">Opdatering-URL vir uitbreiding met ID “<ph name="EXTENSION_ID" />” is ongeldig of gebruik ’n ongesteunde skema. Gesteunde skemas is: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Jy sal dit in alle Google-produkte kan gebruik</translation>
 <translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6569366777234823130">Dramaflieks</translation>
 <translation id="6573200754375280815">Dubbelpons regs</translation>
 <translation id="6576181918031900030">Begin uitsaai</translation>
+<translation id="6578434528542148658">Ongeldige uitbreiding-ID.</translation>
 <translation id="657902945730878902">Skets en inkleur</translation>
 <translation id="6579630537141957243">Koppel MIDI-toestel?</translation>
 <translation id="6579990219486187401">Ligpienk</translation>

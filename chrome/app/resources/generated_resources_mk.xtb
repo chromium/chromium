@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Екстензијава може да ги чита и менува вашите податоци на сајтовите. Може да ги контролирате сајтовите до кои таа има пристап.</translation>
 <translation id="1007057452468855774">Вклучи ја Google Play Store</translation>
 <translation id="1008186147501209563">Извезување обележувачи</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> памти како сте се најавиле и кога е тоа можно, ве најавува автоматски. Кога е исклучен, ќе се бара потврда од вас при секое најавување.</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{За да ги заштитиме вашите податоци, ги отстранивме дозволите за сајт што го немате посетено 2 месеци}one{За да ги заштитиме вашите податоци, ги отстранивме дозволите за сајтови што ги немате посетено 2 месеци}other{За да ги заштитиме вашите податоци, ги отстранивме дозволите за сајтови што ги немате посетено 2 месеци}}</translation>
 <translation id="1009663062402466586">Сега се достапни контроли за игри</translation>
@@ -228,6 +229,7 @@
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Не може да ја инсталира датотеката <ph name="EXTERNAL_CRX_FILE" /> во локалниот кеш.</translation>
 <translation id="1185924365081634987">Исто така, може да се обидете да <ph name="GUEST_SIGNIN_LINK_START" />прелистувате како гостин<ph name="GUEST_SIGNIN_LINK_END" /> за да ја поправите оваа грешка на мрежата.</translation>
+<translation id="1187692277738768150">Кога ќе ја користите и зачувате лозинкава:</translation>
 <translation id="1187722533808055681">Неактивни будења</translation>
 <translation id="1188807932851744811">Дневникот не се постави.</translation>
 <translation id="1190086046506744802">Многу пространо</translation>
@@ -244,6 +246,7 @@
 <translation id="1195447618553298278">Непозната грешка.</translation>
 <translation id="1195558154361252544">Известувањата се автоматски блокирани за сите сајтови, освен за оние за коишто сте ги дозволиле</translation>
 <translation id="1197088940767939838">Портокалова</translation>
+<translation id="1197185198920566650">Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="1197199342062592414">Да започнеме</translation>
 <translation id="11978075283960463">Податоци зачувани во апликација: <ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">Деактивирај</translation>
@@ -1479,6 +1482,7 @@
 <translation id="2241053333139545397">Прочитајте ги и променете ги вашите податоци на повеќе веб-локации</translation>
 <translation id="2241634353105152135">Само еднаш</translation>
 <translation id="2242687258748107519">Информации за датотека</translation>
+<translation id="2243452222143104807">Неактивна картичка</translation>
 <translation id="2245603955208828424">За движење низ ставките буква по буква, користете ги копчињата со стрелки</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> автоматски се ажурира во заднина за да ви ги овозможи последните функции и безбедносни подобрувања. Сега можете да ги прегледате поставките за ажурирање во „Поставки“.</translation>
 <translation id="2246549592927364792">Сакате да добивате описи за слики од Google?</translation>
@@ -1509,6 +1513,7 @@
     Центарот за помош<ph name="END_LINK" />.</translation>
 <translation id="2266957463645820432">IPP преку USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth е оневозможен</translation>
+<translation id="2269895253281481171">Ќе добиете известување ако некогаш постои ризик</translation>
 <translation id="2270450558902169558">Разменете податоци со кој било уред во доменот <ph name="DOMAIN" /></translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />Инсталацијата <ph name="BEGIN_BOLD" />ќе го избрише целиот хард диск<ph name="END_BOLD" />. Уверете се дека имате направено бекап на вашите податоци.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Откако ќе започне, инсталирањето нема да може да се откаже.<ph name="END_PARAGRAPH2" /></translation>
@@ -1940,6 +1945,7 @@
 <translation id="2616008379779647117">Јазик на титловите</translation>
 <translation id="2616366145935564096">Прочитајте ги и променете ги вашите податоци на <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Поставување „Споделување во близина“</translation>
+<translation id="261953424982546039">Chrome Labs…</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> не може да се преземе безбедно.</translation>
 <translation id="2620245777360407679">Уреди тековно поврзани со точка на пристап</translation>
 <translation id="2620436844016719705">Систем</translation>
@@ -3840,6 +3846,7 @@
 <translation id="429234155571566255">овие неодамна прегледани рецепти</translation>
 <translation id="4295072614469448764">Апликацијата е достапна во вашиот терминал. Може да има икона и во „Стартерот“.</translation>
 <translation id="4295979599050707005">Најавете се повторно за да потврдите дека вашата сметка <ph name="USER_EMAIL" /> може да се користи со веб-сајтови, апликации и екстензии во Chrome и Google Play. Може и да ја отстраните сметкава. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304">Инсталирани и стримувани апликации од <ph name="APP_NAME" /></translation>
 <translation id="4297219207642690536">Рестартирај и ресетирај</translation>
 <translation id="4297813521149011456">Ротирање на екранот</translation>
 <translation id="4299022904780065004">Нов &amp;прозорец „Инкогнито“</translation>
@@ -3873,6 +3880,7 @@
 <translation id="4325237902968425115">Се деинсталира <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Најсилната безбедност на Chrome нуди поголема заштита од опасни веб-сајтови, преземања и екстензии</translation>
 <translation id="4326484226728068206">Ставки во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">Картичкава користи <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">Вода со мраз</translation>
 <translation id="4330387663455830245">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Поставете родителски контроли</translation>
@@ -5477,6 +5485,7 @@
 <translation id="5780973441651030252">Приоритет на процес</translation>
 <translation id="5781092003150880845">Синхронизирај како <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Испратете наредби до <ph name="EXTENSION_NAME" /></translation>
+<translation id="5782040878821624922">Достапно на секој уред</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5785583009707899920">Услуги за датотеки на Chrome</translation>
@@ -5949,7 +5958,7 @@
 <translation id="6169040057125497443">Проверете го микрофонот.</translation>
 <translation id="6169967265765719844">Можете да управувате со дозволите за игри и апликации инсталирани преку Steam во <ph name="LINK_BEGIN" />поставките за апликацијата Steam<ph name="LINK_END" />.</translation>
 <translation id="6170470584681422115">Сендвич</translation>
-<translation id="6170498031581934115">Не може да се овозможи отстранување грешки на ADB. Одете во „Поставки“ и обидете се повторно.</translation>
+<translation id="6170498031581934115">Не може да се овозможи отстранување грешки на ADB. Отворете „Поставки“ и обидете се повторно.</translation>
 <translation id="6171779718418683144">Прашувај при секоја посета</translation>
 <translation id="617213288191670920">Не се додадени јазици</translation>
 <translation id="6173623053897475761">Напишете го вашиот PIN повторно</translation>
@@ -6175,6 +6184,7 @@
 <translation id="6384275966486438344">Променете ги поставките за пребарување на: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Неименувана група - 1 картичка}one{Неименувана група - # картичка}other{Неименувана група - # картички}}</translation>
 <translation id="6385149369087767061">Поврзете се на интернет и обидете се повторно</translation>
+<translation id="6385382178401976503">Картичка: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Опомена - Овозможена е детална евиденција, евиденцијата подолу може да содржи URL-адреси или други чувствителни податоци. Прегледајте ги и уверете се дека сакате да ги испратите овие податоци.</translation>
 <translation id="6387674443318562538">Подели вертикално</translation>
 <translation id="6388429472088318283">Пребарувајте јазици</translation>
@@ -7422,6 +7432,7 @@
 <translation id="7475671414023905704">URL за изгубена лозинка на Netscape</translation>
 <translation id="7476454130948140105">Батеријата е речиси празна за да се ажурира (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Автоматски блокирани: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
+<translation id="7477599578899108080">Голема потрошувачка на меморија: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Создајте QR-код за страницава</translation>
 <translation id="7477793887173910789">Контролирајте ја музиката, видеата и др.</translation>
 <translation id="7478069565037869084">Широко</translation>
@@ -8154,6 +8165,7 @@
 <translation id="8086610718778464681">Не може да се направи бекап на апликациите и датотеките на Linux</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Датотекава е шифрирана. Побарајте од сопственикот да ја дешифрира.}one{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}other{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}}</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
+<translation id="8089547136368562137">Заштитено со најдобрите технологии на Google</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
 <translation id="8090513782447872344">Може да се вратите во секое време за да погледнете повторно</translation>
 <translation id="809312780580957751">Steam не може да се инсталира на уредов</translation>
@@ -8187,6 +8199,7 @@
 <translation id="8113476325385351118">Не дозволувај сајтов да има целосна контрола врз MIDI-уредите</translation>
 <translation id="8115139559594092084">Од вашиот Google Drive</translation>
 <translation id="8116972784401310538">&amp;Управник со обележувачи</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> памти како сте се најавиле и кога е тоа можно, ве најавува автоматски. Кога е исклучен, ќе се бара потврда од вас при секое најавување.</translation>
 <translation id="8118362518458010043">Оневозможено од Chrome. Екстензијава може да биде небезбедна.</translation>
 <translation id="8118488170956489476">Вашата организација <ph name="BEGIN_LINK" />управува со прелистувачот<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">Брзина на освежување на екранот</translation>
@@ -8942,6 +8955,7 @@
 <translation id="8771300903067484968">Заднината на почетната страница е ресетирана на стандардната заднина.</translation>
 <translation id="8773280816776735812">Прикажи ја вредноста за IBAN</translation>
 <translation id="8773302562181397928">Зачувај го <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">Заштеда на неактивна картичка: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="8774934320277480003">Маргина на врв</translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
@@ -9219,6 +9233,7 @@
 <translation id="9013037634206938463">Потребни се <ph name="INSTALL_SIZE" /> слободен простор за инсталирање на Linux. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="9014206344398081366">Упатство за ChromeVox</translation>
 <translation id="901668144954885282">Направете бекап на Google Drive</translation>
+<translation id="90181708067259747">Датум на истекување: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Инсталирањето заврши</translation>
 <translation id="9019062154811256702">Читај и менувај ги поставките за автоматско пополнување</translation>
 <translation id="9019894137004772119">Користење на локацијата. Дозволете апликациите и услугите со дозвола за локација да ја користат локацијата на уредот. Google може повремено да прибира податоци за локацијата и анонимно да ги користи податоциве за да ги подобри прецизноста на локацијата и услугите според локација.</translation>

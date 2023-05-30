@@ -142,6 +142,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1750259112639922169">Grupo de pestanas: <ph name="TAB_COUNT" /> pestanas</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
+<translation id="1757620656501361327">Actualización do xestor de contrasinais de Google</translation>
 <translation id="1778457539567749232">Marcar como sen ler</translation>
 <translation id="1779766957982586368">Pechar ventá</translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
@@ -754,6 +755,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="504456571576643789">Cuestións que se deben ter en conta</translation>
 <translation id="5054455334322721892">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK1" />outros datos da túa actividade<ph name="END_LINK1" />. Podes eliminalos en calquera momento.</translation>
 <translation id="506254248375231072">Ningunha pestana</translation>
+<translation id="5062960805900435602">A actualización sobre a combinación de contrasinais está pechada</translation>
 <translation id="5091199029769593641">Pronto se che mostrarán historias de <ph name="SITE_NAME" /> cando abras unha pestana nova. Os sitios que segues gárdanse na túa conta de Google. Podes xestionalos na configuración de Discover.</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
@@ -803,6 +805,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5361107212971249203">mensaxe de texto</translation>
 <translation id="5368227114232678694">Se queres navegar de forma privada neste dispositivo, proba o modo de incógnito</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Suxestión de contrasinal seguro. Teclado oculto.</translation>
 <translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio.</translation>
 <translation id="5409881200985013443">Queres enviar o código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
@@ -1161,6 +1164,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7217781228893594884">As pestanas do modo de incógnito bloquearanse cando saias de Chrome</translation>
 <translation id="7222235798733126207">Uso compartido limitado entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
+<translation id="72415438529550637">A suxestión de contrasinal está pechada.</translation>
 <translation id="7242755609445462077">Nota estilizada (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7252076891734325316">Coloca o teléfono preto do ordenador</translation>

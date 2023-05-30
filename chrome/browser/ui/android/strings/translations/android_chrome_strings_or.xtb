@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">ଟାବ ଗ୍ରୁପ - <ph name="TAB_COUNT" />ଟି ଟାବ</translation>
 <translation id="17513872634828108">ଟାବ୍‌ଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="1754404134430936718">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
+<translation id="1757620656501361327">Google Password Manager ସମ୍ବନ୍ଧିତ ଅପଡେଟ</translation>
 <translation id="1778457539567749232">ପଢ଼ାଯାଇନାହିଁ ଭାବେ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="1779766957982586368">ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1791662854739702043">ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇଛି</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
 <translation id="5054455334322721892">ଆପଣ ସାଇନ୍ ଇନ୍ କରିଥିବା ବେଳେ <ph name="BEGIN_LINK1" />ଅନ୍ୟ ପ୍ରକାରର କାର୍ଯ୍ୟକଳାପ<ph name="END_LINK1" /> ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ। ଆପଣ ସେଗୁଡ଼ିକୁ ଯେ କୌଣସି ସମୟରେ ଡିଲିଟ୍ କରିପାରିବେ।</translation>
 <translation id="506254248375231072">କୌଣସି ଟାବ୍ ନାହିଁ</translation>
+<translation id="5062960805900435602">ପାସୱାର୍ଡ ମର୍ଜ ବିଷୟରେ ଅପଡେଟକୁ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="5091199029769593641">ଶୀଘ୍ର, ଆପଣ ଏକ ନୂଆ ଟାବ୍ ଖୋଲିଲେ <ph name="SITE_NAME" />ରୁ ଷ୍ଟୋରୀଗୁଡ଼ିକୁ ଦେଖିବେ। ଆପଣ ଅନୁସରଣ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରାଯାଏ। ଆପଣ ସେଗୁଡ଼ିକୁ ଡିସ୍କଭର ସେଟିଂସରେ ପରିଚାଳନା କରିପାରିବେ।</translation>
 <translation id="5091249083535528968">ବିସ୍ତାରିତ ବ୍ୟବହାର ଡାଟା</translation>
 <translation id="509429900233858213">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">ଟେକ୍ସଟ</translation>
 <translation id="5368227114232678694">ଏହି ଡିଭାଇସରେ ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବା ପାଇଁ ଇନକଗ୍ନିଟୋ ମୋଡ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="5375577065097716013">Google Lens ସହ ଛବି ଖୋଜନ୍ତୁ <ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">କଠିନ ପାସୱାର୍ଡ ପାଇଁ ପରାମର୍ଶ ଦିଆଯାଇଛି। କୀବୋର୍ଡ ଲୁଚାଯାଇଛି।</translation>
 <translation id="5401851137404501592">ଜାରି ରଖିବାକୁ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ ନାମ, ଇମେଲ ଠିକଣା ଏବଂ ପ୍ରୋଫାଇଲ ଛବିକୁ ସେୟାର କରିବ।</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />ରେ <ph name="ONE_TIME_CODE" /> ଦାଖଲ କରିବେ?</translation>
 <translation id="5414836363063783498">ଯାଞ୍ଚ କରୁଛି…</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକ ଲକ ହୋଇଯିବ</translation>
 <translation id="7222235798733126207">ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ସୀମିତ ସେୟାରିଂ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବାକି ଅଛି}}</translation>
+<translation id="72415438529550637">ପାସୱାର୍ଡ ପରାମର୍ଶକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="7242755609445462077">ଷ୍ଟାଇଲାଇଜଡ୍ ହାଇଲାଇଟ୍ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chromeରେ <ph name="TARGET_DEVICE_NAME" />ର ସିଙ୍କ୍ ଚାଲୁ ହୋଇଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7252076891734325316">ଆପଣଙ୍କ ଫୋନକୁ କମ୍ପ୍ୟୁଟର ପାଖରେ ରଖନ୍ତୁ</translation>

@@ -1242,6 +1242,7 @@
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4040350669425716613">महाविद्यालये आणि विद्यापीठे</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" आयडी असलेल्या एक्स्टेंशनसाठी अपडेट URL चुकीची आहे किंवा सपोर्ट नसलेली स्‍कीम वापरत आहे. सपोर्ट असलेल्या स्कीम: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> आणि <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">तुम्हाला तो सर्व Google उत्पादनांवर वापरता येईल</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">नाट्यमय चित्रपट</translation>
 <translation id="6573200754375280815">ड्युअल पंच राइट</translation>
 <translation id="6576181918031900030">कास्ट करणे सुरू करा</translation>
+<translation id="6578434528542148658">एक्स्टेंशन आयडी चुकीचा आहे.</translation>
 <translation id="657902945730878902">चित्रकला आणि रंग भरणे</translation>
 <translation id="6579630537141957243">MIDI डिव्‍हाइस कनेक्ट करायचे का?</translation>
 <translation id="6579990219486187401">फिकट गुलाबी</translation>

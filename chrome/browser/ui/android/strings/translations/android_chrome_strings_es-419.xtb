@@ -142,6 +142,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1750259112639922169">Grupo de pestañas: <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="1754404134430936718">Se copió el texto</translation>
+<translation id="1757620656501361327">Actualización del Administrador de contraseñas de Google</translation>
 <translation id="1778457539567749232">Marcar como no leído</translation>
 <translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1791662854739702043">Instalado</translation>
@@ -754,6 +755,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="504456571576643789">Aspectos para tener en cuenta</translation>
 <translation id="5054455334322721892">Es posible que se guarden <ph name="BEGIN_LINK1" />otras formas de actividad<ph name="END_LINK1" /> en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
+<translation id="5062960805900435602">La actualización sobre la combinación de contraseñas está cerrada</translation>
 <translation id="5091199029769593641">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="SITE_NAME" />. Los sitios que sigues se guardan en tu Cuenta de Google. Puedes administrarlos en la configuración de Descubre.</translation>
 <translation id="5091249083535528968">Datos de uso extendidos</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
@@ -803,6 +805,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5361107212971249203">texto</translation>
 <translation id="5368227114232678694">Para navegar de forma privada en este dispositivo, prueba el modo Incógnito</translation>
 <translation id="5375577065097716013">Buscar imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Se sugiere una contraseña segura. El teclado está oculto.</translation>
 <translation id="5401851137404501592">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio.</translation>
 <translation id="5409881200985013443">¿Deseas enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando…</translation>
@@ -1161,6 +1164,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7217781228893594884">Las pestañas de incógnito se bloquearán cuando salgas de Chrome</translation>
 <translation id="7222235798733126207">Limitamos el uso compartido entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
+<translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="7242755609445462077">Nota estilizada con contenido destacado (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Comprueba que <ph name="TARGET_DEVICE_NAME" /> tenga activada la sincronización en Chrome</translation>
 <translation id="7252076891734325316">Coloca el teléfono cerca de la computadora</translation>

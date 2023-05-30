@@ -143,6 +143,7 @@
 <translation id="1750259112639922169">分頁群組 - <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
 <translation id="1754404134430936718">已複製文字</translation>
+<translation id="1757620656501361327">Google 密碼管理工具更新</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
 <translation id="1791662854739702043">安裝位置</translation>
@@ -753,6 +754,7 @@
 <translation id="504456571576643789">注意事項</translation>
 <translation id="5054455334322721892">在你登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>
+<translation id="5062960805900435602">已關閉密碼合併相關更新</translation>
 <translation id="5091199029769593641">不久後，你就會在開啟新分頁時看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
 <translation id="5091249083535528968">延伸使用資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -802,6 +804,7 @@
 <translation id="5361107212971249203">文字內容</translation>
 <translation id="5368227114232678694">如果想在這部裝置上進行私密瀏覽，請使用無痕模式</translation>
 <translation id="5375577065097716013">使用 Google 智慧鏡頭搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">建議使用高強度密碼。鍵盤已隱藏。</translation>
 <translation id="5401851137404501592">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">驗證中…</translation>
@@ -1160,6 +1163,7 @@
 <translation id="7217781228893594884">系統會在你離開 Chrome 後鎖定無痕分頁</translation>
 <translation id="7222235798733126207">限制網站之間分享的資訊</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載作業仍待處理}other{# 項下載作業仍待處理}}</translation>
+<translation id="72415438529550637">已關閉密碼建議功能。</translation>
 <translation id="7242755609445462077">風格化醒目顯示內容 (日期：<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">請確認「<ph name="TARGET_DEVICE_NAME" />」的 Chrome 同步功能已開啟</translation>
 <translation id="7252076891734325316">請將手機置於電腦附近</translation>

@@ -214,6 +214,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1198183996903759302">Si se asigna el valor "True" a esta política o se asigna el valor "False" a <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" />, las páginas web no podrán acceder a la API de WebGL y los complementos no podrán usar la API de Pepper 3D.
 
       Si se le asigna el valor "False" o no se le asigna ningún valor, las páginas web podrán usar la API de WebGL y los complementos podrán usar la API de Pepper 3D, pero es posible que la configuración predeterminada del navegador requiera el uso de argumentos de línea de comandos para utilizar estas API.</translation>
+<translation id="1198458955128279215">Usar el comportamiento predeterminado del plan de lanzamiento de funciones.</translation>
 <translation id="1202216683470826356">Mostrar tarjetas en la página Nueva pestaña</translation>
 <translation id="120314092766637918">Si esta política se habilita o no se define, <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> controlará la protección contra phishing en el cliente en <ph name="PRODUCT_NAME" />. Si a <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> se le asignan los valores <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> o <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, la protección contra phishing en el cliente ejecutará un modelo local para comprobar si una página está suplantando una identidad. Si el modelo cree que la página está suplantando una identidad, <ph name="PRODUCT_NAME" /> enviará una solicitud a Google para recibir un veredicto final.
 Si se inhabilita esta política, la protección contra phishing en el cliente no ofrecerá ninguna protección ni enviará datos a Google para recibir veredictos.</translation>
@@ -838,6 +839,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1768225118528727376">Permitir permiso de gestión de ventanas en estos sitios</translation>
 <translation id="1770071413238151235">Formato de reloj de 12 horas</translation>
 <translation id="1771024053220392089">Inhabilitar la compatibilidad con navegadores antiguos</translation>
+<translation id="1781225230395284182">Mostrar el cuadro de diálogo de cancelación cuando se llama a beforeunload event.preventDefault().</translation>
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para Desarrolladores de Android. Si se asigna el valor true a esta política, los usuarios no podrán acceder a las Opciones para Desarrolladores. Si se le asigna el valor false o no se configura, los usuarios podrán tocar siete veces el número de compilación en la aplicación Ajustes de Android para acceder a esas opciones.</translation>
 <translation id="1787790976045065845">Esta política solo tiene validez si se le asigna el valor <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> a la política <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> y si un usuario que se autentica mediante una tarjeta inteligente quita dicha tarjeta. Esta política especifica durante cuántos segundos se muestra una notificación que informa al usuario de la acción que tendrá lugar a continuación. La notificación bloquea la pantalla. La acción solo se realizará una vez que caduque la notificación. El usuario puede impedir que se produzca la acción volviendo a insertar la tarjeta inteligente antes de que caduque la notificación. Si se le asigna el valor cero a esta política, no se mostrará ninguna notificación y la acción ocurrirá inmediatamente.</translation>
 <translation id="1793346220873697538">Inhabilitar la impresión con PIN de forma predeterminada</translation>
@@ -1925,6 +1927,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2787774054174244402">Si se le asigna el valor "true" a esta política, se evita que los usuarios deban escribir en dispositivos de almacenamiento externos.
 
       A menos que el almacenamiento externo esté bloqueado, si se configura "ExternalStorageReadOnly" en "false" o no se le asigna ningún valor, los usuarios podrán crear y modificar archivos de dispositivos de almacenamiento externos en los que se pueda escribir físicamente. (El almacenamiento externo se bloquea asignándole a "ExternalStorageDisable" el valor "true").</translation>
+<translation id="2788443040242264100">No mostrar el cuadro de diálogo de cancelación cuando se llama a beforeunload event.preventDefault().</translation>
 <translation id="2789742777235177478">Limita el tiempo durante el que un usuario autenticado mediante GAIA sin SAML puede iniciar sesión sin conexión en la pantalla de bloqueo</translation>
 <translation id="2796714419743648316">Lista de límites de tiempo por aplicación permitidos
 </translation>
@@ -2714,6 +2717,18 @@ Esta política se eliminó en la versión 113 de <ph name="PRODUCT_NAME" /> para
       Si no se asigna ningún valor a esta política o no contiene ningún intervalo de tiempo:
       Esta política no bloqueará ninguna comprobación de actualizaciones automática, pero es posible que otras políticas sí lo hagan.
       Hasta la versión M88, esta función solo está habilitada en los dispositivos <ph name="PRODUCT_OS_NAME" /> configurados como kioscos de inicio automático. Esta política no afectará a otros dispositivos. Sin embargo, a partir de la versión M89, esta política está habilitada en todos los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3457921137261127955">La extensión para el uso de claves X.509 indica cómo se puede usar la clave en un certificado. Estas instrucciones garantizan que los certificados no se utilicen en un contexto no deseado, lo que protege contra una clase de ataques de varios protocolos en HTTPS y otros protocolos. Para que esto funcione, los clientes HTTPS deben comprobar si los certificados del servidor coinciden con los parámetros TLS de la conexión.
+
+Si se habilita esta política, <ph name="PRODUCT_NAME" /> hará esta comprobación.
+Esto ayuda a evitar ataques en los que un atacante manipula el navegador para interpretar una clave de una forma no deseada por el propietario del certificado.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> omitirá esta comprobación en las conexiones HTTPS que negocien TLS 1.2 y, además, usen un certificado RSA que conecte con un ancla de confianza local. Entre las anclas de confianza locales se incluyen, por ejemplo, los certificados raíz proporcionados por la política o instalados por el usuario. En todos los demás casos, la comprobación se realizará independientemente de la configuración de esta política.
+
+Si no se configura esta política, <ph name="PRODUCT_NAME" /> se comportará como si la política estuviera inhabilitada.
+
+Esta política está disponible para que los administradores puedan revisar el comportamiento de una versión futura, lo que habilitará esta comprobación de forma predeterminada. A partir de ese momento, esta política seguirá estando disponible temporalmente para los administradores que necesiten más tiempo para actualizarla.
+
+Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KEY_USAGE_INCOMPATIBLE. Los sitios con este error probablemente no tengan un certificado configurado correctamente. Los paquetes de cifrado ECDHE_RSA modernos emplean la opción para usar la clave "digitalSignature", mientras que los antiguos paquetes de cifrado para descifrar RSA emplean la opción para usar la clave "keyEncipherment". Si no lo tienes claro, los administradores deberían incluir ambas opciones en los certificados RSA destinados a HTTPS.</translation>
 <translation id="3459509316159669723">Imprimir</translation>
 <translation id="3461279434465463233">Informar sobre el estado de la energía</translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
@@ -5981,6 +5996,7 @@ Consulta también la política <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</trans
 
       Nota: Si no se admite el método de introducción actual, se cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de esta lista. Se ignorarán los métodos no válidos o no admitidos.</translation>
 <translation id="6483115462650732746">Mostrar el menú de accesibilidad flotante en modo Kiosco</translation>
+<translation id="6485036313708130232">Controlar el nuevo comportamiento del evento beforeunload que muestra el cuadro de diálogo para confirmar la cancelación cuando se llama a preventDefault</translation>
 <translation id="6489084406497912050">Controla si los usuarios pueden añadir cuentas de Kerberos.
 
           Si se habilita esta política o no se le asigna ningún valor, los usuarios podrán añadir cuentas de Kerberos a través de la página de configuración de cuentas de Kerberos. Los usuarios tendrán control total sobre las cuentas que han añadido y podrán modificarlas o eliminarlas.
@@ -7284,6 +7300,13 @@ en la pantalla <ph name="LOG_IN" />.</translation>
 <translation id="7613115815080726221">El tiempo que debe transcurrir (en milisegundos) sin que el usuario realice ninguna acción antes de que se entre en modo de inactividad</translation>
 <translation id="7614663184588396421">Lista de esquemas de protocolo inhabilitados</translation>
 <translation id="7616631530432070402">Se habilitarán los paquetes de cifrado 3DES en TLS</translation>
+<translation id="7617710923960807616">Esta política permite controlar si se muestra el cuadro de diálogo de confirmación cuando una página llama a preventDefault para el evento beforeunload. Anteriormente, <ph name="PRODUCT_NAME" /> no mostraba estos cuadros de diálogo, pero el comportamiento predeterminado ha cambiado. Esta política es una solución temporal para las empresas que necesitan algo de tiempo para arreglar sus sitios web rotos debido al nuevo comportamiento.
+
+Si se habilita esta política, se mostrará el cuadro de diálogo para confirmar la cancelación cuando una página llame a preventDefault para el evento beforeunload.
+
+Si se inhabilita esta política, no se mostrará ningún cuadro de diálogo para confirmar la cancelación cuando una página llame a preventDefault para el evento beforeunload.
+
+Si no se define esta política, se usará el comportamiento predeterminado según el plan de lanzamiento de funciones de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Requerir el aislamiento en todos los sitios web</translation>
 <translation id="7620869951155758729">Esta política especifica la configuración que se utiliza para generar y verificar códigos de acceso parental.
 
@@ -8083,6 +8106,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       El valor correspondiente a esta política se debe especificar en milisegundos.</translation>
 <translation id="8330437518362176921">Usar solo la URL de actualización proporcionada en la política al descargar y actualizar aplicaciones de kiosco de Chrome</translation>
 <translation id="8331479227794770304">Habilitar teclas persistentes</translation>
+<translation id="8332822245414537447">Inhabilitar la comprobación de uso de claves RSA</translation>
 <translation id="8337114537412769126">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar sugerencias con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda de sugerencias se enviarán mediante el método GET.</translation>
@@ -8373,6 +8397,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="8623672932476443039">Si se habilita la política, los usuarios podrán acceder al modo desarrollador para aplicaciones aisladas.
       Si se inhabilita, los usuarios no podrán acceder a esta función.
       Si no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas en ChromeOS, pero sí estará disponible para el resto de los usuarios y sistemas operativos.</translation>
+<translation id="862621549134406761">Habilitar comprobación de uso de claves RSA</translation>
 <translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
 <translation id="8631314130868563649">Inhabilitar la gestión del cambio de alimentación en picos</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>
@@ -8483,6 +8508,7 @@ Si la política no se define, no se importará ninguna contraseña guardada al e
 
 Si se configura la política, los usuarios no podrán cambiar esta función. Si no se le asigna ningún valor, podrán cambiar esta opción.</translation>
 <translation id="8707790573162457301">Ejecuta una limpieza de disco automática al iniciar sesión</translation>
+<translation id="8708628595824806312">Comprobar el uso de claves RSA para certificados de servidor emitidos por anclas de confianza locales</translation>
 <translation id="8713535263782304771">Inhabilitar Navegación segura</translation>
 <translation id="8715181294371649277">Permitir que Navegación segura proteja las descargas en tiempo real</translation>
 <translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
@@ -8624,6 +8650,7 @@ Si esta política se inhabilita o no se establece, los datos del usuario de esta
 
 Si se inhabilita, <ph name="PRODUCT_NAME" /> no estará disponible en ninguna página web.</translation>
 <translation id="8864975621965365890">Elimina el mensaje de desactivación que aparece cuando <ph name="PRODUCT_FRAME_NAME" /> muestra un sitio.</translation>
+<translation id="8865404058177794289">Usar la configuración predeterminada para la comprobación de uso de claves RSA</translation>
 <translation id="8866430022832109569">Informes de inventario de aplicaciones</translation>
 <translation id="886645881209114007">Permite a los usuarios usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8867894831390233044">Controla si los usuarios pueden usar la depuración remota.

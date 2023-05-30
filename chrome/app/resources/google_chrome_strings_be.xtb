@@ -31,6 +31,7 @@
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
+<translation id="1555506416658437797">змяніць спосабы аплаты.</translation>
 <translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небяспечны, таму Chrome заблакіраваў яго.</translation>
@@ -82,6 +83,7 @@
 <translation id="234869673307233423">Браўзеру Chrome не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
 <translation id="235650106824528204">Любыя даныя Chrome, створаныя пры выкарыстанні гэтага профілю (напрыклад, закладкі, гісторыя, паролі і іншыя налады), могуць быць выдалены адміністратарам працоўнага профілю. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Працягнуць</translation>
+<translation id="2399868464369312507">Google Chrome спрабуе змяніць спосабы аплаты.</translation>
 <translation id="2401189691232800402">Сістэма Chrome OS</translation>
 <translation id="2467438592969358367">Google Chrome запытвае дазвол на экспартаванне вашых пароляў. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="2485422356828889247">Выдаліць</translation>

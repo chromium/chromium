@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> 會記住你的登入資訊，並在可能情況下自動將你登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
 <translation id="1008557486741366299">現在不要</translation>
 <translation id="1009454959501038262">{NUM_SITES,plural, =1{為保護你的資料，系統已從你 2 個月以來未曾造訪的一個網站移除相關權限}other{為保護你的資料，系統已從你 2 個月以來未曾造訪的多個網站移除相關權限}}</translation>
 <translation id="1009663062402466586">現已提供遊戲控制項</translation>
@@ -226,6 +227,7 @@
 <translation id="1181366777303791449">位於 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">無法在本機快取中安裝 <ph name="EXTERNAL_CRX_FILE" />。</translation>
 <translation id="1185924365081634987">你也可以嘗試<ph name="GUEST_SIGNIN_LINK_START" />以訪客身分瀏覽<ph name="GUEST_SIGNIN_LINK_END" />，藉此修復網路問題。</translation>
+<translation id="1187692277738768150">使用並儲存這個密碼有以下好處：</translation>
 <translation id="1187722533808055681">閒置喚醒</translation>
 <translation id="1188807932851744811">尚未上傳記錄。</translation>
 <translation id="1190086046506744802">行距很大</translation>
@@ -241,6 +243,7 @@
 <translation id="1195447618553298278">未知的錯誤。</translation>
 <translation id="1195558154361252544">除了你允許的網站之外，自動封鎖所有網站的通知</translation>
 <translation id="1197088940767939838">橘色</translation>
+<translation id="1197185198920566650">系統會將這組密碼儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="1197199342062592414">開始使用</translation>
 <translation id="11978075283960463">儲存在應用程式中的資料大小：<ph name="APP_SIZE" /></translation>
 <translation id="1197935538609051549">停用</translation>
@@ -1466,6 +1469,7 @@
 <translation id="2241053333139545397">讀取及變更你在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2242687258748107519">檔案資訊</translation>
+<translation id="2243452222143104807">閒置分頁</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景自動進行更新，為你提供最新功能並改善安全性。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="2246549592927364792">要取得 Google 提供的圖片說明嗎？</translation>
@@ -1493,6 +1497,7 @@
 <translation id="2263679799334060788">你的寶貴意見可協助我們讓 Google Cast 更臻完美。如需排解投放問題的相關說明，請參閱<ph name="BEGIN_LINK" />說明中心<ph name="END_LINK" />的文章。</translation>
 <translation id="2266957463645820432">USB 型 IPP (IPPUSB)</translation>
 <translation id="2268130516524549846">藍牙已停用</translation>
+<translation id="2269895253281481171">如果密碼有安全風險，系統會通知你</translation>
 <translation id="2270450558902169558">與 <ph name="DOMAIN" /> 網域中的任何裝置交換資料</translation>
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />安裝程序<ph name="BEGIN_BOLD" />會清除整個硬碟的資料<ph name="END_BOLD" />。請確認資料已備份。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />安裝程序開始後就無法取消。<ph name="END_PARAGRAPH2" /></translation>
@@ -1924,6 +1929,7 @@
 <translation id="2616008379779647117">字幕語言：</translation>
 <translation id="2616366145935564096">讀取以及變更你在 <ph name="WEBSITE_1" /> 網站上的資料</translation>
 <translation id="2618797463720777311">設定鄰近分享功能</translation>
+<translation id="261953424982546039">Chrome 研究室功能(&amp;L)...</translation>
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="2620245777360407679">目前已連上無線基地台的裝置</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -3823,6 +3829,7 @@
 <translation id="429234155571566255">這些最近瀏覽過的食譜</translation>
 <translation id="4295072614469448764">應用程式已出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="4295979599050707005">請再次登入，並確認你的帳戶 (<ph name="USER_EMAIL" />) 可用於 Chrome 和 Google Play 的網站、應用程式與擴充功能。你也可以移除這個帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4296424230850377304">已透過「<ph name="APP_NAME" />」安裝及串流的應用程式</translation>
 <translation id="4297219207642690536">重新啟動並重設</translation>
 <translation id="4297813521149011456">螢幕旋轉</translation>
 <translation id="4299022904780065004">新增無痕式視窗(&amp;I)</translation>
@@ -3856,6 +3863,7 @@
 <translation id="4325237902968425115">正在解除安裝「<ph name="LINUX_APP_NAME" />」...</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4326484226728068206">購物車中的商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
+<translation id="4328507707463585900">這個分頁使用了 <ph name="MEMORY_USAGE" /></translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">設定家長監護功能</translation>
@@ -5455,6 +5463,7 @@
 <translation id="5780973441651030252">處理優先順序</translation>
 <translation id="5781092003150880845">和 <ph name="ACCOUNT_FULL_NAME" /> 同步</translation>
 <translation id="5781865261247219930">傳送指令給「<ph name="EXTENSION_NAME" />」</translation>
+<translation id="5782040878821624922">適用於所有裝置</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="57838592816432529">靜音</translation>
 <translation id="5785583009707899920">Chrome 檔案公用程式</translation>
@@ -6151,6 +6160,7 @@
 <translation id="6384275966486438344">將你的搜尋設定變更為：<ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
 <translation id="6385149369087767061">請連線至網際網路，然後再試一次</translation>
+<translation id="6385382178401976503">卡片：<ph name="CARD" /></translation>
 <translation id="6385994920693662133">警告：詳細記錄功能已啟用；以下記錄可能包含網址或其他機密資訊，請檢閱並確認你同意提交這些資訊。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
@@ -7396,6 +7406,7 @@
 <translation id="7475671414023905704">Netscape 遺失密碼網址</translation>
 <translation id="7476454130948140105">電量過低，無法進行更新 (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">已自動封鎖：<ph name="PERMISSION" />和另外 <ph name="COUNT" /> 項</translation>
+<translation id="7477599578899108080">高記憶體用量：<ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">為這個頁面建立 QR 圖碼</translation>
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
 <translation id="7478069565037869084">寬字距</translation>
@@ -8129,6 +8140,7 @@
 <translation id="8086610718778464681">無法備份 Linux 應用程式和檔案</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{這個檔案已加密。請要求檔案擁有者解密。}other{部分檔案已加密。請要求檔案擁有者解密。}}</translation>
 <translation id="808894953321890993">變更密碼</translation>
+<translation id="8089547136368562137">採用 Google 最嚴密的安全防護機制</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
 <translation id="8090513782447872344">你可以日後隨時返回查看</translation>
 <translation id="809312780580957751">無法在這部裝置上安裝 Steam</translation>
@@ -8162,6 +8174,7 @@
 <translation id="8113476325385351118">繼續禁止這個網站取得 MIDI 裝置的完整控制權限</translation>
 <translation id="8115139559594092084">來自你的 Google 雲端硬碟</translation>
 <translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> 會記住你的登入資訊，並在可能情況下自動將你登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
 <translation id="8118362518458010043">這個擴充功能可能不安全，因此遭到 Chrome 停用。</translation>
 <translation id="8118488170956489476">你的<ph name="BEGIN_LINK" />瀏覽器是由貴機構所管理<ph name="END_LINK" /></translation>
 <translation id="8118515372935001629">螢幕重新整理頻率</translation>
@@ -8914,6 +8927,7 @@
 <translation id="8771300903067484968">起始網頁背景已重設為預設背景。</translation>
 <translation id="8773280816776735812">顯示 IBAN 值</translation>
 <translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>
+<translation id="8774286683882091094">閒置分頁省下的記憶體用量：<ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>
@@ -9190,6 +9204,7 @@
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
 <translation id="901668144954885282">備份到 Google 雲端硬碟</translation>
+<translation id="90181708067259747">到期日：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安裝完成</translation>
 <translation id="9019062154811256702">讀取及變更自動填入設定</translation>
 <translation id="9019894137004772119">使用定位服務。允許具有位置存取權的應用程式和服務使用裝置的位置資訊。Google 可能會定期收集位置資料，並以匿名方式使用這項資料，藉此提高定位精確度及改善適地性服務。</translation>

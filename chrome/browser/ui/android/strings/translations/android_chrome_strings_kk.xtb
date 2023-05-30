@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">Қойындылар тобы – <ph name="TAB_COUNT" /> қойынды</translation>
 <translation id="17513872634828108">Ашық қойындылар</translation>
 <translation id="1754404134430936718">Мәтін көшірілді.</translation>
+<translation id="1757620656501361327">Google Password Manager жаңартуы</translation>
 <translation id="1778457539567749232">Оқылмаған деп белгілеу</translation>
 <translation id="1779766957982586368">Терезені жабу</translation>
 <translation id="1791662854739702043">Орнатылды</translation>
@@ -754,6 +755,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="504456571576643789">Ескеретін жайттар</translation>
 <translation id="5054455334322721892">Google аккаунтына кірген кезде, <ph name="BEGIN_LINK1" />басқа әрекет түрлері<ph name="END_LINK1" /> оған сақталуы мүмкін. Оларды кез келген уақытта жоя аласыз.</translation>
 <translation id="506254248375231072">Қойындылар жоқ.</translation>
+<translation id="5062960805900435602">Құпия сөзді біріктіру туралы жаңарту жабық.</translation>
 <translation id="5091199029769593641">Жаңа қойындыны ашқан кезде, <ph name="SITE_NAME" /> сайтының жаңалықтарын көре аласыз. Сіз жазылған сайттар Google аккаунтыңызда сақталады. Оларды Discover параметрлерінен басқара аласыз.</translation>
 <translation id="5091249083535528968">Пайдаланылуы туралы толығырақ дерек</translation>
 <translation id="509429900233858213">Қате орын алды.</translation>
@@ -803,6 +805,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5361107212971249203">мәтін</translation>
 <translation id="5368227114232678694">Осы құрылғыда құпия шолу үшін инкогнито режимін қолданып көріңіз.</translation>
 <translation id="5375577065097716013">Суретті Google Lens арқылы іздеу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Күрделі құпия сөз ұсынылған. Пернетақта жасырылды.</translation>
 <translation id="5401851137404501592">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөніңізді, электрондық мекенжайыңызды және профиль суретіңізді осы сайтпен бөліседі.</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> коды <ph name="CLIENT_NAME" /> құрылғысына жіберілсін бе?</translation>
 <translation id="5414836363063783498">Расталуда…</translation>
@@ -1161,6 +1164,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7217781228893594884">Инкогнито қойындылары Chrome-нан шыққан кезде құлыпталады.</translation>
 <translation id="7222235798733126207">Сайттар арасында бөлісуді шектеу</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 файл жүктеп алынуы керек}other{# файл жүктеп алынуы керек}}</translation>
+<translation id="72415438529550637">Құпия сөз ұсынысы жабық.</translation>
 <translation id="7242755609445462077">Стильденген жазба: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" /> құрылғысындағы Chrome браузерінде синхронизация қосулы екеніне көз жеткізіңіз.</translation>
 <translation id="7252076891734325316">Телефоныңызды компьютерге жақын орналастырыңыз.</translation>

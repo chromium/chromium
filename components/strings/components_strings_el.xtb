@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
 <translation id="4040350669425716613">Κολέγια και πανεπιστήμια</translation>
 <translation id="4047351652147966654">18 x 24 ίντσες</translation>
+<translation id="404831776305217138">Το URL ενημέρωσης για την επέκταση με αναγνωριστικό "<ph name="EXTENSION_ID" />" δεν είναι έγκυρο ή χρησιμοποιεί μη υποστηριζόμενο σχήμα. Τα υποστηριζόμενα σχήματα είναι: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> και <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Θα μπορείτε να τη χρησιμοποιείτε σε όλα τα προϊόντα Google</translation>
 <translation id="405399507749852140">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο</translation>
 <translation id="4056223980640387499">Σέπια</translation>
@@ -2294,6 +2295,7 @@
 <translation id="6569366777234823130">Δραματικές ταινίες</translation>
 <translation id="6573200754375280815">Διπλό τρύπημα στα δεξιά</translation>
 <translation id="6576181918031900030">Έναρξη μετάδοσης</translation>
+<translation id="6578434528542148658">Μη έγκυρο αναγνωριστικό επέκτασης.</translation>
 <translation id="657902945730878902">Σχεδίαση και χρωματισμός</translation>
 <translation id="6579630537141957243">Σύνδεση συσκευής MIDI;</translation>
 <translation id="6579990219486187401">Ανοιχτό ροζ</translation>

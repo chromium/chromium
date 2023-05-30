@@ -37,7 +37,7 @@
 <translation id="5436430103864390185">Jendela berbentuk tidak didukung.</translation>
 <translation id="5456409301717116725">Ekstensi ini termasuk file kunci '<ph name="KEY_PATH" />'. Anda mungkin tidak ingin melakukannya.</translation>
 <translation id="5486326529110362464">Nilai masukan untuk kunci pribadi harus ada.</translation>
-<translation id="5972529113578162692">Administrator komputer ini mewajibkan agar <ph name="EXTENSION_NAME" /> dipasang. Ekstensi tersebut tidak dapat dicopot pemasangannya.</translation>
+<translation id="5972529113578162692">Administrator komputer ini mewajibkan agar <ph name="EXTENSION_NAME" /> dipasang. Ekstensi tersebut tidak dapat di-uninstal.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> tak dikenal dari <ph name="VENDOR_NAME" /> (nomor seri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> dari vendor <ph name="VENDOR_ID" /></translation>
 <translation id="6143635259298204954">Tidak dapat membuka paket ekstensi. Untuk membuka paket ekstensi dengan aman, harus tersedia jalur ke direktori profil Anda yang tidak berisi link simbolik. Tidak ada jalur yang seperti itu untuk profil Anda.</translation>

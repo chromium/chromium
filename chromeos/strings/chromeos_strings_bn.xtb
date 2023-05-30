@@ -119,7 +119,9 @@
 <translation id="1801418420130173017">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1827738518074806965">আর্ট গ্যালারি</translation>
+<translation id="1836553715834333258">সিস্টেমের রঙ</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
+<translation id="1840474674287087346">ডেস্কটপের রঙ</translation>
 <translation id="1851218745569890714">ভিডিও কনফারেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনস্টল করুন</translation>
 <translation id="1856388568474281774">নিম্নমুখী তীরচিহ্ন</translation>
@@ -422,6 +424,7 @@
 <translation id="4454245904991689773">স্ক্যান করা ফাইল এখানে সেভ করুন</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
+<translation id="4500966230243561393">ইন্টারফেসের রঙ</translation>
 <translation id="4503223151711056411">বাঁদিকে তীরচিহ্ন</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বাড়ান</translation>
 <translation id="4511264077854731334">পোর্টাল</translation>
@@ -500,6 +503,7 @@
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">আপনার স্ক্রিন ব্যবহার না হলে ফটো, সময়, আবহাওয়া এবং মিডিয়া সম্পর্কিত তথ্য দেখুন।</translation>
+<translation id="5035083460461104704">থিমের রঙ</translation>
 <translation id="5038292761217083259">কীবোর্ড মাল্টিকালার</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5049856988445523908">সিম লক করা হয়েছে (<ph name="LOCK_TYPE" />)</translation>
@@ -815,6 +819,7 @@
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7620771111601174153">সহায়তা কেন্দ্র বিভাগে গিয়ে আরও জানুন</translation>
 <translation id="763165478673169849">শেষবার রিসেট করার সময়</translation>
+<translation id="7633068090678117093">ব্যাকগ্রাউন্ড ছবি</translation>
 <translation id="7648838807254605802">বেশি HTTPS লেটেন্সি</translation>
 <translation id="765159867434478292">স্প্লিট</translation>
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
@@ -981,6 +986,7 @@
 <translation id="8930521118335213258">পিয়ার</translation>
 <translation id="8930622219860340959">ওয়্যারলেস</translation>
 <translation id="8936793075252196307">ক্লায়েন্ট IP অ্যাড্রেস</translation>
+<translation id="8944651180182756621">লঞ্চারের রঙ</translation>
 <translation id="894617464444543719">ডিভাইস একটি ফোন।</translation>
 <translation id="8957423540740801332">ডান</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
@@ -1014,6 +1020,7 @@
 <translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">এক মিনিটেরও কম সময় বাকি আছে</translation>
+<translation id="9174334653006917325">UI-এর রঙ</translation>
 <translation id="917720651393141712">পরীক্ষা করুন</translation>
 <translation id="9188992814426075118">আপনার কীবোর্ডের রঙ নিজে থেকে আপনার ওয়ালপেপারের রঙয়ের সাথে মিলতে পারে</translation>
 <translation id="9189000703457422362">অটোমেটিক শনাক্ত করা APN ব্যবহার করে এই নেটওয়ার্কের সাথে কানেক্ট করা যাচ্ছে না। আরও তথ্যের জন্য আপনার মোবাইল পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>

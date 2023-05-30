@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">टैब ग्रुप - <ph name="TAB_COUNT" /> टैब</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1754404134430936718">टेक्स्ट कॉपी किया गया</translation>
+<translation id="1757620656501361327">Google Password Manager के बारे में अपडेट</translation>
 <translation id="1778457539567749232">'नहीं पढ़ा गया' का निशान लगाएं</translation>
 <translation id="1779766957982586368">विंडो बंद करें</translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">इन बातों का ध्यान रखें</translation>
 <translation id="5054455334322721892">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधियां<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="506254248375231072">कोई टैब नहीं है</translation>
+<translation id="5062960805900435602">इस बारे में जानकारी कि पासवर्ड मर्ज करने की सुविधा बंद है</translation>
 <translation id="5091199029769593641">जल्द ही, कोई भी नया टैब खोलते ही आपको <ph name="SITE_NAME" /> से जुड़ी जानकारी दिखेगी. आप जिन साइटों को फ़ॉलो करते हैं वे आपके Google खाते में सेव हो जाती हैं. आप उन्हें डिस्कवर की सेटिंग में मैनेज कर सकते हैं.</translation>
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
 <translation id="509429900233858213">कोई गड़बड़ी हुई.</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">टेक्स्ट</translation>
 <translation id="5368227114232678694">इस डिवाइस पर निजी रूप से ब्राउज़ करने के लिए, गुप्त टैब का इस्तेमाल करें</translation>
 <translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">मज़बूत पासवर्ड बनाने का सुझाव दिया जाता है. कीबोर्ड छिपा हुआ है.</translation>
 <translation id="5401851137404501592">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा.</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">Chrome बंद करने पर, गुप्त टैब लॉक हो जाएंगे</translation>
 <translation id="7222235798733126207">साइटों के बीच जानकारी शेयर करने की एक तय सीमा</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 डाउनलोड बाकी है}one{# डाउनलोड बाकी हैं}other{# डाउनलोड बाकी हैं}}</translation>
+<translation id="72415438529550637">पासवर्ड के सुझाव देने की सुविधा बंद है.</translation>
 <translation id="7242755609445462077">बेहतर बनाई गई हाइलाइट <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">पक्का करें कि <ph name="TARGET_DEVICE_NAME" /> पर Chrome में सिंक करने की सुविधा चालू है</translation>
 <translation id="7252076891734325316">अपने फ़ोन को कंप्यूटर के पास रखें</translation>

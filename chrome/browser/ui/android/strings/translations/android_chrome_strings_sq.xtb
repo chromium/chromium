@@ -142,6 +142,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1750259112639922169">Grupi i skedave - <ph name="TAB_COUNT" /> skeda</translation>
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1754404134430936718">Teksti u kopjua</translation>
+<translation id="1757620656501361327">Përditësim i "Menaxherit të fjalëkalimeve të Google"</translation>
 <translation id="1778457539567749232">Shëno si të palexuar</translation>
 <translation id="1779766957982586368">Mbyll dritaren</translation>
 <translation id="1791662854739702043">I instaluar</translation>
@@ -754,6 +755,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="504456571576643789">Gjëra për të pasur parasysh</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Forma të tjera aktiviteti<ph name="END_LINK1" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="506254248375231072">Nuk ka skeda</translation>
+<translation id="5062960805900435602">Përditësimi për shkrirjen e fjalëkalimeve është mbyllur</translation>
 <translation id="5091199029769593641">Së shpejti do të shikosh histori nga <ph name="SITE_NAME" /> kur të hapësh një skedë të re. Sajtet që ndjek ruhen në llogarinë tënde të Google. Mund t'i menaxhosh te cilësimet e "Zbulo".</translation>
 <translation id="5091249083535528968">Të dhënat e zgjeruara të përdorimit</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
@@ -803,6 +805,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5361107212971249203">teksti</translation>
 <translation id="5368227114232678694">Provo modalitetin "E fshehtë" për të shfletuar në mënyrë private në këtë pajisje</translation>
 <translation id="5375577065097716013">Kërko imazh me "Lenten e Google" <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">U sugjerua një fjalëkalim i fortë. Tastiera është e fshehur.</translation>
 <translation id="5401851137404501592">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë emrin, adresën e email-it dhe fotografinë tënde të profilit me këtë sajt.</translation>
 <translation id="5409881200985013443">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>
@@ -1161,6 +1164,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7217781228893594884">Skedat "e fshehta" do të kyçen kur të largohesh nga Chrome</translation>
 <translation id="7222235798733126207">Ndarje e kufizuar mes sajteve</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 shkarkim në pritje}other{# shkarkime në pritje}}</translation>
+<translation id="72415438529550637">Sugjerimi i fjalëkalimit u mbyll.</translation>
 <translation id="7242755609445462077">Theksimi i stilizuar (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome</translation>
 <translation id="7252076891734325316">Vendose telefonin tënd pranë kompjuterit</translation>

@@ -215,6 +215,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1198183996903759302">Se il criterio è impostato su true (o se <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> è impostato su false), le pagine web non possono accedere all'API WebGL e i plug-in non possono usare l'API Pepper 3D.
 
       Se il criterio è impostato su false o non viene configurato, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
+<translation id="1198458955128279215">Utilizza il comportamento predefinito del piano di implementazione delle funzionalità.</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="120314092766637918">Se questo criterio viene attivato o se non viene configurato, la protezione contro il phishing lato client verrà controllata da <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> per <ph name="PRODUCT_NAME" />. Se <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> è impostato su <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> o <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, la protezione dal phishing lato client esegue un modello locale per verificare se si tratta di una pagina come phishing. Se il modello ritiene che la pagina sia di phishing, <ph name="PRODUCT_NAME" /> invia a Google una richiesta di esito finale.
 Se questo criterio viene disattivato, la protezione contro il phishing lato client non esegue alcuna protezione e non invia dati a Google per esiti.</translation>
@@ -835,6 +836,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1768225118528727376">Concedi l'autorizzazione per la gestione delle finestre su questi siti</translation>
 <translation id="1770071413238151235">Formato dell'orologio di 12 ore</translation>
 <translation id="1771024053220392089">Disattiva Supporto dei browser precedenti</translation>
+<translation id="1781225230395284182">Mostra la finestra di dialogo di annullamento prima dell'unload della chiamata di event.preventDefault().</translation>
 <translation id="1781356041596378058">Questa norma controlla anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su true, gli utenti non possono accedere alle Opzioni sviluppatore. Se la norma viene impostata su false o non viene impostata, gli utenti possono accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="1787790976045065845">Questo criterio viene applicato soltanto se il criterio <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> è impostato su <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> o <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> e un utente che effettua l'autenticazione tramite smart card rimuove quest'ultima. Consente inoltre di specificare per quanti secondi viene visualizzata una notifica che informa l'utente dell'azione imminente. Questa notifica blocca lo schermo. L'azione viene compiuta soltanto allo scadere della notifica. L'utente può impedire l'azione inserendo di nuovo la smart card prima della scadenza della notifica. Se questo criterio viene impostato su 0, non viene visualizzata alcuna notifica e l'azione viene compiuta immediatamente.</translation>
 <translation id="1793346220873697538">Disattiva la stampa PIN per impostazione predefinita</translation>
@@ -1920,6 +1922,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
+<translation id="2788443040242264100">Non mostrare la finestra di dialogo di annullamento prima dell'unload della chiamata di event.preventDefault().</translation>
 <translation id="2789742777235177478">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline nella schermata di blocco</translation>
 <translation id="2796714419743648316">Lista consentita limiti di utilizzo per app</translation>
 <translation id="2801065672151277034">Impostazioni di gestione dei certificati</translation>
@@ -2715,6 +2718,18 @@ in concomitanza con la rimozione del supporto per l'utilizzo dello strumento di 
       Quando la norma non viene impostata o non contiene intervalli di tempo:
       Le verifiche automatiche degli aggiornamenti non verranno bloccate da questa norma, ma potrebbero essere bloccate da altre norme.
       Fino a M88, questa funzionalità è attiva solo sui dispositivi <ph name="PRODUCT_OS_NAME" /> configurati come kiosk ad avvio automatico. Gli altri dispositivi non risulteranno limitati da questa norma. Tuttavia, a partire da M89, questa norma è attiva su tutti i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3457921137261127955">L'estensione di utilizzo della chiave X.509 dichiara come può essere utilizzata la chiave in un certificato. Queste istruzioni assicurano che i certificati non vengano utilizzati in un contesto imprevisto, che protegge da una classe di attacchi multiprotocollo su HTTPS e su altri protocolli. Affinché questo comando funzioni, i client HTTPS devono verificare che i certificati del server corrispondano ai parametri TLS della connessione.
+
+Se questo criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> eseguirà questo controllo.
+In questo modo è possibile evitare attacchi in cui un utente malintenzionato manipola il browser per interpretare una chiave in modo non intenzionale dal proprietario del certificato.
+
+Se questo criterio viene impostato su Disabled, <ph name="PRODUCT_NAME" /> ignorerà questo controllo nelle connessioni HTTPS che negoziano TLS 1.2 e utilizzano un certificato RSA che si collega a un anchor trust locale. Esempi di anchor trust locali includono i certificati radice forniti dall'utente o forniti dai criteri. In tutti gli altri casi, il controllo viene eseguito indipendentemente dall'impostazione di questo criterio.
+
+Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> si comporterà come se il criterio fosse disattivato.
+
+Questo criterio è disponibile per gli amministratori per visualizzare in anteprima il comportamento di una release futura che attiverà il controllo per impostazione predefinita. A quel punto, questo criterio rimarrà temporaneamente disponibile per gli amministratori che hanno bisogno di più tempo per eseguire l'aggiornamento.
+
+Le connessioni che non superano il controllo non andranno a buon fine con l'errore ERR_SSL_KEY_USAGE_INCOMPATIBLE. I siti che non superano questo errore hanno probabilmente un certificato configurato in modo errato. Le moderne suite di crittografia ECDHE_RSA utilizzano l'opzione di utilizzo della chiave "digitalSignature", mentre le suite di crittografia di decrittografia precedenti utilizzano l'opzione di utilizzo della chiave "keyEncipherment". In caso di dubbi, gli amministratori devono includere entrambi i certificati RSA destinati a HTTPS.</translation>
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
 <translation id="3478024346823118645">Cancella dati utente all'uscita</translation>
@@ -5955,6 +5970,7 @@ Vedi anche il criterio <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 
       Nota: se il metodo di immissione corrente non è supportato, il criterio passa automaticamente al layout della tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="6483115462650732746">Mostra il menu Accessibilità mobile in modalità kiosk</translation>
+<translation id="6485036313708130232">Gestisci il nuovo comportamento prima dell'unload che mostra la finestra di dialogo di conferma dell'annullamento quando viene richiamato il valore preventDefault.</translation>
 <translation id="6489084406497912050">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
 
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono aggiungere account Kerberos tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
@@ -7233,6 +7249,13 @@ AVVISO: fai attenzione quando modifichi questa impostazione perché potrebbe vio
 <translation id="7613115815080726221">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene compiuta l'azione stabilita per l'inattività.</translation>
 <translation id="7614663184588396421">Elenco degli schemi di protocollo disabilitati</translation>
 <translation id="7616631530432070402">Le suite di crittografia 3DES saranno attivate in TLS</translation>
+<translation id="7617710923960807616">Questo criterio consente di controllare se viene mostrata una finestra di dialogo di conferma quando una pagina chiama preventDefault prima dell'unload. In passato, <ph name="PRODUCT_NAME" /> non mostrava queste finestre di dialogo, ma il comportamento predefinito è in fase di modifica. Questo criterio è un'alternativa temporanea, destinata alle aziende i cui siti web si sono rotti a causa del nuovo comportamento e che hanno bisogno di un po' di tempo per essere risolte.
+
+Se questo criterio viene attivato, la finestra di dialogo di conferma dell'annullamento viene visualizzata quando una pagina chiama preventDefault prima dell'unload.
+
+Se questo criterio viene disattivato, non viene mostrata alcuna finestra di dialogo di conferma dell'annullamento quando una pagina chiama preventDefault prima dell'unload.
+
+Se questo criterio non viene configurato, verrà utilizzato il comportamento predefinito, in base al piano di implementazione delle funzionalità di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Richiedi l'isolamento dei siti per tutti i siti web</translation>
 <translation id="7620869951155758729">Questa norma consente di specificare la configurazione utilizzata per generare e verificare il codice di accesso genitori.
 
@@ -8016,6 +8039,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Il valore della norma deve essere specificato in millisecondi.</translation>
 <translation id="8330437518362176921">Utilizza solo l'URL di aggiornamento fornito dal criterio durante il download e l'aggiornamento delle app di Chrome Kiosk</translation>
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
+<translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8337114537412769126">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>
@@ -8302,6 +8326,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
       Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.
       Se non viene configurato, per impostazione predefinita le funzionalità non sono consentite per gli utenti gestiti a livello aziendale su ChromeOS, mentre sono consentite per tutti gli altri utenti e sistemi operativi.</translation>
+<translation id="862621549134406761">Attiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8626826495474944836">Richiedi isolamento dei siti per ogni sito</translation>
 <translation id="8631314130868563649">Disattiva la gestione della variazione dei picchi energetici</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
@@ -8412,6 +8437,7 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
 
       Se imposti il criterio, gli utenti non possono modificare questa funzione. Se non viene impostato, gli utenti possono cambiare l'impostazione.</translation>
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
+<translation id="8708628595824806312">Controlla l'utilizzo delle chiavi RSA per i certificati server emessi da trust anchor locali</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>
 <translation id="8715181294371649277">Consenti la protezione dei download in tempo reale con Navigazione sicura</translation>
 <translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
@@ -8554,6 +8580,7 @@ Se il criterio non viene configurato o se viene disattivato, i dati dell'utente 
 
 Se viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> non è disponibile in nessuna pagina web.</translation>
 <translation id="8864975621965365890">Consente di eliminare il messaggio di richiesta di turndown che compare quando un sito viene visualizzato da <ph name="PRODUCT_FRAME_NAME" />.</translation>
+<translation id="8865404058177794289">Utilizza l'impostazione predefinita per il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8866430022832109569">Generazione di report sull'inventario per app</translation>
 <translation id="886645881209114007">Consenti agli utenti di usare un <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8867894831390233044">Consente di stabilire se gli utenti possono o meno usare il debug remoto.

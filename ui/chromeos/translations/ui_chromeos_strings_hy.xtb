@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1853795129690976061">Այս պանակը հասանելի է Լինուքսին</translation>
 <translation id="1864756863218646478">Ֆայլը չգտնվեց:</translation>
+<translation id="1877377730633446520">Սա կզբաղեցնի մոտ <ph name="REQUIRED_SPACE" /> տարածք։ Այս պահին հասանելի է <ph name="FREE_SPACE" />։</translation>
 <translation id="1884013283844450420">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, կապակցում</translation>
 <translation id="1920670151694390848">մալայալամ տառադարձում</translation>
 <translation id="1920798810075583923">Ձմերուկ</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
+<translation id="2004942826429452291">Ֆայլերը կպահվեն ամպում և այս Chromebook-ում։</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">թիգրինյա</translation>
 <translation id="2037845485764049925">ռուսերեն</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Սարքի կարգավորումներ</translation>
 <translation id="2084809735218147718">Շնորհակալություն գրող մարդ</translation>
 <translation id="2088690981887365033">VPN ցանց</translation>
+<translation id="2089751716171649322">Հեշտությամբ բացեք Google Drive-ի ձեր ֆայլերը, երբ օֆլայն եք</translation>
 <translation id="2111134541987263231">Միացրեք <ph name="BEGIN_BOLD" />Թույլ տալ ինկոգնիտո ռեժիմում<ph name="END_BOLD" /> կարգավորումը</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> տարր կջնջվի, և դուք չեք կարողանա վերականգնել դրանք։</translation>
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
+<translation id="3501954296166022751">Google Drive-ի ձեր ֆայլերը հասանելի են անցանց</translation>
 <translation id="3509680540198371098">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="3511705761158917664">Պատրաստվում ենք համաժամացնել <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
@@ -569,6 +573,7 @@
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5500122897333236901">Իսլանդական</translation>
 <translation id="5508696409934741614">Կետեր</translation>
+<translation id="5519161320735100193">Google Drive-ի կարգավորումներ</translation>
 <translation id="5522908512596376669">Ֆայլերի ցանկն այժմ ցուցադրված է ցանկի տեսքով:</translation>
 <translation id="5524517123096967210">Չհաջողվեց բացել ֆայլը:</translation>
 <translation id="5533102081734025921">Պատկեր (<ph name="IMAGE_TYPE" />)</translation>
@@ -860,6 +865,7 @@
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7806708061868529807">եբրայերեն</translation>
 <translation id="78104721049218340">թայերեն (Kedmanee ստեղնաշար)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ՏԲ</translation>
 <translation id="7831491651892296503">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
@@ -872,15 +878,18 @@
 <translation id="7903984238293908205">Կատականա</translation>
 <translation id="7908793776359722643">Եթե բաժինը ֆորմատավորեք, դրա մեջ պահված բոլոր տվյալները կջնջվեն։ Գործողությունը հնարավոր չէ հետարկել։</translation>
 <translation id="7911118814695487383">Լինուքս</translation>
+<translation id="7920501309908018401">«Իմ դրայվը» պանակի ֆայլերն ավտոմատ կհամաժամացվեն ձեր Chromebook-ի հետ, այնպես որ դրանք կարող եք բացել առանց ինտերնետին միանալու։</translation>
 <translation id="7925247922861151263">AAA ստուգումը չհաջողվեց</translation>
 <translation id="7925686952655276919">Չօգտագործել բջջային սարքերի տվյալները համաժամացման համար</translation>
 <translation id="7928710562641958568">Անջատել սարքը</translation>
+<translation id="7933875256234974853">Պատրաստվում ենք համաժամացնել Drive-ի ֆայլերը…</translation>
 <translation id="7943385054491506837">ԱՄՆ (Colemak)</translation>
 <translation id="7953739707111622108">Հնարավոր չէ բացել այս սարքը, քանի որ նրա ֆայլային համակարգը չի ճանաչվել:</translation>
 <translation id="7969525169268594403">Սլովենական</translation>
 <translation id="7972920761225148017">ֆրանսերեն (Շվեյցարիա)</translation>
 <translation id="7973962044839454485">PPP իսկորոշումը չհաջողվեց: Օգտանունը կամ գաղտնաբառը սխալ են</translation>
 <translation id="7980421588063892270">անգլերեն (ԱՄՆ)՝ Colemak ստեղնաշարով</translation>
+<translation id="7985008041109611710">Համաժամացվում է <ph name="NUMBER_OF_FILES_SYNCING" /> ֆայլ…</translation>
 <translation id="8000066093800657092">Ցանց չկա</translation>
 <translation id="8008366997883261463">Շուն</translation>
 <translation id="8028993641010258682">Չափ</translation>
@@ -1002,6 +1011,7 @@
 <translation id="8919081441417203123">Դանիական</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
+<translation id="8971742885766657349">Համաժամացում – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">չինարեն փինյին (ավանդական)</translation>
 <translation id="8998871447376656508">Վերբեռնումն ավարտելու համար ձեր Google Drive-ում բավարար ազատ տարածք չկա։</translation>
 <translation id="9003940392834790328">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
@@ -1035,6 +1045,7 @@
 <translation id="9213073329713032541">Տեղադրումը սկսվեց:</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="9219908252191632183">Լուսնային լանդշաֆտ</translation>
+<translation id="937795003075802289">Համաժամացվում է 1 ֆայլ</translation>
 <translation id="938470336146445890">Տեղադրեք օգտատիրոջ վկայագիրը:</translation>
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="943972244133411984">Ով է փոփոխել</translation>

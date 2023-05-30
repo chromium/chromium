@@ -19,6 +19,7 @@
 <translation id="1414495520565016063">আপুনি Chromiumত ছাইন ইন হৈ আছে!</translation>
 <translation id="1524282610922162960">Chromium টেব এটা শ্বেয়াৰ কৰক</translation>
 <translation id="1553461853655228091">আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ Chromiumক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতিৰ প্ৰয়োজন</translation>
+<translation id="1555506416658437797">পৰিশোধ পদ্ধতি সম্পাদনা কৰিবলৈ।</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে}=1{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ.ইনক’গনিট' ৱিণ্ড'খন পুনৰ খুলিব নোৱাৰিব।}one{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}other{আপোনাৰ প্ৰশাসকে কোনো আপডে’ট প্ৰয়োগ কৰিবলৈ আপুনি Chromium পুনৰ লঞ্চ কৰাটো বিচাৰে। আপোনাৰ #খন.ইনক’গনিট' ৱিণ্ড' পুনৰ খুলিব নোৱাৰিব।}}</translation>
 <translation id="1625909126243026060">Chromiumত গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহ পৰ্যালোচনা কৰক</translation>
 <translation id="1632539827495546968">যদি আপুনি এই একাউণ্টটো কেৱল এবাৰ ব্যৱহাৰ কৰিব বিচাৰে, আপুনি Chromium ব্ৰাউজাৰত <ph name="GUEST_LINK_BEGIN" />অতিথি ম'ডটো<ph name="GUEST_LINK_END" /> ব্যৱহাৰ কৰিব পাৰে। যদি আপুনি অন্য কাৰোবাৰ বাবে এটা একাউণ্ট যোগ দিব বিচাৰে, আপোনাৰ <ph name="DEVICE_TYPE" />ত <ph name="LINK_BEGIN" />এগৰাকী নতুন ব্যক্তি যোগ দিয়ক<ph name="LINK_END" />।
@@ -138,6 +139,7 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমানৰ ছেটিংসমূহ<ph name="END_LINK" />ৰ সম্পর্কে প্ৰতিবেদন দি Chromiumক উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4050175100176540509">শেহতীয়া সংস্কৰণত কিছুমান গুৰুত্বপূর্ণ উন্নত সুৰক্ষাৰ ব্যৱস্থা আৰু নতুন সুবিধা উপলব্ধ।</translation>
+<translation id="4050599136622776556">Chromiumএ পৰিশোধ পদ্ধতি সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="4148957013307229264">ইনষ্টল কৰি থকা হৈছে…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - নেটৱর্কত ছাইন ইন - Chromium</translation>
 <translation id="421369550622382712">Chromiumৰ বাবে উৎকৃষ্ট এপ্, গে’ম, এক্সটেনশ্বন আৰু থীমসমূহ বিচাৰক।</translation>

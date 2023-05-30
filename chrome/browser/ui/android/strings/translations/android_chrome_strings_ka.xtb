@@ -142,6 +142,7 @@
 <translation id="1750259112639922169">ჩანართების ჯგუფი — <ph name="TAB_COUNT" /> ჩანართი</translation>
 <translation id="17513872634828108">გახსნილი ჩანართები</translation>
 <translation id="1754404134430936718">ტექსტი დაკოპირდა</translation>
+<translation id="1757620656501361327">ახალი ინფორმაცია Google პაროლების მმართველიდან</translation>
 <translation id="1778457539567749232">წაუკითხავად მონიშვნა</translation>
 <translation id="1779766957982586368">ფანჯრის დახურვა</translation>
 <translation id="1791662854739702043">დაინსტალირებულია</translation>
@@ -754,6 +755,7 @@
 <translation id="504456571576643789">გასათვალისწინებელი საკითხები</translation>
 <translation id="5054455334322721892">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK1" />სხვა ტიპის აქტივობა<ph name="END_LINK1" />, როცა შესული ხართ სისტემაში. აღნიშნულის წაშლა ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="506254248375231072">ჩანართები არ არის</translation>
+<translation id="5062960805900435602">პაროლების გაერთიანების შესახებ ახალი ინფორმაცია დახურულია</translation>
 <translation id="5091199029769593641">მალე, ახალი ჩანართის გახსნისას, იხილავთ ამბებს <ph name="SITE_NAME" />-დან. თქვენ მიერ თვალმიდევნებული საიტები შეინახება თქვენს Google ანგარიშში. მათი მართვა Discover-ის პარამეტრებიდან შეგიძლიათ.</translation>
 <translation id="5091249083535528968">გამოყენების გაფართოებული მონაცემები</translation>
 <translation id="509429900233858213">შეცდომა მოხდა.</translation>
@@ -803,6 +805,7 @@
 <translation id="5361107212971249203">ტექსტი</translation>
 <translation id="5368227114232678694">ამ მოწყობილობაზე ვების კონფიდენციალურად დასათვალიერებლად ცადეთ ინკოგნიტო რეჟიმი</translation>
 <translation id="5375577065097716013">მოიძიეთ სურათი Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">შემოთავაზებულია ძლიერი პაროლი. კლავიატურა დამალულია.</translation>
 <translation id="5401851137404501592">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს.</translation>
 <translation id="5409881200985013443">გსურთ, გადაუგზავნოთ <ph name="ONE_TIME_CODE" /> <ph name="CLIENT_NAME" />-ს?</translation>
 <translation id="5414836363063783498">დადასტურება…</translation>
@@ -1161,6 +1164,7 @@
 <translation id="7217781228893594884">ინკოგნიტო ჩანართები ჩაიკეტება, როცა Chrome-იდან გახვალთ</translation>
 <translation id="7222235798733126207">საიტებს შორის შეზღუდული გაზიარება</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ჩამოტვირთვა მოლოდინის რეჟიმშია}other{# ჩამოტვირთვა მოლოდინის რეჟიმშია}}</translation>
+<translation id="72415438529550637">პაროლის შემოთავაზება დახურულია.</translation>
 <translation id="7242755609445462077">სტილიზებული გამოყოფილი კონტენტი — <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">დარწმუნდით, რომ <ph name="TARGET_DEVICE_NAME" />-ისთვის Chrome-ში ჩართულია სინქრონიზაცია</translation>
 <translation id="7252076891734325316">მოათავსეთ ტელეფონი კომპიუტერთან უფრო ახლოს</translation>

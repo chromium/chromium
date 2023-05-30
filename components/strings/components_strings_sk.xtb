@@ -1239,6 +1239,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4031179711345676612">Mikrofón je povolený</translation>
 <translation id="4040350669425716613">Vysoké školy a univerzity</translation>
 <translation id="4047351652147966654">18 × 24 palcov</translation>
+<translation id="404831776305217138">Aktualizácia webovej adresy rozšírenia s identifikátorom <ph name="EXTENSION_ID" /> je neplatná alebo používa nepodporovanú schému. Podporované sú tieto schémy: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> a <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Budete ju môcť používať v rôznych službách Googlu</translation>
 <translation id="405399507749852140">Dostávajte upozornenia, keď cena na ľubovoľnom webe poklesne</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -2288,6 +2289,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6569366777234823130">Filmové drámy</translation>
 <translation id="6573200754375280815">Dve dierky vpravo</translation>
 <translation id="6576181918031900030">Spustiť prenos</translation>
+<translation id="6578434528542148658">Identifikátor rozšírenia je neplatný.</translation>
 <translation id="657902945730878902">Kreslenie a vyfarbovanie</translation>
 <translation id="6579630537141957243">Chcete pripojiť zariadenie MIDI?</translation>
 <translation id="6579990219486187401">Svetloružová</translation>

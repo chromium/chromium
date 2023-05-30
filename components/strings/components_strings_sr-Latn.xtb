@@ -1243,6 +1243,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4040350669425716613">Koledži i univerziteti</translation>
 <translation id="4047351652147966654">18×24 in</translation>
+<translation id="404831776305217138">URL ažuriranja za dodatak sa ID-om <ph name="EXTENSION_ID" /> je nevažeći ili koristi nepodržanu šemu. Podržane šeme su: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Moći ćete da je koristite u svim Google proizvodima</translation>
 <translation id="405399507749852140">Dobijajte obaveštenja kada se cena snizi na bilo kom sajtu</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -2292,6 +2293,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6569366777234823130">Drame</translation>
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6576181918031900030">Započni prebacivanje</translation>
+<translation id="6578434528542148658">Nevažeći ID dodatka.</translation>
 <translation id="657902945730878902">Crtanje i bojenje</translation>
 <translation id="6579630537141957243">Želite da povežete MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svetloroze</translation>

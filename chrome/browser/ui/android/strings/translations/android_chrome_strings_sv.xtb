@@ -142,6 +142,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1750259112639922169">Flikgrupp – <ph name="TAB_COUNT" /> flikar</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1754404134430936718">Texten har kopierats</translation>
+<translation id="1757620656501361327">Uppdatering om Google Lösenordshantering</translation>
 <translation id="1778457539567749232">Markera som oläst</translation>
 <translation id="1779766957982586368">Stäng fönstret</translation>
 <translation id="1791662854739702043">Installerat</translation>
@@ -755,6 +756,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="504456571576643789">Tänk på detta</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Annan aktivitet<ph name="END_LINK1" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="506254248375231072">Inga flikar</translation>
+<translation id="5062960805900435602">Uppdateringen om lösenordssammanslagning har stängts</translation>
 <translation id="5091199029769593641">Snart visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
 <translation id="5091249083535528968">Utökad data om användning</translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
@@ -804,6 +806,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5361107212971249203">text</translation>
 <translation id="5368227114232678694">Testa inkognitoläget om du vill surfa privat på enheten</translation>
 <translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Ett starkt lösenord har föreslagits. Tangentbordet är dolt.</translation>
 <translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar ditt namn, din e-postadress och din profilbild med den här webbplatsen om du fortsätter.</translation>
 <translation id="5409881200985013443">Vill du skicka <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
@@ -1162,6 +1165,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7217781228893594884">Inkognitoflikar låses när du lämnar Chrome</translation>
 <translation id="7222235798733126207">Begränsad delning mellan webbplatser</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
+<translation id="72415438529550637">Lösenordsförslaget har stängts.</translation>
 <translation id="7242755609445462077">Stiliserad markering <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollera att synkronisering har aktiverats i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Lägg telefonen nära datorn</translation>

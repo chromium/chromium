@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8949925099261528566">Connecté, aucun accès à Internet</translation>
 <translation id="8965697826696209160">Espace disponible insuffisant.</translation>
+<translation id="8971742885766657349">Synchronisation (<ph name="PERCENT" /> %)</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="8998871447376656508">L'espace disponible sur votre Google Drive est insuffisant pour effectuer l'importation.</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>

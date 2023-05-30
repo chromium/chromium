@@ -315,6 +315,9 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2975121486251958312">Dostupan je samo anonimni način</translation>
 <translation id="2982481275546140226">Izbriši podatke</translation>
 <translation id="298306318844797842">Dodajte način plaćanja...</translation>
+<translation id="2988274366244053197">Načini plaćanja i adrese s Google Paya neće se šifrirati. Povijest pregledavanja iz Chromea neće se sinkronizirati.
+
+Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromeove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Otvori u novoj kartici</translation>
 <translation id="3020183492814296499">Prečaci</translation>
 <translation id="3037605927509011580">O, ne!</translation>
@@ -381,6 +384,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3471148582064653480">Sinkronizirajte svoje zaporke, povijest i drugo.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{za {COUNT} web-lokaciju ili aplikaciju}one{za {COUNT} web-lokaciju ili aplikaciju}few{za {COUNT} web-lokacije ili aplikacije}other{za {COUNT} web-lokacija ili aplikacija}}</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Pristupajte svojim zaporkama u drugim aplikacijama.</translation>
 <translation id="3478058380795961209">Mjesec isteka</translation>
 <translation id="3482959374254649722">Sinkronizacija kartica...</translation>
 <translation id="3484946776651937681">Otvori u Preuzimanjima</translation>
@@ -652,6 +656,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
+<translation id="5325595483440111327">Pregledajte povijest pregledavanja.</translation>
 <translation id="5339316356165661760">Uključi sinkronizaciju</translation>
 <translation id="536067926684072644">Prikaži oznake</translation>
 <translation id="5360976571138293719">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Googleove usluge<ph name="END_LINK" />.</translation>

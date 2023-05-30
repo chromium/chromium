@@ -142,6 +142,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1750259112639922169">Flipahópur – <ph name="TAB_COUNT" /> flipar</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="1754404134430936718">Texti afritaður</translation>
+<translation id="1757620656501361327">Tilkynning frá Google-aðgangsorðastjórnun</translation>
 <translation id="1778457539567749232">Merkja sem ólesið</translation>
 <translation id="1779766957982586368">Loka glugga</translation>
 <translation id="1791662854739702043">Uppsett</translation>
@@ -754,6 +755,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="504456571576643789">Atriði til að hafa í huga</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Aðrar aðgerðir<ph name="END_LINK1" /> kunna að vera vistaðar á Google reikningnum þínum þegar þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="506254248375231072">Engir flipar</translation>
+<translation id="5062960805900435602">Tilkynningu um sameiningu aðgangsorða lokað</translation>
 <translation id="5091199029769593641">Fljótlega sérðu sögur frá <ph name="SITE_NAME" /> þegar þú opnar nýjan flipa. Vefsvæði sem þú fylgir eru vistuð á Google reikningnum þínum. Þú getur stjórnað þeim í stillingum Tillagna.</translation>
 <translation id="5091249083535528968">Ítarleg notkunargögn</translation>
 <translation id="509429900233858213">Villa kom upp.</translation>
@@ -803,6 +805,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5361107212971249203">texta</translation>
 <translation id="5368227114232678694">Prófaðu huliðsstillingu til að vafra í næði í þessu tæki</translation>
 <translation id="5375577065097716013">Leita að mynd með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Tillaga að traustu aðgangsorði. Lyklaborð er falið.</translation>
 <translation id="5401851137404501592">Til að halda áfram mun <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deila nafni þínu, netfangi og prófílmynd með þessu vefsvæði.</translation>
 <translation id="5409881200985013443">Senda <ph name="ONE_TIME_CODE" /> á <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Staðfestir…</translation>
@@ -1161,6 +1164,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7217781228893594884">Huliðsflipum verður læst þegar þú lokar Chrome</translation>
 <translation id="7222235798733126207">Takmörkuð deiling milli vefsvæða</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ein skrá bíður niðurhals}one{# skrá bíður niðurhals}other{# skrár bíða niðurhals}}</translation>
+<translation id="72415438529550637">Tillögu að aðgangsorði lokað.</translation>
 <translation id="7242755609445462077">Áhersluatriði stílfært <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Gakktu úr skugga um að kveikt sé á samstillingu í Chrome í <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Stilltu símanum upp við tölvuna</translation>

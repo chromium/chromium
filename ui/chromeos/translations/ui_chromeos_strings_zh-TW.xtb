@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8949925099261528566">已連線，但沒有網際網路</translation>
 <translation id="8965697826696209160">空間不足。</translation>
+<translation id="8971742885766657349">正在同步處理，已完成 <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">中文 (繁體拼音)</translation>
 <translation id="8998871447376656508">你的 Google 雲端硬碟可用空間不足，無法完成上傳。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>

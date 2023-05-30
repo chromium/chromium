@@ -1243,6 +1243,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4031179711345676612">Mikrofon je dovoljen</translation>
 <translation id="4040350669425716613">Visoke šole in univerze</translation>
 <translation id="4047351652147966654">18 x 24 palcev</translation>
+<translation id="404831776305217138">Posodobitveni URL za razširitev z ID-jem »<ph name="EXTENSION_ID" />« ni veljaven ali pa uporablja nepodprto shemo. Podprte sheme: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> in <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Uporabljali ga boste lahko v Googlovih izdelkih</translation>
 <translation id="405399507749852140">Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -2293,6 +2294,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6569366777234823130">Drame</translation>
 <translation id="6573200754375280815">Dvojno luknjanje na desni</translation>
 <translation id="6576181918031900030">Začni predvajanje</translation>
+<translation id="6578434528542148658">Neveljaven ID razširitve.</translation>
 <translation id="657902945730878902">Risanje in barvanje</translation>
 <translation id="6579630537141957243">Želite povezati napravo MIDI?</translation>
 <translation id="6579990219486187401">Svetlo rožnata</translation>
