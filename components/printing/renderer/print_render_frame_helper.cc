@@ -613,6 +613,22 @@ PrintParamsWithFloatingSize CalculatePrintParamsForCss(
   return params_with_floating_size;
 }
 
+// Get page layout in points and fit to page if needed.
+mojom::PageSizeMarginsPtr ComputePageLayoutInPointsForCss(
+    blink::WebLocalFrame* frame,
+    uint32_t page_index,
+    const mojom::PrintParams& page_params,
+    bool ignore_css_margins,
+    double* scale_factor) {
+  double input_scale_factor = *scale_factor;
+  PrintParamsWithFloatingSize params_with_floating_size =
+      CalculatePrintParamsForCss(
+          frame, page_index, page_params, ignore_css_margins,
+          IsPrintScalingOptionFitToPage(page_params), scale_factor);
+  return CalculatePageLayoutFromPrintParams(params_with_floating_size,
+                                            input_scale_factor);
+}
+
 bool CopyMetafileDataToReadOnlySharedMem(
     const MetafileSkia& metafile,
     base::ReadOnlySharedMemoryRegion* region) {
@@ -647,103 +663,21 @@ bool CopyMetafileDataToDidPrintContentParams(
   return true;
 }
 
-}  // namespace
-
-FrameReference::FrameReference(blink::WebLocalFrame* frame) {
-  Reset(frame);
-}
-
-FrameReference::FrameReference() {
-  Reset(nullptr);
-}
-
-FrameReference::~FrameReference() {}
-
-void FrameReference::Reset(blink::WebLocalFrame* frame) {
-  if (frame) {
-    view_ = frame->View();
-    // Make sure this isn't called too early in the |frame| lifecycle... i.e.
-    // calling this in WebLocalFrameClient::BindToFrame() doesn't work.
-    // TODO(dcheng): It's a bit awkward that lifetime details like this leak out
-    // of Blink. Fixing https://crbug.com/727166 should allow this to be
-    // addressed.
-    DCHECK(view_);
-    frame_ = frame;
-  } else {
-    view_ = nullptr;
-    frame_ = nullptr;
-  }
-}
-
-blink::WebLocalFrame* FrameReference::GetFrame() {
-  if (!view_ || !frame_)
-    return nullptr;
-  for (blink::WebFrame* frame = view_->MainFrame(); frame;
-       frame = frame->TraverseNext()) {
-    if (frame == frame_)
-      return frame_;
-  }
-  return nullptr;
-}
-
-blink::WebView* FrameReference::view() {
-  return view_;
-}
-
-ClosuresForMojoResponse::ClosuresForMojoResponse() = default;
-
-ClosuresForMojoResponse::~ClosuresForMojoResponse() {
-  RunScriptedPrintPreviewQuitClosure();
-  RunPrintSettingFromUserQuitClosure();
-}
-
-void ClosuresForMojoResponse::SetScriptedPrintPreviewQuitClosure(
-    base::OnceClosure quit_print_preview) {
-  DCHECK(!scripted_print_preview_quit_closure_);
-  scripted_print_preview_quit_closure_ = std::move(quit_print_preview);
-}
-
-bool ClosuresForMojoResponse::HasScriptedPrintPreviewQuitClosure() const {
-  return !scripted_print_preview_quit_closure_.is_null();
-}
-
-void ClosuresForMojoResponse::RunScriptedPrintPreviewQuitClosure() {
-  if (!scripted_print_preview_quit_closure_)
-    return;
-
-  std::move(scripted_print_preview_quit_closure_).Run();
-}
-
-void ClosuresForMojoResponse::SetPrintSettingFromUserQuitClosure(
-    base::OnceClosure quit_print_setting) {
-  DCHECK(!get_print_settings_from_user_quit_closure_);
-  get_print_settings_from_user_quit_closure_ = std::move(quit_print_setting);
-}
-
-void ClosuresForMojoResponse::RunPrintSettingFromUserQuitClosure() {
-  if (!get_print_settings_from_user_quit_closure_)
-    return;
-
-  std::move(get_print_settings_from_user_quit_closure_).Run();
-}
-
-// static
-double PrintRenderFrameHelper::GetScaleFactor(double input_scale_factor,
-                                              bool is_pdf) {
+double GetScaleFactor(double input_scale_factor, bool is_pdf) {
   if (input_scale_factor >= PrintRenderFrameHelper::kEpsilon && !is_pdf)
     return input_scale_factor;
   return 1.0f;
 }
 
-// static - Not anonymous so that platform implementations can use it.
-void PrintRenderFrameHelper::PrintHeaderAndFooter(
-    cc::PaintCanvas* canvas,
-    uint32_t page_number,
-    uint32_t total_pages,
-    const blink::WebLocalFrame& source_frame,
-    float webkit_scale_factor,
-    const mojom::PageSizeMargins& page_layout,
-    const mojom::PrintParams& params) {
+// Given the |device| and |canvas| to draw on, prints the appropriate headers
+// and footers using strings from |header_footer_info| on to the canvas.
+void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
+                          uint32_t page_number,
+                          uint32_t total_pages,
+                          const blink::WebLocalFrame& source_frame,
+                          float webkit_scale_factor,
+                          const mojom::PageSizeMargins& page_layout,
+                          const mojom::PrintParams& params) {
   DCHECK_LE(total_pages, kMaxPageCount);
   // |page_number| is 1-based here, so it could be equal to kMaxPageCount.
   DCHECK_LE(page_number, kMaxPageCount);
@@ -847,20 +781,106 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   web_view->Close();
 }
 
-// static - Not anonymous so that platform implementations can use it.
-void PrintRenderFrameHelper::RenderPageContent(blink::WebLocalFrame* frame,
-                                               uint32_t page_number,
-                                               const gfx::Rect& canvas_area,
-                                               const gfx::Rect& content_area,
-                                               double scale_factor,
-                                               cc::PaintCanvas* canvas) {
-  TRACE_EVENT1("print", "PrintRenderFrameHelper::RenderPageContent",
-               "page_number", page_number);
+// Renders page contents from |frame| to |content_area| of |canvas|.
+// |page_number| is zero-based.
+// When method is called, canvas should be setup to draw to |canvas_area| with
+// |scale_factor|.
+void RenderPageContent(blink::WebLocalFrame* frame,
+                       uint32_t page_number,
+                       const gfx::Rect& canvas_area,
+                       const gfx::Rect& content_area,
+                       double scale_factor,
+                       cc::PaintCanvas* canvas) {
+  TRACE_EVENT1("print", "RenderPageContent", "page_number", page_number);
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
   canvas->translate((content_area.x() - canvas_area.x()) / scale_factor,
                     (content_area.y() - canvas_area.y()) / scale_factor);
   frame->PrintPage(page_number, canvas);
+}
+
+}  // namespace
+
+FrameReference::FrameReference(blink::WebLocalFrame* frame) {
+  Reset(frame);
+}
+
+FrameReference::FrameReference() {
+  Reset(nullptr);
+}
+
+FrameReference::~FrameReference() = default;
+
+void FrameReference::Reset(blink::WebLocalFrame* frame) {
+  if (frame) {
+    view_ = frame->View();
+    // Make sure this isn't called too early in the |frame| lifecycle... i.e.
+    // calling this in WebLocalFrameClient::BindToFrame() doesn't work.
+    // TODO(dcheng): It's a bit awkward that lifetime details like this leak out
+    // of Blink. Fixing https://crbug.com/727166 should allow this to be
+    // addressed.
+    DCHECK(view_);
+    frame_ = frame;
+  } else {
+    view_ = nullptr;
+    frame_ = nullptr;
+  }
+}
+
+blink::WebLocalFrame* FrameReference::GetFrame() {
+  if (!view_ || !frame_) {
+    return nullptr;
+  }
+  for (blink::WebFrame* frame = view_->MainFrame(); frame;
+       frame = frame->TraverseNext()) {
+    if (frame == frame_) {
+      return frame_;
+    }
+  }
+  return nullptr;
+}
+
+blink::WebView* FrameReference::view() {
+  return view_;
+}
+
+ClosuresForMojoResponse::ClosuresForMojoResponse() = default;
+
+ClosuresForMojoResponse::~ClosuresForMojoResponse() {
+  RunScriptedPrintPreviewQuitClosure();
+  RunPrintSettingFromUserQuitClosure();
+}
+
+void ClosuresForMojoResponse::SetScriptedPrintPreviewQuitClosure(
+    base::OnceClosure quit_print_preview) {
+  DCHECK(!scripted_print_preview_quit_closure_);
+  scripted_print_preview_quit_closure_ = std::move(quit_print_preview);
+}
+
+bool ClosuresForMojoResponse::HasScriptedPrintPreviewQuitClosure() const {
+  return !scripted_print_preview_quit_closure_.is_null();
+}
+
+void ClosuresForMojoResponse::RunScriptedPrintPreviewQuitClosure() {
+  if (!scripted_print_preview_quit_closure_) {
+    return;
+  }
+
+  std::move(scripted_print_preview_quit_closure_).Run();
+}
+
+void ClosuresForMojoResponse::SetPrintSettingFromUserQuitClosure(
+    base::OnceClosure quit_print_setting) {
+  DCHECK(!get_print_settings_from_user_quit_closure_);
+  get_print_settings_from_user_quit_closure_ = std::move(quit_print_setting);
+}
+
+void ClosuresForMojoResponse::RunPrintSettingFromUserQuitClosure() {
+  if (!get_print_settings_from_user_quit_closure_) {
+    return;
+  }
+
+  std::move(get_print_settings_from_user_quit_closure_).Run();
 }
 
 // Class that calls the Begin and End print functions on the frame and changes
@@ -1112,8 +1132,7 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
   web_print_params_ =
       ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf);
   frame->PrintBegin(web_print_params_, node_to_print_);
-  double scale_factor = PrintRenderFrameHelper::GetScaleFactor(
-      print_params->scale_factor, is_pdf);
+  double scale_factor = GetScaleFactor(print_params->scale_factor, is_pdf);
   PrintParamsWithFloatingSize params_with_floating_size =
       CalculatePrintParamsForCss(frame, /*page_index=*/0, *print_params,
                                  ignore_css_margins, fit_to_page,
@@ -1230,8 +1249,9 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
       delegate_(std::move(delegate)),
       closures_for_mojo_responses_(
           base::MakeRefCounted<ClosuresForMojoResponse>()) {
-  if (!delegate_->IsPrintPreviewEnabled())
-    DisablePreview();
+  if (!delegate_->IsPrintPreviewEnabled()) {
+    g_is_preview_enabled = false;
+  }
 
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::PrintRenderFrame>(base::BindRepeating(
@@ -1240,11 +1260,6 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
 }
 
 PrintRenderFrameHelper::~PrintRenderFrameHelper() {}
-
-// static
-void PrintRenderFrameHelper::DisablePreview() {
-  g_is_preview_enabled = false;
-}
 
 const mojo::AssociatedRemote<mojom::PrintManagerHost>&
 PrintRenderFrameHelper::GetPrintManagerHost() {
@@ -2381,23 +2396,6 @@ bool PrintRenderFrameHelper::PrintPagesNative(
 
 void PrintRenderFrameHelper::FinishFramePrinting() {
   prep_frame_view_.reset();
-}
-
-// static - Not anonymous so that platform implementations can use it.
-mojom::PageSizeMarginsPtr
-PrintRenderFrameHelper::ComputePageLayoutInPointsForCss(
-    blink::WebLocalFrame* frame,
-    uint32_t page_index,
-    const mojom::PrintParams& page_params,
-    bool ignore_css_margins,
-    double* scale_factor) {
-  double input_scale_factor = *scale_factor;
-  PrintParamsWithFloatingSize params_with_floating_size =
-      CalculatePrintParamsForCss(
-          frame, page_index, page_params, ignore_css_margins,
-          IsPrintScalingOptionFitToPage(page_params), scale_factor);
-  return CalculatePageLayoutFromPrintParams(params_with_floating_size,
-                                            input_scale_factor);
 }
 
 void PrintRenderFrameHelper::IPCReceived() {

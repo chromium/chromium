@@ -146,15 +146,7 @@ class PrintRenderFrameHelper
   // valid.
   static constexpr double kEpsilon = 0.01f;
 
-  // Disable print preview and switch to system dialog printing even if full
-  // printing is build-in. This method is used by CEF.
-  static void DisablePreview();
-
   void PrintNode(const blink::WebNode& node);
-
-  // Get the scale factor. Returns |input_scale_factor| if it is valid and
-  // |is_pdf| is false, and 1.0f otherwise.
-  static double GetScaleFactor(double input_scale_factor, bool is_pdf);
 
   const mojo::AssociatedRemote<mojom::PrintManagerHost>& GetPrintManagerHost();
 
@@ -386,17 +378,6 @@ class PrintRenderFrameHelper
                          blink::WebLocalFrame* frame,
                          MetafileSkia* metafile);
 
-  // Renders page contents from |frame| to |content_area| of |canvas|.
-  // |page_number| is zero-based.
-  // When method is called, canvas should be setup to draw to |canvas_area|
-  // with |scale_factor|.
-  static void RenderPageContent(blink::WebLocalFrame* frame,
-                                uint32_t page_number,
-                                const gfx::Rect& canvas_area,
-                                const gfx::Rect& content_area,
-                                double scale_factor,
-                                cc::PaintCanvas* canvas);
-
   // Helper methods -----------------------------------------------------------
 
   // Increments the IPC nesting level when an IPC message is received.
@@ -404,25 +385,6 @@ class PrintRenderFrameHelper
 
   // Decrements the IPC nesting level once an IPC message has been processed.
   void IPCProcessed();
-
-  // Helper method to get page layout in points and fit to page if needed.
-  static mojom::PageSizeMarginsPtr ComputePageLayoutInPointsForCss(
-      blink::WebLocalFrame* frame,
-      uint32_t page_index,
-      const mojom::PrintParams& default_params,
-      bool ignore_css_margins,
-      double* scale_factor);
-
-  // Given the |device| and |canvas| to draw on, prints the appropriate headers
-  // and footers using strings from |header_footer_info| on to the canvas.
-  static void PrintHeaderAndFooter(
-      cc::PaintCanvas* canvas,
-      uint32_t page_number,
-      uint32_t total_pages,
-      const blink::WebLocalFrame& source_frame,
-      float webkit_scale_factor,
-      const mojom::PageSizeMargins& page_layout_in_points,
-      const mojom::PrintParams& params);
 
   // Script Initiated Printing ------------------------------------------------
 
