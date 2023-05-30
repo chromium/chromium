@@ -115,6 +115,7 @@ message AutofillProfileSpecifics {
   optional string address_home_country = 12;
   optional string address_home_landmark = 67;
   optional string address_home_between_streets = 69;
+  optional string address_home_admin_level_2 = 71;
 
   // Additional address fields for i18n.
   optional string address_home_street_address = 17;
@@ -136,6 +137,7 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_country_status = 46;
   optional VerificationStatus address_home_landmark_status = 68;
   optional VerificationStatus address_home_between_streets_status = 70;
+  optional VerificationStatus address_home_admin_level_2_status = 72;
   optional VerificationStatus address_home_street_address_status = 47;
   optional VerificationStatus address_home_sorting_code_status = 48;
   optional VerificationStatus address_home_dependent_locality_status = 49;

@@ -174,7 +174,8 @@ class AutofillTableProfileTest
     AutofillTableTest::SetUp();
     features_.InitWithFeatures(
         {features::kAutofillEnableSupportForLandmark,
-         features::kAutofillEnableSupportForBetweenStreets},
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2},
         {});
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }
@@ -967,6 +968,8 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
                                                 u"Marcos y Oliva",
                                                 VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca", VerificationStatus::kObserved);
 
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);

@@ -186,6 +186,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_between_streets(TruncateUTF8(
         UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    specifics->set_address_home_admin_level_2(
+        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2))));
+  }
   specifics->set_address_home_street_address(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
   specifics->set_address_home_line1(
@@ -237,6 +242,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
     specifics->set_address_home_between_streets_status(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS)));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    specifics->set_address_home_admin_level_2_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2)));
   }
   specifics->set_address_home_street_address_status(
       ConvertProfileToSpecificsVerificationStatus(
@@ -454,6 +465,15 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
         UTF8ToUTF16(specifics.address_home_between_streets()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_between_streets_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_ADMIN_LEVEL2,
+        UTF8ToUTF16(specifics.address_home_admin_level_2()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_admin_level_2_status()));
   }
 
   // Set either the deprecated subparts (line1 & line2) or the full address

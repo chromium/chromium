@@ -118,6 +118,7 @@ message ContactInfoSpecifics {
   optional StringToken address_country = 20;
   optional StringToken address_landmark = 41;
   optional StringToken address_between_streets = 42;
+  optional StringToken address_admin_level_2 = 43;
 
   // Additional address fields for i18n.
   // Includes all of the lines of a street address, including newlines, e.g.

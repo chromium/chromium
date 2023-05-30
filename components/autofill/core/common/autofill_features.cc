@@ -190,6 +190,13 @@ BASE_FEATURE(kAutofillEnableSupportForBetweenStreets,
              "AutofillEnableSupportForBetweenStreets",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Chrome supports filling and importing administrative area
+// level 2. A sub-division of a state, e.g. a Municipio in Brazil or Mexico.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForAdminLevel2,
+             "AutofillEnableSupportForAdminLevel2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,

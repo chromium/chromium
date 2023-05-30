@@ -950,6 +950,7 @@ std::vector<ServerFieldType> GetStoredTypesForAutofillProfile() {
           ADDRESS_HOME_FLOOR,
           ADDRESS_HOME_LANDMARK,
           ADDRESS_HOME_BETWEEN_STREETS,
+          ADDRESS_HOME_ADMIN_LEVEL2,
           EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER,
           BIRTHDATE_DAY,
@@ -1020,6 +1021,11 @@ bool AddAutofillProfileToTable(sql::Database* db,
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForBetweenStreets) &&
         type == ADDRESS_HOME_BETWEEN_STREETS) {
+      continue;
+    }
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForAdminLevel2) &&
+        type == ADDRESS_HOME_ADMIN_LEVEL2) {
       continue;
     }
     InsertBuilder(db, s, GetProfileTypeTokensTable(profile.source()),
