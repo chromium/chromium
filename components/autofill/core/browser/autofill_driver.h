@@ -72,10 +72,6 @@ class AutofillDriver {
   // frame.
   virtual bool IsInAnyMainFrame() const = 0;
 
-  // Returns whether the AutofillDriver instance is associated with a fenced
-  // frame. This can be an active or non-active main frame.
-  virtual bool IsInFencedFrameRoot() const = 0;
-
   // Returns whether the AutofillDriver instance is associated with a
   // prerendered frame.
   virtual bool IsPrerendering() const = 0;

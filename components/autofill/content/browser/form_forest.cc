@@ -215,9 +215,10 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         [this, frame](FrameToken removed_child_token) {
           absl::optional<LocalFrameToken> local_child =
               frame->driver->Resolve(removed_child_token);
-          FrameData* child_frame;
-          if (local_child && (child_frame = GetFrameData(*local_child)))
+          if (FrameData* child_frame = nullptr;
+              local_child && (child_frame = GetFrameData(*local_child))) {
             child_frame->parent_form = absl::nullopt;
+          }
         },
         &FrameTokenWithPredecessor::token);
     *old_form = std::move(*form);
@@ -468,8 +469,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // unsetting FrameData::parent_form.
         absl::optional<LocalFrameToken> local_child =
             n.frame->driver->Resolve(n.form->child_frames[n.next_frame].token);
-        FrameData* child_frame;
-        if (local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
+        if (FrameData* child_frame = nullptr;
+            local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
           num_will_visit += NumChildrenOfFrame(*child_frame);
           if (num_will_visit > kMaxVisits) {
             num_will_visit -= NumChildrenOfFrame(*child_frame);
@@ -501,8 +502,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // Triggers form re-extraction in the parent frame if `frame->parent_form` is
   // unset.
   //
-  // If |frame| has a parent frame and is not a fenced frame, there are two
-  // scenarios where `frame->parent_form` is unset:
+  // If |frame| has a parent frame, there are two scenarios where
+  // `frame->parent_form` is unset:
   // - The parent frame hasn't been processed by UpdateTreeOfRendererForm() yet.
   // - The parent form did not include the correct token of |frame| in its
   //   FormData::child_frames (for example, because loading a cross-origin page
@@ -512,12 +513,6 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // UpdateTreeOfRendererForm() will be called for the parent form, whose
   // FormData::child_frames now include |frame|.
   //
-  // We do not want to fill across the boundary of a fenced frame. Hence, a
-  // fenced frame's FrameData must be disconnected (in terms of
-  // FormData::child_frames and FrameData::parent_form) from its parent form.
-  // This is already guaranteed because FormData::child_frames does not contain
-  // fenced frames.
-  //
   // We also do not want to fill across iframes with the disallowdocumentaccess
   // attribute (https://crbug.com/961448). Since disallowdocumentaccess is
   // currently not going to ship and supporting it requires significant
@@ -525,10 +520,9 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // FormData::child_frame and unset FrameData::parent_form for frames that
   // disallow document access, there is no immediate need to support it. See
   // https://crrev.com/c/3055422 for a draft implementation.
-  if (!frame->parent_form && !driver->IsInFencedFrameRoot()) {
-    if (AutofillDriver* parent_driver = driver->GetParent()) {
-      parent_driver->TriggerFormExtraction();
-    }
+  if (AutofillDriver* parent_driver = nullptr;
+      !frame->parent_form && (parent_driver = driver->GetParent())) {
+    parent_driver->TriggerFormExtraction();
   }
 }
 
@@ -636,7 +630,6 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       result.safe_fields.push_back(browser_field.global_id());
     }
   }
-
   return result;
 }
 

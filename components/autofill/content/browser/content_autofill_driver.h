@@ -160,7 +160,6 @@ class ContentAutofillDriver : public AutofillDriver,
   ContentAutofillDriver* GetParent() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
-  bool IsInFencedFrameRoot() const override;
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;

@@ -71,11 +71,6 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
   return frame ? frame->IsMainFrame() : true;
 }
 
-// iOS has no fenced frames.
-bool AutofillDriverIOS::IsInFencedFrameRoot() const {
-  return false;
-}
-
 bool AutofillDriverIOS::IsPrerendering() const {
   return false;
 }

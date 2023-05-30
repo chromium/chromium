@@ -172,10 +172,6 @@ bool ContentAutofillDriver::IsInAnyMainFrame() const {
   return render_frame_host_->GetMainFrame() == render_frame_host();
 }
 
-bool ContentAutofillDriver::IsInFencedFrameRoot() const {
-  return render_frame_host_->IsFencedFrameRoot();
-}
-
 bool ContentAutofillDriver::IsPrerendering() const {
   return render_frame_host_->IsInLifecycleState(
       content::RenderFrameHost::LifecycleState::kPrerendering);

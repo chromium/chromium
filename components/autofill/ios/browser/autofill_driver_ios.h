@@ -48,7 +48,6 @@ class AutofillDriverIOS : public AutofillDriver,
   absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
-  bool IsInFencedFrameRoot() const override;
   bool IsPrerendering() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;

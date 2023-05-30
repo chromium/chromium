@@ -49,7 +49,6 @@ class TestAutofillDriverTemplate : public T {
   }
   bool IsInActiveFrame() const override { return is_in_active_frame_; }
   bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
-  bool IsInFencedFrameRoot() const override { return false; }
   bool IsPrerendering() const override { return false; }
   bool HasSharedAutofillPermission() const override { return false; }
   bool CanShowAutofillUi() const override { return true; }
