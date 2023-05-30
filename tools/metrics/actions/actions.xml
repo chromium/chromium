@@ -30006,6 +30006,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SafetyCheck.ShownExtensionsReviewRow">
+  <owner>psarouthakis@google.com</owner>
+  <owner>anunoy@chromium.org</owner>
+  <description>
+    The user has been shown the Safety Check Extensions Review Row on the
+    chrome://settings/privacy page. This row encourages navigation to the main
+    Safety Check Extensions Review panel on chrome://extensions. This row is
+    shown when the user has at least one extension that needs a safety review.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.Start">
   <owner>rainhard@chromium.org</owner>
   <owner>andzaytsev@google.com</owner>
