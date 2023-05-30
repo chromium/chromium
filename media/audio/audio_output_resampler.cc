@@ -25,6 +25,7 @@
 #include "media/audio/audio_output_dispatcher_impl.h"
 #include "media/audio/audio_output_proxy.h"
 #include "media/base/audio_converter.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/limits.h"
 #include "media/base/sample_rates.h"
@@ -467,6 +468,7 @@ int OnMoreDataConverter::OnMoreData(base::TimeDelta delay,
                                     AudioBus* dest) {
   TRACE_EVENT2("audio", "OnMoreDataConverter::OnMoreData", "input buffer size",
                input_buffer_size_, "output buffer size", output_buffer_size_);
+  CheckGlitchInfoAndDelay(glitch_info, delay);
   current_delay_ = delay;
   current_delay_timestamp_ = delay_timestamp;
   audio_converter_.ConvertWithInfo(0, glitch_info, dest);
