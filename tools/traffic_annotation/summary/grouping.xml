@@ -25,8 +25,6 @@ after discussions on the right group.
       <annotation id="customtabs_parallel_request"/>
       <annotation id="download_bitmap"/>
       <annotation id="download_manager_service_retry"/>
-      <annotation id="kids_chrome_management_client_classify_url"/>
-      <annotation id="supervised_user_classify_url"/>
       <annotation id="minidump_uploader_android"/>
       <annotation id="oma_download_handler_android"/>
       <annotation id="partner_bookmarks_reader_get_favicon"/>
@@ -334,6 +332,8 @@ after discussions on the right group.
   <group name="Child-protection and Safe Browsing Features" hidden="true">
     <sender name="Safe Browsing">
       <annotation id="client_download_request"/>
+      <annotation id="kids_chrome_management_client_classify_url"/>
+      <annotation id="supervised_user_classify_url"/>
       <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>
       <annotation id="permission_predictions"/>
