@@ -1081,7 +1081,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
   // Keep consuming, building up a result string as we go.
   re2::StringPiece text(input);
   re2::StringPiece skipped;
-  re2::StringPiece pre_match, pre_matched_id, matched_id, post_matched_id;
+  re2::StringPiece pre_matched_id, matched_id, post_matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &pre_matched_id,
                                      &matched_id, &post_matched_id)) {
     std::string matched_id_as_string(matched_id);

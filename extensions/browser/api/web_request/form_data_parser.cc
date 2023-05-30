@@ -372,8 +372,7 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
 FormDataParser::FormDataParser() = default;
 
 FormDataParserUrlEncoded::FormDataParserUrlEncoded()
-    : source_(nullptr),
-      source_set_(false),
+    : source_set_(false),
       source_malformed_(false),
       arg_name_(&name_),
       arg_value_(&value_),
