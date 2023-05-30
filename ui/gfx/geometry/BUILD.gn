@@ -53,6 +53,7 @@ component("geometry") {
     "resize_utils.h",
     "rounded_corners_f.cc",
     "rounded_corners_f.h",
+    "sin_cos_degrees.h",
     "size.cc",
     "size.h",
     "size_conversions.cc",

@@ -11,17 +11,17 @@
 namespace gfx {
 
 GEOMETRY_EXPORT constexpr double DegToRad(double deg) {
-  return deg * base::kPiDouble / 180.0;
+  return deg * base::kDegToRadDouble;
 }
 GEOMETRY_EXPORT constexpr float DegToRad(float deg) {
-  return deg * base::kPiFloat / 180.0f;
+  return deg * base::kDegToRadFloat;
 }
 
 GEOMETRY_EXPORT constexpr double RadToDeg(double rad) {
-  return rad * 180.0 / base::kPiDouble;
+  return rad * base::kRadToDegDouble;
 }
 GEOMETRY_EXPORT constexpr float RadToDeg(float rad) {
-  return rad * 180.0f / base::kPiFloat;
+  return rad * base::kRadToDegFloat;
 }
 
 }  // namespace gfx

@@ -748,6 +748,7 @@ test("gfx_unittests") {
     "geometry/linear_gradient_unittest.cc",
     "geometry/mask_filter_info_unittest.cc",
     "geometry/rrect_f_unittest.cc",
+    "geometry/sin_cos_degrees_unittest.cc",
     "geometry/transform_operations_unittest.cc",
     "geometry/transform_unittest.cc",
     "image/buffer_w_stream_unittest.cc",
