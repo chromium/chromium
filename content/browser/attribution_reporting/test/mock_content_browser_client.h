@@ -33,6 +33,8 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
               (override));
 
   MOCK_METHOD(bool, IsWebAttributionReportingAllowed, (), (override));
+
+  MOCK_METHOD(bool, ShouldUseOsWebSourceAttributionReporting, (), (override));
 };
 
 using MockAttributionReportingContentBrowserClient =
