@@ -96,6 +96,7 @@
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -175,6 +176,7 @@
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service_factory.h"
+#include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webid/federated_identity_api_permission_context_factory.h"
@@ -221,6 +223,7 @@
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
+#include "chrome/browser/content_creation/notes/internal/note_service_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/signin/signin_manager_android_factory.h"
@@ -249,7 +252,6 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
-#include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 #endif
@@ -569,6 +571,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if defined(TOOLKIT_VIEWS)
   BubbleContentsWrapperServiceFactory::GetInstance();
 #endif
+  BulkLeakCheckServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderServiceFactory::GetInstance();
 #endif
@@ -608,6 +611,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ConsentAuditorFactory::GetInstance();
   ContentIndexProviderFactory::GetInstance();
+#if BUILDFLAG(IS_ANDROID)
+  content_creation::NoteServiceFactory::GetInstance();
+#endif
   CookieControlsServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
@@ -719,8 +725,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   LoginUIServiceFactory::GetInstance();
-  LogoServiceFactory::GetInstance();
 #endif
+  LogoServiceFactory::GetInstance();
   LookalikeUrlService::EnsureFactoryBuilt();
 #if !BUILDFLAG(IS_ANDROID)
   ManagedConfigurationAPIFactory::GetInstance();
@@ -1028,8 +1034,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   UnifiedConsentServiceFactory::GetInstance();
   UnusedSitePermissionsServiceFactory::GetInstance();
   UrlLanguageHistogramFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
   UsbChooserContextFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
   user_notes::UserNoteServiceFactory::EnsureFactoryBuilt();
   UserEducationServiceFactory::GetInstance();
 #endif
