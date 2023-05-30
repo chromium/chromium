@@ -719,6 +719,20 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
+  switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
+      &db_, source, source_time)) {
+    case RateLimitResult::kAllowed:
+      break;
+    case RateLimitResult::kNotAllowed:
+      // TODO(https://crbug.com/1448330): Report a different result
+      // type for this limit to avoid overlap with the other reporting
+      // origin limit.
+      return StoreSourceResult(
+          StorableSource::Result::kExcessiveReportingOrigins);
+    case RateLimitResult::kError:
+      return StoreSourceResult(StorableSource::Result::kInternalError);
+  }
+
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return StoreSourceResult(StorableSource::Result::kInternalError);
