@@ -30,6 +30,8 @@ class MediaRouterCastUiForTest : public MediaRouterUiForTestBase,
   void HideDialog() override;
   void ChooseSourceType(CastDialogView::SourceType source_type) override;
   CastDialogView::SourceType GetChosenSourceType() const override;
+  void StartCasting(const std::string& sink_name) override;
+  void StopCasting(const std::string& sink_name) override;
   std::string GetRouteIdForSink(const std::string& sink_name) const override;
   std::string GetStatusTextForSink(const std::string& sink_name) const override;
   std::string GetIssueTextForSink(const std::string& sink_name) const override;
@@ -59,6 +61,8 @@ class MediaRouterCastUiForTest : public MediaRouterUiForTestBase,
 
   const CastDialogView* GetDialogView() const;
   CastDialogView* GetDialogView();
+
+  CastDialogSinkView* GetSinkView(const std::string& sink_name) const;
 };
 
 }  // namespace media_router
