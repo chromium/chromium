@@ -9,27 +9,13 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/observer_list.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 
 namespace apps {
 
 ShortcutRegistryCache::ShortcutRegistryCache() = default;
 
-ShortcutRegistryCache::~ShortcutRegistryCache() {
-  for (auto& obs : observers_) {
-    obs.OnShortcutRegistryCacheWillBeDestroyed(this);
-  }
-  CHECK(observers_.empty());
-}
-
-void ShortcutRegistryCache::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ShortcutRegistryCache::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
+ShortcutRegistryCache::~ShortcutRegistryCache() = default;
 
 void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -38,19 +24,12 @@ void ShortcutRegistryCache::UpdateShortcut(ShortcutPtr delta) {
   is_updating_ = true;
   const ShortcutId shortcut_id = delta->shortcut_id;
 
-  Shortcut* state =
-      HasShortcut(shortcut_id) ? states_[shortcut_id].get() : nullptr;
-
-  for (auto& obs : observers_) {
-    obs.OnShortcutUpdated(ShortcutUpdate(state, delta.get()));
-  }
-
-  if (state) {
-    ShortcutUpdate::Merge(state, delta.get());
+  if (HasShortcut(shortcut_id)) {
+    ShortcutUpdate::Merge(states_[shortcut_id].get(), delta.get());
   } else {
     states_.emplace(shortcut_id, delta->Clone());
   }
-
+  // TODO(crbug.com/1412708): Update observer.
   is_updating_ = false;
 }
 

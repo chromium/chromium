@@ -26,8 +26,6 @@ class COMPONENT_EXPORT(SHORTCUT) ShortcutUpdate {
   ShortcutUpdate(const ShortcutUpdate&) = delete;
   ShortcutUpdate& operator=(const ShortcutUpdate&) = delete;
 
-  bool operator==(const ShortcutUpdate&) const;
-
   const ShortcutId& ShortcutId() const;
   const std::string& HostAppId() const;
   const std::string& LocalId() const;

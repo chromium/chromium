@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
-#include <type_traits>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -22,25 +21,6 @@ ShortcutUpdate::ShortcutUpdate(const Shortcut* state, const Shortcut* delta)
     CHECK_EQ(state_->host_app_id, delta->host_app_id);
     CHECK_EQ(state_->local_id, delta->local_id);
   }
-}
-
-bool ShortcutUpdate::operator==(const ShortcutUpdate& rhs) const {
-  bool states_are_same = false;
-  bool deltas_are_same = false;
-  if (!this->state_ && !rhs.state_) {
-    states_are_same = true;
-  }
-  if (this->state_ && rhs.state_) {
-    states_are_same = *(this->state_) == *(rhs.state_);
-  }
-
-  if (!this->delta_ && !rhs.delta_) {
-    deltas_are_same = true;
-  }
-  if (this->delta_ && rhs.delta_) {
-    deltas_are_same = *(this->delta_) == *(rhs.delta_);
-  }
-  return states_are_same && deltas_are_same;
 }
 
 void ShortcutUpdate::Merge(Shortcut* state, const Shortcut* delta) {
@@ -101,19 +81,6 @@ ShortcutSource ShortcutUpdate::ShortcutSource() const {
 bool ShortcutUpdate::ShortcutSourceChanged() const {
   IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(shortcut_source,
                                       ShortcutSource::kUnknown);
-}
-
-// For logging and debug purposes.
-COMPONENT_EXPORT(SHORTCUT)
-std::ostream& operator<<(std::ostream& out,
-                         const ShortcutUpdate& shortcut_update) {
-  out << "ShortcutId: " << shortcut_update.ShortcutId() << std::endl;
-  out << "HostAppId: " << shortcut_update.HostAppId() << std::endl;
-  out << "LocalId: " << shortcut_update.LocalId() << std::endl;
-  out << "Name: " << shortcut_update.Name() << std::endl;
-  out << "ShortcutSource: " << EnumToString(shortcut_update.ShortcutSource())
-      << std::endl;
-  return out;
 }
 
 }  // namespace apps

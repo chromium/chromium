@@ -35,8 +35,6 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   Shortcut(Shortcut&&) = delete;
   Shortcut& operator=(Shortcut&&) = delete;
 
-  bool operator==(const Shortcut&) const;
-
   ~Shortcut();
 
   std::unique_ptr<Shortcut> Clone() const;
