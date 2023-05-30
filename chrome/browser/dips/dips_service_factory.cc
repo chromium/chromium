@@ -4,7 +4,7 @@
 
 #include "chrome/browser/dips/dips_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
@@ -18,7 +18,8 @@ DIPSService* DIPSServiceFactory::GetForBrowserContext(
 }
 
 DIPSServiceFactory* DIPSServiceFactory::GetInstance() {
-  return base::Singleton<DIPSServiceFactory>::get();
+  static base::NoDestructor<DIPSServiceFactory> instance;
+  return instance.get();
 }
 
 /* static */

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/dips/dips_cleanup_service.h"
 #include "chrome/browser/dips/dips_features.h"
 
@@ -16,7 +16,8 @@ DIPSCleanupService* DIPSCleanupServiceFactory::GetForBrowserContext(
 }
 
 DIPSCleanupServiceFactory* DIPSCleanupServiceFactory::GetInstance() {
-  return base::Singleton<DIPSCleanupServiceFactory>::get();
+  static base::NoDestructor<DIPSCleanupServiceFactory> instance;
+  return instance.get();
 }
 
 /*static*/
