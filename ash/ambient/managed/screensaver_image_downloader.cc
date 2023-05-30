@@ -204,6 +204,7 @@ void ScreensaverImageDownloader::UpdateImageUrlList(
     ClearRequestQueue();
     weak_ptr_factory_.InvalidateWeakPtrs();
     DeleteDownloadedImages();
+    downloaded_images_.clear();
     return;
   }
 
@@ -222,7 +223,7 @@ void ScreensaverImageDownloader::UpdateImageUrlList(
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (const std::string& url : new_image_urls) {
-    DLOG(WARNING) << "Queue URL: " << url;
+    DVLOG(1) << "Queue URL: " << url;
     auto job = std::make_unique<ScreensaverImageDownloader::Job>(url);
     QueueDownloadJob(std::move(job));
   }
@@ -261,6 +262,7 @@ void ScreensaverImageDownloader::OnUnreferencedImagesDeleted(
   }
   for (const auto& path : file_paths_deleted) {
     downloaded_images_.erase(path);
+    DVLOG(1) << "Removing path from in memory cache " << path;
   }
 
   image_list_updated_callback_.Run(std::vector<base::FilePath>(
