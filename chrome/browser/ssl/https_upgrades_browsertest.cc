@@ -2058,6 +2058,45 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 }
 
+// Tests that URLs typed with an explicit http:// scheme that result in an
+// opt-out cause the url to be added to the allowlist.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       URLsTypedWithHttpSchemeNoUpgradesAllowlist) {
+  if (!IsHttpUpgradingEnabled() || IsHttpsFirstModePrefEnabled()) {
+    return;
+  }
+  GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxEditModelDelegate* edit_model_delegate = browser()
+                                                      ->window()
+                                                      ->GetLocationBar()
+                                                      ->GetOmniboxView()
+                                                      ->model()
+                                                      ->delegate();
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+
+  // Site should not yet be in the allowlist.
+  EXPECT_FALSE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
+
+  // Simulate the full URL was typed with an http scheme.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  edit_model_delegate->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
+      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+  nav_observer.Wait();
+
+  // URL should not have been upgraded, and site should now be in the allowlist.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(state->IsHttpAllowedForHost(
+      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
+}
+
 // A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled
 // and constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.

@@ -298,6 +298,10 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   if (chrome_navigation_ui_data &&
       chrome_navigation_ui_data->url_is_typed_with_http_scheme() &&
       !IsInterstitialEnabled(*interstitial_state_)) {
+    if (state) {
+      state->AllowHttpForHost(tentative_resource_request.url.host(),
+                              storage_partition);
+    }
     std::move(callback).Run({});
     return;
   }
