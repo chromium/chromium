@@ -60,12 +60,13 @@ FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
 FirstPartySetsPolicyServiceFactory::~FirstPartySetsPolicyServiceFactory() =
     default;
 
-KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FirstPartySetsPolicyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!GetTestingFactory()->is_null()) {
-    return GetTestingFactory()->Run(context).release();
+    return GetTestingFactory()->Run(context);
   }
-  return new FirstPartySetsPolicyService(context);
+  return std::make_unique<FirstPartySetsPolicyService>(context);
 }
 
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
