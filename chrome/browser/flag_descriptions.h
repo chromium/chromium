@@ -788,6 +788,9 @@ extern const char kExperimentalWebAssemblyFeaturesDescription[];
 extern const char kExperimentalWebAssemblyJSPIName[];
 extern const char kExperimentalWebAssemblyJSPIDescription[];
 
+extern const char kEnablePolicyTestPageName[];
+extern const char kEnablePolicyTestPageDescription[];
+
 extern const char kEnableWasmBaselineName[];
 extern const char kEnableWasmBaselineDescription[];
 
@@ -2553,6 +2556,9 @@ extern const char kCastMirroringTargetPlayoutDelay200ms[];
 extern const char kCastMirroringTargetPlayoutDelay250ms[];
 extern const char kCastMirroringTargetPlayoutDelay300ms[];
 extern const char kCastMirroringTargetPlayoutDelay350ms[];
+
+extern const char kEnablePolicyTestPageName[];
+extern const char kEnablePolicyTestPageDescription[];
 
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];

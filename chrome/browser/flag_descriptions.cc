@@ -1414,6 +1414,12 @@ const char kExperimentalWebAssemblyJSPIDescription[] =
     "Integration (JSPI) "
     "API.";
 
+const char kEnablePolicyTestPageName[] =
+    "Enables access to the policy test page.";
+const char kEnablePolicyTestPageDescription[] =
+    "When enabled, allows the policy test page to be accessed at "
+    "chrome://policy/test.";
+
 const char kEnableWasmBaselineName[] = "WebAssembly baseline compiler";
 const char kEnableWasmBaselineDescription[] =
     "Enables WebAssembly baseline compilation and tier up.";

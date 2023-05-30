@@ -10387,6 +10387,10 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kCastMirroringTargetPlayoutDelayChoices)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"enable-policy-test-page", flag_descriptions::kEnablePolicyTestPageName,
+     flag_descriptions::kEnablePolicyTestPageDescription, kOsAll,
+     FEATURE_VALUE_TYPE(policy::features::kEnablePolicyTestPage)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

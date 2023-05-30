@@ -3006,6 +3006,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-policy-test-page",
+    "owners": [ "scobici@google.com", "ydago@google.com", "//components/policy/OWNERS" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "enable-power-sounds",
     "owners": [ "afakhry", "bicioglu", "hongyulong", "nupurjain" ],
     "expiry_milestone": 123
