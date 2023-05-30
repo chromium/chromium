@@ -34,10 +34,6 @@ source_set("ozone_demo_lib") {
     "//ui/ozone",
     "//ui/platform_window",
   ]
-
-  if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp" ]
-  }
 }
 
 executable("ozone_demo") {
