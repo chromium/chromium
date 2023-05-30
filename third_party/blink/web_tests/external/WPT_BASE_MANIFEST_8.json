@@ -135116,6 +135116,19 @@
         ]
        },
        "track-sizing": {
+        "masonry-track-sizing-check-grid-height-on-resize.html": [
+         "06c2901f27bf8c8edabf434cf79bf7915e5dd09e",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/masonry/tentative/track-sizing/masonry-track-sizing-check-grid-height-on-resize-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "masonry-track-sizing-explicit-block.html": [
          "05f60893900f44753d4873e60d4b348bd6270a07",
          [
@@ -272940,16 +272953,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "5e7eac2597517b07bc65279a9d3ca3616f68844b",
-     []
-    ],
-    "mtime.json": [
-     "c7cc35787ff47a8f17e254f0ddce64a2cff48d30",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -292960,7 +292963,7 @@
        []
       ],
       "color-computed-lab-expected.txt": [
-       "4445e6305a1ae3afaf16a3a6db52db5a042c959e",
+       "77fbfbee89f8e52585800b5e3b1df0bdb61ecc07",
        []
       ],
       "color-computed-lab.html.ini": [
@@ -292988,7 +292991,7 @@
        []
       ],
       "color-valid-lab-expected.txt": [
-       "0dc2ec7db1046b6a9bb7f924bc5fbe77603efd1e",
+       "e9b2ea64a3fdac9f9fe6ab1aa177b0c11e18f344",
        []
       ],
       "color-valid-lab.html.ini": [
@@ -307981,6 +307984,10 @@
         ]
        },
        "track-sizing": {
+        "masonry-track-sizing-check-grid-height-on-resize-ref.html": [
+         "71968864924cafa3166a352d15e4d0d1b81383d1",
+         []
+        ],
         "masonry-track-sizing-explicit-block-ref.html": [
          "993017919f39d72a8408de68b0c797e59ff3aebd",
          []
@@ -355344,14 +355351,6 @@
        ]
       },
       "drawing-images-to-the-canvas": {
-       "2d.drawImage.animated.poster-expected.txt": [
-        "5ef858d2314729c5cf09250e06c19c983c237857",
-        []
-       ],
-       "2d.drawImage.animated.poster.html.ini": [
-        "c26cd20441d5d1701e9cd4ef2a1968b623576017",
-        []
-       ],
        "2d.drawImage.svg.html.ini": [
         "1a3fc37e1e658c02f96935be17d1d8f0fc228366",
         []
@@ -356870,22 +356869,6 @@
        []
       ],
       "drawing-images-to-the-canvas": {
-       "2d.drawImage.animated.poster-expected.txt": [
-        "5ef858d2314729c5cf09250e06c19c983c237857",
-        []
-       ],
-       "2d.drawImage.animated.poster.html.ini": [
-        "c26cd20441d5d1701e9cd4ef2a1968b623576017",
-        []
-       ],
-       "2d.drawImage.animated.poster.worker-expected.txt": [
-        "5ef858d2314729c5cf09250e06c19c983c237857",
-        []
-       ],
-       "2d.drawImage.animated.poster.worker.js.ini": [
-        "2c48d688b6af35ef3c65da7c8cda127b80716571",
-        []
-       ],
        "2d.drawImage.svg-expected.txt": [
         "26f3a1a58bdb336e60300e16b8c934e427a98a23",
         []
@@ -357607,7 +357590,7 @@
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "91b92b0092fc9de2d6729215aa192aef6aca07dc",
+        "074d1bc546dd8d1a5bfa0bc9d3fbe0177dae3ba1",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
@@ -372301,10 +372284,6 @@
     ],
     "anim-gr.png": [
      "925e2efc9a97ade490f04d57271adc10b2fe69b6",
-     []
-    ],
-    "anim-poster-gr.png": [
-     "6941207373e513cfe10729077f59d369c59e6046",
      []
     ],
     "anim-tao.png": [
@@ -515068,7 +515047,7 @@
    },
    "graphics-aria": {
     "graphics-roles.html": [
-     "159190ed833398d2410c5f4f2224f0b3a7dfd0a8",
+     "fd7fabbb6907d0ce1e1a9dcdbdd96c3bb398bdbe",
      [
       null,
       {
@@ -523187,22 +523166,8 @@
          {}
         ]
        ],
-       "2d.drawImage.animated.apng.html": [
-        "ffe19ce9bc4aec3fdc8073ca0ec65c2277f4dbde",
-        [
-         null,
-         {}
-        ]
-       ],
        "2d.drawImage.animated.gif.html": [
         "6330d06ade35721f9e20b79a396715a4196392ce",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.drawImage.animated.poster.html": [
-        "2d28bc12837973c78cf4c0b176698e1ed0056d7b",
         [
          null,
          {}
@@ -530808,20 +530773,6 @@
         "958a2431b6d9823b2ac0a31e848d178d13f2bdf1",
         [
          "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.alpha.worker.html",
-         {}
-        ]
-       ],
-       "2d.drawImage.animated.poster.html": [
-        "eccf14bfd044c98f0c9412f7c7d18359ae645b01",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.drawImage.animated.poster.worker.js": [
-        "542c9382f64572be389a06249f376ec824c31c76",
-        [
-         "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.animated.poster.worker.html",
          {}
         ]
        ],
@@ -568647,7 +568598,7 @@
      ]
     },
     "roles.html": [
-     "3609c26a23f9d826fa004c68835039ab051fedc9",
+     "ff4986370f474668484e24204fa5d8ab204bc81d",
      [
       null,
       {
@@ -568656,7 +568607,7 @@
      ]
     ],
     "table-roles.html": [
-     "d7865f5fccab6ff12fc592835512e613e883ef80",
+     "3f1a4eccd666eabfc718354e0d436da198469251",
      [
       null,
       {
