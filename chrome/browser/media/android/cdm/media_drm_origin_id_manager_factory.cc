@@ -21,7 +21,8 @@ MediaDrmOriginIdManager* MediaDrmOriginIdManagerFactory::GetForProfile(
 
 // static
 MediaDrmOriginIdManagerFactory* MediaDrmOriginIdManagerFactory::GetInstance() {
-  return base::Singleton<MediaDrmOriginIdManagerFactory>::get();
+  static base::NoDestructor<MediaDrmOriginIdManagerFactory> instance;
+  return instance.get();
 }
 
 MediaDrmOriginIdManagerFactory::MediaDrmOriginIdManagerFactory()

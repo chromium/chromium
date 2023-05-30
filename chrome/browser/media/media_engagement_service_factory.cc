@@ -18,7 +18,8 @@ MediaEngagementService* MediaEngagementServiceFactory::GetForProfile(
 
 // static
 MediaEngagementServiceFactory* MediaEngagementServiceFactory::GetInstance() {
-  return base::Singleton<MediaEngagementServiceFactory>::get();
+  static base::NoDestructor<MediaEngagementServiceFactory> instance;
+  return instance.get();
 }
 
 MediaEngagementServiceFactory::MediaEngagementServiceFactory()
@@ -34,7 +35,7 @@ MediaEngagementServiceFactory::MediaEngagementServiceFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
-MediaEngagementServiceFactory::~MediaEngagementServiceFactory() {}
+MediaEngagementServiceFactory::~MediaEngagementServiceFactory() = default;
 
 KeyedService* MediaEngagementServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

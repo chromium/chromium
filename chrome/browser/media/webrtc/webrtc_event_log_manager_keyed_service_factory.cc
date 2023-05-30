@@ -13,7 +13,8 @@ namespace webrtc_event_logging {
 // static
 WebRtcEventLogManagerKeyedServiceFactory*
 WebRtcEventLogManagerKeyedServiceFactory::GetInstance() {
-  return base::Singleton<WebRtcEventLogManagerKeyedServiceFactory>::get();
+  static base::NoDestructor<WebRtcEventLogManagerKeyedServiceFactory> instance;
+  return instance.get();
 }
 
 WebRtcEventLogManagerKeyedServiceFactory::

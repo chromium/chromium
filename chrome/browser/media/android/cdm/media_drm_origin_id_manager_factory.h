@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ANDROID_CDM_MEDIA_DRM_ORIGIN_ID_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_ANDROID_CDM_MEDIA_DRM_ORIGIN_ID_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class MediaDrmOriginIdManager;
@@ -23,7 +23,7 @@ class MediaDrmOriginIdManagerFactory : public ProfileKeyedServiceFactory {
   static MediaDrmOriginIdManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<MediaDrmOriginIdManagerFactory>;
+  friend base::NoDestructor<MediaDrmOriginIdManagerFactory>;
 
   MediaDrmOriginIdManagerFactory();
 
