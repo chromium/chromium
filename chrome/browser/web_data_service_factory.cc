@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -137,7 +137,8 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
 
 // static
 WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
-  return base::Singleton<WebDataServiceFactory>::get();
+  static base::NoDestructor<WebDataServiceFactory> instance;
+  return instance.get();
 }
 
 // static

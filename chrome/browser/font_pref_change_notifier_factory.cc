@@ -28,7 +28,8 @@ FontPrefChangeNotifier* FontPrefChangeNotifierFactory::GetForProfile(
 
 // static
 FontPrefChangeNotifierFactory* FontPrefChangeNotifierFactory::GetInstance() {
-  return base::Singleton<FontPrefChangeNotifierFactory>::get();
+  static base::NoDestructor<FontPrefChangeNotifierFactory> instance;
+  return instance.get();
 }
 
 KeyedService* FontPrefChangeNotifierFactory::BuildServiceInstanceFor(
