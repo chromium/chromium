@@ -616,6 +616,9 @@ void TaskEnvironment::DestroyThreadPool() {
   // threads. Make sure this is allowed to avoid flaking tests that have
   // disallowed waits on their main thread.
   ScopedAllowBaseSyncPrimitivesForTesting allow_waits_to_destroy_task_tracker;
+
+  // Drop unowned resource before destroying thread pool which owns it.
+  task_tracker_ = nullptr;
   ThreadPoolInstance::Set(nullptr);
 }
 
