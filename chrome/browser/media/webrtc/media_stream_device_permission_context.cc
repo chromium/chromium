@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
+
+#include "base/command_line.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -10,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
@@ -64,6 +67,13 @@ ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
     DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
     policy_name = prefs::kVideoCaptureAllowed;
     urls_policy_name = prefs::kVideoCaptureAllowedUrls;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForMediaStream)) {
+    bool blocked = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                       switches::kUseFakeUIForMediaStream) == "deny";
+    return blocked ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW;
   }
 
   MediaStreamDevicePolicy policy =

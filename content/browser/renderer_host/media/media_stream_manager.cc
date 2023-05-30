@@ -1473,7 +1473,9 @@ MediaStreamManager::MediaStreamManager(
   bool use_fake_ui_factory = false;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeUIForMediaStream)) {
+          switches::kUseFakeUIForMediaStream) &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kUseFakeDeviceForMediaStream) != "deny") {
     use_fake_ui_factory = true;
   }
 
