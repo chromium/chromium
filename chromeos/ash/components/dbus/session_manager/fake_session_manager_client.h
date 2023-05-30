@@ -101,9 +101,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const cryptohome::AccountIdentifier& cryptohome_id) override;
   void StartDeviceWipe() override;
   void StartRemoteDeviceWipe(
-      const enterprise_management::SignedData& signed_command,
-      enterprise_management::PolicyFetchRequest::SignatureType signature_type)
-      override;
+      const enterprise_management::SignedData& signed_command) override;
   void ClearForcedReEnrollmentVpd(
       chromeos::VoidDBusMethodCallback callback) override;
   void UnblockDevModeForEnrollment(

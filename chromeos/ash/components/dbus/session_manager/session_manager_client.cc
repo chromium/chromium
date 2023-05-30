@@ -372,15 +372,12 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   void StartRemoteDeviceWipe(
-      const enterprise_management::SignedData& signed_command,
-      enterprise_management::PolicyFetchRequest::SignatureType signature_type)
-      override {
+      const enterprise_management::SignedData& signed_command) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,
         login_manager::kSessionManagerStartRemoteDeviceWipe);
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(signed_command);
-    writer.AppendByte(signature_type);
     session_manager_proxy_->CallMethod(&method_call,
                                        dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
                                        base::DoNothing());

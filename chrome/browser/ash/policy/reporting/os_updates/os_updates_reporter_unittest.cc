@@ -279,9 +279,7 @@ TEST_P(PowerwashTest, PolicyEnabled) {
 
   // Fake a powerwash.
   if (remote_requested_) {
-    session_manager->StartRemoteDeviceWipe(
-        enterprise_management::SignedData(),
-        enterprise_management::PolicyFetchRequest::NONE);
+    session_manager->StartRemoteDeviceWipe(enterprise_management::SignedData());
   } else {
     session_manager->StartDeviceWipe();
   }
@@ -313,9 +311,7 @@ TEST_P(PowerwashTest, PolicyDisabled) {
 
   // Fake a powerwash.
   if (remote_requested_) {
-    session_manager->StartRemoteDeviceWipe(
-        enterprise_management::SignedData(),
-        enterprise_management::PolicyFetchRequest::NONE);
+    session_manager->StartRemoteDeviceWipe(enterprise_management::SignedData());
   } else {
     session_manager->StartDeviceWipe();
   }
