@@ -144,12 +144,6 @@ std::unique_ptr<PermissionSet> GetAllowedPermissionsAfterWithholding(
       URLPatternSet::IntersectionBehavior::kDetailed);
 }
 
-// Returns whether the extension requests host permissions.
-bool ExtensionRequestsHostPermissions(const Extension& extension) {
-  return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
-         !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
-}
-
 class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   PermissionsManagerFactory();
@@ -446,6 +440,12 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   }
 
   return extension_access;
+}
+
+bool PermissionsManager::ExtensionRequestsHostPermissions(
+    const Extension& extension) const {
+  return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
+         !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
 }
 
 bool PermissionsManager::CanAffectExtension(const Extension& extension) const {

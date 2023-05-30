@@ -90,6 +90,7 @@ const MenuEntries kPermissionsPage =
     ExtensionContextMenuModel::PAGE_ACCESS_PERMISSIONS_PAGE;
 const MenuEntries kLearnMore =
     ExtensionContextMenuModel::PAGE_ACCESS_LEARN_MORE;
+const MenuEntries kUninstall = ExtensionContextMenuModel::UNINSTALL;
 
 namespace {
 
@@ -2056,6 +2057,56 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
       EXPECT_EQ(GetPageAccessCommandState(menu, kPermissionsPage),
                 CommandState::kAbsent);
     }
+  }
+}
+
+TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
+       PageAccessItemsVisibility_PolicyInstalled) {
+  bool is_feature_enabled = GetParam();
+  InitializeEmptyExtensionService();
+
+  const Extension* enterprise_extension = AddExtensionWithHostPermission(
+      "extension", manifest_keys::kBrowserAction,
+      ManifestLocation::kExternalPolicy, "<all_urls>");
+
+  // Add a tab to the browser.
+  const GURL url("http://www.example.com/");
+  AddTab(url);
+
+  ExtensionContextMenuModel menu(enterprise_extension, GetBrowser(),
+                                 ExtensionContextMenuModel::PINNED, nullptr,
+                                 true, ContextMenuSource::kToolbarAction);
+
+  // By default, user can customize site access by extension and the 'grant all
+  // extensions' and 'block all extensions' are not visible.
+  EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions), CommandState::kAbsent);
+  EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions), CommandState::kAbsent);
+
+  if (is_feature_enabled) {
+    // Page access submenu is enabled and has all its items disabled, since
+    // the policy installed extension has site access but user cannot change it.
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
+              CommandState::kEnabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnClick),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnSite),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnAllSites),
+              CommandState::kDisabled);
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
+    EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
+    EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
+    // Policy extension cannot be uninstalled.
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kAbsent);
+  } else {
+    // Page access submenu is hidden since user cannot change the site access of
+    // the policy installed extension.
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnClick), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnSite), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kOnAllSites),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kDisabled);
   }
 }
 
