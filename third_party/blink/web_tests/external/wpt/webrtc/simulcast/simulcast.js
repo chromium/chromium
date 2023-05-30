@@ -77,6 +77,16 @@ function midToRid(description, localDescription, rids) {
   }
 
   const localMid = localDescription ? SDPUtils.getMid(SDPUtils.splitSections(localDescription.sdp)[1]) : '0';
+  if (localDescription) {
+    const localVideoSection = SDPUtils.splitSections(localDescription.sdp)[1];
+    const localParameters = SDPUtils.parseRtpParameters(localVideoSection);
+
+    const localMidExtension = localParameters.headerExtensions
+      .find(ext => ext.uri === 'urn:ietf:params:rtp-hdrext:sdes:mid');
+    if (localMidExtension) {
+      rtpParameters.headerExtensions.push(localMidExtension);
+    }
+  }
 
   if (!rids) {
     rids = [];
