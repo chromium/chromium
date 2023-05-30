@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 671 tests; 356 PASS, 315 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 673 tests; 356 PASS, 317 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -682,5 +682,7 @@ FAIL Parsing: <stun://test/a/../b> against <about:blank> assert_equals: href exp
 FAIL Parsing: <stun://:443> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <stun://test:test> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <stun://[:1]> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <w://x:0> against <about:blank> assert_equals: host expected "x:0" but got ""
+FAIL Parsing: <west://x:0> against <about:blank> assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 

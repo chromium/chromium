@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 672 tests; 483 PASS, 189 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 483 PASS, 191 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -815,5 +815,7 @@ FAIL Parsing: <stun://test:test> without base assert_throws_js: function "functi
 FAIL Parsing: <stun://[:1]> without base assert_throws_js: function "function() {
           new URL(expected.input, base);
         }" did not throw
+FAIL Parsing: <w://x:0> without base assert_equals: href expected "w://x:0" but got "file:///W://x:0"
+FAIL Parsing: <west://x:0> without base assert_equals: host expected "x:0" but got ""
 Harness: the test ran to completion.
 
