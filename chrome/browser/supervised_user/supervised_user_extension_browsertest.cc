@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/disable_reason.h"
@@ -88,6 +90,10 @@ class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
 
  private:
   InProcessBrowserTestMixinHost mixin_host_;
+
+  base::test::ScopedFeatureList feature_list_{
+      supervised_user::kEnableSupervisionOnDesktopAndIOS};
+
   // In order to simulate supervision removal and re-authentication use
   // supervised account in the PRE test and regular account afterwards.
   supervised_user::SupervisionMixin supervision_mixin_{
