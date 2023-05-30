@@ -273,9 +273,6 @@ void ExecutionContext::ReportNavigatorUserAgentAccess() {
     return;
   has_filed_navigator_user_agent_issue_ = true;
   AuditsIssue::ReportNavigatorUserAgentAccess(this, Url().GetString());
-  base::UmaHistogramBoolean(
-      "Blink.Navigator.ReducedUserAgent",
-      RuntimeEnabledFeatures::UserAgentReductionEnabled(this));
 }
 
 void ExecutionContext::AddConsoleMessageImpl(

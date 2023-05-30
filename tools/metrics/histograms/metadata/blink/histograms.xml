@@ -2578,20 +2578,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
-    expires_after="2023-08-27">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
-  <summary>
-    Whether the navigator.userAgent and navigator.appVersion JavaScript getters
-    returned a reduced user agent string value. The reduced user agent string is
-    only returned in the presence of a valid UserAgentReduction origin trial
-    token. This histogram is recorded when the navigator.userAgent and
-    navigator.appVersion JavaScript APIs are invoked.
-  </summary>
-</histogram>
-
 <histogram name="Blink.NotificationManager.GetPermissionStatusTime" units="ms"
     expires_after="2023-11-19">
   <owner>cduvall@chromium.org</owner>
