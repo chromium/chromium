@@ -18,6 +18,7 @@ source_set("bottom_sheet") {
   ]
   deps = [
     ":common",
+    ":constants",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/browser",
@@ -67,6 +68,14 @@ source_set("common") {
   ]
 }
 
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_suggestion_bottom_sheet_constants.h",
+    "password_suggestion_bottom_sheet_constants.mm",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
@@ -75,6 +84,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
+    ":constants",
     ":eg_test_support+eg2",
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",

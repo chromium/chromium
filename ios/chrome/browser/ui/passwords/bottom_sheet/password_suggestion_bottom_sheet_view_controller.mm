@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
@@ -379,6 +380,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   _tableView.showsVerticalScrollIndicator = NO;
   _tableView.delegate = self;
   _tableView.dataSource = self;
+  _tableView.isAccessibilityElement = YES;
+  _tableView.accessibilityIdentifier =
+      kPasswordSuggestionBottomSheetTableViewId;
   [_tableView registerClass:TableViewURLCell.class
       forCellReuseIdentifier:@"cell"];
 
