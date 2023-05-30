@@ -101,6 +101,8 @@ class GLManager : private GpuControl {
 
   void PerformIdleWork();
 
+  void BindOffscreenFramebuffer(GLenum target);
+
   void set_use_iosurface_memory_buffers(bool use_iosurface_memory_buffers) {
     use_iosurface_memory_buffers_ = use_iosurface_memory_buffers;
   }
@@ -193,6 +195,8 @@ class GLManager : private GpuControl {
   bool use_native_pixmap_memory_buffers_ = false;
 
   Capabilities capabilities_;
+
+  GLuint fbo_ = 0;
 
   // Used on Android to virtualize GL for all contexts.
   static int use_count_;

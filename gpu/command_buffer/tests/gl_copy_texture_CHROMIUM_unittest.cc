@@ -1269,7 +1269,7 @@ TEST_P(GLCopyTextureCHROMIUMTest, BasicStatePreservation) {
   uint8_t pixels[1 * 4] = {255u, 0u, 0u, 255u};
 
   CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  gl_.BindOffscreenFramebuffer(GL_FRAMEBUFFER);
 
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -1529,7 +1529,7 @@ TEST_P(GLCopyTextureCHROMIUMTest, FBOStatePreserved) {
 TEST_P(GLCopyTextureCHROMIUMTest, ProgramStatePreservation) {
   CopyType copy_type = GetParam();
   CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  gl_.BindOffscreenFramebuffer(GL_FRAMEBUFFER);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   GLManager gl2;
