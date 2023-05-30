@@ -315,6 +315,10 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private shouldShowHr_(): boolean {
     return this.unreadItems_.length > 0 && this.readItems_.length > 0;
   }
+
+  private shouldShowList_(): boolean {
+    return this.unreadItems_.length > 0 || this.readItems_.length > 0;
+  }
 }
 
 declare global {
