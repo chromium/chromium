@@ -49,6 +49,9 @@ BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 // Enables serving the Android Protego allowlist through the component updater.
 BASE_DECLARE_FEATURE(kComponentUpdaterAndroidProtegoAllowlist);
 
+// Controls whether new deep scanning UX is enabled or not.
+BASE_DECLARE_FEATURE(kDeepScanningUpdatedUX);
+
 // Controls whether the delayed warning experiment is enabled.
 BASE_DECLARE_FEATURE(kDelayedWarnings);
 // True if mouse clicks should undelay the warnings immediately when delayed
