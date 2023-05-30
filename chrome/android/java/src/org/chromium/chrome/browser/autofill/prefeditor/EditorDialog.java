@@ -155,13 +155,6 @@ public class EditorDialog
         mProfile = profile;
     }
 
-    /**
-     * @return The browser profile that is associated with the content being edited.
-     */
-    public Profile getProfile() {
-        return mProfile;
-    }
-
     /** Prevents screenshots of this editor. */
     public void disableScreenshots() {
         WindowManager.LayoutParams attributes = getWindow().getAttributes();

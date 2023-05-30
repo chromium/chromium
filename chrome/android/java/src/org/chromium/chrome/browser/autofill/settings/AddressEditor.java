@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Addre
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
@@ -61,6 +62,7 @@ public class AddressEditor {
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
     private final EditorDialog mEditorDialog;
     private final Delegate mDelegate;
+    private final Profile mProfile;
     private final Context mContext;
     private final AutofillProfile mProfileToEdit;
     private final AutofillAddress mAddressToEdit;
@@ -147,14 +149,15 @@ public class AddressEditor {
      *
      * @param editorDialog Editor's view displayed to the user.
      * @param delegate Delegate to react to users interactions with the editor.
+     * @param profile Current user's profile.
      * @param saveToDisk Whether to save changes to disk after editing.
      * @param isUpdate Whether an existing address profile is being edited.
      * @param isMigrationToAccount Whether this editor is shown during address profile migration to
      *         Google account.
      */
-    public AddressEditor(EditorDialog editorDialog, Delegate delegate, boolean saveToDisk,
-            boolean isUpdate, boolean isMigrationToAccount) {
-        this(editorDialog, delegate,
+    public AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
+            boolean saveToDisk, boolean isUpdate, boolean isMigrationToAccount) {
+        this(editorDialog, delegate, profile,
                 new AutofillAddress(editorDialog.getContext(), AutofillProfile.builder().build()),
                 saveToDisk, isUpdate, isMigrationToAccount, true);
     }
@@ -164,17 +167,18 @@ public class AddressEditor {
      *
      * @param editorDialog Editor's view displayed to the user.
      * @param delegate Delegate to react to users interactions with the editor.
+     * @param profile Current user's profile.
      * @param addressToEdit Address the user wants to modify.
      * @param saveToDisk Whether to save changes to disk after editing.
      * @param isUpdate Whether an existing address profile is being edited.
      * @param isMigrationToAccount Whether this editor is shown during address profile migration to
      *         Google account.
      */
-    public AddressEditor(EditorDialog editorDialog, Delegate delegate,
+    public AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, boolean saveToDisk, boolean isUpdate,
             boolean isMigrationToAccount) {
-        this(editorDialog, delegate, addressToEdit, saveToDisk, isUpdate, isMigrationToAccount,
-                false);
+        this(editorDialog, delegate, profile, addressToEdit, saveToDisk, isUpdate,
+                isMigrationToAccount, false);
     }
 
     /**
@@ -182,6 +186,7 @@ public class AddressEditor {
      *
      * @param editorDialog Editor's view displayed to the user.
      * @param delegate Delegate to react to users interactions with the editor.
+     * @param profile Current user's profile.
      * @param addressToEdit Address the user wants to modify.
      * @param saveToDisk Whether to save changes to disk after editing.
      * @param isUpdate Whether an existing address profile is being edited.
@@ -189,11 +194,12 @@ public class AddressEditor {
      *         Google account.
      * @param isProfileNew whether the user intends to create a new address.
      */
-    private AddressEditor(EditorDialog editorDialog, Delegate delegate,
+    private AddressEditor(EditorDialog editorDialog, Delegate delegate, Profile profile,
             AutofillAddress addressToEdit, boolean saveToDisk, boolean isUpdate,
             boolean isMigrationToAccount, boolean isProfileNew) {
         mEditorDialog = editorDialog;
         mDelegate = delegate;
+        mProfile = profile;
         mContext = editorDialog.getContext();
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
@@ -444,7 +450,7 @@ public class AddressEditor {
     @Nullable
     private String getUserEmail() {
         final IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mEditorDialog.getProfile());
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
         CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return CoreAccountInfo.getEmailFrom(accountInfo);
     }

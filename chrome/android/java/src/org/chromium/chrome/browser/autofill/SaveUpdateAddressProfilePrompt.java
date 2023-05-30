@@ -85,7 +85,7 @@ public class SaveUpdateAddressProfilePrompt {
                 onEdited(address);
             }
         };
-        mAddressEditor = new AddressEditor(mEditorDialog, delegate,
+        mAddressEditor = new AddressEditor(mEditorDialog, delegate, browserProfile,
                 new AutofillAddress(activity, autofillProfile),
                 /*saveToDisk=*/false, isUpdate, isMigrationToAccount);
         mDialogView.findViewById(R.id.edit_button).setOnClickListener(v -> {

@@ -224,15 +224,16 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         mEditorDialog = prepareEditorDialog(editorPreference.getGUID());
         AutofillAddress autofillAddress = getAutofillAddress(editorPreference);
         if (autofillAddress == null) {
-            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
-                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
-                    /*isMigrationToAccount=*/false);
-            addressEditor.showEditorDialog();
-        } else {
             AddressEditor addressEditor =
-                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, autofillAddress,
+                    new AddressEditor(mEditorDialog, sAddressEditorDelegate, mProfile,
                             /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
                             /*isMigrationToAccount=*/false);
+            addressEditor.showEditorDialog();
+        } else {
+            AddressEditor addressEditor = new AddressEditor(mEditorDialog, sAddressEditorDelegate,
+                    mProfile, autofillAddress,
+                    /*saveToDisk=*/true, /*isUpdate=*/autofillAddress != null,
+                    /*isMigrationToAccount=*/false);
             addressEditor.showEditorDialog();
         }
     }
