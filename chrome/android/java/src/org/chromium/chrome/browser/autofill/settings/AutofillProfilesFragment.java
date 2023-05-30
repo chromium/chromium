@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -248,7 +249,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
         };
 
-        return new EditorDialog(getActivity(), runnable, mProfile);
+        return new EditorDialog(
+                getActivity(), runnable, HelpAndFeedbackLauncherImpl.getForProfile(mProfile));
     }
 
     @Nullable

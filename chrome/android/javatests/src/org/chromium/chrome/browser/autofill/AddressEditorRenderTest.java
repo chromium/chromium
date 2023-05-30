@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridgeJni;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -135,6 +136,8 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     @Mock
     private Profile mProfile;
     @Mock
+    private HelpAndFeedbackLauncher mLauncher;
+    @Mock
     private AddressEditor.Delegate mDelegate;
 
     private final CoreAccountInfo mAccountInfo =
@@ -227,7 +230,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
     public void editNewAddressProfile() throws Exception {
         View editor = runOnUiThreadBlocking(() -> {
             EditorDialog dialog =
-                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor =
                     new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false,
                             /*isUpdate=*/false, /*isMigrationToAccount=*/false);
@@ -244,7 +247,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialog dialog =
-                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor =
                     new AddressEditor(dialog, mDelegate, mProfile, /*saveToDisk=*/false,
                             /*isUpdate=*/false, /*isMigrationToAccount=*/false);
@@ -261,7 +264,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialog dialog =
-                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
                     new AutofillAddress(getActivity(), sLocalProfile), /*saveToDisk=*/false,
                     /*isUpdate=*/false, /*isMigrationToAccount=*/false);
@@ -278,7 +281,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialog dialog =
-                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
                     new AutofillAddress(getActivity(), sAccountProfile), /*saveToDisk=*/false,
                     /*isUpdate=*/false, /*isMigrationToAccount=*/false);
@@ -295,7 +298,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
         View editor = runOnUiThreadBlocking(() -> {
             when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
             EditorDialog dialog =
-                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mLauncher);
             AddressEditor addressEditor = new AddressEditor(dialog, mDelegate, mProfile,
                     new AutofillAddress(getActivity(), sLocalProfile), /*saveToDisk=*/false,
                     /*isUpdate=*/false, /*isMigrationToAccount=*/true);

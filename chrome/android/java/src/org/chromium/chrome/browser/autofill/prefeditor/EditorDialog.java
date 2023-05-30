@@ -45,8 +45,7 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldView;
@@ -88,6 +87,7 @@ public class EditorDialog
     private static EditorObserverForTest sObserverForTest;
 
     private final Activity mActivity;
+    private final HelpAndFeedbackLauncher mHelpLauncher;
     private final Handler mHandler;
     private final TextView.OnEditorActionListener mEditorActionListener;
     private final int mHalfRowMargin;
@@ -107,7 +107,6 @@ public class EditorDialog
     @Nullable
     private Runnable mDeleteRunnable;
     private boolean mIsDismissed;
-    private Profile mProfile;
     @Nullable
     private UiConfig mUiConfig;
     @Nullable
@@ -118,13 +117,15 @@ public class EditorDialog
      *
      * @param activity             The activity on top of which the UI should be displayed.
      * @param deleteRunnable       The runnable that when called will delete the profile.
-     * @param profile              The current profile that creates EditorDialog.
+     * @param helpLauncher         The launcher of user help activity.
      */
-    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
+    public EditorDialog(
+            Activity activity, Runnable deleteRunnable, HelpAndFeedbackLauncher helpLauncher) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;
+        mHelpLauncher = helpLauncher;
         mHandler = new Handler();
         mIsDismissed = false;
         mEditorActionListener = new TextView.OnEditorActionListener() {
@@ -152,7 +153,6 @@ public class EditorDialog
         mDropdownFields = new ArrayList<>();
 
         mDeleteRunnable = deleteRunnable;
-        mProfile = profile;
     }
 
     /** Prevents screenshots of this editor. */
@@ -199,7 +199,7 @@ public class EditorDialog
                         handleDelete();
                     }
                 } else if (item.getItemId() == R.id.help_menu_id) {
-                    HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
+                    mHelpLauncher.show(
                             mActivity, mActivity.getString(R.string.help_context_autofill), null);
                 }
                 return true;
