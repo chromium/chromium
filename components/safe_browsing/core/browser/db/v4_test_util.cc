@@ -113,6 +113,7 @@ TestV4DatabaseFactory::Create(
 
 void TestV4DatabaseFactory::MarkPrefixAsBad(ListIdentifier list_id,
                                             HashPrefixStr prefix) {
+  CHECK(v4_db_);
   v4_db_->MarkPrefixAsBad(list_id, prefix);
 }
 

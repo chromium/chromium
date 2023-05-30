@@ -482,6 +482,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void PreRunTestOnMainThread() override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    base::RunLoop().RunUntilIdle();
+    InProcessBrowserTest::PreRunTestOnMainThread();
+  }
+
   void TearDown() override {
     InProcessBrowserTest::TearDown();
 
