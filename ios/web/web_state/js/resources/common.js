@@ -143,11 +143,15 @@ __gCrWeb.common.removeQueryAndReferenceFromURL = function(url) {
  * @param {Object} message The message to post to the handler.
  */
 __gCrWeb.common.sendWebKitMessage = function(handlerName, message) {
-  // A web page can override |window.webkit| with any value. Deleting the
-  // object ensures that original and working implementation of
-  // window.webkit is restored.
-  var oldWebkit = window.webkit;
-  delete window['webkit'];
-  window.webkit.messageHandlers[handlerName].postMessage(message);
-  window.webkit = oldWebkit;
+  try {
+    // A web page can override `window.webkit` with any value. Deleting the
+    // object ensures that original and working implementation of
+    // window.webkit is restored.
+    var oldWebkit = window.webkit;
+    delete window['webkit'];
+    window.webkit.messageHandlers[handlerName].postMessage(message);
+    window.webkit = oldWebkit;
+  } catch (err) {
+    // TODO(crbug.com/1449955): Report this fatal error
+  }
 };
