@@ -92,7 +92,7 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   manifest_files =
       filter_include(get_target_outputs(":generate_desk_api_bundle"),
-                     [ "*.manifest" ])
+                     [ "*_manifest.json" ])
 
   grd_prefix = "desk_api"
   out_grd = resources_grd_file

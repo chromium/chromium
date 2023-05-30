@@ -91,7 +91,7 @@ template("optimize_js") {
         _dep_gen_dir =
             rebase_path(get_label_info(_dep, "target_gen_dir"), root_build_dir)
         name = get_label_info(_dep, "name")
-        args += [ "$_dep_gen_dir/$name.manifest" ]
+        args += [ "$_dep_gen_dir/${name}_manifest.json" ]
       }
     }
   }

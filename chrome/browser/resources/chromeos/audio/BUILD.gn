@@ -63,7 +63,7 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
 
   grd_prefix = "audio"
   out_grd = resources_grd_file

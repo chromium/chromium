@@ -199,8 +199,8 @@ generate_grd("build_grd") {
     manifest_files += [ "$target_gen_dir/manifest_preprocess.json" ]
 
     # Labs:
-    manifest_files +=
-        filter_include(get_target_outputs(":labs_build_ts"), [ "*.manifest" ])
+    manifest_files += filter_include(get_target_outputs(":labs_build_ts"),
+                                     [ "*_manifest.json" ])
     input_files += [ "labs/labs.html" ]
     deps += [
       ":copy_labs",
