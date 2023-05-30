@@ -483,7 +483,6 @@
                 {
                     "name": "Enabled_WithLowEndAndAccessibility",
                     "params": {
-                        "gts-accessibility-list-mode": "false",
                         "gts-accessibility-support": "true",
                         "gts-low-end-support": "true"
                     },
