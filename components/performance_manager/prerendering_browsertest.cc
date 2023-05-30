@@ -209,9 +209,12 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerPrerenderingBrowserTest,
   RunInGraph([&](Graph*) {
     ASSERT_TRUE(page_node);
     EXPECT_EQ(page_node->GetMainFrameNodes().size(), 1U);
-    EXPECT_EQ(page_node->GetMainFrameNode(), initial_main_frame_node);
+    // The RenderFrameHost might change after the navigation if RenderDocument
+    // is enabled.
+    EXPECT_EQ(content::WillSameSiteNavigationsChangeRenderFrameHosts(),
+              page_node->GetMainFrameNode() != initial_main_frame_node);
     EXPECT_EQ(page_node->GetMainFrameUrl(), kFinalUrl);
-    EXPECT_TRUE(initial_main_frame_node->IsCurrent());
+    EXPECT_TRUE(page_node->GetMainFrameNode()->IsCurrent());
   });
 }
 
