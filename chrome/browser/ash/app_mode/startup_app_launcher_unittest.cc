@@ -656,13 +656,32 @@ class StartupAppLauncherNoCreateTest
     provider->VisitRegisteredExtension();
   }
 
- protected:
+  auto CreateStartupAppLauncher() {
+    return CreateStartupAppLauncherInternal(/*should_skip_install=*/false);
+  }
+
+  auto CreateStartupAppLauncherForSessionRestore() {
+    return CreateStartupAppLauncherInternal(/*should_skip_install=*/true);
+  }
+
+  void PreinstallApp(const Extension& app) { service()->AddExtension(&app); }
+
   TestAppLaunchDelegate startup_launch_delegate_;
 
   std::unique_ptr<AppLaunchTracker> app_launch_tracker_;
   std::unique_ptr<TestKioskLoaderVisitor> external_apps_loader_handler_;
 
  private:
+  std::unique_ptr<KioskAppLauncher> CreateStartupAppLauncherInternal(
+      bool should_skip_install) {
+    std::unique_ptr<KioskAppLauncher> startup_app_launcher =
+        std::make_unique<StartupAppLauncher>(profile(), kTestPrimaryAppId,
+                                             should_skip_install,
+                                             &startup_launch_delegate_);
+    startup_app_launcher->AddObserver(&startup_launch_delegate_);
+    return startup_app_launcher;
+  }
+
   AshTestHelper ash_test_helper_;
   base::test::ScopedCommandLine command_line_;
 
@@ -680,15 +699,31 @@ TEST_F(StartupAppLauncherNoCreateTest, ExtensionDownloadBackoffReduced) {
   ASSERT_TRUE(external_cache());
   EXPECT_FALSE(external_cache()->backoff_policy().has_value());
 
-  auto startup_app_launcher = std::make_unique<StartupAppLauncher>(
-      profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
-      &startup_launch_delegate_);
+  auto startup_app_launcher = CreateStartupAppLauncher();
 
   ASSERT_TRUE(external_cache()->backoff_policy().has_value());
   EXPECT_EQ(external_cache()->backoff_policy()->maximum_backoff_ms, 3000);
 
   startup_app_launcher.reset();
   EXPECT_FALSE(external_cache()->backoff_policy().has_value());
+}
+
+TEST_F(StartupAppLauncherNoCreateTest, AppNotKioskEnabledOnSessionRestore) {
+  PreinstallApp(*PrimaryAppBuilder().set_kiosk_enabled(false).Build());
+  auto startup_app_launcher = CreateStartupAppLauncherForSessionRestore();
+
+  startup_app_launcher->Initialize();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
+
+  startup_app_launcher->LaunchApp();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
+
+  EXPECT_EQ(startup_launch_delegate_.launch_error(),
+            KioskAppLaunchError::Error::kUnableToLaunch);
 }
 
 // Tests with `StartupAppLauncher` object created.
@@ -698,10 +733,7 @@ class StartupAppLauncherTest : public StartupAppLauncherNoCreateTest {
   void SetUp() override {
     StartupAppLauncherNoCreateTest::SetUp();
 
-    startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
-        profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
-        &startup_launch_delegate_);
-    startup_app_launcher_->AddObserver(&startup_launch_delegate_);
+    startup_app_launcher_ = CreateStartupAppLauncher();
   }
 
   void TearDown() override {
@@ -715,8 +747,6 @@ class StartupAppLauncherTest : public StartupAppLauncherNoCreateTest {
     startup_app_launcher_->Initialize();
     EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
   }
-
-  void PreinstallApp(const Extension& app) { service()->AddExtension(&app); }
 
   std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
 };
@@ -1426,12 +1456,7 @@ TEST_F(StartupAppLauncherTest, SecondaryExtensionStateOnSessionRestore) {
   service()->DisableExtension(kExtraSecondaryAppId,
                               extensions::disable_reason::DISABLE_USER_ACTION);
 
-  // This matches the delegate settings during session restart (e.g. after a
-  // browser process crash).
-  startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
-      profile(), kTestPrimaryAppId, /*should_skip_install=*/true,
-      &startup_launch_delegate_);
-  startup_app_launcher_->AddObserver(&startup_launch_delegate_);
+  startup_app_launcher_ = CreateStartupAppLauncherForSessionRestore();
 
   startup_launch_delegate_.set_network_ready(true);
   startup_app_launcher_->Initialize();
