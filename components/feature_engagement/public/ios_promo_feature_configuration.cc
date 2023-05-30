@@ -58,7 +58,9 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    if (base::FeatureList::IsEnabled(kIPHGroups)) {
+      config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    }
     config->used = EventConfig("default_browser_promo_used",
                                Comparator(EQUAL, 0), 365, 365);
     // Default Browser promo should only ever trigger once.
