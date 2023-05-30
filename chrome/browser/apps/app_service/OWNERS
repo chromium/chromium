@@ -10,11 +10,5 @@ per-file bruschetta*=file://chrome/browser/ash/guest_os/OWNERS
 per-file crostini*=file://chrome/browser/ash/guest_os/OWNERS
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS
 
-# For files and intent handling system:
-per-file intent*=mxcai@chromium.org
-per-file file*=mxcai@chromium.org
-per-file intent*=tsergeant@chromium.org
-per-file file*=tsergeant@chromium.org
-
 # For policy_id util:
 per-file policy_util*=greengrape@google.com
