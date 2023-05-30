@@ -10,7 +10,7 @@
 #include "printing/mojom/print.mojom.h"
 
 #if BUILDFLAG(USE_CUPS)
-#include "printing/backend/cups_ipp_utils.h"
+#include "printing/backend/cups_connection.h"
 #include "printing/backend/print_backend_cups_ipp.h"
 #endif  // BUILDFLAG(USE_CUPS)
 
@@ -78,7 +78,7 @@ bool PrintBackendChromeOS::IsValidPrinter(const std::string& printer_name) {
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const std::string& /*locale*/) {
 #if BUILDFLAG(USE_CUPS)
-  return base::MakeRefCounted<PrintBackendCupsIpp>(CreateConnection());
+  return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
 #else
   return base::MakeRefCounted<PrintBackendChromeOS>();
 #endif  // BUILDFLAG(USE_CUPS)

@@ -290,7 +290,7 @@ PrintingContextChromeos::CreateForTesting(
 
 PrintingContextChromeos::PrintingContextChromeos(Delegate* delegate)
     : PrintingContext(delegate),
-      connection_(CupsConnection::Create(GURL(), HTTP_ENCRYPT_NEVER, true)),
+      connection_(CupsConnection::Create()),
       ipp_options_(WrapIpp(nullptr)) {}
 
 PrintingContextChromeos::PrintingContextChromeos(

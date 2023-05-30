@@ -103,8 +103,6 @@ component("backend") {
         "cups_ipp_constants.h",
         "cups_ipp_helper.cc",
         "cups_ipp_helper.h",
-        "cups_ipp_utils.cc",
-        "cups_ipp_utils.h",
         "cups_jobs.cc",
         "cups_jobs.h",
         "cups_printer.cc",

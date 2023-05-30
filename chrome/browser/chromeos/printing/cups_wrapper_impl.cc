@@ -80,11 +80,7 @@ class CupsWrapperImpl : public CupsWrapper {
  private:
   class Backend {
    public:
-    Backend()
-        : cups_connection_(
-              ::printing::CupsConnection::Create(GURL(),
-                                                 HTTP_ENCRYPT_NEVER,
-                                                 false)) {
+    Backend() : cups_connection_(::printing::CupsConnection::Create()) {
       DETACH_FROM_SEQUENCE(sequence_checker_);
     }
     ~Backend() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }

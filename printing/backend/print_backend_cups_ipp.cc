@@ -35,14 +35,12 @@ mojom::ResultCode PrintBackendCupsIpp::EnumeratePrinters(
   std::vector<std::unique_ptr<CupsPrinter>> printers;
   if (!cups_connection_->GetDests(printers)) {
     LOG(WARNING) << "CUPS: Error getting printers from CUPS server"
-                 << ", server: " << cups_connection_->server_name()
                  << ", error: " << cups_connection_->last_error() << " - "
                  << cups_connection_->last_error_message();
     return mojom::ResultCode::kFailed;
   }
 
-  VLOG(1) << "CUPS: found " << printers.size()
-          << " printers from CUPS server: " << cups_connection_->server_name();
+  VLOG(1) << "CUPS: found " << printers.size() << " printers from CUPS server.";
   for (const auto& printer : printers) {
     PrinterBasicInfo basic_info;
     if (printer->ToPrinterInfo(&basic_info)) {

@@ -29,7 +29,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "printing/backend/cups_connection.h"
-#include "printing/backend/cups_ipp_utils.h"
 #include "printing/backend/print_backend_cups_ipp.h"
 #include "printing/printing_features.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -296,7 +295,7 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const std::string& locale) {
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
-    return base::MakeRefCounted<PrintBackendCupsIpp>(CreateConnection());
+    return base::MakeRefCounted<PrintBackendCupsIpp>(CupsConnection::Create());
   }
 #endif  // BUILDFLAG(IS_MAC)
   return base::MakeRefCounted<PrintBackendCUPS>(
