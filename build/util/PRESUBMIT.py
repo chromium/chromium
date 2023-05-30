@@ -6,7 +6,6 @@ import re
 """Presubmit for build/util"""
 
 
-USE_PYTHON3 = True
 
 
 def _GetFilesToSkip(input_api):

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 
-USE_PYTHON3 = True
 
 
 def _RunTests(input_api, output_api):
