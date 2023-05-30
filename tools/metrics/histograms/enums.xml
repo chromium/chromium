@@ -9495,6 +9495,13 @@ others/histograms.xml -->
   <int value="3" label="Upload / conflict resolution in initial sync"/>
 </enum>
 
+<enum name="AutofillProviderPackageName">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Autofill with Google"/>
+  <int value="2" label="Samsung Pass"/>
+  <int value="3" label="LastPass"/>
+</enum>
+
 <enum name="AutofillQualitiyMetricType">
   <int value="0" label="TYPE_SUBMISSION"/>
   <int value="1" label="TYPE_NO_SUBMISSION"/>

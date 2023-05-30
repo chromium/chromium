@@ -5442,6 +5442,18 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.WebView.Provider.PackageName"
+    enum="AutofillProviderPackageName" expires_after="2024-05-23">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the Autofill provider on the device if it matches a fixed list of
+    package names or unknown otherwise. This is recorded once for a given
+    AwContents. It is recorded on AutofillProvider initialization. Only recorded
+    in Android P and beyond.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WebView.ServerPrediction.AwGSuggestionAvailability"
     enum="AutofillAwGSuggestionAvailability" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>

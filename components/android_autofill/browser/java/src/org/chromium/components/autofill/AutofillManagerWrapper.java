@@ -91,6 +91,7 @@ public class AutofillManagerWrapper {
             if (componentName != null) {
                 mIsAwGCurrentAutofillService =
                         AWG_COMPONENT_NAME.equals(componentName.flattenToString());
+                AutofillProviderUMA.logCurrentProvider(componentName.getPackageName());
             } else {
                 mIsAwGCurrentAutofillService = false;
             }
