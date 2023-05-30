@@ -30,6 +30,7 @@ For Chromium contributors that have different nicks on other domains.
 | koz               | jameskozianski  |
 | kuchhal           | rahulk          |
 | littledan         | dehrenberg      |
+| liza              | yelizaveta      |
 | loonybear         | lunalu          |
 | mark              | mmentovai       |
 | mathias           | mths, mathiasb  |
