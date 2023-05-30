@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -17,7 +17,7 @@ class AccessContextAuditServiceFactory : public ProfileKeyedServiceFactory {
   static AccessContextAuditService* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<AccessContextAuditServiceFactory>;
+  friend base::NoDestructor<AccessContextAuditServiceFactory>;
   AccessContextAuditServiceFactory();
   ~AccessContextAuditServiceFactory() override = default;
 

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -40,7 +40,8 @@
 // static
 ChromeBrowsingDataRemoverDelegateFactory*
 ChromeBrowsingDataRemoverDelegateFactory::GetInstance() {
-  return base::Singleton<ChromeBrowsingDataRemoverDelegateFactory>::get();
+  static base::NoDestructor<ChromeBrowsingDataRemoverDelegateFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -90,7 +91,7 @@ ChromeBrowsingDataRemoverDelegateFactory::
 }
 
 ChromeBrowsingDataRemoverDelegateFactory::
-    ~ChromeBrowsingDataRemoverDelegateFactory() {}
+    ~ChromeBrowsingDataRemoverDelegateFactory() = default;
 
 KeyedService* ChromeBrowsingDataRemoverDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
