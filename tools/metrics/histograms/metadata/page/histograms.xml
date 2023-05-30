@@ -315,33 +315,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.HeavyAds.FrameRemovedPriorToPageEnd"
-    enum="BooleanRemoved" expires_after="2021-03-28">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a heavy ad frame was deleted prior to the page being
-    destroyed/navigated. Recorded per-frame, only if the frame is considered a
-    heavy ad, when the frame is destroyed. For example, this is true if the
-    iframe element is deleted by javascript. This is recorded whether or not the
-    ads are actually unloaded by the intervention.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.HeavyAds.IgnoredByReload"
-    enum="BooleanIgnored" expires_after="2021-08-09">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a possible intervention was ignored because the page was the
-    result of a reload. This is checked prior to checking whether a given site
-    is blocklisted. Therefore it is possible this histogram records |Ignored|
-    when the intervention wouldn't have actually triggered. This is recorded
-    when an ad frame becomes eligible for the heavy ad intervention to unload
-    it.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Clients.Ads.HeavyAds.NetworkBytesAtFrameUnload"
     units="bytes" expires_after="2024-04-17">
   <owner>johnidel@chromium.org</owner>
@@ -351,18 +324,6 @@ chromium-metrics-reviews@google.com.
     network usage by the heavy ad intervention. It is recorded at the time of
     unload and the value may be larger than the heavy ads threshold due to the
     delay in unloading an ad.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Ads.HeavyAds.UserDidReload"
-    enum="BooleanReloaded" expires_after="2024-04-17">
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records whether a page with a heavy ad is reloaded or navigated/destroyed
-    for any other reason. Only recorded for pages that had at least one heavy ad
-    prior to being navigated/reloaded/destroyed. This is recorded whether or not
-    the ads are actually unloaded by the intervention.
   </summary>
 </histogram>
 

@@ -135,8 +135,6 @@ void RecordHeavyAdInterventionDisallowedByBlocklist(bool disallowed) {
 }
 
 using ResourceMimeType = AdsPageLoadMetricsObserver::ResourceMimeType;
-const char kIgnoredByReloadHistogramName[] =
-    "PageLoad.Clients.Ads.HeavyAds.IgnoredByReload";
 
 blink::mojom::HeavyAdReason GetHeavyAdReason(HeavyAdStatus status) {
   switch (status) {
@@ -954,7 +952,6 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kVisible);
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kAnyVisibility);
   RecordAggregateHistogramsForCpuUsage();
-  RecordAggregateHistogramsForHeavyAds();
   RecordPageResourceTotalHistograms(source_id);
 }
 
@@ -1072,14 +1069,6 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
   }
 }
 
-void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForHeavyAds() {
-  if (!heavy_ad_on_page_)
-    return;
-
-  UMA_HISTOGRAM_BOOLEAN("PageLoad.Clients.Ads.HeavyAds.UserDidReload",
-                        GetDelegate().GetPageEndReason() == END_RELOAD);
-}
-
 void AdsPageLoadMetricsObserver::RecordPerFrameMetrics(
     const FrameTreeData& ad_frame_data,
     ukm::SourceId source_id) {
@@ -1191,17 +1180,6 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
                   UMA_HISTOGRAM_ENUMERATION, visibility,
                   ad_frame_data.heavy_ad_status_with_noise());
   }
-
-  // Only record the following histograms if the frame was a heavy ad.
-  if (ad_frame_data.heavy_ad_status_with_noise() == HeavyAdStatus::kNone)
-    return;
-
-  heavy_ad_on_page_ = true;
-
-  // Record whether the frame was removed prior to the page being unloaded.
-  UMA_HISTOGRAM_BOOLEAN(
-      "PageLoad.Clients.Ads.HeavyAds.FrameRemovedPriorToPageEnd",
-      GetDelegate().GetPageEndReason() == END_NONE);
 }
 
 void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
@@ -1268,7 +1246,6 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // privacy mitigations flag to help developers debug (otherwise they need to
   // trigger new navigations to the site to test it).
   if (heavy_ad_privacy_mitigations_enabled_) {
-    UMA_HISTOGRAM_BOOLEAN(kIgnoredByReloadHistogramName, page_load_is_reload_);
     // Skip firing the intervention, but mark that an action occurred on the
     // frame.
     if (page_load_is_reload_) {
