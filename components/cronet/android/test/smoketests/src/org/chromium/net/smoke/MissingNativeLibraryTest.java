@@ -4,6 +4,8 @@
 
 package org.chromium.net.smoke;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -72,12 +74,14 @@ public class MissingNativeLibraryTest {
         CronetEngine engine = builder.build();
         assertJavaEngine(engine);
 
-        Assert.assertTrue("It should be always possible to cast the created builder to"
-                        + " ExperimentalCronetEngine.Builder",
-                builder instanceof ExperimentalCronetEngine.Builder);
+        assertWithMessage("It should be always possible to cast the created builder to"
+                + " ExperimentalCronetEngine.Builder")
+                .that(builder)
+                .isInstanceOf(ExperimentalCronetEngine.Builder.class);
 
-        Assert.assertTrue("It should be always possible to cast the created engine to"
-                        + " ExperimentalCronetEngine.Builder",
-                engine instanceof ExperimentalCronetEngine);
+        assertWithMessage("It should be always possible to cast the created engine to"
+                + " ExperimentalCronetEngine.Builder")
+                .that(engine)
+                .isInstanceOf(ExperimentalCronetEngine.class);
     }
 }

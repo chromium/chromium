@@ -4,6 +4,8 @@
 
 package org.chromium.net.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -62,6 +64,6 @@ public class FakeCronetProviderTest {
     @Test
     @SmallTest
     public void testEquals() {
-        assertTrue(mProvider.equals(new FakeCronetProvider(mContext)));
+        assertThat(mProvider).isEqualTo(new FakeCronetProvider(mContext));
     }
 }

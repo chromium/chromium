@@ -240,8 +240,8 @@ public class NQETest {
 
         // Verify that effective connection type callback is received and
         // effective connection type is correctly set.
-        assertTrue(
-                cronetEngine.getEffectiveConnectionType() != EffectiveConnectionType.TYPE_UNKNOWN);
+        assertThat(cronetEngine.getEffectiveConnectionType())
+                .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
 
         // Verify that the HTTP RTT, transport RTT and downstream throughput
         // estimates are available.
@@ -353,8 +353,8 @@ public class NQETest {
 
             // Verify that effective connection type callback is received and
             // effective connection type is correctly set.
-            assertTrue(cronetEngine.getEffectiveConnectionType()
-                    != EffectiveConnectionType.TYPE_UNKNOWN);
+            assertThat(cronetEngine.getEffectiveConnectionType())
+                    .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
 
             cronetEngine.shutdown();
 

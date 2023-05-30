@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
@@ -276,7 +275,7 @@ public class ExperimentalOptionsTest {
             CronetEngine cronetEngine = mBuilder.build();
             fail("Setting invalid JSON should have thrown an exception.");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().contains("Experimental options parsing failed"));
+            assertThat(e).hasMessageThat().contains("Experimental options parsing failed");
         }
     }
 
@@ -328,8 +327,9 @@ public class ExperimentalOptionsTest {
         callback.blockForDone();
         assertTrue(stream.isDone());
         assertTrue(callback.mOnErrorCalled);
-        assertContains("Exception in BidirectionalStream: net::ERR_HTTP2_PING_FAILED",
-                callback.mError.getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception in BidirectionalStream: net::ERR_HTTP2_PING_FAILED");
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(NetError.ERR_HTTP2_PING_FAILED);
         cronetEngine.shutdown();
@@ -466,9 +466,9 @@ public class ExperimentalOptionsTest {
             mBuilder.build();
             fail();
         } catch (IllegalArgumentException expected) {
-            assertTrue(expected.getMessage().contains(
+            assertThat(expected).hasMessageThat().contains(
                     "Unable to turn on non-default network usage without path degradation"
-                    + " migration"));
+                    + " migration");
         }
     }
 

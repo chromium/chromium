@@ -4,11 +4,11 @@
 
 package org.chromium.net.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
+
+import com.google.common.collect.Range;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,10 +61,7 @@ public class FakeCronetControllerTest {
         CronetEngine providerEngine = provider.createBuilder().build();
         List<CronetEngine> engines = FakeCronetController.getFakeCronetEngines();
 
-        assertTrue(engines.contains(engine));
-        assertTrue(engines.contains(providerEngine));
-        assertEquals(engine, engines.get(0));
-        assertEquals(providerEngine, engines.get(1));
+        assertThat(engines).containsExactly(engine, providerEngine).inOrder();
     }
 
     @Test
@@ -120,14 +119,12 @@ public class FakeCronetControllerTest {
         CronetEngine engine = mFakeCronetController.newFakeCronetEngineBuilder(mContext).build();
         CronetEngine engine2 = mFakeCronetController.newFakeCronetEngineBuilder(mContext).build();
         List<CronetEngine> engines = FakeCronetController.getFakeCronetEngines();
-        assertTrue(engines.contains(engine));
-        assertTrue(engines.contains(engine2));
+        assertThat(engines).containsExactly(engine, engine2);
 
         engine.shutdown();
         engines = FakeCronetController.getFakeCronetEngines();
 
-        assertFalse(engines.contains(engine));
-        assertTrue(engines.contains(engine2));
+        assertThat(engines).containsExactly(engine2);
     }
 
     @Test
@@ -209,9 +206,8 @@ public class FakeCronetControllerTest {
         FakeUrlResponse foundResponse = mFakeCronetController.getResponse("url", null, null, null);
         Map.Entry<String, String> headerEntry = new AbstractMap.SimpleEntry<>("location", location);
 
-        assertTrue(foundResponse.getAllHeadersList().contains(headerEntry));
-        assertTrue(foundResponse.getHttpStatusCode() >= 300);
-        assertTrue(foundResponse.getHttpStatusCode() < 400);
+        assertThat(foundResponse.getAllHeadersList()).contains(headerEntry);
+        assertThat(foundResponse.getHttpStatusCode()).isIn(Range.closedOpen(300, 400));
     }
 
     @Test
@@ -248,8 +244,7 @@ public class FakeCronetControllerTest {
 
         FakeUrlResponse foundResponse = mFakeCronetController.getResponse(url, null, null, null);
 
-        assertTrue(foundResponse.getHttpStatusCode() >= 200);
-        assertTrue(foundResponse.getHttpStatusCode() < 300);
+        assertThat(foundResponse.getHttpStatusCode()).isIn(Range.closedOpen(200, 300));
         assertEquals(body, new String(foundResponse.getResponseBody()));
     }
 }

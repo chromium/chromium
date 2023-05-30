@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -62,7 +61,7 @@ public class BrotliTest {
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertTrue(callback.mResponseAsString.contains("accept-encoding: gzip, deflate, br"));
+        assertThat(callback.mResponseAsString).contains("accept-encoding: gzip, deflate, br");
     }
 
     @Test
@@ -77,7 +76,7 @@ public class BrotliTest {
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
-        assertFalse(callback.mResponseAsString.contains("br"));
+        assertThat(callback.mResponseAsString).doesNotContain("br");
     }
 
     @Test

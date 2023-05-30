@@ -4,8 +4,9 @@
 
 package org.chromium.net.test;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -69,7 +70,7 @@ public class FakeUrlResponseTest {
         List<Map.Entry<String, String>> responseHeadersList = response.getAllHeadersList();
 
         // mTestHeaderEntry is header entry of TEST_HEADER_NAME, TEST_HEADER_VALUE.
-        assertTrue(responseHeadersList.contains(mTestHeaderEntry));
+        assertThat(responseHeadersList).contains(mTestHeaderEntry);
     }
 
     @Test
@@ -125,8 +126,8 @@ public class FakeUrlResponseTest {
                         .addHeader(nameNotInOriginalList, valueNotInOriginalList)
                         .build();
 
-        assertFalse(mTestHeaders.contains(entryNotInOriginalList));
-        assertTrue(testResponseWithHeader.getAllHeadersList().contains(entryNotInOriginalList));
+        assertThat(mTestHeaders).doesNotContain(entryNotInOriginalList);
+        assertThat(testResponseWithHeader.getAllHeadersList()).contains(entryNotInOriginalList);
     }
 
     @Test
@@ -212,7 +213,7 @@ public class FakeUrlResponseTest {
 
         Map infoMap = info.getAllHeaders();
 
-        assertTrue(infoMap.containsKey(TEST_HEADER_NAME.toLowerCase(Locale.ROOT)));
-        assertTrue(infoMap.containsKey(TEST_HEADER_NAME.toUpperCase(Locale.ROOT)));
+        assertThat(infoMap).containsKey(TEST_HEADER_NAME.toLowerCase(Locale.ROOT));
+        assertThat(infoMap).containsKey(TEST_HEADER_NAME.toUpperCase(Locale.ROOT));
     }
 }

@@ -13,7 +13,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.net.CronetTestRule.assertContains;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.Build;
@@ -136,7 +135,7 @@ public class BidirectionalStreamTest {
         mTestRule.assertResponseEquals(urlResponseInfo, callback.mResponseInfo);
         checkResponseInfo(callback.mResponseInfo, Http2TestServer.getEchoMethodUrl(), 200, "");
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
-        assertTrue(finishedInfo.getAnnotations().isEmpty());
+        assertThat(finishedInfo.getAnnotations()).isEmpty();
     }
 
     @Test
@@ -221,8 +220,9 @@ public class BidirectionalStreamTest {
         stream.start();
         callback.blockForDone();
         assertTrue(stream.isDone());
-        assertContains("Exception in BidirectionalStream: net::ERR_DISALLOWED_URL_SCHEME",
-                callback.mError.getMessage());
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception in BidirectionalStream: net::ERR_DISALLOWED_URL_SCHEME");
         assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
                 .isEqualTo(-301);
     }
@@ -358,7 +358,7 @@ public class BidirectionalStreamTest {
         assertThat(callback.mResponseInfo.getAllHeaders())
                 .containsEntry("foo", Arrays.asList("bar", "bar2"));
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
-        assertTrue(finishedInfo.getAnnotations().isEmpty());
+        assertThat(finishedInfo.getAnnotations()).isEmpty();
     }
 
     @Test
@@ -1028,7 +1028,7 @@ public class BidirectionalStreamTest {
                     stream.read(ByteBuffer.allocateDirect(5));
                     fail("Exception is not thrown.");
                 } catch (Exception e) {
-                    assertThat(e.getMessage()).isEqualTo("Unexpected read attempt.");
+                    assertThat(e).hasMessageThat().isEqualTo("Unexpected read attempt.");
                 }
             }
         };
@@ -1292,7 +1292,7 @@ public class BidirectionalStreamTest {
             stream.read(readBuffer);
             fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage()).isEqualTo("ByteBuffer is already full.");
+            assertThat(e).hasMessageThat().isEqualTo("ByteBuffer is already full.");
         }
 
         // Try to read using a non-direct buffer.

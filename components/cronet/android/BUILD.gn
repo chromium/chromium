@@ -962,8 +962,10 @@ android_library("cronet_test_apk_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//net/android:net_java_test_support",
+    "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_multidex_multidex_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
     "//third_party/netty4:netty_all_java",
   ]
@@ -1031,7 +1033,10 @@ android_library("cronet_fake_javatests") {
            ":cronet_impl_fake_base_java",
            ":cronet_impl_platform_base_java",
            "//base:base_java_test_support",
+           "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
+           "//third_party/android_deps:guava_android_java",
            "//third_party/android_sdk:android_test_base_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
          ] + cronet_tests_androidx_common_srcs
 }

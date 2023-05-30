@@ -232,7 +232,7 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
         assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertNotNull(requestInfo.getException());
         assertThat(((NetworkException) requestInfo.getException()).getErrorCode())
@@ -253,8 +253,8 @@ public class RequestFinishedInfoTest {
         assertNotNull(metrics.getRequestEnd());
         MetricsTestUtil.assertAfter(endTime, metrics.getRequestEnd());
         MetricsTestUtil.assertAfter(metrics.getRequestEnd(), metrics.getRequestStart());
-        assertTrue(metrics.getSentByteCount() == 0);
-        assertTrue(metrics.getReceivedByteCount() == 0);
+        assertThat(metrics.getSentByteCount()).isEqualTo(0);
+        assertThat(metrics.getReceivedByteCount()).isEqualTo(0);
     }
 
     @Test
@@ -520,7 +520,7 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
         assertThat(requestInfo.getUrl()).isEqualTo(mUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertThat(requestInfo.getException())
                 .hasMessageThat()
@@ -548,7 +548,7 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
         assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
-        assertTrue(requestInfo.getAnnotations().isEmpty());
+        assertThat(requestInfo.getAnnotations()).isEmpty();
         assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertNotNull(requestInfo.getException());
         assertThat(((NetworkException) requestInfo.getException()).getErrorCode())

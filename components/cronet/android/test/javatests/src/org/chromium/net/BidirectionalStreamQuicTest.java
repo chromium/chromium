@@ -310,8 +310,8 @@ public class BidirectionalStreamQuicTest {
         // QUIC reports this as ERR_QUIC_PROTOCOL_ERROR. Sometimes we get ERR_CONNECTION_REFUSED.
         assertThat(callback.mError).isInstanceOf(NetworkException.class);
         NetworkException networkError = (NetworkException) callback.mError;
-        assertTrue(NetError.ERR_QUIC_PROTOCOL_ERROR == networkError.getCronetInternalErrorCode()
-                || NetError.ERR_CONNECTION_REFUSED == networkError.getCronetInternalErrorCode());
+        assertThat(networkError.getCronetInternalErrorCode())
+                .isAnyOf(NetError.ERR_QUIC_PROTOCOL_ERROR, NetError.ERR_CONNECTION_REFUSED);
         if (NetError.ERR_CONNECTION_REFUSED == networkError.getCronetInternalErrorCode()) return;
         assertThat(callback.mError).isInstanceOf(QuicException.class);
     }
@@ -344,8 +344,7 @@ public class BidirectionalStreamQuicTest {
         if (callback.mError instanceof QuicException) {
             QuicException quicException = (QuicException) callback.mError;
             // Checks that detailed quic error code is not QUIC_NO_ERROR == 0.
-            assertTrue("actual error " + quicException.getQuicDetailedErrorCode(),
-                    0 < quicException.getQuicDetailedErrorCode());
+            assertThat(quicException.getQuicDetailedErrorCode()).isGreaterThan(0);
         }
     }
 }

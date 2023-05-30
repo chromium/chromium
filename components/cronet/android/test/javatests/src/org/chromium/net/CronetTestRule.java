@@ -319,14 +319,6 @@ public class CronetTestRule implements TestRule {
         }
     }
 
-    public static void assertContains(String expectedSubstring, String actualString) {
-        Assert.assertNotNull(actualString);
-        if (!actualString.contains(expectedSubstring)) {
-            Assert.fail("String [" + actualString + "] doesn't contain substring ["
-                    + expectedSubstring + "]");
-        }
-    }
-
     public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {
         cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
         cronetEngineBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 1000 * 1024);

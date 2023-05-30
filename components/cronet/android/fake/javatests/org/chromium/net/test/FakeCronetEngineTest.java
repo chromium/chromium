@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 package org.chromium.net.test;
+
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
@@ -185,7 +188,7 @@ public class FakeCronetEngineTest {
     @Test
     @SmallTest
     public void testGetGlobalMetricsDeltas() {
-        assertTrue(mFakeCronetEngine.getGlobalMetricsDeltas().length == 0);
+        assertThat(mFakeCronetEngine.getGlobalMetricsDeltas()).isEmpty();
     }
 
     @Test
@@ -309,7 +312,7 @@ public class FakeCronetEngineTest {
             public void onRequestFinished(RequestFinishedInfo requestInfo) {
                 super.onRequestFinished(requestInfo);
                 assertEquals(url, requestInfo.getUrl());
-                assertTrue(requestInfo.getAnnotations().contains(annotation));
+                assertThat(requestInfo.getAnnotations()).contains(annotation);
             }
         };
         mFakeCronetEngine.addRequestFinishedListener(listener);

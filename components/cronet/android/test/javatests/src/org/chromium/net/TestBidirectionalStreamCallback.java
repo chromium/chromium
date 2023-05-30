@@ -214,9 +214,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onResponseHeadersReceived(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
         assertFalse(stream.isDone());
-        assertTrue(mResponseStep == ResponseStep.NOTHING
-                || mResponseStep == ResponseStep.ON_STREAM_READY
-                || mResponseStep == ResponseStep.ON_WRITE_COMPLETED);
+        assertThat(mResponseStep)
+                .isAnyOf(ResponseStep.NOTHING, ResponseStep.ON_STREAM_READY,
+                        ResponseStep.ON_WRITE_COMPLETED);
         assertNull(mError);
 
         mResponseStep = ResponseStep.ON_RESPONSE_STARTED;
@@ -232,10 +232,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
             ByteBuffer byteBuffer, boolean endOfStream) {
         checkOnValidThread();
         assertFalse(stream.isDone());
-        assertTrue(mResponseStep == ResponseStep.ON_RESPONSE_STARTED
-                || mResponseStep == ResponseStep.ON_READ_COMPLETED
-                || mResponseStep == ResponseStep.ON_WRITE_COMPLETED
-                || mResponseStep == ResponseStep.ON_TRAILERS);
+        assertThat(mResponseStep)
+                .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
+                        ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
         assertNull(mError);
 
         mResponseStep = ResponseStep.ON_READ_COMPLETED;
@@ -297,10 +296,9 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
         checkOnValidThread();
         assertTrue(stream.isDone());
-        assertTrue(mResponseStep == ResponseStep.ON_RESPONSE_STARTED
-                || mResponseStep == ResponseStep.ON_READ_COMPLETED
-                || mResponseStep == ResponseStep.ON_WRITE_COMPLETED
-                || mResponseStep == ResponseStep.ON_TRAILERS);
+        assertThat(mResponseStep)
+                .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
+                        ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
         assertNull(mError);
@@ -319,7 +317,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         checkOnValidThread();
         assertTrue(stream.isDone());
         // Shouldn't happen after success.
-        assertTrue(mResponseStep != ResponseStep.ON_SUCCEEDED);
+        assertThat(mResponseStep).isNotEqualTo(ResponseStep.ON_SUCCEEDED);
         // Should happen at most once for a single stream.
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
