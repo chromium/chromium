@@ -114,6 +114,7 @@ void SyntheticTouchscreenPinchGesture::PressTouchPoints(
     SyntheticGestureTarget* target,
     const base::TimeTicks& timestamp) {
   synthetic_pointer_driver_->Press(params_.anchor.x(), start_y_0_, 0);
+  synthetic_pointer_driver_->DispatchEvent(target, timestamp);
   synthetic_pointer_driver_->Press(params_.anchor.x(), start_y_1_, 1);
   synthetic_pointer_driver_->DispatchEvent(target, timestamp);
 }
@@ -134,8 +135,9 @@ void SyntheticTouchscreenPinchGesture::MoveTouchPoints(
 void SyntheticTouchscreenPinchGesture::ReleaseTouchPoints(
     SyntheticGestureTarget* target,
     const base::TimeTicks& timestamp) {
-  synthetic_pointer_driver_->Release(0);
   synthetic_pointer_driver_->Release(1);
+  synthetic_pointer_driver_->DispatchEvent(target, timestamp);
+  synthetic_pointer_driver_->Release(0);
   synthetic_pointer_driver_->DispatchEvent(target, timestamp);
 }
 

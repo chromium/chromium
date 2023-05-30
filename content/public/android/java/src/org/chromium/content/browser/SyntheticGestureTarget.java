@@ -26,8 +26,8 @@ public class SyntheticGestureTarget {
     }
 
     @CalledByNative
-    private void inject(int action, int pointerCount, long timeInMs) {
-        mMotionEventSynthesizer.inject(action, pointerCount, timeInMs);
+    private void inject(int action, int pointerCount, int pointerIndex, long timeInMs) {
+        mMotionEventSynthesizer.inject(action, pointerCount, pointerIndex, timeInMs);
     }
 
     @CalledByNative

@@ -11,6 +11,7 @@
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
+#include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
 #include "content/browser/renderer_host/input/web_input_event_builders_ios.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
@@ -272,6 +273,11 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       ui_view_->view_.get(), this, host()->is_hidden(),
       host()->GetFrameSinkId());
 
+  if (IsTesting()) {
+    browser_compositor_->UpdateSurfaceFromUIView(
+        gfx::Size(kDefaultWidthForTesting, kDefaultHeightForTesting));
+  }
+
   CHECK(host()->GetFrameSinkId().is_valid());
 
   // Let the page-level input event router know about our surface ID
@@ -328,7 +334,9 @@ bool RenderWidgetHostViewIOS::HasFocus() {
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {
-  return gfx::Rect([ui_view_->view_ bounds]);
+  return IsTesting()
+             ? gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting)
+             : gfx::Rect([ui_view_->view_ bounds]);
 }
 blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockMouse(bool) {
   return {};
@@ -349,9 +357,12 @@ void RenderWidgetHostViewIOS::EnsureSurfaceSynchronizedForWebTest() {
 
 void RenderWidgetHostViewIOS::TakeFallbackContentFrom(
     RenderWidgetHostView* view) {}
+
 std::unique_ptr<SyntheticGestureTarget>
 RenderWidgetHostViewIOS::CreateSyntheticGestureTarget() {
-  return nullptr;
+  RenderWidgetHostImpl* host =
+      RenderWidgetHostImpl::From(GetRenderWidgetHost());
+  return std::make_unique<SyntheticGestureTargetIOS>(host);
 }
 
 const viz::LocalSurfaceId& RenderWidgetHostViewIOS::GetLocalSurfaceId() const {
@@ -418,7 +429,9 @@ bool RenderWidgetHostViewIOS::IsShowing() {
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetBoundsInRootWindow() {
-  return gfx::Rect([ui_view_->view_ bounds]);
+  return IsTesting()
+             ? gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting)
+             : gfx::Rect([ui_view_->view_ bounds]);
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
@@ -636,6 +649,30 @@ void RenderWidgetHostViewIOS::SendGestureEvent(
     const blink::WebGestureEvent& event) {
   ui::LatencyInfo latency_info =
       ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(event);
+  InjectGestureEvent(event, latency_info);
+}
+
+void RenderWidgetHostViewIOS::InjectTouchEvent(
+    const blink::WebTouchEvent& event,
+    const ui::LatencyInfo& latency_info) {
+  ui::FilteredGestureProvider::TouchHandlingResult result =
+      gesture_provider_.OnTouchEvent(MotionEventWeb(event));
+  if (!result.succeeded) {
+    return;
+  }
+
+  if (ShouldRouteEvents()) {
+    blink::WebTouchEvent touch_event(event);
+    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
+        this, &touch_event, latency_info);
+  } else {
+    host()->ForwardTouchEventWithLatencyInfo(event, latency_info);
+  }
+}
+
+void RenderWidgetHostViewIOS::InjectGestureEvent(
+    const blink::WebGestureEvent& event,
+    const ui::LatencyInfo& latency_info) {
   if (ShouldRouteEvents()) {
     blink::WebGestureEvent gesture_event(event);
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
@@ -643,6 +680,18 @@ void RenderWidgetHostViewIOS::SendGestureEvent(
   } else {
     host()->ForwardGestureEventWithLatencyInfo(event, latency_info);
   }
+}
+
+void RenderWidgetHostViewIOS::InjectMouseEvent(
+    const blink::WebMouseEvent& web_mouse,
+    const ui::LatencyInfo& latency_info) {
+  NOTIMPLEMENTED();
+}
+
+void RenderWidgetHostViewIOS::InjectMouseWheelEvent(
+    const blink::WebMouseWheelEvent& web_wheel,
+    const ui::LatencyInfo& latency_info) {
+  NOTIMPLEMENTED();
 }
 
 bool RenderWidgetHostViewIOS::CanBecomeFirstResponderForTesting() const {

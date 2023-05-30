@@ -56,7 +56,8 @@ class SyntheticGestureTargetAndroid : public SyntheticGestureTargetBase {
   void TouchSetPointer(int index, float x, float y, int id);
   void TouchSetScrollDeltas(float x, float y, float dx, float dy);
   void TouchInject(MotionEventAction action,
-                   int pointer_count,
+                   int num_pointers,
+                   int pointer_index,
                    base::TimeTicks time);
 
   RenderWidgetHostViewAndroid* GetView() const;
