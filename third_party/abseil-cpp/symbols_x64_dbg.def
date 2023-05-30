@@ -4541,3 +4541,5 @@ EXPORTS
     ?year@?$civil_time@Uyear_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QEBA_JXZ
     ?year_index@impl@detail@cctz@time_internal@absl@@YAH_JC@Z
     ?ymd_ord@impl@detail@cctz@time_internal@absl@@YA_J_JCC@Z
+    AbslInternalSpinLockDelay
+    AbslInternalSpinLockWake
