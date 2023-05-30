@@ -15,7 +15,8 @@ BitmapFetcherService* BitmapFetcherServiceFactory::GetForBrowserContext(
 
 // static
 BitmapFetcherServiceFactory* BitmapFetcherServiceFactory::GetInstance() {
-  return base::Singleton<BitmapFetcherServiceFactory>::get();
+  static base::NoDestructor<BitmapFetcherServiceFactory> instance;
+  return instance.get();
 }
 
 BitmapFetcherServiceFactory::BitmapFetcherServiceFactory()
@@ -28,8 +29,7 @@ BitmapFetcherServiceFactory::BitmapFetcherServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() {
-}
+BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() = default;
 
 KeyedService* BitmapFetcherServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
