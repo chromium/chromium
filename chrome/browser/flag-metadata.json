@@ -2734,11 +2734,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-launcher-app-paging",
-    "owners": [ "//ash/app_list/OWNERS" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-lens-context-menu-alt-text",
     "owners": [ "apalanki", "schechter", "hujasonx" ],
     "expiry_milestone": 116
