@@ -691,7 +691,9 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.push('activeFolderPath_', event.detail.bookmark);
         // Cancel search when changing active folder.
         this.$.searchField.setValue('');
-        this.$.shownBookmarksIronList.focusItem(0);
+        if (this.shownBookmarks_.length > 0) {
+          this.$.shownBookmarksIronList.focusItem(0);
+        }
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
