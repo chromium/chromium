@@ -60,7 +60,9 @@ class FloatingWorkspaceService : public KeyedService,
 
   // Used in constructor for initializations
   void Init();
-  void InitForTest(TestFloatingWorkspaceVersion version);
+  void InitForTest(
+      TestFloatingWorkspaceVersion version,
+      raw_ptr<desks_storage::DeskSyncService> fake_desk_sync_service);
 
   // Add subscription to foreign session changes.
   void SubscribeToForeignSessionUpdates();

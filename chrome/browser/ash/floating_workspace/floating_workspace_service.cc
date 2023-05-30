@@ -70,7 +70,8 @@ void FloatingWorkspaceService::Init() {
 }
 
 void FloatingWorkspaceService::InitForTest(
-    TestFloatingWorkspaceVersion version) {
+    TestFloatingWorkspaceVersion version,
+    raw_ptr<desks_storage::DeskSyncService> fake_desk_sync_service) {
   CHECK_IS_TEST();
   is_testing_ = true;
   switch (version) {
@@ -83,6 +84,7 @@ void FloatingWorkspaceService::InitForTest(
       // For testings we don't need to add itself to observer list of
       // DeskSyncBridge, tests can be done by calling
       // EntriesAddedOrUpdatedRemotely directly so InitForV2 can be skipped.
+      desk_sync_service_ = fake_desk_sync_service;
       StartCaptureAndUploadActiveDesk();
       break;
   }
@@ -424,7 +426,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // information from the sync bridge and the info may be outdated for the sync
   // bridge. However, the sync bridge does not need to know the new uuid since
   // the current service will handle it. Ignore for testing.
-  if (!floating_workspace_uuid_.has_value() && !is_testing_) {
+  if (!floating_workspace_uuid_.has_value()) {
     absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
         GetFloatingWorkspaceUuidForCurrentDevice();
     if (floating_workspace_uuid_from_desk_model.has_value()) {

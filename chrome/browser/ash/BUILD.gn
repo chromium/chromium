@@ -4608,6 +4608,7 @@ static_library("test_support") {
     "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/printing",
     "//components/account_id",
+    "//components/desks_storage:test_support",
     "//components/keyed_service/core",
     "//components/login",
     "//components/ownership",
