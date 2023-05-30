@@ -1075,7 +1075,6 @@ grit("generate_components_resources") {
 
   deps = [
     ":concatenate_resources_allowlists",
-    "//components/flags_ui/resources:build_ts",
     "//components/resources:about_credits",
     "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",
     "//components/security_interstitials/content/resources:build_ts",

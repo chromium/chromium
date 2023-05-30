@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_FLAGS_UI_FLAGS_HTML" file="../flags_ui/resources/flags.html" preprocess="true" type="BINDATA" />
-  <include name="IDR_FLAGS_UI_FLAGS_JS" file="${root_gen_dir}/components/flags_ui/resources/tsc/flags.js" use_base_dir="false" type="BINDATA" />
-  <include name="IDR_FLAGS_UI_FLAGS_CSS" file="../flags_ui/resources/flags.css"  preprocess="true" type="BINDATA" />
-</grit-part>

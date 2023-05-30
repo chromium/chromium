@@ -24,8 +24,9 @@
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
-#include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/grit/flags_ui_resources.h"
+#include "components/grit/flags_ui_resources_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_chromium_strings.h"
@@ -87,8 +88,8 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   }
 #endif
 
-  source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
-  source->AddResourcePath(flags_ui::kFlagsCSS, IDR_FLAGS_UI_FLAGS_CSS);
+  source->AddResourcePaths(
+      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   return source;

@@ -17,7 +17,7 @@
 #import "components/flags_ui/flags_ui_constants.h"
 #import "components/flags_ui/flags_ui_pref_names.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
-#import "components/grit/components_resources.h"
+#import "components/grit/flags_ui_resources.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_chromium_strings.h"

@@ -444,6 +444,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3960],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/flags_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [3970],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/history_clusters/history_clusters_internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [3980],
