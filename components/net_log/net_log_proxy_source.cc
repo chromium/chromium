@@ -35,15 +35,13 @@ void NetLogProxySource::ShutDown() {
 
 void NetLogProxySource::OnAddEntry(const net::NetLogEntry& entry) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
-    SendNetLogEntry(entry.type, entry.source.type, entry.source.id,
-                    entry.source.start_time, entry.phase, entry.time,
+    SendNetLogEntry(entry.type, entry.source, entry.phase, entry.time,
                     entry.params.Clone());
   } else {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&NetLogProxySource::SendNetLogEntry, weak_this_,
-                       entry.type, entry.source.type, entry.source.id,
-                       entry.source.start_time, entry.phase, entry.time,
+                       entry.type, entry.source, entry.phase, entry.time,
                        entry.params.Clone()));
   }
 }
@@ -90,15 +88,12 @@ void NetLogProxySource::UpdateCaptureModes(
 }
 
 void NetLogProxySource::SendNetLogEntry(net::NetLogEventType type,
-                                        net::NetLogSourceType source_type,
-                                        uint32_t source_id,
-                                        base::TimeTicks source_start_time,
+                                        const net::NetLogSource& net_log_source,
                                         net::NetLogEventPhase phase,
                                         base::TimeTicks time,
                                         base::Value::Dict params) {
-  proxy_sink_remote_->AddEntry(
-      static_cast<uint32_t>(type), static_cast<uint32_t>(source_type),
-      source_id, source_start_time, phase, time, std::move(params));
+  proxy_sink_remote_->AddEntry(static_cast<uint32_t>(type), net_log_source,
+                               phase, time, std::move(params));
 }
 
 }  // namespace net_log

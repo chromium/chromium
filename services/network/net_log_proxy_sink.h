@@ -43,9 +43,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogProxySink
 
   // mojom::NetLogProxySink:
   void AddEntry(uint32_t type,
-                uint32_t source_type,
-                uint32_t source_id,
-                base::TimeTicks source_start_time,
+                const net::NetLogSource& net_log_source,
                 net::NetLogEventPhase phase,
                 base::TimeTicks time,
                 base::Value::Dict params) override;

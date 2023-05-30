@@ -50,9 +50,7 @@ class NetLogProxySource : public net::NetLog::ThreadSafeObserver,
  private:
   // Proxy entry to the remote. Must only be called on |task_runner_|.
   void SendNetLogEntry(net::NetLogEventType type,
-                       net::NetLogSourceType source_type,
-                       uint32_t source_id,
-                       base::TimeTicks source_start_time,
+                       const net::NetLogSource& net_log_source,
                        net::NetLogEventPhase phase,
                        base::TimeTicks time,
                        base::Value::Dict params);
