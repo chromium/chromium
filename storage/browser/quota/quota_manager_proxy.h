@@ -99,12 +99,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   // This function calls the asynchronous GetOrCreateBucket function but blocks
-  // until completion.
-  //
-  // NOTE: this function cannot be called from the
-  // quota_manager_impl_task_runner. Additionally, the asychonrous version of
-  // this method `GetOrCreateBucket` is preferred; only use this synchronous
-  // version where asynchronous bucket retrieval is not possible.
+  // until completion. Be strongly advised NOT to use this method, see
+  // crbug.com/1444138
   virtual QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
       const BucketInitParams& params);
 

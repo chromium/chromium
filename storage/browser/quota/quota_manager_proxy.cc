@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
@@ -35,6 +36,27 @@
 using ::blink::StorageKey;
 
 namespace storage {
+
+// This object signals the given `WaitableEvent` when it goes out of scope.
+class ScopedWaitableEvent {
+ public:
+  explicit ScopedWaitableEvent(base::WaitableEvent& event) : event_(&event) {}
+  ScopedWaitableEvent(ScopedWaitableEvent&& other) {
+    event_ = std::exchange(other.event_, nullptr);
+  }
+
+  ~ScopedWaitableEvent() {
+    if (event_) {
+      event_->Signal();
+    }
+  }
+
+  ScopedWaitableEvent(const ScopedWaitableEvent& other) = delete;
+  ScopedWaitableEvent& operator=(const ScopedWaitableEvent& other) = delete;
+
+ private:
+  raw_ptr<base::WaitableEvent> event_;
+};
 
 QuotaManagerProxy::QuotaManagerProxy(
     QuotaManagerImpl* quota_manager_impl,
@@ -124,38 +146,38 @@ QuotaErrorOr<BucketInfo> QuotaManagerProxy::GetOrCreateBucketSync(
     const BucketInitParams& params) {
   // Ensure that the task runner we want is free and can be blocked on.
   DCHECK(!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence());
-  QuotaErrorOr<BucketInfo> bucket;
+  QuotaErrorOr<BucketInfo> bucket = base::unexpected(QuotaError::kUnknownError);
   base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
   // Asynchronously call UpdateOrCreateBucket and block until it completes.
   quota_manager_impl_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](const scoped_refptr<QuotaManagerProxy>& self,
-             const BucketInitParams& params, base::WaitableEvent* waiter,
+             const BucketInitParams& params, ScopedWaitableEvent waiter,
              QuotaErrorOr<BucketInfo>* sync_bucket) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
                 self->quota_manager_impl_sequence_checker_);
-            // If the database is still bootstrapping, return an error rather
-            // than risking deadlock.
+            // If the database is still bootstrapping, return rather than
+            // risking deadlock.
             if (!self->quota_manager_impl_ ||
                 self->quota_manager_impl_->is_bootstrapping_database_) {
-              *sync_bucket = base::unexpected(QuotaError::kUnknownError);
-              waiter->Signal();
               return;
             }
             // Otherwise, return the bucket value and resolve the waiter.
             self->quota_manager_impl_->UpdateOrCreateBucket(
                 params, base::BindOnce(
-                            [](base::WaitableEvent* waiter,
+                            [](ScopedWaitableEvent waiter,
                                QuotaErrorOr<BucketInfo>* sync_bucket,
                                QuotaErrorOr<BucketInfo> result_bucket) {
                               *sync_bucket = std::move(result_bucket);
-                              waiter->Signal();
                             },
-                            waiter, sync_bucket));
+                            std::move(waiter), sync_bucket));
           },
-          base::WrapRefCounted(this), params, &waiter, &bucket));
+          base::WrapRefCounted(this), params, ScopedWaitableEvent(waiter),
+          &bucket));
   waiter.Wait();
   return bucket;
 }

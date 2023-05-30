@@ -207,6 +207,15 @@ class IndexedDBFactoryTest : public testing::Test {
         std::move(remote));
   }
 
+  storage::BucketLocator GetOrCreateBucket(
+      const storage::BucketInitParams& params) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+    quota_manager_proxy_->UpdateOrCreateBucket(
+        params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        future.GetCallback());
+    return future.Take()->ToBucketLocator();
+  }
+
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
 
@@ -273,11 +282,8 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
 
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  storage::BucketLocator bucket_locator_1 =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(storage_key_1))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator_1 = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key_1));
   auto file_1 = context_->GetLevelDBPathForTesting(bucket_locator_1)
                     .AppendASCII("1.json");
   ASSERT_TRUE(CreateDirectory(file_1.DirName()));
@@ -285,11 +291,8 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
 
   const blink::StorageKey storage_key_2 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:82");
-  storage::BucketLocator bucket_locator_2 =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(storage_key_2))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator_2 = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key_2));
   auto file_2 = context_->GetLevelDBPathForTesting(bucket_locator_2)
                     .AppendASCII("2.json");
   ASSERT_TRUE(CreateDirectory(file_2.DirName()));
@@ -297,11 +300,8 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
 
   const blink::StorageKey storage_key_3 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost2:82");
-  storage::BucketLocator bucket_locator_3 =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(storage_key_3))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator_3 = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key_3));
   auto file_3 = context_->GetLevelDBPathForTesting(bucket_locator_3)
                     .AppendASCII("3.json");
   ASSERT_TRUE(CreateDirectory(file_3.DirName()));
@@ -310,11 +310,8 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   const blink::StorageKey storage_key_4 = blink::StorageKey::Create(
       storage_key_1.origin(), net::SchemefulSite(storage_key_3.origin()),
       blink::mojom::AncestorChainBit::kCrossSite);
-  storage::BucketLocator bucket_locator_4 =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(storage_key_4))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator_4 = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key_4));
   auto file_4 = context_->GetLevelDBPathForTesting(bucket_locator_4)
                     .AppendASCII("4.json");
   ASSERT_TRUE(CreateDirectory(file_4.DirName()));
@@ -322,8 +319,7 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
 
   const blink::StorageKey storage_key_5 = storage_key_1;
   storage::BucketInitParams params(storage_key_5, "inbox");
-  storage::BucketLocator bucket_locator_5 =
-      quota_manager()->GetOrCreateBucketSync(params)->ToBucketLocator();
+  storage::BucketLocator bucket_locator_5 = GetOrCreateBucket(params);
   auto file_5 = context_->GetLevelDBPathForTesting(bucket_locator_5)
                     .AppendASCII("5.json");
   ASSERT_TRUE(CreateDirectory(file_5.DirName()));
@@ -691,11 +687,8 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  storage::BucketLocator bucket_locator =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(storage_key))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(storage_key));
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
@@ -731,11 +724,8 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   const blink::StorageKey too_long_storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://" + origin +
                                                     ":81/");
-  storage::BucketLocator bucket_locator =
-      quota_manager()
-          ->GetOrCreateBucketSync(
-              storage::BucketInitParams::ForDefaultBucket(too_long_storage_key))
-          ->ToBucketLocator();
+  storage::BucketLocator bucket_locator = GetOrCreateBucket(
+      storage::BucketInitParams::ForDefaultBucket(too_long_storage_key));
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
