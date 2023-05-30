@@ -1044,10 +1044,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     // cleaned up.
     private int getLogoMargin(boolean isTopMargin) {
         if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+
         if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
-            return mNewTabPageLayout.getResources().getDimensionPixelSize(
-                    R.dimen.ntp_logo_vertical_margin_tablet);
+            return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
+                           R.dimen.ntp_logo_vertical_top_margin_tablet)
+                               : mNewTabPageLayout.getResources().getDimensionPixelSize(
+                                       R.dimen.ntp_logo_vertical_bottom_margin_tablet);
         }
+
         return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
                        R.dimen.ntp_logo_margin_top)
                            : mNewTabPageLayout.getResources().getDimensionPixelSize(
