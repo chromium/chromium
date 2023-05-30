@@ -47,10 +47,6 @@ class AudioGlitchInfo::Accumulator {
   AudioGlitchInfo pending_info_;
 };
 
-// Used to investigate https://crbug.com/1449671
-MEDIA_EXPORT void CheckGlitchInfoAndDelay(const AudioGlitchInfo& glitch_info,
-                                          const base::TimeDelta delay);
-
 }  // namespace media
 
 #endif  // MEDIA_BASE_AUDIO_GLITCH_INFO_H_

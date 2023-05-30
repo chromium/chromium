@@ -752,10 +752,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       std::unique_ptr<AudioBus> audio_bus(
           AudioBus::WrapMemory(params_, audio_data));
       audio_bus_->set_is_bitstream_format(true);
-      auto glitch_info = glitch_info_accumulator.GetAndReset();
-      CheckGlitchInfoAndDelay(glitch_info, delay);
-      int frames_filled = source_->OnMoreData(delay, delay_timestamp,
-                                              glitch_info, audio_bus.get());
+      int frames_filled = source_->OnMoreData(
+          delay, delay_timestamp, glitch_info_accumulator.GetAndReset(),
+          audio_bus.get());
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
@@ -771,10 +770,9 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       return true;
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    auto glitch_info = glitch_info_accumulator.GetAndReset();
-    CheckGlitchInfoAndDelay(glitch_info, delay);
-    int frames_filled = source_->OnMoreData(delay, delay_timestamp, glitch_info,
-                                            audio_bus_.get());
+    int frames_filled = source_->OnMoreData(
+        delay, delay_timestamp, glitch_info_accumulator.GetAndReset(),
+        audio_bus_.get());
     uint32_t num_filled_bytes = frames_filled * format_.Format.nBlockAlign;
     DCHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);
