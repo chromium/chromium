@@ -4,6 +4,8 @@
 
 #include "skia/ext/skcolorspace_trfn.h"
 
+#include <cmath>
+
 namespace skia {
 
 namespace {
