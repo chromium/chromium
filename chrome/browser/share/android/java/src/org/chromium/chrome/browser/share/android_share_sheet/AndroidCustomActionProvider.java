@@ -11,8 +11,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -50,10 +48,8 @@ import java.util.List;
  */
 class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBase
         implements ChromeCustomShareAction.Provider {
-    private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITH_LINK =
-            "SharingHubAndroid.AndroidShareHighlightText.WithLink";
-    private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITHOUT_LINK =
-            "SharingHubAndroid.AndroidShareHighlightText.WithoutLink";
+    private static final String USER_ACTION_COPY_HIGHLIGHT_TEXT_WITHOUT_LINK =
+            "SharingHubAndroid.CopyHighlightTextWithoutLinkSelected";
 
     private static final String USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED =
             "SharingHubAndroid.LongScreenshotSelected.NoEditor";
@@ -65,8 +61,6 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     @Nullable
     private final LinkToTextCoordinator mLinkToTextCoordinator;
     private final List<ChromeCustomShareAction> mCustomActions = new ArrayList<>();
-
-    private @Nullable ChromeCustomShareAction mModifyAction;
 
     /**
      * Constructs a new {@link AndroidCustomActionProvider}.
@@ -127,27 +121,11 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         for (var option : options) {
             mCustomActions.add(shareActionFromFirstPartyOption(option));
         }
-
-        // getLinkToTextSuccessful is only populated when an link is generated for share.
-        if (mShareParams.getLinkToTextSuccessful() != null && mShareParams.getLinkToTextSuccessful()
-                && mChromeShareExtras != null
-                && mChromeShareExtras.getDetailedContentType()
-                        == ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT) {
-            FirstPartyOption option = TextUtils.isEmpty(mShareParams.getUrl())
-                    ? createShareHighlightTextWithLink()
-                    : createShareHighlightTextWithOutLink();
-            mModifyAction = shareActionFromFirstPartyOption(option);
-        }
     }
 
     @Override
     public List<ChromeCustomShareAction> getCustomActions() {
         return mCustomActions;
-    }
-
-    @Override
-    public ChromeCustomShareAction getModifyShareAction() {
-        return mModifyAction;
     }
 
     //  extends ChromeProvidedSharingOptionsProviderBase:
@@ -190,6 +168,14 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     @Override
     protected void maybeAddCopyFirstPartyOption() {
+        // getLinkToTextSuccessful is only populated when an link is generated for share.
+        if (mShareParams.getLinkToTextSuccessful() != null && mShareParams.getLinkToTextSuccessful()
+                && mChromeShareExtras != null
+                && mChromeShareExtras.getDetailedContentType()
+                        == ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT) {
+            mOrderedFirstPartyOptions.add(createCopyHighlightTextWithOutLinkOption());
+        }
+
         // For Android's share sheet, only use copy image for web share.
         // TODO(crbug/1448944): Exclude the copy action from Context menu instead.
         if (mChromeShareExtras != null
@@ -199,28 +185,18 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         mOrderedFirstPartyOptions.add(createCopyImageWithLinkFirstPartyOption());
     }
 
-    private FirstPartyOption createShareHighlightTextWithLink() {
+    private FirstPartyOption createCopyHighlightTextWithOutLinkOption() {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
-                .setIcon(R.drawable.link, R.string.sharing_include_link)
-                .setFeatureNameForMetrics(USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITH_LINK)
+                .setIcon(R.drawable.link_off, R.string.sharing_copy_highlight_without_link)
+                .setFeatureNameForMetrics(USER_ACTION_COPY_HIGHLIGHT_TEXT_WITHOUT_LINK)
                 .setOnClickCallback((view) -> {
                     assert mLinkToTextCoordinator != null;
-                    mChromeOptionShareCallback.showShareSheet(
-                            mLinkToTextCoordinator.getShareParams(LinkToggleState.LINK),
-                            mChromeShareExtras, SystemClock.elapsedRealtime());
-                })
-                .build();
-    }
-
-    private FirstPartyOption createShareHighlightTextWithOutLink() {
-        return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
-                .setIcon(R.drawable.link_off, R.string.sharing_exclude_link)
-                .setFeatureNameForMetrics(USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITHOUT_LINK)
-                .setOnClickCallback((view) -> {
-                    assert mLinkToTextCoordinator != null;
-                    mChromeOptionShareCallback.showShareSheet(
-                            mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK),
-                            mChromeShareExtras, SystemClock.elapsedRealtime());
+                    ShareParams textShareParams =
+                            mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK);
+                    ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
+                            Context.CLIPBOARD_SERVICE);
+                    clipboard.setPrimaryClip(ClipData.newPlainText(
+                            textShareParams.getTitle(), textShareParams.getTextAndUrl()));
                 })
                 .build();
     }

@@ -317,13 +317,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             Parcelable[] customActions = chooserActions.toArray(new Parcelable[0]);
             chooserIntent.putExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS, customActions);
 
-            if (mCustomActionProvider.getModifyShareAction() != null) {
-                var modifiedShareAction = createChooserAction(
-                        mCustomActionProvider.getModifyShareAction(), activity, requestCode);
-                chooserIntent.putExtra(
-                        INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION, modifiedShareAction);
-            }
-
             return chooserIntent;
         }
 

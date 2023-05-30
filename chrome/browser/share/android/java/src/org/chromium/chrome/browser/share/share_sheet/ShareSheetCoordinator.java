@@ -275,7 +275,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             }
             mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
                     chromeShareExtras, shareStartTime, getUrlToShare(params, chromeShareExtras),
-                    params.getText());
+                    params.getText(), /*includeOriginInTitle=*/false);
         }
         mShareSheetLinkToggleCoordinator = new ShareSheetLinkToggleCoordinator(
                 params, chromeShareExtras, mLinkToTextCoordinator);

@@ -142,8 +142,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
                             urlToShare, profile, chromeShareExtras, isInMultiWindow,
                             mLinkToTextCoordinator, mDeviceLockActivityLauncher);
-            if (actionProvider.getCustomActions().size() > 0
-                    || actionProvider.getModifyShareAction() != null) {
+            if (actionProvider.getCustomActions().size() > 0) {
                 provider = actionProvider;
             }
         }
@@ -192,9 +191,9 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         assert mLinkToTextCoordinator == null : "LinkToTextCoordinator is already created!";
-        mLinkToTextCoordinator =
-                new LinkToTextCoordinator(mTabProvider.get(), this, chromeShareExtras,
-                        SystemClock.elapsedRealtime(), params.getUrl(), params.getText());
+        mLinkToTextCoordinator = new LinkToTextCoordinator(mTabProvider.get(), this,
+                chromeShareExtras, SystemClock.elapsedRealtime(), params.getUrl(), params.getText(),
+                /*includeOriginInTitle=*/true);
         mLinkToTextCoordinator.shareLinkToText();
         return true;
     }

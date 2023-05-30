@@ -454,25 +454,15 @@ public class AndroidShareSheetControllerUnitTest {
                 "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(chooserIntent, R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
+        assertCustomActions(chooserIntent, R.string.sharing_copy_highlight_without_link,
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
-        runModifyActionFromChooserIntent(chooserIntent);
-        Intent chooserIntent2 = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        Intent shareIntent2 = chooserIntent2.getParcelableExtra(Intent.EXTRA_INTENT);
-        Assert.assertEquals("Text being shared is different.", "highlight",
-                shareIntent2.getStringExtra(Intent.EXTRA_TEXT));
-
-        assertCustomActions(chooserIntent2);
-
-        // Toggle the modify action again, link is reattached with the text.
-        runModifyActionFromChooserIntent(chooserIntent2);
-        Intent chooserIntent3 = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        Intent shareIntent3 = chooserIntent3.getParcelableExtra(Intent.EXTRA_INTENT);
-        Assert.assertEquals("Text being shared is different.",
-                "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
-                shareIntent3.getStringExtra(Intent.EXTRA_TEXT));
+        chooseCustomAction(chooserIntent, R.string.sharing_copy_highlight_without_link);
+        ClipboardManager clipboardManager =
+                (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        Assert.assertEquals("Text being copied is different.", "highlight",
+                clipboardManager.getPrimaryClip().getItemAt(0).getText());
     }
 
     @Test
@@ -752,6 +742,11 @@ public class AndroidShareSheetControllerUnitTest {
         protected void shareLinkToText() {
             boolean fail = sForceToFail != null && sForceToFail;
             mRealObj.onSelectorReady(fail ? "" : SELECTOR_FOR_LINK_TO_TEXT);
+        }
+
+        @Implementation
+        protected String getTitle() {
+            return "Include link: <link>";
         }
     }
 

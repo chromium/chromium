@@ -352,6 +352,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                             Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(
                             ClipData.newPlainText(mShareParams.getTitle(), mShareParams.getUrl()));
+                    // TODO(crbug/1448655): Remove toast for Android T+
                     Toast.makeText(mActivity, R.string.link_copied, Toast.LENGTH_SHORT).show();
                 })
                 .build();
@@ -368,6 +369,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                     Uri imageUri = mShareParams.getImageUriToShare();
                     if (imageUri != null) {
                         Clipboard.getInstance().setImageUri(imageUri);
+                        // TODO(crbug/1448655): Move toast into Clipboard#setImageUri.
                         Toast.makeText(mActivity, R.string.gif_copied, Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -387,6 +389,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                             Uri imageUri = mShareParams.getImageUriToShare();
                             if (imageUri != null) {
                                 Clipboard.getInstance().setImageUri(imageUri);
+                                // TODO(crbug/1448655): Move toast into Clipboard#setImageUri.
                                 Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
                                         .show();
                             }
@@ -402,6 +405,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_SELECTED)
                 .setOnClickCallback((view) -> {
+                    // TODO(crbug/1448655): Switch to Clipboard#setText.
                     ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
                             Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(ClipData.newPlainText(
@@ -417,6 +421,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_text)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_TEXT_SELECTED)
                 .setOnClickCallback((view) -> {
+                    // TODO(crbug/1448655): Switch to Clipboard#setText.
                     ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(
                             Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(
