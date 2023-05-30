@@ -15570,6 +15570,21 @@
             ]
         }
     ],
+    "WinSboxHighRendererJobMemoryLimits": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxHighRendererJobMemoryLimits"
+                    ]
+                }
+            ]
+        }
+    ],
     "WindowLayoutMenu": [
         {
             "platforms": [
