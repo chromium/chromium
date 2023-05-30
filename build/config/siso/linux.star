@@ -6,6 +6,7 @@
 
 load("@builtin//struct.star", "module")
 load("./clang_linux.star", "clang")
+load("./config.star", "config")
 load("./mojo.star", "mojo")
 load("./nacl_linux.star", "nacl")
 load("./remote_exec_wrapper.star", "remote_exec_wrapper")
@@ -21,6 +22,7 @@ __handlers.update(mojo.handlers)
 __handlers.update(nacl.handlers)
 
 def __step_config(ctx, step_config):
+    config.check(ctx)
     step_config["platforms"] = {
         "default": {
             "OSFamily": "Linux",
