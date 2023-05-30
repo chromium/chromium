@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/bundle_locations.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -114,7 +115,9 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
 #endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
   // Create the app delegate by requesting the shared AppController.
+  CHECK_EQ(nil, NSApp.delegate);
   AppController* app_controller = AppController.sharedController;
+  CHECK_NE(nil, NSApp.delegate);
 
   chrome::BuildMainMenu(NSApp, app_controller,
                         l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), false);
