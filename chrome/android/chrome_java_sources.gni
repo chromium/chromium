@@ -135,7 +135,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDialogToolbar.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorDropdownField.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/EditorProperties.java",
-  "java/src/org/chromium/chrome/browser/autofill/prefeditor/ExpandableGridView.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/HintedDropDownAdapter.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AddressEditor.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppPreference.java",
