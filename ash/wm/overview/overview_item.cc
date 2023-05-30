@@ -389,9 +389,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // For non minimized windows, we simply apply the transform and update the
   // header.
   if (!transform_window_.IsMinimized()) {
-    SetItemBounds(target_bounds, new_animation_type, is_first_update);
     UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
                                        : new_animation_type);
+    SetItemBounds(target_bounds, new_animation_type, is_first_update);
     return;
   }
 
@@ -1227,16 +1227,29 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
           screen_rect, transformed_bounds, top_view_inset, kHeaderHeightDp);
 
   if (chromeos::features::IsJellyrollEnabled()) {
-    // Adjust the `overview_item_bounds` if the window has normal or letter
-    // dimensions type to make sure it's aligned with overview item header view
-    // after the transform.
+    // Adjust the `overview_item_bounds` x position and width if the window has
+    // normal or letter dimensions type to make sure it's aligned with overview
+    // item header view after the transform.
     if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
         transform_window_.type() == OverviewGridWindowFillMode::kLetterBoxed) {
       overview_item_bounds.set_x(transformed_bounds.x());
-      // We minus 0.5f here because sometimes the transformed window is a little
-      // bit wider than the header view on the right side.
-      // TODO(b/280085961): Investigate a proper fix for this.
-      overview_item_bounds.set_width(transformed_bounds.width() - 0.5f);
+      overview_item_bounds.set_width(transformed_bounds.width());
+    }
+
+    // Adjust the `overview_item_bounds` y position and height if the window has
+    // normal or pillar dimensions type to make sure there's no gap between the
+    // header and the window and no empty space at the end of the overview item
+    // container.
+    if (transform_window_.type() == OverviewGridWindowFillMode::kNormal ||
+        transform_window_.type() == OverviewGridWindowFillMode::kPillarBoxed) {
+      // The window top bar's target height with the transform.
+      float window_top_inset_target_height =
+          target_bounds.height() / screen_rect.height() * top_view_inset;
+      overview_item_bounds.set_y(
+          overview_item_view_->header_view()->GetBoundsInScreen().bottom() -
+          window_top_inset_target_height);
+      overview_item_bounds.set_height(target_bounds.height() - kHeaderHeightDp +
+                                      window_top_inset_target_height);
     }
   }
 
