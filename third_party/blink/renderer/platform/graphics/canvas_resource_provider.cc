@@ -544,8 +544,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       // deferred queue in that context so that we don't need to copy.
       GetFlushForImageListener()->NotifyFlushForImage(content_id);
 
-      if (!use_oop_rasterization_)
-        surface_->flushAndSubmit();
+      if (!use_oop_rasterization_) {
+        skgpu::ganesh::FlushAndSubmit(surface_);
+      }
     }
 
     return !resource_->HasOneRef();
@@ -1447,7 +1448,7 @@ absl::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
 void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
-  GetSkSurface()->flushAndSubmit();
+  skgpu::ganesh::FlushAndSubmit(GetSkSurface());
 }
 
 void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,

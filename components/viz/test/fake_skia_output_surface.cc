@@ -207,7 +207,7 @@ void FakeSkiaOutputSurface::EndPaint(
     const gfx::Rect& update_rect,
     bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  sk_surfaces_[current_render_pass_id_]->flushAndSubmit();
+  skgpu::ganesh::FlushAndSubmit(sk_surfaces_[current_render_pass_id_]);
   current_render_pass_id_ = AggregatedRenderPassId{0};
 
   if (on_finished)

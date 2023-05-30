@@ -260,14 +260,16 @@ void SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
   DCHECK(promise_image_textures_.empty() || surfaces_.empty());
 
   int num_planes = representation()->format().NumberOfPlanes();
+  GrDirectContext* direct_context = ganesh_representation()->gr_context();
+  CHECK(direct_context);
   if (!surfaces_.empty()) {
     for (int plane = 0; plane < num_planes; plane++) {
-      surface(plane)->flush(/*info=*/{}, end_state_.get());
+      direct_context->flush(surface(plane), /*info=*/{}, end_state_.get());
     }
   }
   if (!promise_image_textures_.empty()) {
     for (int plane = 0; plane < num_planes; plane++) {
-      if (!ganesh_representation()->gr_context()->setBackendTextureState(
+      if (!direct_context->setBackendTextureState(
               promise_image_texture(plane)->backendTexture(), *end_state_)) {
         LOG(ERROR) << "setBackendTextureState() failed for plane: " << plane;
       }

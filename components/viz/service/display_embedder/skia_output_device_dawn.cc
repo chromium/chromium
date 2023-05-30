@@ -160,8 +160,12 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
 }
 
 void SkiaOutputDeviceDawn::EndPaint() {
-  GrFlushInfo flush_info;
-  sk_surface_->flush(SkSurface::BackendSurfaceAccess::kPresent, flush_info);
+  CHECK(sk_surface_);
+  if (GrDirectContext* direct_context =
+          GrAsDirectContext(sk_surface_->recordingContext())) {
+    direct_context->flush(sk_surface_,
+                          SkSurfaces::BackendSurfaceAccess::kPresent, {});
+  }
   sk_surface_.reset();
 }
 

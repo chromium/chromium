@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace gpu {
@@ -190,7 +191,9 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
       /*gpu_compositing=*/true, format());
   const std::string label =
       "RawDrawImageBacking" + CreateLabelForSharedImageUsage(usage());
-  backend_texture_ = context_state_->gr_context()->createBackendTexture(
+  GrDirectContext* direct_context = context_state_->gr_context();
+  CHECK(direct_context);
+  backend_texture_ = direct_context->createBackendTexture(
       size().width(), size().height(), sk_color, GrMipMapped::kNo,
       GrRenderable::kYes, GrProtected::kNo, label);
   if (!backend_texture_.isValid()) {
@@ -201,9 +204,8 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
   promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
 
   auto surface = SkSurfaces::WrapBackendTexture(
-      context_state_->gr_context(), backend_texture_, surface_origin(),
-      final_msaa_count_, sk_color, color_space().ToSkColorSpace(),
-      &surface_props_);
+      direct_context, backend_texture_, surface_origin(), final_msaa_count_,
+      sk_color, color_space().ToSkColorSpace(), &surface_props_);
   if (!surface) {
     DLOG(ERROR) << "SkSurfaces::WrapBackendTexture() failed! SkColorType:"
                 << sk_color;
@@ -220,14 +222,14 @@ bool RawDrawImageBacking::CreateBackendTextureAndFlushPaintOps(bool flush) {
   }
 
   if (flush) {
-    surface->flush();
+    direct_context->flush(surface);
   } else {
     // For a MSAA SkSurface, if gr_context->flush() is called, all draws on the
     // SkSurface will be flush into a temp MSAA buffer, but the it will not
     // resolved the temp MSAA buffer to the wrapped backend texture.
     // So call resolveMSAA() to insert resolve op in surface's command stream,
     // and when gr_context->flush() is call, the surface will be resolved.
-    surface->resolveMSAA();
+    SkSurfaces::ResolveMSAA(surface);
   }
 
   UpdateEstimatedSize(format().EstimatedSizeInBytes(size()));

@@ -773,9 +773,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   // This flushes paint ops first, then applies Vulkan transition layouts and
   // then submit semaphores to signal.
-  surface->flush();
+  gr_context()->flush(surface, {});
   scoped_access->ApplyBackendSurfaceEndState();
-  auto result = surface->flush(flush_info, nullptr);
+  auto result = gr_context()->flush(surface, flush_info, nullptr);
 
   if (result != GrSemaphoresSubmitted::kYes &&
       !(begin_semaphores.empty() && end_semaphores.empty())) {
@@ -1002,7 +1002,10 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
   gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_, &flush_info);
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
-  GrSemaphoresSubmitted flush_result = surface->flush(flush_info, nullptr);
+  GrSemaphoresSubmitted flush_result = GrSemaphoresSubmitted::kNo;
+  if (GrDirectContext* direct_context = gr_context()) {
+    direct_context->flush(surface, flush_info, nullptr);
+  }
   if (scoped_write_access) {
     scoped_write_access->ApplyBackendSurfaceEndState();
   }
@@ -1248,7 +1251,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                         request->blit_request());
   }
 
-  intermediate_surface->flush();
+  gr_context()->flush(intermediate_surface);
 
   auto intermediate_image = intermediate_surface->makeImageSnapshot();
   if (!intermediate_image) {
@@ -1531,7 +1534,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     paint.setColor(SK_ColorBLACK);
     paint.setBlendMode(SkBlendMode::kDstATop);
     surface->getCanvas()->drawPaint(paint);
-    surface->flush();
+    skgpu::ganesh::Flush(surface);
   }
 
   absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;

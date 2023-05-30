@@ -184,7 +184,7 @@ void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     auto* surface = access->surface(plane_index);
     DCHECK(surface);
-    surface->flush();
+    skgpu::ganesh::Flush(surface);
   }
   access->ApplyBackendSurfaceEndState();
 }
@@ -776,8 +776,10 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
                                    texture_info);
 
   auto dest_color_space = SkColorSpace::MakeSRGB();
+  GrDirectContext* direct_context = shared_context_state_->gr_context();
+  CHECK(direct_context);
   sk_sp<SkSurface> dest_surface = SkSurfaces::WrapBackendTexture(
-      shared_context_state_->gr_context(), backend_texture,
+      direct_context, backend_texture,
       flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
              : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
       /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
@@ -806,7 +808,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     canvas->clipRect(dest_rect);
     canvas->clear(SkColors::kBlack);
 
-    dest_surface->flush();
+    direct_context->flush(dest_surface);
     SubmitIfNecessary({}, shared_context_state_, is_drdc_enabled_);
 
     // Note, that we still generate error for the client to indicate there was
@@ -837,7 +839,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   }
   if (!source_scoped_access) {
     // We still need to flush surface for begin semaphores above.
-    dest_surface->flush();
+    direct_context->flush(dest_surface);
     SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                       is_drdc_enabled_);
 
@@ -870,7 +872,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
         SkSamplingOptions(), &paint, SkCanvas::kStrict_SrcRectConstraint);
   }
 
-  dest_surface->flush();
+  direct_context->flush(dest_surface);
   source_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);

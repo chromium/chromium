@@ -78,6 +78,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -764,7 +765,7 @@ class RasterDecoderImpl final : public RasterDecoder,
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       auto* surface = access->surface(plane_index);
       DCHECK(surface);
-      surface->flush();
+      skgpu::ganesh::Flush(surface);
     }
     access->ApplyBackendSurfaceEndState();
 
@@ -2135,7 +2136,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                        "Failed to write pixels to SkCanvas");
   }
 
-  surface->flush();
+  skgpu::ganesh::Flush(surface);
   dest_scoped_access->ApplyBackendSurfaceEndState();
   SubmitIfNecessary(std::move(end_semaphores));
 

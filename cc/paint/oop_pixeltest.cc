@@ -1756,7 +1756,7 @@ class OopTextBlobPixelTest
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SkColors::kBlack);
     DrawExpectedToCanvas(*canvas);
-    surface->flushAndSubmit();
+    context_state->gr_context()->flushAndSubmit(surface);
 
     // Readback the expected image into `expected`.
     expected.allocPixels(image_info);

@@ -143,7 +143,11 @@ void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   gpu::AddVulkanCleanupTaskForSkiaFlush(context_state->vk_context_provider(),
                                         &flush_info);
 
-  surface->flush(SkSurface::BackendSurfaceAccess::kNoAccess, flush_info);
+  // Graphite surfaces do not need to be flushed, only Ganesh ones.
+  if (GrDirectContext* direct_context = context_state->gr_context()) {
+    direct_context->flush(surface, SkSurfaces::BackendSurfaceAccess::kNoAccess,
+                          flush_info);
+  }
 }
 
 // Reads back NV12 planes from textures returned in the result.

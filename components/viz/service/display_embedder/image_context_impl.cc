@@ -163,7 +163,6 @@ void ImageContextImpl::CreateFallbackImage(
       }
       sk_surface->getCanvas()->clear(
           GetFallbackColorForPlane(format(), plane_index));
-      sk_surface->flush();
     }
     graphite_textures_ = graphite_fallback_textures_;
     return;

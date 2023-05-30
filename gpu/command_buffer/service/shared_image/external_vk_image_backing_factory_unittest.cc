@@ -272,7 +272,7 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     flush_info.fSignalSemaphores = end_semaphores.data();
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_.get(),
                                           &flush_info);
-    dest_surface->flush(flush_info, nullptr);
+    gr_context()->flush(dest_surface, flush_info, nullptr);
     skia_scoped_access->ApplyBackendSurfaceEndState();
     gr_context()->submit();
   }
@@ -423,7 +423,8 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
         flush_info.fSignalSemaphores = end_semaphores.data();
       }
       for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-        scoped_write_access->surface(plane)->flush(flush_info, nullptr);
+        gr_context()->flush(scoped_write_access->surface(plane), flush_info,
+                            nullptr);
       }
       gr_context()->submit();
     }

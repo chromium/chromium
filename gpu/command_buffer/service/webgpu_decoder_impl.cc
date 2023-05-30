@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <dawn/native/D3D11Backend.h>
@@ -857,7 +858,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
       // will populate it with semaphores and call GrDirectContext::flush.
-      surface->flush();
+      skgpu::ganesh::Flush(surface);
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
       scoped_write_access->ApplyBackendSurfaceEndState();

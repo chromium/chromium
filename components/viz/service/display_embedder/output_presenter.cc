@@ -108,15 +108,16 @@ void OutputPresenter::Image::EndWriteSkia(bool force_flush) {
         .fNumSemaphores = end_semaphores_.size(),
         .fSignalSemaphores = end_semaphores_.data(),
     };
-    // This flushes paint ops first, then applies Vulkan transition layouts and
-    // then submit semaphores to signal.
-    scoped_skia_write_access_->surface()->flush();
-    scoped_skia_write_access_->ApplyBackendSurfaceEndState();
-    scoped_skia_write_access_->surface()->flush(flush_info, nullptr);
     auto* direct_context = scoped_skia_write_access_->surface()
                                ->recordingContext()
                                ->asDirectContext();
     DCHECK(direct_context);
+    // This flushes paint ops first, then applies Vulkan transition layouts and
+    // then submit semaphores to signal.
+    direct_context->flush(scoped_skia_write_access_->surface(), {});
+    scoped_skia_write_access_->ApplyBackendSurfaceEndState();
+    direct_context->flush(scoped_skia_write_access_->surface(), flush_info,
+                          nullptr);
     direct_context->submit();
   }
   scoped_skia_write_access_.reset();
