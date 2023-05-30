@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include <iosfwd>
 #include <tuple>
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -412,6 +413,9 @@ class PLATFORM_EXPORT Color {
   // The alpha value for the color is guaranteed to be in the [0, 1] interval.
   float alpha_ = 0.f;
 };
+
+// For unit tests and similar.
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream& os, const Color& color);
 
 PLATFORM_EXPORT int DifferenceSquared(const Color&, const Color&);
 PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
