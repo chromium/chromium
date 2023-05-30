@@ -1263,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
+    ShouldRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
   // 4 days is an arbitrary value between 3 days and 7 days to allow testing
   // histogram suffixes.
   const base::Time migration_time = base::Time::Now() - base::Days(4);
@@ -1323,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    PRE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown) {
+    PRE_ShouldRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown) {
   ASSERT_TRUE(SetupClients());
 
   // There needs to be an existing tab for the second tab (the retrieval flow)
@@ -1348,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown) {
+    ShouldRecordTrustedVaultErrorShownOnStartupWhenErrorNotShown) {
   // Mimic the account being already using a trusted vault passphrase.
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
                         GetFakeServer());
