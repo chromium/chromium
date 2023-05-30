@@ -26,6 +26,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/widget/widget.h"
 
@@ -73,15 +75,14 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
 
 UnifiedMessageCenterBubble::UnifiedMessageCenterBubble(UnifiedSystemTray* tray)
     : tray_(tray), border_(std::make_unique<Border>()) {
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = GetWeakPtr();
-  // Anchor within the overlay container.
-  init_params.parent_window = tray->GetBubbleWindowContainer();
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.preferred_width = kTrayMenuWidth;
+  auto init_params = CreateInitParamsForTrayBubble(tray);
   init_params.has_shadow = false;
   init_params.close_on_deactivate = false;
-  init_params.translucent = true;
+  init_params.reroute_event_handler = false;
+
+  // Anchor rect and insets for this bubble is set in `UpdatePosition()`.
+  init_params.anchor_rect = gfx::Rect();
+  init_params.insets = gfx::Insets();
 
   bubble_view_ = new TrayBubbleView(init_params);
 

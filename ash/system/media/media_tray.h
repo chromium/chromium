@@ -103,7 +103,6 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnGlobalMediaControlsPinPrefChanged();
 
   void ShowEmptyState();
-  std::unique_ptr<TrayBubbleView> CreateTrayBubbleView();
 
   // Ptr to pin button in the dialog, owned by the view hierarchy.
   raw_ptr<views::Button, ExperimentalAsh> pin_button_ = nullptr;

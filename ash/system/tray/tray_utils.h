@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +25,7 @@ class Label;
 namespace ash {
 
 class HoverHighlightView;
+class TrayBackgroundView;
 
 // Sets up a Label properly for the tray (sets color, font etc.).
 void SetupLabelForTray(views::Label* label);
@@ -62,6 +64,14 @@ gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 // Gets the maximum height possible for a tray bubble that would be shown in the
 // display containing `window` based on that display's available screen space.
 int CalculateMaxTrayBubbleHeight(aura::Window* window);
+
+// Creates a default instance of InitParams for a tray bubble. If
+// `anchor_to_shelf_corner` is true, the bubble will be anchored to the corner
+// of the shelf, near the status area button. Otherwise, it will be anchored to
+// the associated `tray`.
+TrayBubbleView::InitParams CreateInitParamsForTrayBubble(
+    TrayBackgroundView* tray,
+    bool anchor_to_shelf_corner = false);
 
 }  // namespace ash
 

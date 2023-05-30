@@ -298,17 +298,13 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   slider_type_ = slider_type;
   CreateSliderController();
 
-  TrayBubbleView::InitParams init_params;
+  TrayBubbleView::InitParams init_params =
+      CreateInitParamsForTrayBubble(tray_, /*anchor_to_shelf_corner=*/true);
+  init_params.reroute_event_handler = false;
 
-  init_params.shelf_alignment = tray_->shelf()->alignment();
-  init_params.preferred_width = kTrayMenuWidth;
+  // Use this controller as the delegate rather than the tray.
   init_params.delegate = GetWeakPtr();
-  init_params.parent_window = tray_->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
-  init_params.translucent = true;
+
   if (features::IsQsRevampEnabled()) {
     init_params.corner_radius = kQsToastCornerRadius;
     // `bubble_view_` is fully rounded, so sets it to be true and paints the

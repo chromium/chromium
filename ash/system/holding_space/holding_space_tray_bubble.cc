@@ -136,7 +136,7 @@ class ChildBubbleContainerLayout {
   // maximum height restrictions.
   views::ProposedLayout CalculateProposedLayout() const {
     views::ProposedLayout layout;
-    layout.host_size = gfx::Size(kHoldingSpaceBubbleWidth, 0);
+    layout.host_size = gfx::Size(kTrayMenuWidth, 0);
 
     int top = 0;
     for (views::View* child : host_->children()) {
@@ -254,7 +254,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
 
   // views::View:
   int GetHeightForWidth(int width) const override {
-    DCHECK_EQ(width, kHoldingSpaceBubbleWidth);
+    DCHECK_EQ(width, kTrayMenuWidth);
     if (current_layout_.host_size.IsEmpty())
       current_layout_ = layout_manager_.CalculateProposedLayout();
     return current_layout_.host_size.height();
@@ -434,20 +434,9 @@ HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {
 }
 
 void HoldingSpaceTrayBubble::Init() {
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = holding_space_tray_->GetWeakPtr();
-  init_params.parent_window = holding_space_tray_->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect =
-      holding_space_tray_->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets =
-      GetTrayBubbleInsets(holding_space_tray_->GetBubbleWindowContainer());
-  init_params.shelf_alignment = holding_space_tray_->shelf()->alignment();
-  init_params.preferred_width = kHoldingSpaceBubbleWidth;
-  init_params.close_on_deactivate = true;
+  TrayBubbleView::InitParams init_params = CreateInitParamsForTrayBubble(
+      holding_space_tray_, /*anchor_to_shelf_corner=*/true);
   init_params.has_shadow = false;
-  init_params.reroute_event_handler = true;
   init_params.translucent = features::IsHoldingSpaceRefreshEnabled();
   init_params.transparent = !features::IsHoldingSpaceRefreshEnabled();
 
@@ -555,7 +544,7 @@ int HoldingSpaceTrayBubble::CalculateTopLevelBubbleMaxHeight() const {
 
 int HoldingSpaceTrayBubble::CalculateChildBubbleContainerMaxHeight() const {
   return CalculateTopLevelBubbleMaxHeight() -
-         (header_ ? header_->GetHeightForWidth(kHoldingSpaceBubbleWidth) : 0u);
+         (header_ ? header_->GetHeightForWidth(kTrayMenuWidth) : 0u);
 }
 
 void HoldingSpaceTrayBubble::UpdateBubbleBounds() {

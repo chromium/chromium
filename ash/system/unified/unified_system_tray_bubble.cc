@@ -42,19 +42,12 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
       tray_(tray) {
   time_opened_ = base::TimeTicks::Now();
 
-  TrayBubbleView::InitParams init_params;
-  init_params.shelf_alignment = tray_->shelf()->alignment();
-  init_params.preferred_width =
-      features::IsQsRevampEnabled() ? kRevampedTrayMenuWidth : kTrayMenuWidth;
-  init_params.delegate = tray->GetWeakPtr();
-  init_params.parent_window = tray->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = tray->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
+  TrayBubbleView::InitParams init_params =
+      CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
+  if (features::IsQsRevampEnabled()) {
+    init_params.preferred_width = kRevampedTrayMenuWidth;
+  }
   init_params.close_on_deactivate = false;
-  init_params.reroute_event_handler = true;
-  init_params.translucent = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
 

@@ -14,20 +14,10 @@
 namespace ash {
 
 GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
-  TrayBubbleView::InitParams init_params;
-  init_params.shelf_alignment = tray_->shelf()->alignment();
+  TrayBubbleView::InitParams init_params =
+      CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   // TODO(b:277268122): Update with glanceable spec.
   init_params.preferred_width = kRevampedTrayMenuWidth;
-  init_params.delegate = tray->GetWeakPtr();
-  init_params.parent_window = tray->GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
-  // TODO(b:277268122): Update with glanceable spec.
-  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
-  init_params.close_on_deactivate = false;
-  init_params.reroute_event_handler = true;
-  init_params.translucent = true;
 
   bubble_view_ = new GlanceableTrayBubbleView(init_params, tray_->shelf());
 

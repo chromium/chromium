@@ -382,20 +382,11 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
     return;
   }
 
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = GetWeakPtr();
-  init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = GetAnchorBoundsInScreen();
-  init_params.insets = GetTrayBubbleInsets(GetBubbleWindowContainer());
-  init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = kTrayMenuWidth;
-  init_params.close_on_deactivate = true;
-  init_params.translucent = true;
-
   // Create top-level bubble.
   auto bubble_view = std::make_unique<video_conference::BubbleView>(
-      init_params, VideoConferenceTrayController::Get());
+      /*init_params=*/CreateInitParamsForTrayBubble(/*tray=*/this),
+      /*controller=*/VideoConferenceTrayController::Get());
+
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
 
