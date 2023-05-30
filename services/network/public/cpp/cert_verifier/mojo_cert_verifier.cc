@@ -126,9 +126,8 @@ int MojoCertVerifier::Verify(
   mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request;
   auto cert_verifier_receiver =
       cert_verifier_request.InitWithNewPipeAndPassReceiver();
-  mojo_cert_verifier_->Verify(
-      params, static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time, std::move(cert_verifier_request));
+  mojo_cert_verifier_->Verify(params, net_log.source(),
+                              std::move(cert_verifier_request));
   *out_req = std::make_unique<CertVerifierRequestImpl>(
       std::move(cert_verifier_receiver), params.certificate(), verify_result,
       std::move(callback), net_log);

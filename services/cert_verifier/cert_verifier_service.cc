@@ -139,9 +139,7 @@ void CertVerifierServiceImpl::UpdateVerifierData(
 
 void CertVerifierServiceImpl::Verify(
     const net::CertVerifier::RequestParams& params,
-    uint32_t netlog_source_type,
-    uint32_t netlog_source_id,
-    base::TimeTicks netlog_source_start_time,
+    const net::NetLogSource& net_log_source,
     mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request) {
   DVLOG(3) << "Received certificate validation request for hostname: "
            << params.hostname();
@@ -160,24 +158,14 @@ void CertVerifierServiceImpl::Verify(
       base::BindOnce(&CertVerifyResultHelper::CompleteCertVerifierRequest,
                      std::move(result_helper));
 
-  if (netlog_source_type >=
-      static_cast<uint32_t>(net::NetLogSourceType::COUNT)) {
-    // Note that netlog_source_id is not checked here. It is valid to pass a
-    // unbound NetLogWithSource into CertVerifier::Verify. If that occurs
-    // the netlog_source_id passed through mojo will be kInvalidId and the
-    // NetLogWithSource::Make below will in turn create an unbound
-    // NetLogWithSource.
-    receiver_.ReportBadMessage("invalid NetLogSource");
-    return;
-  }
+  // Note it is valid to pass a unbound NetLogWithSource into
+  // CertVerifier::Verify. If that occurs the net_log_source.id passed through
+  // mojo will be kInvalidId and the NetLogWithSource::Make below will in turn
+  // create an unbound NetLogWithSource.
   int net_err = verifier_->Verify(
       params, result.get(), std::move(callback),
       result_helper_ptr->local_request(),
-      net::NetLogWithSource::Make(
-          net::NetLog::Get(),
-          net::NetLogSource(
-              static_cast<net::NetLogSourceType>(netlog_source_type),
-              netlog_source_id, netlog_source_start_time)));
+      net::NetLogWithSource::Make(net::NetLog::Get(), net_log_source));
   if (net_err == net::ERR_IO_PENDING) {
     // If this request is to be completely asynchronously, give the callback
     // ownership of our mojom::CertVerifierRequest and net::CertVerifyResult.

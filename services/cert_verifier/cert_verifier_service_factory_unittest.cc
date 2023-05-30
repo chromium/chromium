@@ -109,8 +109,7 @@ std::tuple<int, net::CertVerifyResult> Verify(
                                        /*flags=*/0,
                                        /*ocsp_response=*/std::string(),
                                        /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
+      net_log.source(),
       dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
 
   request_completed_run_loop.Run();

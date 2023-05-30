@@ -54,9 +54,7 @@ interface CertVerifierService {
   // Mojo IPC used to verify a certificate. Sends results to the
   // |cert_verifier_request| interface when verification is complete.
   Verify(RequestParams params,
-         /*NetLogSourceType*/ uint32 netlog_source_type,
-         uint32 netlog_source_id,
-         mojo_base.mojom.TimeTicks netlog_source_start_time,
+         network.mojom.NetLogSource net_log_source,
          pending_remote<CertVerifierRequest> cert_verifier_request);
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);

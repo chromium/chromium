@@ -137,14 +137,9 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
 
   void ExpectReceivedNetlogSource(
       const net::CertVerifier::RequestParams& params,
-      uint32_t type,
-      uint32_t id,
-      base::TimeTicks start_time) {
+      const net::NetLogSource& net_log_source) {
     ASSERT_TRUE(request_netlogs_.count(params));
-    EXPECT_EQ(type,
-              static_cast<uint32_t>(request_netlogs_[params].source().type));
-    EXPECT_EQ(id, request_netlogs_[params].source().id);
-    EXPECT_EQ(start_time, request_netlogs_[params].source().start_time);
+    EXPECT_EQ(net_log_source, request_netlogs_[params].source());
   }
 
   const net::CertVerifier::Config* config() const { return &config_; }
@@ -183,22 +178,16 @@ class CertVerifierServiceTest : public PlatformTest,
  public:
   struct RequestInfo {
     RequestInfo(net::CertVerifier::RequestParams request_params_p,
-                uint32_t netlog_source_type_p,
-                uint32_t netlog_source_id_p,
-                base::TimeTicks netlog_source_start_time_p,
+                const net::NetLogSource& net_log_source_p,
                 std::unique_ptr<DummyCVServiceRequest> dummy_cv_request_p,
                 std::unique_ptr<mojo::Receiver<mojom::CertVerifierRequest>>
                     cv_request_receiver_p)
         : request_params(std::move(request_params_p)),
-          netlog_source_type(netlog_source_type_p),
-          netlog_source_id(netlog_source_id_p),
-          netlog_source_start_time(netlog_source_start_time_p),
+          net_log_source(net_log_source_p),
           dummy_cv_request(std::move(dummy_cv_request_p)),
           cv_request_receiver(std::move(cv_request_receiver_p)) {}
     net::CertVerifier::RequestParams request_params;
-    uint32_t netlog_source_type;
-    uint32_t netlog_source_id;
-    base::TimeTicks netlog_source_start_time;
+    net::NetLogSource net_log_source;
     std::unique_ptr<DummyCVServiceRequest> dummy_cv_request;
     std::unique_ptr<mojo::Receiver<mojom::CertVerifierRequest>>
         cv_request_receiver;
@@ -240,15 +229,14 @@ class CertVerifierServiceTest : public PlatformTest,
 
       request_infos.emplace_back(
           std::move(dummy_params),
-          static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB),
-          1234 + i, time_zero + base::Seconds(i), std::move(cv_service_req),
-          std::move(cv_request_receiver));
+          net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234 + i,
+                            time_zero + base::Seconds(i)),
+          std::move(cv_service_req), std::move(cv_request_receiver));
     }
 
     for (RequestInfo& info : request_infos) {
       cv_service_remote_->Verify(
-          info.request_params, info.netlog_source_type, info.netlog_source_id,
-          info.netlog_source_start_time,
+          info.request_params, info.net_log_source,
           info.cv_request_receiver->BindNewPipeAndPassRemote());
     }
 
@@ -272,9 +260,8 @@ class CertVerifierServiceTest : public PlatformTest,
       ASSERT_TRUE(info.dummy_cv_request->is_completed);
       ASSERT_EQ(info.dummy_cv_request->net_error, kExpectedNetError);
       ASSERT_EQ(info.dummy_cv_request->result.cert_status, kExpectedCertStatus);
-      dummy_cv()->ExpectReceivedNetlogSource(
-          info.request_params, info.netlog_source_type, info.netlog_source_id,
-          info.netlog_source_start_time);
+      dummy_cv()->ExpectReceivedNetlogSource(info.request_params,
+                                             info.net_log_source);
     }
   }
 
@@ -342,8 +329,8 @@ TEST_F(CertVerifierServiceTest, TestInvalidIntermediate) {
 
   cv_service_remote()->Verify(
       dummy_params,
-      static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB),
-      /*netlog_source_id=*/1234, base::TimeTicks::Now(),
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB,
+                        /*id=*/1234, base::TimeTicks::Now()),
       cv_request_receiver.BindNewPipeAndPassRemote());
 
   // Handle async Mojo request.
@@ -379,8 +366,9 @@ TEST_F(CertVerifierServiceTest, TestRequestDisconnectionCancelsCVRequest) {
 
   cv_service_remote()->Verify(
       dummy_params,
-      static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB), 1234,
-      base::TimeTicks::Now(), cv_request_receiver.BindNewPipeAndPassRemote());
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
 
   // Handle async Mojo request.
   cv_service_remote().FlushForTesting();
@@ -409,8 +397,9 @@ TEST_F(CertVerifierServiceTest, TestCVServiceDisconnection) {
 
   cv_service_remote()->Verify(
       dummy_params,
-      static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB), 1234,
-      base::TimeTicks::Now(), cv_request_receiver.BindNewPipeAndPassRemote());
+      net::NetLogSource(net::NetLogSourceType::CERT_VERIFIER_JOB, 1234,
+                        base::TimeTicks::Now()),
+      cv_request_receiver.BindNewPipeAndPassRemote());
 
   // Make sure we observe disconnection.
   cv_request_receiver.set_disconnect_handler(

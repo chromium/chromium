@@ -39,9 +39,7 @@ FakeTestCertVerifierParamsFactory::GetCertVerifierParams() {
 
 void FakeTestCertVerifierParamsFactory::Verify(
     const ::net::CertVerifier::RequestParams& params,
-    uint32_t netlog_source_type,
-    uint32_t netlog_source_id,
-    base::TimeTicks netlog_source_start_time,
+    const net::NetLogSource& net_log_source,
     mojo::PendingRemote<cert_verifier::mojom::CertVerifierRequest>
         cert_verifier_request) {
   mojo::Remote<cert_verifier::mojom::CertVerifierRequest> request(
