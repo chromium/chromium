@@ -74,7 +74,7 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
     "Ken R. Example",           // name
     "Ken",                      // given_name
     GURL(),                     // picture
-    std::vector<std::string>()  // hints
+    std::vector<std::string>()  // login_hints
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.

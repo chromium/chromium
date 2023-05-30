@@ -111,7 +111,7 @@ static const std::initializer_list<IdentityRequestAccount> kSingleAccount{{
     "Ken R. Example",           // name
     "Ken",                      // given_name
     GURL(),                     // picture
-    std::vector<std::string>()  // hints
+    std::vector<std::string>()  // login_hints
 }};
 
 static const std::initializer_list<IdentityRequestAccount>
@@ -121,7 +121,7 @@ static const std::initializer_list<IdentityRequestAccount>
         "Ken R. Example",     // name
         "Ken",                // given_name
         GURL(),               // picture
-        {kAccountId, kEmail}  // hints
+        {kAccountId, kEmail}  // login_hints
     }};
 
 static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
@@ -131,7 +131,7 @@ static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
         "Nicolas P",                 // name
         "Nicolas",                   // given_name
         GURL(),                      // picture
-        std::vector<std::string>(),  // hints
+        std::vector<std::string>(),  // login_hints
         LoginState::kSignUp          // login_state
     },
     {
@@ -140,7 +140,7 @@ static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
         "Peter K",                   // name
         "Peter",                     // given_name
         GURL(),                      // picture
-        std::vector<std::string>(),  // hints
+        std::vector<std::string>(),  // login_hints
         LoginState::kSignIn          // login_state
     },
     {
@@ -149,7 +149,7 @@ static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
         "Zachary T",                 // name
         "Zach",                      // given_name
         GURL(),                      // picture
-        std::vector<std::string>(),  // hints
+        std::vector<std::string>(),  // login_hints
         LoginState::kSignUp          // login_state
     }};
 
@@ -161,7 +161,7 @@ static const std::initializer_list<IdentityRequestAccount>
             "Nicolas P",                                // name
             "Nicolas",                                  // given_name
             GURL(),                                     // picture
-            {kAccountIdNicolas, kAccountEmailNicolas},  // hints
+            {kAccountIdNicolas, kAccountEmailNicolas},  // login_hints
             LoginState::kSignUp                         // login_state
         },
         {
@@ -170,7 +170,7 @@ static const std::initializer_list<IdentityRequestAccount>
             "Peter K",                              // name
             "Peter",                                // given_name
             GURL(),                                 // picture
-            {kAccountIdPeter, kAccountEmailPeter},  // hints
+            {kAccountIdPeter, kAccountEmailPeter},  // login_hints
             LoginState::kSignIn                     // login_state
         },
         {
@@ -179,7 +179,7 @@ static const std::initializer_list<IdentityRequestAccount>
             "Zachary T",                          // name
             "Zach",                               // given_name
             GURL(),                               // picture
-            {kAccountIdZach, kAccountEmailZach},  // hints
+            {kAccountIdZach, kAccountEmailZach},  // login_hints
             LoginState::kSignUp                   // login_state
         }};
 

@@ -302,8 +302,8 @@ void FilterAccountsWithLoginHint(
   // account afterwards, in which case the multiple account chooser would be
   // shown.
   auto Filter = [&login_hint](const IdentityRequestAccount& account) {
-    return std::find(account.hints.begin(), account.hints.end(), login_hint) ==
-           account.hints.end();
+    return std::find(account.login_hints.begin(), account.login_hints.end(),
+                     login_hint) == account.login_hints.end();
   };
   accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
                  accounts.end());
