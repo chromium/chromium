@@ -3385,6 +3385,7 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/device_trust:features",
           "//chrome/browser/enterprise/connectors/device_trust:prefs",
           "//chrome/browser/enterprise/connectors/device_trust/common",
+          "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
           "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
@@ -3396,7 +3397,6 @@ if (!is_android) {
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
-          "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
           "//chrome/browser/ui/webui/app_home:mojo_bindings",
         ]
       }

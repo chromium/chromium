@@ -2,18 +2,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 source_set("test_support") {
   testonly = true
-  public = [ "device_trust_test_environment.h" ]
-
-  sources = [ "device_trust_test_environment.cc" ]
-
-  public_deps = [
-    "//base",
-    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
+  public = [
+    "device_trust_management_mixin.h",
+    "test_constants.h",
   ]
 
-  deps = [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence" ]
+  sources = [
+    "device_trust_management_mixin.cc",
+    "test_constants.cc",
+  ]
+
+  public_deps = [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+
+  deps = [
+    "//chrome/browser/enterprise/connectors/device_trust:features",
+    "//chrome/browser/profiles:profile",
+    "//components/device_signals/core/browser",
+    "//components/policy:policy_code_generate",
+    "//components/prefs",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash:test_support" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    public += [ "device_trust_test_environment.h" ]
+    sources += [ "device_trust_test_environment.cc" ]
+
+    public_deps += [
+      "//base",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:network",
+    ]
+
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence" ]
+  }
 
   if (is_win) {
     public += [ "device_trust_test_environment_win.h" ]
