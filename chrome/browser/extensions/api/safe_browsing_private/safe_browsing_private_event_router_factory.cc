@@ -25,7 +25,8 @@ SafeBrowsingPrivateEventRouterFactory::GetForProfile(
 // static
 SafeBrowsingPrivateEventRouterFactory*
 SafeBrowsingPrivateEventRouterFactory::GetInstance() {
-  return base::Singleton<SafeBrowsingPrivateEventRouterFactory>::get();
+  static base::NoDestructor<SafeBrowsingPrivateEventRouterFactory> instance;
+  return instance.get();
 }
 
 SafeBrowsingPrivateEventRouterFactory::SafeBrowsingPrivateEventRouterFactory()
@@ -45,7 +46,7 @@ SafeBrowsingPrivateEventRouterFactory::SafeBrowsingPrivateEventRouterFactory()
 }
 
 SafeBrowsingPrivateEventRouterFactory::
-    ~SafeBrowsingPrivateEventRouterFactory() {}
+    ~SafeBrowsingPrivateEventRouterFactory() = default;
 
 KeyedService* SafeBrowsingPrivateEventRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

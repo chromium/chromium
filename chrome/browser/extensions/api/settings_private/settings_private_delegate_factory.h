@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_DELEGATE_FACTORY_H__
 #define CHROME_BROWSER_EXTENSIONS_API_SETTINGS_PRIVATE_SETTINGS_PRIVATE_DELEGATE_FACTORY_H__
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace context {
@@ -29,7 +29,7 @@ class SettingsPrivateDelegateFactory : public ProfileKeyedServiceFactory {
   static SettingsPrivateDelegateFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<SettingsPrivateDelegateFactory>;
+  friend base::NoDestructor<SettingsPrivateDelegateFactory>;
 
   SettingsPrivateDelegateFactory();
   ~SettingsPrivateDelegateFactory() override;

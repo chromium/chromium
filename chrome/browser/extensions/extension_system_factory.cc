@@ -35,7 +35,8 @@ ExtensionSystemSharedFactory::GetForBrowserContext(
 
 // static
 ExtensionSystemSharedFactory* ExtensionSystemSharedFactory::GetInstance() {
-  return base::Singleton<ExtensionSystemSharedFactory>::get();
+  static base::NoDestructor<ExtensionSystemSharedFactory> instance;
+  return instance.get();
 }
 
 ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
@@ -66,8 +67,7 @@ ExtensionSystemSharedFactory::ExtensionSystemSharedFactory()
   DependsOn(ExtensionHostRegistry::GetFactory());
 }
 
-ExtensionSystemSharedFactory::~ExtensionSystemSharedFactory() {
-}
+ExtensionSystemSharedFactory::~ExtensionSystemSharedFactory() = default;
 
 KeyedService* ExtensionSystemSharedFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
@@ -85,7 +85,8 @@ ExtensionSystem* ExtensionSystemFactory::GetForBrowserContext(
 
 // static
 ExtensionSystemFactory* ExtensionSystemFactory::GetInstance() {
-  return base::Singleton<ExtensionSystemFactory>::get();
+  static base::NoDestructor<ExtensionSystemFactory> instance;
+  return instance.get();
 }
 
 ExtensionSystemFactory::ExtensionSystemFactory()
@@ -96,8 +97,7 @@ ExtensionSystemFactory::ExtensionSystemFactory()
   DependsOn(ExtensionSystemSharedFactory::GetInstance());
 }
 
-ExtensionSystemFactory::~ExtensionSystemFactory() {
-}
+ExtensionSystemFactory::~ExtensionSystemFactory() = default;
 
 KeyedService* ExtensionSystemFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -22,7 +22,8 @@ WarningBadgeService* WarningBadgeServiceFactory::GetForBrowserContext(
 
 // static
 WarningBadgeServiceFactory* WarningBadgeServiceFactory::GetInstance() {
-  return base::Singleton<WarningBadgeServiceFactory>::get();
+  static base::NoDestructor<WarningBadgeServiceFactory> instance;
+  return instance.get();
 }
 
 WarningBadgeServiceFactory::WarningBadgeServiceFactory()
@@ -37,8 +38,7 @@ WarningBadgeServiceFactory::WarningBadgeServiceFactory()
   DependsOn(WarningServiceFactory::GetInstance());
 }
 
-WarningBadgeServiceFactory::~WarningBadgeServiceFactory() {
-}
+WarningBadgeServiceFactory::~WarningBadgeServiceFactory() = default;
 
 KeyedService* WarningBadgeServiceFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

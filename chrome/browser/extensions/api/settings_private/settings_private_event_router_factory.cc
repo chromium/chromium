@@ -24,7 +24,8 @@ SettingsPrivateEventRouter* SettingsPrivateEventRouterFactory::GetForProfile(
 // static
 SettingsPrivateEventRouterFactory*
 SettingsPrivateEventRouterFactory::GetInstance() {
-  return base::Singleton<SettingsPrivateEventRouterFactory>::get();
+  static base::NoDestructor<SettingsPrivateEventRouterFactory> instance;
+  return instance.get();
 }
 
 SettingsPrivateEventRouterFactory::SettingsPrivateEventRouterFactory()
@@ -42,8 +43,8 @@ SettingsPrivateEventRouterFactory::SettingsPrivateEventRouterFactory()
   DependsOn(SettingsPrivateDelegateFactory::GetInstance());
 }
 
-SettingsPrivateEventRouterFactory::~SettingsPrivateEventRouterFactory() {
-}
+SettingsPrivateEventRouterFactory::~SettingsPrivateEventRouterFactory() =
+    default;
 
 KeyedService* SettingsPrivateEventRouterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

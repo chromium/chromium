@@ -20,7 +20,8 @@ GeneratedPrefs* GeneratedPrefsFactory::GetForBrowserContext(
 
 // static
 GeneratedPrefsFactory* GeneratedPrefsFactory::GetInstance() {
-  return base::Singleton<GeneratedPrefsFactory>::get();
+  static base::NoDestructor<GeneratedPrefsFactory> instance;
+  return instance.get();
 }
 
 GeneratedPrefsFactory::GeneratedPrefsFactory()
@@ -34,7 +35,7 @@ GeneratedPrefsFactory::GeneratedPrefsFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-GeneratedPrefsFactory::~GeneratedPrefsFactory() {}
+GeneratedPrefsFactory::~GeneratedPrefsFactory() = default;
 
 bool GeneratedPrefsFactory::ServiceIsNULLWhileTesting() const {
   return true;

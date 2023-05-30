@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_SYSTEM_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/extensions/extension_system_impl.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -27,7 +27,7 @@ class ExtensionSystemSharedFactory : public ProfileKeyedServiceFactory {
   static ExtensionSystemSharedFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionSystemSharedFactory>;
+  friend base::NoDestructor<ExtensionSystemSharedFactory>;
 
   ExtensionSystemSharedFactory();
   ~ExtensionSystemSharedFactory() override;
@@ -51,7 +51,7 @@ class ExtensionSystemFactory : public ExtensionSystemProvider {
   static ExtensionSystemFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<ExtensionSystemFactory>;
+  friend base::NoDestructor<ExtensionSystemFactory>;
 
   ExtensionSystemFactory();
   ~ExtensionSystemFactory() override;

@@ -24,7 +24,8 @@ InstallVerifier* InstallVerifierFactory::GetForBrowserContext(
 
 // static
 InstallVerifierFactory* InstallVerifierFactory::GetInstance() {
-  return base::Singleton<InstallVerifierFactory>::get();
+  static base::NoDestructor<InstallVerifierFactory> instance;
+  return instance.get();
 }
 
 InstallVerifierFactory::InstallVerifierFactory()
@@ -40,8 +41,7 @@ InstallVerifierFactory::InstallVerifierFactory()
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
-InstallVerifierFactory::~InstallVerifierFactory() {
-}
+InstallVerifierFactory::~InstallVerifierFactory() = default;
 
 KeyedService* InstallVerifierFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

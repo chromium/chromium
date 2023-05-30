@@ -22,7 +22,8 @@ ErrorConsole* ErrorConsoleFactory::GetForBrowserContext(
 
 // static
 ErrorConsoleFactory* ErrorConsoleFactory::GetInstance() {
-  return base::Singleton<ErrorConsoleFactory>::get();
+  static base::NoDestructor<ErrorConsoleFactory> instance;
+  return instance.get();
 }
 
 ErrorConsoleFactory::ErrorConsoleFactory()
@@ -37,8 +38,7 @@ ErrorConsoleFactory::ErrorConsoleFactory()
   DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
-ErrorConsoleFactory::~ErrorConsoleFactory() {
-}
+ErrorConsoleFactory::~ErrorConsoleFactory() = default;
 
 KeyedService* ErrorConsoleFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

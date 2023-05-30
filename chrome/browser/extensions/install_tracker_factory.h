@@ -8,7 +8,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
-template <typename T> struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 namespace extensions {
@@ -24,7 +25,7 @@ class InstallTrackerFactory : public ProfileKeyedServiceFactory {
   static InstallTrackerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<InstallTrackerFactory>;
+  friend base::NoDestructor<InstallTrackerFactory>;
 
   InstallTrackerFactory();
   ~InstallTrackerFactory() override;

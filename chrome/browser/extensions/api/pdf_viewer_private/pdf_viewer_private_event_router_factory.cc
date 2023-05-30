@@ -22,7 +22,8 @@ PdfViewerPrivateEventRouter* PdfViewerPrivateEventRouterFactory::GetForProfile(
 // static
 PdfViewerPrivateEventRouterFactory*
 PdfViewerPrivateEventRouterFactory::GetInstance() {
-  return base::Singleton<PdfViewerPrivateEventRouterFactory>::get();
+  static base::NoDestructor<PdfViewerPrivateEventRouterFactory> instance;
+  return instance.get();
 }
 
 PdfViewerPrivateEventRouterFactory::PdfViewerPrivateEventRouterFactory()

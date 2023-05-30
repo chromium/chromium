@@ -23,7 +23,8 @@ LanguageSettingsPrivateDelegateFactory::GetForBrowserContext(
 // static
 LanguageSettingsPrivateDelegateFactory*
 LanguageSettingsPrivateDelegateFactory::GetInstance() {
-  return base::Singleton<LanguageSettingsPrivateDelegateFactory>::get();
+  static base::NoDestructor<LanguageSettingsPrivateDelegateFactory> instance;
+  return instance.get();
 }
 
 LanguageSettingsPrivateDelegateFactory::LanguageSettingsPrivateDelegateFactory()
@@ -40,8 +41,7 @@ LanguageSettingsPrivateDelegateFactory::LanguageSettingsPrivateDelegateFactory()
 }
 
 LanguageSettingsPrivateDelegateFactory::
-    ~LanguageSettingsPrivateDelegateFactory() {
-}
+    ~LanguageSettingsPrivateDelegateFactory() = default;
 
 KeyedService* LanguageSettingsPrivateDelegateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

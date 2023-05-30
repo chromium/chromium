@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/install_tracker_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -21,7 +21,8 @@ InstallTracker* InstallTrackerFactory::GetForBrowserContext(
 }
 
 InstallTrackerFactory* InstallTrackerFactory::GetInstance() {
-  return base::Singleton<InstallTrackerFactory>::get();
+  static base::NoDestructor<InstallTrackerFactory> instance;
+  return instance.get();
 }
 
 InstallTrackerFactory::InstallTrackerFactory()
@@ -39,8 +40,7 @@ InstallTrackerFactory::InstallTrackerFactory()
   DependsOn(ExtensionPrefsFactory::GetInstance());
 }
 
-InstallTrackerFactory::~InstallTrackerFactory() {
-}
+InstallTrackerFactory::~InstallTrackerFactory() = default;
 
 KeyedService* InstallTrackerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

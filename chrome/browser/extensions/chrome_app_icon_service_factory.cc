@@ -18,7 +18,8 @@ ChromeAppIconService* ChromeAppIconServiceFactory::GetForBrowserContext(
 
 // static
 ChromeAppIconServiceFactory* ChromeAppIconServiceFactory::GetInstance() {
-  return base::Singleton<ChromeAppIconServiceFactory>::get();
+  static base::NoDestructor<ChromeAppIconServiceFactory> instance;
+  return instance.get();
 }
 
 ChromeAppIconServiceFactory::ChromeAppIconServiceFactory()

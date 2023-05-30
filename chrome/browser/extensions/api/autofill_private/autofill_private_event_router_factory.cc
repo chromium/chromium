@@ -23,7 +23,8 @@ AutofillPrivateEventRouterFactory::GetForProfile(
 // static
 AutofillPrivateEventRouterFactory*
 AutofillPrivateEventRouterFactory::GetInstance() {
-  return base::Singleton<AutofillPrivateEventRouterFactory>::get();
+  static base::NoDestructor<AutofillPrivateEventRouterFactory> instance;
+  return instance.get();
 }
 
 AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
