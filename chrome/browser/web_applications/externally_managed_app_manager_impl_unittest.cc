@@ -211,7 +211,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
         std::move(install_options));
   }
 
-  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> StartRegistration(
+  std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> CreateRegistration(
       GURL install_url) override {
     ++registration_run_count_;
     last_registered_install_url_ = install_url;
@@ -372,6 +372,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
     TestExternallyManagedAppRegistrationTask& operator=(
         const TestExternallyManagedAppRegistrationTask&) = delete;
     ~TestExternallyManagedAppRegistrationTask() override = default;
+
+    void Start() override {}
 
    private:
     void OnProgress(const GURL& install_url) {

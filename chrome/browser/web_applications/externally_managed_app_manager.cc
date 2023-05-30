@@ -247,7 +247,7 @@ ExternallyManagedAppManager::CreateInstallationTask(
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
-ExternallyManagedAppManager::StartRegistration(GURL install_url) {
+ExternallyManagedAppManager::CreateRegistration(GURL install_url) {
   DCHECK(!IsShuttingDown());
   ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManager::OnRegistrationFinished,
@@ -411,7 +411,8 @@ bool ExternallyManagedAppManager::RunNextRegistration() {
 
   GURL url_to_check = std::move(pending_registrations_.front());
   pending_registrations_.pop_front();
-  current_registration_ = StartRegistration(std::move(url_to_check));
+  current_registration_ = CreateRegistration(std::move(url_to_check));
+  current_registration_->Start();
   return true;
 }
 

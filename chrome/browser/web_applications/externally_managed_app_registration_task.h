@@ -29,6 +29,7 @@ class WebAppUrlLoader;
 class ExternallyManagedAppRegistrationTaskBase
     : public content::ServiceWorkerContextObserver {
  public:
+  virtual void Start() = 0;
   ~ExternallyManagedAppRegistrationTaskBase() override;
 
   const GURL& install_url() const { return install_url_; }
@@ -58,6 +59,8 @@ class ExternallyManagedAppRegistrationTask
   // ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
+
+  void Start() override;
 
   static void SetTimeoutForTesting(int registration_timeout_in_seconds);
 
