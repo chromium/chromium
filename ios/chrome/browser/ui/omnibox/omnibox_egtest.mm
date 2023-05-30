@@ -1170,3 +1170,58 @@ void FocusFakebox() {
 }
 
 @end
+
+#pragma mark - Hardware keyboard simulation interaction with omnibox
+
+@interface OmniboxHardwareKeyboardInteractionTestCase : ChromeTestCase
+@end
+
+@implementation OmniboxHardwareKeyboardInteractionTestCase {
+  GURL _URL;
+}
+
+- (void)setUp {
+  [super setUp];
+
+  [ChromeEarlGrey clearBrowsingHistory];
+
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  _URL = self.testServer->GetURL(kPage1URL);
+
+  // Clear the pasteboard in case there is a URL copied.
+  [ChromeEarlGrey clearPasteboard];
+}
+
+- (void)tearDown {
+  [super tearDown];
+  // HW keyboard simulation can mess up the SW keyboard simulator state.
+  // Relaunching resets the state.
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+// Tests that in SRP/webpage state, pressing on forward delete HW key would
+// erase the selected url.
+- (void)testHWBackspaceKey {
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  // Omnibox contains the page url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+
+  // Press the backspace HW keyboard key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\b" flags:0];
+
+  // Omnibox now should be empty.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText("")];
+}
+
+@end
