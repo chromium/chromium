@@ -3526,14 +3526,14 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_NEXT_PANE" translateable="false" desc="Label for accelerator action - Next pane.">
         Next pane
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PIP" desc="Label for accelerator action - Focus on the Picture-in-Picture window.">
-        Focus on the Picture-in-Picture window
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PIP" desc="Label for accelerator action - Focus on the picture-in-picture window.">
+        Focus on the picture-in-picture window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Previous pane.">
-        Previous pane
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Label for accelerator action - Move focus to previous pane.">
+        Move focus to previous pane
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" desc="Label for accelerator action - Highlight launcher button on shelf.">
-        Highlight launcher button on shelf
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" desc="Label for accelerator action - Highlight Launcher button on shelf.">
+        Highlight Launcher button on shelf
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_RESTORE_WINDOWS" translateable="false" desc="Label for accelerator action - Minimize or restores the windows in snap group.">
         Minimize or restore the windows in snap group
@@ -3616,17 +3616,17 @@ Connect your device to power.
        <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
         Open Crosh window
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Label for accelerator action - Open Diagnostics App.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_DIAGNOSTICS" desc="Label for accelerator action - Open Diagnostics App.">
         Open Diagnostics app
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FEEDBACK_PAGE" desc="Label for accelerator action - Submit feedback.">
-        Submit feedback
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FEEDBACK_PAGE" desc="Label for accelerator action - Open feedback tool.">
+        Open feedback tool
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FILE_MANAGER" desc="Label for accelerator action - Open Files app.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_FILE_MANAGER" desc="Label for accelerator action - Open Files app.">
         Open Files app
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_GET_HELP" desc="Label for accelerator action - Open Help in Explore app.">
-        Open Help in Explore app
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_GET_HELP" desc="Label for accelerator action - Open 'Help' in Explore app.">
+        Open "Help" in Explore app
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_POWER_PRESSED" translateable="false" desc="Label for accelerator action - Power pressed.">
         Power pressed
@@ -3709,8 +3709,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST" desc="Label for accelerator action - Open/close launcher.">
-        Open/close launcher
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST" desc="Label for accelerator action - Open/close Launcher.">
+        Open/close Launcher
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CALENDAR" desc="Label for accelerator action - Open/close calendar.">
         Open/close calendar
@@ -3910,8 +3910,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_TAB" translateable="false" desc="Label for accelerator action - Open new tab.">
         Open new tab
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_WINDOW" translateable="false" desc="Label for accelerator action - Open new window.">
-        Open new window
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEW_WINDOW" translateable="false" desc="Label for accelerator action - Open new tab in new window.">
+        Open new tab in new window
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RESTORE_TAB" desc="Label for accelerator action - Reopen the last tab or window closed.">
         Reopen the last tab or window closed
@@ -3973,8 +3973,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SAVE_PAGE" desc="Label for accelerator action - Save current page.">
         Save current page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_THIS_TAB" desc="Label for accelerator action - Save current tab as bookmark.">
-        Save current tab as bookmark
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOOKMARK_THIS_TAB" desc="Label for accelerator action - Save current page as bookmark.">
+        Save current page as bookmark
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_APP_MENU" desc="Label for accelerator action - Show Chrome menu.">
         Show Chrome menu
@@ -4009,8 +4009,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_TOOLBAR" desc="Label for accelerator action - Select first icon to the left of address bar.">
         Select first icon to the left of address bar
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" desc="Label for accelerator action - Move focus to popups and dialogs.">
-        Move focus to popups and dialogs
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY" desc="Label for accelerator action - Move focus to pop-ups and dialogs.">
+        Move focus to pop-ups and dialogs
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_BOTTOM_PAGE" desc="Label for accelerator action - Go to bottom of page.">
         Go to bottom of page
@@ -4018,8 +4018,8 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_TOP_PAGE" desc="Label for accelerator action - Go to top of page.">
         Go to top of page
       </message>
-      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEXT_PANE" desc="Label for accelerator action - Next pane.">
-        Next pane
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_NEXT_PANE" desc="Label for accelerator action - Move focus to next pane.">
+        Move focus to next pane
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_PAGE_UP" desc="Label for accelerator action - Page up.">
         Page up
