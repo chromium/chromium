@@ -20,6 +20,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CredentialFieldElement} from './credential_field.js';
 import {CredentialNoteElement} from './credential_note.js';
 import {getTemplate} from './password_details_card.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
@@ -38,7 +39,6 @@ declare global {
 export interface PasswordDetailsCardElement {
   $: {
     copyPasswordButton: CrIconButtonElement,
-    copyUsernameButton: CrIconButtonElement,
     deleteButton: CrButtonElement,
     domainLabel: HTMLElement,
     editButton: CrButtonElement,
@@ -47,7 +47,7 @@ export interface PasswordDetailsCardElement {
     showMore: HTMLAnchorElement,
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,
-    usernameValue: CrInputElement,
+    usernameValue: CredentialFieldElement,
   };
 }
 
@@ -67,6 +67,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return {
       password: Object,
       toastMessage_: String,
+      usernameCopyInteraction_: {
+        type: PasswordViewPageInteractions,
+        value() {
+          return PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED;
+        },
+      },
 
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
@@ -119,14 +125,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     this.onShowHidePasswordButtonClick();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.PASSWORD_SHOW_BUTTON_CLICKED);
-  }
-
-  private onCopyUsernameClick_() {
-    navigator.clipboard.writeText(this.password.username).catch(() => {});
-    this.showToast_(this.i18n('usernameCopiedToClipboard'));
-    this.extendAuthValidity_();
-    PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
-        PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED);
   }
 
   private onDeleteClick_() {

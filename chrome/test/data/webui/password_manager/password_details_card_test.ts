@@ -58,7 +58,6 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('password', card.$.passwordValue.type);
     assertTrue(isVisible(card.$.noteValue));
     assertEquals(password.note, card.$.noteValue.note);
-    assertTrue(isVisible(card.$.copyUsernameButton));
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
     assertTrue(isVisible(card.$.editButton));
@@ -75,31 +74,10 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.federationText, card.$.passwordValue.value);
     assertEquals('text', card.$.passwordValue.type);
     assertFalse(isVisible(card.$.noteValue));
-    assertTrue(isVisible(card.$.copyUsernameButton));
     assertFalse(isVisible(card.$.showPasswordButton));
     assertFalse(isVisible(card.$.copyPasswordButton));
     assertFalse(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
-  });
-
-  test('Copy username', async function() {
-    const password = createPasswordEntry({url: 'test.com', username: 'vik'});
-
-    const card = await createCardElement(password);
-
-    assertTrue(isVisible(card.$.copyUsernameButton));
-    assertFalse(card.$.toast.open);
-
-    card.$.copyUsernameButton.click();
-    await passwordManager.whenCalled('extendAuthValidity');
-    assertEquals(
-        PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED,
-        await passwordManager.whenCalled('recordPasswordViewInteraction'));
-
-    assertTrue(card.$.toast.open);
-    assertEquals(
-        loadTimeData.getString('usernameCopiedToClipboard'),
-        card.$.toast.textContent!.trim());
   });
 
   test('Copy password', async function() {

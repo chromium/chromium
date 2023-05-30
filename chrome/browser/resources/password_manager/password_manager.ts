@@ -12,6 +12,7 @@ export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_bu
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {PluralStringProxy, PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+export {CredentialFieldElement} from './credential_field.js';
 export {CredentialNoteElement} from './credential_note.js';
 export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
