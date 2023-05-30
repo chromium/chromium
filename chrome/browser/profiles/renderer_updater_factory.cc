@@ -29,11 +29,12 @@ RendererUpdaterFactory::RendererUpdaterFactory()
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 }
 
-RendererUpdaterFactory::~RendererUpdaterFactory() {}
+RendererUpdaterFactory::~RendererUpdaterFactory() = default;
 
 // static
 RendererUpdaterFactory* RendererUpdaterFactory::GetInstance() {
-  return base::Singleton<RendererUpdaterFactory>::get();
+  static base::NoDestructor<RendererUpdaterFactory> instance;
+  return instance.get();
 }
 
 // static

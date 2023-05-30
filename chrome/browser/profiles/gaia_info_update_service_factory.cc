@@ -25,7 +25,7 @@ GAIAInfoUpdateServiceFactory::GAIAInfoUpdateServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-GAIAInfoUpdateServiceFactory::~GAIAInfoUpdateServiceFactory() {}
+GAIAInfoUpdateServiceFactory::~GAIAInfoUpdateServiceFactory() = default;
 
 // static
 GAIAInfoUpdateService* GAIAInfoUpdateServiceFactory::GetForProfile(
@@ -36,7 +36,8 @@ GAIAInfoUpdateService* GAIAInfoUpdateServiceFactory::GetForProfile(
 
 // static
 GAIAInfoUpdateServiceFactory* GAIAInfoUpdateServiceFactory::GetInstance() {
-  return base::Singleton<GAIAInfoUpdateServiceFactory>::get();
+  static base::NoDestructor<GAIAInfoUpdateServiceFactory> instance;
+  return instance.get();
 }
 
 KeyedService* GAIAInfoUpdateServiceFactory::BuildServiceInstanceFor(
