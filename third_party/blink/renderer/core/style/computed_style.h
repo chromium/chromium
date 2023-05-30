@@ -736,8 +736,7 @@ class ComputedStyle : public ComputedStyleBase,
   // ignore non-standard ::-webkit-scrollbar when standard properties are in use
   bool HasCustomScrollbarStyle() const {
     return HasPseudoElementStyle(kPseudoIdScrollbar) &&
-           ScrollbarWidth() == EScrollbarWidth::kAuto &&
-           ScrollbarColor() == absl::nullopt;
+           ScrollbarWidth() == EScrollbarWidth::kAuto;
   }
 
   // shape-outside (aka -webkit-shape-outside)
