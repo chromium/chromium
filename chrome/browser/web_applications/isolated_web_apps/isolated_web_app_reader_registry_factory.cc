@@ -29,7 +29,8 @@ IsolatedWebAppReaderRegistryFactory::GetForProfile(Profile* profile) {
 // static
 IsolatedWebAppReaderRegistryFactory*
 IsolatedWebAppReaderRegistryFactory::GetInstance() {
-  return base::Singleton<IsolatedWebAppReaderRegistryFactory>::get();
+  static base::NoDestructor<IsolatedWebAppReaderRegistryFactory> instance;
+  return instance.get();
 }
 
 IsolatedWebAppReaderRegistryFactory::IsolatedWebAppReaderRegistryFactory()
