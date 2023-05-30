@@ -13,17 +13,12 @@ loadScript.then(() => {
       `https://b.test:${port}` +
       `/extensions/api_test/webnavigation/fencedFramesMappedURL/frame.html`;
 
-    let shadow_dom_enabled = response == "shadow_dom";
-    const expected_frame_type = shadow_dom_enabled
-      ? "sub_frame"
-      : "fenced_frame";
-
     chrome.test.runTests([
       () => {
         chrome.test.listenOnce(
           chrome.webNavigation.onBeforeNavigate,
           function (details) {
-            chrome.test.assertEq(details.frameType, expected_frame_type);
+            chrome.test.assertEq(details.frameType, "fenced_frame");
             chrome.test.assertEq(details.url, actual_fenced_frame_url);
           }
         );
