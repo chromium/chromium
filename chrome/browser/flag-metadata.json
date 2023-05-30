@@ -2455,6 +2455,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-federated-service",
+    "owners": [ "alanlxl", "amoylan"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-feed-ablation",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 118

@@ -5865,6 +5865,11 @@ const char kExposeOutOfProcessVideoDecodingToLacrosDescription[] =
     "Accept media.stable.mojom.StableVideoDecoderFactory connection requests "
     "from LaCrOS and host said factories in utility processes.";
 
+const char kFederatedServiceName[] =
+    "Enable Federated Service on ChromeOS login";
+const char kFederatedServiceDescription[] =
+    "If disalbed, all federated service activities are stopped.";
+
 const char kFileTransferEnterpriseConnectorName[] =
     "Enable Files Transfer Enterprise Connector.";
 const char kFileTransferEnterpriseConnectorDescription[] =

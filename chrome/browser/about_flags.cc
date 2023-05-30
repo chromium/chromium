@@ -5421,6 +5421,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSystemProxyForSystemServicesName,
      flag_descriptions::kSystemProxyForSystemServicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSystemProxyForSystemServices)},
+    {"enable-federated-service", flag_descriptions::kFederatedServiceName,
+     flag_descriptions::kFederatedServiceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFederatedService)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-cros-touch-text-editing-redesign",

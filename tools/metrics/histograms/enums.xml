@@ -62028,6 +62028,7 @@ from previous Chrome versions.
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>
   <int value="-437292646" label="DeferBeginMainFrameDuringLoading:enabled"/>
+  <int value="-436799973" label="FederatedService:enabled"/>
   <int value="-436470115" label="TouchpadAndWheelScrollLatching:enabled"/>
   <int value="-435914745" label="ClipboardContentSetting:disabled"/>
   <int value="-435636565" label="EnableLensPing:disabled"/>
@@ -65316,6 +65317,7 @@ from previous Chrome versions.
   <int value="1313608203"
       label="TabbedAppOverflowMenuThreeButtonActionbar:enabled"/>
   <int value="1313850691" label="Metal:disabled"/>
+  <int value="1314067176" label="FederatedService:disabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1314797690"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>
