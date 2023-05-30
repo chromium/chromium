@@ -148,8 +148,8 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_DATA_SIZE" desc="Text for data size label for the amount of storage the app's associated files is using">
     Data stored in app: <ph name="APP_SIZE">$1<ex>100 MB</ex></ph>
   </message>
-  <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions and more settings for an app.">
-    Manage permissions and settings
+  <message name="IDS_APP_MANAGEMENT_ARC_MANAGE_PERMISSIONS" desc="Label for a link to manage permissions for an app.">
+    Manage permissions
   </message>
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ASK" desc="Label explaining that the user will be asked whether an app can access a permission (e.g. camera access) every time it is used.">
     Ask every time
