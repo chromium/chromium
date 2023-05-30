@@ -31,6 +31,7 @@ extern const char kAppExecKey[];
 extern const char kAppExecutableFileNameKey[];
 extern const char kAppNameKey[];
 extern const char kAppNoDisplayKey[];
+extern const char kAppTerminalKey[];
 extern const char kAppScaledKey[];
 extern const char kAppPackageIdKey[];
 extern const char kAppStartupWMClassKey[];

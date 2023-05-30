@@ -35,6 +35,7 @@ const char kAppExecKey[] = "exec";
 const char kAppExecutableFileNameKey[] = "executable_file_name";
 const char kAppNameKey[] = "name";
 const char kAppNoDisplayKey[] = "no_display";
+const char kAppTerminalKey[] = "terminal";
 const char kAppScaledKey[] = "scaled";
 const char kAppPackageIdKey[] = "package_id";
 const char kAppStartupWMClassKey[] = "startup_wm_class";
