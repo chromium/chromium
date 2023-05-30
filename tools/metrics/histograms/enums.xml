@@ -92077,22 +92077,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="NOT_SUPPORTED"/>
 </enum>
 
-<enum name="SafetyCheckChromeCleanerStatus">
-  <obsolete>
-    Removed from code 2023/01, in crbug.com/1407233
-  </obsolete>
-  <int value="0" label="HIDDEN"/>
-  <int value="1" label="CHECKING"/>
-  <int value="2" label="INFECTED"/>
-  <int value="3" label="REBOOT_REQUIRED"/>
-  <int value="4" label="SCANNING_FOR_UWS"/>
-  <int value="5" label="REMOVING_UWS"/>
-  <int value="6" label="DISABLED_BY_ADMIN"/>
-  <int value="7" label="ERROR"/>
-  <int value="8" label="NO_UWS_FOUND_WITH_TIMESTAMP"/>
-  <int value="9" label="NO_UWS_FOUND_WITHOUT_TIMESTAMP"/>
-</enum>
-
 <enum name="SafetyCheckExtensionsStatus">
   <int value="0" label="CHECKING"/>
   <int value="1" label="DEPRECATED_ERROR"/>

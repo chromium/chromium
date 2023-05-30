@@ -531,16 +531,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.SafetyCheck.ChromeCleanerResult"
-    enum="SafetyCheckChromeCleanerStatus" expires_after="2023-07-09">
-  <owner>rainhard@chromium.org</owner>
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Resulting state of the safety check Chrome cleaner check. Recorded when a
-    safety check is run by the user. Value 4-9 got added with M88.
-  </summary>
-</histogram>
-
 <histogram name="Settings.SafetyCheck.ExtensionsResult"
     enum="SafetyCheckExtensionsStatus" expires_after="2021-06-20">
   <owner>andzaytsev@google.com</owner>
