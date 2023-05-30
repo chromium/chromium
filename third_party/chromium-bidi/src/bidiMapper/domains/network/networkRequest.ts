@@ -277,6 +277,13 @@ export class NetworkRequest {
       throw new Error('ResponseReceivedEvent is not set');
     }
 
+    // Chromium sends wrong extraInfo events for responses served from cache.
+    // See https://github.com/puppeteer/puppeteer/issues/9965 and
+    // https://crbug.com/1340398.
+    if (this.#responseReceivedEvent.response.fromDiskCache) {
+      this.#responseReceivedExtraInfoEvent = undefined;
+    }
+
     return {
       method: Network.EventNames.ResponseCompletedEvent,
       params: {
@@ -284,7 +291,9 @@ export class NetworkRequest {
         response: {
           url: this.#responseReceivedEvent.response.url,
           protocol: this.#responseReceivedEvent.response.protocol ?? '',
-          status: this.#responseReceivedEvent.response.status,
+          status:
+            this.#responseReceivedExtraInfoEvent?.statusCode ||
+            this.#responseReceivedEvent.response.status,
           statusText: this.#responseReceivedEvent.response.statusText,
           fromCache:
             (this.#responseReceivedEvent.response.fromDiskCache ||
