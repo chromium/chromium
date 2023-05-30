@@ -1067,6 +1067,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
   bool is_webauthn_form =
+      form_data &&
       std::any_of(form_data->fields.begin(), form_data->fields.end(),
                   autofill::FieldHasWebAuthnAutocompleteAttribute);
   GetPasswordManagerDriver().ShowKeyboardReplacingSurface(
