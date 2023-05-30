@@ -718,7 +718,6 @@ crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/textur
 
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
-crbug.com/angleproject/3685 [ android-pie android-pixel-2 angle-opengles ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
@@ -899,6 +898,17 @@ crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExt
 # Conflicts if between a generic os condition and a specific version
 #[ highsierra nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 #[ mac nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
+
+# Roll WebGL d1b65aa..b934957.
+crbug.com/1448567 [ android ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448567 [ chromeos ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448567 [ fuchsia ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448567 [ linux ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448567 [ mac ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448567 [ win ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
+crbug.com/1448570 [ android-pixel-4 ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
+crbug.com/1448570 [ android-pixel-4 ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
+crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
