@@ -68,6 +68,11 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                 user_enrollment_domain.value());
   }
 
+  // On Chrome Browser, the trigger is currently always a browser navigation.
+  signals.Set(
+      device_signals::names::kTrigger,
+      static_cast<int32_t>(device_signals::Trigger::kBrowserNavigation));
+
   auto barrier_closure = base::BarrierClosure(
       /*num_closures=*/signals_aggregator_ ? 2 : 1,
       base::BindOnce(&BrowserSignalsDecorator::OnAllSignalsReceived,

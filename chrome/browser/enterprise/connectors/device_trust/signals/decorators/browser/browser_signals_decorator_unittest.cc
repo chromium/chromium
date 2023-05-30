@@ -104,6 +104,11 @@ void ValidateStaticSignals(const base::Value::Dict& signals) {
       signals.FindInt(device_signals::names::kSecureBootEnabled);
   ASSERT_TRUE(secure_boot_enabled);
   EXPECT_EQ(secure_boot_enabled.value(), kEnabledSetting);
+
+  auto signals_context = signals.FindInt(device_signals::names::kTrigger);
+  ASSERT_TRUE(signals_context);
+  EXPECT_EQ(signals_context.value(),
+            static_cast<int32_t>(device_signals::Trigger::kBrowserNavigation));
 }
 
 void ValidateCrowdStrikeSignals(const base::Value::Dict& signals) {

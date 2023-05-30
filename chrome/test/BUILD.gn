@@ -4610,6 +4610,7 @@ if (!is_android) {
         "//components/arc:arc_test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/device_event_log",
+        "//components/device_signals/core/browser",
         "//components/drive",
         "//components/exo:test_support",
         "//components/feedback:feedback",
