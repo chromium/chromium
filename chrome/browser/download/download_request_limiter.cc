@@ -174,7 +174,11 @@ void DownloadRequestLimiter::TabDownloadState::DidFinishNavigation(
     // renderer-initiated and we are in a prompt state.
     NotifyCallbacks(false);
     host_->Remove(this, web_contents());
+    return;
     // WARNING: We've been deleted.
+  } else if (status_ == ALLOW_ALL_DOWNLOADS) {
+    OnUserInteraction();
+    return;
   }
 }
 
@@ -295,10 +299,11 @@ void DownloadRequestLimiter::TabDownloadState::OnUserInteraction() {
        it != download_status_map_.end();) {
     ContentSetting setting =
         GetAutoDownloadContentSetting(web_contents(), it->first.GetURL());
-    // If an origin has non block content setting and does not have
-    // |DOWNLOADS_NOT_ALLOWED| status, remove it from the map so that it is able
-    // to initiate one download without asking user.
-    if (setting != CONTENT_SETTING_BLOCK &&
+    // If an origin has non-block content setting and does not have
+    // |DOWNLOADS_NOT_ALLOWED| or |ALLOW_ALL_DOWNLOADS| status, remove
+    // it from the map so that it is able to initiate one download
+    // without asking the user.
+    if (setting != CONTENT_SETTING_BLOCK && it->second != ALLOW_ALL_DOWNLOADS &&
         ((no_permission_request_manager &&
           it->second == DOWNLOADS_NOT_ALLOWED) ||
          it->second != DOWNLOADS_NOT_ALLOWED)) {

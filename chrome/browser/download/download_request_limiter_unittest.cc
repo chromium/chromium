@@ -289,11 +289,12 @@ TEST_F(DownloadRequestLimiterTest, ResetOnNavigation) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Do a user gesture, that will reset all the state if current state is not
-  // DOWNLOADS_NOT_ALLOWED or content setting is not block.
+  // DOWNLOADS_NOT_ALLOWED or ALLOW_ALL_DOWNLOADS or content setting is not
+  // block.
   OnUserInteraction(blink::WebInputEvent::Type::kRawKeyDown);
-  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Navigate to a completely different host, which should reset the state.
@@ -506,7 +507,7 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
   // Since a download is allowed earlier, a new download will prompt user.
   CanDownload();
-  ExpectAndResetCounts(1, 0, 1, __LINE__);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
 }
 
 // Test that history back will not change the tab download state if all the
