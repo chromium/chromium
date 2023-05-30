@@ -332,10 +332,7 @@ static_library("content_shell_lib") {
       "browser/fuchsia_view_presenter.cc",
       "browser/fuchsia_view_presenter.h",
     ]
-    deps += [
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy:fuchsia.ui.policy_hlcpp",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element:fuchsia.element_hlcpp" ]
   } else {
     deps += [
       "//components/crash/content/browser",
