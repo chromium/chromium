@@ -1194,15 +1194,6 @@ class BookmarkManagerMediator
                 && !Objects.equals(getCurrentFolderId(), mBookmarkModel.getRootFolderId());
         if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             listItems.add(buildMenuListItem(R.string.bookmark_show_in_folder, 0, 0));
-        } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER && location != Location.SOLO
-                && canReorder) {
-            // Only add move up / move down buttons if there is more than 1 item.
-            if (location != Location.TOP) {
-                listItems.add(buildMenuListItem(R.string.menu_item_move_up, 0, 0));
-            }
-            if (location != Location.BOTTOM) {
-                listItems.add(buildMenuListItem(R.string.menu_item_move_down, 0, 0));
-            }
         }
 
         PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
@@ -1215,6 +1206,7 @@ class BookmarkManagerMediator
                     0, 0));
         }
 
+        // TODO(crbug.com/1448691): Add reordering to new bookmarks manager.
         return listItems;
     }
 

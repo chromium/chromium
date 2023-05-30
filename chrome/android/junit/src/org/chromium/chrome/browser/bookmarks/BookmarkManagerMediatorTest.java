@@ -818,25 +818,11 @@ public class BookmarkManagerMediatorTest {
         BookmarkListEntry entry = BookmarkListEntry.createBookmarkEntry(
                 mBookmarkItem21, null, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(6, modelList.size());
+        assertEquals(4, modelList.size());
         verifyBookmarkListMenuItem(modelList.get(0), R.string.bookmark_item_select, true);
         verifyBookmarkListMenuItem(modelList.get(1), R.string.bookmark_item_edit, true);
         verifyBookmarkListMenuItem(modelList.get(2), R.string.bookmark_item_move, true);
         verifyBookmarkListMenuItem(modelList.get(3), R.string.bookmark_item_delete, true);
-        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_up, true);
-        verifyBookmarkListMenuItem(modelList.get(5), R.string.menu_item_move_down, true);
-
-        modelList = mMediator.createListMenuModelList(entry, Location.TOP);
-        assertEquals(5, modelList.size());
-        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_down, true);
-
-        modelList = mMediator.createListMenuModelList(entry, Location.BOTTOM);
-        assertEquals(5, modelList.size());
-        verifyBookmarkListMenuItem(modelList.get(4), R.string.menu_item_move_up, true);
-
-        mMediator.openFolder(mRootFolderId);
-        modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals("neither move option should be visible", 4, modelList.size());
 
         mMediator.openSearchUi();
         modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
@@ -880,15 +866,15 @@ public class BookmarkManagerMediatorTest {
         BookmarkListEntry entry = BookmarkListEntry.createBookmarkEntry(
                 mBookmarkItem21, meta, BookmarkRowDisplayPref.COMPACT);
         ModelList modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(7, modelList.size());
+        assertEquals(5, modelList.size());
         verifyBookmarkListMenuItem(
-                modelList.get(6), R.string.disable_price_tracking_menu_item, true);
+                modelList.get(4), R.string.disable_price_tracking_menu_item, true);
 
         doReturn(false).when(mShoppingService).isSubscribedFromCache(any());
         modelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
-        assertEquals(7, modelList.size());
+        assertEquals(5, modelList.size());
         verifyBookmarkListMenuItem(
-                modelList.get(6), R.string.enable_price_tracking_menu_item, true);
+                modelList.get(4), R.string.enable_price_tracking_menu_item, true);
     }
 
     @Test
