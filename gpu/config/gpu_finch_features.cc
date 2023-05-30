@@ -393,7 +393,7 @@ BASE_FEATURE(kPassthroughYuvRgbConversion,
 // cleanup when executing deferred requests.
 BASE_FEATURE(kGpuCleanupInBackground,
              "GpuCleanupInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY)
