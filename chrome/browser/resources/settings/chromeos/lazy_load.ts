@@ -168,6 +168,7 @@ export {PrinterListEntry, PrinterType} from './os_printing_page/cups_printer_typ
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
 export {SettingsCupsPrintersEntryElement} from './os_printing_page/cups_printers_entry.js';
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
+export {PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS} from './os_printing_page/cups_saved_printers.js';
 export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
