@@ -774,6 +774,8 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
   params.input_start = location_bar->GetMatchSelectionTimestamp();
   params.is_using_https_as_default_scheme =
       location_bar->IsInputTypedUrlWithoutScheme();
+  params.url_typed_with_http_scheme =
+      location_bar->IsInputTypedUrlWithHttpScheme();
   auto result = Navigate(&params);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

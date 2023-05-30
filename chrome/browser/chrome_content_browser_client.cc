@@ -6006,7 +6006,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeV2)) {
     auto https_upgrades_interceptor =
-        HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id);
+        HttpsUpgradesInterceptor::MaybeCreateInterceptor(frame_tree_node_id,
+                                                         navigation_ui_data);
     if (https_upgrades_interceptor) {
       interceptors.push_back(std::move(https_upgrades_interceptor));
     }

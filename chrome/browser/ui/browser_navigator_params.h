@@ -340,6 +340,10 @@ struct NavigateParams {
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme = false;
 
+  // True if the navigation was initiated by typing in the omnibox and the typed
+  // text had an explicit http scheme.
+  bool url_typed_with_http_scheme = false;
+
   // Indicates if the page load occurs during a non-optimal performance state.
   // This value is only suggested based upon the load context, and can be
   // overridden by other factors.

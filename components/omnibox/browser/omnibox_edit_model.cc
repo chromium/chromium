@@ -2553,7 +2553,10 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
         ui::PageTransitionFromInt(match.transition |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
         match.type, match_selection_timestamp,
-        input_.added_default_scheme_to_typed_url(), input_text, match,
+        input_.added_default_scheme_to_typed_url(),
+        input_.typed_url_had_http_scheme() &&
+            match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+        input_text, match,
         VerbatimMatchForInput(
             autocomplete_controller()->history_url_provider(),
             autocomplete_controller()->autocomplete_provider_client(),

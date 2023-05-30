@@ -20,10 +20,15 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_edit_model_delegate.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
@@ -1988,6 +1993,69 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_FALSE(content::NavigateToURL(contents, http_url));
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
       contents));
+}
+
+// Tests that URLs typed with an explicit http:// scheme are opted out from
+// upgrades.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       URLsTypedWithHttpSchemeNoUpgrades) {
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
+  GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxEditModelDelegate* edit_model_delegate = browser()
+                                                      ->window()
+                                                      ->GetLocationBar()
+                                                      ->GetOmniboxView()
+                                                      ->model()
+                                                      ->delegate();
+
+  // Simulate the full URL was typed with an http scheme.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  edit_model_delegate->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
+      base::TimeTicks(), false, true, std::u16string(), AutocompleteMatch(),
+      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+  nav_observer.Wait();
+
+  if (IsHttpsFirstModePrefEnabled()) {
+    // Typed http URLs don't opt out of upgrades in HFM.
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  } else {
+    EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  }
+}
+
+// Tests that URLs with an explicit http:// scheme are upgraded if they were
+// autocompleted.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       URLsAutocompletedWithHttpSchemeAreUpgraded) {
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
+  GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxEditModelDelegate* edit_model_delegate = browser()
+                                                      ->window()
+                                                      ->GetLocationBar()
+                                                      ->GetOmniboxView()
+                                                      ->model()
+                                                      ->delegate();
+
+  // Simulate the full URL was autocompleted with an http scheme.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  edit_model_delegate->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::NAVSUGGEST,
+      base::TimeTicks(), false, false, std::u16string(), AutocompleteMatch(),
+      AutocompleteMatch(), IDNA2008DeviationCharacter::kNone);
+  nav_observer.Wait();
+
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
 }
 
 // A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled

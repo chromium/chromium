@@ -115,6 +115,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                                 AutocompleteMatchType::Type match_type,
                                 base::TimeTicks match_selection_timestamp,
                                 bool destination_url_entered_without_scheme,
+                                bool destination_url_entered_with_http_scheme,
                                 const std::u16string&,
                                 const AutocompleteMatch&,
                                 const AutocompleteMatch&,

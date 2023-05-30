@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -183,7 +184,12 @@ void AutocompleteInput::Init(
   PopulateTermsPrefixedByHttpOrHttps(text_, &terms_prefixed_by_http_or_https_);
 
   DCHECK(!added_default_scheme_to_typed_url_);
-
+  typed_url_had_http_scheme_ =
+      base::StartsWith(text,
+                       base::ASCIIToUTF16(base::StrCat(
+                           {url::kHttpScheme, url::kStandardSchemeSeparator})),
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      canonicalized_url.SchemeIs(url::kHttpScheme);
   GURL upgraded_url;
   if (should_use_https_as_default_scheme_ &&
       type_ == metrics::OmniboxInputType::URL &&

@@ -472,7 +472,8 @@ base::WeakPtr<content::NavigationHandle> LoadURLInContents(
     load_url_params.navigation_ui_data =
         ChromeNavigationUIData::CreateForMainFrameNavigation(
             target_contents, params->disposition,
-            params->is_using_https_as_default_scheme);
+            params->is_using_https_as_default_scheme,
+            params->url_typed_with_http_scheme);
   }
 
   if (params->post_data) {

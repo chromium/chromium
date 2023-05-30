@@ -131,7 +131,8 @@ void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
       .Run(url, nullptr, context.disposition_, ui::PAGE_TRANSITION_GENERATED,
            /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
            context.match_selection_timestamp_,
-           /*destination_url_entered_without_scheme=*/false, u"",
+           /*destination_url_entered_without_scheme=*/false,
+           /*destination_url_entered_with_http_scheme=*/false, u"",
            AutocompleteMatch(), AutocompleteMatch(),
            IDNA2008DeviationCharacter::kNone);
 }

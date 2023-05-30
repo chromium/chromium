@@ -11,6 +11,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
@@ -157,7 +158,9 @@ using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
 
 // static
 std::unique_ptr<HttpsUpgradesInterceptor>
-HttpsUpgradesInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
+HttpsUpgradesInterceptor::MaybeCreateInterceptor(
+    int frame_tree_node_id,
+    content::NavigationUIData* navigation_ui_data) {
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
@@ -175,15 +178,17 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
   bool https_first_mode_enabled =
       base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
       prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  return std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id,
-                                                    https_first_mode_enabled);
+  return std::make_unique<HttpsUpgradesInterceptor>(
+      frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }
 
 HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
     int frame_tree_node_id,
-    bool http_interstitial_enabled_by_pref)
+    bool http_interstitial_enabled_by_pref,
+    content::NavigationUIData* navigation_ui_data)
     : frame_tree_node_id_(frame_tree_node_id),
-      http_interstitial_enabled_by_pref_(http_interstitial_enabled_by_pref) {}
+      http_interstitial_enabled_by_pref_(http_interstitial_enabled_by_pref),
+      navigation_ui_data_(navigation_ui_data) {}
 
 HttpsUpgradesInterceptor::~HttpsUpgradesInterceptor() = default;
 
@@ -284,6 +289,17 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       std::move(callback).Run({});
       return;
     }
+  }
+
+  // If the URL was typed with an explicit http:// URL, it is opted-out from
+  // upgrades.
+  ChromeNavigationUIData* chrome_navigation_ui_data =
+      static_cast<ChromeNavigationUIData*>(navigation_ui_data_);
+  if (chrome_navigation_ui_data &&
+      chrome_navigation_ui_data->url_is_typed_with_http_scheme() &&
+      !IsInterstitialEnabled(*interstitial_state_)) {
+    std::move(callback).Run({});
+    return;
   }
 
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a

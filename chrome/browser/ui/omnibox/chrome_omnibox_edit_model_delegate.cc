@@ -41,6 +41,7 @@ void ChromeOmniboxEditModelDelegate::OnAutocompleteAccept(
     AutocompleteMatchType::Type match_type,
     base::TimeTicks match_selection_timestamp,
     bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
@@ -56,6 +57,8 @@ void ChromeOmniboxEditModelDelegate::OnAutocompleteAccept(
   match_selection_timestamp_ = match_selection_timestamp;
   destination_url_entered_without_scheme_ =
       destination_url_entered_without_scheme;
+  destination_url_entered_with_http_scheme_ =
+      destination_url_entered_with_http_scheme;
 
   if (browser_) {
     auto navigation = chrome::OpenCurrentURL(browser_);
