@@ -1411,7 +1411,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 4. Add new tab button offset animation.
-        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+        if (isNewTabButtonAnchorDisabled()) {
             CompositorAnimator newTabButtonOffsetAnimator = updateNewTabButtonState(true);
             if (newTabButtonOffsetAnimator != null) {
                 tabStripAnimators.add(newTabButtonOffsetAnimator);
