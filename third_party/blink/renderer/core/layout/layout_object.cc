@@ -4240,9 +4240,7 @@ bool LayoutObject::WillRenderImage() {
   // If paint invalidation of this object is delayed, animations can be
   // suspended. When the object is painted the next time, the animations will
   // be started again.
-  if (ShouldDelayFullPaintInvalidation() &&
-      base::FeatureList::IsEnabled(
-          features::kThrottleOffscreenAnimatingSvgImages)) {
+  if (ShouldDelayFullPaintInvalidation()) {
     return false;
   }
   return true;

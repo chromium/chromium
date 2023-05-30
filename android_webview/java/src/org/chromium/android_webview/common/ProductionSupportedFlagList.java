@@ -324,10 +324,6 @@ public final class ProductionSupportedFlagList {
                             + "using the property tree builder."),
             Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
                     "If enabled, reads and decodes navigation body data off the main thread."),
-            Flag.baseFeature(BlinkFeatures.THROTTLE_OFFSCREEN_ANIMATING_SVG_IMAGES,
-                    "If enabled, SVG images will suspend animations when all "
-                            + "instances of the image are outside of the "
-                            + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
             Flag.baseFeature(BlinkFeatures.COMPOSITE_BACKGROUND_ATTACHMENT_FIXED),
             Flag.baseFeature(BlinkFeatures.COMPOSITE_SCROLL_AFTER_PAINT),

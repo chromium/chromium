@@ -366,10 +366,6 @@ const char kSmilAnimatedDocument[] = R"SVG(
 )SVG";
 
 TEST_F(SVGImageSimTest, AnimationsPausedWhenImageScrolledOutOfView) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kThrottleOffscreenAnimatingSvgImages);
-
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.svg",
                                        "image/svg+xml");
