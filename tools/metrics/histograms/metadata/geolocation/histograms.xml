@@ -132,29 +132,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Geolocation.PositionCache.CacheHit" enum="BooleanCacheHit"
-    expires_after="2022-10-04">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    For each query into the position cache used by the network location
-    provider, records whether a position was returned from the cache.
-  </summary>
-</histogram>
-
-<histogram name="Geolocation.PositionCache.CacheSize" units="count"
-    expires_after="2022-05-22">
-  <owner>mattreynolds@chromium.org</owner>
-  <owner>deviceapi-team@google.com</owner>
-  <summary>
-    For each query into the position cache used by the network location
-    provider, records the number of items in the cache.
-
-    Warning: this histogram was expired after 2021-03-10 and brought back
-    2021-05-21; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Geolocation.WifiDataProviderCommon.WifiScanTaskTime"
     units="ms" expires_after="2023-07-15">
   <owner>reillyg@chromium.org</owner>
