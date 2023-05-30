@@ -1883,6 +1883,18 @@ LengthPoint StyleBuilderConverter::ConvertPositionOrAuto(
   return LengthPoint(Length::Auto(), Length::Auto());
 }
 
+LengthPoint StyleBuilderConverter::ConvertOffsetPosition(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (value.IsValuePair()) {
+    return ConvertPosition(state, value);
+  }
+  if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kAuto) {
+    return LengthPoint(Length::Auto(), Length::Auto());
+  }
+  return LengthPoint(Length::None(), Length::None());
+}
+
 static float ConvertPerspectiveLength(
     StyleResolverState& state,
     const CSSPrimitiveValue& primitive_value) {

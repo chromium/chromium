@@ -5684,6 +5684,9 @@ const CSSValue* OffsetPosition::ParseSingleValue(
   if (id == CSSValueID::kAuto) {
     return css_parsing_utils::ConsumeIdent(range);
   }
+  if (id == CSSValueID::kNormal) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
   CSSValue* value = css_parsing_utils::ConsumePosition(
       range, context, css_parsing_utils::UnitlessQuirk::kForbid,
       absl::optional<WebFeature>());

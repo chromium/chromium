@@ -2655,7 +2655,6 @@ class ComputedStyle : public ComputedStyleBase,
                                 gfx::Transform&) const;
   PointAndTangent CalculatePointAndTangentOnBasicShape(
       const BasicShape& shape,
-      const LayoutBox* box,
       const gfx::PointF starting_point,
       const gfx::SizeF reference_box_size) const;
   PointAndTangent CalculatePointAndTangentOnRay(

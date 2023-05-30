@@ -31,7 +31,8 @@ class StyleRay : public BasicShape {
 
   float CalculateRayPathLength(const gfx::PointF& starting_point,
                                const gfx::SizeF& reference_box_size) const;
-  PointAndTangent PointAndNormalAtLength(float length) const;
+  PointAndTangent PointAndNormalAtLength(const gfx::PointF& starting_point,
+                                         float length) const;
 
   float Angle() const { return ClampTo<float, float>(angle_); }
   RaySize Size() const { return size_; }

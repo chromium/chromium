@@ -118,11 +118,13 @@ float StyleRay::CalculateRayPathLength(
   }
 }
 
-PointAndTangent StyleRay::PointAndNormalAtLength(float length) const {
+PointAndTangent StyleRay::PointAndNormalAtLength(
+    const gfx::PointF& starting_point,
+    float length) const {
   const float angle = Angle() - 90;
   const float rad = Deg2rad(angle);
-  const float x = length * std::cos(rad);
-  const float y = length * std::sin(rad);
+  const float x = starting_point.x() + length * std::cos(rad);
+  const float y = starting_point.y() + length * std::sin(rad);
   return {{x, y}, angle};
 }
 

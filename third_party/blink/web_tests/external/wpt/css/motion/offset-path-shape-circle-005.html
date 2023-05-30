@@ -1,26 +1,23 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>CSS Motion Path test: &lt;coord-box&gt; &lt;padding-box&gt;</title>
+<title>CSS Motion Path test: &lt;basic-shape&gt; circle() path with offset-position</title>
 <link rel="author" title="Daniil Sakhapov" href="sakhapov@google.com">
-<link rel="match" href="offset-path-coord-box-002-ref.html">
-<link rel="help" href="https://drafts.fxtf.org/motion/#valdef-offset-path-coord-box">
+<link rel="match" href="offset-path-shape-circle-005-ref.html">
+<link rel="help" href="https://drafts.fxtf.org/motion/#valdef-offset-path-basic-shape">
 
 <style>
 #outer {
   top: 100px;
   left: 100px;
   position: relative;
-  border: 5px solid black;
   width: 600px;
   height: 400px;
 }
 #box {
   background-color: green;
   position: relative;
-  top: 100px;
-  left: 100px;
-  offset-path: padding-box;
-  offset-distance: 15%;
+  offset-path: circle(100px);
+  offset-position: normal;
   width: 100px;
   height: 100px;
 }
