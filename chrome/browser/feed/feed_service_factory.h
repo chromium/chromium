@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FEED_FEED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FEED_FEED_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -32,7 +32,7 @@ class FeedServiceFactory : public ProfileKeyedServiceFactory {
   static FeedServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<FeedServiceFactory>;
+  friend base::NoDestructor<FeedServiceFactory>;
 
   FeedServiceFactory();
   ~FeedServiceFactory() override;
