@@ -222,7 +222,8 @@ ColorFilterPaintFilter::ColorFilterPaintFilter(sk_sp<ColorFilter> color_filter,
       color_filter_(std::move(color_filter)),
       input_(std::move(input)) {
   cached_sk_filter_ = SkImageFilters::ColorFilter(
-      color_filter_->GetSkColorFilter(), GetSkFilter(input_.get()), crop_rect);
+      color_filter_ ? color_filter_->GetSkColorFilter() : nullptr,
+      GetSkFilter(input_.get()), crop_rect);
 }
 
 ColorFilterPaintFilter::~ColorFilterPaintFilter() = default;
