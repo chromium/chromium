@@ -52,7 +52,8 @@ scoped_refptr<PasswordStoreInterface> PasswordStoreFactory::GetForProfile(
 
 // static
 PasswordStoreFactory* PasswordStoreFactory::GetInstance() {
-  return base::Singleton<PasswordStoreFactory>::get();
+  static base::NoDestructor<PasswordStoreFactory> instance;
+  return instance.get();
 }
 
 PasswordStoreFactory::PasswordStoreFactory()
