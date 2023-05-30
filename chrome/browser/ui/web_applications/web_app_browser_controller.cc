@@ -489,6 +489,15 @@ bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
   return false;
 }
 
+bool WebAppBrowserController::ShouldShowAppIconOnTab(int index) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return !system_app() &&
+         web_app::IsPinnedHomeTab(browser()->tab_strip_model(), index);
+#else
+  return web_app::IsPinnedHomeTab(browser()->tab_strip_model(), index);
+#endif
+}
+
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_app() && system_app()->IsUrlInSystemAppScope(url))

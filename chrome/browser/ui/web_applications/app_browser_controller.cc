@@ -445,6 +445,10 @@ bool AppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
   return false;
 }
 
+bool AppBrowserController::ShouldShowAppIconOnTab(int index) const {
+  return false;
+}
+
 #if BUILDFLAG(IS_MAC)
 bool AppBrowserController::AlwaysShowToolbarInFullscreen() const {
   return true;
