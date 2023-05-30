@@ -230,33 +230,14 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   const absl::optional<TimelineOffset>& GetRangeEndInternal() const {
     return range_end_;
   }
-  void SetRangeStartInternal(
-      const absl::optional<TimelineOffset>& range_start) {
-    auto_align_start_time_ = true;
-    if (range_start_ != range_start) {
-      range_start_ = range_start;
-      OnRangeUpdate();
-    }
-  }
-  void SetRangeEndInternal(const absl::optional<TimelineOffset>& range_end) {
-    auto_align_start_time_ = true;
-    if (range_end_ != range_end) {
-      range_end_ = range_end;
-      OnRangeUpdate();
-    }
-  }
+  void SetRangeStartInternal(const absl::optional<TimelineOffset>& range_start);
+  void SetRangeEndInternal(const absl::optional<TimelineOffset>& range_end);
 
   // This method is only called during style update of a CSS animation.
   // Preventing an endpoint from stomping a value set via the rangeStart or
   // rangeEnd API is performed by the caller in CSSAnimations.
   virtual void SetRange(const absl::optional<TimelineOffset>& range_start,
-                        const absl::optional<TimelineOffset>& range_end) {
-    if (range_start_ != range_start || range_end_ != range_end) {
-      range_start_ = range_start;
-      range_end_ = range_end;
-      OnRangeUpdate();
-    }
-  }
+                        const absl::optional<TimelineOffset>& range_end);
 
   // Called during validation of a scroll timeline to determine if a second
   // style and layout pass is required. During this validation step, we have an
@@ -539,6 +520,9 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   absl::optional<TimelineOffset> range_start_;
   absl::optional<TimelineOffset> range_end_;
+
+  Member<CSSValue> style_dependent_range_start_;
+  Member<CSSValue> style_dependent_range_end_;
 
   ReplaceState replace_state_;
 

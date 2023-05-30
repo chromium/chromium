@@ -23,7 +23,7 @@ namespace blink {
 
 namespace {
 
-void ThrowExcpetionForInvalidTimelineOffset(ExceptionState& exception_state) {
+void ThrowExceptionForInvalidTimelineOffset(ExceptionState& exception_state) {
   exception_state.ThrowTypeError(
       "Animation range must be a name <length-percent> pair");
 }
@@ -58,14 +58,21 @@ String TimelineOffset::TimelineRangeNameToString(
 }
 
 String TimelineOffset::ToString() const {
-  if (name == NamedRange::kNone) {
-    return "normal";
-  }
-
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*MakeGarbageCollected<CSSIdentifierValue>(name));
+  if (name != NamedRange::kNone) {
+    list->Append(*MakeGarbageCollected<CSSIdentifierValue>(name));
+  }
   list->Append(*CSSValue::Create(offset, 1));
   return list->CssText();
+}
+
+bool TimelineOffset::UpdateOffset(Element* element, CSSValue* value) {
+  Length new_offset = ResolveLength(element, value);
+  if (new_offset != offset) {
+    offset = new_offset;
+    return true;
+  }
+  return false;
 }
 
 /* static */
@@ -94,7 +101,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
       /* default_offset_percent */ default_percent);
 
   if (!value || !range.AtEnd()) {
-    ThrowExcpetionForInvalidTimelineOffset(exception_state);
+    ThrowExceptionForInvalidTimelineOffset(exception_state);
     return absl::nullopt;
   }
 
@@ -105,21 +112,28 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
 
   const auto& list = To<CSSValueList>(*value);
 
-  // TODO(kevers): Keep track of style dependent lengths in order
-  // to re-resolve on a style update.
   DCHECK(list.length());
   NamedRange range_name = NamedRange::kNone;
   Length offset = Length::Percent(default_percent);
+  absl::optional<String> style_dependent_offset_str;
   if (list.Item(0).IsIdentifierValue()) {
     range_name = To<CSSIdentifierValue>(list.Item(0)).ConvertTo<NamedRange>();
     if (list.length() == 2u) {
-      offset = ResolveLength(element, &list.Item(1));
+      const CSSValue* css_offset_value = &list.Item(1);
+      offset = ResolveLength(element, css_offset_value);
+      if (IsStyleDependent(css_offset_value)) {
+        style_dependent_offset_str = css_offset_value->CssText();
+      }
     }
   } else {
-    offset = ResolveLength(element, &list.Item(0));
+    const CSSValue* css_offset_value = &list.Item(0);
+    offset = ResolveLength(element, css_offset_value);
+    if (IsStyleDependent(css_offset_value)) {
+      style_dependent_offset_str = css_offset_value->CssText();
+    }
   }
 
-  return TimelineOffset(range_name, offset);
+  return TimelineOffset(range_name, offset, style_dependent_offset_str);
 }
 
 /* static */
@@ -138,6 +152,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
       value->hasRangeName() ? value->rangeName().AsEnum() : NamedRange::kNone;
 
   Length parsed_offset;
+  absl::optional<String> style_dependent_offset_str;
   if (value->hasOffset()) {
     CSSNumericValue* offset = value->offset();
     const CSSPrimitiveValue* css_value =
@@ -158,16 +173,44 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
     } else {
       DCHECK(css_value->IsCalculatedPercentageWithLength());
       parsed_offset = TimelineOffset::ResolveLength(element, css_value);
+      style_dependent_offset_str = css_value->CssText();
     }
   } else {
     parsed_offset = Length::Percent(default_percent);
   }
+  return TimelineOffset(name, parsed_offset, style_dependent_offset_str);
+}
 
-  return TimelineOffset(name, parsed_offset);
+/* static */
+bool TimelineOffset::IsStyleDependent(const CSSValue* value) {
+  const CSSPrimitiveValue* primitive_value =
+      DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value) {
+    return true;
+  }
+
+  if (primitive_value->IsPercentage()) {
+    return false;
+  }
+
+  if (primitive_value->IsPx()) {
+    return false;
+  }
+
+  return true;
 }
 
 /* static */
 Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsPercentage()) {
+      return Length::Percent(primitive_value->GetDoubleValue());
+    }
+    if (primitive_value->IsPx()) {
+      return Length::Fixed(primitive_value->GetDoubleValue());
+    }
+  }
+
   // Elements without the computed style don't have a layout box,
   // so the timeline will be inactive.
   // See ScrollTimeline::IsResolved.
@@ -176,7 +219,6 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
   }
   ElementResolveContext element_resolve_context(*element);
   Document& document = element->GetDocument();
-  // TODO(kevers): Re-resolve any value that is not px or % on a style change.
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData length_conversion_data(
       element->ComputedStyleRef(), element_resolve_context.ParentStyle(),
@@ -186,6 +228,28 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
 
   return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(
       length_conversion_data);
+}
+
+/* static */
+CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
+  if (!document) {
+    return nullptr;
+  }
+
+  CSSTokenizer tokenizer(css_text);
+  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  range.ConsumeWhitespace();
+
+  CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(
+      range, *document->ElementSheet().Contents()->ParserContext(),
+      CSSPrimitiveValue::ValueRange::kAll);
+
+  if (!range.AtEnd()) {
+    return nullptr;
+  }
+
+  return value;
 }
 
 }  // namespace blink
