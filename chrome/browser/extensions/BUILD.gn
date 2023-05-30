@@ -1278,14 +1278,15 @@ static_library("extensions") {
 
   if (is_mac) {
     sources += [
+      "api/enterprise_reporting_private/keychain_data_helper_mac.cc",
       "api/enterprise_reporting_private/keychain_data_helper_mac.h",
-      "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
       "api/image_writer_private/removable_storage_provider_mac.cc",
       "global_shortcut_listener_mac.h",
       "global_shortcut_listener_mac.mm",
       "system_display/display_info_provider_mac.cc",
       "system_display/display_info_provider_mac.h",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux || is_chromeos_lacros) {

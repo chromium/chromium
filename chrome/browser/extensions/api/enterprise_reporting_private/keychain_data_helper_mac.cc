@@ -5,10 +5,9 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <Foundation/Foundation.h>
+#include <Security/Security.h>
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -23,35 +22,40 @@ namespace {
 
 // Creates an access for a generic password item to share it with other Google
 // applications with teamid:EQHXZ8M8AV (taken from the signing certificate).
-OSStatus CreateTargetAccess(NSString* service_name, SecAccessRef* access_ref) {
+OSStatus CreateTargetAccess(CFStringRef service_name,
+                            SecAccessRef* access_ref) {
   OSStatus status = noErr;
-  status =
-      SecAccessCreate(base::mac::NSToCFCast(service_name), nullptr, access_ref);
-  if (status != noErr)
+  status = SecAccessCreate(service_name, /*trustedlist=*/nullptr, access_ref);
+  if (status != noErr) {
     return status;
+  }
 
   base::ScopedCFTypeRef<CFArrayRef> acl_list;
   status = SecAccessCopyACLList(*access_ref, acl_list.InitializeInto());
-  if (status != noErr)
+  if (status != noErr) {
     return status;
+  }
 
-  for (id acl in base::mac::CFToNSCast(acl_list.get())) {
+  for (CFIndex i = 0; i < CFArrayGetCount(acl_list); ++i) {
+    SecACLRef acl = (SecACLRef)CFArrayGetValueAtIndex(acl_list, i);
+
     base::ScopedCFTypeRef<CFArrayRef> app_list;
     base::ScopedCFTypeRef<CFStringRef> description;
     SecKeychainPromptSelector dummy_prompt_selector;
-    status = SecACLCopyContents(
-        static_cast<SecACLRef>(acl), app_list.InitializeInto(),
-        description.InitializeInto(), &dummy_prompt_selector);
-    if (status != noErr)
+    status = SecACLCopyContents(acl, app_list.InitializeInto(),
+                                description.InitializeInto(),
+                                &dummy_prompt_selector);
+    if (status != noErr) {
       return status;
+    }
 
-    NSArray* const ns_app_list = base::mac::CFToNSCast(app_list);
     // Replace explicit non-empty app list with void to allow any application
-    if (ns_app_list && ns_app_list.count != 0) {
-      status = SecACLSetContents(static_cast<SecACLRef>(acl), nullptr,
-                                 description, dummy_prompt_selector);
-      if (status != noErr)
+    if (app_list && CFArrayGetCount(app_list)) {
+      status = SecACLSetContents(acl, /*applicationList=*/nullptr, description,
+                                 dummy_prompt_selector);
+      if (status != noErr) {
         return status;
+      }
     }
   }
 
@@ -90,10 +94,11 @@ OSStatus WriteKeychainItem(const std::string& service_name,
   SecKeychainAttributeList attribute_list = {std::size(attributes), attributes};
 
   base::ScopedCFTypeRef<SecAccessRef> access_ref;
-  OSStatus status = CreateTargetAccess(base::SysUTF8ToNSString(service_name),
+  OSStatus status = CreateTargetAccess(base::SysUTF8ToCFStringRef(service_name),
                                        access_ref.InitializeInto());
-  if (status != noErr)
+  if (status != noErr) {
     return status;
+  }
   return SecKeychainItemCreateFromContent(
       kSecGenericPasswordItemClass, &attribute_list,
       static_cast<UInt32>(password.size()), password.data(), nullptr,
