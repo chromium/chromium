@@ -200,6 +200,8 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Helper to generate a base::TimeTicks from an input_event's time
   static base::TimeTicks TimeTicksFromInputEvent(const input_event& event);
 
+  static bool IsValidKeyboardKeyPress(uint64_t key);
+
   // Handle gamepad force feedback effects.
   virtual void PlayVibrationEffect(uint8_t amplitude, uint16_t duration_millis);
   virtual void StopVibration();

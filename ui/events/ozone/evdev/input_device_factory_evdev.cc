@@ -605,6 +605,13 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
   for (auto& converter : converters_) {
     if (converter.second->HasMouse()) {
       mice.push_back(converter.second->input_device());
+
+      // If the device also has a keyboard, clear the suspected imposter field
+      // as it currently only applies to the keyboard `InputDevice` struct.
+      if (converter.second->HasKeyboard()) {
+        mice.back().suspected_imposter = false;
+      }
+
       // Some I2C touchpads falsely claim to be mice, see b/205272718
       if (converter.second->type() !=
           ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
@@ -621,6 +628,12 @@ void InputDeviceFactoryEvdev::NotifyPointingStickDevicesUpdated() {
   for (auto& converter : converters_) {
     if (converter.second->HasPointingStick()) {
       pointing_sticks.push_back(converter.second->input_device());
+
+      // If the device also has a keyboard, clear the suspected imposter field
+      // as it currently only applies to the keyboard `InputDevice` struct.
+      if (converter.second->HasKeyboard()) {
+        pointing_sticks.back().suspected_imposter = false;
+      }
     }
   }
 
@@ -636,6 +649,12 @@ void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
         has_haptic_touchpad = true;
       touchpads.emplace_back(it.second->input_device(),
                              it.second->HasHapticTouchpad());
+
+      // If the device also has a keyboard, clear the suspected imposter field
+      // as it currently only applies to the keyboard `InputDevice` struct.
+      if (it.second->HasKeyboard()) {
+        touchpads.back().suspected_imposter = false;
+      }
     }
   }
 
