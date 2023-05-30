@@ -16,6 +16,7 @@
     "build-perf-linux": "Ubuntu-22.04",
     "build-perf-linux-siso": "Ubuntu-22.04",
     "chromeos-amd64-generic-asan-rel": "Ubuntu-22.04",
+    "chromeos-amd64-generic-cfi-thin-lto-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
