@@ -886,22 +886,22 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
 
   // We can't use anything other than explicit resolve for swap chain.
-  bool use_implicit_resolve =
+  bool supports_implicit_resolve =
       !using_swap_chain_ && extensions_util_->SupportsExtension(
                                 "GL_EXT_multisampled_render_to_texture");
 
   const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
   // With graphite, Skia is not using ANGLE, so ANGLE will never be able to know
   // when the back buffer is sampled by Skia, so we can't use implicit resolve.
-  use_implicit_resolve =
-      use_implicit_resolve &&
-      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+  supports_implicit_resolve =
+      supports_implicit_resolve &&
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] !=
           gpu::kGpuFeatureStatusEnabled;
 
   if (webgl_preferences.anti_aliasing_mode == kAntialiasingModeUnspecified) {
     if (use_multisampling) {
       anti_aliasing_mode_ = kAntialiasingModeMSAAExplicitResolve;
-      if (use_implicit_resolve) {
+      if (supports_implicit_resolve) {
         anti_aliasing_mode_ = kAntialiasingModeMSAAImplicitResolve;
       }
     } else {
@@ -910,7 +910,7 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   } else {
     bool prefer_implicit_resolve = (webgl_preferences.anti_aliasing_mode ==
                                     kAntialiasingModeMSAAImplicitResolve);
-    if (prefer_implicit_resolve && !use_multisampling) {
+    if (prefer_implicit_resolve && !supports_implicit_resolve) {
       DLOG(ERROR) << "Invalid anti-aliasing mode specified.";
       return false;
     }
