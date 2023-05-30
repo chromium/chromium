@@ -4,7 +4,7 @@
 
 #include "chrome/browser/query_tiles/tile_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -48,7 +48,8 @@ std::string GetGoogleAPIKey() {
 
 // static
 TileServiceFactory* TileServiceFactory::GetInstance() {
-  return base::Singleton<TileServiceFactory>::get();
+  static base::NoDestructor<TileServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -64,7 +65,7 @@ TileServiceFactory::TileServiceFactory()
   DependsOn(background_task::BackgroundTaskSchedulerFactory::GetInstance());
 }
 
-TileServiceFactory::~TileServiceFactory() {}
+TileServiceFactory::~TileServiceFactory() = default;
 
 std::unique_ptr<KeyedService> TileServiceFactory::BuildServiceInstanceFor(
     SimpleFactoryKey* key) const {
