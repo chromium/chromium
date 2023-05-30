@@ -115,7 +115,6 @@ void AudioDeviceStatsReporter::UploadStats(const Stats& stats,
   DCHECK_NE(stats.smallest_delay, base::TimeDelta::Max());
   int delay_difference_ms =
       (stats.largest_delay - stats.smallest_delay).InMilliseconds();
-  DCHECK_GE(delay_difference_ms, 0);
 
   glitch_count_log_callback_.Run(stats.glitch_count, sampling_period);
   delay_difference_log_callback_.Run(delay_difference_ms, sampling_period);
