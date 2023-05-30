@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridgeJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -201,11 +202,12 @@ public class AddressEditorTest {
                         anyList(), anyList(), anyList());
     }
 
-    private static void validateTextField(EditorFieldModel field, String value, int inputTypeHint,
-            String label, boolean isRequired, boolean isFullLine, boolean hasLengthCounter) {
+    private static void validateTextField(EditorFieldModel field, String value,
+            @TextInputType int textInputType, String label, boolean isRequired, boolean isFullLine,
+            boolean hasLengthCounter) {
         assertTrue(field.isTextField());
         assertEquals(field.getValue(), value);
-        assertEquals(inputTypeHint, field.getInputTypeHint());
+        assertEquals(textInputType, field.getTextInputType());
         assertEquals(label, field.getLabel());
         assertEquals(isRequired, field.isRequired());
         assertEquals(isFullLine, field.isFullLine());
@@ -229,14 +231,16 @@ public class AddressEditorTest {
 
         // Fields obtained from backend must be placed after the country dropdown.
         validateTextField(editorFields.get(1), profile.getFullName(),
-                EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME, /*label=*/"full name label",
+                TextInputType.PERSON_NAME_INPUT,
+                /*label=*/"full name label",
                 /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
-        validateTextField(editorFields.get(2), profile.getRegion(),
-                EditorFieldModel.INPUT_TYPE_HINT_REGION, /*label=*/"admin area label",
+        validateTextField(editorFields.get(2), profile.getRegion(), TextInputType.REGION_INPUT,
+                /*label=*/"admin area label",
                 /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
         // Locality field is forced to occupy full line.
         validateTextField(editorFields.get(3), profile.getLocality(),
-                EditorFieldModel.INPUT_TYPE_HINT_NONE, /*label=*/"locality label",
+                TextInputType.PLAIN_TEXT_INPUT,
+                /*label=*/"locality label",
                 /*isRequired=*/true, /*isFullLine=*/true, /*hasLengthCounter=*/false);
 
         // Note: dependent locality is a required field for address profiles stored in Google
@@ -244,28 +248,29 @@ public class AddressEditorTest {
         // the existing address profile is empty. It is considered required for new address
         // profiles.
         validateTextField(editorFields.get(4), profile.getDependentLocality(),
-                EditorFieldModel.INPUT_TYPE_HINT_NONE, /*label=*/"dependent locality label",
+                TextInputType.PLAIN_TEXT_INPUT, /*label=*/"dependent locality label",
                 /*isRequired=*/true, /*isFullLine=*/true,
                 /*hasLengthCounter=*/false);
 
         validateTextField(editorFields.get(5), profile.getCompanyName(),
-                EditorFieldModel.INPUT_TYPE_HINT_NONE, /*label=*/"organization label",
+                TextInputType.PLAIN_TEXT_INPUT,
+                /*label=*/"organization label",
                 /*isRequired=*/false, /*isFullLine=*/true, /*hasLengthCounter=*/false);
 
         validateTextField(editorFields.get(6), profile.getSortingCode(),
-                EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC, /*label=*/"sorting code label",
+                TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"sorting code label",
                 /*isRequired=*/false, /*isFullLine=*/false,
                 /*hasLengthCounter=*/false);
         validateTextField(editorFields.get(7), profile.getPostalCode(),
-                EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC, /*label=*/"postal code label",
+                TextInputType.ALPHA_NUMERIC_INPUT, /*label=*/"postal code label",
                 /*isRequired=*/true, /*isFullLine=*/false,
                 /*hasLengthCounter=*/false);
         validateTextField(editorFields.get(8), profile.getStreetAddress(),
-                EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES, /*label=*/"street address label",
+                TextInputType.STREET_ADDRESS_INPUT, /*label=*/"street address label",
                 /*isRequired=*/true, /*isFullLine=*/true,
                 /*hasLengthCounter=*/false);
         validateTextField(editorFields.get(9), profile.getPhoneNumber(),
-                EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+                TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /*isRequired=*/true, /*isFullLine=*/true,
                 /*hasLengthCounter=*/false);
@@ -322,7 +327,7 @@ public class AddressEditorTest {
                 containsInAnyOrder(countryDropdown.getDropdownKeyValues().toArray()));
 
         validateTextField(editorFields.get(1), sProfile.getPhoneNumber(),
-                EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+                TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /*isRequired=*/true, /*isFullLine=*/true,
                 /*hasLengthCounter=*/false);
@@ -431,12 +436,12 @@ public class AddressEditorTest {
         // editorFields[1] - sorting code field.
         // editorFields[2] - phone number field.
         assertEquals(3, editorFields.size());
-        assertThat(editorFields.stream()
-                           .map(EditorFieldModel::getInputTypeHint)
+        assertThat(editorFields.subList(1, 3)
+                           .stream()
+                           .map(EditorFieldModel::getTextInputType)
                            .collect(Collectors.toList()),
-                containsInAnyOrder(EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN,
-                        EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC,
-                        EditorFieldModel.INPUT_TYPE_HINT_PHONE));
+                containsInAnyOrder(
+                        TextInputType.ALPHA_NUMERIC_INPUT, TextInputType.PHONE_NUMBER_INPUT));
         EditorFieldModel countryDropdown = editorFields.get(0);
 
         countryDropdown.setDropdownKey("DE", () -> {});
@@ -444,12 +449,12 @@ public class AddressEditorTest {
         // editorFields[1] - street address field.
         // editorFields[2] - phone number field.
         assertEquals(3, editorFields.size());
-        assertThat(editorFields.stream()
-                           .map(EditorFieldModel::getInputTypeHint)
+        assertThat(editorFields.subList(1, 3)
+                           .stream()
+                           .map(EditorFieldModel::getTextInputType)
                            .collect(Collectors.toList()),
-                containsInAnyOrder(EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN,
-                        EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES,
-                        EditorFieldModel.INPUT_TYPE_HINT_PHONE));
+                containsInAnyOrder(
+                        TextInputType.STREET_ADDRESS_INPUT, TextInputType.PHONE_NUMBER_INPUT));
     }
 
     @Test

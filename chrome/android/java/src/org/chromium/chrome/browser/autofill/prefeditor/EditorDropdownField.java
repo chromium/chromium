@@ -63,7 +63,7 @@ class EditorDropdownField implements EditorFieldView {
      */
     public EditorDropdownField(Context context, ViewGroup root, final EditorFieldModel fieldModel,
             final Runnable changedCallback, boolean hasRequiredIndicator) {
-        assert fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
+        assert fieldModel.isDropdownField();
         mContext = context;
         mFieldModel = fieldModel;
 

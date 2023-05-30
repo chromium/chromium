@@ -484,7 +484,7 @@ public class EditorDialog
     private View addFieldViewToEditor(ViewGroup parent, final EditorFieldModel fieldModel) {
         View childView = null;
 
-        if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN) {
+        if (fieldModel.isDropdownField()) {
             Runnable prepareEditorRunnable = new Runnable() {
                 @Override
                 public void run() {

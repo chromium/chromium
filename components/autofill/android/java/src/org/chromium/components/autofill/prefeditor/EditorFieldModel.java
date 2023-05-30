@@ -8,10 +8,13 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +26,45 @@ import java.util.Set;
  * input field.
  */
 public class EditorFieldModel {
+    /*
+     * Types of fields this editor model supports.
+     */
+    @IntDef({ItemType.DROPDOWN, ItemType.TEXT_INPUT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ItemType {
+        // A fixed list of values, only 1 of which can be selected.
+        int DROPDOWN = 1;
+        // User can fill in a sequence of characters subject to input type restrictions.
+        int TEXT_INPUT = 2;
+    }
+
+    @IntDef({
+            TextInputType.PLAIN_TEXT_INPUT,
+            TextInputType.PHONE_NUMBER_INPUT,
+            TextInputType.EMAIL_ADDRESS_INPUT,
+            TextInputType.STREET_ADDRESS_INPUT,
+            TextInputType.PERSON_NAME_INPUT,
+            TextInputType.ALPHA_NUMERIC_INPUT,
+            TextInputType.REGION_INPUT,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TextInputType {
+        // All symbols are allowed.
+        int PLAIN_TEXT_INPUT = 1;
+        // Only numbers and phone related symbols should be entered.
+        int PHONE_NUMBER_INPUT = 2;
+        // Text with email address symbols should be entered.
+        int EMAIL_ADDRESS_INPUT = 3;
+        // Text with numbers should be entered.
+        int STREET_ADDRESS_INPUT = 4;
+        // Only text symbols should be entered.
+        int PERSON_NAME_INPUT = 5;
+        // Text symbols and number should be entered.
+        int ALPHA_NUMERIC_INPUT = 6;
+        // All letters will be capitalized.
+        int REGION_INPUT = 7;
+    }
+
     /**
      * The interface to be implemented by the field validator.
      */
@@ -69,40 +111,11 @@ public class EditorFieldModel {
         }
     }
 
-    private static final int INPUT_TYPE_HINT_MIN_INCLUSIVE = 0;
-
-    /** Text input with no special formatting rules, e.g., a city, a suburb, or a company name. */
-    public static final int INPUT_TYPE_HINT_NONE = 0;
-
-    /** Indicates a phone field. */
-    public static final int INPUT_TYPE_HINT_PHONE = 1;
-
-    /** Indicates an email field. */
-    public static final int INPUT_TYPE_HINT_EMAIL = 2;
-
-    /** Indicates a multi-line address field that may include numbers. */
-    public static final int INPUT_TYPE_HINT_STREET_LINES = 3;
-
-    /** Indicates a person's name. */
-    public static final int INPUT_TYPE_HINT_PERSON_NAME = 4;
-
-    /** Indicates a region or an administrative area, e.g., a state or a province. */
-    public static final int INPUT_TYPE_HINT_REGION = 5;
-
-    /** Indicates an alpha-numeric value, e.g., postal code or sorting code. */
-    public static final int INPUT_TYPE_HINT_ALPHA_NUMERIC = 6;
-
-    private static final int INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE = 8;
-
-    /** Indicates a dropdown. */
-    public static final int INPUT_TYPE_HINT_DROPDOWN = 9;
-
-    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 10;
-
     /* Indicates that the length counter is disabled. */
     public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
 
-    private final int mInputTypeHint;
+    private final @ItemType int mFieldType;
+    private final @TextInputType int mTextInputType;
 
     @Nullable
     private List<DropdownKeyValue> mDropdownKeyValues;
@@ -148,7 +161,7 @@ public class EditorFieldModel {
     public static EditorFieldModel createDropdown(@Nullable CharSequence label,
             List<DropdownKeyValue> dropdownKeyValues, @Nullable CharSequence hint) {
         assert dropdownKeyValues != null;
-        EditorFieldModel result = new EditorFieldModel(INPUT_TYPE_HINT_DROPDOWN);
+        EditorFieldModel result = new EditorFieldModel(ItemType.DROPDOWN);
         result.mLabel = label;
         result.mHint = hint;
         result.setDropdownKeyValues(dropdownKeyValues);
@@ -179,16 +192,16 @@ public class EditorFieldModel {
 
     /** Constructs a text input field model without any special text formatting hints. */
     public static EditorFieldModel createTextInput() {
-        return new EditorFieldModel(INPUT_TYPE_HINT_NONE);
+        return createTextInput(TextInputType.PLAIN_TEXT_INPUT);
     }
 
     /**
      * Constructs a text input field model.
      *
-     * @param inputTypeHint The type of input. For example, INPUT_TYPE_HINT_PHONE.
+     * @param textInputType The type of text field to create.
      */
-    public static EditorFieldModel createTextInput(int inputTypeHint) {
-        EditorFieldModel result = new EditorFieldModel(inputTypeHint);
+    public static EditorFieldModel createTextInput(@TextInputType int textInputType) {
+        EditorFieldModel result = new EditorFieldModel(ItemType.TEXT_INPUT, textInputType);
         assert result.isTextField();
         return result;
     }
@@ -196,7 +209,7 @@ public class EditorFieldModel {
     /**
      * Constructs a text input field model.
      *
-     * @param inputTypeHint        The type of input. For example, {@link INPUT_TYPE_HINT_PHONE}.
+     * @param textInputType        The type of text field to create.
      * @param label                The human-readable label for user to understand the type of data
      *                             that should be entered into this field.
      * @param suggestions          Optional set of values to suggest to the user.
@@ -212,13 +225,13 @@ public class EditorFieldModel {
      *                             {@link LENGTH_COUNTER_LIMIT_NONE} to disable the counter.
      * @param value                Optional initial value of this field.
      */
-    public static EditorFieldModel createTextInput(int inputTypeHint, CharSequence label,
-            @Nullable Set<CharSequence> suggestions, @Nullable TextWatcher formatter,
-            @Nullable EditorFieldValidator validator, @Nullable CharSequence requiredErrorMessage,
-            @Nullable CharSequence invalidErrorMessage, int lengthCounterLimit,
-            @Nullable CharSequence value) {
+    public static EditorFieldModel createTextInput(@TextInputType int textInputType,
+            CharSequence label, @Nullable Set<CharSequence> suggestions,
+            @Nullable TextWatcher formatter, @Nullable EditorFieldValidator validator,
+            @Nullable CharSequence requiredErrorMessage, @Nullable CharSequence invalidErrorMessage,
+            int lengthCounterLimit, @Nullable CharSequence value) {
         assert label != null;
-        EditorFieldModel result = new EditorFieldModel(inputTypeHint);
+        EditorFieldModel result = new EditorFieldModel(ItemType.TEXT_INPUT, textInputType);
         assert result.isTextField();
         result.mSuggestions = suggestions == null ? null : new ArrayList<CharSequence>(suggestions);
         result.mFormatter = formatter;
@@ -231,9 +244,17 @@ public class EditorFieldModel {
         return result;
     }
 
-    private EditorFieldModel(int inputTypeHint) {
-        assert isTextField();
-        mInputTypeHint = inputTypeHint;
+    public EditorFieldModel(@ItemType int fieldType) {
+        assert fieldType != ItemType.TEXT_INPUT;
+        mFieldType = fieldType;
+        // This value is meaningless when field type is not text input.
+        mTextInputType = TextInputType.PLAIN_TEXT_INPUT;
+    }
+
+    public EditorFieldModel(@ItemType int fieldType, @TextInputType int textInputType) {
+        assert fieldType == ItemType.TEXT_INPUT;
+        mFieldType = fieldType;
+        mTextInputType = textInputType;
     }
 
     /** @return The value formatter or null if not exist. */
@@ -245,29 +266,34 @@ public class EditorFieldModel {
 
     /** @return Whether the input is a text field. */
     public boolean isTextField() {
-        return mInputTypeHint >= INPUT_TYPE_HINT_MIN_INCLUSIVE
-                && mInputTypeHint < INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE;
+        return mFieldType == ItemType.TEXT_INPUT;
     }
 
     /** @return Whether the input is a dropdown field. */
     public boolean isDropdownField() {
-        return mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        return mFieldType == ItemType.DROPDOWN;
     }
 
-    /** @return The type of input, for example, INPUT_TYPE_HINT_PHONE. */
-    public int getInputTypeHint() {
-        return mInputTypeHint;
+    /** @return The type of this field, for example, {@link ItemType.DROPDOWN}. */
+    public @ItemType int getFieldType() {
+        return mFieldType;
+    }
+
+    /** @return The type of this text input field. */
+    public @TextInputType int getTextInputType() {
+        assert isTextField();
+        return mTextInputType;
     }
 
     /** @return The dropdown key-value pairs. */
     public List<DropdownKeyValue> getDropdownKeyValues() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         return mDropdownKeyValues;
     }
 
     /** @return The dropdown keys. */
     public Set<String> getDropdownKeys() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         return mDropdownKeys;
     }
 
@@ -281,7 +307,7 @@ public class EditorFieldModel {
      */
     @Nullable
     public String getDropdownKeyByValue(@Nullable CharSequence value) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         if (value == null) {
             return null;
         }
@@ -298,13 +324,13 @@ public class EditorFieldModel {
      */
     @Nullable
     public CharSequence getDropdownValueByKey(@Nullable String key) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         return mDropdownKeyToValueMap.get(key);
     }
 
     /** Updates the dropdown key values. */
     public void setDropdownKeyValues(List<DropdownKeyValue> dropdownKeyValues) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         mDropdownKeyValues = dropdownKeyValues;
         mDropdownKeys = new HashSet<>();
         mDropdownKeyToValueMap = new HashMap<>();
@@ -326,7 +352,7 @@ public class EditorFieldModel {
 
     /** @return The human-readable hint for this dropdown field. */
     public CharSequence getHint() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         return mHint;
     }
 
@@ -383,7 +409,7 @@ public class EditorFieldModel {
      * @param callback The callback to invoke when the change has been processed.
      */
     public void setDropdownKey(@Nullable String key, Runnable callback) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         // The mValue can only be set to null if there is a hint.
         if (key == null && mHint == null) {
             return;
@@ -453,7 +479,7 @@ public class EditorFieldModel {
      *                 callback to invoke after the dropdown change has been processed.
      */
     public void setDropdownCallback(Callback<Pair<String, Runnable>> callback) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
+        assert isDropdownField();
         mDropdownCallback = callback;
     }
 

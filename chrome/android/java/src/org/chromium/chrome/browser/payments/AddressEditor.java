@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Addre
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -228,25 +229,25 @@ public class AddressEditor
 
             // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
             // the keyboard, if possible.
-            mAddressFields.put(AddressField.SORTING_CODE, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
-            mAddressFields.put(AddressField.POSTAL_CODE, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+            mAddressFields.put(AddressField.SORTING_CODE,
+                    EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
+            mAddressFields.put(AddressField.POSTAL_CODE,
+                    EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
 
             // Street line field can contain \n to indicate line breaks.
-            mAddressFields.put(AddressField.STREET_ADDRESS, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
+            mAddressFields.put(AddressField.STREET_ADDRESS,
+                    EditorFieldModel.createTextInput(TextInputType.STREET_ADDRESS_INPUT));
 
             // Android has special formatting rules for names.
-            mAddressFields.put(AddressField.RECIPIENT, EditorFieldModel.createTextInput(
-                    EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
+            mAddressFields.put(AddressField.RECIPIENT,
+                    EditorFieldModel.createTextInput(TextInputType.PERSON_NAME_INPUT));
         }
 
         // Phone number is present for all countries.
         if (mPhoneField == null) {
             String requiredErrorMessage =
                     mContext.getString(R.string.pref_edit_dialog_field_required_validation_message);
-            mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+            mPhoneField = EditorFieldModel.createTextInput(TextInputType.PHONE_NUMBER_INPUT,
                     mContext.getString(R.string.autofill_profile_editor_phone_number),
                     mPhoneNumbers, mPhoneFormatter, mPhoneValidator, requiredErrorMessage,
                     mContext.getString(R.string.payments_phone_invalid_validation_message),
@@ -411,11 +412,10 @@ public class AddressEditor
                 (adminAreaCodes != null && adminAreaNames != null && adminAreaCodes.length != 0
                         && adminAreaCodes.length == adminAreaNames.length)
                         ? EditorFieldModel.createDropdown(null /* label */,
-                                  AutofillProfileBridge.getAdminAreaDropdownList(
-                                          adminAreaCodes, adminAreaNames),
-                                  mContext.getString(R.string.select))
-                        : EditorFieldModel.createTextInput(
-                                  EditorFieldModel.INPUT_TYPE_HINT_REGION));
+                                AutofillProfileBridge.getAdminAreaDropdownList(
+                                        adminAreaCodes, adminAreaNames),
+                                mContext.getString(R.string.select))
+                        : EditorFieldModel.createTextInput(TextInputType.REGION_INPUT));
 
         // Admin areas need to be fetched in two cases:
         // 1. Initial loading of the form.

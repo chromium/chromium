@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -189,7 +190,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                 : toEdit;
 
         final EditorFieldModel nameField = mRequestPayerName
-                ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
+                ? EditorFieldModel.createTextInput(TextInputType.PERSON_NAME_INPUT,
                         mContext.getString(R.string.payments_name_field_in_contact_details),
                         mPayerNames, /*formatter=*/null, /*validator=*/null,
                         mContext.getString(
@@ -198,7 +199,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                 : null;
 
         final EditorFieldModel phoneField = mRequestPayerPhone
-                ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+                ? EditorFieldModel.createTextInput(TextInputType.PHONE_NUMBER_INPUT,
                         mContext.getString(R.string.autofill_profile_editor_phone_number),
                         mPhoneNumbers, new PhoneNumberUtil.CountryAwareFormatTextWatcher(),
                         getPhoneValidator(),
@@ -209,7 +210,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                 : null;
 
         final EditorFieldModel emailField = mRequestPayerEmail
-                ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+                ? EditorFieldModel.createTextInput(TextInputType.EMAIL_ADDRESS_INPUT,
                         mContext.getString(R.string.autofill_profile_editor_email_address),
                         mEmailAddresses, null, getEmailValidator(),
                         mContext.getString(

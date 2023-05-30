@@ -4,6 +4,13 @@
 
 package org.chromium.components.autofill.prefeditor;
 
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.ALPHA_NUMERIC_INPUT;
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.EMAIL_ADDRESS_INPUT;
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.PERSON_NAME_INPUT;
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.PHONE_NUMBER_INPUT;
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.REGION_INPUT;
+import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.STREET_ADDRESS_INPUT;
+
 import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -57,7 +64,7 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
             boolean focusAndShowKeyboard, boolean hasRequiredIndicator) {
         super(context);
-        assert fieldModel.getInputTypeHint() != EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
+        assert !fieldModel.isDropdownField();
         mEditorFieldModel = fieldModel;
         mEditorActionListener = actionListener;
 
@@ -174,31 +181,31 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             formatter.afterTextChanged(mInput.getText());
         }
 
-        switch (fieldModel.getInputTypeHint()) {
-            case EditorFieldModel.INPUT_TYPE_HINT_PHONE:
+        switch (fieldModel.getTextInputType()) {
+            case PHONE_NUMBER_INPUT:
                 // Show the keyboard with numbers and phone-related symbols.
                 mInput.setInputType(InputType.TYPE_CLASS_PHONE);
                 break;
-            case EditorFieldModel.INPUT_TYPE_HINT_EMAIL:
+            case EMAIL_ADDRESS_INPUT:
                 mInput.setInputType(
                         InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 break;
-            case EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES:
+            case STREET_ADDRESS_INPUT:
                 // TODO(rouslan): Provide a hint to the keyboard that the street lines are
                 // likely to have numbers.
                 mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_FLAG_MULTI_LINE
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
                 break;
-            case EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME:
+            case PERSON_NAME_INPUT:
                 mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 break;
-            case EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC:
+            case ALPHA_NUMERIC_INPUT:
             // Intentionally fall through.
             // TODO(rouslan): Provide a hint to the keyboard that postal code and sorting
             // code are likely to have numbers.
-            case EditorFieldModel.INPUT_TYPE_HINT_REGION:
+            case REGION_INPUT:
                 mInput.setInputType(InputType.TYPE_CLASS_TEXT
                         | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);

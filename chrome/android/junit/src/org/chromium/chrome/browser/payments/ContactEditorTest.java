@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -88,10 +89,10 @@ public class ContactEditorTest {
     }
 
     private static void validateTextField(
-            EditorFieldModel field, String value, int inputTypeHint, String label) {
+            EditorFieldModel field, String value, @TextInputType int textInputType, String label) {
         assertTrue(field.isTextField());
         assertEquals(field.getValue(), value);
-        assertEquals(inputTypeHint, field.getInputTypeHint());
+        assertEquals(textInputType, field.getTextInputType());
         assertEquals(label, field.getLabel());
         assertTrue(field.isRequired());
         assertTrue(field.isFullLine());
@@ -127,7 +128,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), null, EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
+        validateTextField(editorFields.get(0), null, TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
     }
 
@@ -146,7 +147,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), null, EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+        validateTextField(editorFields.get(0), null, TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
     }
 
@@ -165,7 +166,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), null, EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+        validateTextField(editorFields.get(0), null, TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
     }
 
@@ -184,11 +185,11 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
-        validateTextField(editorFields.get(0), null, EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
+        validateTextField(editorFields.get(0), null, TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
-        validateTextField(editorFields.get(1), null, EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+        validateTextField(editorFields.get(1), null, TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
-        validateTextField(editorFields.get(2), null, EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+        validateTextField(editorFields.get(2), null, TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
     }
 
@@ -209,8 +210,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), "Payer name",
-                EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
+        validateTextField(editorFields.get(0), "Payer name", TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
     }
 
@@ -231,8 +231,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), "Payer phone",
-                EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+        validateTextField(editorFields.get(0), "Payer phone", TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
     }
 
@@ -253,8 +252,7 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(1, editorFields.size());
-        validateTextField(editorFields.get(0), "Payer email",
-                EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+        validateTextField(editorFields.get(0), "Payer email", TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
     }
 
@@ -275,14 +273,11 @@ public class ContactEditorTest {
 
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(3, editorFields.size());
-        validateTextField(editorFields.get(0), "Payer name",
-                EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
+        validateTextField(editorFields.get(0), "Payer name", TextInputType.PERSON_NAME_INPUT,
                 mActivity.getString(R.string.payments_name_field_in_contact_details));
-        validateTextField(editorFields.get(1), "Payer phone",
-                EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+        validateTextField(editorFields.get(1), "Payer phone", TextInputType.PHONE_NUMBER_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number));
-        validateTextField(editorFields.get(2), "Payer email",
-                EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+        validateTextField(editorFields.get(2), "Payer email", TextInputType.EMAIL_ADDRESS_INPUT,
                 mActivity.getString(R.string.autofill_profile_editor_email_address));
     }
 

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -104,7 +105,7 @@ public class AddressEditor {
     private static Map<Integer, EditorFieldModel> getAddressFields() {
         Map<Integer, EditorFieldModel> addressFields = new HashMap<>();
 
-        // Don't use INPUT_TYPE_HINT_REGION to avoid capitalizing all characters.
+        // Don't use REGION_INPUT to avoid capitalizing all characters.
         addressFields.put(AddressField.ADMIN_AREA, EditorFieldModel.createTextInput());
 
         // City, dependent locality, and organization don't have any special formatting hints.
@@ -115,17 +116,17 @@ public class AddressEditor {
         // Sorting code and postal code (a.k.a. ZIP code) should show both letters and digits on
         // the keyboard, if possible.
         addressFields.put(AddressField.SORTING_CODE,
-                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+                EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
         addressFields.put(AddressField.POSTAL_CODE,
-                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC));
+                EditorFieldModel.createTextInput(TextInputType.ALPHA_NUMERIC_INPUT));
 
         // Street line field can contain \n to indicate line breaks.
         addressFields.put(AddressField.STREET_ADDRESS,
-                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_STREET_LINES));
+                EditorFieldModel.createTextInput(TextInputType.STREET_ADDRESS_INPUT));
 
         // Android has special formatting rules for names.
         addressFields.put(AddressField.RECIPIENT,
-                EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
+                EditorFieldModel.createTextInput(TextInputType.PERSON_NAME_INPUT));
 
         return addressFields;
     }
@@ -235,14 +236,14 @@ public class AddressEditor {
         mAddressFields.putAll(getAddressFields());
 
         // Phone number is present for all countries.
-        mPhoneField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PHONE,
+        mPhoneField = EditorFieldModel.createTextInput(TextInputType.PHONE_NUMBER_INPUT,
                 mContext.getString(R.string.autofill_profile_editor_phone_number), mPhoneNumbers,
                 mPhoneFormatter, mPhoneValidator, /* requiredErrorMessage */ null,
                 mContext.getString(R.string.payments_phone_invalid_validation_message),
                 EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, null /* value */);
 
         // Phone number is present for all countries.
-        mEmailField = EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_EMAIL,
+        mEmailField = EditorFieldModel.createTextInput(TextInputType.EMAIL_ADDRESS_INPUT,
                 mContext.getString(R.string.autofill_profile_editor_email_address),
                 null /* suggestions */, null /* formatter */, null /* validator */,
                 null /* requiredErrorMessage */,
