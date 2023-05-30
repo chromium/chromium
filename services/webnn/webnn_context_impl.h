@@ -6,24 +6,34 @@
 #define SERVICES_WEBNN_WEBNN_CONTEXT_IMPL_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/mojom/webnn_service.mojom.h"
 
 namespace webnn {
 
+class WebNNContextProviderImpl;
+
 class WebNNContextImpl : public mojom::WebNNContext {
  public:
-  WebNNContextImpl();
+  WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                   WebNNContextProviderImpl* context_provider);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
 
   ~WebNNContextImpl() override;
 
-  static void Create(mojo::PendingReceiver<mojom::WebNNContext> receiver);
-
  private:
+  void OnConnectionError();
+
   // mojom::WebNNContext
-  void CreateGraph(CreateGraphCallback callback) override;
+  void CreateGraph(mojom::GraphInfoPtr graph_info,
+                   CreateGraphCallback callback) override;
+
+  mojo::Receiver<mojom::WebNNContext> receiver_;
+
+  // Owns this object.
+  raw_ptr<WebNNContextProviderImpl> context_provider_;
 };
 
 }  // namespace webnn

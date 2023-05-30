@@ -29,6 +29,7 @@ source_set("webnn") {
 
   deps = [
     "//base",
+    "//components/ml/webnn",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
   ]
@@ -37,7 +38,10 @@ source_set("webnn") {
 source_set("tests") {
   testonly = true
 
-  sources = [ "webnn_context_impl_unittest.cc" ]
+  sources = [
+    "webnn_context_impl_unittest.cc",
+    "webnn_graph_impl_unittest.cc",
+  ]
 
   if (is_win) {
     sources += [

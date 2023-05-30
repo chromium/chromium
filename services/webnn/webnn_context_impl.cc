@@ -8,29 +8,37 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn {
 
-WebNNContextImpl::WebNNContextImpl() = default;
+WebNNContextImpl::WebNNContextImpl(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    WebNNContextProviderImpl* context_provider)
+    : receiver_(this, std::move(receiver)),
+      context_provider_(context_provider) {
+  CHECK(context_provider_);
+  // Safe to use base::Unretained because the context_provider_ owns this class
+  // that won't be destroyed until this callback executes.
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &WebNNContextImpl::OnConnectionError, base::Unretained(this)));
+}
 
 WebNNContextImpl::~WebNNContextImpl() = default;
 
-// static
-void WebNNContextImpl::Create(
-    mojo::PendingReceiver<mojom::WebNNContext> receiver) {
-  mojo::MakeSelfOwnedReceiver<mojom::WebNNContext>(
-      std::make_unique<WebNNContextImpl>(), std::move(receiver));
+void WebNNContextImpl::OnConnectionError() {
+  context_provider_->OnConnectionError(this);
 }
 
 void WebNNContextImpl::CreateGraph(
+    mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
-  // The receiver bound to WebNNGraphImpl.
-  WebNNGraphImpl::Create(blink_remote.InitWithNewPipeAndPassReceiver());
-
-  std::move(callback).Run(std::move(blink_remote));
+  if (!WebNNGraphImpl::ValidateAndBuildGraph(std::move(callback),
+                                             std::move(graph_info))) {
+    receiver_.ReportBadMessage("Invalid graph from renderer.");
+    return;
+  }
 }
 
 }  // namespace webnn

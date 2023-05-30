@@ -24,7 +24,7 @@ class V8TestingScope;
 // The utility methods for graph test.
 enum ExecutionMode { kAsync, kSync };
 // The backends share the unit tests in the MLGraphTest.
-enum BackendType { kFake, kXnnpack, kModelLoader };
+enum BackendType { kFake, kXnnpack, kModelLoader, kWebNNService };
 
 using TestVariety = std::tuple<BackendType, ExecutionMode>;
 

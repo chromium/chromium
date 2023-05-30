@@ -76,6 +76,8 @@ blink_modules_sources("ml") {
       # renderer process.
       "webnn/ml_graph_mojo.cc",
       "webnn/ml_graph_mojo.h",
+      "webnn/ml_graph_type_converter.cc",
+      "webnn/ml_graph_type_converter.h",
     ]
   }
 }

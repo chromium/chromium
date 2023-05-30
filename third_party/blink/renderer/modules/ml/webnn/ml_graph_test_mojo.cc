@@ -21,10 +21,23 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_test_base.h"
 
 namespace blink {
 
 namespace blink_mojom = webnn::mojom::blink;
+
+class MLGraphTestMojo : public MLGraphTestBase {
+ public:
+  void SetGraphInfo(blink_mojom::GraphInfoPtr graph_info) {
+    graph_info_ = std::move(graph_info);
+  }
+
+  blink_mojom::GraphInfoPtr GetGraphInfo() { return std::move(graph_info_); }
+
+ private:
+  blink_mojom::GraphInfoPtr graph_info_;
+};
 
 class FakeWebNNGraph : public blink_mojom::WebNNGraph {
  public:
@@ -40,14 +53,17 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
 class FakeWebNNContext : public blink_mojom::WebNNContext {
  public:
-  FakeWebNNContext() = default;
+  explicit FakeWebNNContext(MLGraphTestMojo& helper) : helper_(helper) {}
   FakeWebNNContext(const FakeWebNNContext&) = delete;
   FakeWebNNContext(FakeWebNNContext&&) = delete;
   ~FakeWebNNContext() override = default;
 
  private:
   // Override methods from webnn::mojom::WebNNContext.
-  void CreateGraph(CreateGraphCallback callback) override {
+  void CreateGraph(blink_mojom::GraphInfoPtr graph_info,
+                   CreateGraphCallback callback) override {
+    helper_.SetGraphInfo(std::move(graph_info));
+
     mojo::PendingRemote<blink_mojom::WebNNGraph> blink_remote;
     // The receiver bind to FakeWebNNGraph.
     mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNGraph>(
@@ -56,11 +72,13 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
 
     std::move(callback).Run(std::move(blink_remote));
   }
+  MLGraphTestMojo& helper_;
 };
 
 class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
  public:
-  FakeWebNNContextProvider() : receiver_(this) {}
+  explicit FakeWebNNContextProvider(MLGraphTestMojo& helper)
+      : helper_(helper), receiver_(this) {}
   FakeWebNNContextProvider(const FakeWebNNContextProvider&) = delete;
   FakeWebNNContextProvider(FakeWebNNContextProvider&&) = delete;
   ~FakeWebNNContextProvider() override = default;
@@ -84,21 +102,23 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
     mojo::PendingRemote<blink_mojom::WebNNContext> blink_remote;
     // The receiver bind to FakeWebNNContext.
     mojo::MakeSelfOwnedReceiver<blink_mojom::WebNNContext>(
-        std::make_unique<FakeWebNNContext>(),
+        std::make_unique<FakeWebNNContext>(helper_),
         blink_remote.InitWithNewPipeAndPassReceiver());
 
     std::move(callback).Run(blink_mojom::CreateContextResult::kOk,
                             std::move(blink_remote));
   }
 
+  MLGraphTestMojo& helper_;
   mojo::Receiver<blink_mojom::WebNNContextProvider> receiver_;
 };
 
 class ScopedWebNNServiceBinder {
  public:
-  explicit ScopedWebNNServiceBinder(V8TestingScope& scope)
+  explicit ScopedWebNNServiceBinder(MLGraphTestMojo& helper,
+                                    V8TestingScope& scope)
       : fake_webnn_context_provider_(
-            std::make_unique<FakeWebNNContextProvider>()),
+            std::make_unique<FakeWebNNContextProvider>(helper)),
         interface_broker_(
             scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
     interface_broker_.SetBinderForTesting(
@@ -122,8 +142,6 @@ class ScopedWebNNServiceBinder {
   const BrowserInterfaceBrokerProxy& interface_broker_;
 };
 
-class MLGraphTestMojo : public testing::Test {};
-
 MLGraphMojo* ToMLGraphMojo(V8TestingScope* scope, ScriptValue value) {
   return NativeValueTraits<MLGraphMojo>::NativeValue(
       scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
@@ -134,19 +152,30 @@ ScriptPromise BuildSimpleGraph(V8TestingScope& scope,
                                MLContextOptions* context_options) {
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), context_options);
-  auto* input =
-      BuildInput(builder, "input", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+  auto* lhs_operand =
+      BuildInput(builder, "lhs", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
                  scope.GetExceptionState());
-  auto* output = builder->relu(input, scope.GetExceptionState());
+  auto* rhs_operand =
+      BuildInput(builder, "rhs", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+                 scope.GetExceptionState());
+  auto* output =
+      builder->add(lhs_operand, rhs_operand, scope.GetExceptionState());
   EXPECT_NE(output, nullptr);
   return builder->build(scope.GetScriptState(), {{"output", output}},
                         scope.GetExceptionState());
 }
 
-TEST_F(MLGraphTestMojo, CreateWebNNGraphTest) {
+struct OperandInfoMojo {
+  blink_mojom::Operand::DataType type;
+  Vector<uint32_t> dimensions;
+};
+
+using OperandInfoBlink = OperandInfo<float>;
+
+TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(scope);
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
 
   auto* script_state = scope.GetScriptState();
   auto* options = MLContextOptions::Create();
@@ -182,5 +211,139 @@ TEST_F(MLGraphTestMojo, CreateWebNNGraphTest) {
     EXPECT_TRUE(scoped_setup_binder.IsWebNNContextBound());
   }
 }
+
+struct ElementWiseBinaryTester {
+  ElementWiseBinaryKind kind;
+  OperandInfoBlink lhs;
+  OperandInfoBlink rhs;
+  OperandInfoMojo expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* lhs_operand = BuildInput(builder, "lhs", lhs.dimensions, lhs.type,
+                                   scope.GetExceptionState());
+    auto* rhs_operand = BuildInput(builder, "rhs", rhs.dimensions, rhs.type,
+                                   scope.GetExceptionState());
+    auto* output_operand =
+        BuildElementWiseBinary(scope, builder, kind, lhs_operand, rhs_operand);
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 3u);
+    EXPECT_EQ(graph_info->input_operands.size(), 2u);
+    // Verify the left `mojo::Operand`.
+    auto lhs_operand_id = graph_info->input_operands[0];
+    auto lhs_operand_iter = graph_info->id_to_operand_map.find(lhs_operand_id);
+    ASSERT_TRUE(lhs_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(lhs_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(lhs_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(lhs_operand_iter->value->dimensions, lhs.dimensions);
+    EXPECT_EQ(lhs_operand_iter->value->name, "lhs");
+    // Verify the right `mojo::Operand`.
+    auto rhs_operand_id = graph_info->input_operands[1];
+    auto rhs_operand_iter = graph_info->id_to_operand_map.find(rhs_operand_id);
+    ASSERT_TRUE(rhs_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(rhs_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kInput);
+    EXPECT_EQ(rhs_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(rhs_operand_iter->value->dimensions, rhs.dimensions);
+    EXPECT_EQ(rhs_operand_iter->value->name, "rhs");
+    // Verify the output `mojo::Operand`.
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->kind,
+              blink_mojom::Operand::Kind::kOutput);
+    EXPECT_EQ(output_operand_iter->value->data_type, expected.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+    EXPECT_EQ(output_operand_iter->value->name, "output");
+    // Verify the `mojo::Operator`.
+    ASSERT_EQ(graph_info->operators.size(), 1u);
+    auto& operation = graph_info->operators[0];
+    ASSERT_EQ(operation->input_operands.size(), 2u);
+    EXPECT_EQ(operation->input_operands[0], lhs_operand_id);
+    EXPECT_EQ(operation->input_operands[1], rhs_operand_id);
+    ASSERT_EQ(operation->output_operands.size(), 1u);
+    EXPECT_EQ(operation->output_operands[0], output_operand_id);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ElementWiseBinaryTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  {
+    // Test element-wise add operator for two 1-D tensors.
+    ElementWiseBinaryTester{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
+        .rhs = {.type = V8MLOperandType::Enum::kFloat32, .dimensions = {2}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test element-wise add operator for two 2-D tensors.
+    ElementWiseBinaryTester{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
+        .rhs = {.type = V8MLOperandType::Enum::kFloat16, .dimensions = {3, 7}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {3, 7}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test element-wise add operator for broadcasting to 2-D tensor.
+    ElementWiseBinaryTester{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 3}},
+        .rhs = {.type = V8MLOperandType::Enum::kInt32, .dimensions = {5, 1}},
+        .expected = {.type = blink_mojom::Operand::DataType::kInt32,
+                     .dimensions = {5, 3}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test element-wise add operator for broadcasting to 3-D tensor.
+    ElementWiseBinaryTester{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4, 2, 1}},
+        .rhs = {.type = V8MLOperandType::Enum::kInt8, .dimensions = {4}},
+        .expected = {.type = blink_mojom::Operand::DataType::kInt8,
+                     .dimensions = {4, 2, 4}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test element-wise add operator for broadcasting to 4-D tensors.
+    ElementWiseBinaryTester{
+        .kind = ElementWiseBinaryKind::kAdd,
+        .lhs = {.type = V8MLOperandType::Enum::kUint8,
+                .dimensions = {8, 1, 6, 1}},
+        .rhs = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {7, 1, 5}},
+        .expected = {.type = blink_mojom::Operand::DataType::kUint8,
+                     .dimensions = {8, 7, 6, 5}}}
+        .Test(*this, scope, builder);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MLGraphTestMojo,
+    testing::Combine(::testing::Values(BackendType::kWebNNService),
+                     ::testing::Values(ExecutionMode::kAsync)),
+    TestVarietyToString);
 
 }  // namespace blink

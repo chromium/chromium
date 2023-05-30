@@ -36,6 +36,9 @@ std::string TestVarietyToString(
     case BackendType::kModelLoader:
       name += "ModelLoader_";
       break;
+    case BackendType::kWebNNService:
+      name += "WebNNService_";
+      break;
   }
 
   switch (execution_mode) {
