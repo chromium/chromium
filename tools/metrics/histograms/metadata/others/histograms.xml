@@ -14813,13 +14813,72 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WrenchMenu.TimeToAction" units="units"
+<histogram name="WrenchMenu.TimeToAction.{Action}" units="units"
     expires_after="2023-10-01">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>
     The time a user takes to select a menu item after opening the menu.
   </summary>
+  <token key="Action">
+    <variant name="About"/>
+    <variant name="AppInfo"/>
+    <variant name="BetaForum"/>
+    <variant name="BookmarkAllTabs"/>
+    <variant name="BookmarkPage"/>
+    <variant name="Cast"/>
+    <variant name="ChromeOSRestart"/>
+    <variant name="ChromeTips"/>
+    <variant name="ClearBrowsingData"/>
+    <variant name="Copy"/>
+    <variant name="CopyUrl"/>
+    <variant name="CreateHostedApp"/>
+    <variant name="CreateQrCode"/>
+    <variant name="Cut"/>
+    <variant name="DevTools"/>
+    <variant name="DevToolsConsole"/>
+    <variant name="DevToolsDevices"/>
+    <variant name="DistillPage"/>
+    <variant name="EnterFullScreen"/>
+    <variant name="Exit"/>
+    <variant name="Feedback"/>
+    <variant name="Find"/>
+    <variant name="HelpPage"/>
+    <variant name="ImportSettings"/>
+    <variant name="InstallPwa"/>
+    <variant name="ManageExtensions"/>
+    <variant name="NewIncognitoWindow"/>
+    <variant name="NewTab"/>
+    <variant name="NewWindow"/>
+    <variant name="OpenBookmark"/>
+    <variant name="OpenInChrome"/>
+    <variant name="OpenInPwaWindow"/>
+    <variant name="OpenRecentTab"/>
+    <variant name="PasswordManager"/>
+    <variant name="Paste"/>
+    <variant name="Print"/>
+    <variant name="ProfilingEnabled"/>
+    <variant name="RequestTabletSite"/>
+    <variant name="RestoreTab"/>
+    <variant name="SavePage"/>
+    <variant name="SendToDevices"/>
+    <variant name="Settings"/>
+    <variant name="ShowBookmarkBar"/>
+    <variant name="ShowBookmarkMgr"/>
+    <variant name="ShowChromeLabs"/>
+    <variant name="ShowDownloads"/>
+    <variant name="ShowHistory"/>
+    <variant name="ShowKaleidoscope"/>
+    <variant name="ShowSyncSetup"/>
+    <variant name="SiteSettings"/>
+    <variant name="TaskManager"/>
+    <variant name="ViewSource"/>
+    <variant name="VisitChromeWebStore"/>
+    <variant name="Win8MetroRestart"/>
+    <variant name="WinDesktopRestart"/>
+    <variant name="ZoomMinus"/>
+    <variant name="ZoomPlus"/>
+  </token>
 </histogram>
 
 <histogram name="WrenchMenu.TouchDuration" units="ms" expires_after="M85">
