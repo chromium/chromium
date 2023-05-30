@@ -5,7 +5,9 @@ Hermes' D-Bus client library allows Chrome to make API calls to
 ChromeOS' eSIM configuration manager.
 
 This document describes the various D-Bus clients that utilize Hermes' D-Bus
-interfaces, the **Manager Client**, **EUICC Client**, and **Profile Client**.
+interfaces, the [**Manager Client**](#Hermes-Manager-Client),
+[**EUICC Client**](#Hermes-EUICC-Client), and
+[**Profile Client**](#Hermes-Profile-Client).
 
 ### Initialization and Shutdown
 
@@ -32,7 +34,33 @@ for D-Bus calls.
 TODO
 
 ### Hermes EUICC Client
-TODO
+The EUICC is an embedded UICC which seeks to rectify the physical SIM
+shortcomings by allowing both for the storage of multiple profiles and
+for the remote provisioning of profiles. The
+[`HermesEuiccClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_euicc_client.h;drc=d0397558df545b433b085f4e894b7a61a77258c8)
+class provides an interface for interacting with the Hermes EUICC objects.
+This client can be used to:
+* Read EUICC properties
+* Install/uninstall eSIM profiles on the EUICC
+* Force refresh the list of installed eSIM profiles on the EUICC
+* Perform SM-DS scans for available eSIM profiles
+* Reset the EUICC
+
+For detailed documentation on the Hermes EUICC DBus API, please refer to
+[org.chromium.Hermes.Euicc.xml](https://source.corp.google.com/h/chromium/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Euicc.xml;drc=938e77682349e4678ecc532c57fc1178a4c47978).
+
+The
+[`HermesEuiccClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_euicc_client.h;l=38;drc=d0397558df545b433b085f4e894b7a61a77258c8)
+also provides a number of different APIs for interacting with fake Hermes
+EUICC service for testing purposes.
+* Add/remove fake carrier profile on the EUICC
+* Queues a Hermes error code that will be returned from a subsequent function call
+* Sets the return for the next call to
+`HermesEuiccClient::InstallProfileFromActivationCode()`
+* Miscellaneous behavior such as generate fake activation code, etc
+
+The `HermesEuiccClient::TestInterface` interface is implemented by
+[`FakeHermesEuiccClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h;l=20;drc=d0397558df545b433b085f4e894b7a61a77258c8).
 
 ### Hermes Profile Client
 The [`HermesProfileClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_profile_client.h;drc=e4714ce987b39d3207473e0cd5cc77fbbbf37fda)
