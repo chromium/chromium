@@ -114,6 +114,9 @@ id<GREYMatcher> Omnibox();
 // Returns matcher for the omnibox popup list row views.
 id<GREYMatcher> OmniboxPopupRow();
 
+// Returns a matcher for a popup row containing `string` as accessibility label.
+id<GREYMatcher> OmniboxPopupRowWithString(NSString* string);
+
 // Returns matcher for the omnibox popup list view.
 id<GREYMatcher> OmniboxPopupList();
 

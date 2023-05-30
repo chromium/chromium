@@ -331,6 +331,30 @@ void SendKBEventWithModifiers(UIKeyModifierFlags flags, NSString* input) {
   [[UIApplication sharedApplication] handleKeyUIEvent:keyboardEvent];
 }
 
+// Simulate pressing a hardware keyboard key.
+void PressKey(NSString* key) {
+  // Fake up an event.
+  PhysicalKeyboardEvent* keyboardEvent =
+      [NSClassFromString(@"UIPhysicalKeyboardEvent") _eventWithInput:key
+                                                          inputFlags:0];
+  IOHIDEventRef hidEvent =
+      CreateHIDKeyEvent(key, keyboardEvent.timestamp, true);
+  [keyboardEvent _setHIDEvent:hidEvent keyboard:0];
+  [[UIApplication sharedApplication] handleKeyUIEvent:keyboardEvent];
+}
+
+// Simulate releasing a hardware keyboard key.
+void ReleaseKey(NSString* key) {
+  // Fake up an event.
+  PhysicalKeyboardEvent* keyboardEvent =
+      [NSClassFromString(@"UIPhysicalKeyboardEvent") _eventWithInput:key
+                                                          inputFlags:0];
+  IOHIDEventRef hidEvent =
+      CreateHIDKeyEvent(key, keyboardEvent.timestamp, false);
+  [keyboardEvent _setHIDEvent:hidEvent keyboard:0];
+  [[UIApplication sharedApplication] handleKeyUIEvent:keyboardEvent];
+}
+
 // Lifts the keypresses one by one.
 // Once all keypresses are reversed, executes |completion| on the main thread.
 void UnwindFakeKeyboardPressWithFlags(UIKeyModifierFlags flags,
@@ -418,6 +442,27 @@ void SimulatePhysicalKeyboardEventInternal(UIKeyModifierFlags flags,
 namespace chrome_test_util {
 
 void SimulatePhysicalKeyboardEvent(UIKeyModifierFlags flags, NSString* input) {
+  // No modifier keys pressed.
+  if (flags == 0) {
+    if (hidUsageCodeForCharacter(input)) {
+      // Input is a keyboard key.
+      PressKey(input);
+      ReleaseKey(input);
+      return;
+    }
+
+    // If there are no modifier keys and the input is not a keyboard key. Our
+    // intention is then to type the input.
+    for (NSUInteger i = 0; i < [input length]; i++) {
+      NSRange range = NSMakeRange(i, 1);
+      NSString* key = [input substringWithRange:range];
+      PressKey(key);
+      ReleaseKey(key);
+    }
+    return;
+  }
+
+  // Input with modifier keys.
   __block BOOL keyPressesFinished = NO;
 
   SimulatePhysicalKeyboardEventInternal(flags, input, 0, @"", ^{

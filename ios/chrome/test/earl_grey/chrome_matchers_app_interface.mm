@@ -569,6 +569,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_kindOfClassName(@"OmniboxPopupRowCell");
 }
 
++ (id<GREYMatcher>)omniboxPopupRowWithString:(NSString*)string {
+  id<GREYMatcher> textMatcher = grey_descendant(
+      [ChromeMatchersAppInterface staticTextWithAccessibilityLabel:string]);
+  id<GREYMatcher> popupRow =
+      grey_allOf([ChromeMatchersAppInterface omniboxPopupRow], textMatcher,
+                 grey_sufficientlyVisible(), nil);
+  return popupRow;
+}
+
 + (id<GREYMatcher>)omniboxPopupList {
   return grey_accessibilityID(kOmniboxPopupTableViewAccessibilityIdentifier);
 }
