@@ -25,7 +25,8 @@ AppDiscoveryService* AppDiscoveryServiceFactory::GetForProfile(
 
 // static
 AppDiscoveryServiceFactory* AppDiscoveryServiceFactory::GetInstance() {
-  return base::Singleton<AppDiscoveryServiceFactory>::get();
+  static base::NoDestructor<AppDiscoveryServiceFactory> instance;
+  return instance.get();
 }
 
 AppDiscoveryServiceFactory::AppDiscoveryServiceFactory()

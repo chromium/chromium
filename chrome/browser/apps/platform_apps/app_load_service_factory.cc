@@ -23,7 +23,8 @@ AppLoadService* AppLoadServiceFactory::GetForBrowserContext(
 }
 
 AppLoadServiceFactory* AppLoadServiceFactory::GetInstance() {
-  return base::Singleton<AppLoadServiceFactory>::get();
+  static base::NoDestructor<AppLoadServiceFactory> instance;
+  return instance.get();
 }
 
 AppLoadServiceFactory::AppLoadServiceFactory()
@@ -43,7 +44,7 @@ AppLoadServiceFactory::AppLoadServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-AppLoadServiceFactory::~AppLoadServiceFactory() {}
+AppLoadServiceFactory::~AppLoadServiceFactory() = default;
 
 KeyedService* AppLoadServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

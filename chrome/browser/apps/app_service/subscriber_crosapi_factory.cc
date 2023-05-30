@@ -21,7 +21,8 @@ SubscriberCrosapi* SubscriberCrosapiFactory::GetForProfile(Profile* profile) {
 
 // static
 SubscriberCrosapiFactory* SubscriberCrosapiFactory::GetInstance() {
-  return base::Singleton<SubscriberCrosapiFactory>::get();
+  static base::NoDestructor<SubscriberCrosapiFactory> instance;
+  return instance.get();
 }
 
 // static

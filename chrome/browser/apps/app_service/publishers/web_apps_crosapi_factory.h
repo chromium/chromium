@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -25,7 +25,7 @@ class WebAppsCrosapiFactory : public ProfileKeyedServiceFactory {
   static void ShutDownForTesting(content::BrowserContext* context);
 
  private:
-  friend struct base::DefaultSingletonTraits<WebAppsCrosapiFactory>;
+  friend base::NoDestructor<WebAppsCrosapiFactory>;
 
   WebAppsCrosapiFactory();
   WebAppsCrosapiFactory(const WebAppsCrosapiFactory&) = delete;

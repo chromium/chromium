@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_SERVICE_PROXY_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -40,7 +40,7 @@ class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
   AppServiceProxyFactory& operator=(const AppServiceProxyFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<AppServiceProxyFactory>;
+  friend base::NoDestructor<AppServiceProxyFactory>;
 
   AppServiceProxyFactory();
   ~AppServiceProxyFactory() override;
