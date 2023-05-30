@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_TAB_GRID_TRANSITION_HANDLER_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_TAB_GRID_TRANSITION_HANDLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_TAB_GRID_TRANSITION_HANDLER_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_TAB_GRID_TRANSITION_HANDLER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +12,7 @@
 @protocol GridTransitionAnimationLayoutProviding;
 
 // Handler for the transitions between the TabGrid and the Browser.
-@interface TabGridTransitionHandler : NSObject
+@interface LegacyTabGridTransitionHandler : NSObject
 
 - (instancetype)initWithLayoutProvider:
     (id<GridTransitionAnimationLayoutProviding>)layoutProvider
@@ -43,4 +43,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_TAB_GRID_TRANSITION_HANDLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_TAB_GRID_TRANSITION_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
@@ -20,14 +20,14 @@ const CGFloat kGridToBrowserDuration = 0.5;
 const CGFloat kReducedMotionDuration = 0.25;
 }  // namespace
 
-@interface TabGridTransitionHandler ()
+@interface LegacyTabGridTransitionHandler ()
 @property(nonatomic, weak) id<GridTransitionAnimationLayoutProviding>
     layoutProvider;
 // Animation object for the transition.
 @property(nonatomic, strong) GridTransitionAnimation* animation;
 @end
 
-@implementation TabGridTransitionHandler
+@implementation LegacyTabGridTransitionHandler
 
 #pragma mark - Public
 
@@ -53,8 +53,9 @@ const CGFloat kReducedMotionDuration = 0.25;
                                    [browser.view removeFromSuperview];
                                    [browser removeFromParentViewController];
                                    [tabGrid setNeedsStatusBarAppearanceUpdate];
-                                   if (completion)
+                                   if (completion) {
                                      completion();
+                                   }
                                  }];
     return;
   }
@@ -98,8 +99,9 @@ const CGFloat kReducedMotionDuration = 0.25;
       [browser.view removeFromSuperview];
       [browser removeFromParentViewController];
     }
-    if (completion)
+    if (completion) {
       completion();
+    }
   }];
 
   // TODO(crbug.com/850507): Have the tab view animate itself out alongside
@@ -124,8 +126,9 @@ const CGFloat kReducedMotionDuration = 0.25;
   if (self.animationDisabled) {
     browser.view.alpha = 1;
     [tabGrid setNeedsStatusBarAppearanceUpdate];
-    if (completion)
+    if (completion) {
       completion();
+    }
     return;
   }
 
@@ -139,8 +142,9 @@ const CGFloat kReducedMotionDuration = 0.25;
                                    [browser
                                        didMoveToParentViewController:tabGrid];
                                    [tabGrid setNeedsStatusBarAppearanceUpdate];
-                                   if (completion)
+                                   if (completion) {
                                      completion();
+                                   }
                                  }];
     return;
   }
@@ -184,8 +188,9 @@ const CGFloat kReducedMotionDuration = 0.25;
       browser.view.alpha = 1;
       [browser didMoveToParentViewController:tabGrid];
     }
-    if (completion)
+    if (completion) {
       completion();
+    }
   }];
 
   // Run the main animation.
@@ -275,8 +280,9 @@ const CGFloat kReducedMotionDuration = 0.25;
         // `finished` to NO on official builds. For now, the animation not
         // finishing isn't handled anywhere.
         tab.clipsToBounds = oldClipsToBounds;
-        if (completion)
+        if (completion) {
           completion();
+        }
       }];
 }
 

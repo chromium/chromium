@@ -86,7 +86,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -169,7 +169,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 // controller will present this.
 @property(nonatomic, strong) BVCContainerViewController* bvcContainer;
 // Handler for the transitions between the TabGrid and the Browser.
-@property(nonatomic, strong) TabGridTransitionHandler* transitionHandler;
+@property(nonatomic, strong)
+    LegacyTabGridTransitionHandler* legacyTransitionHandler;
 // Mediator for regular Tabs.
 @property(nonatomic, strong) TabGridMediator* regularTabsMediator;
 // Mediator for incognito Tabs.
@@ -661,12 +662,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        animationEnabled:(BOOL)animationEnabled
                                              completion:
                                                  (ProceduralBlock)completion {
-  self.transitionHandler =
+  self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.transitionHandler transitionFromBrowser:self.bvcContainer
-                                      toTabGrid:self.baseViewController
-                                     activePage:activePage
-                                 withCompletion:completion];
+  [self.legacyTransitionHandler transitionFromBrowser:self.bvcContainer
+                                            toTabGrid:self.baseViewController
+                                           activePage:activePage
+                                       withCompletion:completion];
 }
 
 // Performs the Tab Grid to Browser transition.
@@ -674,19 +675,19 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        animationEnabled:(BOOL)animationEnabled
                                              completion:
                                                  (ProceduralBlock)completion {
-  self.transitionHandler =
+  self.legacyTransitionHandler =
       [self createTransitionHanlderWithAnimationEnabled:animationEnabled];
-  [self.transitionHandler transitionFromTabGrid:self.baseViewController
-                                      toBrowser:self.bvcContainer
-                                     activePage:activePage
-                                 withCompletion:completion];
+  [self.legacyTransitionHandler transitionFromTabGrid:self.baseViewController
+                                            toBrowser:self.bvcContainer
+                                           activePage:activePage
+                                       withCompletion:completion];
 }
 
 // Creates a transition handler with `animationEnabled` parameter.
-- (TabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
+- (LegacyTabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
     (BOOL)animationEnabled {
-  TabGridTransitionHandler* transitionHandler =
-      [[TabGridTransitionHandler alloc]
+  LegacyTabGridTransitionHandler* transitionHandler =
+      [[LegacyTabGridTransitionHandler alloc]
           initWithLayoutProvider:self.baseViewController];
   transitionHandler.animationDisabled = !animationEnabled;
 
