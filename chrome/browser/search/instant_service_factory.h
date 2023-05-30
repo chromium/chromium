@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SEARCH_INSTANT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_INSTANT_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -28,7 +28,7 @@ class InstantServiceFactory : public ProfileKeyedServiceFactory {
   InstantServiceFactory& operator=(const InstantServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<InstantServiceFactory>;
+  friend base::NoDestructor<InstantServiceFactory>;
 
   InstantServiceFactory();
   ~InstantServiceFactory() override;

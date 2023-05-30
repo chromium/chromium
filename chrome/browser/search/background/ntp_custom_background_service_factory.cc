@@ -20,7 +20,8 @@ NtpCustomBackgroundService* NtpCustomBackgroundServiceFactory::GetForProfile(
 // static
 NtpCustomBackgroundServiceFactory*
 NtpCustomBackgroundServiceFactory::GetInstance() {
-  return base::Singleton<NtpCustomBackgroundServiceFactory>::get();
+  static base::NoDestructor<NtpCustomBackgroundServiceFactory> instance;
+  return instance.get();
 }
 
 NtpCustomBackgroundServiceFactory::NtpCustomBackgroundServiceFactory()
