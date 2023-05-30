@@ -4365,7 +4365,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // "Navigation.Prerender.ActivationCommitDeferTime" histogram should be
   // recorded as PrerenderCommitDeferringCondition defers the navigation.
   histogram_tester().ExpectTotalCount(
-      "Navigation.Prerender.ActivationCommitDeferTime", 1u);
+      "Navigation.Prerender.ActivationCommitDeferTime.SpeculationRule", 1u);
 }
 
 // TODO(https://crbug.com/1182032): Now the File System Access API is not

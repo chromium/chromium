@@ -102,6 +102,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // frame_tree_node is in a prerendering tree.
   static PrerenderHost* GetPrerenderHostFromFrameTreeNode(
       FrameTreeNode& frame_tree_node);
+  // Similar to GetPrerenderHostFromFrameTreeNode() but `frame_tree_node` must
+  // be in prerendering.
+  static PrerenderHost& GetFromFrameTreeNode(FrameTreeNode& frame_tree_node);
 
   // Checks whether two headers are the same in a case-insensitive and
   // order-insensitive way.

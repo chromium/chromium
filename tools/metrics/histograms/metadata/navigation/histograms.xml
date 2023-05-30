@@ -1231,15 +1231,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.Prerender.ActivationCommitDeferTime" units="ms"
-    expires_after="2023-11-23">
+<histogram
+    name="Navigation.Prerender.ActivationCommitDeferTime{PrerenderTriggerType}"
+    units="ms" expires_after="2023-11-23">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
   <summary>
     Measures time a PrerenderCommitDeferringCondition defers activation waiting
     to commit an ongoing mainframe prerender navigation. Logged every time a
     PrerenderCommitDeferringCondition defers navigation.
+
+    After 2023/05, this metric is used with PrerenderTriggerType key and records
+    even when PrerenderCommitDeferringCondition doesn't delay navigation as zero
+    delay. Previously the metric was only used without the key and recorded only
+    when PrerenderCommitDeferringCondition deferred navigation.
   </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram name="Navigation.QueueTime.{Method}.{FrameType}" units="ms"
