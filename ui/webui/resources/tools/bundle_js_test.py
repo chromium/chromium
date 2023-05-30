@@ -22,10 +22,27 @@ class BundleJsTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self._out_folder)
 
+  def _read_file(self, file):
+    with open(file, 'r') as f:
+      return f.read()
+
   def _read_out_file(self, file_name):
     assert self._out_folder
-    with open(os.path.join(self._out_folder, file_name), 'r') as f:
-      return f.read()
+    return self._read_file(os.path.join(self._out_folder, file_name))
+
+  def _check_dep_file(self, paths_from_test_dir, depfile_content):
+    for path in paths_from_test_dir:
+      abs_path = os.path.join(_HERE_DIR, 'tests', 'bundle_js', path)
+      rel_path = os.path.relpath(abs_path, _CWD)
+      self.assertIn(os.path.normpath(rel_path), depfile_content)
+
+  def _check_bundle_output(self, expected_bundle_name, actual_bundle_name):
+    expected_js = self._read_file(
+        os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'expected',
+                     expected_bundle_name))
+    actual_js = self._read_file(
+        os.path.join(self._out_folder, actual_bundle_name))
+    self.assertMultiLineEqual(expected_js, actual_js)
 
   def _check_dep_file(self, paths_from_test_dir, depfile_content):
     for path in paths_from_test_dir:
@@ -67,10 +84,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    output_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', output_js)
-    self.assertIn('Hello from src/subdir/baz.js', output_js)
-
+    self._check_bundle_output('foo_ui.rollup.js', 'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/foo.js', 'src/subdir/baz.js'], depfile_d)
 
@@ -84,10 +98,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    ui_rollup_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from resources/foo_resource.js', ui_rollup_js)
-    self.assertIn('Hello from resources/bar_resource.js', ui_rollup_js)
-
+    self._check_bundle_output('foo_ui.rollup.js', 'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(
         ['resources/foo_resource.js', 'resources/bar_resource.js'], depfile_d)
@@ -106,20 +117,10 @@ class BundleJsTest(unittest.TestCase):
 
     # Check that the shared element is in the shared bundle and the non-shared
     # elements are in the individual bundles.
-    foo_ui_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', foo_ui_js)
-    self.assertNotIn('Hello from src/bar.js', foo_ui_js)
-    self.assertNotIn('Hello from src/subdir/baz.js', foo_ui_js)
-
-    bar_ui_js = self._read_out_file('bar_ui.rollup.js')
-    self.assertNotIn('Hello from src/foo.js', bar_ui_js)
-    self.assertIn('Hello from src/bar.js', bar_ui_js)
-    self.assertNotIn('Hello from src/subdir/baz.js', bar_ui_js)
-
-    shared_js = self._read_out_file('shared.rollup.js')
-    self.assertNotIn('Hello from src/foo.js', shared_js)
-    self.assertNotIn('Hello from src/bar.js', shared_js)
-    self.assertIn('Hello from src/subdir/baz.js', shared_js)
+    self._check_bundle_output('foo_ui_multi_bundle.rollup.js',
+                              'foo_ui.rollup.js')
+    self._check_bundle_output('bar_ui.rollup.js', 'bar_ui.rollup.js')
+    self._check_bundle_output('shared.rollup.js', 'shared.rollup.js')
 
     # All 3 JS files should be in the depfile.
     depfile_d = self._read_out_file('depfile.d')
@@ -147,9 +148,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    output_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/subdir/baz.js', output_js)
-    self.assertNotIn('Hello from src/foo.js', output_js)
+    self._check_bundle_output('foo_ui_excludes.rollup.js', 'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/subdir/baz.js'], depfile_d)
     self.assertNotIn('src/foo.js', depfile_d)
@@ -170,11 +169,8 @@ class BundleJsTest(unittest.TestCase):
     self._run_bundle(args)
 
     output_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', output_js)
-    self.assertIn('chrome-untrusted://resources/foo_untrusted.js', output_js)
-    self.assertIn('//resources/bar_resource.js', output_js)
-    self.assertNotIn('Hello from resources/foo_untrusted.js', output_js)
-    self.assertNotIn('Hello from resources/bar_resource.js', output_js)
+    self._check_bundle_output('foo_ui_excludes_resources.rollup.js',
+                              'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self.assertNotIn('resources/foo_untrusted.js', depfile_d)
     self.assertNotIn('resources/bar_resource.js', depfile_d)
@@ -190,10 +186,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    output_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', output_js)
-    self.assertIn('Hello from resources/foo_untrusted.js', output_js)
-    self.assertIn('Hello from resources/bar_resource.js', output_js)
+    self._check_bundle_output('foo_ui.rollup.js', 'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(
         ['resources/foo_untrusted.js', 'resources/bar_resource.js'], depfile_d)
@@ -207,11 +200,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    ui_rollup_js = self._read_out_file('foo_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', ui_rollup_js)
-    self.assertIn('Hello from external/foo/foo.js', ui_rollup_js)
-    self.assertIn('Hello from external/bar/bar.js', ui_rollup_js)
-
+    self._check_bundle_output('foo_ui.rollup.js', 'foo_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(
         ['src/foo.js', 'external/foo/foo.js', 'external/bar/bar.js'], depfile_d)
@@ -225,10 +214,7 @@ class BundleJsTest(unittest.TestCase):
     ]
     self._run_bundle(args)
 
-    ui_rollup_js = self._read_out_file('subdir/baz_ui.rollup.js')
-    self.assertIn('Hello from src/foo.js', ui_rollup_js)
-    self.assertIn('Hello from src/subdir/baz.js', ui_rollup_js)
-
+    self._check_bundle_output('baz_ui.rollup.js', 'subdir/baz_ui.rollup.js')
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/foo.js', 'src/subdir/baz.js'], depfile_d)
 
