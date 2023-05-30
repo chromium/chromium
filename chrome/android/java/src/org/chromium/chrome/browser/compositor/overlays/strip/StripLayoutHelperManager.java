@@ -623,14 +623,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 public void onTabStateInitialized() {
                     updateModelSwitcherButton();
                     new Handler().post(() -> mTabModelSelector.removeObserver(this));
+
+                    mNormalHelper.onTabStateInitialized();
+                    mIncognitoHelper.onTabStateInitialized();
                 }
             });
         }
 
+        boolean tabStateInitialized = mTabModelSelector.isTabStateInitialized();
         mNormalHelper.setTabModel(mTabModelSelector.getModel(false),
-                tabCreatorManager.getTabCreator(false));
+                tabCreatorManager.getTabCreator(false), tabStateInitialized);
         mIncognitoHelper.setTabModel(mTabModelSelector.getModel(true),
-                tabCreatorManager.getTabCreator(true));
+                tabCreatorManager.getTabCreator(true), tabStateInitialized);
         if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
             TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
             mNormalHelper.setTabGroupModelFilter(
@@ -704,12 +708,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             @Override
             public void didAddTab(
                     Tab tab, int type, int creationState, boolean markedForSelection) {
-                boolean selected = type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                        || (mTabModelSelector.isIncognitoSelected() && tab.isIncognito());
                 boolean onStartup = type == TabLaunchType.FROM_RESTORE;
                 getStripLayoutHelper(tab.isIncognito())
                         .tabCreated(time(), tab.getId(), mTabModelSelector.getCurrentTabId(),
-                                selected, false, onStartup);
+                                markedForSelection, false, onStartup);
             }
         };
 

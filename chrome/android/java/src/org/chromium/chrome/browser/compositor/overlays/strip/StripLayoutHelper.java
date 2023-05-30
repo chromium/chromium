@@ -246,8 +246,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
     // tab metadata.
+    private boolean mTabStateInitialized;
+    private boolean mPlaceholderStripReady;
     private int mTabCountOnStartup;
     private int mActiveTabIndexOnStartup;
+    private int mCurrentPlaceholderIndex;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -622,11 +625,38 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * Sets the {@link TabModel} that this {@link StripLayoutHelper} will visually represent.
      * @param model The {@link TabModel} to visually represent.
      * @param tabCreator The {@link TabCreator}, used to create new tabs.
+     * @param tabStateInitialized Whether the tab model's tab state is fully initialized after
+     *                            startup or not.
      */
-    public void setTabModel(TabModel model, TabCreator tabCreator) {
+    public void setTabModel(TabModel model, TabCreator tabCreator, boolean tabStateInitialized) {
         if (mModel == model) return;
         mModel = model;
         mTabCreator = tabCreator;
+        mTabStateInitialized = tabStateInitialized;
+
+        // If the tabs are still restoring and the refactoring experiment is enabled, we'll create a
+        // placeholder strip. This means we don't need to call computeAndUpdateTabOrders() to
+        // generate "real" strip tabs.
+        if (!mTabStateInitialized && ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+            // If the placeholder strip is ready, replace the matching placeholders for the tabs
+            // that have already been restored.
+            if (mPlaceholderStripReady) replacePlaceholdersForRestoredTabs();
+        } else {
+            computeAndUpdateTabOrders(false, false);
+        }
+    }
+
+    /**
+     * Called to notify that the tab state has been initialized.
+     */
+    protected void onTabStateInitialized() {
+        mTabStateInitialized = true;
+
+        // TODO(https://crbug.com/1446844): Iterate through tabs and record if a placeholder
+        //  remained when the tab state initialized.
+
+        // Recreate the StripLayoutTabs from the TabModel, now that all of the real Tabs have been
+        // restored. This will reuse valid tabs, discard invalid tabs, and correct tab orders.
         computeAndUpdateTabOrders(false, false);
     }
 
@@ -775,11 +805,44 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             boolean closureCancelled, boolean onStartup) {
         if (findTabById(id) != null) return;
 
-        // 1. Build any tabs that are missing.
+        // 1. If tab state is still initializing, replace the matching placeholder tab.
+        if (!mTabStateInitialized && ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) {
+            // Placeholders are not yet ready. This strip tab will instead be created when we
+            // prepare the placeholder strip.
+            if (!mPlaceholderStripReady) return;
+
+            // The active tab is handled separately.
+            if (mCurrentPlaceholderIndex == mActiveTabIndexOnStartup) mCurrentPlaceholderIndex++;
+
+            // TODO(https://crbug.com/1444818): Investigate if non-restored tabs can be created
+            //  before the tab state is initialized.
+            assert onStartup;
+
+            // TODO(https://crbug.com/1446844): Investigate if we ever allot too few placeholders.
+            assert mCurrentPlaceholderIndex < mStripTabs.length || selected;
+
+            // Replace the matching placeholder.
+            int replaceIndex;
+            if (selected) {
+                replaceIndex = mActiveTabIndexOnStartup;
+            } else {
+                // Should match the index in the model.
+                replaceIndex = mCurrentPlaceholderIndex++;
+                assert replaceIndex == mModel.indexOf(getTabById(id));
+            }
+
+            final StripLayoutTab placeholderTab = mStripTabs[replaceIndex];
+            placeholderTab.setId(id);
+            placeholderTab.setIsPlaceholder(false);
+
+            return;
+        }
+
+        // Otherwise, 2. Build any tabs that are missing.
         List<Animator> animationList = computeAndUpdateTabOrders(false, !onStartup);
         if (animationList == null) animationList = new ArrayList<>();
 
-        // 2. Start an animation for the newly created tab.
+        // 3. Start an animation for the newly created tab.
         StripLayoutTab tab = findTabById(id);
         if (tab != null && !onStartup) {
             finishAnimationsAndPushTabUpdates();
@@ -795,7 +858,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             });
         }
 
-        // 3. Figure out which tab needs to be visible.
+        // 4. Figure out which tab needs to be visible.
         StripLayoutTab fastExpandTab = findTabById(prevId);
 
         int selIndex = mModel.index();
@@ -808,7 +871,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean allowLeftExpand = true;
         boolean canExpandSelectedTab = true;
 
-        // 4. Scroll the stack so that the fast expand tab is visible. Skip if tab was restored.
+        // 5. Scroll the stack so that the fast expand tab is visible. Skip if tab was restored.
         boolean skipAutoScroll = closureCancelled || onStartup;
         if (fastExpandTab != null && !skipAutoScroll) {
             float delta = calculateOffsetToMakeTabVisible(
@@ -820,7 +883,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             setScrollForScrollingTabStacker(delta, shouldAnimate, time);
         }
 
-        // 5. When restoring tabs through startup, ensure the selected tab is visible, as the newly
+        // 6. When restoring tabs through startup, ensure the selected tab is visible, as the newly
         // unfrozen tab may have pushed if off of the visible area of the strip.
         if (onStartup) bringSelectedTabToVisibleArea(time, false);
 
@@ -834,10 +897,91 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * @param tabCountOnStartup What the tab count should be after tabs finish restoring.
      */
     protected void setTabModelStartupInfo(int tabCountOnStartup, int activeTabIndexOnStartup) {
+        if (!ChromeFeatureList.sTabStripStartupRefactoring.isEnabled()) return;
+
         mTabCountOnStartup = tabCountOnStartup;
         mActiveTabIndexOnStartup = activeTabIndexOnStartup;
 
-        // TODO(crbug.com/1444810): Create remaining placeholder tabs, if any.
+        // If tabs are still being restored on startup, create placeholder tabs to mitigate jank.
+        if (!mTabStateInitialized) {
+            prepareEmptyPlaceholderStripLayout();
+
+            // If the TabModel has already been set, then replace placeholders for restored tabs.
+            if (mModel != null) replacePlaceholdersForRestoredTabs();
+        }
+    }
+
+    /**
+     * Creates the placeholder tabs that will be shown on startup before the tab state is
+     * initialized.
+     */
+    private void prepareEmptyPlaceholderStripLayout() {
+        if (mPlaceholderStripReady || mTabStateInitialized) return;
+
+        // 1. Fill with placeholder tabs.
+        mStripTabs = new StripLayoutTab[mTabCountOnStartup];
+        for (int i = 0; i < mStripTabs.length; i++) {
+            mStripTabs[i] = createPlaceholderStripTab();
+        }
+
+        // 2. Initialize the draw parameters.
+        computeAndUpdateTabWidth(false, false);
+        updateScrollOffsetLimits();
+        computeTabInitialPositions();
+        updateVisualTabOrdering();
+
+        // 3. Scroll the strip to bring the selected tab to view and ensure that the active tab
+        // container is visible.
+        if (mActiveTabIndexOnStartup != Tab.INVALID_TAB_ID) {
+            // TODO(https://crbug.com/1444817): Scroll to bring the selected tab to view. The logic
+            //  can be overhauled to 1. not depend on the TabModel and 2. ignore tab expansion,
+            //  since the cascading stacker has been replace by the scrolling stacker.
+
+            mStripTabs[mActiveTabIndexOnStartup].setContainerOpacity(
+                    TAB_OPACITY_VISIBLE_FOREGROUND);
+        }
+
+        // 4. Mark that the placeholder strip layout is ready.
+        mPlaceholderStripReady = true;
+    }
+
+    /**
+     * Replace placeholders for all tabs that have already been restored. Do so by updating all
+     * relevant properties in the StripLayoutTab (id).
+     */
+    private void replacePlaceholdersForRestoredTabs() {
+        if (!mPlaceholderStripReady || mTabStateInitialized) return;
+
+        // If the number of tabs is less than the expected active tab index, it means that there
+        // will need to be placeholders before the active tab. If this is the case, replace the
+        // active tab later to ensure it's at the correct index.
+        int numTabsToCopy = mModel.getCount();
+        boolean needPlaceholdersBeforeActiveTab = numTabsToCopy <= mActiveTabIndexOnStartup;
+        if (needPlaceholdersBeforeActiveTab) numTabsToCopy--;
+        mCurrentPlaceholderIndex = numTabsToCopy;
+
+        // There should not be more restored tabs than the allotted placeholder tabs.
+        assert numTabsToCopy <= mStripTabs.length;
+
+        // 1. Replace the placeholder tabs by updating the relevant properties.
+        for (int i = 0; i < numTabsToCopy; i++) {
+            final StripLayoutTab tab = mStripTabs[i];
+
+            tab.setId(mModel.getTabAt(i).getId());
+            tab.setIsPlaceholder(false);
+        }
+
+        // 2. If the active tab could not be copied earlier, copy it over now at the correct index.
+        if (needPlaceholdersBeforeActiveTab && mModel.getCount() > 0) {
+            // If we need placeholders before the active tab, the active tab should be the last one
+            // in the model.
+            assert mModel.index() == mModel.getCount() - 1;
+
+            final StripLayoutTab tab = mStripTabs[mActiveTabIndexOnStartup];
+
+            tab.setId(mModel.getTabAt(mModel.getCount() - 1).getId());
+            tab.setIsPlaceholder(false);
+        }
     }
 
     /**
@@ -860,7 +1004,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     private void updateCloseButtons() {
         Tab selectedTab = mModel.getTabAt(mModel.index());
-        final int count = mModel.getCount();
+        final int count = mStripTabs.length;
         if (selectedTab == null) return;
 
         for (int i = 0; i < count; i++) {
@@ -1298,6 +1442,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (tab == null || tab.isDying()) return;
 
         int newIndex = TabModelUtils.getTabIndexById(mModel, tab.getId());
+
+        // Early return, since placeholder tabs are known to not have tab ids.
+        if (newIndex == Tab.INVALID_TAB_ID) return;
+
         TabModelUtils.setIndex(mModel, newIndex, false);
     }
 
@@ -1523,7 +1671,18 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mStripTabsVisuallyOrdered = new StripLayoutTab[mStripTabs.length];
         }
 
-        mStripStacker.createVisualOrdering(mModel.index(), mStripTabs, mStripTabsVisuallyOrdered);
+        int selectedIndex = mModel != null ? mModel.index() : mActiveTabIndexOnStartup;
+        mStripStacker.createVisualOrdering(selectedIndex, mStripTabs, mStripTabsVisuallyOrdered);
+    }
+
+    private StripLayoutTab createPlaceholderStripTab() {
+        StripLayoutTab tab = new StripLayoutTab(mContext, Tab.INVALID_TAB_ID, this,
+                mTabLoadTrackerHost, mRenderHost, mUpdateHost, mIncognito);
+        tab.setHeight(mHeight);
+        tab.setIsPlaceholder(true);
+        pushStackerPropertiesToTab(tab);
+
+        return tab;
     }
 
     private StripLayoutTab createStripTab(int id) {
@@ -1622,7 +1781,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // TODO(dtrainor): Remove this once tabCreated() is refactored to be called even from
         // restore.
-        if (mStripTabs == null || mModel.getCount() != mStripTabs.length) {
+        if (mTabStateInitialized
+                && (mStripTabs == null || mModel.getCount() != mStripTabs.length)) {
             computeAndUpdateTabOrders(false, false);
         }
 

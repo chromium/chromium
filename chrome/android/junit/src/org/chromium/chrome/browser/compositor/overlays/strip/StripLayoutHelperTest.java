@@ -60,10 +60,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.tab.MockTab;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 
@@ -1989,6 +1995,161 @@ public class StripLayoutHelperTest {
         assertFalse(mStripLayoutHelper.isInReorderModeForTesting());
     }
 
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_NoTabModel() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2);
+
+        // Verify there are 5 placeholders.
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertTrue("Tab at position 0 should be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertTrue("Tab at position 2 should be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_PrepareOnSetTabModel() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2);
+
+        // Mock a tab model and set it in the StripLayoutHelper.
+        int expectedActiveTabId = 0;
+        MockTabModel tabModel = new MockTabModel(false, null);
+        tabModel.addTab(expectedActiveTabId);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+
+        // Verify that the real and placeholder strip tabs were generated in the correct indices.
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertTrue("Tab at position 0 should be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 2 should not be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertEquals("Tab at position 2 should be the same from the mock.", expectedActiveTabId,
+                stripTabs[2].getId());
+        assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_PrepareOnSetTabModelInfo() {
+        // Create StripLayoutHelper and mock a tab model and set it in the StripLayoutHelper.
+        int expectedActiveTabId = 0;
+        MockTabModel tabModel = new MockTabModel(false, null);
+        tabModel.addTab(expectedActiveTabId);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+
+        // Verify that there are no placeholders yet.
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertEquals("There should be no placeholders yet.", 0, stripTabs.length);
+
+        // Mark that after tabs finish restoring, there will be five tabs, where the third tab will
+        // be the active tab.
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2);
+
+        // Verify that the real and placeholder strip tabs were generated in the correct indices.
+        stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertTrue("Tab at position 0 should be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 2 should not be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertEquals("Tab at position 2 should be the same from the mock.", expectedActiveTabId,
+                stripTabs[2].getId());
+        assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_TabCreated() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2);
+
+        // Mock a tab model and set it in the StripLayoutHelper.
+        int expectedActiveTabId = 0;
+        MockTabModel tabModel = new MockTabModel(false, null);
+        tabModel.addTab(expectedActiveTabId);
+        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+
+        // Mark that a tab was restored.
+        int expectedRestoredTabId = 1;
+        tabModel.addTab(new MockTab(expectedRestoredTabId, false), 0, TabLaunchType.FROM_RESTORE,
+                TabCreationState.FROZEN_ON_RESTORE);
+        mStripLayoutHelper.tabCreated(
+                TIMESTAMP, expectedRestoredTabId, Tab.INVALID_TAB_ID, false, false, true);
+
+        // Verify that the third (active) and first tab are real.
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertFalse(
+                "Tab at position 0 should not be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertEquals("Tab at position 0 should be the same from the mock.", expectedRestoredTabId,
+                stripTabs[0].getId());
+        assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 2 should not be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertEquals("Tab at position 2 should be the same from the mock.", expectedActiveTabId,
+                stripTabs[2].getId());
+        assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING)
+    public void testPlaceholderStripLayout_OnTabStateInitialized() {
+        // Create StripLayoutHelper and mark that after tabs finish restoring, there will be five
+        // tabs, where the third tab will be the active tab.
+        mStripLayoutHelper = createStripLayoutHelper(false, false);
+        mStripLayoutHelper.setTabModelStartupInfo(5, 2);
+
+        // Mock a tab model and set it in the StripLayoutHelper.
+        MockTabModel tabModel = new MockTabModel(false, null);
+        mStripLayoutHelper.setTabModel(tabModel, null, false);
+
+        // Verify there are placeholders.
+        StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertTrue("Tab at position 0 should be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertTrue("Tab at position 2 should be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
+
+        // Add the remaining tabs and mark that the tab state is finished initializing.
+        tabModel.addTab(0);
+        tabModel.addTab(1);
+        tabModel.addTab(2);
+        tabModel.addTab(3);
+        tabModel.addTab(4);
+        tabModel.setIndex(2, TabSelectionType.FROM_NEW, true);
+        mStripLayoutHelper.onTabStateInitialized();
+
+        // Verify the placeholders have been replaced.
+        stripTabs = mStripLayoutHelper.getStripLayoutTabs();
+        assertFalse(
+                "Tab at position 0 should not be a placeholder.", stripTabs[0].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 1 should not be a placeholder.", stripTabs[1].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 2 should not be a placeholder.", stripTabs[2].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 3 should not be a placeholder.", stripTabs[3].getIsPlaceholder());
+        assertFalse(
+                "Tab at position 4 should not be a placeholder.", stripTabs[4].getIsPlaceholder());
+    }
+
     private void setupForAnimations() {
         CompositorAnimationHandler mHandler = new CompositorAnimationHandler(() -> {});
         // CompositorAnimationHandler.setTestingMode(true);
@@ -2024,7 +2185,7 @@ public class StripLayoutHelperTest {
             }
         }
         mModel.setIndex(tabIndex);
-        mStripLayoutHelper.setTabModel(mModel, null);
+        mStripLayoutHelper.setTabModel(mModel, null, true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
         // Flush UI updated

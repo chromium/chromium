@@ -225,6 +225,9 @@ public class StripLayoutTab implements VirtualView {
     private float mHeight;
     private final RectF mTouchTarget = new RectF();
 
+    // Startup parameters
+    private boolean mIsPlaceholder;
+
     private boolean mShowingCloseButton = true;
 
     // Content Animations
@@ -346,6 +349,13 @@ public class StripLayoutTab implements VirtualView {
      */
     public void setFolioAttached(boolean folioAttached) {
         mFolioAttached = folioAttached;
+    }
+
+    /**
+     * Sets the id of the {@link Tab} this {@link StripLayoutTab} represents.
+     */
+    public void setId(int id) {
+        mId = id;
     }
 
     /**
@@ -854,6 +864,26 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getTrailingMargin() {
         return mTrailingMargin;
+    }
+
+    /**
+     * This is used to determine if the tab is a placeholder or not. If it is a placeholder, it will
+     * show as an empty tab on the tab strip (without tab contents, such as title & favicon,
+     * generated).
+     * @param isPlaceholder Whether or not the tab is a placeholder used on startup.
+     */
+    public void setIsPlaceholder(boolean isPlaceholder) {
+        mIsPlaceholder = isPlaceholder;
+    }
+
+    /**
+     * This is used to determine if the tab is a placeholder or not. If it is a placeholder, it will
+     * show as an empty tab on the tab strip (without tab contents, such as title & favicon,
+     * generated).
+     * @return Whether or not the tab is a placeholder used on startup.
+     */
+    public boolean getIsPlaceholder() {
+        return mIsPlaceholder;
     }
 
     /**

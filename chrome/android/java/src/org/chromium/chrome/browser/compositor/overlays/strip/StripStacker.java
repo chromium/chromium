@@ -35,6 +35,7 @@ public abstract class StripStacker {
      */
     public void createVisualOrdering(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             StripLayoutTab[] outVisualOrderedTabs) {
+        // TODO(https://crbug.com/1446515): Stacking order can be ignored for TSR.
         assert indexOrderedTabs.length == outVisualOrderedTabs.length;
 
         selectedIndex = MathUtils.clamp(selectedIndex, 0, indexOrderedTabs.length);
