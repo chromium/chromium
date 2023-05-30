@@ -480,6 +480,11 @@ targets.generated_script(
     label = "//chrome:chrome_private_code_test",
 )
 
+targets.console_test_launcher(
+    name = "chrome_public_apk_baseline_profile_generator",
+    label = "//chrome/test/android:chrome_public_apk_baseline_profile_generator",
+)
+
 targets.compile_target(
     name = "chrome_public_apk",
     label = "//chrome/android:chrome_public_apk",

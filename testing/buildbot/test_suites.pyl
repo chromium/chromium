@@ -488,6 +488,14 @@
       'chrome_private_code_test': {},
     },
 
+    'chrome_profile_generator_tests': {
+      'chrome_public_apk_profile_tests': {
+        'ci_only': True,
+        'experiment_percentage': 100,
+        'test':'chrome_public_apk_baseline_profile_generator',
+      },
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
@@ -6704,6 +6712,7 @@
       'android_trichrome_smoke_tests': {},
       'android_smoke_tests': {},
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
+      'chrome_profile_generator_tests': {},
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
