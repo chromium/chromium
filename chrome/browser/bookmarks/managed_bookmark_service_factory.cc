@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +40,8 @@ bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(
 
 // static
 ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
-  return base::Singleton<ManagedBookmarkServiceFactory>::get();
+  static base::NoDestructor<ManagedBookmarkServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -80,7 +81,7 @@ ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
-ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
+ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() = default;
 
 KeyedService* ManagedBookmarkServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

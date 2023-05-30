@@ -11,7 +11,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 class Profile;
@@ -36,7 +36,7 @@ class ManagedBookmarkServiceFactory : public ProfileKeyedServiceFactory {
   static std::string GetManagedBookmarksManager(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<ManagedBookmarkServiceFactory>;
+  friend base::NoDestructor<ManagedBookmarkServiceFactory>;
 
   ManagedBookmarkServiceFactory();
   ~ManagedBookmarkServiceFactory() override;

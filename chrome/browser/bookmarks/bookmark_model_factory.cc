@@ -4,7 +4,7 @@
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
@@ -67,7 +67,8 @@ BookmarkModel* BookmarkModelFactory::GetForBrowserContextIfExists(
 
 // static
 BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
-  return base::Singleton<BookmarkModelFactory>::get();
+  static base::NoDestructor<BookmarkModelFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -99,8 +100,7 @@ BookmarkModelFactory::BookmarkModelFactory()
 #endif
 }
 
-BookmarkModelFactory::~BookmarkModelFactory() {
-}
+BookmarkModelFactory::~BookmarkModelFactory() = default;
 
 KeyedService* BookmarkModelFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
