@@ -373,7 +373,6 @@ external/wpt/html/canvas/element/drawing-text-to-the-canvas/direction-rtl.html
 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html
 external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html
 external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm
-external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html
 external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html
 external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.html
 external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.NaN.worker.html
