@@ -66,7 +66,7 @@ TEST_F(AttributionOsLevelManagerAndroidTest, Register) {
                        url::Origin::Create(GURL("https://o.test")),
                        test_case.input_event),
         /*is_debug_key_allowed=*/false,
-        base::BindLambdaForTesting([&](bool success) {
+        base::BindLambdaForTesting([&](const OsRegistration&, bool success) {
           // We don't check `success` here because the measurement API may or
           // may not be available depending on the Android version.
           run_loop.Quit();

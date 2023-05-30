@@ -237,8 +237,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnClearDataComplete();
 
   void ProcessNextOsEvent();
-  void OnOsRegistration(const OsRegistration&,
-                        bool is_debug_key_allowed,
+  void OnOsRegistration(bool is_debug_key_allowed,
+                        const OsRegistration&,
                         bool success);
 
   void CheckDestinationThrottlerAndStoreSource(StorableSource source,

@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -109,11 +110,10 @@ ScopedApiStateForTesting::~ScopedApiStateForTesting() {
 
 NoOpAttributionOsLevelManager::~NoOpAttributionOsLevelManager() = default;
 
-void NoOpAttributionOsLevelManager::Register(
-    const OsRegistration&,
-    bool is_debug_key_allowed,
-    base::OnceCallback<void(bool success)> callback) {
-  std::move(callback).Run(false);
+void NoOpAttributionOsLevelManager::Register(OsRegistration registration,
+                                             bool is_debug_key_allowed,
+                                             RegisterCallback callback) {
+  std::move(callback).Run(registration, false);
 }
 
 void NoOpAttributionOsLevelManager::ClearData(

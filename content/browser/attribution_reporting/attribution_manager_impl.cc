@@ -1397,11 +1397,11 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
             DCHECK(!manager->pending_os_events_.empty());
 
             {
-              const auto& event = manager->pending_os_events_.front();
+              auto& event = manager->pending_os_events_.front();
               manager->os_level_manager_->Register(
-                  event, is_debug_key_allowed,
+                  std::move(event), is_debug_key_allowed,
                   base::BindOnce(&AttributionManagerImpl::OnOsRegistration,
-                                 manager, event, is_debug_key_allowed));
+                                 manager, is_debug_key_allowed));
             }
 
             manager->pending_os_events_.pop_front();
@@ -1423,8 +1423,8 @@ void AttributionManagerImpl::NotifyOsRegistration(
 }
 
 void AttributionManagerImpl::OnOsRegistration(
-    const OsRegistration& registration,
     bool is_debug_key_allowed,
+    const OsRegistration& registration,
     bool success) {
   base::UmaHistogramBoolean("Conversions.AttributionOsRegistrationResult",
                             success);

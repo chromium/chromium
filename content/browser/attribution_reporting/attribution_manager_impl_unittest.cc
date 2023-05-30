@@ -227,9 +227,9 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
 
   MOCK_METHOD(void,
               Register,
-              (const OsRegistration&,
+              (OsRegistration,
                bool is_debug_key_allowed,
-               base::OnceCallback<void(bool success)> callback),
+               RegisterCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -1098,17 +1098,17 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
-                                        AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/true, _))
-        .WillOnce(base::test::RunOnceCallback<2>(true));
+    const OsRegistration registration1(kRegistrationUrl1, kTopLevelOrigin1,
+                                       AttributionInputEvent());
+    EXPECT_CALL(*os_level_manager_, Register(registration1,
+                                             /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
-                                        AttributionInputEvent()),
-                         /*is_debug_key_allowed=*/false, _))
-        .WillOnce(base::test::RunOnceCallback<2>(false));
+    const OsRegistration registration2(kRegistrationUrl2, kTopLevelOrigin2,
+                                       AttributionInputEvent());
+    EXPECT_CALL(*os_level_manager_, Register(registration2,
+                                             /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
   }
 
   // Dropped due to the URL being opaque.
@@ -1181,17 +1181,17 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
-                                        /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/true, _))
-        .WillOnce(base::test::RunOnceCallback<2>(true));
+    const OsRegistration registration1(kRegistrationUrl1, kTopLevelOrigin1,
+                                       /*input_event=*/absl::nullopt);
+    EXPECT_CALL(*os_level_manager_, Register(registration1,
+                                             /*is_debug_key_allowed=*/true, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
-    EXPECT_CALL(*os_level_manager_,
-                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
-                                        /*input_event=*/absl::nullopt),
-                         /*is_debug_key_allowed=*/false, _))
-        .WillOnce(base::test::RunOnceCallback<2>(false));
+    const OsRegistration registration2(kRegistrationUrl2, kTopLevelOrigin2,
+                                       /*input_event=*/absl::nullopt);
+    EXPECT_CALL(*os_level_manager_, Register(registration2,
+                                             /*is_debug_key_allowed=*/false, _))
+        .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
   }
 
   // Dropped due to the URL being opaque.

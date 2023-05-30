@@ -35,9 +35,9 @@ class CONTENT_EXPORT AttributionOsLevelManagerAndroid
   AttributionOsLevelManagerAndroid& operator=(
       AttributionOsLevelManagerAndroid&&) = delete;
 
-  void Register(const OsRegistration&,
+  void Register(OsRegistration,
                 bool is_debug_key_allowed,
-                base::OnceCallback<void(bool success)>) override;
+                RegisterCallback) override;
 
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,

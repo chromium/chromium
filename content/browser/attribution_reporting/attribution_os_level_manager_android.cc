@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -103,33 +104,34 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), jobj_);
 }
 
-void AttributionOsLevelManagerAndroid::Register(
-    const OsRegistration& registration,
-    bool is_debug_key_allowed,
-    base::OnceCallback<void(bool sucess)> callback) {
+void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
+                                                bool is_debug_key_allowed,
+                                                RegisterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  int request_id = next_callback_id_++;
-  pending_registration_callbacks_.emplace(request_id, std::move(callback));
-
+  attribution_reporting::mojom::OsRegistrationType type = registration.GetType();
   auto registration_url =
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
       env, registration.top_level_origin.GetURL());
+  absl::optional<AttributionInputEvent> input_event = registration.input_event;
 
-  switch (registration.GetType()) {
+  int request_id = next_callback_id_++;
+  pending_registration_callbacks_.emplace(
+      request_id, base::BindOnce(std::move(callback), std::move(registration)));
+
+  switch (type) {
     case attribution_reporting::mojom::OsRegistrationType::kSource:
-      DCHECK(registration.input_event.has_value());
+      DCHECK(input_event.has_value());
       if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
         Java_AttributionOsLevelManager_registerWebAttributionSource(
             env, jobj_, request_id, registration_url, top_level_origin,
-            is_debug_key_allowed, registration.input_event->input_event);
+            is_debug_key_allowed, input_event->input_event);
       } else {
         Java_AttributionOsLevelManager_registerAttributionSource(
-            env, jobj_, request_id, registration_url,
-            registration.input_event->input_event);
+            env, jobj_, request_id, registration_url, input_event->input_event);
       }
       break;
     case attribution_reporting::mojom::OsRegistrationType::kTrigger:
