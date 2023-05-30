@@ -29,6 +29,7 @@
     "lacros-amd64-generic-rel": "Ubuntu-22.04",
     "lacros-amd64-generic-rel-skylab": "Ubuntu-22.04",
     "lacros-arm-generic-rel": "Ubuntu-22.04",
+    "lacros-arm-generic-rel-skylab": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
