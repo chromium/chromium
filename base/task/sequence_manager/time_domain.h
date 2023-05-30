@@ -59,7 +59,8 @@ class BASE_EXPORT TimeDomain : public TickClock {
  private:
   friend class internal::SequenceManagerImpl;
 
-  raw_ptr<internal::SequenceManagerImpl> sequence_manager_ = nullptr;
+  raw_ptr<internal::SequenceManagerImpl, DanglingUntriaged> sequence_manager_ =
+      nullptr;
 };
 
 }  // namespace sequence_manager
