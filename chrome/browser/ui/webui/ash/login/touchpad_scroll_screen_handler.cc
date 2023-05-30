@@ -38,8 +38,8 @@ void TouchpadScrollScreenHandler::SetReverseScrolling(bool value) {
   CallExternalAPI("setReverseScrolling", value);
 }
 
-void TouchpadScrollScreenHandler::Show() {
-  ShowInWebUI();
+void TouchpadScrollScreenHandler::Show(base::Value::Dict data) {
+  ShowInWebUI(std::move(data));
 }
 
 }  // namespace ash

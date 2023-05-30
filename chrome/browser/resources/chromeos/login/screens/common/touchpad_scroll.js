@@ -7,6 +7,7 @@
 
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
+import '../../components/buttons/oobe_text_button.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/oobe_illo_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -49,6 +50,7 @@ const TouchpadScrollStep = {
 const UserAction = {
   NEXT: 'next',
   REVERSE: 'update-scroll',
+  RETURN: 'return',
 };
 
 /**
@@ -69,6 +71,15 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
         type: Boolean,
         value: false,
         observer: 'onCheckChanged_',
+      },
+
+      /**
+       * Whether the button to return to CHOOBE screen should be shown.
+       * @private
+       */
+      shouldShowReturn_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -106,6 +117,10 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
     scrollArea.scrollTop = scrollArea.scrollHeight / 2 - 150;
   }
 
+  onBeforeShow(data) {
+    this.shouldShowReturn_ = data['shouldShowReturn'];
+  }
+
   /**
    * Set the toggle to the synced
    * scrolling preferences.
@@ -128,6 +143,10 @@ class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
 
   onNextClicked_() {
     this.userActed(UserAction.NEXT);
+  }
+
+  onReturnClicked_() {
+    this.userActed(UserAction.RETURN);
   }
 }
 

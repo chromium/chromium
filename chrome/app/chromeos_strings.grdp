@@ -6732,6 +6732,9 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE" desc="Title of the display size tile in the CHOOBE screen." translateable="false">
     Display size
   </message>
+  <message name="IDS_OOBE_CHOOBE_RETURN_BUTTON" desc="Label for the return button shown in the last optional screen selected by the user if there still exists more features thaat the user can select." translateable="false">
+    Save and see more
+  </message>
 
   <!-- Strings for the office fallback dialog -->
   <message name="IDS_OFFICE_FALLBACK_CANCEL" desc="Label for the button that cancels office fallback.">

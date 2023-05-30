@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -19,6 +20,24 @@ namespace {
 
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionUpdateScrollDirection[] = "update-scroll";
+constexpr const char kUserActionReturn[] = "return";
+
+bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return false;
+  }
+  return controller->ShouldShowReturnButton(
+      TouchpadScrollScreenView::kScreenId);
+}
+
+void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return;
+  }
+  controller->OnScreenCompleted(
+      *ProfileManager::GetActiveUserProfile()->GetPrefs(),
+      TouchpadScrollScreenView::kScreenId);
+}
 
 }  // namespace
 
@@ -87,7 +106,13 @@ void TouchpadScrollScreen::ShowImpl() {
   }
 
   view_->SetReverseScrolling(GetNaturalScrollPrefValue());
-  view_->Show();
+
+  base::Value::Dict data;
+  data.Set(
+      "shouldShowReturn",
+      ShouldShowChoobeReturnButton(
+          WizardController::default_controller()->choobe_flow_controller()));
+  view_->Show(std::move(data));
 }
 
 void TouchpadScrollScreen::HideImpl() {}
@@ -96,6 +121,18 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionNext) {
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
+  if (action_id == kUserActionReturn) {
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->return_to_choobe_screen = true;
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kNext);
     return;
   }

@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -41,6 +42,20 @@ bool IsOptionalScreen(OobeScreenId screen_id) {
     }
   }
   return false;
+}
+
+// Returns the last screen in a set, given the order of screens in the
+// `kOptionalScreens` array, if the set is empty, the function will return
+// `OOBE_SCREEN_UNKNOWN`.
+OobeScreenId GetLastOptionalScreenInSet(
+    const base::flat_set<OobeScreenId>& screens) {
+  OobeScreenId last_screen = OOBE_SCREEN_UNKNOWN;
+  for (const auto& screen : kOptionalScreens) {
+    if (screens.find(screen.AsId()) != screens.end()) {
+      last_screen = screen.AsId();
+    }
+  }
+  return last_screen;
 }
 
 }  // namespace
@@ -161,6 +176,7 @@ void ChoobeFlowController::OnScreensSelected(PrefService& prefs,
 // screen tile is marked as completed in the next time the CHOOBE screen is
 // shown. `completed_screens_ids_` should also be persisted to handle the
 // unexpected shutdown and resuming the onboarding case.
+// If the last selected screen is completed, clear the selected screens.
 void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
                                              OobeScreenId completed_screen_id) {
   if (!IsOptionalScreen(completed_screen_id)) {
@@ -176,6 +192,13 @@ void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
     screens_ids.Append(screen_id.name);
   }
   prefs.SetList(prefs::kChoobeCompletedScreens, std::move(screens_ids));
+
+  // If the last optional screen is completed, clear the selected screens.
+  if (completed_screen_id ==
+      GetLastOptionalScreenInSet(selected_screens_ids_)) {
+    selected_screens_ids_.clear();
+    prefs.ClearPref(prefs::kChoobeSelectedScreens);
+  }
 }
 
 void ChoobeFlowController::OnChoobeFlowExit() {
@@ -186,22 +209,16 @@ void ChoobeFlowController::OnChoobeFlowExit() {
 bool ChoobeFlowController::ShouldShowReturnButton(OobeScreenId screen_id) {
   DCHECK(!selected_screens_ids_.empty());
 
-  // Get the last screen in `kOptionalScreens` that exists in
-  // `selected_screen_ids_`
-  OobeScreenId last_selected_screen = OOBE_SCREEN_UNKNOWN;
-  for (auto id : kOptionalScreens) {
-    if (selected_screens_ids_.find(id.AsId()) != selected_screens_ids_.end()) {
-      last_selected_screen = id.AsId();
-    }
-  }
-
+  // The return button should only be shown in the last selected screen.
+  OobeScreenId last_selected_screen =
+      GetLastOptionalScreenInSet(selected_screens_ids_);
   if (screen_id != last_selected_screen) {
     return false;
   }
 
-  // To show the return button, all eligible screens must be completed
+  // To hide the return button, all eligible screens must be completed
   // except for the current one which is still being completed.
-  if (completed_screens_ids_.size() + 1 != eligible_screens_ids_.size()) {
+  if (completed_screens_ids_.size() + 1 == eligible_screens_ids_.size()) {
     return false;
   }
 

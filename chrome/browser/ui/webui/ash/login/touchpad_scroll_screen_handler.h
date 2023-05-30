@@ -27,7 +27,7 @@ class TouchpadScrollScreenView
   virtual void SetReverseScrolling(bool value) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(base::Value::Dict data) = 0;
 };
 
 class TouchpadScrollScreenHandler : public BaseScreenHandler,
@@ -50,7 +50,7 @@ class TouchpadScrollScreenHandler : public BaseScreenHandler,
   void SetReverseScrolling(bool value) override;
 
   // TouchpadScrollScreenView:
-  void Show() override;
+  void Show(base::Value::Dict data) override;
 };
 
 }  // namespace ash

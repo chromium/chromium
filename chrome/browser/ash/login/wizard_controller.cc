@@ -1595,9 +1595,17 @@ void WizardController::OnDisplaySizeScreenExit(
   switch (result) {
     case DisplaySizeScreen::Result::kNotApplicable:
     case DisplaySizeScreen::Result::kNext:
-      choobe_flow_controller_.reset();
-      ShowMarketingOptInScreen();
-      break;
+      if (wizard_context_->return_to_choobe_screen) {
+        wizard_context_->return_to_choobe_screen = false;
+        ShowChoobeScreen();
+      } else {
+        if (choobe_flow_controller_) {
+          choobe_flow_controller_->OnChoobeFlowExit();
+          choobe_flow_controller_.reset();
+        }
+        ShowMarketingOptInScreen();
+        break;
+      }
   }
 }
 
@@ -2489,6 +2497,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowDrivePinningScreen();
   } else if (screen_id == DisplaySizeScreenView::kScreenId) {
     ShowDisplaySizeScreen();
+  } else if (screen_id == ChoobeScreenView::kScreenId) {
+    ShowChoobeScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

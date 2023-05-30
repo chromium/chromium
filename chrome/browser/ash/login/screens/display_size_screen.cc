@@ -20,6 +20,7 @@ namespace ash {
 namespace {
 
 constexpr const char kUserActionNext[] = "next";
+constexpr const char kUserActionReturn[] = "return";
 
 std::vector<float> GetZoomFactors() {
   const auto display_id =
@@ -36,6 +37,26 @@ float GetCurrentZoomFactor() {
   const auto& info =
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
   return info.zoom_factor();
+}
+
+bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return false;
+  }
+  return controller->ShouldShowReturnButton(DisplaySizeScreenView::kScreenId);
+}
+
+void PersistSelectedFactor(PrefService* prefs, double factor) {
+  prefs->SetDouble(prefs::kOobeDisplaySizeFactorDeferred, factor);
+}
+
+void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
+  if (!features::IsOobeChoobeEnabled() || !controller) {
+    return;
+  }
+  controller->OnScreenCompleted(
+      *ProfileManager::GetActiveUserProfile()->GetPrefs(),
+      DisplaySizeScreenView::kScreenId);
 }
 
 }  // namespace
@@ -129,6 +150,10 @@ void DisplaySizeScreen::ShowImpl() {
   base::Value::Dict data;
   data.Set("availableSizes", std::move(factors_list));
   data.Set("currentSize", GetCurrentZoomFactor());
+  data.Set(
+      "shouldShowReturn",
+      ShouldShowChoobeReturnButton(
+          WizardController::default_controller()->choobe_flow_controller()));
   view_->Show(std::move(data));
 }
 
@@ -138,14 +163,27 @@ void DisplaySizeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionNext) {
     CHECK_EQ(args.size(), 2u);
-    double selected_factor = args[1].GetDouble();
-
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    profile->GetPrefs()->SetDouble(prefs::kOobeDisplaySizeFactorDeferred,
-                                   selected_factor);
+    PersistSelectedFactor(ProfileManager::GetActiveUserProfile()->GetPrefs(),
+                          args[1].GetDouble());
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kNext);
     return;
   }
+
+  if (action_id == kUserActionReturn) {
+    CHECK_EQ(args.size(), 2u);
+    PersistSelectedFactor(ProfileManager::GetActiveUserProfile()->GetPrefs(),
+                          args[1].GetDouble());
+    ReportScreenCompletedToChoobe(
+        WizardController::default_controller()->choobe_flow_controller());
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->return_to_choobe_screen = true;
+    exit_callback_.Run(Result::kNext);
+    return;
+  }
+
   BaseScreen::OnUserAction(args);
 }
 
