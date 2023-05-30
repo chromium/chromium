@@ -48,8 +48,9 @@ void AddUiColorMixer(ColorProvider* provider,
       kColorSubtleEmphasisBackground};
   mixer[kColorButtonBackgroundProminentFocused] = {
       kColorButtonBackgroundProminent};
-  mixer[kColorButtonBackgroundTonal] = {kColorSysPrimaryContainer};
-  mixer[kColorButtonBackgroundTonalDisabled] = {kColorSubtleEmphasisBackground};
+  mixer[kColorButtonBackgroundTonal] = {kColorSysTonalContainer};
+  mixer[kColorButtonBackgroundTonalDisabled] = {
+      kColorSysStateDisabledContainer};
   mixer[kColorButtonBackgroundTonalFocused] = {kColorButtonBackgroundTonal};
   mixer[kColorButtonBorder] = {kColorMidground};
   mixer[kColorButtonBorderDisabled] = {kColorSubtleEmphasisBackground};
@@ -59,7 +60,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundDisabled] = {kColorDisabledForeground};
   mixer[kColorButtonForegroundProminent] =
       GetColorWithMaxContrast(kColorButtonBackgroundProminent);
-  mixer[kColorButtonForegroundTonal] = {kColorSysOnPrimaryContainer};
+  mixer[kColorButtonForegroundTonal] = {kColorSysOnTonalContainer};
   mixer[kColorButtonHoverBackgroundText] = {kColorSysStateHoverOnSubtle};
   mixer[kColorCheckboxForegroundUnchecked] = {kColorSecondaryForeground};
   mixer[kColorCheckboxForegroundChecked] = {kColorButtonForeground};
