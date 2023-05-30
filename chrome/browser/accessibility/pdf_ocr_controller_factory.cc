@@ -16,7 +16,8 @@ PdfOcrController* PdfOcrControllerFactory::GetForProfile(Profile* profile) {
 
 // static
 PdfOcrControllerFactory* PdfOcrControllerFactory::GetInstance() {
-  return base::Singleton<PdfOcrControllerFactory>::get();
+  static base::NoDestructor<PdfOcrControllerFactory> instance;
+  return instance.get();
 }
 
 PdfOcrControllerFactory::PdfOcrControllerFactory()
