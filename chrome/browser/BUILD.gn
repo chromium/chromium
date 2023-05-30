@@ -7909,7 +7909,6 @@ grit("dev_ui_browser_resources") {
   ]
 
   deps = [
-    "//chrome/browser/resources/accessibility:build_ts",
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/engagement:build_ts",
     "//chrome/browser/resources/memory_internals:build_ts",
