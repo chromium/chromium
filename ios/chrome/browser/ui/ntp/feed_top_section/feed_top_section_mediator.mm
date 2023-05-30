@@ -8,7 +8,6 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -26,7 +25,10 @@
       _identityObserverBridge;
 }
 
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+@property(nonatomic, assign) AuthenticationService* authenticationService;
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
+@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) PrefService* prefService;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<FeedTopSectionConsumer> consumer;
@@ -43,14 +45,18 @@
 @synthesize signinPromoConfigurator = _signinPromoConfigurator;
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
-                    browserState:(ChromeBrowserState*)browserState {
+                 identityManager:(signin::IdentityManager*)identityManager
+                     authService:(AuthenticationService*)authenticationService
+                     isIncognito:(BOOL)isIncognito
+                     prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
-    _browserState = browserState;
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+    _authenticationService = authenticationService;
+    _identityManager = identityManager;
     _identityObserverBridge.reset(
-        new signin::IdentityManagerObserverBridge(identityManager, self));
+        new signin::IdentityManagerObserverBridge(_identityManager, self));
+    _isIncognito = isIncognito;
+    _prefService = prefService;
     _consumer = consumer;
   }
   return self;
@@ -66,6 +72,9 @@
 
 - (void)shutdown {
   _identityObserverBridge.reset();
+  self.authenticationService = nullptr;
+  self.identityManager = nullptr;
+  self.prefService = nullptr;
 }
 
 #pragma mark - Setters
@@ -131,11 +140,9 @@
 #pragma mark - Private
 
 - (void)updateShouldShowSigninPromo {
-  DCHECK(self.browserState);
   self.shouldShowSigninPromo = NO;
   // Don't show the promo for incognito or start surface.
-  if (self.browserState->IsOffTheRecord() ||
-      [self.ntpDelegate isStartSurface]) {
+  if (self.isIncognito || [self.ntpDelegate isStartSurface]) {
     return;
   }
 
@@ -146,18 +153,13 @@
     return;
   }
 
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
-                                authenticationService:authenticationService
-                                          prefService:_browserState
-                                                          ->GetPrefs()]) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForBrowserState(_browserState);
+                                authenticationService:self.authenticationService
+                                          prefService:self.prefService]) {
     self.shouldShowSigninPromo =
-        !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+        !self.identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
 }
 

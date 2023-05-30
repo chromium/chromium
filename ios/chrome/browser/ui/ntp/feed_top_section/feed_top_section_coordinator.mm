@@ -45,10 +45,19 @@
   self.feedTopSectionViewController =
       [[FeedTopSectionViewController alloc] init];
   _viewController = self.feedTopSectionViewController;
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
       initWithConsumer:self.feedTopSectionViewController
-          browserState:browserState];
+       identityManager:identityManager
+           authService:authenticationService
+           isIncognito:browserState->IsOffTheRecord()
+           prefService:browserState->GetPrefs()];
+
   self.signinPromoMediator = [[SigninPromoViewMediator alloc]
             initWithBrowser:self.browser
       accountManagerService:ChromeAccountManagerServiceFactory::
