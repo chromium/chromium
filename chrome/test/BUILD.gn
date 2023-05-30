@@ -3384,6 +3384,7 @@ if (!is_android) {
           "//chrome/browser/enterprise/connectors/device_trust:features",
           "//chrome/browser/enterprise/connectors/device_trust:prefs",
           "//chrome/browser/enterprise/connectors/device_trust/common",
+          "//chrome/browser/enterprise/connectors/test:test_support",
           "//components/device_signals/core/common",
           "//components/device_signals/core/common:features",
           "//components/device_signals/test:test_support",
