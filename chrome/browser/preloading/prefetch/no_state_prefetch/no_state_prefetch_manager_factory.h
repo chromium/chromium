@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
@@ -30,7 +30,7 @@ class NoStatePrefetchManagerFactory : public ProfileKeyedServiceFactory {
   static NoStatePrefetchManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<NoStatePrefetchManagerFactory>;
+  friend base::NoDestructor<NoStatePrefetchManagerFactory>;
 
   NoStatePrefetchManagerFactory();
   ~NoStatePrefetchManagerFactory() override;

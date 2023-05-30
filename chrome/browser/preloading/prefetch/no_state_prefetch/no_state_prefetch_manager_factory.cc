@@ -30,7 +30,8 @@ NoStatePrefetchManager* NoStatePrefetchManagerFactory::GetForBrowserContext(
 
 // static
 NoStatePrefetchManagerFactory* NoStatePrefetchManagerFactory::GetInstance() {
-  return base::Singleton<NoStatePrefetchManagerFactory>::get();
+  static base::NoDestructor<NoStatePrefetchManagerFactory> instance;
+  return instance.get();
 }
 
 NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
@@ -52,7 +53,7 @@ NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-NoStatePrefetchManagerFactory::~NoStatePrefetchManagerFactory() {}
+NoStatePrefetchManagerFactory::~NoStatePrefetchManagerFactory() = default;
 
 KeyedService* NoStatePrefetchManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
