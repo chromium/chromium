@@ -321,10 +321,10 @@ class DownloadBubbleUpdateService
 
 #if DCHECK_IS_ON()
     // Checks that the cache data structures are consistent.
-    bool ConsistencyCheckCaches() const;
+    void ConsistencyCheckCaches() const;
 
     template <typename Id, typename Item>
-    bool ConsistencyCheckImpl(const SortedItems<Item>& cache,
+    void ConsistencyCheckImpl(const SortedItems<Item>& cache,
                               const IterMap<Id, Item>& iter_map) const;
 #endif  // DCHECK_IS_ON()
 
