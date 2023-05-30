@@ -139,10 +139,12 @@ void WaylandScreen::OnOutputAddedOrUpdated(
 
 void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
   DCHECK(display_id_map_.contains(output_id));
-  if (display_id_map_.find(output_id) == display_id_map_.end())
+  auto iter = display_id_map_.find(output_id);
+  if (iter == display_id_map_.end()) {
     return;
-
-  int64_t display_id = display_id_map_[output_id];
+  }
+  int64_t display_id = iter->second;
+  display_id_map_.erase(iter);
 
   if (display_id == GetPrimaryDisplay().id()) {
     // First, set a new primary display as required by the |display_list_|. It's

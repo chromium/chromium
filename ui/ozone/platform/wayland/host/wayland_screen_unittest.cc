@@ -319,6 +319,10 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
   int64_t removed_display_id = observer.GetRemovedDisplay().id();
   EXPECT_EQ(added_display_id, removed_display_id);
 
+  // Ensure that |WaylandScreen| has forgotten about the removed display.
+  EXPECT_EQ(platform_screen_->GetOutputIdForDisplayId(removed_display_id),
+            WaylandOutput::Id(0));
+
   // Create another display again. Updates rect again.
   PostToServerAndWait(
       [&output2, &output1](wl::TestWaylandServerThread* server) {
