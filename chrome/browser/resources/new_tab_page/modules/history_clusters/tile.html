@@ -1,5 +1,7 @@
 <style include="history-clusters-shared-style">
   :host {
+    background:
+        var(--color-new-tab-page-history-clusters-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     color: var(--color-new-tab-page-primary-foreground);
     display: inline-block;
@@ -21,20 +23,9 @@
   }
 
   #content {
-    background:
-        var(--color-new-tab-page-history-clusters-module-item-background);
     display: inline-block;
     height: 100%;
     width: 100%;
-  }
-
-  #content:hover {
-    background: var(--color-sys-state-hover-dim-blend-protection);
-  }
-
-  #content:active,
-  :host-context(.focus-outline-visible) #content:focus {
-    background-color: var(--color-new-tab-page-active-background);
   }
 
   :host([medium-format]) #content {
