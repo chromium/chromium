@@ -46,9 +46,6 @@ class ASH_EXPORT LoginBigUserView : public NonAccessibleView,
 
   ~LoginBigUserView() override;
 
-  // NonAccessibleView:
-  void OnThemeChanged() override;
-
   // Base on the user type, call CreateAuthUser or CreatePublicAccount.
   void CreateChildView(const LoginUserInfo& user);
 
