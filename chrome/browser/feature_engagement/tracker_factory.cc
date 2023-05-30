@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +19,8 @@ namespace feature_engagement {
 
 // static
 TrackerFactory* TrackerFactory::GetInstance() {
-  return base::Singleton<TrackerFactory>::get();
+  static base::NoDestructor<TrackerFactory> instance;
+  return instance.get();
 }
 
 // static
