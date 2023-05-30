@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,7 +33,6 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1684,7 +1684,8 @@ class EmptyNetworkServiceTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, Base) {
+// TODO(https://crbug.com/1448414): Reenable this test.
+IN_PROC_BROWSER_TEST_F(EmptyNetworkServiceTest, DISABLED_Base) {
   // This test is only for high-RAM device to create another process.
   if (!IsInProcessNetworkService()) {
     GTEST_SKIP();

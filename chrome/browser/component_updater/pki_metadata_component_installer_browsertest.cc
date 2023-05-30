@@ -23,7 +23,7 @@
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "components/certificate_transparency/ct_features.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/network_service_util.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/net_buildflags.h"

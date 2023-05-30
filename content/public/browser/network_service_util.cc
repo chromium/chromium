@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/network_service_util.h"
+#include "content/public/browser/network_service_util.h"
 
 #include "base/command_line.h"
 #include "build/build_config.h"

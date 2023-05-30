@@ -61,6 +61,7 @@ static_library("flags_android") {
     "//base",
     "//chrome/browser:browser_process",
     "//components/prefs:prefs",
+    "//content/public/browser",
     "//content/public/common",
   ]
 }

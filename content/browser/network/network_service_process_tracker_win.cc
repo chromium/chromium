@@ -8,9 +8,9 @@
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
-#include "content/public/common/network_service_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {

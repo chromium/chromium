@@ -8,7 +8,7 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "chromecast/app/cast_main_delegate.h"
-#include "content/public/common/network_service_util.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/test/test_launcher.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/core/embedder/embedder.h"

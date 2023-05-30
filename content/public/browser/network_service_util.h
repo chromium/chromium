@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_COMMON_NETWORK_SERVICE_UTIL_H_
-#define CONTENT_PUBLIC_COMMON_NETWORK_SERVICE_UTIL_H_
+#ifndef CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_UTIL_H_
+#define CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_UTIL_H_
 
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -22,4 +23,4 @@ CONTENT_EXPORT bool IsInProcessNetworkService();
 CONTENT_EXPORT void ForceInProcessNetworkService(bool is_forced);
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_COMMON_NETWORK_SERVICE_UTIL_H_
+#endif  // CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_UTIL_H_

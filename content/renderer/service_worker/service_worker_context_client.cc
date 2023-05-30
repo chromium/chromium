@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/network_service_util.h"
 #include "content/public/common/referrer.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/worker_thread.h"
@@ -152,21 +151,19 @@ ServiceWorkerContextClient::ServiceWorkerContextClient(
   blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
       registry_.GetWeakPtr(), /*associated_interface_registry=*/nullptr);
 
-  if (IsOutOfProcessNetworkService()) {
-    // If the network service crashes, this worker self-terminates, so it can
-    // be restarted later with a connection to the restarted network
-    // service.
-    // Note that the default factory is the network service factory. It's set
-    // on the start worker sequence.
-    network_service_disconnect_handler_holder_.Bind(
-        std::move(subresource_loaders->pending_default_factory()));
-    network_service_disconnect_handler_holder_->Clone(
-        subresource_loaders->pending_default_factory()
-            .InitWithNewPipeAndPassReceiver());
-    network_service_disconnect_handler_holder_.set_disconnect_handler(
-        base::BindOnce(&ServiceWorkerContextClient::StopWorkerOnInitiatorThread,
-                       base::Unretained(this)));
-  }
+  // If the network service crashes, this worker self-terminates, so it can
+  // be restarted later with a connection to the restarted network
+  // service.
+  // Note that the default factory is the network service factory. It's set
+  // on the start worker sequence.
+  network_service_disconnect_handler_holder_.Bind(
+      std::move(subresource_loaders->pending_default_factory()));
+  network_service_disconnect_handler_holder_->Clone(
+      subresource_loaders->pending_default_factory()
+          .InitWithNewPipeAndPassReceiver());
+  network_service_disconnect_handler_holder_.set_disconnect_handler(
+      base::BindOnce(&ServiceWorkerContextClient::StopWorkerOnInitiatorThread,
+                     base::Unretained(this)));
 
   loader_factories_ = base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
       std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
