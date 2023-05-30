@@ -10,11 +10,11 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "apps/switches.h"
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
 #import "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -50,6 +50,10 @@
 #include "extensions/test/extension_test_message_listener.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using extensions::Extension;
 using extensions::ExtensionRegistry;
@@ -232,9 +236,11 @@ class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
 
 NSString* GetBundleID(const base::FilePath& shim_path) {
   base::FilePath plist_path = shim_path.Append("Contents").Append("Info.plist");
-  NSMutableDictionary* plist = [NSMutableDictionary
-      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(plist_path)];
-  return [plist objectForKey:base::mac::CFToNSCast(kCFBundleIdentifierKey)];
+  NSDictionary* plist = [NSDictionary
+      dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(plist_path)
+                            error:nil];
+  return
+      [plist objectForKey:base::apple::CFToNSPtrCast(kCFBundleIdentifierKey)];
 }
 
 bool HasAppShimHost(Profile* profile, const std::string& app_id) {
@@ -327,10 +333,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_HostedAppLaunch) {
 
   // Case 1: Launch the hosted app, it should start the shim.
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer;
-    ns_observer.reset([[WindowedNSNotificationObserver alloc]
-        initForWorkspaceNotification:NSWorkspaceDidLaunchApplicationNotification
-                            bundleId:bundle_id]);
+    WindowedNSNotificationObserver* ns_observer =
+        [[WindowedNSNotificationObserver alloc]
+            initForWorkspaceNotification:
+                NSWorkspaceDidLaunchApplicationNotification
+                                bundleId:bundle_id];
     WindowedAppShimLaunchObserver observer(app->id());
     LaunchHostedApp(app);
     EXPECT_TRUE([ns_observer wait]);
@@ -339,16 +346,15 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_HostedAppLaunch) {
     EXPECT_TRUE(HasAppShimHost(profile(), app->id()));
     EXPECT_TRUE(GetFirstHostedAppWindow());
 
-    NSArray* running_shim = [NSRunningApplication
+    NSArray<NSRunningApplication*>* running_shims = [NSRunningApplication
         runningApplicationsWithBundleIdentifier:bundle_id];
-    ASSERT_EQ(1u, [running_shim count]);
+    ASSERT_EQ(1u, running_shims.count);
 
-    ns_observer.reset([[WindowedNSNotificationObserver alloc]
+    ns_observer = [[WindowedNSNotificationObserver alloc]
         initForWorkspaceNotification:
             NSWorkspaceDidTerminateApplicationNotification
-                            bundleId:bundle_id]);
-    [base::mac::ObjCCastStrict<NSRunningApplication>(
-        [running_shim objectAtIndex:0]) terminate];
+                            bundleId:bundle_id];
+    [running_shims[0] terminate];
     EXPECT_TRUE([ns_observer wait]);
 
     EXPECT_FALSE(GetFirstHostedAppWindow());
@@ -397,10 +403,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
 
   // Case 1: Launch the app, it should start the shim.
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer;
-    ns_observer.reset([[WindowedNSNotificationObserver alloc]
-        initForWorkspaceNotification:NSWorkspaceDidLaunchApplicationNotification
-                            bundleId:bundle_id]);
+    WindowedNSNotificationObserver* ns_observer =
+        [[WindowedNSNotificationObserver alloc]
+            initForWorkspaceNotification:
+                NSWorkspaceDidLaunchApplicationNotification
+                                bundleId:bundle_id];
     WindowedAppShimLaunchObserver observer(app->id());
     LaunchPlatformApp(app);
     EXPECT_TRUE([ns_observer wait]);
@@ -413,17 +420,16 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_Launch) {
     // intercepts the -terminate, sends an QuitApp message to Chrome, and then
     // immediately quits. Chrome closes all windows of the app when QuitApp is
     // received.
-    NSArray* running_shim = [NSRunningApplication
+    NSArray<NSRunningApplication*>* running_shims = [NSRunningApplication
         runningApplicationsWithBundleIdentifier:bundle_id];
-    ASSERT_EQ(1u, [running_shim count]);
+    ASSERT_EQ(1u, running_shims.count);
 
-    ns_observer.reset([[WindowedNSNotificationObserver alloc]
+    ns_observer = [[WindowedNSNotificationObserver alloc]
         initForWorkspaceNotification:
             NSWorkspaceDidTerminateApplicationNotification
-                            bundleId:bundle_id]);
+                            bundleId:bundle_id];
     observer.StartObserving();
-    [base::mac::ObjCCastStrict<NSRunningApplication>(
-        [running_shim objectAtIndex:0]) terminate];
+    [running_shims[0] terminate];
     observer.Wait();
     EXPECT_TRUE([ns_observer wait]);
 
@@ -500,11 +506,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
 
   // Showing the window causes the shim to launch.
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer(
+    WindowedNSNotificationObserver* ns_observer =
         [[WindowedNSNotificationObserver alloc]
             initForWorkspaceNotification:
                 NSWorkspaceDidLaunchApplicationNotification
-                                bundleId:bundle_id]);
+                                bundleId:bundle_id];
     WindowedAppShimLaunchObserver observer(app->id());
     window_1->Show(extensions::AppWindow::SHOW_INACTIVE);
     EXPECT_TRUE([ns_observer wait]);
@@ -515,11 +521,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
 
   // Hiding the window causes the shim to quit.
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer(
+    WindowedNSNotificationObserver* ns_observer =
         [[WindowedNSNotificationObserver alloc]
             initForWorkspaceNotification:
                 NSWorkspaceDidTerminateApplicationNotification
-                                bundleId:bundle_id]);
+                                bundleId:bundle_id];
     window_1->Hide();
     EXPECT_TRUE([ns_observer wait]);
     EXPECT_FALSE(HasAppShimHost(profile(), app->id()));
@@ -543,11 +549,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
 
   // Showing one of the windows should launch the shim.
   {
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer(
+    WindowedNSNotificationObserver* ns_observer =
         [[WindowedNSNotificationObserver alloc]
             initForWorkspaceNotification:
                 NSWorkspaceDidLaunchApplicationNotification
-                                bundleId:bundle_id]);
+                                bundleId:bundle_id];
     WindowedAppShimLaunchObserver observer(app->id());
     window_1->Show(extensions::AppWindow::SHOW_INACTIVE);
     EXPECT_TRUE([ns_observer wait]);
@@ -580,11 +586,11 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_ShowWindow) {
   {
     AppLifetimeMonitorObserver deactivate_observer(profile());
     EXPECT_TRUE(HasAppShimHost(profile(), app->id()));
-    base::scoped_nsobject<WindowedNSNotificationObserver> ns_observer(
+    WindowedNSNotificationObserver* ns_observer =
         [[WindowedNSNotificationObserver alloc]
             initForWorkspaceNotification:
                 NSWorkspaceDidTerminateApplicationNotification
-                                bundleId:bundle_id]);
+                                bundleId:bundle_id];
     window_2->Hide();
     EXPECT_TRUE([ns_observer wait]);
     EXPECT_EQ(1, deactivate_observer.deactivated_count());
@@ -617,10 +623,10 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
   std::vector<base::FilePath> updated_paths;
   shortcut_creator.UpdateShortcuts(false, &updated_paths);
   base::FilePath shim_path = updated_paths.front();
-  NSMutableDictionary* plist_64 = [NSMutableDictionary
-      dictionaryWithContentsOfFile:base::mac::FilePathToNSString(
-                                       shim_path.Append("Contents")
-                                           .Append("Info.plist"))];
+  NSURL* plist_64_url = base::mac::FilePathToNSURL(
+      shim_path.Append("Contents").Append("Info.plist"));
+  NSDictionary* plist_64 =
+      [NSDictionary dictionaryWithContentsOfURL:plist_64_url error:nil];
 
   // Copy 32 bit shim to where it's expected to be.
   // CopyDirectory doesn't seem to work when copying and renaming in one go.
@@ -633,20 +639,21 @@ IN_PROC_BROWSER_TEST_F(AppShimInteractiveTest, MAYBE_RebuildShim) {
       shim_path.Append("Contents").Append("MacOS").Append("app_mode_loader")));
 
   // Fix up the plist so that it matches the installed test app.
-  NSString* plist_path = base::mac::FilePathToNSString(
+  NSURL* plist_url = base::mac::FilePathToNSURL(
       shim_path.Append("Contents").Append("Info.plist"));
   NSMutableDictionary* plist =
-      [NSMutableDictionary dictionaryWithContentsOfFile:plist_path];
+      [NSMutableDictionary dictionaryWithContentsOfURL:plist_url];
 
   NSArray* keys_to_copy = @[
-    base::mac::CFToNSCast(kCFBundleIdentifierKey),
-    base::mac::CFToNSCast(kCFBundleNameKey), app_mode::kCrAppModeShortcutIDKey,
-    app_mode::kCrAppModeUserDataDirKey, app_mode::kBrowserBundleIDKey
+    base::apple::CFToNSPtrCast(kCFBundleIdentifierKey),
+    base::apple::CFToNSPtrCast(kCFBundleNameKey),
+    app_mode::kCrAppModeShortcutIDKey, app_mode::kCrAppModeUserDataDirKey,
+    app_mode::kBrowserBundleIDKey
   ];
   for (NSString* key in keys_to_copy) {
-    [plist setObject:[plist_64 objectForKey:key] forKey:key];
+    plist[key] = plist_64[key];
   }
-  [plist writeToFile:plist_path atomically:YES];
+  [plist writeToURL:plist_url error:nil];
 
   base::mac::RemoveQuarantineAttribute(shim_path);
 

@@ -1176,6 +1176,7 @@ if (is_win) {
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
       "//chrome/app:notification_metrics",
+      "//chrome/browser:browser_arc",
       "//chrome/common:buildflags",
       "//chrome/common/profiler",
       "//components/crash/core/app",

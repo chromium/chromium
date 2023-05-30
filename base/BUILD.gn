@@ -213,7 +213,21 @@ if (is_apple) {
       "apple/owned_objc.h",
       "apple/owned_objc.mm",
     ]
+    if (is_mac) {
+      sources += [
+        "mac/launch_application.h",
+        "mac/launch_application.mm",
+      ]
+      frameworks = [
+        "AppKit.framework",
+        "Foundation.framework",
+      ]
+    }
     configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      "//base:base_static",
+      "//third_party/abseil-cpp:absl",
+    ]
   }
 }
 
@@ -1992,8 +2006,6 @@ component("base") {
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
       "mac/close_nocancel.cc",
-      "mac/launch_application.h",
-      "mac/launch_application.mm",
       "mac/launchd.cc",
       "mac/launchd.h",
       "mac/mac_util.h",
@@ -2108,6 +2120,7 @@ component("base") {
     ]
     frameworks += [ "Security.framework" ]
     public_deps += [ ":base_arc" ]
+    allow_circular_includes_from = [ ":base_arc" ]
   }
 
   # Linux.

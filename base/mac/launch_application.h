@@ -16,6 +16,10 @@
 #include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Launches an application.
 //
 // What makes this different from `LaunchProcess()` in /base/process/launch.h?

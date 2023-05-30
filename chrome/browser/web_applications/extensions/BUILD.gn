@@ -19,6 +19,7 @@ source_set("extensions") {
   ]
   if (is_mac) {
     sources += [ "web_app_extension_shortcut_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   # Enable the "exit_time_destructors" warning here to avoid accidentally

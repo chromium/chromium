@@ -5,10 +5,17 @@
 #include "chrome/app_shim/app_shim_delegate.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app_shim/app_shim_controller.h"
 #include "net/base/mac/url_conversions.h"
 
-@implementation AppShimDelegate
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation AppShimDelegate {
+  raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|
+}
 
 - (instancetype)initWithController:(AppShimController*)controller {
   if (self = [super init])

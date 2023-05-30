@@ -16,6 +16,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 void ValidateFontFamily(PrefService* prefs, const char* family_pref_name) {
   // The native font settings dialog saved fonts by the font name, rather
@@ -25,10 +29,10 @@ void ValidateFontFamily(PrefService* prefs, const char* family_pref_name) {
   // the webui settings window, we will fix the saved preference if necessary.
   NSString* family_name =
       base::SysUTF8ToNSString(prefs->GetString(family_pref_name));
-  NSFont* font = [NSFont fontWithName:family_name size:[NSFont systemFontSize]];
+  NSFont* font = [NSFont fontWithName:family_name size:NSFont.systemFontSize];
   if (font &&
-      [[font familyName] caseInsensitiveCompare:family_name] != NSOrderedSame) {
-    std::string new_family_name = base::SysNSStringToUTF8([font familyName]);
+      [font.familyName caseInsensitiveCompare:family_name] != NSOrderedSame) {
+    std::string new_family_name = base::SysNSStringToUTF8(font.familyName);
     prefs->SetString(family_pref_name, new_family_name);
   }
 }

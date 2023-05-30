@@ -16,6 +16,10 @@
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/models/image_model.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace apps {
 
 namespace {
@@ -36,7 +40,7 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
                           forKey:NSURLLocalizedNameKey
                            error:nil]) {
     // This shouldn't happen but just in case.
-    app_name = [app_url lastPathComponent];
+    app_name = app_url.lastPathComponent;
   }
   NSImage* app_icon = nil;
   if (![app_url getResourceValue:&app_icon
@@ -75,8 +79,7 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
     if (!nsurl)
       return absl::nullopt;
 
-    SFUniversalLink* link =
-        [[[SFUniversalLink alloc] initWithWebpageURL:nsurl] autorelease];
+    SFUniversalLink* link = [[SFUniversalLink alloc] initWithWebpageURL:nsurl];
 
     if (link)
       return AppInfoForAppUrl(link.applicationURL);

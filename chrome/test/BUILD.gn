@@ -1319,6 +1319,7 @@ if (!is_android) {
     source_set("browser_tests_arc") {
       testonly = true
       sources = [
+        "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm",
         "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h",
         "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.mm",
         "../browser/ui/cocoa/applescript/bookmark_folder_applescript_browsertest.mm",
@@ -1336,6 +1337,7 @@ if (!is_android) {
         "//base/test:test_support",
         "//chrome/app:command_ids",
         "//chrome/app_shim",
+        "//chrome/app_shim:app_shim_arc",
         "//chrome/browser",
         "//chrome/browser:browser_process",
         "//chrome/browser/apps/app_shim",
@@ -2812,7 +2814,6 @@ if (!is_android) {
     if (is_mac) {
       sources += [
         "../browser/app_controller_mac_browsertest.mm",
-        "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.cc",
         "../browser/apps/app_shim/test/app_shim_listener_test_api_mac.h",
         "../browser/mac/auth_session_request_browsertest.mm",
@@ -2848,6 +2849,7 @@ if (!is_android) {
       deps += [
         ":browser_tests_arc",
         "//chrome/app_shim",
+        "//chrome/browser:browser_arc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/ui:ui_arc",
@@ -5564,6 +5566,7 @@ if (is_mac) {
   source_set("unit_tests_arc") {
     testonly = true
     sources = [
+      "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/scoped_menu_bar_lock_unittest.mm",
@@ -5585,6 +5588,8 @@ if (is_mac) {
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/app_shim:app_shim_arc",
+      "//chrome/browser/apps/app_shim",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/ui:test_support",
@@ -6649,7 +6654,6 @@ test("unit_tests") {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
       "../browser/app_controller_mac_unittest.mm",
-      "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/auth_session_request_unittest.mm",
@@ -9809,15 +9813,24 @@ if (is_mac) {
   # target once all .mm files are ARCed.
   source_set("interactive_ui_tests_arc") {
     testonly = true
-    sources = [ "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm" ]
+    sources = [
+      "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
+      "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
+    ]
     configs += [ "//build/config/compiler:enable_arc" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
+      ":test_support",
+      ":test_support_ui",
       "//base",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui",
+      "//chrome/browser/web_applications/extensions",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
+      "//ui/base:test_support",
+      "//ui/events:test_support",
     ]
   }
 }
@@ -10425,7 +10438,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
         "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
         "../browser/focus_ring_browsertest_mac.h",
         "../browser/focus_ring_browsertest_mac.mm",
