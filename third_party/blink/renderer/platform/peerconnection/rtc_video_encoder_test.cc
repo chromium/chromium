@@ -1606,6 +1606,81 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
                                  &frame_types));
 }
 
+TEST_P(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
+  webrtc::VideoCodec codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                              /*num_spatial_layers=*/1);
+  CreateEncoder(codec.codecType);
+
+  if (!InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  constexpr size_t kNumEncodeFrames = 3u;
+  class EnodedBufferLifetimeVerifier : public webrtc::EncodedImageCallback {
+   public:
+    explicit EnodedBufferLifetimeVerifier() = default;
+    ~EnodedBufferLifetimeVerifier() override {
+      last_encoded_image_->data()[0] = 0;
+    }
+
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      last_encoded_image_ = encoded_image.GetEncodedData();
+      if (encoded_image.Timestamp() == kNumEncodeFrames - 1 &&
+          codec_specific_info->end_of_picture) {
+        waiter_.Signal();
+      }
+      return Result(Result::OK);
+    }
+
+    void Wait() { waiter_.Wait(); }
+
+   private:
+    base::WaitableEvent waiter_;
+    rtc::scoped_refptr<webrtc::EncodedImageBufferInterface> last_encoded_image_;
+  };
+
+  EnodedBufferLifetimeVerifier lifetime_verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&lifetime_verifier);
+  if (InitializeOnFirstFrameEnabled()) {
+    ExpectCreateInitAndDestroyVEA();
+  }
+  for (size_t i = 0; i < kNumEncodeFrames; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+    base::WaitableEvent event;
+    if (i > 0) {
+      EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_))
+          .Times((i > 1) ? 1 : 0);
+    }
+    EXPECT_CALL(*mock_vea_, Encode)
+        .WillOnce(DoAll(
+            Invoke(this,
+                   &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
+            [&event]() { event.Signal(); }));
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_timestamp_rtp(i)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+  }
+  lifetime_verifier.Wait();
+  RunUntilIdle();
+  rtc_encoder_.reset();
+}
+
 const RTCVideoEncoderEncodeTestParam kEncodeTestCases[] = {
     {false, false},
     {false, true},
