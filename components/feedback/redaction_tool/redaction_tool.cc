@@ -949,8 +949,8 @@ std::string RedactionTool::RedactIbans(
   while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped,
                                      &pre_separating_char, &iban,
                                      &post_separating_char)) {
-    skipped.AppendToString(&result);
-    pre_separating_char.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
+    result.append(pre_separating_char.data(), pre_separating_char.size());
 
     // Validation sequence as per [1].
     //
@@ -964,7 +964,7 @@ std::string RedactionTool::RedactIbans(
     if (const auto previous_iban = ibans_.find(stripped);
         previous_iban != ibans_.end()) {
       result += previous_iban->second;
-      post_separating_char.AppendToString(&result);
+      result.append(post_separating_char.data(), post_separating_char.size());
       continue;
     }
 
@@ -1017,7 +1017,7 @@ std::string RedactionTool::RedactIbans(
 
     if (remainder != 1) {
       result.append(iban.data(), iban.size());
-      post_separating_char.AppendToString(&result);
+      result.append(post_separating_char.data(), post_separating_char.size());
       continue;
     }
 
@@ -1025,7 +1025,7 @@ std::string RedactionTool::RedactIbans(
         stripped, base::StrCat({"(IBAN: ",
                                 base::NumberToString(ibans_.size() + 1), ")"}));
     result += it->second;
-    post_separating_char.AppendToString(&result);
+    result.append(post_separating_char.data(), post_separating_char.size());
 
     if (detected != nullptr) {
       (*detected)[PIIType::kIBAN].insert(it->first);
