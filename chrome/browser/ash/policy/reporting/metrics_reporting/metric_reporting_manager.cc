@@ -599,7 +599,7 @@ void MetricReportingManager::InitPeripheralsCollectors() {
           /*handler=*/std::make_unique<CrosHealthdBusSamplerHandler>(
               CrosHealthdSamplerHandler::MetricType::kTelemetry),
           ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus),
-      /*delay=*/metrics::PeripheralCollectionDelayParam::Get());
+      /*delay=*/metrics::kPeripheralCollectionDelay);
 
   InitManualTelemetryCollector(
       kDelayedPeripheralTelemetry, delayed_peripheral_telemetry_sampler.get(),
