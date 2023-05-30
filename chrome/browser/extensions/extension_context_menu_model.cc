@@ -266,7 +266,12 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       delegate_(delegate),
       button_visibility_(button_visibility),
       source_(source) {
-  InitMenu(extension, can_show_icon_in_toolbar);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    InitMenuWithFeature(extension, can_show_icon_in_toolbar);
+  } else {
+    InitMenu(extension, can_show_icon_in_toolbar);
+  }
 }
 
 bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {
@@ -434,6 +439,99 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 
 ExtensionContextMenuModel::~ExtensionContextMenuModel() {}
 
+void ExtensionContextMenuModel::InitMenuWithFeature(
+    const Extension* extension,
+    bool can_show_icon_in_toolbar) {
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+  DCHECK(extension);
+
+  extension_action_ =
+      ExtensionActionManager::Get(profile_)->GetExtensionAction(*extension);
+  absl::optional<ActionInfo::Type> action_type =
+      extension_action_
+          ? absl::optional<ActionInfo::Type>(extension_action_->action_type())
+          : absl::nullopt;
+
+  extension_items_ = std::make_unique<ContextMenuMatcher>(
+      profile_, this, this,
+      base::BindRepeating(MenuItemMatchesAction, action_type));
+
+  // Home page section.
+  std::string extension_name = extension->name();
+  // Ampersands need to be escaped to avoid being treated like
+  // mnemonics in the menu.
+  base::ReplaceChars(extension_name, "&", "&&", &extension_name);
+  AddItem(HOME_PAGE, base::UTF8ToUTF16(extension_name));
+  AppendExtensionItems();
+
+  // Site permissions section.
+  // Add page access items if active web contents exist and the extension
+  // wants site access (either by requesting host permissions or active tab).
+  // TODO(crbug.com/1306679): Show page access submenu for extensions installed
+  // by policy that have access.
+  auto* web_contents = GetActiveWebContents();
+  auto* permissions_manager = PermissionsManager::Get(profile_);
+  if (web_contents && (permissions_manager->CanAffectExtension(*extension) ||
+                       permissions_manager->HasActiveTabAndCanAccess(
+                           *extension, web_contents->GetLastCommittedURL()))) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    CreatePageAccessItems(extension, web_contents);
+    AddItemWithStringId(
+        PAGE_ACCESS_PERMISSIONS_PAGE,
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
+  }
+
+  // TODO(crbug.com/1306679): Add an entry when extension is installed by
+  // policy. The location in the menu will change dependent on whether the
+  // extension has site permissions.
+
+  // Controls section.
+  bool has_options_page = OptionsPageInfo::HasOptionsPage(extension);
+  bool can_uninstall_extension =
+      !is_component_ && !IsExtensionRequiredByPolicy(extension, profile_);
+  if (can_show_icon_in_toolbar || has_options_page || can_uninstall_extension) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
+  if (can_show_icon_in_toolbar) {
+    if (IsExtensionForcePinned(*extension, profile_)) {
+      AddItemWithStringIdAndIcon(
+          TOGGLE_VISIBILITY, IDS_EXTENSIONS_PINNED_BY_ADMIN,
+          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                         ui::kColorIcon, 16));
+    } else {
+      int message_id = button_visibility_ == ExtensionContextMenuModel::PINNED
+                           ? IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR
+                           : IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR;
+      AddItemWithStringId(TOGGLE_VISIBILITY, message_id);
+    }
+  }
+
+  if (has_options_page) {
+    AddItemWithStringId(OPTIONS, IDS_EXTENSIONS_OPTIONS_MENU_ITEM);
+  }
+
+  if (can_uninstall_extension) {
+    AddItemWithStringId(UNINSTALL, IDS_EXTENSIONS_UNINSTALL);
+  }
+
+  // Settings section.
+  if (!is_component_) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddItemWithStringId(MANAGE_EXTENSIONS, IDS_MANAGE_EXTENSION);
+    AddItemWithStringId(VIEW_WEB_PERMISSIONS, IDS_VIEW_WEB_PERMISSIONS);
+  }
+
+  // Developer section.
+  const ActionInfo* action_info = ActionInfo::GetExtensionActionInfo(extension);
+  if (delegate_ && !is_component_ && action_info && !action_info->synthesized &&
+      profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    AddItemWithStringId(INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP);
+  }
+}
+
 void ExtensionContextMenuModel::InitMenu(const Extension* extension,
                                          bool can_show_icon_in_toolbar) {
   DCHECK(extension);
@@ -475,7 +573,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
         IsExtensionRequiredByPolicy(extension, profile_);
     int message_id = is_required_by_policy ? IDS_EXTENSIONS_INSTALLED_BY_ADMIN
                                            : IDS_EXTENSIONS_UNINSTALL;
-    AddItem(UNINSTALL, l10n_util::GetStringUTF16(message_id));
+    AddItemWithStringId(UNINSTALL, message_id);
     if (is_required_by_policy) {
       size_t uninstall_index = GetIndexOfCommandId(UNINSTALL).value();
       // TODO (kylixrd): Investigate the usage of the hard-coded color.
@@ -485,15 +583,8 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     }
   }
 
-  // Extensions menu using kExtensionsMenuAccessControl doesn't have pin button
-  // in the menu items and thus context menu should display it (whereas
-  // extensions menu without the feature could have pin buttons).
-  bool show_toggle_visibility_button =
-      can_show_icon_in_toolbar &&
-      (base::FeatureList::IsEnabled(
-           extensions_features::kExtensionsMenuAccessControl) ||
-       source_ == ContextMenuSource::kToolbarAction);
-  if (show_toggle_visibility_button) {
+  if (can_show_icon_in_toolbar &&
+      source_ == ContextMenuSource::kToolbarAction) {
     int visibility_string_id =
         GetVisibilityStringId(profile_, extension, button_visibility_);
     DCHECK_NE(-1, visibility_string_id);
@@ -655,10 +746,6 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
                                page_access_submenu_.get());
         break;
     }
-
-    AddItemWithStringId(
-        PAGE_ACCESS_PERMISSIONS_PAGE,
-        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
   } else {
     // The extension wants site access but can't run on the page if it does
     // not have at least "on click" access.

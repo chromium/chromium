@@ -137,6 +137,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
  private:
   void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
+  // Constructs the menu when `kExtensionsMenuAccessControl` is enabled.
+  void InitMenuWithFeature(const Extension* extension,
+                           bool can_show_icon_in_toolbar);
+
   // Adds the page access items based on the current site setting pointed by
   // `web_contents`.
   void CreatePageAccessItems(const Extension* extension,

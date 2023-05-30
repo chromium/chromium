@@ -5326,6 +5326,12 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE" desc="The label in an extension's context menu that the user can click to learn more about site access (sentence case).">
             Learn more about site access
           </message>
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR" desc="The label in an extension's context menu that the user can click to pin the extension to the toolbar (sentence case).">
+            Pin to toolbar
+          </message>
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR" desc="The label in an extension's context menu that the user can click to unpin the extension from the toolbar (sentence case).">
+            Unpin from toolbar
+          </message>
           <message name="IDS_EXTENSIONS_OPTIONS_MENU_ITEM" desc="The text for the options menu item in context menus (sentence case).">
             Options
           </message>
@@ -5396,6 +5402,12 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
           </message>
           <message name="IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_LEARN_MORE" desc="The label in an extension's context menu that the user can click to learn more about site access (title case).">
             Learn More About Site Access
+          </message>
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR" desc="The label in an extension's context menu that the user can click to pin the extension to the toolbar (title case).">
+            Pin to Toolbar
+          </message>
+          <message name="IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR" desc="The label in an extension's context menu that the user can click to unpin the extension from the toolbar (sentence case).">
+            Unpin from Toolbar
           </message>
           <message name="IDS_EXTENSIONS_OPTIONS_MENU_ITEM" desc="The text for the options menu item in context menus (title case).">
             Options
