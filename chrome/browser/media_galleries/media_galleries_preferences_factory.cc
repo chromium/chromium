@@ -18,7 +18,8 @@ MediaGalleriesPreferencesFactory::GetForProfile(Profile* profile) {
 // static
 MediaGalleriesPreferencesFactory*
 MediaGalleriesPreferencesFactory::GetInstance() {
-  return base::Singleton<MediaGalleriesPreferencesFactory>::get();
+  static base::NoDestructor<MediaGalleriesPreferencesFactory> instance;
+  return instance.get();
 }
 
 MediaGalleriesPreferencesFactory::MediaGalleriesPreferencesFactory()
@@ -31,7 +32,7 @@ MediaGalleriesPreferencesFactory::MediaGalleriesPreferencesFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-MediaGalleriesPreferencesFactory::~MediaGalleriesPreferencesFactory() {}
+MediaGalleriesPreferencesFactory::~MediaGalleriesPreferencesFactory() = default;
 
 KeyedService* MediaGalleriesPreferencesFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
