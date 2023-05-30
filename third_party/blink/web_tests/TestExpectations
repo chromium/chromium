@@ -6785,6 +6785,8 @@ crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frame
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/oopif/oopif-storage.js [ Failure Pass ]
+crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 
 crbug.com/1449347 http/tests/devtools/persistence/persistence-sync-content-nodejs.js [ Failure Pass ]
 
