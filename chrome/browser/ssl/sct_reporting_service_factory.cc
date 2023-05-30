@@ -12,7 +12,8 @@
 
 // static
 SCTReportingServiceFactory* SCTReportingServiceFactory::GetInstance() {
-  return base::Singleton<SCTReportingServiceFactory>::get();
+  static base::NoDestructor<SCTReportingServiceFactory> instance;
+  return instance.get();
 }
 
 // static

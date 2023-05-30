@@ -32,7 +32,8 @@ StatefulSSLHostStateDelegateFactory::GetForProfile(Profile* profile) {
 // static
 StatefulSSLHostStateDelegateFactory*
 StatefulSSLHostStateDelegateFactory::GetInstance() {
-  return base::Singleton<StatefulSSLHostStateDelegateFactory>::get();
+  static base::NoDestructor<StatefulSSLHostStateDelegateFactory> instance;
+  return instance.get();
 }
 
 // static
