@@ -16,7 +16,8 @@
 
 // static
 PluginPrefsFactory* PluginPrefsFactory::GetInstance() {
-  return base::Singleton<PluginPrefsFactory>::get();
+  static base::NoDestructor<PluginPrefsFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -43,7 +44,7 @@ PluginPrefsFactory::PluginPrefsFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-PluginPrefsFactory::~PluginPrefsFactory() {}
+PluginPrefsFactory::~PluginPrefsFactory() = default;
 
 scoped_refptr<RefcountedKeyedService>
 PluginPrefsFactory::BuildServiceInstanceFor(
