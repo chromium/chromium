@@ -1672,6 +1672,12 @@
       copied_from_base_feature_if: "enabled_or_overridden",
     },
     {
+      name: "FencedFramesDefaultMode",
+      base_feature_status: "disabled",
+      copied_from_base_feature_if: "enabled_or_overridden",
+      public: true,
+    },
+    {
       name: "FetchUploadStreaming",
       status: "stable",
       base_feature: "none",

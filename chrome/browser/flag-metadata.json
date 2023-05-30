@@ -2485,6 +2485,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "enable-fenced-frames-developer-mode",
+    "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "enable-first-party-sets",
     "owners": [ "chrome-first-party-sets@chromium.org" ],
     "expiry_milestone": 120

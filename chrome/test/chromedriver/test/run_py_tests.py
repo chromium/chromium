@@ -4377,7 +4377,7 @@ class ChromeDriverFencedFrame(ChromeDriverBaseTestWithWebServer):
         accept_insecure_certs = True,
         chrome_switches=['--site-per-process',
           '--enable-features=FencedFrames,PrivacySandboxAdsAPIsOverride,'
-          'FencedFramesAPIChanges'])
+          'FencedFramesAPIChanges,FencedFramesDefaultMode'])
 
   def testCanSwitchToFencedFrame(self):
     self._initDriver()
