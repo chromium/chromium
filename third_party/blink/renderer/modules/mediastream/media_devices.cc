@@ -234,11 +234,6 @@ bool TransientActivationRequirementSatisfied(LocalDOMWindow* window) {
   return false;
 }
 
-void RecordEnumerateDevicesLatency(base::TimeTicks start_time) {
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-  base::UmaHistogramTimes("WebRTC.EnumerateDevices.Latency", elapsed);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
                                           ExceptionState& exception_state) {
@@ -376,8 +371,7 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
       script_state, "Media.MediaDevices.EnumerateDevices", base::Seconds(4));
   const ScriptPromise promise = result_tracker->Promise();
 
-  enumerate_device_requests_.Set(
-      result_tracker, RequestMetadata{.start_time = base::TimeTicks::Now()});
+  enumerate_device_requests_.insert(result_tracker);
 
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
   GetDispatcherHost(frame).EnumerateDevices(
@@ -901,8 +895,6 @@ void MediaDevices::DevicesEnumerated(
     return;
   }
 
-  const RequestMetadata request_metadata =
-      enumerate_device_requests_.at(result_tracker);
   enumerate_device_requests_.erase(result_tracker);
 
   ScriptState* script_state = result_tracker->GetScriptState();
@@ -964,10 +956,6 @@ void MediaDevices::DevicesEnumerated(
   }
 
   RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
-  // TODO(crbug.com/1395324): Remove this custom EnumerateDevices latency
-  // tracking by reverting crrev.com/c/3944912/ once the
-  // ScriptPromiseResolverWithTracker based latency monitoring reaches stable.
-  RecordEnumerateDevicesLatency(request_metadata.start_time);
 
   if (enumerate_devices_test_callback_) {
     std::move(enumerate_devices_test_callback_).Run(media_devices);
@@ -977,12 +965,8 @@ void MediaDevices::DevicesEnumerated(
 }
 
 void MediaDevices::OnDispatcherHostConnectionError() {
-  for (auto& entry : enumerate_device_requests_) {
-    ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker =
-        entry.key;
-    RequestMetadata& metadata = entry.value;
-
-    RecordEnumerateDevicesLatency(metadata.start_time);
+  for (ScriptPromiseResolverWithTracker<EnumerateDevicesResult>*
+           result_tracker : enumerate_device_requests_) {
     result_tracker->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                            "enumerateDevices() failed."),
