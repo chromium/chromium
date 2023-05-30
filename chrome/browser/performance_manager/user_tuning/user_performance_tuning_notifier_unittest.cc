@@ -4,25 +4,21 @@
 
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 
+#include <algorithm>
+#include <iterator>
 #include <memory>
 #include <utility>
-#include "base/run_loop.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/task_traits.h"
-#include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/performance_controls/resource_usage_tab_helper.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/performance_manager/public/features.h"
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/system_node_impl.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
-#include "components/performance_manager/test_support/test_harness_helper.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "url/gurl.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager::user_tuning {
 
@@ -39,11 +35,22 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
       ++memory_percent_threshold_reached_count_;
     }
 
-    void NotifyMemoryMetricsRefreshed() override { ++memory_refreshed_count_; }
+    void NotifyMemoryMetricsRefreshed(
+        ProxyAndPmfKbVector proxies_and_pmf) override {
+      pages_pmf_kb_.clear();
+      std::transform(
+          proxies_and_pmf.begin(), proxies_and_pmf.end(),
+          std::back_inserter(pages_pmf_kb_),
+          [](const std::pair<WebContentsProxy, uint64_t>& proxy_and_pmf) {
+            return proxy_and_pmf.second;
+          });
+      ++memory_refreshed_count_;
+    }
 
     int tab_count_threshold_reached_count_ = 0;
     int memory_percent_threshold_reached_count_ = 0;
     int memory_refreshed_count_ = 0;
+    std::vector<uint64_t> pages_pmf_kb_;
   };
 
   void SetUp() override {
@@ -122,103 +129,32 @@ TEST_F(UserPerformanceTuningNotifierTest, TestMemoryThresholdTriggered) {
 
 TEST_F(UserPerformanceTuningNotifierTest, TestMemoryAvailableTriggered) {
   // Memory Metrics are available
+  auto process1 = CreateNode<ProcessNodeImpl>();
+  auto page1 = CreateNode<PageNodeImpl>();
+  auto frame1 = CreateFrameNodeAutoId(process1.get(), page1.get());
+  frame1->SetPrivateFootprintKbEstimate(10);
+
+  auto process2 = CreateNode<ProcessNodeImpl>();
+  auto page2 = CreateNode<PageNodeImpl>();
+  auto frame2 = CreateFrameNodeAutoId(process2.get(), page2.get());
+  frame2->SetPrivateFootprintKbEstimate(20);
+
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(1, receiver_->memory_refreshed_count_);
+
+  std::vector<uint64_t> expected_pmf_kb{
+      frame1->private_footprint_kb_estimate(),
+      frame2->private_footprint_kb_estimate()};
+  EXPECT_EQ(std::size(expected_pmf_kb), receiver_->pages_pmf_kb_.size());
+  EXPECT_THAT(expected_pmf_kb,
+              testing::UnorderedElementsAreArray(receiver_->pages_pmf_kb_));
 
   // When memory metrics are available again, the notifier should be
   // triggered again
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(2, receiver_->memory_refreshed_count_);
-}
-
-class UserPerformanceTuningNotifierWithWebContentsTest
-    : public ChromeRenderViewHostTestHarness {
- public:
-  class TestReceiverWithCallback
-      : public UserPerformanceTuningNotifier::Receiver {
-   public:
-    ~TestReceiverWithCallback() override = default;
-
-    void NotifyTabCountThresholdReached() override {}
-
-    void NotifyMemoryThresholdReached() override {}
-
-    void NotifyMemoryMetricsRefreshed() override {
-      if (metrics_refreshed_callback_) {
-        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-            ->PostTask(FROM_HERE, std::move(metrics_refreshed_callback_));
-      }
-    }
-
-    void SetMemoryMetricsRefreshedCallback(
-        base::OnceClosure metrics_refreshed_callback) {
-      metrics_refreshed_callback_ = std::move(metrics_refreshed_callback);
-    }
-
-    base::OnceClosure metrics_refreshed_callback_;
-  };
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    pm_helper_.SetUp();
-
-    base::RunLoop run_loop;
-    auto receiver = std::make_unique<TestReceiverWithCallback>();
-    receiver_ = receiver.get();
-    PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-          graph->PassToGraph(std::make_unique<ProcessMetricsDecorator>());
-          auto notifier = std::make_unique<UserPerformanceTuningNotifier>(
-              std::move(receiver), /*memory_theshold_kb=*/10,
-              /*tab_count_threshold=*/2);
-          graph->PassToGraph(std::move(notifier));
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-
-  void TearDown() override {
-    pm_helper_.TearDown();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  PerformanceManagerTestHarnessHelper pm_helper_;
-  raw_ptr<TestReceiverWithCallback> receiver_;
-};
-
-TEST_F(UserPerformanceTuningNotifierWithWebContentsTest,
-       TestWritingMemoryUsageToTabHelper) {
-  // Enable memory usage in hovercards
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      performance_manager::features::kMemoryUsageInHovercards);
-
-  // Set the memory metrics refreshed callback ahead of navigation.
-  base::RunLoop run_loop;
-  receiver_->SetMemoryMetricsRefreshedCallback(run_loop.QuitClosure());
-
-  // Trigger a navigation so frames are set up.
-  SetContents(CreateTestWebContents());
-  ResourceUsageTabHelper::CreateForWebContents(web_contents());
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://www.example.com/"));
-
-  // Set active memory usage on the frame and process memory metrics.
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
-        for (const FrameNode* node : graph->GetAllFrameNodes()) {
-          FrameNodeImpl::FromNode(node)->SetPrivateFootprintKbEstimate(11);
-        }
-        SystemNodeImpl::FromNode(graph->GetSystemNode())
-            ->OnProcessMemoryMetricsAvailable();
-      }));
-  run_loop.Run();
-
-  // Memory usage should be written to the tab helper.
-  auto* tab_helper = ResourceUsageTabHelper::FromWebContents(web_contents());
-  EXPECT_EQ(tab_helper->GetMemoryUsageInBytes(), 11u * 1024);
 }
 
 }  // namespace performance_manager::user_tuning

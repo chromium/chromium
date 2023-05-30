@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/performance_controls/resource_usage_tab_helper.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "url/gurl.h"
+
+namespace performance_manager::user_tuning {
 
 namespace {
 constexpr char kTestDomain[] = "http://foo.bar";
@@ -14,9 +16,11 @@ constexpr uint64_t kTestMemoryUsageBytes = 100000;
 
 class ResourceUsageTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
-  ResourceUsageTabHelper* InitializeTabHelper() {
-    ResourceUsageTabHelper::CreateForWebContents(web_contents());
-    return ResourceUsageTabHelper::FromWebContents(web_contents());
+  UserPerformanceTuningManager::ResourceUsageTabHelper* InitializeTabHelper() {
+    UserPerformanceTuningManager::ResourceUsageTabHelper::CreateForWebContents(
+        web_contents());
+    return UserPerformanceTuningManager::ResourceUsageTabHelper::
+        FromWebContents(web_contents());
   }
 };
 
@@ -34,3 +38,5 @@ TEST_F(ResourceUsageTabHelperTest, ClearsMemoryUsageOnNavigate) {
   NavigateAndCommit(GURL(kTestDomain));
   EXPECT_EQ(tab_helper->GetMemoryUsageInBytes(), 0u);
 }
+
+}  // namespace performance_manager::user_tuning

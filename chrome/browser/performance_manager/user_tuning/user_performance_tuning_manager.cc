@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_rate_throttling.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -427,6 +430,24 @@ const char UserPerformanceTuningManager::kForceDeviceHasBatterySwitch[] =
     "force-device-has-battery";
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
+    UserPerformanceTuningManager::ResourceUsageTabHelper);
+
+UserPerformanceTuningManager::ResourceUsageTabHelper::
+    ~ResourceUsageTabHelper() = default;
+
+void UserPerformanceTuningManager::ResourceUsageTabHelper::PrimaryPageChanged(
+    content::Page&) {
+  // Reset memory usage count when we navigate to another site since the
+  // memory usage reported will be outdated.
+  memory_usage_bytes_ = 0;
+}
+
+UserPerformanceTuningManager::ResourceUsageTabHelper::ResourceUsageTabHelper(
+    content::WebContents* contents)
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<ResourceUsageTabHelper>(*contents) {}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(
     UserPerformanceTuningManager::PreDiscardResourceUsage);
 
 UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
@@ -582,14 +603,31 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
 }
 
 void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
-    NotifyMemoryMetricsRefreshed() {
+    NotifyMemoryMetricsRefreshed(ProxyAndPmfKbVector proxies_and_pmf) {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        // Hitting this CHECK would mean this task is running after
-        // PostMainMessageLoopRun, which shouldn't happen.
-        CHECK(g_user_performance_tuning_manager);
-        GetInstance()->NotifyMemoryMetricsRefreshed();
-      }));
+      FROM_HERE,
+      base::BindOnce(
+          [](ProxyAndPmfKbVector web_contents_memory_usage) {
+            if (base::FeatureList::IsEnabled(
+                    performance_manager::features::kMemoryUsageInHovercards)) {
+              for (const auto& [contents_proxy, pmf] :
+                   web_contents_memory_usage) {
+                content::WebContents* web_contents = contents_proxy.Get();
+                if (web_contents) {
+                  ResourceUsageTabHelper* helper =
+                      ResourceUsageTabHelper::FromWebContents(web_contents);
+                  if (helper) {
+                    helper->SetMemoryUsageInBytes(pmf * 1024);
+                  }
+                }
+              }
+            }
+            // Hitting this CHECK would mean this task is running after
+            // PostMainMessageLoopRun, which shouldn't happen.
+            CHECK(g_user_performance_tuning_manager);
+            GetInstance()->NotifyMemoryMetricsRefreshed();
+          },
+          std::move(proxies_and_pmf)));
 }
 
 void UserPerformanceTuningManager::NotifyOnBatterySaverModeChanged(
