@@ -237,6 +237,13 @@ bool BrowserParamsProxy::IsCurrentUserDeviceOwner() const {
   return BrowserInitParams::Get()->is_current_user_device_owner;
 }
 
+bool BrowserParamsProxy::IsCurrentUserEphemeral() const {
+  if (IsLaunchedWithPostLoginParams()) {
+    return BrowserPostLoginParams::Get()->is_current_user_ephemeral;
+  }
+  return BrowserInitParams::Get()->is_current_user_ephemeral;
+}
+
 bool BrowserParamsProxy::DoNotMuxExtensionAppIds() const {
   return BrowserInitParams::Get()->do_not_mux_extension_app_ids;
 }

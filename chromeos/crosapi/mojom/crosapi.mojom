@@ -960,8 +960,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 63
-// Next id: 63
+// Next version: 64
+// Next id: 64
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1351,6 +1351,10 @@ struct BrowserInitParams {
   // refresh rate timing.
   [MinVersion=62]
   bool is_variable_refresh_rate_enabled@62;
+
+  // Tells lacros whether the currently logged in user is ephemeral.
+  [MinVersion=63]
+  bool is_current_user_ephemeral@63;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams
@@ -1360,8 +1364,8 @@ struct BrowserInitParams {
 // BrowserInitParams which is already available is by ash-chrome at
 // that time. The rest is passed after login via this structure.
 //
-// Next version: 1
-// Next id: 19
+// Next version: 2
+// Next id: 20
 [Stable]
 struct BrowserPostLoginParams {
   // Type of the ash-chrome session at the browser startup time.
@@ -1454,6 +1458,10 @@ struct BrowserPostLoginParams {
 
   // When this flag is set to true, Lacros tts support feature will be enabled.
   bool enable_lacros_tts_support@18;
+
+  // Tells lacros whether the currently logged in user is ephemeral.
+  [MinVersion=1]
+  bool is_current_user_ephemeral@19;
 };
 
 // Parameters to specify OpenUrl behavior.
