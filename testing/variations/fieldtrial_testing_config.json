@@ -6055,20 +6055,71 @@
             ],
             "experiments": [
                 {
-                    "name": "UseWebpFormat45QualityV3",
+                    "name": "WebpQualityBackendV5",
                     "params": {
                         "encoding-quality-image-search": "45",
                         "encoding-quality-region-search": "45",
+                        "lens-homepage-url": "https://lens.google.com/v3/",
+                        "lens-html-redirect-fix": "false",
                         "use-jpeg-region-search": "false",
                         "use-webp-image-search": "true",
                         "use-webp-region-search": "true"
                     },
                     "enable_features": [
-                        "LensImageFormatOptimizations"
+                        "LensImageFormatOptimizations",
+                        "LensStandalone"
                     ]
                 },
                 {
-                    "name": "UseJpegFormat40QualityV3",
+                    "name": "WebpBackendOnlyV5",
+                    "params": {
+                        "encoding-quality-image-search": "90",
+                        "encoding-quality-region-search": "90",
+                        "lens-homepage-url": "https://lens.google.com/v3/",
+                        "lens-html-redirect-fix": "false",
+                        "use-jpeg-region-search": "false",
+                        "use-webp-image-search": "true",
+                        "use-webp-region-search": "true"
+                    },
+                    "enable_features": [
+                        "LensImageFormatOptimizations",
+                        "LensStandalone"
+                    ]
+                },
+                {
+                    "name": "JpegQualityBackendV5",
+                    "params": {
+                        "encoding-quality-image-search": "40",
+                        "encoding-quality-region-search": "40",
+                        "lens-homepage-url": "https://lens.google.com/v3/",
+                        "lens-html-redirect-fix": "false",
+                        "use-jpeg-region-search": "true",
+                        "use-webp-image-search": "false",
+                        "use-webp-region-search": "false"
+                    },
+                    "enable_features": [
+                        "LensImageFormatOptimizations",
+                        "LensStandalone"
+                    ]
+                },
+                {
+                    "name": "JpegBackendOnlyV5",
+                    "params": {
+                        "encoding-quality-image-search": "90",
+                        "encoding-quality-region-search": "90",
+                        "lens-homepage-url": "https://lens.google.com/v3/",
+                        "lens-html-redirect-fix": "false",
+                        "use-jpeg-region-search": "true",
+                        "use-webp-image-search": "false",
+                        "use-webp-region-search": "false"
+                    },
+                    "enable_features": [
+                        "LensImageFormatOptimizations",
+                        "LensStandalone"
+                    ]
+                },
+                {
+                    "name": "JpegQualityOnlyV5",
                     "params": {
                         "encoding-quality-image-search": "40",
                         "encoding-quality-region-search": "40",
@@ -6078,29 +6129,6 @@
                     },
                     "enable_features": [
                         "LensImageFormatOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GoogleLensDesktopV3UploadUrlAndRedirectFixDisabled": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230421",
-                    "params": {
-                        "lens-homepage-url": "https://lens.google.com/v3/",
-                        "lens-html-redirect-fix": "false"
-                    },
-                    "enable_features": [
-                        "LensStandalone"
                     ]
                 }
             ]
