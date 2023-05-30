@@ -3738,12 +3738,6 @@ const char kChromeSharingCrowLaunchTabDescription[] =
     "Launches Thank Creator actions in a traditional  new tab; default is a "
     "custom tab. For internal debugging.";
 
-const char kChromeSharingHubLaunchAdjacentName[] =
-    "Launch new share hub actions in adjacent window";
-const char kChromeSharingHubLaunchAdjacentDescription[] =
-    "In multi-window mode, launches share hub actions in an adjacent window. "
-    "For internal debugging.";
-
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "

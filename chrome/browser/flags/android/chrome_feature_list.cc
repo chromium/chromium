@@ -205,7 +205,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeNewDownloadTab,
     &kChromeSharingHub,
-    &kChromeSharingHubLaunchAdjacent,
     &kChromeSurveyNextAndroid,
     &kCommandLineOnNonRooted,
     &kContextMenuEnableLensShoppingAllowlist,
@@ -618,10 +617,6 @@ BASE_FEATURE(kChromeNewDownloadTab,
 BASE_FEATURE(kChromeSharingHub,
              "ChromeSharingHub",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeSharingHubLaunchAdjacent,
-             "ChromeSharingHubLaunchAdjacent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeSurveyNextAndroid,
              "ChromeSurveyNextAndroid",

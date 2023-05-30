@@ -26,9 +26,7 @@ import androidx.core.os.BuildCompat;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
@@ -41,9 +39,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Matchers;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.share.ShareHelper.TargetChosenReceiver;
@@ -60,7 +56,6 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPendingIntent.class})
-@Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB_LAUNCH_ADJACENT)
 public class ShareHelperUnitTest {
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
@@ -76,9 +71,6 @@ public class ShareHelperUnitTest {
     private WindowAndroid mWindow;
     private Activity mActivity;
     private Uri mImageUri;
-
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setup() {

@@ -33,7 +33,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -116,9 +115,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         }
         Intent intent = getShareIntent(params);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_LAUNCH_ADJACENT)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
         intent.setComponent(component);
         try {
             fireIntent(params.getWindow(), intent, null);

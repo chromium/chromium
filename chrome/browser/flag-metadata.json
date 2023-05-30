@@ -1048,11 +1048,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "chrome-sharing-hub-launch-adjacent",
-    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "chrome-webui-refresh-2023",
     "owners":["dpapad", "johntlee"],
     "expiry_milestone": 120

@@ -189,8 +189,6 @@ public abstract class ChromeFeatureList {
             "CCTTextFragmentLookupApiEnabled";
     public static final String CCT_TOOLBAR_CUSTOMIZATIONS = "CCTToolbarCustomizations";
     public static final String CHROME_SHARING_HUB = "ChromeSharingHub";
-    public static final String CHROME_SHARING_HUB_LAUNCH_ADJACENT =
-            "ChromeSharingHubLaunchAdjacent";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
             "ClearOmniboxFocusAfterNavigation";
