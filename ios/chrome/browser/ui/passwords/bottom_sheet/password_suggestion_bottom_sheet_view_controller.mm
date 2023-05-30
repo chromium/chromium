@@ -87,10 +87,10 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   // The current's page domain. This is used for the password bottom sheet
   // description label.
   NSString* _domain;
-
-  // The password controller handler used to open the password manager.
-  id<PasswordSuggestionBottomSheetHandler> _handler;
 }
+
+// The password controller handler used to open the password manager.
+@property(nonatomic, weak) id<PasswordSuggestionBottomSheetHandler> handler;
 
 @end
 
@@ -100,7 +100,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
     (id<PasswordSuggestionBottomSheetHandler>)handler {
   self = [super init];
   if (self) {
-    _handler = handler;
+    self.handler = handler;
   }
   return self;
 }
@@ -182,7 +182,11 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 }
 
 - (void)dismiss {
-  [self dismissViewControllerAnimated:NO completion:NULL];
+  __weak __typeof(self) weakSelf = self;
+  [self dismissViewControllerAnimated:NO
+                           completion:^{
+                             [weakSelf.handler stop];
+                           }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -537,24 +541,13 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   }
 }
 
-// Opens the password manager settings page.
-- (void)displayPasswordManager {
-  [_handler displayPasswordManager];
-}
-
-// Opens the password details for form suggestion.
-- (void)displayPasswordDetailsForFormSuggestion:
-    (FormSuggestion*)formSuggestion {
-  [_handler displayPasswordDetailsForFormSuggestion:formSuggestion];
-}
-
 // Creates the UI action used to open the password manager.
 - (UIAction*)openPasswordManagerAction {
   __weak __typeof(self) weakSelf = self;
   void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Manager.
     [weakSelf.delegate disableRefocus];
-    [weakSelf displayPasswordManager];
+    [weakSelf.handler displayPasswordManager];
   };
   UIImage* keyIcon =
       CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
@@ -574,7 +567,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Details.
     [weakSelf.delegate disableRefocus];
-    [weakSelf displayPasswordDetailsForFormSuggestion:formSuggestion];
+    [weakSelf.handler displayPasswordDetailsForFormSuggestion:formSuggestion];
   };
 
   UIImage* infoIcon =
