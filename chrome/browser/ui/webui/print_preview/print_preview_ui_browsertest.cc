@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -41,7 +43,8 @@ namespace {
 
 class PrintPreviewBrowserTest : public InProcessBrowserTest {
  public:
-  PrintPreviewBrowserTest() {}
+  PrintPreviewBrowserTest() = default;
+  ~PrintPreviewBrowserTest() override = default;
 
   void Print() {
     content::TestNavigationObserver nav_observer(nullptr);
@@ -49,6 +52,7 @@ class PrintPreviewBrowserTest : public InProcessBrowserTest {
     chrome::ExecuteCommand(browser(), IDC_PRINT);
     nav_observer.Wait();
     nav_observer.StopWatchingNewWebContents();
+    EXPECT_EQ(GURL("chrome://print/"), nav_observer.last_navigation_url());
   }
 };
 
@@ -143,5 +147,28 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
              TabStripUserGestureDetails::GestureType::kOther));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PreviewStartedMetric) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      "PrintPreview.UserAction", printing::UserActionBuckets::kPreviewStarted,
+      /*expected_count=*/0);
+
+  Print();
+  histogram_tester.ExpectBucketCount(
+      "PrintPreview.UserAction", printing::UserActionBuckets::kPreviewStarted,
+      /*expected_count=*/1);
+
+  // Watch for the next navigation in the print preview dialog. The metric
+  // shouldn't change. See crbug.com/1075795 and crbug.com/1448984.
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.WatchExistingWebContents();
+  nav_observer.Wait();
+  EXPECT_EQ(GURL("chrome-untrusted://print/1/0/print.pdf"),
+            nav_observer.last_navigation_url());
+  histogram_tester.ExpectBucketCount(
+      "PrintPreview.UserAction", printing::UserActionBuckets::kPreviewStarted,
+      /*expected_count=*/1);
+}
 
 }  // namespace
