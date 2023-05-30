@@ -143,9 +143,10 @@ class ImageProcessorPerfTest : public ::testing::Test {
     candidate_.size = test_image_size_;
     candidates_ = {candidate_};
 
-    client_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-    quit_closure_ = run_loop_.QuitClosure();
-    image_processor_error_ = false;
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    base::RepeatingClosure quit_closure_ = run_loop_.QuitClosure();
+    bool image_processor_error_ = false;
 
     input_frames_.reserve(kNumberOfTestFrames);
     for (int i = 0; i < kNumberOfTestFrames; i++) {
@@ -156,6 +157,20 @@ class ImageProcessorPerfTest : public ::testing::Test {
     output_frame_ = CreateNV12Frame(test_image_size_,
                                     VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
     ASSERT_TRUE(output_frame_) << "Error creating output frame";
+
+    error_cb_ = base::BindRepeating(
+        [](scoped_refptr<base::SequencedTaskRunner> client_task_runner_,
+           base::RepeatingClosure quit_closure_, bool* image_processor_error_) {
+          CHECK(client_task_runner_->RunsTasksInCurrentSequence());
+          ASSERT_TRUE(false);
+          quit_closure_.Run();
+        },
+        client_task_runner_, quit_closure_, &image_processor_error_);
+
+    pick_format_cb_ = base::BindRepeating(
+        [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
+          return absl::make_optional<Fourcc>(Fourcc::NV12);
+        });
   }
 
   gfx::Size test_image_size_;
@@ -163,12 +178,11 @@ class ImageProcessorPerfTest : public ::testing::Test {
   ImageProcessor::PixelLayoutCandidate candidate_{Fourcc(Fourcc::MM21),
                                                   gfx::Size()};
   std::vector<ImageProcessor::PixelLayoutCandidate> candidates_;
-  scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   base::RunLoop run_loop_;
-  base::RepeatingClosure quit_closure_;
-  bool image_processor_error_;
   std::vector<scoped_refptr<VideoFrame>> input_frames_;
   scoped_refptr<VideoFrame> output_frame_;
+  ImageProcessor::ErrorCB error_cb_;
+  ImageProcessorFactory::PickFormatCB pick_format_cb_;
 };
 
 // Tests GLImageProcessor by feeding in |kNumberOfTestFrames| unique input
@@ -185,23 +199,13 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
 
   InitializeImageProcessorTest();
 
-  ImageProcessor::ErrorCB error_cb = base::BindRepeating(
-      [](scoped_refptr<base::SequencedTaskRunner> client_task_runner_,
-         base::RepeatingClosure quit_closure_, bool* image_processor_error_) {
-        CHECK(client_task_runner_->RunsTasksInCurrentSequence());
-        *image_processor_error_ = true;
-        quit_closure_.Run();
-      },
-      client_task_runner_, quit_closure_, &image_processor_error_);
-  ImageProcessorFactory::PickFormatCB pick_format_cb = base::BindRepeating(
-      [](const std::vector<Fourcc>&, absl::optional<Fourcc>) {
-        return absl::make_optional<Fourcc>(Fourcc::NV12);
-      });
-
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
   std::unique_ptr<ImageProcessor> gl_image_processor = ImageProcessorFactory::
       CreateGLImageProcessorWithInputCandidatesForTesting(
           candidates_, test_image_visible_rect_, test_image_size_,
-          /*num_buffers=*/1, client_task_runner_, pick_format_cb, error_cb);
+          /*num_buffers=*/1, client_task_runner, pick_format_cb_, error_cb_);
   ASSERT_TRUE(gl_image_processor) << "Error creating GLImageProcessor";
 
   LOG(INFO) << "Running GLImageProcessor Uncapped Perf Test";
@@ -209,10 +213,9 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
   for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
     ImageProcessor::FrameReadyCB gl_callback =
         base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
-          CHECK(client_task_runner_->RunsTasksInCurrentSequence());
-          output_frame_ = std::move(frame);
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
           if (!(--outstanding_processors)) {
-            quit_closure_.Run();
+            quit_closure.Run();
           }
         });
     gl_image_processor->Process(input_frames_[num_cycles % kNumberOfTestFrames],
@@ -226,6 +229,57 @@ TEST_F(ImageProcessorPerfTest, UncappedGLImageProcessorPerfTest) {
   const double fps = (kNumberOfTestCycles / delta_time.InSeconds());
 
   perf_test::PerfResultReporter reporter("GLImageProcessor", "Uncapped Test");
+  reporter.RegisterImportantMetric(".frames_decoded", "frames");
+  reporter.RegisterImportantMetric(".total_duration", "us");
+  reporter.RegisterImportantMetric(".frames_per_second", "fps");
+
+  reporter.AddResult(".frames_decoded",
+                     static_cast<double>(kNumberOfTestCycles));
+  reporter.AddResult(".total_duration",
+                     static_cast<double>(delta_time.InMicroseconds()));
+  reporter.AddResult(".frames_per_second", fps);
+}
+
+// Tests the LibYUV by feeding in |kNumberOfTestFrames| unique input
+// frames looped over |kNumberOfTestCycles| iterations to the LibYUV
+// as fast as possible. Will print out elapsed processing time.
+TEST_F(ImageProcessorPerfTest, UncappedLibYUVPerfTest) {
+  InitializeImageProcessorTest();
+
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::RepeatingClosure quit_closure = run_loop_.QuitClosure();
+
+  std::unique_ptr<ImageProcessor> libyuv_image_processor =
+      ImageProcessorFactory::
+          CreateLibYUVImageProcessorWithInputCandidatesForTesting(
+              candidates_, test_image_visible_rect_, test_image_size_,
+              /*num_buffers=*/1, client_task_runner, pick_format_cb_,
+              error_cb_);
+  ASSERT_TRUE(libyuv_image_processor) << "Error creating LibYUV";
+
+  LOG(INFO) << "Running LibYUV Uncapped Perf Test";
+  int outstanding_processors = kNumberOfTestCycles;
+  for (int num_cycles = outstanding_processors; num_cycles > 0; num_cycles--) {
+    ImageProcessor::FrameReadyCB libyuv_callback =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          CHECK(client_task_runner->RunsTasksInCurrentSequence());
+          if (!(--outstanding_processors)) {
+            quit_closure.Run();
+          }
+        });
+    libyuv_image_processor->Process(
+        input_frames_[num_cycles % kNumberOfTestFrames], output_frame_,
+        std::move(libyuv_callback));
+  }
+
+  auto start_time = base::TimeTicks::Now();
+  run_loop_.Run();
+  auto end_time = base::TimeTicks::Now();
+  base::TimeDelta delta_time = end_time - start_time;
+  const double fps = (kNumberOfTestCycles / delta_time.InSeconds());
+
+  perf_test::PerfResultReporter reporter("LibYUV", "Uncapped Test");
   reporter.RegisterImportantMetric(".frames_decoded", "frames");
   reporter.RegisterImportantMetric(".total_duration", "us");
   reporter.RegisterImportantMetric(".frames_per_second", "fps");
