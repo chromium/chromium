@@ -48,6 +48,7 @@ group("closure_compile") {
     ":oobe_display_size_selector",
     ":oobe_i18n_dropdown",
     ":oobe_icons.html",
+    ":oobe_illo_icons.html",
     ":oobe_network_icons.html",
     ":oobe_screens_list",
     ":oobe_select",
@@ -172,6 +173,12 @@ js_library("oobe_apps_list") {
 }
 
 js_library("oobe_icons.html") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.html.js" ]
+  deps = []
+  extra_deps = [ ":html_wrapper_files" ]
+}
+
+js_library("oobe_illo_icons.html") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.html.js" ]
   deps = []
   extra_deps = [ ":html_wrapper_files" ]
@@ -311,6 +318,7 @@ copy("copy_js") {
 html_to_wrapper("html_wrapper_files") {
   in_files = [
     "oobe_icons.html",
+    "oobe_illo_icons.html",
     "oobe_network_icons.html",
   ]
   use_js = true

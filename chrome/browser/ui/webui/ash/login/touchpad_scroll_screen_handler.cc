@@ -24,8 +24,6 @@ void TouchpadScrollScreenHandler::DeclareLocalizedValues(
   builder->Add("TouchpadScrollScreenTitle", IDS_OOBE_TOUCHPAD_SCROLL_TITLE);
   builder->Add("TouchpadScrollScreenDescription",
                IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION);
-  builder->Add("TouchpadScrollScreenAdditionalDescription",
-               IDS_OOBE_TOUCHPAD_SCROLL_DESCRIPTION_ADDITIONAL);
   builder->Add("TouchpadScrollToggleTitle",
                IDS_OOBE_TOUCHPAD_SCROLL_TOGGLE_TITLE);
   builder->Add("TouchpadScrollToggleDescription",
