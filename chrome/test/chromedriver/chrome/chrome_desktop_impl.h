@@ -19,13 +19,13 @@ class TimeDelta;
 }
 
 class DevToolsClient;
-class DevToolsHttpClient;
 class Status;
 class WebView;
 
 class ChromeDesktopImpl : public ChromeImpl {
  public:
-  ChromeDesktopImpl(std::unique_ptr<DevToolsHttpClient> http_client,
+  ChromeDesktopImpl(BrowserInfo browser_info,
+                    std::set<WebViewInfo::Type> window_types,
                     std::unique_ptr<DevToolsClient> websocket_client,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,

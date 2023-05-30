@@ -73,7 +73,8 @@ bool KillProcess(const base::Process& process, bool kill_gracefully) {
 }  // namespace
 
 ChromeDesktopImpl::ChromeDesktopImpl(
-    std::unique_ptr<DevToolsHttpClient> http_client,
+    BrowserInfo browser_info,
+    std::set<WebViewInfo::Type> window_types,
     std::unique_ptr<DevToolsClient> websocket_client,
     std::vector<std::unique_ptr<DevToolsEventListener>>
         devtools_event_listeners,
@@ -84,7 +85,8 @@ ChromeDesktopImpl::ChromeDesktopImpl(
     base::ScopedTempDir* user_data_dir,
     base::ScopedTempDir* extension_dir,
     bool network_emulation_enabled)
-    : ChromeImpl(std::move(http_client),
+    : ChromeImpl(std::move(browser_info),
+                 std::move(window_types),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
                  std::move(mobile_device),
@@ -159,9 +161,9 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   Status status = CreateClient(id, &client);
   if (status.IsError())
     return status;
-  std::unique_ptr<WebViewImpl> web_view_tmp(new WebViewImpl(
-      id, w3c_compliant, nullptr, devtools_http_client_->browser_info(),
-      std::move(client), mobile_device, page_load_strategy()));
+  std::unique_ptr<WebViewImpl> web_view_tmp(
+      new WebViewImpl(id, w3c_compliant, nullptr, &browser_info_,
+                      std::move(client), mobile_device, page_load_strategy()));
   DevToolsClientImpl* parent =
       static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
   status = web_view_tmp->AttachTo(parent);

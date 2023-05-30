@@ -27,7 +27,6 @@ class ReplayHttpClient : public DevToolsHttpClient {
   // Initializes a DevToolsLogReader with the given log file.
   ReplayHttpClient(const DevToolsEndpoint& endpoint,
                    network::mojom::URLLoaderFactory* factory,
-                   std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
                    const base::FilePath& log_file);
   ~ReplayHttpClient() override;
 

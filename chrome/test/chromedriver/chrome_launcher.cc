@@ -244,25 +244,16 @@ Status WaitForDevToolsAndCheckVersion(
     bool* retry,
     ChromeType ct,
     std::string fp = "") {
-  std::unique_ptr<std::set<WebViewInfo::Type>> window_types;
-  if (capabilities && !capabilities->window_types.empty()) {
-    window_types = std::make_unique<std::set<WebViewInfo::Type>>(
-        capabilities->window_types);
-  } else {
-    window_types = std::make_unique<std::set<WebViewInfo::Type>>();
-  }
-
   std::unique_ptr<DevToolsHttpClient> client;
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (cmd_line->HasSwitch("devtools-replay")) {
     base::CommandLine::StringType log_path =
         cmd_line->GetSwitchValueNative("devtools-replay");
     base::FilePath log_file_path(log_path);
-    client = std::make_unique<ReplayHttpClient>(
-        endpoint, factory, std::move(window_types), log_file_path);
+    client =
+        std::make_unique<ReplayHttpClient>(endpoint, factory, log_file_path);
   } else {
-    client = std::make_unique<DevToolsHttpClient>(endpoint, factory,
-                                                  std::move(window_types));
+    client = std::make_unique<DevToolsHttpClient>(endpoint, factory);
   }
 
   const base::TimeTicks initial = base::TimeTicks::Now();
@@ -400,10 +391,12 @@ Status LaunchRemoteChromeSession(
                  << status.message();
   }
 
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
+
   *chrome = std::make_unique<ChromeRemoteImpl>(
-      std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), capabilities.mobile_device,
-      capabilities.page_load_strategy);
+      *browser_info, capabilities.window_types,
+      std::move(devtools_websocket_client), std::move(devtools_event_listeners),
+      capabilities.mobile_device, capabilities.page_load_strategy);
   return Status(kOk);
 }
 
@@ -659,9 +652,12 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
+
   std::unique_ptr<ChromeDesktopImpl> chrome_desktop =
       std::make_unique<ChromeDesktopImpl>(
-          std::move(devtools_http_client), std::move(devtools_websocket_client),
+          *browser_info, capabilities.window_types,
+          std::move(devtools_websocket_client),
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(process), command,
           &user_data_dir_temp_dir, &extension_dir,
@@ -748,10 +744,13 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
+
   *chrome = std::make_unique<ChromeAndroidImpl>(
-      std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), capabilities.mobile_device,
-      capabilities.page_load_strategy, std::move(device));
+      *browser_info, capabilities.window_types,
+      std::move(devtools_websocket_client), std::move(devtools_event_listeners),
+      capabilities.mobile_device, capabilities.page_load_strategy,
+      std::move(device));
   return Status(kOk);
 }
 
@@ -805,10 +804,13 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
+
   base::Process dummy_process;
   std::unique_ptr<ChromeDesktopImpl> chrome_impl =
       std::make_unique<ChromeReplayImpl>(
-          std::move(devtools_http_client), std::move(devtools_websocket_client),
+          *browser_info, capabilities.window_types,
+          std::move(devtools_websocket_client),
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(dummy_process), command,
           &user_data_dir_temp_dir, &extension_dir,

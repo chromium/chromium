@@ -7,23 +7,23 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
+#include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 
 class DevToolsClient;
 class DevToolsClientImpl;
 class DevToolsEventListener;
-class DevToolsHttpClient;
 class PageTracker;
 class Status;
 class WebView;
 class WebViewImpl;
-class WebViewsInfo;
-struct BrowserInfo;
 
 class ChromeImpl : public Chrome {
  public:
@@ -59,7 +59,8 @@ class ChromeImpl : public Chrome {
   DevToolsClient* Client() const;
 
  protected:
-  ChromeImpl(std::unique_ptr<DevToolsHttpClient> http_client,
+  ChromeImpl(BrowserInfo browser_info,
+             std::set<WebViewInfo::Type> window_types,
              std::unique_ptr<DevToolsClient> websocket_client,
              std::vector<std::unique_ptr<DevToolsEventListener>>
                  devtools_event_listeners,
@@ -71,6 +72,8 @@ class ChromeImpl : public Chrome {
   Status CreateClient(const std::string& id,
                       std::unique_ptr<DevToolsClientImpl>* client);
   Status CloseTarget(const std::string& id);
+
+  bool IsBrowserWindow(const WebViewInfo& view) const;
 
   struct Window {
     int id;
@@ -91,7 +94,8 @@ class ChromeImpl : public Chrome {
 
   bool quit_ = false;
   absl::optional<MobileDevice> mobile_device_;
-  std::unique_ptr<DevToolsHttpClient> devtools_http_client_;
+  BrowserInfo browser_info_;
+  std::set<WebViewInfo::Type> window_types_;
   std::unique_ptr<DevToolsClient> devtools_websocket_client_;
 
  private:

@@ -17,16 +17,30 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/constants/version.h"
 
-BrowserInfo::BrowserInfo()
-    : major_version(0),
-      build_no(kToTBuildNo),
-      blink_revision(kToTBlinkRevision),
-      is_android(false),
-      is_headless(false) {}
+BrowserInfo::BrowserInfo() = default;
 
-BrowserInfo::~BrowserInfo() {}
+BrowserInfo::~BrowserInfo() = default;
 
-Status ParseBrowserInfo(const std::string& data, BrowserInfo* browser_info) {
+BrowserInfo::BrowserInfo(const BrowserInfo&) = default;
+
+BrowserInfo& BrowserInfo::operator=(const BrowserInfo&) = default;
+
+Status BrowserInfo::FillFromBrowserVersionResponse(
+    const base::Value::Dict& response) {
+  const std::string* browser_string = response.FindString("product");
+  if (!browser_string) {
+    return Status(kUnknownError, "version doesn't include 'Browser'");
+  }
+
+  return ParseBrowserString(false, *browser_string, this);
+}
+
+Status BrowserInfo::ParseBrowserInfo(const std::string& data) {
+  return ParseBrowserInfo(data, this);
+}
+
+Status BrowserInfo::ParseBrowserInfo(const std::string& data,
+                                     BrowserInfo* browser_info) {
   absl::optional<base::Value> value = base::JSONReader::Read(data);
   if (!value) {
     return Status(kUnknownError, "version info not in JSON");
@@ -68,9 +82,9 @@ Status ParseBrowserInfo(const std::string& data, BrowserInfo* browser_info) {
   return ParseBlinkVersionString(*blink_version, &browser_info->blink_revision);
 }
 
-Status ParseBrowserString(bool has_android_package,
-                          const std::string& browser_string,
-                          BrowserInfo* browser_info) {
+Status BrowserInfo::ParseBrowserString(bool has_android_package,
+                                       const std::string& browser_string,
+                                       BrowserInfo* browser_info) {
   if (has_android_package)
     browser_info->is_android = true;
 
@@ -135,8 +149,10 @@ Status ParseBrowserString(bool has_android_package,
                                    kBrowserShortName, browser_string.c_str()));
 }
 
-Status ParseBrowserVersionString(const std::string& browser_version,
-                                 int* major_version, int* build_no) {
+Status BrowserInfo::ParseBrowserVersionString(
+    const std::string& browser_version,
+    int* major_version,
+    int* build_no) {
   std::vector<base::StringPiece> version_parts = base::SplitStringPiece(
       browser_version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (version_parts.size() != 4 ||
@@ -148,8 +164,8 @@ Status ParseBrowserVersionString(const std::string& browser_version,
   return Status(kOk);
 }
 
-Status ParseBlinkVersionString(const std::string& blink_version,
-                               int* blink_revision) {
+Status BrowserInfo::ParseBlinkVersionString(const std::string& blink_version,
+                                            int* blink_revision) {
   size_t before = blink_version.find('@');
   size_t after = blink_version.find(')');
   if (before == std::string::npos || after == std::string::npos) {
@@ -171,7 +187,7 @@ Status ParseBlinkVersionString(const std::string& blink_version,
   return Status(kOk);
 }
 
-bool IsGitHash(const std::string& revision) {
+bool BrowserInfo::IsGitHash(const std::string& revision) {
   const int kShortGitHashLength = 7;
   const int kFullGitHashLength = 40;
   return kShortGitHashLength <= revision.size()
