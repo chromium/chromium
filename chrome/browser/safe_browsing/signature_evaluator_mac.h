@@ -15,7 +15,7 @@
 
 namespace safe_browsing {
 
-// Wraps the OS X SecStaticCode API, to evaluate a given file object
+// Wraps the macOS SecStaticCode API, to evaluate a given file object
 // with a given code requirement, and produce a list of incident reports
 // for files that fail code signature validity checks.
 class MacSignatureEvaluator {
