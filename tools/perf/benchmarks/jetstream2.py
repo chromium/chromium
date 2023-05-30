@@ -27,24 +27,54 @@ import page_sets
 from benchmarks import press
 
 
+class _JetStream2Base(press._PressBenchmark):  # pylint: disable=protected-access
+  """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
+
+  Run all the JetStream 2 benchmarks by default.
+  """
+  @classmethod
+  def AddBenchmarkCommandLineArgs(cls, parser):
+    parser.add_option('--test-list',
+                      type="string",
+                      help="Only run specific tests, separated by commas.")
+
+
 @benchmark.Info(emails=['hablich@chromium.org', 'tcwang@chromium.org'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/JetStream/in-depth.html')
+class JetStream20(_JetStream2Base):
+  """JetStream 2.0"""
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_jetstream20'
 
-class Jetstream2(press._PressBenchmark): # pylint: disable=protected-access
-  """JetStream2, a combination of JavaScript and Web Assembly benchmarks.
+  def CreateStorySet(self, options):
+    return page_sets.JetStream20StorySet(options.test_list)
 
-  Run all the Jetstream 2 benchmarks by default.
-  """
+
+@benchmark.Info(
+    emails=['hablich@chromium.org', 'tcwang@chromium.org'],
+    component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream/in-depth.html')
+class JetStream21(_JetStream2Base):
+  """JetStream 2.1"""
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_jetstream21'
+
+  def CreateStorySet(self, options):
+    return page_sets.JetStream21StorySet(options.test_list)
+
+
+@benchmark.Info(
+    emails=['hablich@chromium.org', 'tcwang@chromium.org'],
+    component='Blink>JavaScript',
+    documentation_url='https://browserbench.org/JetStream/in-depth.html')
+class JetStream2(JetStream20):
+  """Latest JetStream2 """
   @classmethod
   def Name(cls):
     return 'jetstream2'
 
   def CreateStorySet(self, options):
-    return page_sets.Jetstream2StorySet(options.test_list)
-
-  @classmethod
-  def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--test-list',
-                      type="string",
-                      help="Only run specific tests, seperated by commas.")
+    return page_sets.JetStream2StorySet(options.test_list)
