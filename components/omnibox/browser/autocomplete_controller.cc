@@ -391,7 +391,7 @@ AutocompleteController::AutocompleteController(
 #endif
 
   // Create URL scoring signal annotators.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
     url_scoring_signals_annotators_.push_back(
         std::make_unique<HistoryScoringSignalsAnnotator>(
@@ -997,7 +997,7 @@ void AutocompleteController::UpdateResult(
   // The additional signals in `result_` will be lost when `UpdateResult()` is
   // called again. Currently, `result_` is updated in each `UpdateResult()`
   // call.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       OmniboxFieldTrial::AreScoringSignalsAnnotatorsEnabled()) {
     for (const auto& annotator : url_scoring_signals_annotators_) {
       annotator->AnnotateResult(input_, &result_);

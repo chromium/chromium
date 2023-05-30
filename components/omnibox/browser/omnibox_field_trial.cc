@@ -1016,9 +1016,15 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
 
 // If true, enables scoring signal annotators for logging Omnibox scoring
 // signals to OmniboxEventProto.
-const base::FeatureParam<bool> kEnableScoringSignalsAnnotators(
+const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForLogging(
     &omnibox::kLogUrlScoringSignals,
     "enable_scoring_signals_annotators",
+    false);
+
+// If true, enables scoring signal annotators for ML scoring.
+const base::FeatureParam<bool> kEnableScoringSignalsAnnotatorsForMlScoring(
+    &omnibox::kMlUrlScoring,
+    "enable_scoring_signals_annotators_for_ml_scoring",
     false);
 
 // If true, runs the ML scoring model but does not assign new relevance scores
@@ -1061,7 +1067,9 @@ const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
-  enable_scoring_signals_annotators = kEnableScoringSignalsAnnotators.Get();
+  enable_scoring_signals_annotators =
+      kEnableScoringSignalsAnnotatorsForLogging.Get() ||
+      kEnableScoringSignalsAnnotatorsForMlScoring.Get();
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
   ml_batch_url_scoring = kMlBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
@@ -1088,9 +1096,14 @@ const MLConfig& GetMLConfig() {
   return GetMLConfigInternal();
 }
 
-bool IsLogUrlScoringSignalsEnabled() {
+bool IsReportingUrlScoringSignalsEnabled() {
   return GetMLConfig().log_url_scoring_signals;
 }
+
+bool IsPopulatingUrlScoringSignalsEnabled() {
+  return IsReportingUrlScoringSignalsEnabled() || IsMlUrlScoringEnabled();
+}
+
 bool AreScoringSignalsAnnotatorsEnabled() {
   return GetMLConfig().enable_scoring_signals_annotators;
 }

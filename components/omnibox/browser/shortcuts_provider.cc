@@ -197,7 +197,8 @@ void ShortcutsProvider::Start(const AutocompleteInput& input,
   if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT &&
       input.type() != metrics::OmniboxInputType::EMPTY &&
       !input.text().empty() && initialized_) {
-    GetMatches(input, OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled());
+    GetMatches(input,
+               OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled());
   }
 }
 

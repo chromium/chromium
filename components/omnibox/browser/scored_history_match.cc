@@ -162,7 +162,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   // has been constructed via the no-args constructor.
   ScoredHistoryMatch::Init();
 
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
     // Populate the scoring signals available in the URL Row.
     scoring_signals = absl::make_optional<ScoringSignals>();
     scoring_signals->set_typed_count(row.typed_count());
@@ -715,7 +715,7 @@ float ScoredHistoryMatch::GetTopicalityScore(
   IncrementTitleMatchTermScores(terms_to_word_starts_offsets,
                                 word_starts.title_word_starts_, &term_scores);
 
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
     // Url matching signals.
     const auto url_matching_signals = ComputeUrlMatchingSignals(
         terms_to_word_starts_offsets, url, word_starts.url_word_starts_,

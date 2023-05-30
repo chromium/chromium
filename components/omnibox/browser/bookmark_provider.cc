@@ -250,11 +250,11 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   int relevance = static_cast<int>(normalized_sum * kBookmarkScoreRange) +
                   kBaseBookmarkScore;
 
-  // If scoring signal logging is disabled, skip counting bookmarks if relevance
-  // is above max score. Don't waste any time searching for additional
-  // referenced URLs if we already have a perfect title match. Returns a pair of
-  // the relevance score and -1 as a dummy bookmark count.
-  if (!OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  // If scoring signal logging and ML scoring is disabled, skip counting
+  // bookmarks if relevance is above max score. Don't waste any time searching
+  // for additional referenced URLs if we already have a perfect title match.
+  // Returns a pair of the relevance score and -1 as a dummy bookmark count.
+  if (!OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       relevance >= kMaxBookmarkScore) {
     return {relevance, /*bookmark_count=*/-1};
   }

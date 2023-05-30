@@ -147,7 +147,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.from_keyword = true;
   }
 
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled() &&
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
       AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
     match.scoring_signals = absl::make_optional<ScoringSignals>();
     // Populate ACMatches with signals for ML model scoring and training.
