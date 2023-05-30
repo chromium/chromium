@@ -57,6 +57,9 @@ class CONTENT_EXPORT PreloadingDecider
   bool IsOnStandByForTesting(const GURL& url,
                              blink::mojom::SpeculationAction action);
 
+  // Called by PrefetchService when a prefetch is evicted.
+  virtual void OnPrefetchEvicted(const GURL& url);
+
  private:
   explicit PreloadingDecider(RenderFrameHost* rfh);
   friend class DocumentUserData<PreloadingDecider>;
@@ -119,10 +122,13 @@ class CONTENT_EXPORT PreloadingDecider
       no_vary_search_hint_on_standby_candidates_;
 
   // |processed_candidates_| stores all target URL, action pairs that are
-  // already processed by prefetcher or prerenderer. Right now it is needed to
-  // avoid adding such candidates back to |on_standby_candidates_| whenever
-  // there is an update in speculation rules.
-  std::set<SpeculationCandidateKey> processed_candidates_;
+  // already processed by prefetcher or prerenderer, and maps them to all
+  // candidates with the same URL, action pair. Right now it is needed to avoid
+  // adding such candidates back to |on_standby_candidates_| whenever there is
+  // an update in speculation rules.
+  std::map<SpeculationCandidateKey,
+           std::vector<blink::mojom::SpeculationCandidatePtr>>
+      processed_candidates_;
 
   // Behavior determined dynamically. Stored on this object rather than globally
   // so that it does not span unit tests.

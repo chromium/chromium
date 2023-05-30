@@ -49,6 +49,20 @@ class TestPrefetchService : public PrefetchService {
     prefetches_.push_back(prefetch_container);
   }
 
+  void EvictPrefetch(size_t index) {
+    DCHECK_LT(index, prefetches_.size());
+    DCHECK(prefetches_[index]);
+    base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
+    std::unique_ptr<PrefetchContainer> owned_prefetch_container =
+        prefetch_container->GetPrefetchDocumentManager()
+            ->ReleasePrefetchContainer(prefetch_container->GetURL());
+    prefetches_.erase(prefetches_.begin() + index);
+    PreloadingDecider::GetForCurrentDocument(
+        RenderFrameHost::FromID(
+            prefetch_container->GetReferringRenderFrameHostId()))
+        ->OnPrefetchEvicted(prefetch_container->GetURL());
+  }
+
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
@@ -529,6 +543,84 @@ TEST_F(PreloadingDeciderTest, UmaRecallStats) {
   histogram_tester.ExpectBucketCount(
       uma_predictor_recall(pointer_down_predictor),
       PredictorConfusionMatrix::kFalseNegative, 0);
+}
+
+// Tests that an eager candidate is always processed before a non-eager
+// candidate with the same URL, and that the non-eager candidate isn't marked as
+// "on-standby".
+TEST_F(PreloadingDeciderTest, CandidateWithMultipleEagernessValues) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  auto candidate_1 = blink::mojom::SpeculationCandidate::New();
+  candidate_1->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate_1->url = url;
+  candidate_1->eagerness = blink::mojom::SpeculationEagerness::kConservative;
+  candidate_1->referrer = blink::mojom::Referrer::New();
+
+  auto candidate_2 = candidate_1.Clone();
+  candidate_2->eagerness = blink::mojom::SpeculationEagerness::kEager;
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate_1.Clone());
+  candidates.push_back(candidate_2.Clone());
+
+  // Add conservative prefetch candidate and prefetch on pointer-down.
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+  const auto& prefetches = GetPrefetchService()->prefetches_;
+  EXPECT_EQ(1u, prefetches.size());
+  EXPECT_EQ(prefetches[0]->GetPrefetchType().GetEagerness(),
+            blink::mojom::SpeculationEagerness::kEager);
+  EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
+      url, blink::mojom::SpeculationAction::kPrefetch));
+}
+
+// Tests that a previously prefetched conservative candidate can be reprefetched
+// after eviction (when retriggered).
+TEST_F(PreloadingDeciderTest, CandidateCanBeReprefetchedAfterEviction) {
+  const GURL url = GetSameOriginUrl("/candidate1.html");
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
+  ASSERT_TRUE(preloading_decider);
+
+  auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->url = url;
+  candidate->eagerness = blink::mojom::SpeculationEagerness::kConservative;
+  candidate->referrer = blink::mojom::Referrer::New();
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate.Clone());
+
+  // Add conservative prefetch candidate and prefetch on pointer-down.
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+  preloading_decider->OnPointerDown(url);
+  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+
+  // Simulate eviction of non-eager prefetch.
+  GetPrefetchService()->EvictPrefetch(0);
+  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+
+  // Trigger prefetch for same URL again, it should succeed.
+  preloading_decider->OnPointerDown(url);
+  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+
+  // Simulate eviction of non-eager prefetch.
+  GetPrefetchService()->EvictPrefetch(0);
+  EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
+
+  auto eager_candidate = candidate.Clone();
+  candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidates.clear();
+  candidates.push_back(candidate.Clone());
+  candidates.push_back(eager_candidate.Clone());
+
+  // Add a new eager candidate (but also send the old non-eager candidate). A
+  // prefetch should automatically trigger.
+  preloading_decider->UpdateSpeculationCandidates(candidates);
+  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 }
 
 }  // namespace

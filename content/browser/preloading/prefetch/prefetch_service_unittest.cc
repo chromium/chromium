@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -5258,6 +5259,12 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/4));
+
+  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
+  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
+  EXPECT_CALL(mock_eviction_callback, Run(url_2)).Times(1);
+  PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh())
+      ->SetPrefetchEvictionCallback(mock_eviction_callback.Get());
 
   base::WeakPtr<PrefetchContainer> prefetch_1 =
       CompletePrefetch(url_1, blink::mojom::SpeculationEagerness::kModerate);

@@ -60,7 +60,8 @@ void SetMetricsForPossibleNoVarySearchHintMatches(
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
       WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      no_vary_search_helper_(base::MakeRefCounted<NoVarySearchHelper>()) {}
+      no_vary_search_helper_(base::MakeRefCounted<NoVarySearchHelper>()),
+      prefetch_eviction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
   // On destruction, removes any owned prefetches from |PrefetchService|. Other
@@ -397,14 +398,20 @@ bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     DCHECK(GetPrefetchService());
     base::WeakPtr<PrefetchContainer> oldest_prefetch =
         completed_non_eager_prefetches_.front();
+    auto oldest_prefetch_key = oldest_prefetch->GetPrefetchContainerKey();
     // TODO(crbug.com/1445086): We should also be checking if the prefetch is
     // currently being used to serve a navigation. In that scenario, evicting
     // doesn't make sense.
-    GetPrefetchService()->EvictPrefetch(
-        oldest_prefetch->GetPrefetchContainerKey());
+    GetPrefetchService()->EvictPrefetch(oldest_prefetch_key);
     completed_non_eager_prefetches_.pop_front();
+    prefetch_eviction_callback_.Run(oldest_prefetch_key.second);
     return true;
   }
+}
+
+void PrefetchDocumentManager::SetPrefetchEvictionCallback(
+    PrefetchEvictionCallback callback) {
+  prefetch_eviction_callback_ = std::move(callback);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);
