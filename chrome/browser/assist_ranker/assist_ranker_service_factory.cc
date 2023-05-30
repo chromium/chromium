@@ -15,7 +15,8 @@ namespace assist_ranker {
 
 // static
 AssistRankerServiceFactory* AssistRankerServiceFactory::GetInstance() {
-  return base::Singleton<AssistRankerServiceFactory>::get();
+  static base::NoDestructor<AssistRankerServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -35,7 +36,7 @@ AssistRankerServiceFactory::AssistRankerServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-AssistRankerServiceFactory::~AssistRankerServiceFactory() {}
+AssistRankerServiceFactory::~AssistRankerServiceFactory() = default;
 
 KeyedService* AssistRankerServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
