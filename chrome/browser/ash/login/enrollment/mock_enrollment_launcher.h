@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_MOCK_H_
-#define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_MOCK_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_ENROLLMENT_LAUNCHER_H_
+#define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_ENROLLMENT_LAUNCHER_H_
 
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
-// Mocks out EnterpriseEnrollmentHelper.
-class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
+// Mocks out EnrollmentLauncher.
+class MockEnrollmentLauncher : public EnrollmentLauncher {
  public:
-  EnterpriseEnrollmentHelperMock();
-  ~EnterpriseEnrollmentHelperMock() override;
+  MockEnrollmentLauncher();
+  ~MockEnrollmentLauncher() override;
 
   EnrollmentStatusConsumer* status_consumer() const;
 
@@ -40,4 +40,4 @@ class EnterpriseEnrollmentHelperMock : public EnterpriseEnrollmentHelper {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_MOCK_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_MOCK_ENROLLMENT_LAUNCHER_H_

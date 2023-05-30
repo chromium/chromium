@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -129,7 +130,7 @@ class DemoSetupControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(nullptr);
+    EnrollmentLauncher::SetEnrollmentHelperMock(nullptr);
     SessionManagerClient::Shutdown();
     DBusThreadManager::Shutdown();
     SystemSaltGetter::Shutdown();

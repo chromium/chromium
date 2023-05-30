@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "net/cookies/canonical_cookie.h"
@@ -69,8 +69,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void ShowEnrollmentTPMCheckingScreen() override;
   void ShowAuthError(const GoogleServiceAuthError& error) override;
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
-  void ShowOtherError(
-      EnterpriseEnrollmentHelper::OtherError error_code) override;
+  void ShowOtherError(EnrollmentLauncher::OtherError error_code) override;
   void Shutdown() override;
 
   // Implements BaseScreenHandler:

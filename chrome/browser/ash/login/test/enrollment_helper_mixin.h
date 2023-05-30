@@ -19,12 +19,12 @@ class EnrollmentStatus;
 }
 
 namespace ash {
-class EnterpriseEnrollmentHelperMock;
+class MockEnrollmentLauncher;
 
 namespace test {
 
 // This test mixin covers mocking backend interaction during enterprise
-// enrollment on EnterpriseEnrollmentHelper level.
+// enrollment on EnrollmentLauncher level.
 class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
  public:
   static const char kTestAuthCode[];
@@ -79,7 +79,7 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
 
  private:
   // Unowned reference to last created mock.
-  raw_ptr<EnterpriseEnrollmentHelperMock, ExperimentalAsh> mock_ = nullptr;
+  raw_ptr<MockEnrollmentLauncher, ExperimentalAsh> mock_ = nullptr;
   base::WeakPtrFactory<EnrollmentHelperMixin> weak_ptr_factory_{this};
 };
 

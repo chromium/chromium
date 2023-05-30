@@ -158,7 +158,7 @@ EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
 
 EnrollmentScreen::~EnrollmentScreen() {
   scoped_network_observation_.Reset();
-  DCHECK(!enrollment_helper_ || g_browser_process->IsShuttingDown() ||
+  DCHECK(!enrollment_launcher_ || g_browser_process->IsShuttingDown() ||
          browser_shutdown::IsTryingToQuit() ||
          DBusThreadManager::Get()->IsUsingFakes());
 }
@@ -213,7 +213,7 @@ void EnrollmentScreen::SetConfig() {
                << static_cast<int>(config_.auth_mechanism);
   if (view_)
     view_->SetEnrollmentConfig(config_);
-  enrollment_helper_ = nullptr;
+  enrollment_launcher_ = nullptr;
 }
 
 bool EnrollmentScreen::AdvanceToNextAuth() {
@@ -227,9 +227,9 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
   return false;
 }
 
-void EnrollmentScreen::CreateEnrollmentHelper() {
-  if (!enrollment_helper_) {
-    enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
+void EnrollmentScreen::CreateEnrollmentLauncher() {
+  if (!enrollment_launcher_) {
+    enrollment_launcher_ = EnrollmentLauncher::Create(
         this, config_, enrolling_user_domain_, license_type_to_use_);
   }
 }
@@ -239,17 +239,17 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
     wait_state_timer_.Stop();
     install_state_retries_ = 0;
   }
-  if (!enrollment_helper_) {
+  if (!enrollment_launcher_) {
     std::move(callback).Run();
     return;
   }
-  enrollment_helper_->ClearAuth(base::BindOnce(&EnrollmentScreen::OnAuthCleared,
-                                               weak_ptr_factory_.GetWeakPtr(),
-                                               std::move(callback)));
+  enrollment_launcher_->ClearAuth(
+      base::BindOnce(&EnrollmentScreen::OnAuthCleared,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
-  enrollment_helper_ = nullptr;
+  enrollment_launcher_ = nullptr;
   std::move(callback).Run();
 }
 
@@ -463,8 +463,8 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
 
   if (view_)
     view_->Show();
-  CreateEnrollmentHelper();
-  enrollment_helper_->EnrollUsingAttestation();
+  CreateEnrollmentLauncher();
+  enrollment_launcher_->EnrollUsingAttestation();
 }
 
 void EnrollmentScreen::OnLoginDone(const std::string& user,
@@ -480,8 +480,8 @@ void EnrollmentScreen::OnLoginDone(const std::string& user,
 
   if (view_)
     view_->ShowEnrollmentWorkingScreen();
-  CreateEnrollmentHelper();
-  enrollment_helper_->EnrollUsingAuthCode(auth_code);
+  CreateEnrollmentLauncher();
+  enrollment_launcher_->EnrollUsingAuthCode(auth_code);
 }
 
 void EnrollmentScreen::OnRetry() {
@@ -508,7 +508,7 @@ void EnrollmentScreen::ProcessRetry() {
 bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kCancelScreenAction) {
     if (config_.is_license_packaged_with_device && !config_.is_forced() &&
-        (!(enrollment_helper_ && enrollment_helper_->InProgress()))) {
+        (!(enrollment_launcher_ && enrollment_launcher_->InProgress()))) {
       ShowSkipEnrollmentDialogue();
       return true;
     } else {
@@ -526,7 +526,7 @@ void EnrollmentScreen::OnCancel() {
     return;
   }
 
-  if (enrollment_helper_ && enrollment_helper_->InProgress()) {
+  if (enrollment_launcher_ && enrollment_launcher_->InProgress()) {
     // Don't allow cancellation while enrollment is in progress.
     return;
   }
@@ -592,8 +592,7 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
     AutomaticRetry();
 }
 
-void EnrollmentScreen::OnOtherError(
-    EnterpriseEnrollmentHelper::OtherError error) {
+void EnrollmentScreen::OnOtherError(EnrollmentLauncher::OtherError error) {
   LOG(ERROR) << "Other enrollment error: " << error;
   RecordEnrollmentErrorMetrics();
   if (view_)
@@ -612,7 +611,7 @@ void EnrollmentScreen::OnDeviceEnrolled() {
     view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
                                    ui::GetChromeOSDeviceName());
 
-  enrollment_helper_->GetDeviceAttributeUpdatePermission();
+  enrollment_launcher_->GetDeviceAttributeUpdatePermission();
 
   // Evaluates device policy TPMFirmwareUpdateSettings and updates the TPM if
   // the policy is set to auto-update vulnerable TPM firmware at enrollment.
@@ -669,7 +668,7 @@ void EnrollmentScreen::OnAccountStatusFetched(
 
 void EnrollmentScreen::OnDeviceAttributeProvided(const std::string& asset_id,
                                                  const std::string& location) {
-  enrollment_helper_->UpdateDeviceAttributes(asset_id, location);
+  enrollment_launcher_->UpdateDeviceAttributes(asset_id, location);
 }
 
 void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {

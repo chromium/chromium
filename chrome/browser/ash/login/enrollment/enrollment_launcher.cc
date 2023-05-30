@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 
 #include <memory>
 #include <string>
@@ -88,18 +88,16 @@ void TokenRevoker::OnOAuth2RevokeTokenCompleted(
                                                                 this);
 }
 
-class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
+class EnrollmentLauncherImpl : public EnrollmentLauncher {
  public:
-  EnterpriseEnrollmentHelperImpl();
+  EnrollmentLauncherImpl();
 
-  EnterpriseEnrollmentHelperImpl(const EnterpriseEnrollmentHelperImpl&) =
-      delete;
-  EnterpriseEnrollmentHelperImpl& operator=(
-      const EnterpriseEnrollmentHelperImpl&) = delete;
+  EnrollmentLauncherImpl(const EnrollmentLauncherImpl&) = delete;
+  EnrollmentLauncherImpl& operator=(const EnrollmentLauncherImpl&) = delete;
 
-  ~EnterpriseEnrollmentHelperImpl() override;
+  ~EnrollmentLauncherImpl() override;
 
-  // EnterpriseEnrollmentHelper:
+  // EnrollmentLauncher:
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
@@ -164,24 +162,24 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   // Non-nullptr from DoEnroll till OnEnrollmentFinished.
   std::unique_ptr<policy::EnrollmentHandler> enrollment_handler_;
 
-  base::WeakPtrFactory<EnterpriseEnrollmentHelperImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<EnrollmentLauncherImpl> weak_ptr_factory_{this};
 };
 
-EnterpriseEnrollmentHelperImpl::EnterpriseEnrollmentHelperImpl() {
+EnrollmentLauncherImpl::EnrollmentLauncherImpl() {
   // Init the TPM if it has not been done until now (in debug build we might
   // have not done that yet).
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
 }
 
-EnterpriseEnrollmentHelperImpl::~EnterpriseEnrollmentHelperImpl() {
+EnrollmentLauncherImpl::~EnrollmentLauncherImpl() {
   DCHECK(
       g_browser_process->IsShuttingDown() ||
       oauth_status_ == OAUTH_NOT_STARTED ||
       (oauth_status_ == OAUTH_FINISHED && (success_ || oauth_data_cleared_)));
 }
 
-void EnterpriseEnrollmentHelperImpl::Setup(
+void EnrollmentLauncherImpl::Setup(
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain,
     policy::LicenseType license_type) {
@@ -190,8 +188,7 @@ void EnterpriseEnrollmentHelperImpl::Setup(
   license_type_ = license_type;
 }
 
-void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
-    const std::string& auth_code) {
+void EnrollmentLauncherImpl::EnrollUsingAuthCode(const std::string& auth_code) {
   DCHECK(oauth_status_ == OAUTH_NOT_STARTED);
   oauth_status_ = OAUTH_STARTED_WITH_AUTH_CODE;
   oauth_fetcher_ =
@@ -200,12 +197,11 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAuthCode(
       auth_code,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
-      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnTokenFetched,
+      base::BindOnce(&EnrollmentLauncherImpl::OnTokenFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EnterpriseEnrollmentHelperImpl::EnrollUsingToken(
-    const std::string& token) {
+void EnrollmentLauncherImpl::EnrollUsingToken(const std::string& token) {
   DCHECK(oauth_status_ != OAUTH_STARTED_WITH_TOKEN);
   if (oauth_status_ == OAUTH_NOT_STARTED) {
     oauth_status_ = OAUTH_STARTED_WITH_TOKEN;
@@ -213,13 +209,13 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingToken(
   DoEnroll(policy::DMAuth::FromOAuthToken(token));
 }
 
-void EnterpriseEnrollmentHelperImpl::EnrollUsingAttestation() {
+void EnrollmentLauncherImpl::EnrollUsingAttestation() {
   CHECK(enrollment_config_.is_mode_attestation());
   // The tokens are not used in attestation mode.
   DoEnroll(policy::DMAuth::NoAuth());
 }
 
-void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
+void EnrollmentLauncherImpl::ClearAuth(base::OnceClosure callback) {
   if (oauth_status_ != OAUTH_NOT_STARTED) {
     if (oauth_fetcher_) {
       if (!oauth_fetcher_->OAuth2AccessToken().empty()) {
@@ -238,11 +234,11 @@ void EnterpriseEnrollmentHelperImpl::ClearAuth(base::OnceClosure callback) {
   }
   auth_data_ = policy::DMAuth::NoAuth();
   SigninProfileHandler::Get()->ClearSigninProfile(
-      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared,
+      base::BindOnce(&EnrollmentLauncherImpl::OnSigninProfileCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
+void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
   DCHECK(auth_data_.empty() || auth_data_ == auth_data);
   DCHECK(enrollment_config_.is_mode_attestation() ||
          oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
@@ -297,20 +293,20 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
       InstallAttributes::Get()->GetDeviceId(),
       policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
       policy::EnrollmentRequisitionManager::GetSubOrganization(),
-      base::BindOnce(&EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished,
+      base::BindOnce(&EnrollmentLauncherImpl::OnEnrollmentFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 
   enrollment_handler_->StartEnrollment();
 }
 
-bool EnterpriseEnrollmentHelperImpl::InProgress() const {
+bool EnrollmentLauncherImpl::InProgress() const {
   // `enrollment_handler_` lives from `DoEnroll` till `OnEnrollmentFinished`
   // which covers the whole enrollment process whether it ends with success or
   // failure.
   return enrollment_handler_ != nullptr;
 }
 
-void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
+void EnrollmentLauncherImpl::GetDeviceAttributeUpdatePermission() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
@@ -328,13 +324,12 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
   }
   client->GetDeviceAttributeUpdatePermission(
       std::move(auth.value()),
-      base::BindOnce(
-          &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUpdatePermission,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&EnrollmentLauncherImpl::OnDeviceAttributeUpdatePermission,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 absl::optional<policy::DMAuth>
-EnterpriseEnrollmentHelperImpl::GetDMAuthForDeviceAttributeUpdate(
+EnrollmentLauncherImpl::GetDMAuthForDeviceAttributeUpdate(
     policy::CloudPolicyClient* device_cloud_policy_client) {
   // Checking whether the device attributes can be updated requires either
   // knowing which user is performing enterprise enrollment, or which device
@@ -348,7 +343,7 @@ EnterpriseEnrollmentHelperImpl::GetDMAuthForDeviceAttributeUpdate(
   }
 }
 
-void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
+void EnrollmentLauncherImpl::UpdateDeviceAttributes(
     const std::string& asset_id,
     const std::string& location) {
   policy::BrowserPolicyConnectorAsh* connector =
@@ -367,12 +362,11 @@ void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
 
   client->UpdateDeviceAttributes(
       std::move(auth.value()), asset_id, location,
-      base::BindOnce(
-          &EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUploadCompleted,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&EnrollmentLauncherImpl::OnDeviceAttributeUploadCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EnterpriseEnrollmentHelperImpl::OnTokenFetched(
+void EnrollmentLauncherImpl::OnTokenFetched(
     const std::string& token,
     const GoogleServiceAuthError& error) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -385,7 +379,7 @@ void EnterpriseEnrollmentHelperImpl::OnTokenFetched(
   EnrollUsingToken(token);
 }
 
-void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
+void EnrollmentLauncherImpl::OnEnrollmentFinished(
     policy::EnrollmentStatus status) {
   // Regardless how enrollment has finished, |enrollment_handler_| is expired.
   // |client| might still be needed to connect the manager.
@@ -425,17 +419,15 @@ void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
   status_consumer()->OnDeviceEnrolled();
 }
 
-void EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUpdatePermission(
-    bool granted) {
+void EnrollmentLauncherImpl::OnDeviceAttributeUpdatePermission(bool granted) {
   status_consumer()->OnDeviceAttributeUpdatePermission(granted);
 }
 
-void EnterpriseEnrollmentHelperImpl::OnDeviceAttributeUploadCompleted(
-    bool success) {
+void EnrollmentLauncherImpl::OnDeviceAttributeUploadCompleted(bool success) {
   status_consumer()->OnDeviceAttributeUploadCompleted(success);
 }
 
-void EnterpriseEnrollmentHelperImpl::ReportAuthStatus(
+void EnrollmentLauncherImpl::ReportAuthStatus(
     const GoogleServiceAuthError& error) {
   switch (error.state()) {
     case GoogleServiceAuthError::NONE:
@@ -462,7 +454,7 @@ void EnterpriseEnrollmentHelperImpl::ReportAuthStatus(
   }
 }
 
-void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
+void EnrollmentLauncherImpl::ReportEnrollmentStatus(
     policy::EnrollmentStatus status) {
   switch (status.status()) {
     case policy::EnrollmentStatus::SUCCESS:
@@ -625,11 +617,11 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
   }
 }
 
-void EnterpriseEnrollmentHelperImpl::UMA(policy::MetricEnrollment sample) {
+void EnrollmentLauncherImpl::UMA(policy::MetricEnrollment sample) {
   EnrollmentUMA(sample, enrollment_config_.mode);
 }
 
-void EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared(
+void EnrollmentLauncherImpl::OnSigninProfileCleared(
     base::OnceClosure callback) {
   oauth_data_cleared_ = true;
   std::move(callback).Run();
@@ -637,16 +629,15 @@ void EnterpriseEnrollmentHelperImpl::OnSigninProfileCleared(
 
 }  // namespace
 
-EnterpriseEnrollmentHelper*
-    EnterpriseEnrollmentHelper::mock_enrollment_helper_ = nullptr;
+EnrollmentLauncher* EnrollmentLauncher::mock_enrollment_helper_ = nullptr;
 
-EnterpriseEnrollmentHelper::EnterpriseEnrollmentHelper() = default;
+EnrollmentLauncher::EnrollmentLauncher() = default;
 
-EnterpriseEnrollmentHelper::~EnterpriseEnrollmentHelper() = default;
+EnrollmentLauncher::~EnrollmentLauncher() = default;
 
 // static
-void EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(
-    std::unique_ptr<EnterpriseEnrollmentHelper> mock) {
+void EnrollmentLauncher::SetEnrollmentHelperMock(
+    std::unique_ptr<EnrollmentLauncher> mock) {
   if (mock_enrollment_helper_) {
     delete mock_enrollment_helper_;
   }
@@ -654,26 +645,26 @@ void EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(
 }
 
 // static
-std::unique_ptr<EnterpriseEnrollmentHelper> EnterpriseEnrollmentHelper::Create(
+std::unique_ptr<EnrollmentLauncher> EnrollmentLauncher::Create(
     EnrollmentStatusConsumer* status_consumer,
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain,
     policy::LicenseType license_type) {
-  std::unique_ptr<EnterpriseEnrollmentHelper> result;
+  std::unique_ptr<EnrollmentLauncher> result;
 
   // Create a mock instance.
   if (mock_enrollment_helper_) {
     result = base::WrapUnique(mock_enrollment_helper_);
     mock_enrollment_helper_ = nullptr;
   } else {
-    result = std::make_unique<EnterpriseEnrollmentHelperImpl>();
+    result = std::make_unique<EnrollmentLauncherImpl>();
   }
   result->set_status_consumer(status_consumer);
   result->Setup(enrollment_config, enrolling_user_domain, license_type);
   return result;
 }
 
-void EnterpriseEnrollmentHelper::set_status_consumer(
+void EnrollmentLauncher::set_status_consumer(
     EnrollmentStatusConsumer* status_consumer) {
   DCHECK(status_consumer);
   status_consumer_ = status_consumer;

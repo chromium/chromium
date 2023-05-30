@@ -248,14 +248,14 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
 // static
 DemoSetupController::DemoSetupError
 DemoSetupController::DemoSetupError::CreateFromOtherEnrollmentError(
-    EnterpriseEnrollmentHelper::OtherError error) {
+    EnrollmentLauncher::OtherError error) {
   const std::string debug_message =
       base::StringPrintf("Other error: %d", error);
   switch (error) {
-    case EnterpriseEnrollmentHelper::OTHER_ERROR_DOMAIN_MISMATCH:
+    case EnrollmentLauncher::OTHER_ERROR_DOMAIN_MISMATCH:
       return DemoSetupError(ErrorCode::kAlreadyLocked,
                             RecoveryMethod::kPowerwash, debug_message);
-    case EnterpriseEnrollmentHelper::OTHER_ERROR_FATAL:
+    case EnrollmentLauncher::OTHER_ERROR_FATAL:
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
@@ -509,7 +509,7 @@ void DemoSetupController::Enroll(
     const OnSetCurrentSetupStep& set_current_setup_step) {
   DCHECK_NE(demo_config_, DemoSession::DemoModeConfig::kNone)
       << "Demo config needs to be explicitly set before calling Enroll()";
-  DCHECK(!enrollment_helper_);
+  DCHECK(!enrollment_launcher_);
 
   set_current_setup_step_ = set_current_setup_step;
   on_setup_success_ = std::move(on_setup_success);
@@ -607,9 +607,9 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   config.mode = policy::EnrollmentConfig::MODE_ATTESTATION;
   config.management_domain = policy::kDemoModeDomain;
 
-  enrollment_helper_ = EnterpriseEnrollmentHelper::Create(
+  enrollment_launcher_ = EnrollmentLauncher::Create(
       this, config, policy::kDemoModeDomain, policy::LicenseType::kEnterprise);
-  enrollment_helper_->EnrollUsingAttestation();
+  enrollment_launcher_->EnrollUsingAttestation();
 }
 
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
@@ -620,8 +620,7 @@ void DemoSetupController::OnEnrollmentError(policy::EnrollmentStatus status) {
   SetupFailed(DemoSetupError::CreateFromEnrollmentStatus(status));
 }
 
-void DemoSetupController::OnOtherError(
-    EnterpriseEnrollmentHelper::OtherError error) {
+void DemoSetupController::OnOtherError(EnrollmentLauncher::OtherError error) {
   SetupFailed(DemoSetupError::CreateFromOtherEnrollmentError(error));
 }
 
@@ -698,7 +697,7 @@ void DemoSetupController::Reset() {
   DCHECK_NE(demo_config_, DemoSession::DemoModeConfig::kNone);
 
   // `demo_config_` is not reset here, because it is needed for retrying setup.
-  enrollment_helper_.reset();
+  enrollment_launcher_.reset();
   ClearDemoRequisition();
 }
 

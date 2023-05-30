@@ -8,13 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace test {
@@ -27,15 +20,15 @@ enum class DemoModeSetupResult {
   ERROR_POWERWASH_REQUIRED
 };
 
-// Helper method that mocks EnterpriseEnrollmentHelper to ensure that no
+// Helper method that mocks EnrollmentLauncher to ensure that no
 // enrollment attempt was made.
 void SetupMockDemoModeNoEnrollmentHelper();
 
-// Helper method that mocks EnterpriseEnrollmentHelper for online Demo Mode
+// Helper method that mocks EnrollmentLauncher for online Demo Mode
 // setup. It simulates specified Demo Mode enrollment `result`.
 void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result);
 
-// Helper method that mocks EnterpriseEnrollmentHelper for offline Demo Mode
+// Helper method that mocks EnrollmentLauncher for offline Demo Mode
 // setup. It simulates specified Demo Mode enrollment `result`.
 void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
 

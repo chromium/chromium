@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
-#include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 
@@ -41,22 +44,22 @@ void EnrollmentHelperMixin::SetUpInProcessBrowserTestFixture() {
 
 void EnrollmentHelperMixin::TearDownInProcessBrowserTestFixture() {
   mock_ = nullptr;
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(nullptr);
-  // Enrollment screen might have reference to enrollment_helper_.
+  EnrollmentLauncher::SetEnrollmentHelperMock(nullptr);
+  // Enrollment screen might have reference to enrollment_launcher_.
   if (WizardController::default_controller()) {
     auto* screen_manager =
         WizardController::default_controller()->screen_manager();
     if (screen_manager->HasScreen(EnrollmentScreenView::kScreenId)) {
-      EnrollmentScreen::Get(screen_manager)->enrollment_helper_.reset();
+      EnrollmentScreen::Get(screen_manager)->enrollment_launcher_.reset();
     }
   }
 }
 
 void EnrollmentHelperMixin::ResetMock() {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
   mock_ = mock.get();
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
 void EnrollmentHelperMixin::ExpectNoEnrollment() {

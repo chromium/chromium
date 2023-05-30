@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_H_
-#define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_LAUNCHER_H_
+#define CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_LAUNCHER_H_
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@ namespace ash {
 // either a profile containing authentication data or OAuth token.
 // It can also clear an authentication data from the profile and revoke tokens
 // that are not longer needed.
-class EnterpriseEnrollmentHelper {
+class EnrollmentLauncher {
  public:
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
@@ -62,7 +62,7 @@ class EnterpriseEnrollmentHelper {
   };
 
   // Factory method. Caller takes ownership of the returned object.
-  static std::unique_ptr<EnterpriseEnrollmentHelper> Create(
+  static std::unique_ptr<EnrollmentLauncher> Create(
       EnrollmentStatusConsumer* status_consumer,
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain,
@@ -70,14 +70,12 @@ class EnterpriseEnrollmentHelper {
 
   // Sets up a mock object that would be returned by next Create call.
   // This call passes ownership of `mock`.
-  static void SetEnrollmentHelperMock(
-      std::unique_ptr<EnterpriseEnrollmentHelper> mock);
+  static void SetEnrollmentHelperMock(std::unique_ptr<EnrollmentLauncher> mock);
 
-  EnterpriseEnrollmentHelper(const EnterpriseEnrollmentHelper&) = delete;
-  EnterpriseEnrollmentHelper& operator=(const EnterpriseEnrollmentHelper&) =
-      delete;
+  EnrollmentLauncher(const EnrollmentLauncher&) = delete;
+  EnrollmentLauncher& operator=(const EnrollmentLauncher&) = delete;
 
-  virtual ~EnterpriseEnrollmentHelper();
+  virtual ~EnrollmentLauncher();
 
   // Starts enterprise enrollment using `auth_code`. First tries to exchange the
   // auth code to authentication token, then tries to enroll the device with the
@@ -121,7 +119,7 @@ class EnterpriseEnrollmentHelper {
  protected:
   // The user of this class is responsible for clearing auth data in some cases
   // (see comment for EnrollUsingProfile()).
-  EnterpriseEnrollmentHelper();
+  EnrollmentLauncher();
 
   // This method is called once from Create method.
   virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
@@ -138,9 +136,9 @@ class EnterpriseEnrollmentHelper {
   raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
-  static EnterpriseEnrollmentHelper* mock_enrollment_helper_;
+  static EnrollmentLauncher* mock_enrollment_helper_;
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENTERPRISE_ENROLLMENT_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_ENROLLMENT_ENROLLMENT_LAUNCHER_H_

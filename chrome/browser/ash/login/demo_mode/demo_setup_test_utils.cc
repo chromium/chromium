@@ -9,11 +9,16 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace {
@@ -29,15 +34,15 @@ MATCHER(ConfigIsAttestation, "") {
 namespace test {
 
 void SetupMockDemoModeNoEnrollmentHelper() {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
   EXPECT_CALL(*mock, Setup(_, _, _)).Times(0);
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
 void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
-  std::unique_ptr<EnterpriseEnrollmentHelperMock> mock =
-      std::make_unique<EnterpriseEnrollmentHelperMock>();
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
   auto* mock_ptr = mock.get();
   EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _, _));
 
@@ -62,7 +67,7 @@ void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
             NOTREACHED();
         }
       }));
-  EnterpriseEnrollmentHelper::SetEnrollmentHelperMock(std::move(mock));
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,
