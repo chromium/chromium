@@ -341,15 +341,6 @@ bool CronetContext::NetworkTasks::URLRequestContextExistsForTesting(
   return contexts_.contains(network);
 }
 
-void CronetContext::NetworkTasks::InitializeNQEPrefs() const {
-  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  // Initializing |network_qualities_prefs_manager_| may post a callback to
-  // |this|. So, |network_qualities_prefs_manager_| should be initialized after
-  // |callback_| has been initialized.
-  DCHECK(is_default_context_initialized_);
-  cronet_prefs_manager_->SetupNqePersistence(network_quality_estimator_.get());
-}
-
 std::unique_ptr<net::URLRequestContext>
 CronetContext::NetworkTasks::BuildDefaultURLRequestContext(
     std::unique_ptr<net::ProxyConfigService> proxy_config_service) {
@@ -533,13 +524,8 @@ void CronetContext::NetworkTasks::Initialize(
 
   if (context_config_->enable_network_quality_estimator &&
       cronet_prefs_manager_) {
-    // TODO(crbug.com/758401): Provide a better way for to configure the NQE
-    // for testing.. Currently, tests rely on posting a task to this network
-    // thread and hope it executes before the one below does.
-    network_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CronetContext::NetworkTasks::InitializeNQEPrefs,
-                       base::Unretained(this)));
+    cronet_prefs_manager_->SetupNqePersistence(
+        network_quality_estimator_.get());
   }
 
   while (!tasks_waiting_for_context_.empty()) {
