@@ -23,6 +23,7 @@ class AccountSelectionBubbleViewInterface;
 // account chooser to the user.
 class FedCmAccountSelectionView : public AccountSelectionView,
                                   public AccountSelectionBubbleView::Observer,
+                                  public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   TabStripModelObserver,
                                   views::WidgetObserver {
@@ -61,6 +62,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
+
+  // FedCmModalDialogView::Observer
+  void OnPopupWindowDestroyed() override;
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -178,6 +182,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // is ready. This can happen when the accounts fetch has yet to finish but the
   // pop-up window has already been closed.
   bool should_show_bubble_widget_{false};
+
+  // If IDP sign-in pop-up window is closed through means other than
+  // IdentityProvider.close() such as the user closing the pop-up window or
+  // window.close(), we should destroy the bubble widget and reject the
+  // navigator.credentials.get promise. This boolean tracks whether
+  // IdentityProvider.close() was called.
+  bool should_destroy_bubble_widget_{true};
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

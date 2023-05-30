@@ -56,7 +56,8 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindow) {
   TestDelegate delegate(web_contents());
 
   std::unique_ptr<FedCmModalDialogView> popup_window =
-      std::make_unique<FedCmModalDialogView>(web_contents());
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
   content::WebContents* web_contents =
       popup_window->ShowPopupWindow(GURL(u"https://example.com"));
 

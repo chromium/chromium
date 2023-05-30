@@ -13,8 +13,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
-FedCmModalDialogView::FedCmModalDialogView(content::WebContents* web_contents)
-    : source_window_(web_contents) {}
+FedCmModalDialogView::FedCmModalDialogView(
+    content::WebContents* web_contents,
+    FedCmModalDialogView::Observer* observer)
+    : source_window_(web_contents), observer_(observer) {}
 
 FedCmModalDialogView::~FedCmModalDialogView() = default;
 
@@ -35,6 +37,8 @@ content::WebContents* FedCmModalDialogView::ShowPopupWindow(const GURL& url) {
       popup_window_, gfx::Rect(x_coordinate, y_coordinate, kPopupWindowWidth,
                                kPopupWindowHeight));
 
+  Observe(popup_window_);
+
   return popup_window_;
 }
 
@@ -44,4 +48,11 @@ void FedCmModalDialogView::ClosePopupWindow() {
   }
 
   popup_window_->Close();
+}
+
+void FedCmModalDialogView::WebContentsDestroyed() {
+  // Let the observer know that the pop-up window has been destroyed.
+  if (observer_) {
+    observer_->OnPopupWindowDestroyed();
+  }
 }

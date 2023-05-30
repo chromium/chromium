@@ -96,7 +96,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
 class MockFedCmModalDialogView : public FedCmModalDialogView {
  public:
   explicit MockFedCmModalDialogView(content::WebContents* web_contents)
-      : FedCmModalDialogView(web_contents) {}
+      : FedCmModalDialogView(web_contents, /*observer=*/nullptr) {}
   ~MockFedCmModalDialogView() override = default;
 
   MockFedCmModalDialogView(const MockFedCmModalDialogView&) = delete;
@@ -234,6 +234,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
                                   kIdpEtldPlusOne,
                                   content::IdentityProviderMetadata());
+    EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
     return controller;
   }
 
@@ -241,7 +242,6 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     auto idp_signin_popup_window =
         std::make_unique<MockFedCmModalDialogView>(test_web_contents_.get());
     EXPECT_CALL(*idp_signin_popup_window, ShowPopupWindow).Times(1);
-    EXPECT_CALL(*idp_signin_popup_window, ClosePopupWindow).Times(1);
     controller.SetIdpSigninPopupWindowForTesting(
         std::move(idp_signin_popup_window));
 
@@ -547,7 +547,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Trigger IdP sign-in status mismatch failure dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowFailureDialog();
-  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 
   // Emulate user clicking on "Continue" button in the failure dialog.
   CreateAndShowPopupWindow(*controller);
@@ -584,7 +583,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Trigger IdP sign-in status mismatch failure dialog.
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShowFailureDialog();
-  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
 
   // Emulate user clicking on "Continue" button in the failure dialog.
   CreateAndShowPopupWindow(*controller);
@@ -604,10 +602,45 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // closed yet.
   EXPECT_FALSE(widget_->IsVisible());
 
-  // Emulate user completing the sign-in flow and IdP prompts closing the pop-up
-  // window.
+  // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
 
   // Accounts dialog should now be visible.
   EXPECT_TRUE(widget_->IsVisible());
+}
+
+// Test closing the IdP sign-in pop-up window through IdentityProvider.close()
+// should not close the widget.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpSigninStatusPopupClosedViaIdentityProviderClose) {
+  // Trigger IdP sign-in status mismatch failure dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowFailureDialog();
+
+  // Emulate user clicking on "Continue" button in the failure dialog.
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate IdentityProvider.close() being called in the pop-up window.
+  controller->CloseModalDialog();
+
+  // Widget should not be closed.
+  EXPECT_FALSE(widget_->IsClosed());
+}
+
+// Test closing the IdP sign-in pop-up window through means other than
+// IdentityProvider.close() should also close the widget.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpSigninStatusPopupClosedViaPopupDestroyed) {
+  // Trigger IdP sign-in status mismatch failure dialog.
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowFailureDialog();
+
+  // Emulate user clicking on "Continue" button in the failure dialog.
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Widget should be closed.
+  EXPECT_TRUE(widget_->IsClosed());
 }

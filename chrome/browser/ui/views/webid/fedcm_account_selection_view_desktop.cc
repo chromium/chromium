@@ -46,6 +46,7 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   notify_delegate_of_dismiss_ = false;
   should_show_bubble_widget_ = false;
+  should_destroy_bubble_widget_ = false;
   Close();
 
   TabStripModelObserver::StopObservingAll(this);
@@ -282,6 +283,7 @@ FedCmAccountSelectionView::GetBubbleView() const {
   return static_cast<const AccountSelectionBubbleView*>(
       bubble_widget_->widget_delegate());
 }
+
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
   DismissReason dismiss_reason =
       (bubble_widget_->closed_reason() ==
@@ -377,8 +379,8 @@ void FedCmAccountSelectionView::OnSigninToIdP() {
 content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     const GURL& url) {
   if (!idp_signin_modal_dialog_) {
-    idp_signin_modal_dialog_ =
-        std::make_unique<FedCmModalDialogView>(delegate_->GetWebContents());
+    idp_signin_modal_dialog_ = std::make_unique<FedCmModalDialogView>(
+        delegate_->GetWebContents(), this);
   }
 
   input_protector_->VisibilityChanged(false);
@@ -387,6 +389,7 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 }
 
 void FedCmAccountSelectionView::CloseModalDialog() {
+  should_destroy_bubble_widget_ = false;
   if (idp_signin_modal_dialog_) {
     idp_signin_modal_dialog_->ClosePopupWindow();
     idp_signin_modal_dialog_.reset();
@@ -398,6 +401,15 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     input_protector_->VisibilityChanged(true);
     bubble_widget_->Show();
   }
+}
+
+void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
+  if (!should_destroy_bubble_widget_) {
+    return;
+  }
+
+  // This triggers the OnDismiss call to notify delegate_
+  Close();
 }
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(
