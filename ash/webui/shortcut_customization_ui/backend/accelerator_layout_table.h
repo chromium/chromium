@@ -1000,12 +1000,12 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      mojom::AcceleratorSource::kAmbient},
 
     // Windows and Desks
-    {AcceleratorAction::kCycleForwardMru,
+    {NonConfigurableActions::kAmbientCycleForwardMRU,
      IDS_ASH_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU,
      mojom::AcceleratorCategory::kWindowsAndDesks,
      mojom::AcceleratorSubcategory::kWindows,
-     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
-     mojom::AcceleratorSource::kAsh},
+     /*locked=*/true, mojom::AcceleratorLayoutStyle::kText,
+     mojom::AcceleratorSource::kAmbient},
     {NonConfigurableActions::kAmbientCycleBackwardMRU,
      IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU,
      mojom::AcceleratorCategory::kWindowsAndDesks,

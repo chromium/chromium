@@ -165,6 +165,11 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                IDS_AMBIENT_ACCELERATOR_OPEN_PAGE_IN_NEW_TAB,
                {TextAcceleratorPart(ui::EF_ALT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_RETURN)})},
+          {NonConfigurableActions::kAmbientCycleForwardMRU,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_CYCLE_FORWARD_MRU,
+               {TextAcceleratorPart(ui::EF_ALT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_TAB)})},
           {NonConfigurableActions::kAmbientCycleBackwardMRU,
            NonConfigurableAcceleratorDetails(
                IDS_AMBIENT_ACCELERATOR_CYCLE_BACKWARD_MRU,

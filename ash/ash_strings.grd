@@ -4193,6 +4193,9 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_OPEN_PAGE_IN_NEW_TAB" translateable="false" desc="Action for accelerator action - Open the webpage in a new tab.">
         Type a web address in the address bar, then press <ph name="MODIFIER">$1<ex>alt</ex></ph><ph name="KEY">$2<ex>enter</ex></ph>
       </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_CYCLE_FORWARD_MRU" desc="Action for accelerator action - Open the window that has been unused for the longest time.">
+        Press and hold <ph name="MODIFIER_1">$1<ex>alt</ex></ph>, tap <ph name="KEY">$2<ex>tab</ex></ph> until you get to the window you want to open, then release
+      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_CYCLE_BACKWARD_MRU" translateable="false" desc="Action for accelerator action - Open the window that has been unused for the longest time.">
         Press and hold <ph name="MODIFIER_1">$1<ex>alt</ex></ph><ph name="MODIFIER_2">$2<ex>shift</ex></ph>, tap <ph name="KEY">$3<ex>tab</ex></ph> until you get to the window you want to open, then release
       </message>
