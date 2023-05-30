@@ -424,14 +424,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * Runs a set of deferred startup tasks.
      */
     void onDeferredStartup() {
-        boolean didShowPrompt = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
-        if (!didShowPrompt && mAppMenuCoordinator != null) {
-            mDesktopSiteSettingsIPHController = DesktopSiteSettingsIPHController.create(mActivity,
-                    mWindowAndroid, mActivityTabProvider, Profile.getLastUsedRegularProfile(),
-                    getToolbarManager().getMenuButtonView(),
-                    mAppMenuCoordinator.getAppMenuHandler(), getPrimaryDisplaySizeInInches());
-        }
+        new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable((profile) -> {
+            Profile regularProfile = profile.getOriginalProfile();
+
+            boolean didShowPrompt = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                    regularProfile, mMessageDispatcher, mActivity);
+            if (!didShowPrompt && mAppMenuCoordinator != null) {
+                mDesktopSiteSettingsIPHController = DesktopSiteSettingsIPHController.create(
+                        mActivity, mWindowAndroid, mActivityTabProvider, regularProfile,
+                        getToolbarManager().getMenuButtonView(),
+                        mAppMenuCoordinator.getAppMenuHandler(), getPrimaryDisplaySizeInInches());
+            }
+        }));
     }
 
     @VisibleForTesting
