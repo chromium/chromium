@@ -152,7 +152,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       aggregation_service::CloneReportRequest(expected_request), example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
@@ -216,7 +216,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       aggregation_service::CloneReportRequest(expected_request), example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
@@ -252,8 +252,8 @@ TEST_F(PrivateAggregationManagerImplTest,
                                  PrivateAggregationBudgeter::RequestResult)>
                                  on_done) {
           checkpoint.Call(1);
-          std::move(on_done).Run(
-              PrivateAggregationBudgeter::RequestResult::kInsufficientBudget);
+          std::move(on_done).Run(PrivateAggregationBudgeter::RequestResult::
+                                     kInsufficientSmallerScopeBudget);
         }));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
@@ -265,8 +265,10 @@ TEST_F(PrivateAggregationManagerImplTest,
       aggregation_service::CloneReportRequest(expected_request), example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
-      PrivateAggregationBudgeter::RequestResult::kInsufficientBudget, 1);
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
+      PrivateAggregationBudgeter::RequestResult::
+          kInsufficientSmallerScopeBudget,
+      1);
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
@@ -304,7 +306,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       aggregation_service::CloneReportRequest(expected_request), example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kRequestedMoreThanTotalBudget,
       1);
 }
@@ -367,7 +369,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
@@ -451,7 +453,7 @@ TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
       shared_storage_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kApproved, 2);
 }
 
@@ -496,7 +498,7 @@ TEST_F(PrivateAggregationManagerImplTest,
       example_key);
 
   histogram.ExpectUniqueSample(
-      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult",
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
       PrivateAggregationBudgeter::RequestResult::kBadValuesOnDisk, 1);
 }
 

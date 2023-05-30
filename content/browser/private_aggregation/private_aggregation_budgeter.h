@@ -48,17 +48,18 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // numeric values should never be reused.
   enum class RequestResult {
     kApproved = 0,
-    kInsufficientBudget = 1,
-    kRequestedMoreThanTotalBudget = 2,
-    kTooManyPendingCalls = 3,
-    kInvalidRequest = 4,
-    kStorageInitializationFailed = 5,
-    kBadValuesOnDisk = 6,
+    kInsufficientSmallerScopeBudget = 1,
+    kInsufficientLargerScopeBudget = 2,
+    kRequestedMoreThanTotalBudget = 3,
+    kTooManyPendingCalls = 4,
+    kInvalidRequest = 5,
+    kStorageInitializationFailed = 6,
+    kBadValuesOnDisk = 7,
     kMaxValue = kBadValuesOnDisk,
   };
 
   // Represents the validity status of the stored budget data for the provided
-  // origin and API retrieved during a `ConsumeBudget()` call. In case multiple
+  // site and API retrieved during a `ConsumeBudget()` call. In case multiple
   // statuses apply, the first one encountered/detected will be used.
   //
   // These values are persisted to logs. Entries should not be renumbered and
@@ -69,24 +70,56 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kValidButContainsStaleWindow = 2,
     kContainsTimestampInFuture = 3,
     kContainsValueExceedingLimit = 4,
-    kContainsTimestampNotRoundedToHour = 5,
+    kContainsTimestampNotRoundedToMinute = 5,
     kSpansMoreThanADay = 6,
     kContainsNonPositiveValue = 7,
     kMaxValue = kContainsNonPositiveValue,
   };
 
+  // Represents the two different types of budgets, which differ on the duration
+  // of time that they apply to and what the allowable budget for that time is.
+  enum class BudgetScope {
+    // Scope is per-site per-API per-10 min
+    kSmallerScope,
+
+    // Scope is per-site per-API per-day
+    kLargerScope,
+  };
+
+  // Encapsulates constants that differ for the two scopes, allowing them to be
+  // passed around more easily.
+  struct BudgetScopeValues {
+    BudgetScope budget_scope;
+
+    // Maximum budget allowed to be claimed for this scope.
+    int max_budget_per_scope;
+
+    // The total length of time that per-site per-API budgets are enforced
+    // against in this scope. (Note that there are 10 time windows per
+    // `kBudgetSmallerScopeDuration` and 1440 time windows per
+    // `kBudgetLargerScopeDuration`.)
+    base::TimeDelta budget_scope_duration;
+  };
+
+  static constexpr BudgetScopeValues kSmallerScopeValues = {
+      BudgetScope::kSmallerScope, /*max_budget_per_scope=*/65536,
+      /*budget_scope_duration=*/base::Minutes(10)};
+
+  static constexpr BudgetScopeValues kLargerScopeValues = {
+      BudgetScope::kLargerScope, /*max_budget_per_scope=*/1048576,
+      /*budget_scope_duration=*/base::Days(1)};
+
+  static_assert(kSmallerScopeValues.budget_scope_duration %
+                    PrivateAggregationBudgetKey::TimeWindow::kDuration ==
+                base::TimeDelta());
+  static_assert(kLargerScopeValues.budget_scope_duration %
+                    PrivateAggregationBudgetKey::TimeWindow::kDuration ==
+                base::TimeDelta());
+
   // To avoid unbounded memory growth, limit the number of pending calls during
   // initialization. Data clearing calls can be posted even if it would exceed
   // this limit.
   static constexpr int kMaxPendingCalls = 1000;
-
-  // The total length of time that per-origin per-API budgets are enforced
-  // against. Note that there are 24 `PrivateAggregationBudgetKey::TimeWindow`s
-  // per `kBudgetScopeDuration`.
-  static constexpr base::TimeDelta kBudgetScopeDuration = base::Days(1);
-  static_assert(kBudgetScopeDuration %
-                    PrivateAggregationBudgetKey::TimeWindow::kDuration ==
-                base::TimeDelta());
 
   // `db_task_runner` should not be nullptr.
   PrivateAggregationBudgeter(
@@ -102,9 +135,12 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // Attempts to consume `budget` for `budget_key`. The callback `on_done` is
   // then run with the appropriate `RequestResult`.
   //
-  // The attempt is rejected if it would cause an origin's daily per-API budget
-  // to exceed `kMaxBudgetPerScope` (for the 24-hour period ending at the *end*
-  // of `budget_key.time_window`, see `kBudgetScopeDuration` and
+  // The attempt is rejected if it would cause a contribution budget to be
+  // exceeded, i.e. if the site's per-10 min per-API budget would exceed
+  // `kSmallerScopeValues.max_budget_per_scope` and/or if the site's daily
+  // per-API budget would exceed `kLargerScopeValues.max_budget_per_scope` (for
+  // the 10-min and 24-hour period, respectively, ending at the *end* of
+  // `budget_key.time_window`, see the budget scope durations above and
   // `PrivateAggregationBudgetKey` for more detail). The attempt is also
   // rejected if the requested `budget` is non-positive, if `budget_key.origin`
   // is not potentially trustworthy or if the database is closed. If the
@@ -122,14 +158,17 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // between `delete_begin` and `delete_end` time (inclusive). Note that the
   // discrete time windows used may lead to more data being deleted than
   // strictly necessary. Null times are treated as unbounded lower or upper
-  // range. If `!filter.is_null()`, budget keys with an origin that does *not*
-  // match the `filter` are retained (i.e. not cleared).
+  // range. If `!filter.is_null()`, budget entries without an origin that
+  // matches the `filter` are retained (i.e. not cleared). Note that budgets are
+  // scoped per-site, not per-origin. So, the budget storage keeps track of any
+  // reporting origins used in the last day and will delete that corresponding
+  // site's data if the `filter` matches any of those origins.
   virtual void ClearData(base::Time delete_begin,
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
                          base::OnceClosure done);
 
-  // TODO(crbug.com/1328439): Clear stale data periodically and on startup.
+  // TODO(crbug.com/1449005): Clear stale data periodically and on startup.
 
  protected:
   // Should only be used for testing/mocking to avoid creating the underlying
