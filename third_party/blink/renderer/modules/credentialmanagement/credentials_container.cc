@@ -1368,10 +1368,14 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kFedCmIframe);
     }
-
     int provider_index = 0;
     Vector<mojom::blink::IdentityProviderPtr> identity_provider_ptrs;
     for (const auto& provider : options->identity()->providers()) {
+      if (RuntimeEnabledFeatures::FedCmLoginHintEnabled() &&
+          provider->hasLoginHint()) {
+        UseCounter::Count(resolver->GetExecutionContext(),
+                          WebFeature::kFedCmLoginHint);
+      }
       if (RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
           !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
         // TODO(https://crbug.com/1416939): make sure the MDocs API
@@ -1425,6 +1429,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     mojom::blink::RpContext rp_context = mojom::blink::RpContext::kSignIn;
     if (RuntimeEnabledFeatures::FedCmRpContextEnabled() &&
         options->identity()->hasContext()) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmRpContext);
       rp_context = mojo::ConvertTo<mojom::blink::RpContext>(
           options->identity()->context());
     }

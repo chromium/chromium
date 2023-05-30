@@ -42640,6 +42640,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4576" label="V8Navigator_GetInterestGroupAdAuctionData_Method"/>
   <int value="4577" label="LongAnimationFrameObserver"/>
   <int value="4578" label="LongAnimationFrameRequested"/>
+  <int value="4579" label="FedCmLoginHint"/>
+  <int value="4580" label="FedCmRpContext"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
