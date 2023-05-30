@@ -29,6 +29,10 @@ BASE_FEATURE(kPasswordNotesWithBackup,
 #endif
 );
 
+BASE_FEATURE(kSharingOfferKeyPairBootstrap,
+             "SharingOfferKeyPairBootstrap",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",

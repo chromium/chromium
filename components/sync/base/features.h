@@ -51,6 +51,10 @@ inline constexpr base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
     &kPasswordNotesWithBackup, "authentication_validity_duration",
     base::Minutes(5)};
 
+// Controls whether to enable bootstrapping Public-private keys in Nigori
+// key-bag.
+BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kSyncAndroidLimitNTPPromoImpressions);
 inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
