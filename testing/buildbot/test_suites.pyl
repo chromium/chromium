@@ -2773,7 +2773,6 @@
           '--use-gpu-in-tests'
         ],
         'test': 'browser_tests',
-        'ci_only': True,
       },
     },
 

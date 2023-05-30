@@ -17816,7 +17816,6 @@
           "--gtest_filter=MediaFoundationEncryptedMediaTest*",
           "--use-gpu-in-tests"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
