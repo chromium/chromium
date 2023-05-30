@@ -728,6 +728,23 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               implementation-status: implementing
             """)
 
+    def test_remove_orphaned_test(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?does-not-exist]
+              expected: ERROR
+              [subtest]
+                expected: FAIL
+            """)
+        self.update({
+            'results': [{
+                'test': '/variant.html?foo=baz',
+                'status': 'OK',
+                'subtests': [],
+            }],
+        })
+        self.assertFalse(self.exists('external/wpt/variant.html.ini'))
+
     def test_remove_nonexistent_subtest(self):
         """A full update cleans up subtests that no longer exist."""
         self.write_contents(
