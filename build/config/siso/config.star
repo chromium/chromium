@@ -6,7 +6,9 @@
 
 load("@builtin//struct.star", "module")
 
-__KNOWN_CONFIG_OPTIONS = []
+__KNOWN_CONFIG_OPTIONS = [
+    "rewrapper_to_reproxy",
+]
 
 def __check(ctx):
     if "config" in ctx.flags:

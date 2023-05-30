@@ -11,6 +11,7 @@ __filegroups = {}
 __handlers = {}
 
 def __step_config(ctx, step_config):
+    # TODO(b/273407069): Handle reproxy mode.
     config.check(ctx)
     if remote_exec_wrapper.enabled(ctx):
         step_config = remote_exec_wrapper.step_config(ctx, step_config)
