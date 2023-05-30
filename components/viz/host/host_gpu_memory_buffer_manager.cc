@@ -191,7 +191,7 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     buffer_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
         id, size, format, usage);
     DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, buffer_handle.type);
-    AllocatedBufferInfo buffer_info(buffer_handle, size, format);
+    gpu::AllocatedBufferInfo buffer_info(buffer_handle, size, format);
     allocated_buffers_[client_id].insert(
         std::make_pair(buffer_handle.id, buffer_info));
   }
@@ -465,8 +465,8 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
   if (!handle.is_null()) {
     DCHECK(handle.id == id);
 
-    AllocatedBufferInfo buffer_info(handle, pending_buffer.size,
-                                    pending_buffer.format);
+    gpu::AllocatedBufferInfo buffer_info(handle, pending_buffer.size,
+                                         pending_buffer.format);
     allocated_buffers_[client_id].insert(std::make_pair(id, buffer_info));
   }
   std::move(pending_buffer.callback).Run(std::move(handle));

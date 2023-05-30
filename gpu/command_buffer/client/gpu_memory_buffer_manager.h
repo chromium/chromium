@@ -21,8 +21,8 @@ namespace gpu {
 
 class GPU_EXPORT GpuMemoryBufferManager {
  public:
-  GpuMemoryBufferManager();
-  virtual ~GpuMemoryBufferManager();
+  GpuMemoryBufferManager() = default;
+  virtual ~GpuMemoryBufferManager() = default;
 
   // Creates a GpuMemoryBuffer that can be shared with another process. It can
   // be called on any thread. If |shutdown_event| is specified, then the browser
@@ -43,29 +43,6 @@ class GPU_EXPORT GpuMemoryBufferManager {
   virtual bool CopyGpuMemoryBufferSync(
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region) = 0;
-
- protected:
-  class GPU_EXPORT AllocatedBufferInfo {
-   public:
-    AllocatedBufferInfo(const gfx::GpuMemoryBufferHandle& handle,
-                        const gfx::Size& size,
-                        gfx::BufferFormat format);
-    ~AllocatedBufferInfo();
-
-    gfx::GpuMemoryBufferType type() const { return type_; }
-
-    // Add a memory dump for this buffer to |pmd|. Returns false if adding the
-    // dump failed.
-    bool OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                      int client_id,
-                      uint64_t client_tracing_process_id) const;
-
-   private:
-    gfx::GpuMemoryBufferId buffer_id_;
-    gfx::GpuMemoryBufferType type_;
-    size_t size_in_bytes_;
-    base::UnguessableToken shared_memory_guid_;
-  };
 };
 
 }  // namespace gpu

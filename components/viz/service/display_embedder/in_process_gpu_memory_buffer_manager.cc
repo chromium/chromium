@@ -63,7 +63,7 @@ InProcessGpuMemoryBufferManager::CreateGpuMemoryBuffer(
           id, size, /*framebuffer_size=*/size, format, usage, client_id_,
           surface_handle);
 
-  AllocatedBufferInfo buffer_info(buffer_handle, size, format);
+  gpu::AllocatedBufferInfo buffer_info(buffer_handle, size, format);
 
   auto callback = base::BindOnce(
       &InProcessGpuMemoryBufferManager::DestroyGpuMemoryBuffer, weak_ptr_, id);
