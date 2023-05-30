@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PAYMENTS_PAYMENT_REQUEST_DISPLAY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_PAYMENTS_PAYMENT_REQUEST_DISPLAY_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace payments {
@@ -26,8 +26,7 @@ class PaymentRequestDisplayManagerFactory : public ProfileKeyedServiceFactory {
  private:
   PaymentRequestDisplayManagerFactory();
   ~PaymentRequestDisplayManagerFactory() override;
-  friend struct base::DefaultSingletonTraits<
-      PaymentRequestDisplayManagerFactory>;
+  friend base::NoDestructor<PaymentRequestDisplayManagerFactory>;
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
