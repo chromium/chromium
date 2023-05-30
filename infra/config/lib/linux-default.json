@@ -26,6 +26,7 @@
     "chromeos-jacuzzi-rel": "Ubuntu-22.04",
     "chromeos-octopus-rel": "Ubuntu-22.04",
     "lacros-amd64-generic-binary-size-rel": "Ubuntu-22.04",
+    "lacros-amd64-generic-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
