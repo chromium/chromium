@@ -623,8 +623,6 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.cc",
-      "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h",
       "../browser/ash/login/app_mode/test/ash_accelerator_helpers.cc",
       "../browser/ash/login/lock/screen_locker_tester.cc",
       "../browser/ash/login/lock/screen_locker_tester.h",
@@ -6980,16 +6978,6 @@ test("unit_tests") {
   } else {
     # !is_android
     sources += [
-      "../browser/apps/app_service/app_icon/app_icon_factory_unittest.cc",
-      "../browser/apps/app_service/app_icon/app_icon_test_util.cc",
-      "../browser/apps/app_service/app_icon/app_icon_test_util.h",
-      "../browser/apps/app_service/app_icon/chrome_apps_icon_unittest.cc",
-      "../browser/apps/app_service/app_icon/web_app_icon_unittest.cc",
-      "../browser/apps/app_service/app_service_proxy_unittest.cc",
-      "../browser/apps/app_service/intent_util_unittest.cc",
-      "../browser/apps/app_service/launch_utils_unittest.cc",
-      "../browser/apps/app_service/package_id_unittest.cc",
-      "../browser/apps/app_service/publishers/publisher_unittest.cc",
       "../browser/apps/intent_helper/intent_picker_auto_display_prefs_unittest.cc",
       "../browser/apps/intent_helper/intent_picker_internal_unittest.cc",
       "../browser/apps/intent_helper/page_transition_util_unittest.cc",
@@ -7556,6 +7544,7 @@ test("unit_tests") {
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/apps/app_service:unit_tests",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/core/proto",
@@ -7713,25 +7702,6 @@ test("unit_tests") {
       "../browser/apps/app_discovery_service/app_discovery_service_unittest.cc",
       "../browser/apps/app_discovery_service/game_fetcher_unittest.cc",
       "../browser/apps/app_discovery_service/recommended_arc_app_fetcher_unittest.cc",
-      "../browser/apps/app_service/app_icon/app_icon_decoder_unittest.cc",
-      "../browser/apps/app_service/app_icon/arc_apps_icon_unittest.cc",
-      "../browser/apps/app_service/app_icon/guest_os_apps_icon_unittest.cc",
-      "../browser/apps/app_service/file_utils_unittest.cc",
-      "../browser/apps/app_service/metrics/app_platform_metrics_service_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_almanac_connector_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_icon_cache_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_registry_cache_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_service_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_update_unittest.cc",
-      "../browser/apps/app_service/promise_apps/promise_app_wrapper_unittest.cc",
-      "../browser/apps/app_service/publishers/arc_apps_unittest.cc",
-      "../browser/apps/app_service/publishers/bruschetta_apps_unittest.cc",
-      "../browser/apps/app_service/publishers/crostini_apps_unittest.cc",
-      "../browser/apps/app_service/publishers/guest_os_apps_unittest.cc",
-      "../browser/apps/app_service/publishers/plugin_vm_apps_unittest.cc",
-      "../browser/apps/app_service/webapk/webapk_install_task_unittest.cc",
-      "../browser/apps/app_service/webapk/webapk_manager_unittest.cc",
       "../browser/browser_process_platform_part_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
@@ -8038,9 +8008,6 @@ test("unit_tests") {
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [
-      "../browser/apps/app_service/app_service_proxy_lacros_unittest.cc",
-      "../browser/apps/app_service/mock_crosapi_app_service_proxy.cc",
-      "../browser/apps/app_service/mock_crosapi_app_service_proxy.h",
       "../browser/lacros/account_manager/account_manager_util_unittest.cc",
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
       "../browser/lacros/account_manager/get_account_information_helper_unittest.cc",
