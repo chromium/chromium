@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/shell_integration.h"
@@ -250,6 +252,46 @@ SkBitmap* TabHelper::GetExtensionAppIcon() {
   return &extension_app_icon_;
 }
 
+void TabHelper::SetReloadRequired(
+    PermissionsManager::UserSiteSetting site_setting) {
+  switch (site_setting) {
+    case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
+      // Granting access to all extensions is allowed iff feature is
+      // enabled, and it shouldn't be enabled anywhere where this is called.
+      NOTREACHED_NORETURN();
+    }
+    case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
+      // A reload is required if any extension that had site access will lose
+      // it.
+      content::WebContents* web_contents = GetVisibleWebContents();
+      SitePermissionsHelper permissions_helper(profile_);
+      const extensions::ExtensionSet& extensions =
+          extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
+      reload_required_ = base::ranges::any_of(
+          extensions, [&permissions_helper,
+                       web_contents](scoped_refptr<const Extension> extension) {
+            return permissions_helper.GetSiteInteraction(*extension,
+                                                         web_contents) ==
+                   SitePermissionsHelper::SiteInteraction::kGranted;
+          });
+      break;
+    }
+    case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
+      // When the user selects "customize by extension" it means previously all
+      // extensions were blocked and each extension's page access is set as
+      // "denied". Blocked actions in the ExtensionActionRunner are computed by
+      // checking if a page access is "withheld". Therefore, we always need a
+      // refresh since we don't know if there are any extensions that would have
+      // wanted to run if the page had not been restricted by the user.
+      reload_required_ = true;
+      break;
+  }
+}
+
+bool TabHelper::IsReloadRequired() {
+  return reload_required_;
+}
+
 void TabHelper::OnWatchedPageChanged(
     const std::vector<std::string>& css_selectors) {
   InvokeForContentRulesRegistries(
@@ -316,6 +358,10 @@ void TabHelper::DidFinishNavigation(
     UpdateExtensionAppIcon(
         enabled_extensions.GetExtensionOrAppByURL(navigation_handle->GetURL()));
   }
+
+  // Reset the `reload_required_` data member, since a page navigation acts as a
+  // page refresh.
+  reload_required_ = false;
 }
 
 bool TabHelper::OnMessageReceived(const IPC::Message& message,
@@ -344,6 +390,8 @@ void TabHelper::WebContentsDestroyed() {
   InvokeForContentRulesRegistries([this](ContentRulesRegistry* registry) {
     registry->WebContentsDestroyed(web_contents());
   });
+
+  reload_required_ = false;
 }
 
 void TabHelper::OnContentScriptsExecuting(
@@ -416,6 +464,13 @@ void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
     return;
   if (extension == extension_app_)
     SetExtensionApp(nullptr);
+
+  // Technically, the refresh is no longer needed if the unloaded extension was
+  // the only one causing `refresh_required`. However, we would need to track
+  // which are the extensions causing the reload, and sometimes it is not
+  // specific to an extensions. Also, this is a very edge case  (site settings
+  // changed and then extension is installed externally), so it's fine to not
+  // handle it.
 }
 
 void TabHelper::SetTabId(content::RenderFrameHost* render_frame_host) {

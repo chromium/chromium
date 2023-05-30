@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
@@ -259,12 +260,21 @@ ExtensionsMenuMainPageView::MessageSectionState GetMessageSectionState(
   PermissionsManager::UserSiteSetting site_setting =
       PermissionsManager::Get(&profile)->GetUserSiteSetting(
           web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  bool reload_required =
+      extensions::TabHelper::FromWebContents(&web_contents)->IsReloadRequired();
+
   if (site_setting ==
       PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
-    return ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAcces;
+    return reload_required ? ExtensionsMenuMainPageView::MessageSectionState::
+                                 kUserBlockedAccessReload
+                           : ExtensionsMenuMainPageView::MessageSectionState::
+                                 kUserBlockedAccess;
   }
 
-  return ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess;
+  return reload_required ? ExtensionsMenuMainPageView::MessageSectionState::
+                               kUserCustomizedAccessReload
+                         : ExtensionsMenuMainPageView::MessageSectionState::
+                               kUserCustomizedAccess;
 }
 
 }  // namespace
@@ -328,17 +338,17 @@ void ExtensionsMenuViewController::OnSiteAccessSelected(
 
 void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
     bool is_on) {
+  content::WebContents* web_contents = GetActiveWebContents();
   const url::Origin& origin =
-      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   PermissionsManager::UserSiteSetting site_setting =
       is_on ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
             : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
 
+  extensions::TabHelper::FromWebContents(web_contents)
+      ->SetReloadRequired(site_setting);
   PermissionsManager::Get(browser_->profile())
       ->UpdateUserSiteSetting(origin, site_setting);
-
-  // TODO(crbug.com/1390952): Show reload message in menu if any extension needs
-  // a page refresh for the update to take effect.
 }
 
 void ExtensionsMenuViewController::OnExtensionToggleSelected(
@@ -383,6 +393,11 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
     return;
   }
   action_runner->GrantTabPermissions({extension});
+}
+
+void ExtensionsMenuViewController::OnReloadPageButtonClicked() {
+  GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
+                                                 false);
 }
 
 void ExtensionsMenuViewController::OnAllowExtensionClicked(

@@ -22,7 +22,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,6 +91,7 @@ ExtensionMenuItemView* GetMenuItem(
 class MessageSection : public views::BoxLayoutView {
  public:
   explicit MessageSection(
+      base::RepeatingCallback<void()> reload_callback,
       base::RepeatingCallback<void(const extensions::ExtensionId&)>
           allow_callback);
   MessageSection(const MessageSection&) = delete;
@@ -118,6 +118,7 @@ class MessageSection : public views::BoxLayoutView {
 
   // Accessors used by tests:
   views::Label* GetTextContainerForTesting() { return text_container_; }
+  views::View* GetReloadContainerForTesting() { return reload_container_; }
   views::View* GetRequestsAccessContainerForTesting() {
     return requests_access_container_;
   }
@@ -126,6 +127,7 @@ class MessageSection : public views::BoxLayoutView {
       const extensions::ExtensionId& extension_id);
 
  private:
+  static constexpr int kReloadContainerMainTextIndex = 0;
   static constexpr int kExtensionItemsContainerIndex = 1;
   static constexpr int kExtensionItemIconIndex = 0;
   static constexpr int kExtensionItemLabelIndex = 1;
@@ -138,6 +140,11 @@ class MessageSection : public views::BoxLayoutView {
 
   // Text container.
   raw_ptr<views::Label> text_container_;
+
+  // Reload container.
+  raw_ptr<views::View> reload_container_;
+  // Callback for the reload button in `reload_container_`.
+  base::RepeatingCallback<void()> reload_callback_;
 
   // Request access container
   raw_ptr<views::View> requests_access_container_;
@@ -154,9 +161,11 @@ END_VIEW_BUILDER
 DEFINE_VIEW_BUILDER(/* No Export */, MessageSection)
 
 MessageSection::MessageSection(
+    base::RepeatingCallback<void()> reload_callback,
     base::RepeatingCallback<void(const extensions::ExtensionId&)>
         allow_callback)
-    : allow_callback_(std::move(allow_callback)) {
+    : reload_callback_(std::move(reload_callback)),
+      allow_callback_(std::move(allow_callback)) {
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
@@ -170,6 +179,33 @@ MessageSection::MessageSection(
               .SetVisible(false)
               .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
               .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+          // Reload container.
+          views::Builder<views::BoxLayoutView>()
+              .CopyAddressTo(&reload_container_)
+              .SetVisible(false)
+              .SetOrientation(views::BoxLayout::Orientation::kVertical)
+              .AddChildren(
+                  // Main text.
+                  views::Builder<views::Label>()
+                      // Text will be set based on the `state_`.
+                      .SetTextContext(
+                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                      .SetTextStyle(views::style::STYLE_EMPHASIZED)
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+                  // Description text.
+                  views::Builder<views::Label>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
+                      .SetTextContext(
+                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                      .SetMultiLine(true)
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+                  // Reload button.
+                  views::Builder<views::MdTextButton>()
+                      .SetCallback(base::BindRepeating(reload_callback_))
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))),
           // Requests access container.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&requests_access_container_)
@@ -198,19 +234,43 @@ void MessageSection::Update(
       text_container_->SetText(l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT));
       text_container_->SetVisible(true);
+      reload_container_->SetVisible(false);
       requests_access_container_->SetVisible(false);
       ClearExtensions();
       break;
     case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
       text_container_->SetVisible(false);
+      reload_container_->SetVisible(false);
       requests_access_container_->SetVisible(!extension_entries_.empty());
       break;
-    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAcces:
+    case ExtensionsMenuMainPageView::MessageSectionState::
+        kUserCustomizedAccessReload:
+      text_container_->SetVisible(false);
+      reload_container_->SetVisible(true);
+      requests_access_container_->SetVisible(false);
+      views::AsViewClass<views::Label>(
+          reload_container_->children()[kReloadContainerMainTextIndex])
+          ->SetText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_CUSTOMIZED_ACCESS_TEXT));
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess:
       text_container_->SetText(l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
       text_container_->SetVisible(true);
+      reload_container_->SetVisible(false);
       requests_access_container_->SetVisible(false);
       ClearExtensions();
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::
+        kUserBlockedAccessReload:
+      text_container_->SetVisible(false);
+      reload_container_->SetVisible(true);
+      requests_access_container_->SetVisible(false);
+      views::AsViewClass<views::Label>(
+          reload_container_->children()[kReloadContainerMainTextIndex])
+          ->SetText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+      break;
   }
 }
 
@@ -409,6 +469,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               std::make_unique<MessageSection>(
                                   base::BindRepeating(
                                       &ExtensionsMenuHandler::
+                                          OnReloadPageButtonClicked,
+                                      base::Unretained(menu_handler_)),
+                                  base::BindRepeating(
+                                      &ExtensionsMenuHandler::
                                           OnAllowExtensionClicked,
                                       base::Unretained(menu_handler_))))
                               .CopyAddressTo(&message_section_),
@@ -492,11 +556,16 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 }
 
 views::Label* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
-  return message_section_->GetTextContainerForTesting();
+  return message_section_->GetTextContainerForTesting();  // IN-TEST
 }
+
+views::View* ExtensionsMenuMainPageView::GetReloadContainerForTesting() {
+  return message_section_->GetReloadContainerForTesting();  // IN-TEST
+}
+
 views::View*
 ExtensionsMenuMainPageView::GetRequestsAccessContainerForTesting() {
-  return message_section_->GetRequestsAccessContainerForTesting();
+  return message_section_->GetRequestsAccessContainerForTesting();  // IN-TEST
 }
 
 std::vector<extensions::ExtensionId>

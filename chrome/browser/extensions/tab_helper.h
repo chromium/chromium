@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/stack_frame.h"
@@ -75,6 +76,14 @@ class TabHelper : public content::WebContentsObserver,
   // NOTE: the returned icon is larger than 16x16 (its size is
   // extension_misc::EXTENSION_ICON_SMALLISH).
   SkBitmap* GetExtensionAppIcon();
+
+  // Sets whether the tab will require a page reload for applying
+  // `site_setting`.
+  void SetReloadRequired(PermissionsManager::UserSiteSetting site_setting);
+
+  // Returns whether a page reload is required to apply the user site settings
+  // in the tab.
+  bool IsReloadRequired();
 
   ScriptExecutor* script_executor() {
     return script_executor_.get();
@@ -157,6 +166,9 @@ class TabHelper : public content::WebContentsObserver,
   declarative_net_request::WebContentsHelper declarative_net_request_helper_;
 
   std::unique_ptr<ActiveTabPermissionGranter> active_tab_permission_granter_;
+
+  // Whether the tab needs a page reload to apply the user site settings.
+  bool reload_required_ = false;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

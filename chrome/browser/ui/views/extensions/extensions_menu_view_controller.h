@@ -50,6 +50,7 @@ class ExtensionsMenuViewController
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
                                  bool is_on) override;
+  void OnReloadPageButtonClicked() override;
   void OnAllowExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
 
