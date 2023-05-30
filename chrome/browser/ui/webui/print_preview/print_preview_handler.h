@@ -276,6 +276,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                                    scoped_refptr<base::RefCountedMemory> data,
                                    const std::string& callback_id,
                                    bool allowed);
+
+  // Wrapper for OnHidePreviewDialog() from PrintPreviewUI.
+  void OnHidePreviewDialog();
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
   // Whether we have already logged a failed print preview.

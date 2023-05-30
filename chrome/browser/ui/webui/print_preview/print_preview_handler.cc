@@ -752,9 +752,8 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
                      weak_factory_.GetWeakPtr(), user_action,
                      std::move(settings), data, callback_id);
 
-  // TODO(b/283048997): Fix GetWeakPointer usage.
-  auto hide_preview = base::BindOnce(&PrintPreviewUI::OnHidePreviewDialog,
-                                     print_preview_ui()->GetWeakPointer());
+  auto hide_preview = base::BindOnce(&PrintPreviewHandler::OnHidePreviewDialog,
+                                     weak_factory_.GetWeakPtr());
 
   enterprise_connectors::PrintIfAllowedByPolicy(
       data, GetInitiator(), std::move(device_name), std::move(on_verdict),
@@ -777,6 +776,10 @@ void PrintPreviewHandler::OnVerdictByEnterprisePolicy(
   } else {
     OnPrintResult(callback_id, base::Value("NOT_ALLOWED"));
   }
+}
+
+void PrintPreviewHandler::OnHidePreviewDialog() {
+  print_preview_ui()->OnHidePreviewDialog();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 

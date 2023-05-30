@@ -207,8 +207,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // OnJavascriptDisallowed().
   void ClearPreviewUIId();
 
-  base::WeakPtr<PrintPreviewUI> GetWeakPointer();
-
  protected:
   // Alternate constructor for tests
   PrintPreviewUI(content::WebUI* web_ui,
