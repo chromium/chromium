@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 
+#include <memory>
+
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,6 +91,56 @@ TEST_F(ShortcutUpdateTest, Merge) {
   EXPECT_EQ(shortcut_state.shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(shortcut_state.host_app_id, host_app_id_);
   EXPECT_EQ(shortcut_state.local_id, local_id_);
+}
+
+TEST_F(ShortcutUpdateTest, Equal) {
+  std::unique_ptr<Shortcut> state_1 = std::make_unique<Shortcut>("a", "b");
+  state_1->name = "name";
+  std::unique_ptr<Shortcut> state_same_as_1 =
+      std::make_unique<Shortcut>("a", "b");
+  state_same_as_1->name = "name";
+  std::unique_ptr<Shortcut> state_2 = std::make_unique<Shortcut>("a", "b");
+  state_2->name = "different name";
+
+  std::unique_ptr<Shortcut> delta_1 = std::make_unique<Shortcut>("a", "b");
+  delta_1->name = "new name";
+  std::unique_ptr<Shortcut> delta_same_as_1 =
+      std::make_unique<Shortcut>("a", "b");
+  delta_same_as_1->name = "new name";
+  std::unique_ptr<Shortcut> delta_2 = std::make_unique<Shortcut>("a", "b");
+  delta_2->name = "new new name";
+
+  // Test nullptr handling.
+  EXPECT_EQ(ShortcutUpdate(nullptr, delta_1.get()),
+            ShortcutUpdate(nullptr, delta_1.get()));
+  EXPECT_NE(ShortcutUpdate(nullptr, delta_1.get()),
+            ShortcutUpdate(state_1.get(), nullptr));
+  EXPECT_NE(ShortcutUpdate(nullptr, delta_1.get()),
+            ShortcutUpdate(state_1.get(), delta_1.get()));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), nullptr),
+            ShortcutUpdate(nullptr, delta_1.get()));
+  EXPECT_EQ(ShortcutUpdate(state_1.get(), nullptr),
+            ShortcutUpdate(state_1.get(), nullptr));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), nullptr),
+            ShortcutUpdate(state_1.get(), delta_1.get()));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(nullptr, delta_1.get()));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_1.get(), nullptr));
+  EXPECT_EQ(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_1.get(), delta_1.get()));
+
+  // Test deep equal.
+  EXPECT_EQ(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_same_as_1.get(), delta_same_as_1.get()));
+
+  // Test not equal.
+  EXPECT_NE(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_2.get(), delta_1.get()));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_1.get(), delta_2.get()));
+  EXPECT_NE(ShortcutUpdate(state_1.get(), delta_1.get()),
+            ShortcutUpdate(state_2.get(), delta_2.get()));
 }
 
 }  // namespace apps
