@@ -382,8 +382,8 @@
   'CROS_BRYA_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'brya',
-      'cros_chrome_version': '115.0.5762.0',
-      'cros_img': 'brya-release/R115-15460.0.0',
+      'cros_chrome_version': '115.0.5772.0',
+      'cros_img': 'brya-release/R115-15465.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -580,8 +580,8 @@
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '115.0.5762.0',
-      'cros_img': 'jacuzzi-release/R115-15460.0.0',
+      'cros_chrome_version': '115.0.5772.0',
+      'cros_img': 'jacuzzi-release/R115-15465.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -652,8 +652,8 @@
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '115.0.5762.0',
-      'cros_img': 'octopus-release/R115-15460.0.0',
+      'cros_chrome_version': '115.0.5772.0',
+      'cros_img': 'octopus-release/R115-15465.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -735,8 +735,8 @@
   'CROS_TROGDOR_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_chrome_version': '115.0.5762.0',
-      'cros_img': 'trogdor-release/R115-15460.0.0',
+      'cros_chrome_version': '115.0.5772.0',
+      'cros_img': 'trogdor-release/R115-15465.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -746,8 +746,8 @@
   'CROS_VOLTEER_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'volteer',
-      'cros_chrome_version': '115.0.5762.0',
-      'cros_img': 'volteer-release/R115-15460.0.0',
+      'cros_chrome_version': '115.0.5772.0',
+      'cros_img': 'volteer-release/R115-15465.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
