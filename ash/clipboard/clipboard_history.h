@@ -28,7 +28,8 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
  public:
   class ASH_EXPORT Observer : public base::CheckedObserver {
    public:
-    // Called when a ClipboardHistoryItem has been added.
+    // Called when a `ClipboardHistoryItem` has been added. `is_duplicate` is
+    // true if `item` is already in clipboard history when adding.
     virtual void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
                                              bool is_duplicate) {}
 

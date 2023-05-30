@@ -16,6 +16,7 @@
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -50,6 +51,9 @@ NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
       return NudgeCatalogName::kClipboardHistoryZeroState;
     case kScreenshotNotificationNudge:
       NOTREACHED();
+      break;
+    case kDuplicateCopyNudge:
+      return NudgeCatalogName::kClipboardHistoryDuplicateCopy;
   }
   return NudgeCatalogName::kTestCatalogName;
 }
@@ -187,19 +191,24 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
     bool is_duplicate) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!ShouldShowNudge(prefs))
+  if (!ShouldShowNudge(prefs)) {
     return;
+  }
 
   switch (onboarding_state_) {
     case OnboardingState::kInit:
       onboarding_state_ = OnboardingState::kFirstCopy;
-      return;
+      break;
     case OnboardingState::kFirstPaste:
       onboarding_state_ = OnboardingState::kSecondCopy;
-      return;
+      break;
     case OnboardingState::kFirstCopy:
     case OnboardingState::kSecondCopy:
-      return;
+      break;
+  }
+
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled() && is_duplicate) {
+    ShowNudge(ClipboardNudgeType::kDuplicateCopyNudge);
   }
 }
 
@@ -259,12 +268,22 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
       NudgeCatalogName::kClipboardHistoryOnboarding);
   SystemNudgeController::MaybeRecordNudgeAction(
       NudgeCatalogName::kClipboardHistoryZeroState);
+
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    duplicate_copy_nudge_recorder_.OnClipboardHistoryMenuShown();
+    SystemNudgeController::MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryDuplicateCopy);
+  }
 }
 
 void ClipboardNudgeController::OnClipboardHistoryPasted() {
   onboarding_nudge_recorder_.OnClipboardHistoryPasted();
   zero_state_nudge_recorder_.OnClipboardHistoryPasted();
   screenshot_nudge_recorder_.OnClipboardHistoryPasted();
+
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    duplicate_copy_nudge_recorder_.OnClipboardHistoryPasted();
+  }
 }
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
@@ -283,6 +302,12 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
       break;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
       NOTREACHED_NORETURN();
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
+      duplicate_copy_nudge_recorder_.OnNudgeShown();
+      base::UmaHistogramBoolean(kClipboardHistoryDuplicateCopyNudgeShowCount,
+                                true);
+      break;
   }
 
   // Reset `onboarding_state_`.

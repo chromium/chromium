@@ -11,7 +11,7 @@
 namespace ash {
 
 enum ClipboardNudgeType {
-  // Onboarding nudge. Shows when a user copy and pastes repeatedly within a
+  // Onboarding nudge. Shows when a user copies and pastes repeatedly within a
   // time frame.
   kOnboardingNudge = 0,
 
@@ -23,8 +23,11 @@ enum ClipboardNudgeType {
   // notification nudge.
   kScreenshotNotificationNudge = 2,
 
+  // Shows when a user copies data that is already in the clipboard history.
+  kDuplicateCopyNudge = 3,
+
   // NOTE: Need to update when adding a new nudge type.
-  kMax = kScreenshotNotificationNudge,
+  kMax = kDuplicateCopyNudge,
 };
 
 ASH_EXPORT extern const char* const kClipboardHistoryOnboardingNudgeShowCount;
@@ -39,6 +42,11 @@ ASH_EXPORT extern const char* const
     kClipboardHistoryScreenshotNotificationOpenTime;
 ASH_EXPORT extern const char* const
     kClipboardHistoryScreenshotNotificationPasteTime;
+ASH_EXPORT extern const char* const
+    kClipboardHistoryDuplicateCopyNudgeShowCount;
+ASH_EXPORT extern const char* const kClipboardHistoryDuplicateCopyNudgeOpenTime;
+ASH_EXPORT extern const char* const
+    kClipboardHistoryDuplicateCopyNudgePasteTime;
 
 // Returns the histogram that records the time delta between showing the nudge
 // of `type` and pasting clipboard history data.

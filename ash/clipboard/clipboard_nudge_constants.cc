@@ -9,22 +9,29 @@ namespace ash {
 constexpr const char* const kClipboardHistoryOnboardingNudgeShowCount =
     "Ash.ClipboardHistory.Nudges.OnboardingNudge.ShownCount";
 constexpr const char* const kClipboardHistoryOnboardingNudgeOpenTime =
-    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTime";
+    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTimeV2";
 constexpr const char* const kClipboardHistoryOnboardingNudgePasteTime =
-    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTime";
+    "Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTimeV2";
 constexpr const char* const kClipboardHistoryZeroStateNudgeShowCount =
     "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ShownCount";
 constexpr const char* const kClipboardHistoryZeroStateNudgeOpenTime =
-    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeatureOpenTime";
+    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeatureOpenTimeV2";
 constexpr const char* const kClipboardHistoryZeroStateNudgePasteTime =
-    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeaturePasteTime";
+    "Ash.ClipboardHistory.Nudges.ZeroStateNudge.ToFeaturePasteTimeV2";
 constexpr const char* const kClipboardHistoryScreenshotNotificationShowCount =
     "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ShownCount";
 constexpr const char* const kClipboardHistoryScreenshotNotificationOpenTime =
-    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ToFeatureOpenTime";
+    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge."
+    "ToFeatureOpenTimeV2";
 constexpr const char* const kClipboardHistoryScreenshotNotificationPasteTime =
     "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge."
-    "ToFeaturePasteTime";
+    "ToFeaturePasteTimeV2";
+constexpr const char* const kClipboardHistoryDuplicateCopyNudgeShowCount =
+    "Ash.ClipboardHistory.Nudges.DuplicateCopyNudge.ShownCount";
+constexpr const char* const kClipboardHistoryDuplicateCopyNudgeOpenTime =
+    "Ash.ClipboardHistory.Nudges.DuplicateCopyNudge.ToFeatureOpenTimeV2";
+constexpr const char* const kClipboardHistoryDuplicateCopyNudgePasteTime =
+    "Ash.ClipboardHistory.Nudges.DuplicateCopyNudge.ToFeaturePasteTimeV2";
 
 const char* GetClipboardHistoryPasteTimeDeltaHistogram(
     ClipboardNudgeType type) {
@@ -35,6 +42,8 @@ const char* GetClipboardHistoryPasteTimeDeltaHistogram(
       return kClipboardHistoryZeroStateNudgePasteTime;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
       return kClipboardHistoryScreenshotNotificationPasteTime;
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      return kClipboardHistoryDuplicateCopyNudgePasteTime;
   }
 }
 
@@ -46,6 +55,8 @@ const char* GetMenuOpenTimeDeltaHistogram(ClipboardNudgeType type) {
       return kClipboardHistoryZeroStateNudgeOpenTime;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
       return kClipboardHistoryScreenshotNotificationOpenTime;
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      return kClipboardHistoryDuplicateCopyNudgeOpenTime;
   }
 }
 

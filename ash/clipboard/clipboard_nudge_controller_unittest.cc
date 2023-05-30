@@ -20,11 +20,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -38,10 +42,10 @@ using crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator;
 
 // The array of all clipboard nudge types.
 constexpr std::array<ClipboardNudgeType, ClipboardNudgeType::kMax + 1>
-    kAllClipboardNudgeTypes = {
-        ClipboardNudgeType::kOnboardingNudge,
-        ClipboardNudgeType::kZeroStateNudge,
-        ClipboardNudgeType::kScreenshotNotificationNudge};
+    kAllClipboardNudgeTypes = {ClipboardNudgeType::kOnboardingNudge,
+                               ClipboardNudgeType::kZeroStateNudge,
+                               ClipboardNudgeType::kScreenshotNotificationNudge,
+                               ClipboardNudgeType::kDuplicateCopyNudge};
 
 }  // namespace
 
@@ -77,6 +81,7 @@ class ClipboardNudgeControllerTest : public AshTestBase {
     switch (nudge_type) {
       case ClipboardNudgeType::kOnboardingNudge:
       case ClipboardNudgeType::kZeroStateNudge:
+      case ClipboardNudgeType::kDuplicateCopyNudge:
         nudge_controller_->ShowNudge(nudge_type);
         return;
       case ClipboardNudgeType::kScreenshotNotificationNudge:
@@ -313,7 +318,21 @@ class ClipboardNudgeMetricTest
     : public ClipboardNudgeControllerTest,
       public testing::WithParamInterface<ClipboardNudgeType> {
  public:
+  ClipboardNudgeMetricTest() {
+    // Enable the clipboard history refresh feature if the duplicate copy nudge
+    // is being tested.
+    if (GetNudgeType() == ClipboardNudgeType::kDuplicateCopyNudge) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{chromeos::features::kClipboardHistoryRefresh,
+                                chromeos::features::kJelly},
+          /*disabled_features=*/{});
+    }
+  }
+
   ClipboardNudgeType GetNudgeType() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -455,6 +474,62 @@ TEST_P(ClipboardNudgeMetricTest, NotLogForNonAcceleratorMenuShown) {
   histograms().ExpectTotalCount(GetMenuOpenTimeDeltaHistogram(nudge_type), 0);
   histograms().ExpectTotalCount(
       GetClipboardHistoryPasteTimeDeltaHistogram(nudge_type), 0);
+}
+
+class ClipboardHistoryRefreshNudgeTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_refresh=*/bool> {
+ public:
+  ClipboardHistoryRefreshNudgeTest() {
+    std::vector<base::test::FeatureRef> refresh_features = {
+        chromeos::features::kClipboardHistoryRefresh,
+        chromeos::features::kJelly};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    (GetParam() ? enabled_features : disabled_features).swap(refresh_features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void WaitForClipboardWriteConfirmed() {
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+ private:
+  // AshTestBase::SetUp:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    Shell::Get()
+        ->clipboard_history_controller()
+        ->set_confirmed_operation_callback_for_test(
+            operation_confirmed_future_.GetCallback());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryRefreshNudgeTest,
+                         /*enable_refresh=*/testing::Bool());
+
+TEST_P(ClipboardHistoryRefreshNudgeTest, ShowDuplicateCopyNudge) {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"text");
+  WaitForClipboardWriteConfirmed();
+
+  // Write duplicate text to clipboard history.
+  base::HistogramTester histogram_tester;
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"text");
+  WaitForClipboardWriteConfirmed();
+
+  // Check the existence of the system nudge.
+  ClipboardNudgeController* const nudge_controller =
+      Shell::Get()->clipboard_history_controller()->nudge_controller();
+  EXPECT_EQ(!!nudge_controller->GetSystemNudgeForTesting(), GetParam());
+
+  // Check the show count of the clipboard history duplicate copy nudge.
+  histogram_tester.ExpectUniqueSample(
+      kClipboardHistoryDuplicateCopyNudgeShowCount,
+      /*sample=*/true, GetParam() ? 1 : 0);
 }
 
 }  // namespace ash

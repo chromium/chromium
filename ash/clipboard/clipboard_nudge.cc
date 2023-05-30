@@ -5,12 +5,16 @@
 #include "ash/clipboard/clipboard_nudge.h"
 
 #include <memory>
+#include <string>
 
+#include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_nudge_label.h"
+#include "base/notreached.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -70,19 +74,31 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type,
 ClipboardNudge::~ClipboardNudge() = default;
 
 std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
-  bool use_launcher_key =
+  const bool use_launcher_key =
       Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard();
-  std::u16string shortcut_key = l10n_util::GetStringUTF16(
+  const std::u16string shortcut_key = l10n_util::GetStringUTF16(
       use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                        : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
+  size_t text_id = 0;
+  switch (nudge_type_) {
+    case ClipboardNudgeType::kOnboardingNudge:
+      text_id = IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE;
+      break;
+    case ClipboardNudgeType::kZeroStateNudge:
+      text_id = IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE;
+      break;
+    case ClipboardNudgeType::kScreenshotNotificationNudge:
+      NOTREACHED_NORETURN();
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      text_id = IDS_ASH_MULTIPASTE_DUPLICATE_COPY_NUDGE;
+      break;
+  }
+
   size_t offset;
-  std::u16string label_text = l10n_util::GetStringFUTF16(
-      nudge_type_ == kZeroStateNudge
-          ? IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE
-          : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,
-      shortcut_key, &offset);
+  auto label = std::make_unique<SystemNudgeLabel>(
+      l10n_util::GetStringFUTF16(text_id, shortcut_key, &offset),
+      kMinLabelWidth);
   offset = offset + shortcut_key.length();
-  auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
 
   auto keyboard_shortcut_icon_image_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(

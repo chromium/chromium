@@ -5870,6 +5870,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE" desc="The label used to show the keyboard shortcut for multipaste, to be seen aside the screenshot notification banner which notifies the user that the screenshot has been copied to clipboard.">
         <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V
       </message>
+      <message name="IDS_ASH_MULTIPASTE_DUPLICATE_COPY_NUDGE" desc="The label used for the nudge that shows when something copied to clipboard already exists in clipboard.">
+        Copied item already in clipboard. Use <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view.
+      </message>
 
       <message name="IDS_APP_LIST_BLOCKED_APP" desc="The spoken feedback text when a focused app is blocked.">
         Blocked

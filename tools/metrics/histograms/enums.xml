@@ -75919,6 +75919,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Clipboard History Zero State"/>
   <int value="8" label="Clipboard History Onboarding"/>
   <int value="9" label="Long press diacritics"/>
+  <int value="10" label="Clipboard History Duplicate Copy"/>
 </enum>
 
 <enum name="NukeProfileResult">

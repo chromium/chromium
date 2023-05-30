@@ -173,6 +173,11 @@ class ASH_EXPORT ClipboardNudgeController
   NudgeTimeDeltaRecorder screenshot_nudge_recorder_{
       ClipboardNudgeType::kScreenshotNotificationNudge};
 
+  // Records time deltas for the duplicate copy nudge. Used only when the
+  // clipboard history refresh feature is enabled.
+  NudgeTimeDeltaRecorder duplicate_copy_nudge_recorder_{
+      ClipboardNudgeType::kDuplicateCopyNudge};
+
   // Observations --------------------------------------------------------------
 
   // The observation on the clipboard history.
