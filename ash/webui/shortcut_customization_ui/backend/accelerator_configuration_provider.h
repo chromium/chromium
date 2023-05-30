@@ -197,8 +197,7 @@ class AcceleratorConfigurationProvider
   base::flat_map<std::string, AcceleratorLayoutDetails>
       accelerator_layout_lookup_;
 
-  std::map<AcceleratorActionId, std::vector<mojom::AcceleratorInfoPtr>>
-      id_to_accelerator_info_;
+  AcceleratorConfigurationMap cached_configuration_;
 
   AcceleratorSourceMap accelerators_mapping_;
 

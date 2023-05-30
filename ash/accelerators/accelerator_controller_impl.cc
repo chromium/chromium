@@ -236,6 +236,13 @@ bool CanHandleToggleAppList(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
     const std::set<ui::KeyboardCode>& currently_pressed_keys) {
+  // Check if the accelerator pressed is a RWIN/LWIN, if so perform a
+  // secondary check.
+  if (accelerator.key_code() != ui::VKEY_LWIN &&
+      accelerator.key_code() != ui::VKEY_RWIN) {
+    return true;
+  }
+
   for (auto key : currently_pressed_keys) {
     // The AppList accelerator is triggered on search(VKEY_LWIN) key release.
     // Sometimes users will press and release the search key while holding other

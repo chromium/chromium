@@ -240,7 +240,7 @@ constexpr AcceleratorLayoutDetails kAcceleratorLayouts[] = {
      IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_APP_LIST,
      mojom::AcceleratorCategory::kGeneral,
      mojom::AcceleratorSubcategory::kGeneralControls,
-     /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+     /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
      mojom::AcceleratorSource::kAsh},
     {AcceleratorAction::kToggleOverview,
      IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW,

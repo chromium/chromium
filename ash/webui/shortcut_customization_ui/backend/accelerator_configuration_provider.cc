@@ -510,11 +510,17 @@ void AcceleratorConfigurationProvider::AddAccelerator(
     return;
   }
 
-  // Only allow a maximum of five accelerators per action.
-  const size_t accelerator_count =
-      ash_accelerator_configuration_->GetAcceleratorsForAction(action_id)
-          .size();
-  if (accelerator_count >= kMaxAcceleratorsAllowed) {
+  // Only allow a maximum of `kMaxAcceleratorsAllowed` per action.
+  const auto& ash_accelerators_mapping =
+      cached_configuration_.find(mojom::AcceleratorSource::kAsh);
+  CHECK(ash_accelerators_mapping != cached_configuration_.end());
+
+  const auto found_accelerator_infos =
+      ash_accelerators_mapping->second.find(action_id);
+  // Check that there is less than `kMaxAcceleratorsAllowed` accelerator infos
+  // in the cached accelerator configuration mapping for `action_id`.
+  if (found_accelerator_infos != ash_accelerators_mapping->second.end() &&
+      found_accelerator_infos->second.size() >= kMaxAcceleratorsAllowed) {
     result_data->result = AcceleratorConfigResult::kMaximumAcceleratorsReached;
     std::move(callback).Run(std::move(result_data));
     return;
@@ -691,6 +697,9 @@ void AcceleratorConfigurationProvider::NotifyAcceleratorsUpdated() {
   for (auto& observer : accelerators_updated_observers_) {
     observer.OnAcceleratorsUpdated(mojo::Clone(config_map));
   }
+
+  // Store a cached copy of the configuration map.
+  cached_configuration_ = mojo::Clone(config_map);
 }
 
 void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
