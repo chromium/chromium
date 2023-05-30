@@ -65,7 +65,8 @@ const extensions::Extension* ThemeServiceFactory::GetThemeForProfile(
 
 // static
 ThemeServiceFactory* ThemeServiceFactory::GetInstance() {
-  return base::Singleton<ThemeServiceFactory>::get();
+  static base::NoDestructor<ThemeServiceFactory> instance;
+  return instance.get();
 }
 
 ThemeServiceFactory::ThemeServiceFactory()
