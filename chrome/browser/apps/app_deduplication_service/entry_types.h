@@ -14,6 +14,13 @@ class GURL;
 
 namespace apps::deduplication {
 
+enum class EntryStatus {
+  // This entry is not an app entry (could be website, etc.).
+  kNonApp = 0,
+  kInstalledApp = 1,
+  kNotInstalledApp = 2
+};
+
 enum class EntryType { kApp, kWebPage };
 
 // Deduplication entry, each entry represents an app or a web page that could be
@@ -34,6 +41,8 @@ struct Entry {
 
   bool operator==(const Entry& other) const;
   bool operator<(const Entry& other) const;
+
+  EntryStatus entry_status;
 
   EntryType entry_type;
 

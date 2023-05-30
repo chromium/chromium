@@ -31,6 +31,10 @@ bool Entry::operator<(const Entry& other) const {
 }
 
 std::ostream& operator<<(std::ostream& out, const Entry& entry) {
+  out << "EntryStatus: "
+      << static_cast<std::underlying_type<EntryStatus>::type>(
+             entry.entry_status)
+      << std::endl;
   out << "EntryType: "
       << static_cast<std::underlying_type<EntryType>::type>(entry.entry_type)
       << std::endl;

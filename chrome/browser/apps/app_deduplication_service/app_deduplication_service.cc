@@ -123,12 +123,8 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
   }
 
   for (const auto& entry : group->second.entries) {
-    auto status_it = entry_status_.find(entry);
-    if (status_it == entry_status_.end()) {
-      continue;
-    }
-    if (status_it->second == EntryStatus::kNonApp ||
-        status_it->second == EntryStatus::kInstalledApp) {
+    if (entry.entry_status == EntryStatus::kNonApp ||
+        entry.entry_status == EntryStatus::kInstalledApp) {
       entries.push_back(entry);
     }
   }
@@ -163,15 +159,9 @@ void AppDeduplicationService::OnAppRegistryCacheWillBeDestroyed(
 void AppDeduplicationService::UpdateInstallationStatus(
     const apps::AppUpdate& update) {
   Entry entry(update.PublisherId(), update.AppType());
-  auto it = entry_status_.find(entry);
-
-  if (it == entry_status_.end()) {
-    return;
-  }
-
-  it->second = apps_util::IsInstalled(update.Readiness())
-                   ? EntryStatus::kInstalledApp
-                   : EntryStatus::kNotInstalledApp;
+  entry.entry_status = apps_util::IsInstalled(update.Readiness())
+                           ? EntryStatus::kInstalledApp
+                           : EntryStatus::kNotInstalledApp;
 }
 
 absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
@@ -312,11 +302,11 @@ void AppDeduplicationService::DeduplicateDataToEntries(
         entry = Entry(app_id, source);
       }
 
-      entry_to_group_map_[entry] = index;
       // Initialize entry status.
-      entry_status_[entry] = entry.entry_type == EntryType::kApp
-                                 ? EntryStatus::kNotInstalledApp
-                                 : EntryStatus::kNonApp;
+      entry.entry_status = entry.entry_type == EntryType::kApp
+                               ? EntryStatus::kNotInstalledApp
+                               : EntryStatus::kNonApp;
+      entry_to_group_map_[entry] = index;
       duplicate_group.entries.push_back(std::move(entry));
     }
     if (!duplicate_group.entries.empty()) {
