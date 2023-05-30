@@ -5843,13 +5843,12 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
   unsigned int shm_offset = 0;
   if (!mem) {
     mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
-    if (!mem) {
+    auto result = GetResultAs<cmds::MapBufferRange::Result>();
+    if (!mem || !result) {
       SetGLError(GL_OUT_OF_MEMORY, "glMapBufferRange", "out of memory");
       return nullptr;
     }
 
-    typedef cmds::MapBufferRange::Result Result;
-    auto result = GetResultAs<Result>();
     *result = 0;
     helper_->MapBufferRange(target, offset, size, access, shm_id, shm_offset,
                             GetResultShmId(), result.offset());
