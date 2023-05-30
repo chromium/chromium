@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Field Type Constants
+using autofill::ADDRESS_HOME_ADMIN_LEVEL2;
 using autofill::ADDRESS_HOME_BETWEEN_STREETS;
 using autofill::ADDRESS_HOME_CITY;
 using autofill::ADDRESS_HOME_COUNTRY;
@@ -1181,16 +1182,17 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
   }
 }
 
-TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreets) {
+TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreetsAndAdmin2) {
   AutofillProfile empty;
   AutofillProfile profile2;
-  profile2.SetRawInfo(autofill::ADDRESS_HOME_LANDMARK, u"Landmark example");
-  profile2.SetRawInfo(autofill::ADDRESS_HOME_BETWEEN_STREETS,
-                      u"Between streets example");
+  profile2.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
+  profile2.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
+  profile2.SetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2, u"Admin level 2 example");
 
   Address expected;
   expected.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
   expected.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
+  expected.SetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2, u"Admin level 2 example");
 
   MergeAddressesAndExpect(empty, profile2, expected);
 }
@@ -1239,6 +1241,8 @@ TEST_F(AutofillProfileComparatorTest,
   existing_profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
   existing_profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS,
                               u"Cross streets example");
+  existing_profile.SetRawInfo(ADDRESS_HOME_ADMIN_LEVEL2,
+                              u"Admin level 2 example");
 
   // A profile compared with itself cannot have different settings visible
   // values.
@@ -1250,7 +1254,7 @@ TEST_F(AutofillProfileComparatorTest,
   for (ServerFieldType changed_type :
        {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
         ADDRESS_HOME_ZIP, ADDRESS_HOME_LANDMARK, ADDRESS_HOME_BETWEEN_STREETS,
-        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
+        ADDRESS_HOME_ADMIN_LEVEL2, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
     // Make a fresh copy and test that the function returns false.
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(
