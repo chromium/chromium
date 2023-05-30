@@ -219,6 +219,9 @@ extern const base::FeatureParam<bool>
 // Run Safe Browsing code on UI thread.
 BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
 
+// Enable adding copy/paste navigation to the referrer chain.
+BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
+
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 

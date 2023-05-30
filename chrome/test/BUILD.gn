@@ -10553,6 +10553,10 @@ if (!is_android) {
       # For support version skew testing.
       data_deps += [ "//build:version_metadata" ]
     }
+
+    if (safe_browsing_mode == 1) {
+      sources += [ "../browser/safe_browsing/safe_browsing_navigation_observer_interactive_test.cc" ]
+    }
   }
 }
 

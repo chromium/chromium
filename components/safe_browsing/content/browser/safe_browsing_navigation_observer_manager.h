@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -61,6 +62,20 @@ class ReferrerChainData : public base::SupportsUserData::Data {
   // user is incognito mode or hasn't enabled extended reporting, this value is
   // always 0.
   size_t recent_navigations_to_collect_;
+};
+
+// Struct to store a URL copied to the clipboard, along with which frame and
+// main_frame this was copied from.
+struct CopyPasteEntry {
+  explicit CopyPasteEntry(GURL target,
+                          GURL source_frame_url,
+                          GURL source_main_frame_url,
+                          base::Time recorded_time);
+  CopyPasteEntry(const CopyPasteEntry& other);
+  GURL target_;
+  GURL source_frame_url_;
+  GURL source_main_frame_url_;
+  base::Time recorded_time_;
 };
 
 // Struct that manages insertion, cleanup, and lookup of NavigationEvent
@@ -122,7 +137,9 @@ struct NavigationEventList {
                                         SessionID target_tab_id,
                                         size_t start_index);
 
-  void RecordNavigationEvent(std::unique_ptr<NavigationEvent> nav_event);
+  void RecordNavigationEvent(
+      std::unique_ptr<NavigationEvent> nav_event,
+      absl::optional<CopyPasteEntry> last_copy_paste_entry = absl::nullopt);
 
   void RecordPendingNavigationEvent(
       content::NavigationHandle* navigation_handle,
@@ -171,8 +188,10 @@ struct NavigationEventList {
 // Manager class for SafeBrowsingNavigationObserver, which is in charge of
 // cleaning up stale navigation events, and identifying landing page/landing
 // referrer for a specific Safe Browsing event.
-class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
-                                              public KeyedService {
+class SafeBrowsingNavigationObserverManager
+    : public ReferrerChainProvider,
+      public KeyedService,
+      public ui::Clipboard::ClipboardWriteObserver {
  public:
   // Helper function to check if user gesture is older than
   // kUserGestureTTL.
@@ -304,6 +323,12 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   void AppendRecentNavigations(size_t recent_navigation_count,
                                ReferrerChain* out_referrer_chain);
 
+  // ui::Clipboard::ClipboardWriteObserver:
+  // Event for new URLs copied to the clipboard
+  void OnCopyURL(const GURL& url,
+                 const GURL& source_frame_url,
+                 const GURL& source_main_frame_url) override;
+
  protected:
   NavigationEventList* navigation_event_list() {
     return &navigation_event_list_;
@@ -338,6 +363,9 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // Remove stale entries from host_to_ip_map_ if they are older than
   // `GetNavigationFootprintTTL()`.
   void CleanUpIpAddresses();
+
+  // Remove stale copy entries.
+  void CleanUpCopyData();
 
   bool IsCleanUpScheduled() const;
 
@@ -401,6 +429,8 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   raw_ptr<PrefService> pref_service_;
 
   base::OneShotTimer cleanup_timer_;
+
+  absl::optional<CopyPasteEntry> last_copy_paste_entry_;
 };
 }  // namespace safe_browsing
 

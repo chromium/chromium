@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <iframe id="iframe" src="copy_referrer_inner.html"></iframe>
+    Main page contents
+
+    <script>
+      // The iframe needs to be focused to let the JS from test copy to
+      // clipboard.
+      document.getElementById('iframe').focus();
+    </script>
+  </body>
+</html>
