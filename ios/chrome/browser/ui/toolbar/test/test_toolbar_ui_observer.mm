@@ -10,36 +10,47 @@
 
 @implementation TestToolbarUIObserver
 @synthesize broadcaster = _broadcaster;
-@synthesize collapsedHeight = _collapsedHeight;
-@synthesize expandedHeight = _expandedHeight;
-@synthesize bottomToolbarHeight = _bottomToolbarHeight;
+@synthesize collapsedTopToolbarHeight = _collapsedTopToolbarHeight;
+@synthesize expandedTopToolbarHeight = _expandedTopToolbarHeight;
+@synthesize expandedBottomToolbarHeight = _expandedBottomToolbarHeight;
+@synthesize collapsedBottomToolbarHeight = _collapsedBottomToolbarHeight;
 
 - (void)setBroadcaster:(ChromeBroadcaster*)broadcaster {
   [_broadcaster removeObserver:self
-                   forSelector:@selector(broadcastCollapsedToolbarHeight:)];
+                   forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [_broadcaster removeObserver:self
-                   forSelector:@selector(broadcastExpandedToolbarHeight:)];
-  [_broadcaster removeObserver:self
-                   forSelector:@selector(broadcastBottomToolbarHeight:)];
+                   forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
+  [_broadcaster
+      removeObserver:self
+         forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+  [_broadcaster
+      removeObserver:self
+         forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
   _broadcaster = broadcaster;
   [_broadcaster addObserver:self
-                forSelector:@selector(broadcastCollapsedToolbarHeight:)];
+                forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [_broadcaster addObserver:self
-                forSelector:@selector(broadcastExpandedToolbarHeight:)];
+                forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
   [_broadcaster addObserver:self
-                forSelector:@selector(broadcastBottomToolbarHeight:)];
+                forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+  [_broadcaster addObserver:self
+                forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
 }
 
-- (void)broadcastCollapsedToolbarHeight:(CGFloat)toolbarHeight {
-  _collapsedHeight = toolbarHeight;
+- (void)broadcastCollapsedTopToolbarHeight:(CGFloat)toolbarHeight {
+  _collapsedTopToolbarHeight = toolbarHeight;
 }
 
-- (void)broadcastExpandedToolbarHeight:(CGFloat)toolbarHeight {
-  _expandedHeight = toolbarHeight;
+- (void)broadcastExpandedTopToolbarHeight:(CGFloat)toolbarHeight {
+  _expandedTopToolbarHeight = toolbarHeight;
 }
 
-- (void)broadcastBottomToolbarHeight:(CGFloat)toolbarHeight {
-  _bottomToolbarHeight = toolbarHeight;
+- (void)broadcastCollapsedBottomToolbarHeight:(CGFloat)toolbarHeight {
+  _collapsedBottomToolbarHeight = toolbarHeight;
+}
+
+- (void)broadcastExpandedBottomToolbarHeight:(CGFloat)toolbarHeight {
+  _expandedBottomToolbarHeight = toolbarHeight;
 }
 
 @end

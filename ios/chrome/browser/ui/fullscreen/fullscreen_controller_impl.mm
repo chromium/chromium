@@ -54,11 +54,13 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastScrollViewIsDragging:)];
   [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastCollapsedToolbarHeight:)];
+                forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastExpandedToolbarHeight:)];
+                forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
   [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastBottomToolbarHeight:)];
+                forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
+  [broadcaster_ addObserver:bridge_
+                forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
 }
 
 FullscreenControllerImpl::~FullscreenControllerImpl() {
@@ -80,11 +82,15 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastScrollViewIsDragging:)];
   [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastCollapsedToolbarHeight:)];
+                   forSelector:@selector(broadcastCollapsedTopToolbarHeight:)];
   [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastExpandedToolbarHeight:)];
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastBottomToolbarHeight:)];
+                   forSelector:@selector(broadcastExpandedTopToolbarHeight:)];
+  [broadcaster_
+      removeObserver:bridge_
+         forSelector:@selector(broadcastExpandedBottomToolbarHeight:)];
+  [broadcaster_
+      removeObserver:bridge_
+         forSelector:@selector(broadcastCollapsedBottomToolbarHeight:)];
 }
 
 ChromeBroadcaster* FullscreenControllerImpl::broadcaster() {

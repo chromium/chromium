@@ -11,16 +11,18 @@
 @protocol ToolbarUI<NSObject>
 
 // The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastCollapsedToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat collapsedHeight;
+// This should be broadcast using `-broadcastCollapsedTopToolbarHeight:`.
+@property(nonatomic, readonly) CGFloat collapsedTopToolbarHeight;
 
 // The minimum height of the toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastExpandedToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat expandedHeight;
+// This should be broadcast using `-broadcastExpandedTopToolbarHeight:`.
+@property(nonatomic, readonly) CGFloat expandedTopToolbarHeight;
 
 // The height of the bottom toolbar relative to the browser content area.
-// This should be broadcast using `-broadcastBottomToolbarHeight:`.
-@property(nonatomic, readonly) CGFloat bottomToolbarHeight;
+// This should be broadcast using `-broadcastExpandedBottomToolbarHeight:`.
+@property(nonatomic, readonly) CGFloat expandedBottomToolbarHeight;
+
+@property(nonatomic, readonly) CGFloat collapsedBottomToolbarHeight;
 
 @end
 
@@ -29,9 +31,10 @@
 @interface ToolbarUIState : NSObject<ToolbarUI>
 
 // Redefine properties as readwrite.
-@property(nonatomic, assign) CGFloat collapsedHeight;
-@property(nonatomic, assign) CGFloat expandedHeight;
-@property(nonatomic, assign) CGFloat bottomToolbarHeight;
+@property(nonatomic, assign) CGFloat collapsedTopToolbarHeight;
+@property(nonatomic, assign) CGFloat expandedTopToolbarHeight;
+@property(nonatomic, assign) CGFloat expandedBottomToolbarHeight;
+@property(nonatomic, assign) CGFloat collapsedBottomToolbarHeight;
 
 @end
 

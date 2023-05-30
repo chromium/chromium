@@ -2428,9 +2428,11 @@ enum HeaderBehaviour {
 // Updates the ToolbarUIState, which broadcasts any changes to registered
 // listeners.
 - (void)updateToolbarState {
-  _toolbarUIState.collapsedHeight = [self collapsedTopToolbarHeight];
-  _toolbarUIState.expandedHeight = [self expandedTopToolbarHeight];
-  _toolbarUIState.bottomToolbarHeight = [self secondaryToolbarHeightWithInset];
+  _toolbarUIState.collapsedTopToolbarHeight = [self collapsedTopToolbarHeight];
+  _toolbarUIState.expandedTopToolbarHeight = [self expandedTopToolbarHeight];
+  _toolbarUIState.collapsedBottomToolbarHeight = 0.0;
+  _toolbarUIState.expandedBottomToolbarHeight =
+      [self secondaryToolbarHeightWithInset];
 }
 
 // Returns the height difference between the fully expanded and fully collapsed

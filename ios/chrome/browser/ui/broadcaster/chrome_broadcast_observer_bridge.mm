@@ -51,16 +51,20 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
   self.observer->OnScrollViewIsDraggingBroadcasted(dragging);
 }
 
-- (void)broadcastCollapsedToolbarHeight:(CGFloat)height {
-  self.observer->OnCollapsedToolbarHeightBroadcasted(height);
+- (void)broadcastCollapsedTopToolbarHeight:(CGFloat)height {
+  self.observer->OnCollapsedTopToolbarHeightBroadcasted(height);
 }
 
-- (void)broadcastExpandedToolbarHeight:(CGFloat)height {
-  self.observer->OnExpandedToolbarHeightBroadcasted(height);
+- (void)broadcastExpandedTopToolbarHeight:(CGFloat)height {
+  self.observer->OnExpandedTopToolbarHeightBroadcasted(height);
 }
 
-- (void)broadcastBottomToolbarHeight:(CGFloat)height {
-  self.observer->OnBottomToolbarHeightBroadcasted(height);
+- (void)broadcastExpandedBottomToolbarHeight:(CGFloat)height {
+  self.observer->OnExpandedBottomToolbarHeightBroadcasted(height);
+}
+
+- (void)broadcastCollapsedBottomToolbarHeight:(CGFloat)height {
+  self.observer->OnCollapsedBottomToolbarHeightBroadcasted(height);
 }
 
 @end
