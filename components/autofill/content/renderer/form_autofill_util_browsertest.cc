@@ -105,17 +105,6 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class FormAutofillUtilsTestWithIframesEnabled : public FormAutofillUtilsTest {
- public:
-  FormAutofillUtilsTestWithIframesEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
-  }
-  ~FormAutofillUtilsTestWithIframesEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that large option values/contents are truncated while building the
 // FormData.
 TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
@@ -795,7 +784,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
 }
 
 // Tests IsOwnedByFrame().
-TEST_F(FormAutofillUtilsTestWithIframesEnabled, IsOwnedByFrame) {
+TEST_F(FormAutofillUtilsTest, IsOwnedByFrame) {
   LoadHTML(R"(
     <body>
       <div id="div"></div>
@@ -1313,7 +1302,7 @@ struct FieldFramesTestParam {
 };
 
 class FieldFramesTest
-    : public FormAutofillUtilsTestWithIframesEnabled,
+    : public FormAutofillUtilsTest,
       public testing::WithParamInterface<FieldFramesTestParam> {
  public:
   FieldFramesTest() = default;
@@ -1599,8 +1588,7 @@ TEST_P(SelectMenuAutofillParamTest, WebFormElementToFormData) {
 
 // Tests that if the number of iframes exceeds kMaxExtractableChildFrames,
 // child frames of that form are not extracted.
-TEST_F(FormAutofillUtilsTestWithIframesEnabled,
-       ExtractNoFramesIfTooManyIframes) {
+TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);
@@ -1643,8 +1631,7 @@ TEST_F(FormAutofillUtilsTestWithIframesEnabled,
 
 // Tests that if the number of fields exceeds |kMaxExtractableFields|, neither
 // fields nor child frames of that form are extracted.
-TEST_F(FormAutofillUtilsTestWithIframesEnabled,
-       ExtractNoFieldsOrFramesIfTooManyFields) {
+TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   auto CreateFormElement = [this](const char* element) {
     std::string js = base::StringPrintf(
         "document.forms[0].appendChild(document.createElement('%s'))", element);

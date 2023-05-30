@@ -639,8 +639,7 @@ void FormStructure::ProcessQueryResponse(
       };
       if (field->host_form_signature &&
           field->host_form_signature != form->form_signature() &&
-          !is_override(current_field) &&
-          base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+          !is_override(current_field)) {
         // Retrieves the alternative prediction even if it is not used so that
         // the alternative predictions are popped.
         absl::optional<FieldSuggestion> alternative_field = GetPrediction(
@@ -1245,13 +1244,11 @@ void FormStructure::EncodeFormForQuery(
 
   AddFormIf(form_signature(), [](auto& f) { return true; });
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    for (const auto& field : fields_) {
-      if (field->host_form_signature) {
-        AddFormIf(field->host_form_signature, [&](const auto& f) {
-          return f->host_form_signature == field->host_form_signature;
-        });
-      }
+  for (const auto& field : fields_) {
+    if (field->host_form_signature) {
+      AddFormIf(field->host_form_signature, [&](const auto& f) {
+        return f->host_form_signature == field->host_form_signature;
+      });
     }
   }
 }

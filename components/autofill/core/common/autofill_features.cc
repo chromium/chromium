@@ -10,12 +10,6 @@
 
 namespace autofill::features {
 
-// Controls whether to flatten and fill cross-iframe forms.
-// TODO(crbug.com/1187842) Remove once launched.
-BASE_FEATURE(kAutofillAcrossIframes,
-             "AutofillAcrossIframes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to flatten and fill cross-iframe forms on iOS.
 // TODO(crbug.com/1441921) Remove once launched.
 BASE_FEATURE(kAutofillAcrossIframesIos,
@@ -465,8 +459,7 @@ BASE_FEATURE(kAutofillServerBehaviors,
 const base::FeatureParam<int> kAutofillServerBehaviorsParam{
     &kAutofillServerBehaviors, "server_prediction_source", 0};
 
-// Controls whether Autofill may fill across origins as part of the
-// AutofillAcrossIframes experiment.
+// Controls whether Autofill may fill across origins.
 // TODO(crbug.com/1304721): Clean up when launched.
 BASE_FEATURE(kAutofillSharedAutofill,
              "AutofillSharedAutofill",

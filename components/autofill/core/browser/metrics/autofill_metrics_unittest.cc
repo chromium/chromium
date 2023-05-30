@@ -8042,8 +8042,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
 
   AutofillMetricsCrossFrameFormTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(features::kAutofillAcrossIframes, {}),
-         base::test::FeatureRefAndParams(features::kAutofillSharedAutofill,
+        {base::test::FeatureRefAndParams(features::kAutofillSharedAutofill,
                                          {{"relax_shared_autofill", "true"}})},
         {});
   }

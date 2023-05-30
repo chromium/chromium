@@ -208,18 +208,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormAfterDynamicFieldChange) {
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
-class FormCacheIframeBrowserTest : public FormCacheBrowserTest {
- public:
-  FormCacheIframeBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
-  }
-  ~FormCacheIframeBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(FormCacheIframeBrowserTest, ExtractFrames) {
+TEST_F(FormCacheBrowserTest, ExtractFrames) {
   LoadHTML(R"(
     <form id="form1">
       <iframe id="frame1"></iframe>
@@ -276,7 +265,7 @@ TEST_F(FormCacheBrowserTest, ExtractFormsTwice) {
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
-TEST_F(FormCacheIframeBrowserTest, ExtractFramesTwice) {
+TEST_F(FormCacheBrowserTest, ExtractFramesTwice) {
   LoadHTML(R"(
     <form id="form1">
       <iframe></iframe>
@@ -299,7 +288,7 @@ TEST_F(FormCacheIframeBrowserTest, ExtractFramesTwice) {
 }
 
 // TODO(crbug.com/1117028) Adjust expectations when we omit invisible iframes.
-TEST_F(FormCacheIframeBrowserTest, ExtractFramesAfterVisibilityChange) {
+TEST_F(FormCacheBrowserTest, ExtractFramesAfterVisibilityChange) {
   LoadHTML(R"(
     <form id="form1">
       <iframe id="frame1" style="display: none;"></iframe>
@@ -775,7 +764,7 @@ TEST_F(FormCacheBrowserTest, FieldLimit) {
 
 // Test that FormCache::UpdateFormCache() limits the number of total frames by
 // clearing their frames and skipping the then-empty forms.
-TEST_F(FormCacheIframeBrowserTest, FrameLimit) {
+TEST_F(FormCacheBrowserTest, FrameLimit) {
   std::string html;
   for (unsigned int i = 0; i < kMaxExtractableChildFrames + 1; i++) {
     html += "<form><iframe></iframe></form>";
@@ -805,7 +794,7 @@ TEST_F(FormCacheIframeBrowserTest, FrameLimit) {
 #else
 #define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
 #endif
-TEST_F(FormCacheIframeBrowserTest, MAYBE_FieldAndFrameLimit) {
+TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
   ASSERT_LE(kMaxExtractableChildFrames, kMaxExtractableFields);
 
   std::string html;

@@ -233,8 +233,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   AutofillAcrossIframesTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillSharedAutofill},
+        /*enabled_features=*/{features::kAutofillSharedAutofill},
         /*disabled_features=*/{});
   }
 

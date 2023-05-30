@@ -209,14 +209,11 @@ class AutofillAgentTest : public content::RenderViewTest {
   std::unique_ptr<PasswordGenerationAgent> password_generation_;
 };
 
-// Enables AutofillAcrossIframes.
 class AutofillAgentTestWithFeatures : public AutofillAgentTest {
  public:
   AutofillAgentTestWithFeatures() {
     scoped_features_.InitWithFeatures(
-        {features::kAutofillAcrossIframes,
-         blink::features::kAutofillDetectRemovedFormControls},
-        {});
+        {blink::features::kAutofillDetectRemovedFormControls}, {});
   }
 
  private:

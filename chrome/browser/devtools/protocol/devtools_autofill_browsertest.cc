@@ -128,8 +128,6 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
  private:
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
-  base::test::ScopedFeatureList feature_list_{
-      autofill::features::kAutofillAcrossIframes};
 };
 
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {

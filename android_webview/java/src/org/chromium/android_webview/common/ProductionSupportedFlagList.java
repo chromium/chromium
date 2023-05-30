@@ -164,9 +164,6 @@ public final class ProductionSupportedFlagList {
                             + "hierarchy level."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_SPLIT_CREDIT_CARD_NUMBERS_CAUTIOUSLY,
                     "Split credit card numbers over multiple fields more cautiously."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
-                    "Enable Autofill for frame-transcending forms (forms whose fields live in "
-                            + "different frames)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,

@@ -202,9 +202,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
     : ::testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
   feature_list_.InitWithFeatures(
       // Enabled
-      {// TODO(crbug.com/1187842): Remove once experiment is over.
-       features::kAutofillAcrossIframes,
-       // TODO(crbug.com/1076175) Remove once launched.
+      {// TODO(crbug.com/1076175) Remove once launched.
        features::kAutofillUseNewSectioningMethod,
        // TODO(crbug.com/1157405) Remove once launched.
        features::kAutofillEnableDependentLocalityParsing,
