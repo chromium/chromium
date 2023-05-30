@@ -9813,10 +9813,7 @@ if (is_mac) {
   # target once all .mm files are ARCed.
   source_set("interactive_ui_tests_arc") {
     testonly = true
-    sources = [
-      "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
-      "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
-    ]
+    sources = [ "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm" ]
     configs += [ "//build/config/compiler:enable_arc" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
@@ -10438,7 +10435,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
         "../browser/focus_ring_browsertest_mac.h",
         "../browser/focus_ring_browsertest_mac.mm",
         "../browser/global_keyboard_shortcuts_interactive_uitest_mac.mm",
