@@ -419,6 +419,7 @@ crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional
 crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind.html [ RetryOnFailure ]
 crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/textures/misc/texture-active-bind-2.html [ RetryOnFailure ]
 crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
+crbug.com/1446664 [ mac amd-0x67ef angle-metal passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
 
 ## Metal Intel ##
 
@@ -578,7 +579,7 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
 
-crbug.com/1446664 [ mac amd-0x67ef angle-metal passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
+crbug.com/1449922 [ mac amd angle-opengl ] conformance2/transform_feedback/transform_feedback.html [ RetryOnFailure ]
 
 ## Mac Intel ##
 
