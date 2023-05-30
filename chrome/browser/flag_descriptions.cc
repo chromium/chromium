@@ -3228,18 +3228,6 @@ const char kPrivateStateTokensDescription[] =
     "Enables the prototype Private State Token API "
     "(https://github.com/wicg/trust-token-api).";
 
-const char kTurnOffStreamingMediaCachingOnBatteryName[] =
-    "Turn off caching of streaming media to disk while on battery power.";
-const char kTurnOffStreamingMediaCachingOnBatteryDescription[] =
-    "Reduces disk activity during media playback, which can result in "
-    "power savings.";
-
-const char kTurnOffStreamingMediaCachingAlwaysName[] =
-    "Turn off caching of streaming media to disk.";
-const char kTurnOffStreamingMediaCachingAlwaysDescription[] =
-    "Reduces disk activity during media playback, which can result in "
-    "power savings.";
-
 const char kUnifiedPasswordManagerAndroidName[] =
     "Google Mobile Services for passwords";
 const char kUnifiedPasswordManagerAndroidDescription[] =

@@ -1859,12 +1859,6 @@ extern const char kTreatInsecureOriginAsSecureDescription[];
 extern const char kPrivateStateTokensName[];
 extern const char kPrivateStateTokensDescription[];
 
-extern const char kTurnOffStreamingMediaCachingOnBatteryName[];
-extern const char kTurnOffStreamingMediaCachingOnBatteryDescription[];
-
-extern const char kTurnOffStreamingMediaCachingAlwaysName[];
-extern const char kTurnOffStreamingMediaCachingAlwaysDescription[];
-
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 
