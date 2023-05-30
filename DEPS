@@ -4188,7 +4188,7 @@ deps = {
   },
 
   'src/ios_internal':  {
-      'url': '{chrome_git}/chrome/ios_internal.git' + '@' +
+      'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
         '3481331ae5475ebe38f30850c283621a0a513ecb',
       'condition': 'checkout_ios and checkout_src_internal',
   },
@@ -4229,7 +4229,7 @@ deps = {
   },
 
   'src/signing_keys': {
-      'url': '{chrome_git}/clank/apptestkey.git' + '@' +
+      'url': Var('chrome_git') + '/clank/apptestkey.git' + '@' +
         '5138e684915721cbccbb487ec0764ed05650fcd0',
       'condition': 'checkout_android and checkout_google_internal and checkout_src_internal',
   },
