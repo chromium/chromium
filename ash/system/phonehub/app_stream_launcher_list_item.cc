@@ -29,7 +29,7 @@ namespace {
 
 constexpr int kEcheAppListItemHeight = 40;
 constexpr int kEcheAppLIstItemIconSize = 32;
-constexpr double kAlphaValueForInhibitedIconOpacity = 0.3;
+constexpr double kAlphaValueForInhibitedIconOpacity = 0.38;
 
 }  // namespace
 
@@ -81,8 +81,6 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
                         resized_app_icon);
 
   // Fade the image in order to make it look like grayed out.
-  // TODO(b/261916553): Make grayed out icons "gray" in
-  // addition to 30% transparent.
   app_button_->SetImage(
       views::Button::ButtonState::STATE_DISABLED,
       gfx::ImageSkiaOperations::CreateTransparentImage(

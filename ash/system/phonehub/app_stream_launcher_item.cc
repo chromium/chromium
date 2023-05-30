@@ -28,7 +28,7 @@ constexpr gfx::Size kEcheAppItemSize(kEcheAppItemWidth, kEcheAppItemHeight);
 constexpr int kEcheAppItemSpacing = 4;
 constexpr int kEcheAppNameLabelLineHeight = 14;
 constexpr int kEcheAppNameLabelFontSize = 11;
-constexpr double kAlphaValueForInhibitedIconOpacity = 0.3;
+constexpr double kAlphaValueForInhibitedIconOpacity = 0.38;
 
 void ConfigureLabel(views::Label* label, int line_height, int font_size) {
   label->SetLineHeight(line_height);
@@ -75,8 +75,6 @@ AppStreamLauncherItem::AppStreamLauncherItem(
   gfx::Image image = app_metadata.color_icon;
   if (!enabled) {
     // Fade the image in order to make it look like grayed out.
-    // TODO(b/261916553): Make grayed out icons "gray" in
-    // addition to 30% transparent.
     image = gfx::Image(gfx::ImageSkiaOperations::CreateTransparentImage(
         image.AsImageSkia(), kAlphaValueForInhibitedIconOpacity));
   }
