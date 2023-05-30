@@ -13,8 +13,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -242,7 +242,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
       base::Milliseconds(1));
 }
 
@@ -266,14 +266,14 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded).Times(0);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -306,7 +306,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   // Verify that handler switches to short polling period.
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
       base::Milliseconds(1));
 }
 
@@ -339,7 +339,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
       });
   EXPECT_CALL(delegate, OnDegradedRecoverabilityChanged);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
@@ -347,14 +347,14 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded).Times(0);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get() +
       base::Milliseconds(1));
   testing::Mock::VerifyAndClearExpectations(&connection);
 
   EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded);
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get());
 }
 
 TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
@@ -477,7 +477,7 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   // Start the scheduler.
   scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
   task_environment().FastForwardBy(
-      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get() -
       base::Minutes(1) + base::Milliseconds(1));
 }
 

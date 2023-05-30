@@ -8,7 +8,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/sync/base/features.h"
+#import "components/trusted_vault/features.h"
 #import "components/trusted_vault/trusted_vault_registration_verifier.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
@@ -37,7 +37,7 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
   DCHECK(backend_);
 
   if (base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultVerifyDeviceRegistration)) {
+          trusted_vault::kSyncTrustedVaultVerifyDeviceRegistration)) {
     backend_->SetDeviceRegistrationPublicKeyVerifierForUMA(
         base::BindOnce(&IOSTrustedVaultClient::VerifyDeviceRegistration,
                        weak_ptr_factory_.GetWeakPtr()));

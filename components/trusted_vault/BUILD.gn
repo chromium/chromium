@@ -7,6 +7,8 @@ if (!is_android) {
     sources = [
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
+      "features.cc",
+      "features.h",
       "proto_string_bytes_conversion.cc",
       "proto_string_bytes_conversion.h",
       "securebox.cc",

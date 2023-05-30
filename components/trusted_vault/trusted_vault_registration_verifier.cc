@@ -100,7 +100,7 @@ void TrustedVaultRegistrationVerifier::VerifyMembership(
         // also uses kKeyProofsVerificationFailed semi-arbitrarily to represent
         // that verification wasn't possible (since the private key wasn't
         // known).
-        trusted_vault::RecordVerifyRegistrationStatus(
+        RecordVerifyRegistrationStatus(
             GetDownloadKeysStatusForUMAFromResponse(status.value_or(
                 TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed)),
             /*also_log_with_v1_suffix=*/true);

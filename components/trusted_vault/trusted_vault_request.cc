@@ -189,7 +189,7 @@ void TrustedVaultRequest::OnURLLoadComplete(
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
-  trusted_vault::RecordTrustedVaultURLFetchResponse(
+  RecordTrustedVaultURLFetchResponse(
       /*http_response_code=*/http_response_code,
       /*net_error=*/url_loader_->NetError(), reason_for_uma_);
 

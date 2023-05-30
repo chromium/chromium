@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -73,9 +73,9 @@ TrustedVaultDegradedRecoverabilityHandler::
   }
 
   long_degraded_recoverability_refresh_period_ =
-      syncer::kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
+      kSyncTrustedVaultLongPeriodDegradedRecoverabilityPolling.Get();
   short_degraded_recoverability_refresh_period_ =
-      syncer::kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
+      kSyncTrustedVaultShortPeriodDegradedRecoverabilityPolling.Get();
   UpdateCurrentRefreshPeriod();
 }
 
