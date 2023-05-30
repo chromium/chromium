@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -413,7 +414,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
-            linearLayout.addView(view);
+            linearLayout.addView(
+                    view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         } else {
             super.setContentView(view);
         }
@@ -428,7 +430,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
-            linearLayout.addView(view);
+            linearLayout.addView(
+                    view, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         } else {
             super.setContentView(view, params);
         }
