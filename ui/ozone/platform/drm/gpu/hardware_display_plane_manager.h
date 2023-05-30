@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -40,9 +41,13 @@ struct HardwareDisplayPlaneList {
   ~HardwareDisplayPlaneList();
 
   // This is the list of planes to be committed this time.
-  std::vector<HardwareDisplayPlane*> plane_list;
+  // This field is not vector<raw_ptr<...>> due to interaction with third_party
+  // api.
+  RAW_PTR_EXCLUSION std::vector<HardwareDisplayPlane*> plane_list;
   // This is the list of planes that was committed last time.
-  std::vector<HardwareDisplayPlane*> old_plane_list;
+  // This field is not vector<raw_ptr<...>> due to interaction with third_party
+  // api.
+  RAW_PTR_EXCLUSION std::vector<HardwareDisplayPlane*> old_plane_list;
 
   struct PageFlipInfo {
     PageFlipInfo(uint32_t crtc_id, uint32_t framebuffer);
