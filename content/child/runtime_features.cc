@@ -365,6 +365,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"TopicsXHR", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
+          {"TopicsDocumentAPI",
+           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           kSetOnlyIfOverridden},
           {"TouchTextEditingRedesign",
            raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
@@ -669,9 +672,9 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableFencedFrames(false);
   }
 
-  // Topics API cannot be enabled without the support of the browser process,
-  // and the XHR attribute should be additionally gated by the
-  // `kBrowsingTopicsXHR` feature.
+  // Topics API cannot be enabled without the support of the browser process.
+  // The XHR attribute should be additionally gated by the `kBrowsingTopicsXHR`
+  // feature and the Document API by the `kBrowsingTopicsDocumentAPI` feature.
   if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
     LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsAPIEnabled())
         << "Topics cannot be enabled in this configuration. Use --"
@@ -679,13 +682,25 @@ void ResolveInvalidConfigurations() {
         << blink::features::kBrowsingTopics.name << " in addition.";
     WebRuntimeFeatures::EnableTopicsAPI(false);
     WebRuntimeFeatures::EnableTopicsXHR(false);
-  } else if (!base::FeatureList::IsEnabled(
-                 blink::features::kBrowsingTopicsXHR)) {
-    LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsXHREnabled())
-        << "Topics XHR cannot be enabled in this configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kBrowsingTopicsXHR.name << " in addition.";
-    WebRuntimeFeatures::EnableTopicsXHR(false);
+    WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
+  } else {
+    if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopicsXHR)) {
+      LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsXHREnabled())
+          << "Topics XHR cannot be enabled in this configuration. Use --"
+          << switches::kEnableFeatures << "="
+          << blink::features::kBrowsingTopicsXHR.name << " in addition.";
+      WebRuntimeFeatures::EnableTopicsXHR(false);
+    }
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kBrowsingTopicsDocumentAPI)) {
+      LOG_IF(WARNING, WebRuntimeFeatures::IsTopicsDocumentAPIEnabled())
+          << "Topics Document API cannot be enabled in this configuration. Use "
+             "--"
+          << switches::kEnableFeatures << "="
+          << blink::features::kBrowsingTopicsDocumentAPI.name
+          << " in addition.";
+      WebRuntimeFeatures::EnableTopicsDocumentAPI(false);
+    }
   }
 
   if (!base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) ||

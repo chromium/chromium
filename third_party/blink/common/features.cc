@@ -1173,6 +1173,15 @@ BASE_FEATURE(kBrowsingTopicsXHR,
              "BrowsingTopicsXHR",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables calling the Topics API through Javascript (i.e.
+// document.browsingTopics()). For this feature to take effect, the main Topics
+// feature has to be enabled first (i.e. `kBrowsingTopics` is enabled, and,
+// either a valid Origin Trial token exists or `kPrivacySandboxAdsAPIsOverride`
+// is enabled.)
+BASE_FEATURE(kBrowsingTopicsDocumentAPI,
+             "BrowsingTopicsDocumentAPI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the check for whether the IP address is publicly routable will be
 // bypassed when determining the eligibility for a page to be included in topics
 // calculation. This is useful for developers to test in local environment.

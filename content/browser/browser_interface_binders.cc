@@ -1120,7 +1120,9 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
-  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kBrowsingTopicsDocumentAPI)) {
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
         base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
   }

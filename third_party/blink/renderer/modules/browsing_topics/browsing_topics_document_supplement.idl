@@ -6,7 +6,7 @@
 
 [
     ImplementedAs=BrowsingTopicsDocumentSupplement,
-    RuntimeEnabled=TopicsAPI
+    RuntimeEnabled=TopicsDocumentAPI
 ] partial interface Document {
     [
         NewObject,

@@ -3524,6 +3524,13 @@
       public: true,
     },
     {
+      name: "TopicsDocumentAPI",
+      base_feature: "none",
+      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
+      origin_trial_allows_third_party: true,
+      public: true,
+    },
+    {
       name: "TopicsXHR",
       base_feature: "none",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
