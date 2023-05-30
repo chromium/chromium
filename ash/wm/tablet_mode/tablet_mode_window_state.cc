@@ -27,6 +27,7 @@
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/notreached.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/features.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -295,9 +296,10 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       }
       break;
     case WM_EVENT_PIP:
-      if (!window_state->IsPip()) {
-        UpdateWindow(window_state, WindowStateType::kPip, /*animate=*/true);
-      }
+      // PIP windows are not managed by TabletModeWindowManager even if the
+      // window is in tablet mode. PIP window uses DefaultState instead, not
+      // TabletModeWindowState.
+      NOTREACHED();
       break;
     case WM_EVENT_TRUSTED_PIN:
       if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
