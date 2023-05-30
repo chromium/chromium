@@ -672,18 +672,6 @@ bool UserManagerBase::IsEphemeralUser(const User* user) const {
     return false;
   }
 
-  // Owner user is always persistent.
-  if (IsOwnerUser(user)) {
-    return false;
-  }
-
-  // Guest and public account is ephemeral.
-  if (auto user_type = user->GetType();
-      user_type == USER_TYPE_GUEST || user_type == USER_TYPE_PUBLIC_ACCOUNT) {
-    return true;
-  }
-
-  // Otherwise, check ephemeral policies.
   return IsEphemeralAccountId(user->GetAccountId());
 }
 
