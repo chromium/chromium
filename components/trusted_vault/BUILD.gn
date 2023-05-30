@@ -5,6 +5,8 @@
 if (!is_android) {
   static_library("trusted_vault") {
     sources = [
+      "command_line_switches.cc",
+      "command_line_switches.h",
       "download_keys_response_handler.cc",
       "download_keys_response_handler.h",
       "features.cc",

@@ -12,7 +12,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/command_line_switches.h"
+#include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -45,7 +45,7 @@ class TrustedVaultRegistrationVerifierTest : public testing::Test {
     task_environment_.RunUntilIdle();
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetFullGetSecurityDomainMemberURLForTesting(
-            syncer::ExtractTrustedVaultServiceURLFromCommandLine(), public_key)
+            ExtractTrustedVaultServiceURLFromCommandLine(), public_key)
             .spec(),
         /*content=*/std::string(), response_http_code);
   }
