@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include <gtest/gtest.h>
 #include "base/check.h"
@@ -30,14 +31,23 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
 
-class BrowserTestWithParam : public InProcessBrowserTest,
-                             public testing::WithParamInterface<bool> {
+class BrowserTestWithParam
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::pair<bool, bool>> {
  public:
-  BrowserTestWithParam() = default;
+  BrowserTestWithParam() {
+    const bool is_cr23_enabled = GetParam().second;
+    if (is_cr23_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(features::kChromeRefresh2023);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kChromeRefresh2023);
+    }
+  }
   BrowserTestWithParam(const BrowserTestWithParam&) = delete;
   BrowserTestWithParam& operator=(const BrowserTestWithParam&) = delete;
   ~BrowserTestWithParam() override = default;
@@ -48,9 +58,14 @@ class BrowserTestWithParam : public InProcessBrowserTest,
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(RealboxHandlerMatchIconTest,
+// Each value listed below represents the following:
+// {is_bookmark, is_cr23_enabled}
+INSTANTIATE_TEST_SUITE_P(RealboxHandlerIconTest,
                          BrowserTestWithParam,
-                         testing::Bool());
+                         testing::Values(std::pair<bool, bool>(true, true),
+                                         std::pair<bool, bool>(true, false),
+                                         std::pair<bool, bool>(false, true),
+                                         std::pair<bool, bool>(false, false)));
 
 // Tests that all Omnibox match vector icons map to an equivalent SVG for use in
 // the NTP Realbox.
@@ -59,7 +74,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
        type != AutocompleteMatchType::NUM_TYPES; type++) {
     AutocompleteMatch match;
     match.type = static_cast<AutocompleteMatchType::Type>(type);
-    const bool is_bookmark = BrowserTestWithParam::GetParam();
+    const bool is_bookmark = BrowserTestWithParam::GetParam().first;
     const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
     const std::string& svg_name =
         RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
@@ -87,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
     SuggestionAnswer answer;
     answer.set_type(answer_type);
     match.answer = answer;
-    const bool is_bookmark = BrowserTestWithParam::GetParam();
+    const bool is_bookmark = BrowserTestWithParam::GetParam().first;
     const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
     const std::string& svg_name =
         RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
@@ -100,11 +115,9 @@ IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
   }
 }
 
-using RealboxHandlerPedalIconTest = InProcessBrowserTest;
-
 // Tests that all Omnibox Pedal vector icons map to an equivalent SVG for use in
 // the NTP Realbox.
-IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
+IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, PedalVectorIcons) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
       GetPedalImplementations(/*incognito=*/true, /*guest=*/false,
                               /*testing=*/true);
