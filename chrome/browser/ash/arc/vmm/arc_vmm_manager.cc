@@ -104,6 +104,7 @@ void ArcVmmManager::SetSwapState(SwapState state) {
     LOG(ERROR) << "Failed to SetSwapState, ARCVM not enabled or connected.";
     return;
   }
+  DVLOG(1) << "SetSwapState " << static_cast<int>(state);
   vm_tools::concierge::SwapOperation op;
   switch (state) {
     case SwapState::ENABLE:
@@ -191,6 +192,8 @@ void ArcVmmManager::SendSwapRequest(
     return;
   }
 
+  DVLOG(1) << "SendSwapRequest " << static_cast<int>(operation)
+           << " to concierge.";
   vm_tools::concierge::SwapVmRequest request;
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
@@ -220,6 +223,8 @@ void ArcVmmManager::SendAggressiveBalloonRequest(
     return;
   }
 
+  DVLOG(1) << "SendAggressiveBalloon state change " << enable
+           << " request to concierge";
   vm_tools::concierge::AggressiveBalloonRequest request;
   request.set_name(kArcVmName);
   request.set_owner_id(user_id_hash_);
@@ -251,6 +256,8 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
   // Trim ARCVM memory before enable vmm swap in order to squeeze the vm
   // memory. Send enable operation if trim success.
   DCHECK(!trim_call_.is_null());
+  DVLOG(1) << "ShrinkArcVmMemoryAndEnableSwap with request "
+           << static_cast<int>(requested_operation);
   trim_call_.Run(
       base::BindOnce(
           [](base::OnceClosure success_closure, bool success,

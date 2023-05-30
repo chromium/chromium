@@ -49,6 +49,7 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
   // ARC system or app is active.
   if (!should_throttle) {
     last_peace_timestamp_.reset();
+    DVLOG(1) << "ARC is active, reset peace timestamp.";
     if (!active_callback_.is_null()) {
       active_callback_.Run();
     }
@@ -60,6 +61,8 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
   if (arc_connected_) {
     // ARC system and app is not active.
     last_peace_timestamp_ = base::Time::Now();
+    DVLOG(1) << "ARC is not active, time recording start at "
+             << last_peace_timestamp_.value();
   }
 }
 

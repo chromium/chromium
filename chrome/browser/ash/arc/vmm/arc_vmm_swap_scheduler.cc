@@ -96,6 +96,9 @@ void ArcVmmSwapScheduler::UpdateSwappableStateByObservation() {
     if (!last_swap_out_time.is_null()) {
       auto past = base::Time::Now() - last_swap_out_time;
       if (past < minimum_swapout_interval_) {
+        DVLOG(1) << "Swappable checking be throttled due to last swap on "
+                 << last_swap_out_time
+                 << " is not meet time interval requirement.";
         return;
       }
     }
