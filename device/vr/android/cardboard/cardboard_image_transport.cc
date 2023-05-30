@@ -85,6 +85,8 @@ void CardboardImageTransport::InitializeDistortionMesh(
 
   CardboardDistortionRenderer_setMesh(renderer_.get(), &left_mesh, kLeft);
   CardboardDistortionRenderer_setMesh(renderer_.get(), &right_mesh, kRight);
+
+  surface_size_ = frame_size;
 }
 
 void CardboardImageTransport::Render(WebXrPresentationState* webxr,
