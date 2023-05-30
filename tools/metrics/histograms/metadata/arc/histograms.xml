@@ -1503,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.LaunchedWithGhostWindow" units="apps"
-    expires_after="2023-07-09">
+    expires_after="2023-12-09">
   <owner>sstan@chromium.org</owner>
   <owner>nancylingwang@chromium.org</owner>
   <summary>The number of ARC apps launched with ghost window.</summary>
