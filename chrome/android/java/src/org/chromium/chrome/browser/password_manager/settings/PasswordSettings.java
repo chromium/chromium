@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
@@ -65,7 +66,7 @@ import java.util.Locale;
 public class PasswordSettings extends PreferenceFragmentCompat
         implements PasswordManagerHandler.PasswordListObserver,
                    Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener,
-                   FragmentHelpAndFeedbackLauncher {
+                   FragmentHelpAndFeedbackLauncher, ProfileDependentSetting {
     @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
             TrustedVaultBannerState.OPTED_IN})
     @Retention(RetentionPolicy.SOURCE)
@@ -127,6 +128,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     private @Nullable PasswordCheck mPasswordCheck;
     private @ManagePasswordsReferrer int mManagePasswordsReferrer;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    private Profile mProfile;
 
     /**
      * For controlling the UX flow of exporting passwords.
@@ -622,7 +624,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return UserPrefs.get(mProfile);
     }
 
     @Override
@@ -678,6 +680,11 @@ public class PasswordSettings extends PreferenceFragmentCompat
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     @VisibleForTesting
