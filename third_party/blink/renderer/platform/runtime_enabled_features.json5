@@ -3095,7 +3095,7 @@
     },
     {
       name: "ScrollbarColor",
-      status: "experimental",
+      status: "test",
     },
     {
       name: "ScrollbarWidth",
