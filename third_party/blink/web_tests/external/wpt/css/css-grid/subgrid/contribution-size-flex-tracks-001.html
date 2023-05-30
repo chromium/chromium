@@ -6,41 +6,36 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>CSS Grid Test: Subgrid with no grid items accommodates border and padding</title>
+<title>CSS Grid Test: Subgrid contribution size to flexible tracks</title>
 <link rel="author" title="Ethan Jimenez" href="mailto:ethavar@microsoft.com">
-<link rel="help" href="https://drafts.csswg.org/css-grid-2/#subgrid-edge-placeholders">
+<link rel="help" href="https://drafts.csswg.org/css-grid-2/#subgrid-size-contribution">
 <link rel="match" href="../../reference/ref-filled-green-100px-square.xht">
 <style>
-.wrapper {
-  width: 100px;
-  height: 100px;
-  background: red;
-}
 .grid {
-  display: inline-grid;
-  grid: repeat(3, auto) / repeat(5, auto);
   background: red;
+  display: inline-grid;
+  grid-template: repeat(4, minmax(0, 1fr)) / repeat(10, minmax(0, 1fr));
 }
 .subgrid {
+  width: 50px;
+  height: 50px;
+  background: green;
   display: grid;
   grid-row: 1 / -1;
   grid-column: 1 / -1;
   grid-template: subgrid / subgrid;
-  background: green;
-  padding: 11px 7px 20px 13px;
-  border-width: 14px 18px 5px 12px;
-  border-style: solid;
-  border-color: green;
+}
+.item {
+  width: 10px;
+  height: 25px;
 }
 </style>
 </head>
 <body>
 <p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
-<div class="wrapper">
-  <div class="grid">
-    <div class="subgrid">
-      <div class="subgrid"></div>
-    </div>
+<div class="grid">
+  <div class="subgrid">
+    <div class="item"></div>
   </div>
 </div>
 </body>
