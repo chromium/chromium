@@ -6129,6 +6129,8 @@ static_library("browser") {
       "enterprise/idle/action.h",
       "enterprise/idle/action_runner.cc",
       "enterprise/idle/action_runner.h",
+      "enterprise/idle/idle_features.cc",
+      "enterprise/idle/idle_features.h",
       "enterprise/idle/idle_service.cc",
       "enterprise/idle/idle_service.h",
       "enterprise/idle/idle_service_factory.cc",

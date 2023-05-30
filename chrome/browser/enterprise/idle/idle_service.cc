@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
+#include "chrome/browser/enterprise/idle/idle_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -87,6 +88,10 @@ IdleService::IdleService(Profile* profile)
       action_runner_(
           std::make_unique<ActionRunner>(profile_,
                                          ActionFactory::GetInstance())) {
+  if (!base::FeatureList::IsEnabled(kIdleTimeout)) {
+    // Policy disabled by kill-switch.
+    return;
+  }
   browser_observer_ = std::make_unique<BrowserObserver>(profile);
   DCHECK_EQ(profile_->GetOriginalProfile(), profile_);
   pref_change_registrar_.Init(profile->GetPrefs());
