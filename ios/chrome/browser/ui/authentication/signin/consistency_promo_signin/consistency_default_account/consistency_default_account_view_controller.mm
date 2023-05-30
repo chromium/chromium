@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -30,6 +31,11 @@ namespace {
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `self.contentView`.
 constexpr CGFloat kContentSpacing = 16.;
+// Extra top padding between the navigation bar of the scroll view and the
+// top edge of the scroll view.
+constexpr CGFloat kExtraNavBarTopPadding = 3.;
+// Vertical insets of primary button.
+constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 
 }
 
@@ -112,9 +118,6 @@ constexpr CGFloat kContentSpacing = 16.;
   titleLabel.textAlignment = NSTextAlignmentLeft;
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
-  UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-  self.navigationItem.leftBarButtonItem = leftItem;
 
   NSString* skipButtonTitle;
   if (self.accessPoint ==
@@ -126,14 +129,53 @@ constexpr CGFloat kContentSpacing = 16.;
   } else {
     skipButtonTitle = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
   }
-  UIBarButtonItem* skipButton =
-      [[UIBarButtonItem alloc] initWithTitle:skipButtonTitle
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(skipButtonAction:)];
+
+  UIButton* skipButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [skipButton setTitle:skipButtonTitle forState:UIControlStateNormal];
+  skipButton.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  [skipButton addTarget:self
+                 action:@selector(skipButtonAction:)
+       forControlEvents:UIControlEventTouchUpInside];
   skipButton.accessibilityIdentifier =
       kWebSigninSkipButtonAccessibilityIdentifier;
-  self.navigationItem.rightBarButtonItem = skipButton;
+  // Put titleLabel and skipButton each in a wrapper UIView so we can adjust
+  // their top padding.
+  UIView* titleLabelWrapper = [[UIView alloc] init];
+  UIView* skipButtonWrapper = [[UIView alloc] init];
+  [titleLabelWrapper addSubview:titleLabel];
+  [skipButtonWrapper addSubview:skipButton];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  skipButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Fix the positions of titleLabel and skipButton relative to their wrappers.
+  [NSLayoutConstraint activateConstraints:@[
+    [titleLabel.topAnchor constraintEqualToAnchor:titleLabelWrapper.topAnchor
+                                         constant:kExtraNavBarTopPadding],
+    [titleLabel.bottomAnchor
+        constraintEqualToAnchor:titleLabelWrapper.bottomAnchor],
+    [titleLabel.leadingAnchor
+        constraintEqualToAnchor:titleLabelWrapper.leadingAnchor],
+    [titleLabel.trailingAnchor
+        constraintEqualToAnchor:titleLabelWrapper.trailingAnchor],
+    [skipButton.topAnchor constraintEqualToAnchor:skipButtonWrapper.topAnchor
+                                         constant:kExtraNavBarTopPadding],
+    [skipButton.bottomAnchor
+        constraintEqualToAnchor:skipButtonWrapper.bottomAnchor],
+    [skipButton.leadingAnchor
+        constraintEqualToAnchor:skipButtonWrapper.leadingAnchor],
+    [skipButton.trailingAnchor
+        constraintEqualToAnchor:skipButtonWrapper.trailingAnchor]
+  ]];
+
+  // Add the wrappers to the navigation bar.
+  UIBarButtonItem* leftItem =
+      [[UIBarButtonItem alloc] initWithCustomView:titleLabelWrapper];
+  UIBarButtonItem* rightItem =
+      [[UIBarButtonItem alloc] initWithCustomView:skipButtonWrapper];
+  self.navigationItem.leftBarButtonItem = leftItem;
+  self.navigationItem.rightBarButtonItem = rightItem;
+
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -146,6 +188,7 @@ constexpr CGFloat kContentSpacing = 16.;
     [scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
+
   // Create content view.
   self.contentView = [[UIStackView alloc] init];
   self.contentView.axis = UILayoutConstraintAxisVertical;
@@ -208,6 +251,9 @@ constexpr CGFloat kContentSpacing = 16.;
   // Add the primary button (the "Continue as"/"Sign in" button).
   self.primaryButton =
       PrimaryActionButton(/* pointer_interaction_enabled */ YES);
+  SetContentEdgeInsets(self.primaryButton,
+                       UIEdgeInsetsMake(kPrimaryButtonVerticalInsets, 0,
+                                        kPrimaryButtonVerticalInsets, 0));
   self.primaryButton.accessibilityIdentifier =
       kWebSigninPrimaryButtonAccessibilityIdentifier;
   self.primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
