@@ -177,16 +177,6 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
 void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     LazyNow* lazy_now,
     absl::optional<WakeUp> wake_up) {
-  if (wake_up) {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork #1 %ld %ld %d %d",
-                         wake_up->time.ToInternalValue(),
-                         wake_up->leeway.ToInternalValue(),
-                         (int)wake_up->resolution,
-                         (int)wake_up->delay_policy);
-  } else {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork #2");
-  }
-
   DCHECK(!wake_up || !wake_up->is_immediate());
   TimeTicks run_time =
       wake_up.has_value() ? WakeUpRunTime(*wake_up) : TimeTicks::Max();
@@ -195,9 +185,6 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
   if (main_thread_only().next_delayed_do_work == run_time)
     return;
   main_thread_only().next_delayed_do_work = run_time;
-
-  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork #3 %ld",
-                       main_thread_only().next_delayed_do_work.ToInternalValue());
 
   // It's very rare for PostDelayedTask to be called outside of a DoWork in
   // production, so most of the time this does nothing.
@@ -313,16 +300,6 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   absl::optional<WakeUp> next_wake_up = work_details.next_wake_up;
   base::TimeDelta work_interval = work_details.work_interval;
 
-  if (next_wake_up) {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #1 %ld %ld %d %d",
-                         next_wake_up->time.ToInternalValue(),
-                         next_wake_up->leeway.ToInternalValue(),
-                         (int)next_wake_up->resolution,
-                         (int)next_wake_up->delay_policy);
-  } else {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #2");
-  }
-
   // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
   // This will inform the MessagePump to schedule a new continuation based on
   // the information below, but even if its immediate let the native sequence
@@ -358,9 +335,6 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
           : WorkDeduplicator::NextTask::kIsDelayed;
   if (work_deduplicator_.DidCheckForMoreWork(next_task) ==
       ShouldScheduleWork::kScheduleImmediate) {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #5 %ld",
-                         next_work_info.remaining_delay().ToInternalValue());
-
     // Need to run new work immediately, but due to the contract of DoWork
     // we only need to return a null TimeTicks to ensure that happens.
     return next_work_info;
@@ -368,15 +342,8 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // Special-casing here avoids unnecessarily sampling Now() when out of work.
   if (!next_wake_up) {
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #6 %ld",
-                         next_work_info.remaining_delay().ToInternalValue());
-
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
     next_work_info.delayed_run_time = TimeTicks::Max();
-
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #6.1 %ld",
-                        main_thread_only().next_delayed_do_work.ToInternalValue());
-
     return next_work_info;
   }
 
@@ -384,25 +351,15 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   // update |main_thread_only().next_delayed_do_work|.
   main_thread_only().next_delayed_do_work = WakeUpRunTime(*next_wake_up);
 
-  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #6.2 %ld",
-                       main_thread_only().next_delayed_do_work.ToInternalValue());
-
   // Don't request a run time past |main_thread_only().quit_runloop_after|.
   if (main_thread_only().next_delayed_do_work >
       main_thread_only().quit_runloop_after) {
     main_thread_only().next_delayed_do_work =
         main_thread_only().quit_runloop_after;
 
-    recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #6.3 %ld",
-                         main_thread_only().next_delayed_do_work.ToInternalValue());
-
     // If we've passed |quit_runloop_after| there's no more work to do.
     if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
       next_work_info.delayed_run_time = TimeTicks::Max();
-
-      recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #7 %ld",
-                           next_work_info.remaining_delay().ToInternalValue());
-
       return next_work_info;
     }
   }
@@ -410,12 +367,6 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   next_work_info.delayed_run_time = CapAtOneDay(
       main_thread_only().next_delayed_do_work, &continuation_lazy_now);
   next_work_info.recent_now = continuation_lazy_now.Now();
-
-  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::DoWork #8 %ld %ld %ld",
-                       next_work_info.delayed_run_time.ToInternalValue(),
-                       next_work_info.recent_now.ToInternalValue(),
-                       main_thread_only().next_delayed_do_work.ToInternalValue());
-
   return next_work_info;
 }
 

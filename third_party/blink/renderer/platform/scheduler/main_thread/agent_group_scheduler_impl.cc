@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -135,9 +137,13 @@ void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
+  recordreplay::Assert("[RUN-2056] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint");
+
   for (Agent* agent : *agents_) {
     agent->PerformMicrotaskCheckpoint();
   }
+
+  recordreplay::Assert("[RUN-2056] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 }  // namespace scheduler

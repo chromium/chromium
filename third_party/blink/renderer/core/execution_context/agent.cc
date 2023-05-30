@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 namespace {
@@ -108,8 +110,12 @@ bool Agent::IsWindowAgent() const {
 }
 
 void Agent::PerformMicrotaskCheckpoint() {
+  recordreplay::Assert("[RUN-2056] Agent::PerformMicrotaskCheckpoint");
+
   event_loop_->PerformMicrotaskCheckpoint();
   rejected_promises_->ProcessQueue();
+
+  recordreplay::Assert("[RUN-2056] Agent::PerformMicrotaskCheckpoint Done");
 }
 
 void Agent::Dispose() {

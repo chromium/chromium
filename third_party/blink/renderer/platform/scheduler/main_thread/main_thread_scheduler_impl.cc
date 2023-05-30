@@ -1130,6 +1130,8 @@ void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
        main_thread_only().agent_group_schedulers) {
     agent_group_scheduler->PerformMicrotaskCheckpoint();
   }
+  recordreplay::Assert(
+      "[RUN-2056] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 // static
