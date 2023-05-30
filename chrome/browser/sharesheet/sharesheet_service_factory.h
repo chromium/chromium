@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -25,7 +25,7 @@ class SharesheetServiceFactory : public ProfileKeyedServiceFactory {
   SharesheetServiceFactory& operator=(const SharesheetServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SharesheetServiceFactory>;
+  friend base::NoDestructor<SharesheetServiceFactory>;
 
   SharesheetServiceFactory();
   ~SharesheetServiceFactory() override;
