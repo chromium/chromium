@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 from datetime import datetime
+import json
 import logging
 import os
 import re
 import time
+from typing import Any
 
 from chrome_ent_test.infra.core import before_all
 from chrome_ent_test.infra.core import category
@@ -17,6 +19,15 @@ from infra import ChromeEnterpriseTestCase
 
 from .pan_api_service import PanApiService
 from .pan_event import PanEvent
+
+
+def parse_to_json(source: str, pattern: str) -> Any:
+  """Matches string with a regex and loads to a Json object."""
+  matcher = re.search(pattern, source)
+  if matcher:
+    json_string = matcher.group(0)
+    return json.loads(json_string)
+  return None
 
 
 @category("chrome_only")
@@ -49,6 +60,8 @@ class ReportingConnectorPanTest(ChromeEnterpriseTestCase):
     # trigger malware event & get device id from browser
     localDir = os.path.dirname(os.path.abspath(__file__))
     commonDir = os.path.dirname(localDir)
+    self.EnableHistogramSupport(self.win_config['client'], commonDir)
+
     clientId = ''
     retryCount = 0
     # if not be able to find testsafebrowsing in logging, retry up to
@@ -56,16 +69,19 @@ class ReportingConnectorPanTest(ChromeEnterpriseTestCase):
     while retryCount < 3:
       retryCount += 1
       safeNet = ''
-      clientId = self.RunUITest(
+      output = self.RunUITest(
           self.win_config['client'],
           os.path.join(commonDir, 'common', 'realtime_reporting_ui_test.py'),
           timeout=600)
-      safeNet = re.search(r'testsafebrowsing', clientId.strip())
+      safeNet = re.search(r'testsafebrowsing', output.strip())
       if safeNet:
         break
-    clientId = re.search(r'DeviceId:.*$',
-                         clientId.strip()).group(0).replace('DeviceId:',
-                                                            '').rstrip("\\rn'")
+    result = parse_to_json(output, '(?<=Result:).*')
+    self.assertIsNotNone(result)
+    clientId = result['DeviceId']
+    histogram = result['Histogram']
+
+    logging.info('Histogram: %s', histogram)
 
     event_to_query = PanEvent(
         type="badNavigationEvent",
