@@ -1554,96 +1554,6 @@ config("compiler_arm") {
   }
 }
 
-# Rust and C++ both provide intrinsics for LLVM to call for math operations. We
-# want to use the C++ intrinsics, not the ones in the Rust compiler_builtins
-# library. The Rust symbols are marked as weak, so that they can be replaced by
-# the C++ symbols. This config ensures the C++ symbols exist and are strong in
-# order to cause that replacement to occur by explicitly linking in clang's
-# compiler-rt library.
-config("compiler_builtins") {
-  visibility = [ ":runtime_library" ]
-
-  _supported = true
-  _dir = ""
-  _libname = "builtins"
-  _suffix = ""
-  _ext = "a"
-  if (!toolchain_has_rust) {
-    # Since there's no Rust in the toolchain, there's no concern that we'll use
-    # the Rust stdlib's intrinsics here.
-    _supported = false
-  } else if (is_win) {
-    _dir = "windows"
-    _ext = "lib"
-    if (current_cpu == "x64") {
-      _suffix = "-x86_64"
-    } else if (current_cpu == "x86") {
-      _suffix = "-i386"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_mac) {
-    _dir = "darwin"
-    _libname = "osx"
-  } else if (is_ios) {
-    import("//build/config/ios/config.gni")  # For `target_environment`
-
-    _dir = "darwin"
-    if (target_environment == "simulator") {
-      _libname = "iossim"
-    } else {
-      _libname = "ios"
-    }
-  } else if (is_linux || is_chromeos) {
-    if (current_cpu == "x64") {
-      _dir = "x86_64-unknown-linux-gnu"
-    } else if (current_cpu == "x86") {
-      _dir = "i386-unknown-linux-gnu"
-    } else if (current_cpu == "arm") {
-      _dir = "armv7-unknown-linux-gnueabihf"
-    } else if (current_cpu == "arm64") {
-      _dir = "aarch64-unknown-linux-gnu"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_fuchsia) {
-    if (current_cpu == "x64") {
-      _dir = "x86_64-unknown-fuchsia"
-    } else if (current_cpu == "arm64") {
-      _dir = "aarch64-unknown-fuchsia"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else if (is_android) {
-    _dir = "linux"
-    if (current_cpu == "x64") {
-      _suffix = "-x86_64-android"
-    } else if (current_cpu == "x86") {
-      _suffix = "-i686-android"
-    } else if (current_cpu == "arm") {
-      _suffix = "-arm-android"
-    } else if (current_cpu == "arm64") {
-      _suffix = "-aarch64-android"
-    } else {
-      assert(false)  # Unhandled cpu type
-    }
-  } else {
-    assert(false)  # Unhandled target platform
-  }
-
-  if (_supported) {
-    _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
-    libs = [ "$_clang_lib_dir/$_dir/libclang_rt.$_libname$_suffix.$_ext" ]
-  } else {
-    not_needed([
-                 "_dir",
-                 "_libname",
-                 "_suffix",
-                 "_ext",
-               ])
-  }
-}
-
 # runtime_library -------------------------------------------------------------
 #
 # Sets the runtime library and associated options.
@@ -1663,10 +1573,6 @@ config("runtime_library") {
   # build errors related to symbols declared in math.h.
   if (use_custom_libcxx) {
     configs += [ "//build/config/c++:runtime_library" ]
-  }
-
-  if (toolchain_has_rust) {
-    configs += [ ":compiler_builtins" ]
   }
 
   # TODO(crbug.com/830987): Come up with a better name for is POSIX + Fuchsia
