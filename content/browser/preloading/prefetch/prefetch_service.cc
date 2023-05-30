@@ -250,6 +250,14 @@ void RecordRedirectNetworkContextTransition(
   UMA_HISTOGRAM_ENUMERATION(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
 }
+
+void OnIsolatedCookieCopyComplete(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (prefetch_container) {
+    prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
+  }
+}
+
 }  // namespace
 
 // static
@@ -1280,23 +1288,25 @@ void PrefetchService::CopyIsolatedCookies(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK(prefetch_container);
 
-  if (!prefetch_container->GetCurrentNetworkContextToServe()) {
+  if (!prefetch_container->GetReader().GetCurrentNetworkContextToServe()) {
     // Not set in unit tests.
     return;
   }
 
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
-  if (!prefetch_container->IsIsolatedNetworkContextRequiredForCurrentServe()) {
+  if (!prefetch_container->GetReader()
+           .IsIsolatedNetworkContextRequiredToServe()) {
     return;
   }
 
-  prefetch_container->OnIsolatedCookieCopyStart();
+  prefetch_container->GetReader().OnIsolatedCookieCopyStart();
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
-  prefetch_container->GetCurrentNetworkContextToServe()
+  prefetch_container->GetReader()
+      .GetCurrentNetworkContextToServe()
       ->GetCookieManager()
       ->GetCookieList(
-          prefetch_container->GetCurrentURLToServe(), options,
+          prefetch_container->GetReader().GetCurrentURLToServe(), options,
           net::CookiePartitionKeyCollection::Todo(),
           base::BindOnce(&PrefetchService::OnGotIsolatedCookiesForCopy,
                          weak_method_factory_.GetWeakPtr(),
@@ -1307,25 +1317,25 @@ void PrefetchService::OnGotIsolatedCookiesForCopy(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_cookies) {
-  prefetch_container->OnIsolatedCookiesReadCompleteAndWriteStart();
+  prefetch_container->GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
   RecordPrefetchProxyPrefetchMainframeCookiesToCopy(cookie_list.size());
 
   if (cookie_list.empty()) {
-    prefetch_container->OnIsolatedCookieCopyComplete();
+    prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
     return;
   }
 
   base::RepeatingClosure barrier = base::BarrierClosure(
       cookie_list.size(),
-      base::BindOnce(&PrefetchContainer::OnIsolatedCookieCopyComplete,
-                     prefetch_container));
+      base::BindOnce(&OnIsolatedCookieCopyComplete, prefetch_container));
 
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   for (const net::CookieWithAccessResult& cookie : cookie_list) {
     browser_context_->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->SetCanonicalCookie(
-            cookie.cookie, prefetch_container->GetCurrentURLToServe(), options,
+            cookie.cookie,
+            prefetch_container->GetReader().GetCurrentURLToServe(), options,
             base::BindOnce(&CookieSetHelper, barrier));
   }
 }
@@ -1511,7 +1521,7 @@ void PrefetchService::ReturnPrefetchToServe(
     return;
   }
 
-  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
+  if (prefetch_container->GetReader().HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
@@ -1520,7 +1530,7 @@ void PrefetchService::ReturnPrefetchToServe(
     return;
   }
 
-  if (!prefetch_container->HasIsolatedCookieCopyStarted()) {
+  if (!prefetch_container->GetReader().HasIsolatedCookieCopyStarted()) {
     CopyIsolatedCookies(prefetch_container);
   }
 

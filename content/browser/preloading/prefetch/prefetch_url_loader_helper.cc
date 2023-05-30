@@ -71,7 +71,7 @@ void OnComplete(int frame_tree_node_id,
   // Delay updating the prefetch with the probe result in case it becomes not
   // servable.
   if (prefetch_container) {
-    prefetch_container->OnPrefetchProbeResult(probe_result);
+    prefetch_container->GetReader().OnPrefetchProbeResult(probe_result);
 
     PrefetchServingPageMetricsContainer* serving_page_metrics_container =
         PrefetchServingPageMetricsContainerFromFrameTreeNodeId(
@@ -122,20 +122,21 @@ void EnsureCookiesCopiedAndInterceptPrefetchedNavigation(
     base::WeakPtr<PrefetchContainer> prefetch_container,
     PrefetchProbeResult probe_result) {
   if (prefetch_container &&
-      !prefetch_container->HasIsolatedCookieCopyStarted()) {
+      !prefetch_container->GetReader().HasIsolatedCookieCopyStarted()) {
     StartCookieCopy(frame_tree_node_id, prefetch_container);
   }
 
   if (prefetch_container) {
-    prefetch_container->OnInterceptorCheckCookieCopy();
+    prefetch_container->GetReader().OnInterceptorCheckCookieCopy();
   }
 
   if (prefetch_container &&
-      prefetch_container->IsIsolatedCookieCopyInProgress()) {
-    prefetch_container->SetOnCookieCopyCompleteCallback(base::BindOnce(
-        &OnCookieCopyComplete, frame_tree_node_id,
-        std::move(get_prefetch_callback), prefetch_container, probe_result,
-        /* cookie_copy_start_time */ base::TimeTicks::Now()));
+      prefetch_container->GetReader().IsIsolatedCookieCopyInProgress()) {
+    prefetch_container->GetReader().SetOnCookieCopyCompleteCallback(
+        base::BindOnce(&OnCookieCopyComplete, frame_tree_node_id,
+                       std::move(get_prefetch_callback), prefetch_container,
+                       probe_result,
+                       /* cookie_copy_start_time */ base::TimeTicks::Now()));
     return;
   }
 
@@ -171,7 +172,7 @@ void OnProbeComplete(int frame_tree_node_id,
   }
 
   if (prefetch_container) {
-    prefetch_container->OnPrefetchProbeResult(probe_result);
+    prefetch_container->GetReader().OnPrefetchProbeResult(probe_result);
 
     if (serving_page_metrics_container) {
       serving_page_metrics_container->SetPrefetchStatus(
@@ -198,8 +199,9 @@ void OnGotPrefetchToServe(
     replacements.ClearRef();
     replacements.ClearQuery();
     DCHECK_EQ(tentative_resource_request.url.ReplaceComponents(replacements),
-              prefetch_container->GetCurrentURLToServe().ReplaceComponents(
-                  replacements));
+              prefetch_container->GetReader()
+                  .GetCurrentURLToServe()
+                  .ReplaceComponents(replacements));
   }
 #endif
 
@@ -209,7 +211,7 @@ void OnGotPrefetchToServe(
     return;
   }
 
-  if (prefetch_container->HaveDefaultContextCookiesChanged()) {
+  if (prefetch_container->GetReader().HaveDefaultContextCookiesChanged()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchNotUsedCookiesChanged);
     prefetch_container->UpdateServingPageMetrics();
@@ -224,7 +226,8 @@ void OnGotPrefetchToServe(
     std::move(get_prefetch_callback).Run(nullptr);
     return;
   }
-  if (prefetch_container->IsIsolatedNetworkContextRequiredForCurrentServe() &&
+  if (prefetch_container->GetReader()
+          .IsIsolatedNetworkContextRequiredToServe() &&
       origin_prober->ShouldProbeOrigins()) {
     origin_prober->Probe(
         url::SchemeHostPort(tentative_resource_request.url).GetURL(),

@@ -80,7 +80,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   loader_callback_ = std::move(callback);
 
   if (redirect_prefetch_container_ &&
-      redirect_prefetch_container_->DoesCurrentURLToServeMatch(
+      redirect_prefetch_container_->GetReader().DoesCurrentURLToServeMatch(
           tentative_resource_request.url)) {
     OnGotPrefetchToServe(
         frame_tree_node_id_, tentative_resource_request,
@@ -163,7 +163,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     }
     redirect_prefetch_container_ = nullptr;
   } else {
-    prefetch_container->AdvanceCurrentURLToServe();
+    prefetch_container->GetReader().AdvanceCurrentURLToServe();
     redirect_prefetch_container_ = prefetch_container;
   }
 

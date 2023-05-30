@@ -199,47 +199,62 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   // respectively. AdvanceCurrentURLToServe() and
   // ResetCurrentURLToServeForTesting() are used to set the current hop to check
   // the cookies.
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 
   ASSERT_TRUE(SetCookie(kTestUrl1, "test-cookie1"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie2"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 
   prefetch_container.StopAllCookieListeners();
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie3"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 }
 
 TEST_F(PrefetchContainerTest, CookieCopy) {
@@ -255,35 +270,36 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
       /*prefetch_document_manager=*/nullptr);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
-  prefetch_container.OnIsolatedCookieCopyStart();
+  prefetch_container.GetReader().OnIsolatedCookieCopyStart();
 
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
   // Once the cookie copy process has started, we should stop the cookie
   // listener.
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
-  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  prefetch_container.GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   // The URL interceptor checks on the cookie copy status when trying to serve a
   // prefetch. If its still in progress, it registers a callback to be called
   // once the copy is complete.
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
-  prefetch_container.OnInterceptorCheckCookieCopy();
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnInterceptorCheckCookieCopy();
   task_environment()->FastForwardBy(base::Milliseconds(40));
   bool callback_called = false;
-  prefetch_container.SetOnCookieCopyCompleteCallback(
+  prefetch_container.GetReader().SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  prefetch_container.OnIsolatedCookieCopyComplete();
+  prefetch_container.GetReader().OnIsolatedCookieCopyComplete();
 
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -321,11 +337,11 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
   prefetch_container.AddRedirectHop(kRedirectUrl2);
   prefetch_container.RegisterCookieListener(cookie_manager());
 
-  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kTestUrl);
+  EXPECT_EQ(prefetch_container.GetReader().GetCurrentURLToServe(), kTestUrl);
 
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
-  prefetch_container.OnIsolatedCookieCopyStart();
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
   // Once the cookie copy process has started, all cookie listeners are stopped.
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
@@ -333,84 +349,89 @@ TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
   ASSERT_TRUE(SetCookie(kRedirectUrl2, "test-cookie"));
 
   // Check the cookies for `kTestUrl`, `kRedirectUrl1` and `kRedirectUrl2`,
-  // respectively. AdvanceCurrentURLToServe() and
-  // ResetCurrentURLToServeForTesting() are used to set the current hop to check
-  // the cookies.
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
-  prefetch_container.ResetCurrentURLToServeForTesting();
+  // respectively. GetReader().AdvanceCurrentURLToServe() and
+  // GetReader().ResetCurrentURLToServeForTesting() are used to set the current
+  // hop to check the cookies.
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
+  prefetch_container.GetReader().ResetCurrentURLToServeForTesting();
 
   task_environment()->FastForwardBy(base::Milliseconds(10));
-  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  prefetch_container.GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
   task_environment()->FastForwardBy(base::Milliseconds(20));
 
   // The URL interceptor checks on the cookie copy status when trying to serve a
   // prefetch. If its still in progress, it registers a callback to be called
   // once the copy is complete.
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
-  prefetch_container.OnInterceptorCheckCookieCopy();
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnInterceptorCheckCookieCopy();
   task_environment()->FastForwardBy(base::Milliseconds(40));
   bool callback_called = false;
-  prefetch_container.SetOnCookieCopyCompleteCallback(
+  prefetch_container.GetReader().SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  prefetch_container.OnIsolatedCookieCopyComplete();
+  prefetch_container.GetReader().OnIsolatedCookieCopyComplete();
 
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 
   // Simulate copying cookies for the next redirect hop.
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kRedirectUrl1);
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_EQ(prefetch_container.GetReader().GetCurrentURLToServe(),
+            kRedirectUrl1);
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
-  prefetch_container.OnIsolatedCookieCopyStart();
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   task_environment()->FastForwardBy(base::Milliseconds(10));
 
-  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  prefetch_container.GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
   task_environment()->FastForwardBy(base::Milliseconds(20));
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
-  prefetch_container.OnInterceptorCheckCookieCopy();
+  prefetch_container.GetReader().OnInterceptorCheckCookieCopy();
   task_environment()->FastForwardBy(base::Milliseconds(40));
 
   callback_called = false;
-  prefetch_container.SetOnCookieCopyCompleteCallback(
+  prefetch_container.GetReader().SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  prefetch_container.OnIsolatedCookieCopyComplete();
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnIsolatedCookieCopyComplete();
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 
   // Simulate copying cookies for the last redirect hop.
-  prefetch_container.AdvanceCurrentURLToServe();
-  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kRedirectUrl2);
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().AdvanceCurrentURLToServe();
+  EXPECT_EQ(prefetch_container.GetReader().GetCurrentURLToServe(),
+            kRedirectUrl2);
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
-  prefetch_container.OnIsolatedCookieCopyStart();
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   task_environment()->FastForwardBy(base::Milliseconds(10));
 
-  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  prefetch_container.GetReader().OnIsolatedCookiesReadCompleteAndWriteStart();
   task_environment()->FastForwardBy(base::Milliseconds(20));
-  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
 
-  prefetch_container.OnInterceptorCheckCookieCopy();
+  prefetch_container.GetReader().OnInterceptorCheckCookieCopy();
   task_environment()->FastForwardBy(base::Milliseconds(40));
 
   callback_called = false;
-  prefetch_container.SetOnCookieCopyCompleteCallback(
+  prefetch_container.GetReader().SetOnCookieCopyCompleteCallback(
       base::BindOnce([](bool* callback_called) { *callback_called = true; },
                      &callback_called));
 
-  prefetch_container.OnIsolatedCookieCopyComplete();
-  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.GetReader().OnIsolatedCookieCopyComplete();
+  EXPECT_FALSE(prefetch_container.GetReader().IsIsolatedCookieCopyInProgress());
   EXPECT_TRUE(callback_called);
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -463,7 +484,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   // Simulate a successful DNS probe for this prefetch. Not this will also
   // update the status of the prefetch to
   // |PrefetchStatus::kPrefetchUsedProbeSuccess|.
-  prefetch_container->OnPrefetchProbeResult(
+  prefetch_container->GetReader().OnPrefetchProbeResult(
       PrefetchProbeResult::kDNSProbeSuccess);
 
   // Deleting the prefetch container will trigger the recording of the
@@ -726,11 +747,13 @@ TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
   // Register Cookie listener for the prefetch URL.
   prefetch_container.RegisterCookieListener(cookie_manager());
 
-  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged());
+  EXPECT_FALSE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
 
   ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
 
-  EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged());
+  EXPECT_TRUE(
+      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
 }
 
 TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {

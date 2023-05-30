@@ -90,9 +90,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // redirect hop of the given url.
   bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop() const;
 
-  // Whether or not an isolated network context is required to serve.
-  bool IsIsolatedNetworkContextRequiredForCurrentServe() const;
-
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
@@ -145,26 +142,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // `GetCurrentSinglePrefetchToPrefetch()`.
   void RegisterCookieListener(network::mojom::CookieManager* cookie_manager);
   void StopAllCookieListeners();
-  bool HaveDefaultContextCookiesChanged() const;
-
-  // Before a prefetch can be served, any cookies added to the isolated network
-  // context must be copied over to the default network context. These functions
-  // are used to check and update the status of this process, as well as record
-  // metrics about how long this process takes. These functions all operate on
-  // the element in |redirect_chain_| at index
-  // |index_redirect_chain_to_serve_|.
-  bool HasIsolatedCookieCopyStarted() const;
-  bool IsIsolatedCookieCopyInProgress() const;
-  void OnIsolatedCookieCopyStart();
-  void OnIsolatedCookiesReadCompleteAndWriteStart();
-  void OnIsolatedCookieCopyComplete();
-  void OnInterceptorCheckCookieCopy();
-  void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
 
   // The network context used to make network requests for the next prefetch.
   PrefetchNetworkContext* GetOrCreateNetworkContextForCurrentPrefetch(
       PrefetchService* prefetch_service);
-  PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
 
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();
@@ -202,10 +183,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // navigations.
   bool HasPrefetchBeenConsideredToServe() const { return navigated_to_; }
 
-  // Called with the result of the probe. If the probing feature is enabled,
-  // then a probe must complete successfully before the prefetch can be served.
-  void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
-
   // Called when |PrefetchService::OnPrefetchComplete| is called for the
   // prefetch. This happens when |loader_| fully downloads the requested
   // resource.
@@ -217,22 +194,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
-
-  // Checks if the given URL matches the element in |redirect_chain_| at index
-  // |index_redirect_chain_to_serve_|.
-  bool DoesCurrentURLToServeMatch(const GURL& url) const;
-
-  // Returns the URL that can be served next. This is the url of the element in
-  // |redirect_chain_| at index |index_redirect_chain_to_serve_|.
-  const GURL& GetCurrentURLToServe() const;
-
-  // Called when one element of |redirect_chain_| is served and the next element
-  // can now be served.
-  void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
-
-  void ResetCurrentURLToServeForTesting() {
-    index_redirect_chain_to_serve_ = 0;
-  }
 
   // Called when |this| has received prefetched response's head.
   // Once this is called, we should be able to call GetHead() and receive a
@@ -290,6 +251,76 @@ class CONTENT_EXPORT PrefetchContainer {
     no_vary_search_helper_ = no_vary_search_helper;
   }
 
+  class SinglePrefetch;
+
+  // A `Reader` represents the current state of serving.
+  // The `Reader` methods all operate on the currently *serving*
+  // `SinglePrefetch`, which is the element in |redirect_chain_| at index
+  // |index_redirect_chain_to_serve_|.
+  //
+  // TODO(crbug.com/1449360): Allow multiple Readers for a PrefetchContainer.
+  // This might need ownership/lifetime changes of `Reader` and further cleaning
+  // up the dependencies between `PrefetchContainer` and `Reader`.
+  class CONTENT_EXPORT Reader final {
+   public:
+    explicit Reader(PrefetchContainer& prefetch_container);
+
+    Reader(const Reader&) = delete;
+    Reader& operator=(const Reader&) = delete;
+
+    // Whether or not an isolated network context is required to serve.
+    bool IsIsolatedNetworkContextRequiredToServe() const;
+
+    PrefetchNetworkContext* GetCurrentNetworkContextToServe() const;
+
+    bool HaveDefaultContextCookiesChanged() const;
+
+    // Before a prefetch can be served, any cookies added to the isolated
+    // network context must be copied over to the default network context. These
+    // functions are used to check and update the status of this process, as
+    // well as record metrics about how long this process takes.
+    bool HasIsolatedCookieCopyStarted() const;
+    bool IsIsolatedCookieCopyInProgress() const;
+    void OnIsolatedCookieCopyStart();
+    void OnIsolatedCookiesReadCompleteAndWriteStart();
+    void OnIsolatedCookieCopyComplete();
+    void OnInterceptorCheckCookieCopy();
+    void SetOnCookieCopyCompleteCallback(base::OnceClosure callback);
+
+    // Called with the result of the probe. If the probing feature is enabled,
+    // then a probe must complete successfully before the prefetch can be
+    // served.
+    void OnPrefetchProbeResult(PrefetchProbeResult probe_result);
+
+    // Checks if the given URL matches the the URL that can be served next.
+    bool DoesCurrentURLToServeMatch(const GURL& url) const;
+
+    // Returns the URL that can be served next.
+    const GURL& GetCurrentURLToServe() const;
+
+    // Called when one element of |redirect_chain_| is served and the next
+    // element can now be served.
+    void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
+
+    void ResetCurrentURLToServeForTesting() {
+      index_redirect_chain_to_serve_ = 0;
+    }
+
+   private:
+    // Returns the `SinglePrefetch` to be served next.
+    const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
+
+    // Currently the lifetime of `Reader` and `PrefetchContainer` are the same
+    // and thus this reference is always valid as long as `Reader` is valid.
+    PrefetchContainer& prefetch_container_;
+
+    // The index of the element in |prefetch_container_.redirect_chain_| that
+    // can be served.
+    size_t index_redirect_chain_to_serve_ = 0;
+  };
+
+  Reader& GetReader() { return reader_; }
+
  protected:
   friend class PrefetchContainerTest;
 
@@ -305,58 +336,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
 
-  // Holds the state for the request for a single URL in the context of the
-  // broader prefetch. A prefetch can request multiple URLs due to redirects.
-  // While prefetching, mutable references are used via
-  // `GetCurrentSinglePrefetchToPrefetch()` and non-mutable non-const members
-  // are updated.
-  // While serving, const references are used via
-  // `GetCurrentSinglePrefetchToServe()` and mutable members are updated.
-  class SinglePrefetch {
-   public:
-    explicit SinglePrefetch(const GURL& url,
-                            const net::SchemefulSite& referring_site);
-    ~SinglePrefetch();
-
-    SinglePrefetch(const SinglePrefetch&) = delete;
-    SinglePrefetch& operator=(const SinglePrefetch&) = delete;
-
-    // The URL that will potentially be prefetched. This can be the original
-    // prefetch URL, or a URL from a redirect resulting from requesting the
-    // original prefetch URL.
-    const GURL url_;
-
-    const bool is_isolated_network_context_required_;
-
-    // Whether this |url_| is eligible to be prefetched
-    absl::optional<bool> is_eligible_;
-
-    // This tracks whether the cookies associated with |url_| have changed at
-    // some point after the initial eligibility check.
-    std::unique_ptr<PrefetchCookieListener> cookie_listener_;
-
-    // The different possible states of the cookie copy process.
-    enum class CookieCopyStatus {
-      kNotStarted,
-      kInProgress,
-      kCompleted,
-    };
-
-    // The current state of the cookie copy process for this prefetch.
-    mutable CookieCopyStatus cookie_copy_status_ =
-        CookieCopyStatus::kNotStarted;
-
-    // The timestamps of when the overall cookie copy process starts, and midway
-    // when the cookies are read from the isolated network context and are about
-    // to be written to the default network context.
-    mutable absl::optional<base::TimeTicks> cookie_copy_start_time_;
-    mutable absl::optional<base::TimeTicks>
-        cookie_read_end_and_write_start_time_;
-
-    // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
-    mutable base::OnceClosure on_cookie_copy_complete_callback_;
-  };
-
   // Returns the `SinglePrefetch` to be prefetched next. This is the last
   // element in `redirect_chain_`, because, during prefetching from the network,
   // we push back `SinglePrefetch`s to `redirect_chain_` and access the latest
@@ -367,10 +346,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // `GetCurrentSinglePrefetchToPrefetch()`. This must be called only if `this`
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
-
-  // Returns the `SinglePrefetch` to be served next. This is the element in
-  // |redirect_chain_| at index |index_redirect_chain_to_serve_|.
-  const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
   // Helper function to match URLs either directly or using
   // |no_vary_search_helper_|.
@@ -418,8 +393,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // The redirect chain resulting from prefetching |prefetch_url_|.
   std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
 
-  // The index of the element in |redirect_chain_| that can be served.
-  size_t index_redirect_chain_to_serve_ = 0;
+  Reader reader_{*this};
 
   // The network contexts used for this prefetch. They key corresponds to the
   // |is_isolated_network_context_required| param of the
