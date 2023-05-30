@@ -32,15 +32,30 @@ LACROS_BUILD_DIR=${LASCROS_BUILD_DIR:-${CHROME_SRC_ROOT}/out/lacros}
 LACROS_LOG_FILE=${USER_DATA_DIR}/lacros/lacros.log
 
 # Display Configurations
+declare -A DISPLAY_RES=(
+[wxga]=1280x800
+[fwxga]=1366x768
+[hdp]=1600x900*1.25
+[fhd]=1920x1080*1.25
+[wuxga]=1920x1200*1.6
+[qhd]=2560x1440*2
+[qhdp]=3200x1800*2.25
+[f4k]=3840x2160*2.66
+[slate]=3000x2000*2.25
+)
 
+# Custom display configs is possible
 #DISPLAY_CONFIG=1280x800
-DISPLAY_CONFIG=1366x768
+#DISPLAY_CONFIG=1366x768
 #DISPLAY_CONFIG=1920x1080*1.25
 #DISPLAY_CONFIG=2360x1700*2
 #DISPLAY_CONFIG=3000x2000*2.25
 #DISPLAY_CONFIG=3840*2160*2.66
 # multi display example
 #DISPLAY_CONFIG=1200x800,1200+0-1000x800
+
+# Use FHD as default panel.
+DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 
 LACROS_FEATURES=LacrosSupport,LacrosPrimary
 FEATURES=OverviewButton
@@ -96,7 +111,6 @@ function build_args {
 # Start ash chrome binary.
 function start_ash_chrome {
   if $LACROS_ENABLED ; then
-    echo "!!!! LACROS ENABLED= $lacros_enabled"
     FEATURES="$FEATURES,$LACROS_FEATURES"
   fi
   build_args
@@ -168,6 +182,10 @@ command
   --touch-device-id=<id> [ash-chrome only] Specify the input device to emulate
                          touch. Use id from 'show-xinput-device-id'.
   --wayland-debug        [ash-chrome,lacros] Enable WAYLAND_DEBUG=1
+  --panel=<type>         specifies the panel type. Valid opptions are:
+                         wxga(1280x800), fwxga(1355x768), hdp(1600,900),
+                         fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
+                         qudp(3200,1800), 4k(3840,2160)
 EOF
 }
 
@@ -193,16 +211,25 @@ do
       LACROS_ENABLED=true
       LACROS_BUILD_DIR=${1:19}
       ;;
-    --wayland-debug) export WAYLAND_DEBUG=1 ;;
+    --wayland-debug)
+      export WAYLAND_DEBUG=1
+      ;;
     --touch-device-id=*)
       id=${1:18}
       TOUCH_DEVICE_OPTION="--touch-devices=${id} --force-show-cursor"
+      ;;
+    --panel=*)
+      panel=${1:8}
+      DISPLAY_CONFIG=${DISPLAY_RES[${panel}]}
+      if [ -z $DISPLAY_CONFIG ]; then
+        echo "Unknown display panel: $panel"
+        help
+      fi
       ;;
     *) echo "Unknown option $1"; help ;;
   esac
   shift
 done
-
 
 case $command in
   lacros) start_lacros_chrome;;
