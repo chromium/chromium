@@ -186,14 +186,6 @@ bool Partitions::InitializeOnce() {
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
 
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    fast_malloc_root_->SwitchToDenserBucketDistribution();
-#endif
-    buffer_root_->SwitchToDenserBucketDistribution();
-  }
-
   initialized_ = true;
   return initialized_;
 }
@@ -235,10 +227,6 @@ void Partitions::InitializeArrayBufferPartition() {
         array_buffer_root_);
   }
 #endif  // BUILDFLAG(USE_STARSCAN)
-  if (!base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseAlternateDistribution)) {
-    array_buffer_root_->SwitchToDenserBucketDistribution();
-  }
 }
 
 // static

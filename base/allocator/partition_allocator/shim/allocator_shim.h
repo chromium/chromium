@@ -191,8 +191,7 @@ using SplitMainPartition =
                                                  bool>;
 using UseDedicatedAlignedPartition = partition_alloc::internal::base::
     StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
-using AlternateBucketDistribution =
-    base::features::AlternateBucketDistributionMode;
+using AlternateBucketDistribution = base::features::BucketDistributionMode;
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The

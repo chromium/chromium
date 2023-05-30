@@ -1173,9 +1173,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // No specified type means we are in the browser.
   auto bucket_distribution =
       process_type == ""
-          ? base::features::kPartitionAllocAlternateBucketDistributionParam
-                .Get()
-          : base::features::AlternateBucketDistributionMode::kDefault;
+          ? base::features::kPartitionAllocBucketDistributionParam.Get()
+          : base::features::BucketDistributionMode::kDefault;
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
   bool enable_memory_tagging = ShouldEnableMemoryTagging(process_type);
