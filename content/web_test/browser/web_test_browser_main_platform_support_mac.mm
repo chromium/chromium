@@ -37,7 +37,6 @@ void SetDefaultsToWebTestValues() {
   [defaults setObject:@"0.500000 0.500000 0.500000"
                forKey:@"AppleOtherHighlightColor"];
   [defaults setObject:[NSArray arrayWithObject:@"en"] forKey:@"AppleLanguages"];
-  [defaults setBool:NO forKey:@"AppleScrollAnimationEnabled"];
   [defaults setBool:NO forKey:@"NSScrollAnimationEnabled"];
   [defaults setObject:@"Always" forKey:@"AppleShowScrollBars"];
 
