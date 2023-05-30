@@ -6803,11 +6803,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "sharing-desktop-screenshots-edit",
-    "owners": ["skare", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "shelf-auto-hide-separation",
     "owners": [ "yulunwu", "etuck", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 114
