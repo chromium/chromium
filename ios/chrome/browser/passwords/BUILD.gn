@@ -175,6 +175,7 @@ source_set("infobar_delegates") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ui/base",
   ]

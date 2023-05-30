@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
@@ -14,44 +14,28 @@
 #error "This file requires ARC support."
 #endif
 
-using password_modal::PasswordAction;
-
-namespace {
-// Returns the InfobarType that should be used to construct the
-// InfobarPasswordTableViewController for `action`.
-InfobarType GetTableViewInfobarType(PasswordAction action) {
-  switch (action) {
-    case PasswordAction::kSave:
-      return InfobarType::kInfobarTypePasswordSave;
-    case PasswordAction::kUpdate:
-      return InfobarType::kInfobarTypePasswordUpdate;
-  }
-}
-}  // namespace
-
 @interface PasswordInfobarModalOverlayCoordinator ()
 // Redefine ModalConfiguration properties as readwrite.
 @property(nonatomic, readwrite) OverlayRequestMediator* modalMediator;
 @property(nonatomic, readwrite) UIViewController* modalViewController;
 // The request's config.
-@property(nonatomic, readonly) PasswordInfobarModalOverlayRequestConfig* config;
+@property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
 @end
 
 @implementation PasswordInfobarModalOverlayCoordinator
 
 #pragma mark - Accessors
 
-- (PasswordInfobarModalOverlayRequestConfig*)config {
+- (DefaultInfobarOverlayRequestConfig*)config {
   return self.request
-             ? self.request
-                   ->GetConfig<PasswordInfobarModalOverlayRequestConfig>()
+             ? self.request->GetConfig<DefaultInfobarOverlayRequestConfig>()
              : nullptr;
 }
 
 #pragma mark - Public
 
 + (const OverlayRequestSupport*)requestSupport {
-  return PasswordInfobarModalOverlayRequestConfig::RequestSupport();
+  return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
 @end
@@ -67,7 +51,7 @@ InfobarType GetTableViewInfobarType(PasswordAction action) {
   InfobarPasswordTableViewController* modalViewController =
       [[InfobarPasswordTableViewController alloc]
           initWithDelegate:modalMediator
-                      type:GetTableViewInfobarType(self.config->action())];
+                      type:self.config->infobar_type()];
   modalMediator.consumer = modalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;

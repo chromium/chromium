@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -60,7 +61,8 @@ MockIOSChromeSavePasswordInfoBarDelegate::
                     PasswordAccountStorageUserState::kSyncUser
               : password_manager::metrics_util::
                     PasswordAccountStorageUserState::kSignedOutUser,
-          CreateFormManager(form.get(), url.get())),
+          CreateFormManager(form.get(), url.get()),
+          [[CommandDispatcher alloc] init]),
       form_(std::move(form)),
       url_(std::move(url)) {}
 

@@ -17,13 +17,12 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/infobars/test/mock_infobar_delegate.h"
+#import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -68,14 +67,12 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, SavePasswords) {
   std::unique_ptr<OverlayRequest> banner_request =
       DefaultInfobarOverlayRequestFactory(&infobar,
                                           InfobarOverlayType::kBanner);
-  EXPECT_TRUE(
-      banner_request->GetConfig<PasswordInfobarBannerOverlayRequestConfig>());
+  EXPECT_TRUE(banner_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
       DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
-  EXPECT_TRUE(
-      modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
+  EXPECT_TRUE(modal_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 }
 
 // Tests that the factory creates an update passwords infobar request.
@@ -91,14 +88,12 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, UpdatePasswords) {
   std::unique_ptr<OverlayRequest> banner_request =
       DefaultInfobarOverlayRequestFactory(&infobar,
                                           InfobarOverlayType::kBanner);
-  EXPECT_TRUE(
-      banner_request->GetConfig<PasswordInfobarBannerOverlayRequestConfig>());
+  EXPECT_TRUE(banner_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 
   // Test modal request creation.
   std::unique_ptr<OverlayRequest> modal_request =
       DefaultInfobarOverlayRequestFactory(&infobar, InfobarOverlayType::kModal);
-  EXPECT_TRUE(
-      modal_request->GetConfig<PasswordInfobarModalOverlayRequestConfig>());
+  EXPECT_TRUE(modal_request->GetConfig<DefaultInfobarOverlayRequestConfig>());
 }
 
 // Tests that the factory creates an confirm infobar request.

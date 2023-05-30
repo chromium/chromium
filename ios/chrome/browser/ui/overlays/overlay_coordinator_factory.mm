@@ -87,10 +87,6 @@
       }
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
-      if ([PasswordInfobarModalOverlayCoordinator requestSupport]
-              ->IsRequestSupported(request)) {
-        return [PasswordInfobarModalOverlayCoordinator class];
-      }
       if ([SaveCardInfobarModalOverlayCoordinator requestSupport]
               ->IsRequestSupported(request)) {
         return [SaveCardInfobarModalOverlayCoordinator class];
@@ -124,6 +120,9 @@
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
       switch (infobarType) {
+        case InfobarType::kInfobarTypePasswordSave:
+        case InfobarType::kInfobarTypePasswordUpdate:
+          return [PasswordInfobarModalOverlayCoordinator class];
         case InfobarType::kInfobarTypePermissions:
           return [PermissionsInfobarModalOverlayCoordinator class];
         default:

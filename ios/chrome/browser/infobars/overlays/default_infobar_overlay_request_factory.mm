@@ -10,13 +10,11 @@
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_banner/password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/sync_error_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
@@ -32,19 +30,8 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
   switch (infobar_ios->infobar_type()) {
     case InfobarType::kInfobarTypePasswordSave:
     case InfobarType::kInfobarTypePasswordUpdate:
-      switch (overlay_type) {
-        case InfobarOverlayType::kBanner:
-          return OverlayRequest::CreateWithConfig<
-              PasswordInfobarBannerOverlayRequestConfig>(infobar_ios);
-
-        case InfobarOverlayType::kModal:
-          return OverlayRequest::CreateWithConfig<
-              PasswordInfobarModalOverlayRequestConfig>(infobar_ios);
-
-        default:
-          return nullptr;
-      }
-
+      return OverlayRequest::CreateWithConfig<
+          DefaultInfobarOverlayRequestConfig>(infobar_ios, overlay_type);
     case InfobarType::kInfobarTypeTranslate:
       switch (overlay_type) {
         case InfobarOverlayType::kBanner:

@@ -14,6 +14,8 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
 
+@class CommandDispatcher;
+
 namespace password_manager {
 class PasswordFormManagerForUI;
 }
@@ -31,7 +33,8 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
       bool password_update,
       password_manager::metrics_util::PasswordAccountStorageUserState
           account_storage_user_state,
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
+      CommandDispatcher* dispatcher);
 
   IOSChromeSavePasswordInfoBarDelegate(
       const IOSChromeSavePasswordInfoBarDelegate&) = delete;
@@ -53,6 +56,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The URL host for which the credentials are being saved for.
   NSString* GetURLHostText() const;
+
+  // Gets the command dispatcher.
+  CommandDispatcher* GetDispatcher() const { return dispatcher_; }
 
   // The account where the password will be saved, or absl::nullopt if it's
   // saved locally.
@@ -100,6 +106,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  private:
   // ConfirmInfoBarDelegate implementation.
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
+
+  // CommandDispatcher for dispatching commands.
+  CommandDispatcher* dispatcher_ = nullptr;
 
   // The password_manager::PasswordFormManager managing the form we're asking
   // the user about, and should save as per their decision.

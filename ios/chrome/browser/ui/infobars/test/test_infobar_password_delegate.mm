@@ -89,7 +89,8 @@ TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
           false,
           password_manager::metrics_util::PasswordAccountStorageUserState::
               kSyncUser,
-          CreateFormManager()),
+          CreateFormManager(),
+          nullptr),
       infobar_message_(infobar_message) {}
 
 bool TestInfobarPasswordDelegate::Create(

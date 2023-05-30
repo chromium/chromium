@@ -204,6 +204,10 @@
   Class mediatorClass = nil;
 
   switch (infobarType) {
+    case InfobarType::kInfobarTypePasswordSave:
+    case InfobarType::kInfobarTypePasswordUpdate:
+      mediatorClass = [PasswordInfobarBannerOverlayMediator class];
+      break;
     case InfobarType::kInfobarTypePermissions:
       mediatorClass = [PermissionsBannerOverlayMediator class];
       break;
