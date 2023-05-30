@@ -721,7 +721,7 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos) {
     sources += [
-      "isolated_web_apps/policy/isolated_web_app_exteral_install_options_unittest.cc",
+      "isolated_web_apps/policy/isolated_web_app_external_install_options_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
       "isolated_web_apps/update_manifest/update_manifest_fetcher_unittest.cc",
       "isolated_web_apps/update_manifest/update_manifest_unittest.cc",

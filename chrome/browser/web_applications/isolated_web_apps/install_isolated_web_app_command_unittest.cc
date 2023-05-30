@@ -312,8 +312,8 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, location.value(), std::move(web_contents),
-        std::move(url_loader), /*keep_alive=*/nullptr,
-        /*profile_keep_alive=*/nullptr, std::move(callback),
+        std::move(url_loader), /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr, std::move(callback),
         std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
   }
 

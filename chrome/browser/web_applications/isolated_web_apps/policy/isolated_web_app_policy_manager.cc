@@ -56,8 +56,9 @@ void IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl::Install(
   // will be re-attempted the next time they start, assuming that the policy is
   // still set.
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info, location, /*keep_alive=*/nullptr,
-      /*profile_keep_alive=*/nullptr, std::move(callback));
+      url_info, location,
+      /*optional_keep_alive=*/nullptr,
+      /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }
 
 IsolatedWebAppPolicyManager::IsolatedWebAppPolicyManager(

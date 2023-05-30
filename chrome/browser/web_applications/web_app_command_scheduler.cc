@@ -344,12 +344,12 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
 void WebAppCommandScheduler::InstallIsolatedWebApp(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppLocation& location,
-    std::unique_ptr<ScopedKeepAlive> keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
     InstallIsolatedWebAppCallback callback,
     const base::Location& call_location) {
-  DCHECK(profile_keep_alive == nullptr ||
-         profile_keep_alive->profile() == &*profile_);
+  CHECK(optional_profile_keep_alive == nullptr ||
+        optional_profile_keep_alive->profile() == &*profile_);
 
   if (IsShuttingDown()) {
     InstallIsolatedWebAppCommandError error;
@@ -363,8 +363,8 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, location, CreateIsolatedWebAppWebContents(*profile_),
           provider_->web_contents_manager().CreateUrlLoader(),
-          std::move(keep_alive), std::move(profile_keep_alive),
-          std::move(callback),
+          std::move(optional_keep_alive),
+          std::move(optional_profile_keep_alive), std::move(callback),
           InstallIsolatedWebAppCommand::CreateDefaultResponseReaderFactory(
               *profile_->GetPrefs())),
       call_location);
