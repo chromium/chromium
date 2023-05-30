@@ -796,13 +796,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "payment-request-csp-violation",
-    "platforms": ["Linux"],
-    "bases": ["http/tests/inspector-protocol/issues/payment-request-csp-violation-issue.js"],
-    "args": ["--enable-blink-features=IgnoreCSPInWebPaymentAPI"],
-    "expires": "May 30, 2023"
-  },
-  {
     "prefix": "payment-request-mandatory-total",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/payments/payment-request-app-store-billing-mandatory-total.html"],
