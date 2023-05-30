@@ -6788,6 +6788,7 @@ crbug.com/1449390 virtual/text-antialias/font-stretch.html [ Failure Pass ]
 crbug.com/1449445 virtual/text-antialias/font-weight.html [ Failure Pass ]
 
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
+
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-idb-clear-for-storage-key.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
@@ -6798,3 +6799,6 @@ crbug.com/1448011 http/tests/devtools/indexeddb/database-structure.js [ Failure 
 crbug.com/1448011 http/tests/devtools/indexeddb/database-version-number.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
+
+# Sheriff 2023-05-30
+crbug.com/1450020 [ Mac12 ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
