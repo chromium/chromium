@@ -25,6 +25,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
@@ -764,8 +765,13 @@ public abstract class AsyncInitializationActivity
                     (WindowManager) windowManagerContext.getSystemService(Context.WINDOW_SERVICE);
             assert manager != null;
             Rect bounds = ApiHelperForR.getMaximumWindowMetricsBounds(manager);
-            return DisplayUtil.pxToDp(
+            int smallestScreenWidth = DisplayUtil.pxToDp(
                     display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
+
+            if (BuildInfo.getInstance().isAutomotive) {
+                smallestScreenWidth = (int) (smallestScreenWidth / UI_SCALING_FACTOR_FOR_AUTO);
+            }
+            return smallestScreenWidth;
         }
         return DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
     }
