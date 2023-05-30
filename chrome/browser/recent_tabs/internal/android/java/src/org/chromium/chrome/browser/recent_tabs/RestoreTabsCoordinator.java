@@ -28,6 +28,7 @@ public class RestoreTabsCoordinator {
     private RestoreTabsPromoSheetContent mContent;
     private BottomSheetController mBottomSheetController;
     private ViewFlipper mViewFlipperView;
+    private RestoreTabsDetailScreenCoordinator mRestoreTabsDetailScreenCoordinator;
 
     public RestoreTabsCoordinator(Context context, Profile profile,
             RestoreTabsControllerFactory.ControllerListener listener,
@@ -45,7 +46,7 @@ public class RestoreTabsCoordinator {
 
         View rootView = LayoutInflater.from(context).inflate(
                 R.layout.restore_tabs_bottom_sheet, /*root=*/null);
-        mContent = new RestoreTabsPromoSheetContent(rootView);
+        mContent = new RestoreTabsPromoSheetContent(rootView, mModel, mBottomSheetController);
 
         View restoreTabsPromoScreenView =
                 rootView.findViewById(R.id.restore_tabs_promo_screen_sheet);
@@ -53,8 +54,8 @@ public class RestoreTabsCoordinator {
                 new RestoreTabsPromoScreenCoordinator(restoreTabsPromoScreenView, mModel);
 
         View detailScreenView = rootView.findViewById(R.id.restore_tabs_detail_screen_sheet);
-        RestoreTabsDetailScreenCoordinator restoreTabsDetailScreenCoordinator =
-                new RestoreTabsDetailScreenCoordinator(context, detailScreenView, mModel);
+        mRestoreTabsDetailScreenCoordinator =
+                new RestoreTabsDetailScreenCoordinator(context, detailScreenView, mModel, profile);
 
         mViewFlipperView =
                 (ViewFlipper) rootView.findViewById(R.id.restore_tabs_bottom_sheet_view_flipper);
@@ -83,6 +84,8 @@ public class RestoreTabsCoordinator {
     public void destroy() {
         mMediator.destroy();
         mMediator = null;
+        mRestoreTabsDetailScreenCoordinator.destroy();
+        mRestoreTabsDetailScreenCoordinator = null;
     }
 
     public void showHomeScreen() {

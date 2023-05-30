@@ -9,29 +9,30 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/restore_tabs_detail_sheet_device_view"
+    android:id="@+id/restore_tabs_detail_sheet_review_tabs_view"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:paddingTop="@dimen/restore_tabs_detail_sheet_padding_vertical"
     android:paddingBottom="@dimen/restore_tabs_detail_sheet_padding_vertical"
     android:orientation="horizontal">
     <ImageView
-        android:id="@+id/restore_tabs_device_sheet_device_icon"
-        android:layout_width="@dimen/restore_tabs_device_icon"
-        android:layout_height="@dimen/restore_tabs_device_icon"
-        app:tint="@macro/default_icon_color"
-        android:background="@null"
-        android:layout_marginStart="@dimen/restore_tabs_device_icon_margin_horizontal"
-        android:layout_marginEnd="@dimen/restore_tabs_device_icon_margin_horizontal"
+        android:id="@+id/restore_tabs_review_tabs_screen_favicon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="@dimen/restore_tabs_tab_icon_margin_horizontal"
+        android:layout_marginEnd="@dimen/restore_tabs_tab_icon_margin_horizontal"
         android:layout_gravity="center_vertical"
-        android:importantForAccessibility="no" />
+        android:importantForAccessibility="no"
+        android:background="@drawable/oval_surface_0"
+        style="@style/ListItemStartIcon"
+        app:srcCompat="@drawable/restore_tabs_phone_icon"/>
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:orientation="vertical">
             <TextView
-                android:id="@+id/restore_tabs_detail_sheet_device_name"
+                android:id="@+id/restore_tabs_detail_sheet_tab_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary"
@@ -39,7 +40,7 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:singleLine="true" />
             <TextView
-                android:id="@+id/restore_tabs_detail_sheet_session_info"
+                android:id="@+id/restore_tabs_detail_sheet_tab_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
@@ -47,14 +48,16 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:singleLine="true" />
     </LinearLayout>
-    <ImageView
-        android:id="@+id/restore_tabs_detail_sheet_device_item_selected_icon"
+    <CheckBox
+        android:id="@+id/restore_tabs_tab_item_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/restore_tabs_detail_sheet_selected_icon_margin_start"
         android:layout_marginEnd="@dimen/restore_tabs_detail_sheet_selected_icon_margin_end"
         android:layout_gravity="center_vertical"
         android:contentDescription="@null"
+        android:background="@android:color/transparent"
         app:tint="?attr/colorPrimary"
-        app:srcCompat="@drawable/ic_check_circle_filled_green_24dp" />
+        android:checked="true"
+        android:clickable="false"/>
 </LinearLayout>

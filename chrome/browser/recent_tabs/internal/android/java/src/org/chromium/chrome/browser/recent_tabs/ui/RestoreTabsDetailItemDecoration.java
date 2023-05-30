@@ -58,6 +58,10 @@ public class RestoreTabsDetailItemDecoration extends RecyclerView.ItemDecoration
      * @return The resource ID of the item background.
      */
     private static @DrawableRes int getBackgroundDrawable(int position, int itemCount) {
+        if (itemCount == 1) {
+            return R.drawable.restore_tabs_single_item_background;
+        }
+
         if (position == 0) {
             return R.drawable.restore_tabs_detail_item_background_top;
         }

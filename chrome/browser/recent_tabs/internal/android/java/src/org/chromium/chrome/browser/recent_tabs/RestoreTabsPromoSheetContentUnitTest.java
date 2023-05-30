@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN;
+import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISIBLE;
+
 import android.view.View;
 
 import org.junit.After;
@@ -17,6 +23,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit tests for the RestoreTabsPromoSheetContent class.
@@ -26,13 +34,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 public class RestoreTabsPromoSheetContentUnitTest {
     @Mock
     private View mContentView;
+    @Mock
+    private BottomSheetController mBottomSheetController;
 
     private RestoreTabsPromoSheetContent mSheetContent;
+    private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mSheetContent = new RestoreTabsPromoSheetContent(mContentView);
+        mSheetContent =
+                new RestoreTabsPromoSheetContent(mContentView, mModel, mBottomSheetController);
     }
 
     @After
@@ -68,6 +80,58 @@ public class RestoreTabsPromoSheetContentUnitTest {
     @Test
     public void testSheetContent_getFullHeightRatio() {
         Assert.assertEquals(BottomSheetContent.HeightMode.WRAP_CONTENT, mSheetContent.getFullHeightRatio(), 0.05);
+    }
+
+    @Test
+    public void testSheetContent_handleBackPressDeviceScreen() {
+        mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+        Assert.assertTrue(mSheetContent.handleBackPress());
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+    }
+
+    @Test
+    public void testSheetContent_handleBackPressReviewTabsScreen() {
+        mModel.set(CURRENT_SCREEN, REVIEW_TABS_SCREEN);
+        Assert.assertTrue(mSheetContent.handleBackPress());
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+    }
+
+    @Test
+    public void testSheetContent_handleBackPressHomeScreen() {
+        mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+        Assert.assertTrue(mSheetContent.handleBackPress());
+        Assert.assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testSheetContent_handleBackPressUninitializedScreen() {
+        Assert.assertFalse(mSheetContent.handleBackPress());
+    }
+
+    @Test
+    public void testSheetContent_onBackPressedDeviceScreen() {
+        mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+        mSheetContent.onBackPressed();
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+    }
+
+    @Test
+    public void testSheetContent_onBackPressedReviewTabsScreen() {
+        mModel.set(CURRENT_SCREEN, REVIEW_TABS_SCREEN);
+        mSheetContent.onBackPressed();
+        Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
+    }
+
+    @Test
+    public void testSheetContent_onBackPressedHomeScreen() {
+        mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+        mSheetContent.onBackPressed();
+        Assert.assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testSheetContent_onBackPressedUninitializedScreen() {
+        mSheetContent.onBackPressed();
     }
 
     @Test

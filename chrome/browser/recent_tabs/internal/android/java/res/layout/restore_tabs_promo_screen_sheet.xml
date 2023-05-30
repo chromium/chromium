@@ -11,7 +11,9 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/restore_tabs_sheet_padding"
+    android:paddingRight="@dimen/restore_tabs_sheet_padding">
     <!-- Header section -->
     <ImageView
         android:layout_width="wrap_content"
@@ -33,12 +35,12 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.Headline"
             android:text="@string/restore_tabs_promo_sheet_title"/>
         <TextView
+            android:id="@+id/restore_tabs_promo_sheet_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:gravity="center_horizontal"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:text="@string/restore_tabs_promo_sheet_subtitle" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
     </LinearLayout>
     <!-- Selected Device  -->
     <LinearLayout
@@ -49,7 +51,7 @@ found in the LICENSE file.
         android:layout_marginBottom="8dp"
         android:paddingTop="@dimen/restore_tabs_promo_sheet_device_card_padding"
         android:paddingBottom="@dimen/restore_tabs_promo_sheet_device_card_padding"
-        android:background="@drawable/restore_tabs_device_info_background"
+        android:background="@drawable/restore_tabs_single_item_background"
         android:orientation="horizontal">
       <ImageView
           android:id="@+id/restore_tabs_promo_sheet_device_icon"
@@ -106,7 +108,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="@dimen/restore_tabs_bottom_sheet_padding"
         android:ellipsize="end"
         android:gravity="center"
         android:singleLine="true"
