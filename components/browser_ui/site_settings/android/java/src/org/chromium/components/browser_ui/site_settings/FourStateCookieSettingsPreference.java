@@ -175,19 +175,7 @@ public class FourStateCookieSettingsPreference extends Preference
                     (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
                             R.id.block_third_party_with_aux);
 
-            String blockTPIncognitoCtxDescription = getResources().getString(
-                    R.string.website_settings_category_cookie_block_third_party_incognito_title);
-            blockTPIncognitoBtnWithDescAndAux.setAuxButtonContentDescription(
-                    getResources().getString(
-                            R.string.accessibility_expand_button_with_target_description,
-                            blockTPIncognitoCtxDescription));
             blockTPIncognitoBtnWithDescAndAux.setVisibility(View.VISIBLE);
-
-            String blockTPCtxDescription = getResources().getString(
-                    R.string.website_settings_category_cookie_block_third_party_title);
-            blockTPButtonWithDescAndAux.setAuxButtonContentDescription(getResources().getString(
-                    R.string.accessibility_expand_button_with_target_description,
-                    blockTPCtxDescription));
             blockTPButtonWithDescAndAux.setVisibility(View.VISIBLE);
 
             blockTPIncognitoBtnWithDescAndAux.setAuxButtonClickedListener(this);
