@@ -22,7 +22,8 @@ PredictorDatabase* PredictorDatabaseFactory::GetForProfile(Profile* profile) {
 
 // static
 PredictorDatabaseFactory* PredictorDatabaseFactory::GetInstance() {
-  return base::Singleton<PredictorDatabaseFactory>::get();
+  static base::NoDestructor<PredictorDatabaseFactory> instance;
+  return instance.get();
 }
 
 PredictorDatabaseFactory::PredictorDatabaseFactory()
@@ -35,8 +36,7 @@ PredictorDatabaseFactory::PredictorDatabaseFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-PredictorDatabaseFactory::~PredictorDatabaseFactory() {
-}
+PredictorDatabaseFactory::~PredictorDatabaseFactory() = default;
 
 KeyedService* PredictorDatabaseFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

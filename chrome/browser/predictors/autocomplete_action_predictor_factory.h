@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_FACTORY_H_
 #define CHROME_BROWSER_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -29,8 +29,7 @@ class AutocompleteActionPredictorFactory : public ProfileKeyedServiceFactory {
       const AutocompleteActionPredictorFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      AutocompleteActionPredictorFactory>;
+  friend base::NoDestructor<AutocompleteActionPredictorFactory>;
 
   AutocompleteActionPredictorFactory();
   ~AutocompleteActionPredictorFactory() override;

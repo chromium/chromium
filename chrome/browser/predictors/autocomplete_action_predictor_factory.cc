@@ -21,7 +21,8 @@ AutocompleteActionPredictor* AutocompleteActionPredictorFactory::GetForProfile(
 // static
 AutocompleteActionPredictorFactory*
     AutocompleteActionPredictorFactory::GetInstance() {
-  return base::Singleton<AutocompleteActionPredictorFactory>::get();
+  static base::NoDestructor<AutocompleteActionPredictorFactory> instance;
+  return instance.get();
 }
 
 AutocompleteActionPredictorFactory::AutocompleteActionPredictorFactory()
@@ -37,7 +38,8 @@ AutocompleteActionPredictorFactory::AutocompleteActionPredictorFactory()
   DependsOn(PredictorDatabaseFactory::GetInstance());
 }
 
-AutocompleteActionPredictorFactory::~AutocompleteActionPredictorFactory() {}
+AutocompleteActionPredictorFactory::~AutocompleteActionPredictorFactory() =
+    default;
 
 KeyedService* AutocompleteActionPredictorFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

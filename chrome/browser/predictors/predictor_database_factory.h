@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_PREDICTORS_PREDICTOR_DATABASE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -26,7 +26,7 @@ class PredictorDatabaseFactory : public ProfileKeyedServiceFactory {
   PredictorDatabaseFactory& operator=(const PredictorDatabaseFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PredictorDatabaseFactory>;
+  friend base::NoDestructor<PredictorDatabaseFactory>;
 
   PredictorDatabaseFactory();
   ~PredictorDatabaseFactory() override;
