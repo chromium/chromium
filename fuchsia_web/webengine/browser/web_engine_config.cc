@@ -160,5 +160,9 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
     }
   }
 
+  // TODO(crbug.com/1449048): Remove this switch once fixed.
+  command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
+                                  "underlay");
+
   return true;
 }
