@@ -134,7 +134,6 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
  private:
   friend class SavedDeskItemViewTestApi;
 
-  void OnHoverAnimationEnded();
   void AnimateHover(ui::Layer* layer_to_show, ui::Layer* layer_to_hide);
 
   void OnDeleteSavedDesk();
