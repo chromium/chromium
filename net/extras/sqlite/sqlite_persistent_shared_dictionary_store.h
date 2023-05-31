@@ -93,6 +93,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void DeleteExpiredDictionaries(
       const base::Time now,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  // Deletes dictionaries in order of `last_used_time` if the total size of all
+  // dictionaries exceeds `cache_max_size` until the total size reaches
+  // `low_watermark`.
+  void ProcessEviction(
+      const uint64_t cache_max_size,
+      const uint64_t low_watermark,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
                                     base::Time last_used_time);
 
