@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL drawImage with zero-sized source rectangle from image draws nothing without exception promise_test: Unhandled rejection with value: object "InvalidStateError: The source image could not be decoded."
-Harness: the test ran to completion.
-

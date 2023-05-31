@@ -385,7 +385,7 @@
 - name: 2d.drawImage.zerosource.image
   desc: drawImage with zero-sized source rectangle from image draws nothing without exception
   test_type: promise
-  canvasType: ['HTMLCanvas']
+  canvasType: ['HTMLCanvas', 'OffscreenCanvas']
   code: |
     ctx.fillStyle = '#0f0';
     ctx.fillRect(0, 0, 100, 50);
@@ -408,19 +408,6 @@
     _assertPixel(canvas, 50, 25, 0, 255, 0, 255);
   expected: green
 
-- name: 2d.drawImage.zerosource.image
-  desc: drawImage with zero-sized source rectangle from image draws nothing without exception
-  test_type: promise
-  canvasType: ['OffscreenCanvas', 'Worker']
-  code: |
-    ctx.fillStyle = '#0f0';
-    ctx.fillRect(0, 0, 100, 50);
-    const response = await fetch('/images/red-zerowidth.svg');
-    const blob = await response.blob();
-    const bitmap = await createImageBitmap(blob);
-    ctx.drawImage(bitmap, 0, 0, 100, 50);
-    _assertPixel(canvas, 50,25, 0,255,0,255);
-  expected: green
 
 - name: 2d.drawImage.negativesource
   desc: Negative source width/height represents the correct rectangle
@@ -531,7 +518,7 @@
 - name: 2d.drawImage.svg
   desc: drawImage() of an SVG image
   test_type: promise
-  canvasType: ['HTMLCanvas']
+  canvasType: ['HTMLCanvas', 'OffscreenCanvas']
   code: |
     const img = new Image();
     const imageLoadPromise = new Promise((resolve, reject) => {
@@ -543,19 +530,6 @@
 
     ctx.drawImage(img, 0, 0);
     _assertPixelApprox(canvas, 50, 25, 0, 255, 0, 255, 2);
-  expected: green
-
-
-- name: 2d.drawImage.svg
-  desc: drawImage() of an SVG image
-  test_type: promise
-  canvasType: ['OffscreenCanvas', 'Worker']
-  code: |
-    const response = await fetch('/images/green.svg');
-    const blob = await response.blob();
-    const bitmap = await createImageBitmap(blob);
-    ctx.drawImage(bitmap, 0, 0);
-    _assertPixelApprox(canvas, 50,25, 0,255,0,255, 2);
   expected: green
 
 - name: 2d.drawImage.path
