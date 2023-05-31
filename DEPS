@@ -300,7 +300,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'refs/heads/chromium/5803',
+  'src_internal_revision': 'd3fec211a3b6a8f863e79c57b9aee1fafb9547cb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -308,11 +308,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'refs/heads/chromium/5803',
+  'v8_revision': '465cd6658c6dce6887efb4c3eaa74b7b5a45b4ef',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'refs/heads/chromium/5803',
+  'angle_revision': 'ec7e07789c0cffae8e9c8e9d193fc93c79355eed',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -320,7 +320,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'refs/heads/chromium/5803',
+  'pdfium_revision': '6e653ec0cf27cbaf0ff204aeed5d5747dd85da33',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -431,7 +431,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'refs/heads/chromium/5803',
+  'dawn_revision': '212959b7383a69d4df61a17bc5710396411d060c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -812,7 +812,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'refs/heads/chromium/5803',
+    '1faa270649426a6ab0abeb3b8208b638262c0558',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1248,7 +1248,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'refs/heads/chromium/5803',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '10e8cefc566cabb01cf3c02b4cad225ceb5ce289',
     'condition': 'checkout_src_internal',
   },
 
@@ -1860,7 +1860,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@refs/heads/chromium/5803',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@38913f747b19e3fabc01f6a0a92222a339918f4b',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'ebe84bec02c041d28f902da0214bf442743fc907',
@@ -1900,7 +1900,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '68e170d6899db18c5dfe3f1a4d12857a223509c5',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/5803',
+    Var('webrtc_git') + '/src.git' + '@' + '4bf52387e78e0a88c806c7e2c3646756f80e4515',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3959,7 +3959,7 @@ deps = {
   # Dependencies from src_internal
   'src/chromeos/assistant/internal': {
       'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
-        'refs/heads/chromium/5803',
+        '6642da7a3ef31bb09ecb888cb0938e9839bcb445',
       'condition': 'checkout_src_internal and checkout_chromeos',
     },
 
@@ -3969,7 +3969,7 @@ deps = {
   },
 
   'src/libassistant': {
-      'url': Var('chrome_git') + '/chrome/libassistant.git' + '@' + 'refs/heads/chromium/5803',
+      'url': Var('chrome_git') + '/chrome/libassistant.git' + '@' + '814fa857d072d8599cf8b02ac0a79cade692ce7f',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
@@ -4141,7 +4141,7 @@ deps = {
 
   'src/components/optimization_guide/internal': {
       'url': Var('chrome_git') + '/chrome/components/optimization_guide.git' + '@' +
-        'refs/heads/chromium/5803',
+        '15a8ac31d8c154261e8e937c18a4fcf3a76ec22f',
       'condition': 'checkout_src_internal',
   },
 
@@ -4189,7 +4189,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        'refs/heads/chromium/5803',
+        '3481331ae5475ebe38f30850c283621a0a513ecb',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
