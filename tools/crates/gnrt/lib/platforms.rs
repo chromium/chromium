@@ -32,6 +32,7 @@ impl PlatformSet {
     }
 
     /// A `PlatformSet` that matches one platform filter.
+    #[cfg(test)]
     pub fn one(filter: Option<Platform>) -> Self {
         let mut ps = Self::empty();
         ps.add(filter);
@@ -96,10 +97,12 @@ pub fn filter_unsupported_platform_terms(platform: Platform) -> Option<Platform>
     }
 }
 
+#[cfg(test)]
 pub fn supported_os_cfgs_for_testing() -> &'static [Cfg] {
     supported_os_cfgs()
 }
 
+#[cfg(test)]
 pub fn supported_named_platforms_for_testing() -> &'static [&'static str] {
     SUPPORTED_NAMED_PLATFORMS
 }
@@ -244,3 +247,66 @@ static SUPPORTED_NAMED_PLATFORMS: &'static [&'static str] = &[
     "x86_64-apple-darwin",
     "aarch64-apple-darwin",
 ];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use cargo_platform::{CfgExpr, Platform};
+    use std::str::FromStr;
+
+    #[test]
+    fn platform_is_supported() {
+        for named_platform in supported_named_platforms_for_testing() {
+            assert!(matches_supported_target(&Platform::Name(named_platform.to_string())));
+        }
+
+        assert!(!matches_supported_target(&Platform::Name("x86_64-unknown-redox".to_string())));
+        assert!(!matches_supported_target(&Platform::Name("wasm32-wasi".to_string())));
+
+        for os in supported_os_cfgs_for_testing() {
+            assert!(matches_supported_target(&Platform::Cfg(CfgExpr::Value(os.clone()))));
+        }
+
+        assert!(!matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("target_os = \"redox\"").unwrap()
+        )));
+        assert!(!matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("target_os = \"haiku\"").unwrap()
+        )));
+        assert!(!matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("target_arch = \"sparc\"").unwrap()
+        )));
+
+        assert!(matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("any(unix, target_os = \"wasi\")").unwrap()
+        )));
+
+        assert!(!matches_supported_target(&Platform::Cfg(
+            CfgExpr::from_str("all(unix, target_os = \"wasi\")").unwrap()
+        )));
+    }
+
+    #[test]
+    fn filter_unsupported() {
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str("any(unix, target_os = \"wasi\")").unwrap()
+            )),
+            Some(Platform::Cfg(CfgExpr::from_str("unix").unwrap()))
+        );
+
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str("all(not(unix), not(target_os = \"wasi\"))").unwrap()
+            )),
+            Some(Platform::Cfg(CfgExpr::from_str("not(unix)").unwrap()))
+        );
+
+        assert_eq!(
+            filter_unsupported_platform_terms(Platform::Cfg(
+                CfgExpr::from_str("not(target_os = \"wasi\")").unwrap()
+            )),
+            None
+        );
+    }
+}

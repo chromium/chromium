@@ -486,3 +486,46 @@ impl From<EpochString> for Epoch {
         Epoch::from_version_req_str(&epoch.0)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Epoch::*;
+    use super::*;
+
+    #[test]
+    fn epoch_from_str() {
+        use EpochParseError::*;
+        assert_eq!(Epoch::from_str("v1"), Ok(Major(1)));
+        assert_eq!(Epoch::from_str("v2"), Ok(Major(2)));
+        assert_eq!(Epoch::from_str("v0_3"), Ok(Minor(3)));
+        assert_eq!(Epoch::from_str("0_1"), Err(BadFormat));
+        assert_eq!(Epoch::from_str("v1_9"), Err(BadVersion));
+        assert_eq!(Epoch::from_str("v0_0"), Err(BadVersion));
+        assert_eq!(Epoch::from_str("v0_1_2"), Err(BadFormat));
+        assert_eq!(Epoch::from_str("v1_0"), Err(BadVersion));
+        assert!(matches!(Epoch::from_str("v1_0foo"), Err(InvalidInt(_))));
+        assert!(matches!(Epoch::from_str("vx_1"), Err(InvalidInt(_))));
+    }
+
+    #[test]
+    fn epoch_to_string() {
+        assert_eq!(Major(1).to_string(), "v1");
+        assert_eq!(Major(2).to_string(), "v2");
+        assert_eq!(Minor(3).to_string(), "v0_3");
+    }
+
+    #[test]
+    fn epoch_from_version() {
+        use semver::Version;
+
+        assert_eq!(Epoch::from_version(&Version::new(0, 1, 0)), Minor(1));
+        assert_eq!(Epoch::from_version(&Version::new(1, 2, 0)), Major(1));
+    }
+
+    #[test]
+    fn epoch_from_version_req_string() {
+        assert_eq!(Epoch::from_version_req_str("0.1.0"), Minor(1));
+        assert_eq!(Epoch::from_version_req_str("1.0.0"), Major(1));
+        assert_eq!(Epoch::from_version_req_str("2.3.0"), Major(2));
+    }
+}

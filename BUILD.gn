@@ -849,20 +849,14 @@ group("all_rust") {
   deps = [ ":rust_build_tests" ]
 
   if (toolchain_has_rust) {
+    # There is rust stuff behind flags in here.
+    deps += [ "//base:base_unittests" ]
+
     if (enable_rust_mojo) {
       deps += [
         "//mojo/public/rust",
         "//mojo/public/rust:mojo_rust_integration_unittests",
         "//mojo/public/rust:mojo_rust_unittests",
-      ]
-    }
-
-    # gnrt is a developer tool run on developer machines. It is not needed when
-    # cross-compiling.
-    if (enable_rust_gnrt && host_os == target_os && host_cpu == target_cpu) {
-      deps += [
-        "//tools/crates/gnrt($host_toolchain)",
-        "//tools/crates/gnrt/lib:gnrt_unittests",
       ]
     }
   }

@@ -830,11 +830,6 @@ targets.console_test_launcher(
     label = "//third_party/crashpad/crashpad:crashpad_tests",
 )
 
-targets.console_test_launcher(
-    name = "gnrt_unittests",
-    label = "//tools/crates/gnrt/lib:gnrt_unittests",
-)
-
 targets.compile_target(
     name = "cronet_package",
     label = "//components/cronet:cronet_package",

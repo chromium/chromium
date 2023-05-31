@@ -4762,12 +4762,6 @@
       },
     },
 
-    # Some Rust-related tooling is itself written in Rust. These tools are only
-    # run on build hosts.
-    'rust_tooling_gtests': {
-      'gnrt_unittests': {},
-    },
-
     'site_isolation_android_fyi_gtests': {
       'site_per_process_android_browsertests': {
         'args': [
@@ -6626,7 +6620,6 @@
     # Rust tests run on non-cross builds.
     'rust_host_gtests': [
       'rust_common_gtests',
-      'rust_tooling_gtests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [

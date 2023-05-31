@@ -5587,7 +5587,6 @@
       },
       'linux-rust-x64-dbg' : {
         'additional_compile_targets': [
-          'gnrt_unittests',
           'mojo_rust',
           'mojo_rust_integration_unittests',
           'mojo_rust_unittests',
@@ -5603,7 +5602,6 @@
       },
       'linux-rust-x64-rel' : {
         'additional_compile_targets': [
-          'gnrt_unittests',
           'mojo_rust',
           'mojo_rust_integration_unittests',
           'mojo_rust_unittests',
@@ -5619,7 +5617,6 @@
       },
       'mac-rust-x64-dbg' : {
         'additional_compile_targets': [
-          'gnrt_unittests',
           'mojo_rust',
           'mojo_rust_integration_unittests',
           'mojo_rust_unittests',
@@ -5635,7 +5632,6 @@
       },
       'win-rust-x64-dbg' : {
         'additional_compile_targets': [
-          'gnrt_unittests',
           'mojo_rust',
           'mojo_rust_integration_unittests',
           'mojo_rust_unittests',
@@ -5652,7 +5648,6 @@
       },
       'win-rust-x64-rel' : {
         'additional_compile_targets': [
-          'gnrt_unittests',
           'mojo_rust',
           'mojo_rust_integration_unittests',
           'mojo_rust_unittests',

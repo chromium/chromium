@@ -27,9 +27,9 @@ bar = { version = "3", features = [ "spaceships" ] }
 
 To generate `BUILD.gn` files for all third-party crates, and find missing
 transitive dependencies to download, use the `gnrt` tool:
-1. Build `gnrt` to run on host machine, e.g. `ninja -C out/Default gnrt`.
-1. Change directory to the root src/ dir of Chromium.
-2. Run `gnrt` with the `gen` action: e.g. `out/Default/gnrt gen`.
+1. Change directory to the root `src/` dir of Chromium.
+1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
+1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen`.
 
 This will generate a `BUILD.gn` file for each third-party crate. The `BUILD.gn`
 file changes will be visible in `git status` and can be added with `git add`.
@@ -66,16 +66,17 @@ patched with a couple of changes:
 
 To update a crate "foo" to the latest version you must just re-import it at this
 time. To update from version "1.2.0" to "1.3.2":
-1. Build `gnrt` before making any changes to `//third_party/rust`.
+1. Build `gnrt` before making any changes to `//third_party/rust`: `cargo build
+   --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir
+   out/gnrt`.
 1. Remove the `//third_party/rust/foo/v1/crate` directory, which contains the
-upstream code.
-1. Re-download the crate at the new version with `out/<conf>/gnrt download foo
-   1.3.2`.
+   upstream code.
+1. Re-download the crate at the new version with `out/gnrt/release/gnrt download
+   foo 1.3.2`.
 1. If there are any, re-apply local patches with
-`for i in $(find third_party/rust/foo/v1/patches/*); do patch -p1 < $i; done`
-1. Run `out/<conf>/gnrt gen` to re-generate all third-party `BUILD.gn` files.
-1. Re-build `gnrt` and `gnrt_unittests`. Run `gnrt` and ensure the `BUILD.gn`
-outputs are the same as before. Run `gnrt_unittests`.
+   `for i in $(find third_party/rust/foo/v1/patches/*); do patch -p1 < $i; done`
+1. Run `out/gnrt/release/gnrt gen` to re-generate all third-party `BUILD.gn` files.
+1. Build `all_rust` to verify things are working.
 
 # Directory structure for third-party crates
 

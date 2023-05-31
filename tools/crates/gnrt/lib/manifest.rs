@@ -279,3 +279,237 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
         patches: std::iter::once(("crates-io".to_string(), patch_sections)).collect(),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::crates::Epoch;
+
+    #[test]
+    fn parse_single_full_dependency() {
+        assert_eq!(
+            toml::de::from_str(concat!(
+                "version = \"1\"\n",
+                "features = [\"foo\", \"bar\"]\n",
+                "allow-first-party-usage = false\n",
+                "build-script-outputs = [\"stuff.rs\"]\n",
+                "gn-variables-lib = \"\"\"
+                deps = []
+                configs = []
+                \"\"\""
+            )),
+            Ok(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Major(1),
+                features: vec!["foo".to_string(), "bar".to_string()],
+                allow_first_party_usage: false,
+                build_script_outputs: vec!["stuff.rs".to_string()],
+                gn_variables_lib: Some(
+                    concat!(
+                        "                deps = []\n",
+                        "                configs = []\n",
+                        "                "
+                    )
+                    .to_string()
+                )
+            })
+        );
+
+        assert_eq!(
+            toml::de::from_str(concat!(
+                "version = \"3\"\n",
+                "build-script-outputs = [\"generated.rs\"]\n",
+            )),
+            Ok(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Major(3),
+                features: vec![],
+                allow_first_party_usage: true,
+                build_script_outputs: vec!["generated.rs".to_string()],
+                gn_variables_lib: None,
+            })
+        );
+    }
+
+    #[test]
+    fn no_default_features() {
+        assert_eq!(
+            toml::de::from_str(concat!(
+                "default-features = false\n",
+                "version = \"1\"\n",
+                "features = [\"foo\", \"bar\"]\n",
+                "allow-first-party-usage = false\n",
+                "build-script-outputs = [\"stuff.rs\"]\n",
+                "gn-variables-lib = \"\"\"
+                deps = []
+                configs = []
+                \"\"\""
+            )),
+            Ok(ThirdPartyFullDependency {
+                default_features: false,
+                version: Epoch::Major(1),
+                features: vec!["foo".to_string(), "bar".to_string()],
+                allow_first_party_usage: false,
+                build_script_outputs: vec!["stuff.rs".to_string()],
+                gn_variables_lib: Some(
+                    concat!(
+                        "                deps = []\n",
+                        "                configs = []\n",
+                        "                "
+                    )
+                    .to_string()
+                )
+            })
+        );
+    }
+
+    #[test]
+    fn parse_manifest() {
+        let manifest: ThirdPartyManifest = toml::de::from_str(concat!(
+            "[dependencies]\n",
+            "cxx = \"1\"\n",
+            "serde = \"1\"\n",
+            "rustversion = {version = \"1\", build-script-outputs = [\"version.rs\"]}",
+            "\n",
+            "[dependencies.unicode-linebreak]\n",
+            "version = \"0.1\"\n",
+            "allow-first-party-usage = false\n",
+            "build-script-outputs = [ \"table.rs\" ]\n",
+            "\n",
+            "[dependencies.special-stuff]\n",
+            "version = \"0.1\"\n",
+            "gn-variables-lib = \"hello = \\\"world\\\"\"\n",
+            "\n",
+            "[testonly-dependencies]\n",
+            "syn = {version = \"1\", features = [\"full\"]}\n",
+        ))
+        .unwrap();
+
+        assert_eq!(
+            manifest.dependencies.get("cxx"),
+            Some(&ThirdPartyDependency::Short(Epoch::Major(1)))
+        );
+        assert_eq!(
+            manifest.dependencies.get("serde"),
+            Some(&ThirdPartyDependency::Short(Epoch::Major(1)))
+        );
+
+        assert_eq!(
+            manifest.dependencies.get("rustversion"),
+            Some(&Dependency::Full(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Major(1),
+                features: vec![],
+                allow_first_party_usage: true,
+                build_script_outputs: vec!["version.rs".to_string()],
+                gn_variables_lib: None,
+            }))
+        );
+
+        assert_eq!(
+            manifest.dependencies.get("unicode-linebreak"),
+            Some(&Dependency::Full(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Minor(1),
+                features: vec![],
+                allow_first_party_usage: false,
+                build_script_outputs: vec!["table.rs".to_string()],
+                gn_variables_lib: None,
+            }))
+        );
+
+        assert_eq!(
+            manifest.dependencies.get("special-stuff"),
+            Some(&Dependency::Full(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Minor(1),
+                features: vec![],
+                allow_first_party_usage: true,
+                build_script_outputs: vec![],
+                gn_variables_lib: Some("hello = \"world\"".to_string()),
+            }))
+        );
+
+        assert_eq!(
+            manifest.testonly_dependencies.get("syn"),
+            Some(&Dependency::Full(ThirdPartyFullDependency {
+                default_features: true,
+                version: Epoch::Major(1),
+                features: vec!["full".to_string()],
+                allow_first_party_usage: true,
+                build_script_outputs: vec![],
+                gn_variables_lib: None,
+            }))
+        );
+    }
+
+    #[test]
+    fn serialize_manifest_with_patches() {
+        let manifest = CargoManifest {
+            package: CargoPackage {
+                name: "chromium".to_string(),
+                version: Version::new(0, 1, 0),
+                authors: Vec::new(),
+                edition: Edition("2021".to_string()),
+                description: None,
+                license: "funtimes".to_string(),
+            },
+            workspace: None,
+            dependencies: CargoDependencySet::new(),
+            patches: vec![(
+                "crates-io".to_string(),
+                vec![(
+                    "foo_v1".to_string(),
+                    CargoPatch {
+                        path: "third_party/rust/foo/v1/crate".to_string(),
+                        package: "foo".to_string(),
+                    },
+                )]
+                .into_iter()
+                .collect(),
+            )]
+            .into_iter()
+            .collect(),
+        };
+
+        assert_eq!(
+            toml::to_string(&manifest).unwrap(),
+            "[package]
+name = \"chromium\"
+version = \"0.1.0\"
+edition = \"2021\"
+license = \"funtimes\"
+[patch.crates-io.foo_v1]
+path = \"third_party/rust/foo/v1/crate\"
+package = \"foo\"
+"
+        )
+    }
+
+    #[test]
+    fn package_manifest() {
+        let manifest: CargoManifest = toml::de::from_str(concat!(
+            "[package]
+name = \"foo\"
+version = \"1.2.3\"
+authors = [\"alice@foo.com\", \"bob@foo.com\"]
+edition = \"2021\"
+description = \"A library to foo the bars\"
+license = \"funtimes\"
+"
+        ))
+        .unwrap();
+
+        assert_eq!(
+            manifest.package,
+            CargoPackage {
+                name: "foo".to_string(),
+                version: Version::new(1, 2, 3),
+                authors: vec!["alice@foo.com".to_string(), "bob@foo.com".to_string()],
+                edition: Edition("2021".to_string()),
+                description: Some("A library to foo the bars".to_string()),
+                license: "funtimes".to_string(),
+            }
+        )
+    }
+}

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use gnrt_lib::*;
+#![deny(warnings)]
+#![forbid(unsafe_op_in_unsafe_fn)]
+#![forbid(unsafe_code)]
 
 mod download;
 mod gen;
@@ -10,6 +12,7 @@ mod util;
 
 use anyhow::{Context, Result};
 use clap::arg;
+use gnrt_lib::*;
 
 fn main() -> Result<()> {
     let mut logger_builder = env_logger::Builder::new();
