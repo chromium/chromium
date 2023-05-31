@@ -55,7 +55,6 @@ constexpr int kRefreshThumbInset = -4;
 constexpr int kRefreshThumbInsetSelected = -2;
 constexpr int kRefreshThumbPressedOutset = 1;
 constexpr int kRefreshHoverDiameter = 20;
-constexpr int kTrackHorizontalMarginChromeRefresh = 0;
 
 const gfx::Size GetTrackSize() {
   return features::IsChromeRefresh2023() ? kRefreshTrackSize : kTrackSize;
@@ -382,10 +381,9 @@ void ToggleButton::RemoveLayerFromRegions(ui::Layer* layer) {
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {
   gfx::Rect rect(GetTrackSize());
-  rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin,
-                             features::IsChromeRefresh2023()
-                                 ? kTrackHorizontalMarginChromeRefresh
-                                 : -kTrackHorizontalMargin));
+  if (!features::IsChromeRefresh2023()) {
+    rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin, -kTrackHorizontalMargin));
+  }
   rect.Inset(-GetInsets());
   return rect.size();
 }
