@@ -30,7 +30,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac12 Tests (dbg)",
+              "builder": "Mac13 Tests (dbg)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -61,7 +61,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Mac12 Tests (dbg)",
+          "builder": "Mac13 Tests (dbg)",
           "project": "chromium"
         }
       ],

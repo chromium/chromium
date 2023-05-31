@@ -378,7 +378,7 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Mac12 Tests (dbg)",
+    name = "Mac13 Tests (dbg)",
     branch_selector = branches.selector.MAC_BRANCHES,
     triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
@@ -400,7 +400,7 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
-        short_name = "12",
+        short_name = "13",
     ),
     cq_mirrors_console_view = "mirrors",
 )

@@ -368,7 +368,7 @@
           'shards': 12,
         },
       },
-      'Mac12 Tests (dbg)': {
+      'Mac13 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
           '--debug',
@@ -730,7 +730,7 @@
           'shards': 18,
         },
       },
-      'Mac12 Tests (dbg)': {
+      'Mac13 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
           '--debug',
@@ -1012,7 +1012,7 @@
       # off CQ.
       'Mac10.13 Tests', # https://crbug.com/1042757
       'Mac10.15 Tests', # https://crbug.com/1042757
-      'Mac12 Tests (dbg)', # https://crbug.com/1201386
+      'Mac13 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
       'mac11-arm64-rel-tests', # https://crbug.com/1406364
       'mac12-arm64-rel-tests', # https://crbug.com/1406364
@@ -1143,7 +1143,7 @@
           'shards': 20,  # crbug.com/1361887
         },
       },
-      'Mac12 Tests (dbg)': {
+      'Mac13 Tests (dbg)': {
         # crbug.com/1042757
         'swarming': {
           'dimension_sets': [
@@ -1812,7 +1812,7 @@
           'shards': 12,
         },
       },
-      'Mac12 Tests (dbg)': { # https://crbug.com/1279504
+      'Mac13 Tests (dbg)': { # https://crbug.com/1279504
         'swarming': {
           'shards': 18,
         },
@@ -2799,7 +2799,7 @@
           'shards': 6,
         },
       },
-      'Mac12 Tests (dbg)': { # https://crbug.com/1265051
+      'Mac13 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
         'swarming': {
           'shards':6,
@@ -3405,7 +3405,7 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Mac12 Tests (dbg)': {
+      'Mac13 Tests (dbg)': {
         'args': [
           '--browser=debug',
         ],
@@ -3698,7 +3698,7 @@
           'shards': 4,
         },
       },
-      'Mac12 Tests (dbg)':{
+      'Mac13 Tests (dbg)':{
         'swarming': {
           'shards': 3,
         }
@@ -3884,7 +3884,7 @@
       'Mac10.13 Tests',
       'Mac10.15 Tests',
       # TODO crbug.com/1277277
-      'Mac12 Tests (dbg)',
+      'Mac13 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
@@ -3962,7 +3962,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
       },
-      'Mac12 Tests (dbg)': {
+      'Mac13 Tests (dbg)': {
         'swarming': {
           'shards': 2,
         },

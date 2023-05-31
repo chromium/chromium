@@ -320,7 +320,7 @@ try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
         "ci/Mac Builder (dbg)",
-        "ci/Mac12 Tests (dbg)",
+        "ci/Mac13 Tests (dbg)",
     ],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
