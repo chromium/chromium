@@ -138,12 +138,14 @@ void ArcNotificationView::UpdateBackgroundPainter() {
       SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
       return;
   }
-  SetBackground(views::CreateSolidBackground(
-      shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                            AshColorProvider::BaseLayerType::kTransparent80)
-                      : AshColorProvider::Get()->GetControlsLayerColor(
-                            AshColorProvider::ControlsLayerType::
-                                kControlBackgroundColorInactive)));
+  SetBackground(views::CreateBackgroundFromPainter(
+      std::make_unique<message_center::NotificationBackgroundPainter>(
+          top_radius(), bottom_radius(),
+          shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                                AshColorProvider::BaseLayerType::kTransparent80)
+                          : AshColorProvider::Get()->GetControlsLayerColor(
+                                AshColorProvider::ControlsLayerType::
+                                    kControlBackgroundColorInactive))));
 }
 
 void ArcNotificationView::UpdateControlButtonsVisibility() {
