@@ -2156,9 +2156,6 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
-extern const char kChromeSharingCrowLaunchTabName[];
-extern const char kChromeSharingCrowLaunchTabDescription[];
-
 extern const char kCloseTabSuggestionsName[];
 extern const char kCloseTabSuggestionsDescription[];
 

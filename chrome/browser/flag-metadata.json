@@ -1043,11 +1043,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "chrome-sharing-crow-launch-tab",
-    "owners": [ "skare", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "chrome-webui-refresh-2023",
     "owners":["dpapad", "johntlee"],
     "expiry_milestone": 120

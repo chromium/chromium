@@ -3736,12 +3736,6 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
-const char kChromeSharingCrowLaunchTabName[] =
-    "Launch Thank Creator actions in standard tab";
-const char kChromeSharingCrowLaunchTabDescription[] =
-    "Launches Thank Creator actions in a traditional  new tab; default is a "
-    "custom tab. For internal debugging.";
-
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "
