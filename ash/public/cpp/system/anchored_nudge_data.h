@@ -10,6 +10,8 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -19,6 +21,11 @@ class View;
 }
 
 namespace ash {
+
+using HoverStateChangeCallback =
+    base::RepeatingCallback<void(bool is_hovering)>;
+using AnchoredNudgeClickCallback = base::RepeatingCallback<void()>;
+using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
 
 // Describes the contents of an AnchoredNudge, which is a notifier that anchors
 // to an `anchor_view` and informs users about something that might enhance
@@ -39,6 +46,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // Unowned. Must outlive the `AnchoredNudge`.
   raw_ptr<views::View> anchor_view;
+
+  HoverStateChangeCallback hover_state_change_callback = base::DoNothing();
+  AnchoredNudgeClickCallback nudge_click_callback = base::DoNothing();
+  AnchoredNudgeDismissCallback nudge_dimiss_callback = base::DoNothing();
 
   // Used to set bubble placement in relation to the anchor view.
   // A value of `BOTTOM_CENTER` means that the nudge will be anchored from its

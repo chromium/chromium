@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/strings/grit/ash_strings.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/memory/weak_ptr.h"
@@ -24,8 +25,7 @@ namespace ash {
 struct AnchoredNudgeData;
 
 // Class managing anchored nudge requests.
-class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
-                                            public AnchoredNudge::Delegate {
+class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager {
  public:
   AnchoredNudgeManagerImpl();
   AnchoredNudgeManagerImpl(const AnchoredNudgeManagerImpl&) = delete;
@@ -44,8 +44,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void HandleNudgeWidgetDestroying(const std::string& id);
 
   // AnchoredNudge::Delegate:
-  void OnNudgeHoverStateChanged(const std::string& id,
-                                bool is_hovering) override;
+  void OnNudgeHoverStateChanged(const std::string& nudge_id, bool is_hovering);
 
   // Returns true if `id` is stored in `shown_nudges_`.
   bool IsNudgeShown(const std::string& id);
@@ -62,6 +61,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
   class NudgeWidgetObserver;
+  class NudgeHoverObserver;
 
   // Chains the provided `callback` to a `Cancel()` call to dismiss a nudge with
   // `id`, and returns this chained callback. If the provided `callback` is
@@ -77,6 +77,9 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Used to cache and keep track of nudges that are currently displayed, so
   // they can be dismissed or their contents updated.
   std::map<std::string, raw_ptr<AnchoredNudge>> shown_nudges_;
+
+  std::map<std::string, std::unique_ptr<NudgeHoverObserver>>
+      nudge_hover_observers_;
 
   // Maps an `AnchoredNudge` `id` to an observation of that nudge's
   // `anchor_view`, which is used to close the nudge whenever its anchor view is

@@ -10,12 +10,16 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 class Widget;
 }  // namespace views
+
+namespace ui {
+class MouseEvent;
+class GestureEvent;
+}  // namespace ui
 
 namespace ash {
 
@@ -26,17 +30,7 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
 
-  // Used to notify nudge events to `AnchoredNudgeManagerImpl`.
-  class ASH_EXPORT Delegate {
-   public:
-    virtual ~Delegate() {}
-
-    // Called when the mouse hover enters or exits the nudge.
-    virtual void OnNudgeHoverStateChanged(const std::string& id,
-                                          bool is_hovering) = 0;
-  };
-
-  AnchoredNudge(Delegate* delegate, const AnchoredNudgeData& nudge_data);
+  explicit AnchoredNudge(const AnchoredNudgeData& nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
@@ -54,29 +48,23 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
-  // Called by `AnchoredNudgeManager` to start observing hover events once the
-  // `AnchoredNudge` bubble was shown.
-  void AddHoverObserver(gfx::NativeWindow native_window);
-
-  // Called by `hover_observer_` when the mouse enters or exits the nudge.
-  void OnHoverStateChanged(bool is_hovering);
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   const std::string& id() { return id_; }
 
  private:
-  class HoverObserver;
-
-  // Used to notify nudge events to the manager.
-  raw_ptr<Delegate> delegate_;
-
   // Unique id used to find and dismiss the nudge through the manager.
   const std::string id_;
 
+  AnchoredNudgeClickCallback nudge_click_callback_;
+  AnchoredNudgeDismissCallback nudge_dismiss_callback_;
+
   // Owned by the views hierarchy. Contents view of the anchored nudge.
   raw_ptr<SystemToastStyle> toast_contents_view_ = nullptr;
-
-  // Used to pause and restart the nudge's dismiss timer.
-  std::unique_ptr<HoverObserver> hover_observer_;
 };
 
 }  // namespace ash
