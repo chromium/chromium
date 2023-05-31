@@ -53,6 +53,8 @@ public class LoadUrlParams {
     private long mInputStartTimestamp;
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
+    @Nullable
+    private Impression mImpression;
     private Supplier<Long> mNavigationUIDataSupplier;
 
     /**
@@ -129,6 +131,7 @@ public class LoadUrlParams {
         copy.mInputStartTimestamp = other.mInputStartTimestamp;
         copy.mHasUserGesture = other.mHasUserGesture;
         copy.mShouldClearHistoryList = other.mShouldClearHistoryList;
+        copy.mImpression = other.mImpression;
         return copy;
     }
 
@@ -600,6 +603,23 @@ public class LoadUrlParams {
     /** Returns whether session history should be cleared once the navigation commits. */
     public boolean getShouldClearHistoryList() {
         return mShouldClearHistoryList;
+    }
+
+    /**
+     * Set the attribution impression associated with the load.
+     *
+     * @param impression Attribution impression associated with the load.
+     */
+    public void setImpression(Impression impression) {
+        mImpression = impression;
+    }
+
+    /**
+     * @return The attribution impression associated with the load.
+     */
+    @Nullable
+    public Impression getImpression() {
+        return mImpression;
     }
 
     public boolean isBaseUrlDataScheme() {

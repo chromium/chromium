@@ -589,6 +589,7 @@ source_set("browser_sources") {
       "android/compositor_client.h",
       "android/devtools_auth.h",
       "android/gpu_video_accelerator_factories_provider.h",
+      "android/impression_android.h",
       "android/java_interfaces.h",
       "android/media_url_interceptor_register.cc",
       "android/media_url_interceptor_register.h",

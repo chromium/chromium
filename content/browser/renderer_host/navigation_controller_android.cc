@@ -15,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/android/impression_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
@@ -255,6 +256,7 @@ NavigationControllerAndroid::LoadUrl(
     const JavaParamRef<jobject>& j_initiator_origin,
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
+    const base::android::JavaParamRef<jobject>& j_impression,
     jlong input_start,
     jlong navigation_ui_data_ptr) {
   DCHECK(url);
@@ -274,6 +276,20 @@ NavigationControllerAndroid::LoadUrl(
   params.should_replace_current_entry = should_replace_current_entry;
   params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = should_clear_history_list;
+
+  if (j_impression) {
+    params.initiator_frame_token =
+        GetInitiatorFrameTokenFromJavaImpression(env, j_impression);
+    params.initiator_process_id =
+        GetInitiatorProcessIDFromJavaImpression(env, j_impression);
+    blink::Impression impression;
+    impression.attribution_src_token =
+        GetAttributionSrcTokenFromJavaImpression(env, j_impression).value();
+    impression.nav_type = blink::mojom::AttributionNavigationType::kContextMenu;
+    impression.runtime_features =
+        GetAttributionRuntimeFeaturesFromJavaImpression(env, j_impression);
+    params.impression = impression;
+  }
 
   if (extra_headers)
     params.extra_headers = ConvertJavaStringToUTF8(env, extra_headers);

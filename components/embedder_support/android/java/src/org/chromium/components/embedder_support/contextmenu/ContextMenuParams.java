@@ -4,11 +4,13 @@
 
 package org.chromium.components.embedder_support.contextmenu;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
+import org.chromium.content_public.browser.Impression;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.MenuSourceType;
@@ -40,6 +42,8 @@ public class ContextMenuParams {
     private final int mSourceType;
 
     private final boolean mOpenedFromHighlight;
+
+    private final @Nullable Impression mImpression;
 
     @CalledByNative
     private long getNativePointer() {
@@ -166,17 +170,25 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return Whether or not the context menu was opened from ighlight.
+     * @return Whether or not the context menu was opened from highlight.
      */
     public boolean getOpenedFromHighlight() {
         return mOpenedFromHighlight;
+    }
+
+    /**
+     * @return The attribution impresssion associated with this Context Menu.
+     */
+    public Impression getImpression() {
+        return mImpression;
     }
 
     @VisibleForTesting
     public ContextMenuParams(long nativePtr, @ContextMenuDataMediaType int mediaType, GURL pageUrl,
             GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl, String titleText,
             Referrer referrer, boolean canSaveMedia, int triggeringTouchXDp, int triggeringTouchYDp,
-            @MenuSourceType int sourceType, boolean openedFromHighlight) {
+            @MenuSourceType int sourceType, boolean openedFromHighlight,
+            @Nullable Impression impression) {
         mNativePtr = nativePtr;
         mPageUrl = pageUrl;
         mLinkUrl = linkUrl;
@@ -194,6 +206,7 @@ public class ContextMenuParams {
         mTriggeringTouchYDp = triggeringTouchYDp;
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
+        mImpression = impression;
     }
 
     @CalledByNative
@@ -201,13 +214,13 @@ public class ContextMenuParams {
             GURL pageUrl, GURL linkUrl, String linkText, GURL unfilteredLinkUrl, GURL srcUrl,
             String titleText, GURL sanitizedReferrer, int referrerPolicy, boolean canSaveMedia,
             int triggeringTouchXDp, int triggeringTouchYDp, @MenuSourceType int sourceType,
-            boolean openedFromHighlight) {
+            boolean openedFromHighlight, @Nullable Impression impression) {
         // TODO(https://crbug.com/783819): Convert Referrer to use GURL.
         Referrer referrer = sanitizedReferrer.isEmpty()
                 ? null
                 : new Referrer(sanitizedReferrer.getSpec(), referrerPolicy);
         return new ContextMenuParams(nativePtr, mediaType, pageUrl, linkUrl, linkText,
                 unfilteredLinkUrl, srcUrl, titleText, referrer, canSaveMedia, triggeringTouchXDp,
-                triggeringTouchYDp, sourceType, openedFromHighlight);
+                triggeringTouchYDp, sourceType, openedFromHighlight, impression);
     }
 }
