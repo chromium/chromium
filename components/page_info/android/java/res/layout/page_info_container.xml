@@ -89,7 +89,7 @@
                 android:contentDescription="@string/back"
                 android:minWidth="@dimen/min_touch_target_size"
                 android:minHeight="@dimen/min_touch_target_size"
-                android:src="@drawable/ic_arrow_back_white_24dp"
+                android:src="@drawable/ic_arrow_back_24dp"
                 app:tint="@macro/default_icon_color" />
 
             <TextView
