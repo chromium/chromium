@@ -4,13 +4,16 @@
 
 #include "chrome/browser/themes/theme_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/common/pref_names.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -43,10 +46,22 @@ const ThemeHelper& GetThemeHelper() {
   return **theme_helper;
 }
 
+BASE_FEATURE(kProfileBasedThemeService,
+             "ProfileBasedThemeService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 // static
 ThemeService* ThemeServiceFactory::GetForProfile(Profile* profile) {
+  TRACE_EVENT0("loading", "ThemeServiceFactory::GetForProfile");
+  if (base::FeatureList::IsEnabled(kProfileBasedThemeService)) {
+    if (!profile->theme_service()) {
+      profile->set_theme_service(static_cast<ThemeService*>(
+          GetInstance()->GetServiceForBrowserContext(profile, true)));
+    }
+    return profile->theme_service().value();
+  }
   return static_cast<ThemeService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -122,4 +137,10 @@ void ThemeServiceFactory::RegisterProfilePrefs(
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
+}
+
+void ThemeServiceFactory::BrowserContextDestroyed(
+    content::BrowserContext* browser_context) {
+  Profile::FromBrowserContext(browser_context)->set_theme_service(nullptr);
+  BrowserContextKeyedServiceFactory::BrowserContextDestroyed(browser_context);
 }

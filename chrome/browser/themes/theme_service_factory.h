@@ -47,6 +47,8 @@ class ThemeServiceFactory : public ProfileKeyedServiceFactory {
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  void BrowserContextDestroyed(
+      content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SERVICE_FACTORY_H_

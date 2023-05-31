@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/web_data_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
@@ -31,8 +34,26 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
+namespace {
+
+BASE_FEATURE(kProfileBasedTemplateURLService,
+             "ProfileBasedTemplateURLService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
+  TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
+
+  if (base::FeatureList::IsEnabled(kProfileBasedTemplateURLService)) {
+    if (!profile->template_url_service()) {
+      profile->set_template_url_service(static_cast<TemplateURLService*>(
+          GetInstance()->GetServiceForBrowserContext(profile, true)));
+    }
+    return profile->template_url_service().value();
+  }
+
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -110,4 +131,11 @@ void TemplateURLServiceFactory::RegisterProfilePrefs(
 
 bool TemplateURLServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
+}
+
+void TemplateURLServiceFactory::BrowserContextDestroyed(
+    content::BrowserContext* browser_context) {
+  Profile::FromBrowserContext(browser_context)
+      ->set_template_url_service(nullptr);
+  BrowserContextKeyedServiceFactory::BrowserContextDestroyed(browser_context);
 }

@@ -36,6 +36,8 @@ class InstantServiceFactory : public ProfileKeyedServiceFactory {
   // Overridden from BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void BrowserContextDestroyed(
+      content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_INSTANT_SERVICE_FACTORY_H_
