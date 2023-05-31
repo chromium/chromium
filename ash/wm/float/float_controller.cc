@@ -899,7 +899,9 @@ void FloatController::FloatImpl(aura::Window* window) {
   // Get the desk where the window belongs to before moving it to float
   // container.
   const Desk* desk = desks_util::GetDeskForContext(window);
-  DCHECK(desk);
+  if (!desk) {
+    return;
+  }
 
   // TODO(b/267363112): Allow a floated window to be assigned to all desks.
   // If window is visible to all desks, unset it.
