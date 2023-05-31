@@ -14,7 +14,7 @@ public class GEN_JNI {
 
 
       // Hashed name: Java_J_N_MIkEiasS
-      public static native void org_chromium_example_jni_1generator_TinySample_foo();
+    public static native void org_chromium_example_jni_1generator_TinySample_foo();
       // Hashed name: Java_J_N_MtOQLwpt
-      public static native boolean org_chromium_example_jni_1generator_TinySample_bar(int a);
+    public static native boolean org_chromium_example_jni_1generator_TinySample_bar(int a);
 }

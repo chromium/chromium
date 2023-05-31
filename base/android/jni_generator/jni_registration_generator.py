@@ -859,7 +859,7 @@ def _MakeProxySignature(options, proxy_native):
   params_with_types = ', '.join('%s %s' % (p.datatype, p.name)
                                 for p in proxy_native.proxy_params)
   native_method_line = """
-      public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});"""
+    public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});"""
 
   if options.enable_jni_multiplexing:
     # This has to be only one line and without comments because all the proxy

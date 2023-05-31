@@ -12,7 +12,7 @@ public class module_N {
 
 
       // Original name: org_chromium_example_jni_1generator_SampleModule_foo
-      public static native void M$$EIl9t();
+    public static native void M$$EIl9t();
       // Original name: org_chromium_example_jni_1generator_SampleModule_bar
-      public static native boolean Mc2WZLnF(int a);
+    public static native boolean Mc2WZLnF(int a);
 }
