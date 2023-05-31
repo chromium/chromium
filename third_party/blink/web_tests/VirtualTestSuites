@@ -754,7 +754,7 @@
     "bases": ["fast/forms/color-scheme"],
     "args": ["--enable-features=ForcedColors",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "use-common-select-popup",
@@ -772,7 +772,7 @@
     "exclusive_tests": ["external/wpt/forced-colors-mode"],
     "args": ["--force-high-contrast",
              "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "dark-color-scheme",
@@ -907,7 +907,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dark-mode",
