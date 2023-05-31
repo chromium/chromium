@@ -635,10 +635,8 @@ chromeos::WindowStateType GetExpectedWindowState(
     case api::autotest_private::WMEventType::kWmeventFullscreen:
       return chromeos::WindowStateType::kFullscreen;
     case api::autotest_private::WMEventType::kWmeventSnapPrimary:
-    case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return chromeos::WindowStateType::kPrimarySnapped;
     case api::autotest_private::WMEventType::kWmeventSnapSecondary:
-    case api::autotest_private::WMEventType::kWmeventSnapRight:
       return chromeos::WindowStateType::kSecondarySnapped;
     case api::autotest_private::WMEventType::kWmeventFloat:
       return chromeos::WindowStateType::kFloated;
@@ -659,10 +657,8 @@ ash::WMEventType ToWMEventType(api::autotest_private::WMEventType event_type) {
     case api::autotest_private::WMEventType::kWmeventFullscreen:
       return ash::WMEventType::WM_EVENT_FULLSCREEN;
     case api::autotest_private::WMEventType::kWmeventSnapPrimary:
-    case api::autotest_private::WMEventType::kWmeventSnapLeft:
       return ash::WMEventType::WM_EVENT_SNAP_PRIMARY;
     case api::autotest_private::WMEventType::kWmeventSnapSecondary:
-    case api::autotest_private::WMEventType::kWmeventSnapRight:
       return ash::WMEventType::WM_EVENT_SNAP_SECONDARY;
     case api::autotest_private::WMEventType::kWmeventFloat:
       return ash::WMEventType::WM_EVENT_FLOAT;
@@ -4747,11 +4743,7 @@ AutotestPrivateSetAppWindowStateFunction::Run() {
   if (params->change.event_type ==
           api::autotest_private::WMEventType::kWmeventSnapPrimary ||
       params->change.event_type ==
-          api::autotest_private::WMEventType::kWmeventSnapSecondary ||
-      params->change.event_type ==
-          api::autotest_private::WMEventType::kWmeventSnapLeft ||
-      params->change.event_type ==
-          api::autotest_private::WMEventType::kWmeventSnapRight) {
+          api::autotest_private::WMEventType::kWmeventSnapSecondary) {
     const ash::WindowSnapWMEvent event(
         ToWMEventType(params->change.event_type));
     ash::WindowState::Get(window)->OnWMEvent(&event);

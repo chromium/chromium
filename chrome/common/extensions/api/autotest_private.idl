@@ -93,10 +93,6 @@ namespace autotestPrivate {
     WMEventFullscreen,
     WMEventSnapPrimary,
     WMEventSnapSecondary,
-    // TODO(b/252512988): Tast side still uses Left/Right. Temporarily support
-    // both during migration.
-    WMEventSnapLeft,
-    WMEventSnapRight,
     WMEventFloat
   };
 
