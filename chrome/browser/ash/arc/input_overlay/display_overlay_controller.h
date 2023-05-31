@@ -23,7 +23,6 @@ namespace arc::input_overlay {
 
 class Action;
 class ActionEditMenu;
-class ActionView;
 class ButtonOptionsMenu;
 class EditFinishView;
 class EditingList;
@@ -49,9 +48,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetDisplayMode(DisplayMode mode);
   // Get the bounds of |menu_entry_| in screen coordinates.
   absl::optional<gfx::Rect> GetOverlayMenuEntryBounds();
-
-  void AddActionEditMenu(ActionView* anchor, ActionType action_type);
-  void RemoveActionEditMenu();
 
   void AddEditMessage(const base::StringPiece& message,
                       MessageType message_type);
@@ -168,7 +164,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void SetTouchInjectorEnable(bool enable);
   bool GetTouchInjectorEnable();
 
-  // Close |ActionEditMenu| Or |MessageView| if |LocatedEvent| happens outside
+  // Close |MessageView| if |LocatedEvent| happens outside
   // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
@@ -192,7 +188,6 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<InputMenuView> input_menu_view_ = nullptr;
   raw_ptr<ButtonOptionsMenu> button_options_menu_ = nullptr;
   raw_ptr<MenuEntryView> menu_entry_ = nullptr;
-  raw_ptr<ActionEditMenu> action_edit_menu_ = nullptr;
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
   raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
