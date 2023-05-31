@@ -4498,6 +4498,32 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
   }
 }
 
+TEST_F(
+    PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
+    RecordPrivacySandbox4StartupMetrics_GraduationFlowWhenNoticeShownToGuardian) {
+  const std::string privacy_sandbox_prompt_startup_histogram =
+      "Settings.PrivacySandbox.PromptStartupState";
+
+  base::HistogramTester histogram_tester;
+
+  // User was reported restricted
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1Restricted, true);
+
+  // Prompt is suppressed because direct notice was shown to guardian
+  prefs()->SetInteger(
+      prefs::kPrivacySandboxM1PromptSuppressed,
+      static_cast<int>(PrivacySandboxService::PromptSuppressedReason::
+                           kNoticeShownToGuardian));
+
+  privacy_sandbox_service()->RecordPrivacySandbox4StartupMetrics();
+  histogram_tester.ExpectBucketCount(
+      privacy_sandbox_prompt_startup_histogram,
+      static_cast<int>(
+          PrivacySandboxService::PromptStartupState::
+              kWaitingForGraduationRestrictedNoticeFlowNotCompleted),
+      /*expected_count=*/1);
+}
+
 class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted
     : public PrivacySandboxServiceM1RestrictedNoticePromptTest {
  public:
