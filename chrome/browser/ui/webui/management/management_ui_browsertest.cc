@@ -6,7 +6,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +16,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -41,6 +39,14 @@ class ManagementUITest : public InProcessBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
+  void SetUpOnMainThread() override {
+    provider_.SetupPolicyServiceForPolicyUpdates(policy_service());
+  }
+
+  void TearDownOnMainThread() override {
+    provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
+  }
+
   void VerifyTexts(
       base::Value* actual_values,
       const std::map<std::string, std::u16string>& expected_values) {
@@ -48,7 +54,7 @@ class ManagementUITest : public InProcessBrowserTest {
     for (const auto& val : expected_values) {
       const std::string* actual_value = values_as_dict.FindString(val.first);
       ASSERT_TRUE(actual_value);
-      ASSERT_EQ(base::UTF8ToUTF16(*actual_value), val.second);
+      EXPECT_EQ(base::UTF8ToUTF16(*actual_value), val.second);
     }
   }
   policy::MockConfigurationPolicyProvider* provider() { return &provider_; }
@@ -57,12 +63,11 @@ class ManagementUITest : public InProcessBrowserTest {
     return browser()->profile()->GetProfilePolicyConnector();
   }
 
+  policy::PolicyService* policy_service() {
+    return browser()->profile()->GetProfilePolicyConnector()->policy_service();
+  }
+
  private:
-  // Force local machine to be unmanaged, so that variations in try bots and
-  // developer machines don't affect the tests. See https://crbug.com/1445255.
-  policy::ScopedManagementServiceOverrideForTesting platform_browser_mgmt_ = {
-      policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::NONE};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 };
