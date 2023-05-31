@@ -712,15 +712,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
             }
 
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                // Part of scroll jank investigation http://crbug.com/1311003. Will remove
-                // TraceEvent after the investigation is complete.
-                try (TraceEvent te = TraceEvent.scoped("ToolbarManager::onPageLoadFinished")) {
-                    maybeTriggerCacheRefreshForZeroSuggest(url);
-                }
-            }
-
             /**
              * Trigger ZeroSuggest cache refresh in case user is accessing a new tab page.
              * Avoid issuing multiple concurrent server requests for the same event to
@@ -834,6 +825,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     Tab tab, NavigationHandle navigation) {
                 if (navigation.hasCommitted() && !navigation.isSameDocument()) {
                     mToolbar.onNavigatedToDifferentPage();
+                    maybeTriggerCacheRefreshForZeroSuggest(navigation.getUrl());
                 }
 
                 // If the load failed due to a different navigation, there is no need to reset the
