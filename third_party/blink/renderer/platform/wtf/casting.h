@@ -145,22 +145,30 @@ Derived* To(Base* from) {
 // overloads, returns nullptr if the input pointer is nullptr.
 template <typename Derived, typename Base>
 const Derived* DynamicTo(const Base* from) {
-  return IsA<Derived>(from) ? To<Derived>(from) : nullptr;
+  // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
+  // optimize correctly.
+  return IsA<Derived>(from) ? static_cast<const Derived*>(from) : nullptr;
 }
 
 template <typename Derived, typename Base>
 const Derived* DynamicTo(const Base& from) {
-  return IsA<Derived>(from) ? &To<Derived>(from) : nullptr;
+  // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
+  // optimize correctly.
+  return IsA<Derived>(from) ? &static_cast<const Derived&>(from) : nullptr;
 }
 
 template <typename Derived, typename Base>
 Derived* DynamicTo(Base* from) {
-  return IsA<Derived>(from) ? To<Derived>(from) : nullptr;
+  // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
+  // optimize correctly.
+  return IsA<Derived>(from) ? static_cast<Derived*>(from) : nullptr;
 }
 
 template <typename Derived, typename Base>
 Derived* DynamicTo(Base& from) {
-  return IsA<Derived>(from) ? &To<Derived>(from) : nullptr;
+  // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
+  // optimize correctly.
+  return IsA<Derived>(from) ? &static_cast<Derived&>(from) : nullptr;
 }
 
 // Unconditionally downcasts from Base to Derived. Internally, this asserts
