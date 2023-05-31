@@ -149,6 +149,41 @@ id<GREYMatcher> DeleteConfirmationButton() {
       performAction:grey_tap()];
 }
 
+// Notes:
+// - Using the password twice will allow us to know if observers are
+//   properly removed between 2 uses of the bottom sheet.
+// - Testing in incognito mode will allow us to know if we're using a
+//   coherent browser state for all the objects in the bottom sheet.
+- (void)testOpenPasswordBottomSheetUsePasswordTwiceIncognito {
+  [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
+  [PasswordSuggestionBottomSheetAppInterface
+      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
+                                                   kSuccess];
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/simple_login_form.html"))];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:NO];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadLoginPage];
+
+  for (int i = 0; i < 2; ++i) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+    [[EarlGrey selectElementWithMatcher:
+                   grey_accessibilityLabel(l10n_util::GetNSString(
+                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+        performAction:grey_tap()];
+  }
+}
+
 - (void)testOpenPasswordBottomSheetTapNoThanksShowKeyboard {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
