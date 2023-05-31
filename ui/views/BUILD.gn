@@ -1551,6 +1551,7 @@ source_set("views_interactive_ui_tests") {
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (use_aura) {
