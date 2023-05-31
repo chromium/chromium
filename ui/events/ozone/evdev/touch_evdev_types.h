@@ -69,6 +69,10 @@ struct COMPONENT_EXPORT(EVDEV) InProgressTouchEvdev {
   float tilt_y = 0;
   ui::EventPointerType reported_tool_type = ui::EventPointerType::kTouch;
   bool stylus_button = false;
+
+  // The starting position of the stroke.
+  float start_x = 0;
+  float start_y = 0;
 };
 
 // Contains information about stylus event, the useful relate ddevice info and

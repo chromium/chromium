@@ -47,6 +47,8 @@ namespace {
 
 const int kMaxTrackingId = 0xffff;  // TRKID_MAX in kernel.
 const int kMaxTouchGapInSeconds = 5;
+const int kMaxRepeatedTouchGapInSeconds = 2;
+const float kRepeatedTouchThresholdInSquareMillimeter = 7.0 * 7.0;
 
 // Convert tilt from [min, min + num_values] to [-90deg, +90deg]
 float ScaleTilt(int value, int min_value, int num_values) {
@@ -607,6 +609,8 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
     }
   }
 
+  DetectRepeatedTouch(timestamp);
+
   for (size_t i = 0; i < events_.size(); i++) {
     InProgressTouchEvdev* event = &events_[i];
     if (!event->altered)
@@ -662,6 +666,48 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
   }
 
   RecordMetrics(timestamp);
+}
+
+void TouchEventConverterEvdev::DetectRepeatedTouch(base::TimeTicks timestamp) {
+  if (!(type() == InputDeviceType::INPUT_DEVICE_INTERNAL && IsEnabled()) ||
+      has_pen_ || x_res_ <= 0 || y_res_ <= 0) {
+    return;
+  }
+
+  for (auto& event : events_) {
+    if (!event.touching || event.was_touching) {
+      continue;
+    }
+    event.start_x = event.x;
+    event.start_y = event.y;
+
+    for (auto it = cancelled_touches_.begin();
+         it != cancelled_touches_.end();) {
+      auto& touch = *it;
+      if ((timestamp - touch.cancel_timestamp).InSeconds() >
+          kMaxRepeatedTouchGapInSeconds) {
+        it = cancelled_touches_.erase(it);
+        continue;
+      }
+      float dist_sqr = pow(float(event.x - touch.start_x) / x_res_, 2) +
+                       pow(float(event.y - touch.start_y) / y_res_, 2);
+      if (dist_sqr < kRepeatedTouchThresholdInSquareMillimeter) {
+        UMA_HISTOGRAM_BOOLEAN(kRepeatedTouchCountEventName, true);
+        cancelled_touches_.erase(it);
+        break;
+      }
+      ++it;
+    }
+  }
+
+  for (const auto& event : events_) {
+    if (event.touching && event.cancelled &&
+        (!event.was_cancelled || !event.was_touching)) {
+      // It is newly canceled touch.
+      cancelled_touches_.insert(
+          CancelledTouch(timestamp, event.start_x, event.start_y));
+    }
+  }
 }
 
 void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
@@ -832,6 +878,8 @@ const char TouchEventConverterEvdev::kPalmFilterTimerEventName[] =
     "Ozone.TouchEventConverterEvdev.PalmDetectionFilterTime";
 const char TouchEventConverterEvdev::kPalmTouchCountEventName[] =
     "Ozone.TouchEventConverterEvdev.PalmTouchCount";
+const char TouchEventConverterEvdev::kRepeatedTouchCountEventName[] =
+    "Ozone.TouchEventConverterEvdev.RepeatedTouchCount";
 const char TouchEventConverterEvdev::kTouchSessionCountEventName[] =
     "Ozone.TouchEventConverterEvdev.TouchSessionCount";
 const char TouchEventConverterEvdev::kTouchSessionLengthEventName[] =

@@ -13,6 +13,7 @@
 #include <memory>
 #include <ostream>
 #include <queue>
+#include <set>
 // See if we compile against new enough headers and add missing definition
 // if the headers are too old.
 #include "base/memory/raw_ptr.h"
@@ -99,12 +100,35 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   static const char kHoldCountAtCancelEventName[];
   static const char kPalmFilterTimerEventName[];
   static const char kPalmTouchCountEventName[];
+  static const char kRepeatedTouchCountEventName[];
   static const char kTouchSessionCountEventName[];
   static const char kTouchSessionLengthEventName[];
   static const char kStylusSessionCountEventName[];
   static const char kStylusSessionLengthEventName[];
 
  private:
+  struct CancelledTouch {
+    const base::TimeTicks cancel_timestamp;
+    const float start_x, start_y;
+
+    CancelledTouch(base::TimeTicks cancel_timestamp,
+                   float start_x,
+                   float start_y)
+        : cancel_timestamp(cancel_timestamp),
+          start_x(start_x),
+          start_y(start_y) {}
+
+    bool operator==(const CancelledTouch& other) const {
+      return cancel_timestamp == other.cancel_timestamp &&
+             start_x == other.start_x && start_y == other.start_y;
+    }
+
+    bool operator<(const CancelledTouch& other) const {
+      return std::tie(cancel_timestamp, start_x, start_y) <
+             std::tie(other.cancel_timestamp, other.start_x, other.start_y);
+    }
+  };
+
   friend class MockTouchEventConverterEvdev;
 
   // Overidden from base::MessagePumpLibevent::FdWatcher.
@@ -144,6 +168,8 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void UpdateRadiusFromTouchWithOrientation(InProgressTouchEvdev* event) const;
 
   int NextTrackingId();
+
+  void DetectRepeatedTouch(base::TimeTicks timestamp);
 
   void RecordMetrics(base::TimeTicks timestamp);
 
@@ -259,6 +285,10 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Whether the last touch was detected as palm.
   bool last_touch_is_palm_ = false;
+
+  // Stores recently-canceled touches, which are used to detect repeated
+  // touches.
+  std::set<CancelledTouch> cancelled_touches_;
 
   // A delay timer starts whenever a touch is reported and stops after 5s. If a
   // new touch is reported during the 5s, the timer will be reset and restarted.

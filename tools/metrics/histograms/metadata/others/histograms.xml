@@ -8937,6 +8937,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.TouchEventConverterEvdev.RepeatedTouchCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    Whether a repeated touch is detected soon after palm rejection. Reported
+    when users repeated a touch action within 2 seconds after we rejected the
+    first action as palm. This only emits true when we detect a repeated touch
+    but never emits false.
+  </summary>
+</histogram>
+
 <histogram name="Ozone.TouchEventConverterEvdev.StylusSessionCount"
     units="BooleanDetected" expires_after="2024-06-01">
   <owner>jiwan@chromium.org</owner>
