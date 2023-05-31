@@ -169,28 +169,6 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="HeapProfiling.ProfiledProcess.Type"
-    enum="HeapProfilingProcessType" expires_after="2021-12-12">
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    One metric is emitted every 24-hours after Chrome is launched for every
-    process that is being profiled by the out-of-process heap profiler. The
-    timer is reset if Chrome exits.
-  </summary>
-</histogram>
-
-<histogram name="HeapProfiling.ProfilingMode" enum="HeapProfilingMode"
-    expires_after="2021-02-25">
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    One metric is emitted every 24-hours after Chrome is launched for every
-    Chrome instance that is using out of process heap profiling. The timer is
-    reset if Chrome exits.
-  </summary>
-</histogram>
-
 <histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
     expires_after="2023-10-22">
   <owner>joenotcharles@google.com</owner>
