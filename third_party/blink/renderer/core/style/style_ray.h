@@ -26,7 +26,13 @@ class StyleRay : public BasicShape {
     kSides
   };
 
-  static scoped_refptr<StyleRay> Create(float angle, RaySize, bool contain);
+  static scoped_refptr<StyleRay> Create(
+      float angle,
+      RaySize,
+      bool contain,
+      const BasicShapeCenterCoordinate& center_x,
+      const BasicShapeCenterCoordinate& center_y,
+      bool has_explicit_center);
   ~StyleRay() override = default;
 
   float CalculateRayPathLength(const gfx::PointF& starting_point,
@@ -38,6 +44,10 @@ class StyleRay : public BasicShape {
   RaySize Size() const { return size_; }
   bool Contain() const { return contain_; }
 
+  bool HasExplicitCenter() const { return has_explicit_center_; }
+  const BasicShapeCenterCoordinate& CenterX() const { return center_x_; }
+  const BasicShapeCenterCoordinate& CenterY() const { return center_y_; }
+
   void GetPath(Path&, const gfx::RectF&, float) const override;
 
   ShapeType GetType() const override { return kStyleRayType; }
@@ -46,11 +56,19 @@ class StyleRay : public BasicShape {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  StyleRay(float angle, RaySize, bool contain);
+  StyleRay(float angle,
+           RaySize,
+           bool contain,
+           const BasicShapeCenterCoordinate& center_x,
+           const BasicShapeCenterCoordinate& center_y,
+           bool has_explicit_center);
 
   float angle_;
   RaySize size_;
   bool contain_;
+  BasicShapeCenterCoordinate center_x_;
+  BasicShapeCenterCoordinate center_y_;
+  bool has_explicit_center_ = true;
 };
 
 template <>

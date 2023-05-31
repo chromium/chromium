@@ -2654,13 +2654,13 @@ class ComputedStyle : public ComputedStyleBase,
                                 gfx::Transform&) const;
   PointAndTangent CalculatePointAndTangentOnBasicShape(
       const BasicShape& shape,
-      const gfx::PointF starting_point,
-      const gfx::SizeF reference_box_size) const;
+      const gfx::PointF& starting_point,
+      const gfx::SizeF& reference_box_size) const;
   PointAndTangent CalculatePointAndTangentOnRay(
       const StyleRay& ray,
       const LayoutBox* box,
-      const gfx::PointF starting_point,
-      const gfx::SizeF reference_box_size) const;
+      const gfx::PointF& starting_point,
+      const gfx::SizeF& reference_box_size) const;
   PointAndTangent CalculatePointAndTangentOnPath(const Path& path) const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,

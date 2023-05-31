@@ -6461,6 +6461,9 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
   CSSPrimitiveValue* angle = nullptr;
   CSSIdentifierValue* size = nullptr;
   CSSIdentifierValue* contain = nullptr;
+  bool position = false;
+  CSSValue* x = nullptr;
+  CSSValue* y = nullptr;
   while (!function_args.AtEnd()) {
     if (!angle) {
       angle =
@@ -6484,6 +6487,13 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
         continue;
       }
     }
+    if (!position && ConsumeIdent<CSSValueID::kAt>(function_args)) {
+      position = ConsumePosition(function_args, context, UnitlessQuirk::kForbid,
+                                 absl::optional<WebFeature>(), x, y);
+      if (position) {
+        continue;
+      }
+    }
     return nullptr;
   }
   if (!angle) {
@@ -6493,7 +6503,8 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
     size = CSSIdentifierValue::Create(CSSValueID::kClosestSide);
   }
   range = function_range;
-  return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain);
+  return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain, x,
+                                                     y);
 }
 
 CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,

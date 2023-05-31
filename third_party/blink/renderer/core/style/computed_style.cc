@@ -36,6 +36,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
+#include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
@@ -1488,8 +1489,8 @@ gfx::PointF GetStartingPointOfThePath(
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
     const BasicShape& shape,
-    const gfx::PointF starting_point,
-    const gfx::SizeF reference_box_size) const {
+    const gfx::PointF& starting_point,
+    const gfx::SizeF& reference_box_size) const {
   Path path;
   if (const auto* circle_or_ellipse =
           DynamicTo<BasicShapeWithCenterAndRadii>(shape);
@@ -1518,8 +1519,8 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
     const StyleRay& ray,
     const LayoutBox* box,
-    const gfx::PointF starting_point,
-    const gfx::SizeF reference_box_size) const {
+    const gfx::PointF& starting_point,
+    const gfx::SizeF& reference_box_size) const {
   float ray_length =
       ray.CalculateRayPathLength(starting_point, reference_box_size);
   if (ray.Contain() && box) {
@@ -1603,9 +1604,23 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
             GetOffsetFromContainingBlock(box);
         const gfx::SizeF reference_box_size =
             GetReferenceBoxSize(box, coord_box);
-        const gfx::PointF starting_point = GetStartingPointOfThePath(
-            offset_from_containing_block, position, reference_box_size);
         const StyleRay& ray = To<StyleRay>(basic_shape);
+        // Specifies the origin of the ray, where the ray’s line begins (the 0%
+        // position). It’s resolved by using the <position> to position a 0x0
+        // object area within the box’s containing block. If omitted, it uses
+        // the offset starting position of the element, given by
+        // offset-position. If the element doesn’t have an offset starting
+        // position either, it behaves as at center.
+        // NOTE: In current parsing implementation:
+        // if `at position` is omitted, it will be computed as 50% 50%.
+        gfx::PointF starting_point;
+        if (ray.HasExplicitCenter() || position.X().IsNone()) {
+          starting_point = PointForCenterCoordinate(
+              ray.CenterX(), ray.CenterY(), reference_box_size);
+        } else {
+          starting_point = GetStartingPointOfThePath(
+              offset_from_containing_block, position, reference_box_size);
+        }
         path_position = CalculatePointAndTangentOnRay(ray, box, starting_point,
                                                       reference_box_size);
         // `path_position.point` is now relative to the containing block.

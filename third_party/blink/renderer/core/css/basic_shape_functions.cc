@@ -155,12 +155,23 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
   switch (basic_shape->GetType()) {
     case BasicShape::kStyleRayType: {
       const StyleRay& ray = To<StyleRay>(*basic_shape);
+      const CSSValue* center_x =
+          ray.HasExplicitCenter()
+              ? ValueForCenterCoordinate(style, ray.CenterX(),
+                                         EBoxOrient::kHorizontal)
+              : nullptr;
+      const CSSValue* center_y =
+          ray.HasExplicitCenter()
+              ? ValueForCenterCoordinate(style, ray.CenterY(),
+                                         EBoxOrient::kVertical)
+              : nullptr;
       return MakeGarbageCollected<cssvalue::CSSRayValue>(
           *CSSNumericLiteralValue::Create(
               ray.Angle(), CSSPrimitiveValue::UnitType::kDegrees),
           *CSSIdentifierValue::Create(RaySizeToKeyword(ray.Size())),
           (ray.Contain() ? CSSIdentifierValue::Create(CSSValueID::kContain)
-                         : nullptr));
+                         : nullptr),
+          center_x, center_y);
     }
 
     case BasicShape::kStylePathType:
@@ -298,7 +309,7 @@ static LengthSize ConvertToLengthSize(const StyleResolverState& state,
 
 static BasicShapeCenterCoordinate ConvertToCenterCoordinate(
     const StyleResolverState& state,
-    CSSValue* value) {
+    const CSSValue* value) {
   BasicShapeCenterCoordinate::Direction direction;
   Length offset = Length::Fixed(0);
 
@@ -459,7 +470,11 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     float angle = ray_value->Angle().ComputeDegrees();
     StyleRay::RaySize size = KeywordToRaySize(ray_value->Size().GetValueID());
     bool contain = !!ray_value->Contain();
-    basic_shape = StyleRay::Create(angle, size, contain);
+    basic_shape =
+        StyleRay::Create(angle, size, contain,
+                         ConvertToCenterCoordinate(state, ray_value->CenterX()),
+                         ConvertToCenterCoordinate(state, ray_value->CenterY()),
+                         ray_value->CenterX());
   } else if (const auto* path_value =
                  DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
     basic_shape = path_value->GetStylePath();
