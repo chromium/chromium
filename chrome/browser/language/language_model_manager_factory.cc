@@ -154,7 +154,8 @@ void PrepareLanguageModels(Profile* const profile,
 
 // static
 LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
-  return base::Singleton<LanguageModelManagerFactory>::get();
+  static base::NoDestructor<LanguageModelManagerFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -176,7 +177,7 @@ LanguageModelManagerFactory::LanguageModelManagerFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
+LanguageModelManagerFactory::~LanguageModelManagerFactory() = default;
 
 KeyedService* LanguageModelManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* const browser_context) const {
