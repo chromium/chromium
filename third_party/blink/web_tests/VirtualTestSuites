@@ -320,7 +320,7 @@
               "fast/workers/chromium/worker-sharedarraybuffer-transfer-two-workers.html",
               "http/tests/inspector-protocol/issues"],
     "args": ["--enable-features=SharedArrayBuffer"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "mse-1mb-buffers",
