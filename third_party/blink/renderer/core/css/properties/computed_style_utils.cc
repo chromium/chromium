@@ -159,9 +159,11 @@ CSSValue* ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
 
 CSSValue* ComputedStyleUtils::ValueForPosition(const LengthPoint& position,
                                                const ComputedStyle& style) {
-  DCHECK_EQ(position.X().IsAuto(), position.Y().IsAuto());
   if (position.X().IsAuto()) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  if (position.X().IsNone()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
   return MakeGarbageCollected<CSSValuePair>(
