@@ -39,7 +39,7 @@ suite('ErrorMessageElementTest', () => {
       {addResult: AddSinkResultCode.SERVICE_NOT_PRESENT, expectedMessage: 3},
       {addResult: AddSinkResultCode.SERVER_ERROR, expectedMessage: 3},
       {addResult: AddSinkResultCode.SINK_CREATION_ERROR, expectedMessage: 1},
-      {addResult: AddSinkResultCode.CHANNEL_OPEN_ERROR, expectedMessage: 1},
+      {addResult: AddSinkResultCode.CHANNEL_OPEN_ERROR, expectedMessage: 7},
       {addResult: AddSinkResultCode.PROFILE_SYNC_ERROR, expectedMessage: 6},
       {
         addResult: AddSinkResultCode.INTERNAL_MEDIA_ROUTER_ERROR,

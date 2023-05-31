@@ -456,8 +456,10 @@ void AccessCodeCastIntegrationBrowserTest::MockOnChannelOpenedCall(
     CastDeviceCountMetrics::SinkSource sink_source,
     ChannelOpenedCallback callback,
     cast_channel::CastSocketOpenParams open_params) {
-  if (!open_channel_response_)
+  if (!open_channel_response_) {
+    std::move(callback).Run(open_channel_response_);
     return;
+  }
 
   // On a successful addition to the media router, we have to mock
   // the channel open response within the Media Router AND that the
