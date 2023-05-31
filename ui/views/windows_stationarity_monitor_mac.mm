@@ -22,10 +22,17 @@ WindowsStationarityMonitorMac::WindowsStationarityMonitorMac()
                   &WindowsStationarityMonitorMac::OnNativeWidgetAdded,
                   base::Unretained(this)))) {
   for (NSWindow* window : [NSApp windows]) {
-    if (auto* widget = Widget::GetWidgetForNativeWindow(window)) {
-      widget->AddObserver(this);
-      tracked_windows_.push_back(widget);
+    auto* widget = Widget::GetWidgetForNativeWindow(window);
+    // Ignore any widgets that have been tracked.
+    // For example, if the window is a system created NSToolbarFullScreenWindow
+    // GetFromNativeWindow() will later interrogate the original NSWindow,
+    // result in a tracked widget.
+    if (!widget || base::Contains(tracked_windows_, widget)) {
+      continue;
     }
+
+    widget->AddObserver(this);
+    tracked_windows_.push_back(widget);
   }
 }
 
