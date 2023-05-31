@@ -350,6 +350,10 @@ class ASH_EXPORT Desk {
   base::flat_map<aura::Window*, std::vector<AllDeskWindowStackingData>>
       all_desk_window_stacking_;
 
+  // Used to track the last active root when the desk is being deactivated.
+  // Should be null if the current desk is active.
+  aura::Window* last_active_root_ = nullptr;
+
   // Tracks whether |this| has been interacted with this week. This value is
   // reset by the DesksController.
   bool interacted_with_this_week_ = false;
