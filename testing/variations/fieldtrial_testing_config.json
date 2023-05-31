@@ -7227,6 +7227,22 @@
             ]
         }
     ],
+    "IOSPromosManagerMigration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CanaryDevBeta",
+                    "enable_features": [
+                        "IPHGroups",
+                        "PromosManagerUsesFET"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRestoreSessionFromCache": [
         {
             "platforms": [
