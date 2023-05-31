@@ -61,11 +61,13 @@
     z-index: 1;
   }
 
-  .overlay {
+  .overlay,
+  paper-ripple {
     display: none;
   }
 
-  :host-context([chrome-refresh-2023]) .overlay {
+  :host-context([chrome-refresh-2023]) .overlay,
+  :host-context([chrome-refresh-2023]) paper-ripple {
     border-radius: inherit;
     display: inherit;
     height: 100%;
@@ -77,6 +79,11 @@
 
   :host-context([chrome-refresh-2023]) .image-background:hover .overlay {
     background-color: var(--cr-fallback-color-state-hover-on-subtle);
+  }
+
+  paper-ripple {
+    color: var(--cr-fallback-color-state-ripple-neutral-on-subtle);
+    z-index: 1;
   }
 
   .theme-title {
@@ -96,6 +103,7 @@
           aria-labelledby="customThemeTitle">
       </img>
       <div class="overlay"></div>
+      <paper-ripple></paper-ripple>
     </div>
     <div id="customThemeTitle" class="theme-title">
         [[theme_.backgroundImage.title]]
@@ -108,6 +116,7 @@
           aria-labelledby="classicChromeThemeTitle">
       </img>
       <div class="overlay"></div>
+      <paper-ripple></paper-ripple>
     </div>
     <div id="classicChromeThemeTitle" class="theme-title">
         $i18n{classicChrome}
@@ -121,6 +130,7 @@
             aria-labelledby="uploadedThemeTitle">
       </img>
       <div class="overlay"></div>
+      <paper-ripple></paper-ripple>
     </div>
     <div id="uploadedThemeTitle" class="theme-title">
         $i18n{uploadedImage}
