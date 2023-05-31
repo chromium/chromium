@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
+
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
@@ -14,16 +16,13 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SHADOW_TOP_OFFSET;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -78,11 +77,13 @@ class TabListContainerViewBinder {
         } else if (BOTTOM_PADDING == propertyKey) {
             view.setBottomPadding(model.get(BOTTOM_PADDING));
         } else if (FOCUS_TAB_INDEX_FOR_ACCESSIBILITY == propertyKey) {
-            updateAccessibilityFocus(model.get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY), view,
-                    AccessibilityEvent.TYPE_VIEW_FOCUSED, /*shouldFocus=*/true);
-        } else if (UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY == propertyKey) {
-            updateAccessibilityFocus(model.get(UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY), view,
-                    AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE, /*shouldFocus=*/false);
+            int index = model.get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
+            RecyclerView.ViewHolder selectedViewHolder =
+                    view.findViewHolderForAdapterPosition(index);
+            if (selectedViewHolder == null) return;
+            View focusView = selectedViewHolder.itemView;
+            focusView.requestFocus();
+            focusView.sendAccessibilityEvent(TYPE_VIEW_FOCUSED);
         }
     }
 
@@ -157,18 +158,5 @@ class TabListContainerViewBinder {
         }
         assert false : "Unexpected MODE when setting INITIAL_SCROLL_INDEX.";
         return 0;
-    }
-
-    private static void updateAccessibilityFocus(int index, @NonNull TabListRecyclerView view,
-            int accessibilityEventType, boolean shouldFocus) {
-        RecyclerView.ViewHolder selectedViewHolder = view.findViewHolderForAdapterPosition(index);
-        if (selectedViewHolder == null) return;
-        View focusView = selectedViewHolder.itemView;
-        if (shouldFocus) {
-            focusView.requestFocus();
-        } else {
-            focusView.clearFocus();
-        }
-        focusView.sendAccessibilityEvent(accessibilityEventType);
     }
 }

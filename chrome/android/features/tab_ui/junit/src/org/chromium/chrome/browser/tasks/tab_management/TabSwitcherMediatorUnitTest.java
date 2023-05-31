@@ -22,6 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -151,6 +152,8 @@ public class TabSwitcherMediatorUnitTest {
     PriceMessageService mPriceMessageService;
     @Mock
     IncognitoReauthController mIncognitoReauthController;
+    @Mock
+    View mCustomViewMock;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -1069,6 +1072,30 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void testAddingCustomView_ClearsTabList_Requested_ClearsTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/true);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+    }
+
+    @Test
+    public void testAddingCustomView_ClearsTabList_NotRequested_DoesNotClearTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/false);
+        verifyNoInteractions(mResetHandler);
+    }
+
+    @Test
+    public void testRemoveCustomView_ResetTabList() {
+        initAndAssertAllProperties();
+        mMediator.addCustomView(mCustomViewMock, null, /*clearTabList=*/true);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(null), eq(false), eq(false));
+
+        mMediator.removeCustomView(mCustomViewMock);
+        verify(mResetHandler, times(1)).resetWithTabList(eq(mTabModelFilter), eq(false), eq(false));
+    }
+
+    @Test
     public void testOnTabModelSelected_NewModelIncognito_ReauthSuccessful_RestoresTabList() {
         initAndAssertAllProperties();
         mModel.set(TabListContainerProperties.IS_VISIBLE, true);
@@ -1147,27 +1174,6 @@ public class TabSwitcherMediatorUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
         assertThat(mModel.get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
-                equalTo(TAB_MODEL_FILTER_INDEX));
-    }
-
-    @Test
-    @SmallTest
-    public void testUnfocusTabForAccessibility_IsInvoked_WhenResetTabListForIncognitoReauth() {
-        initAndAssertAllProperties();
-
-        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-
-        // Mock showing overview mode.
-        doNothing().when(mTabSwitcherViewObserver).finishedShowing();
-        mMediator.finishedShowing();
-
-        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        doReturn(true).when(mIncognitoReauthController).isIncognitoReauthPending();
-        doReturn(true).when(mIncognitoReauthController).isReauthPageShowing();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(mTabModel, null);
-
-        assertThat(mModel.get(TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY),
                 equalTo(TAB_MODEL_FILTER_INDEX));
     }
 

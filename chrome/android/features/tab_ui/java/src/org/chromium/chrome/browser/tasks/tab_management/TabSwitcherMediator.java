@@ -968,19 +968,27 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * A method to handle signal from outside world that a client is requesting to show a custom
      * view inside the tab switcher.
      *
-     * @param customView A {@link View} view that needs to be shown.
+     * @param customView        A {@link View} view that needs to be shown.
      * @param backPressRunnable A {@link Runnable} which can be supplied if clients also wish to
-     *         handle back presses while the custom view is shown. A null value can be passed to not
-     *         intercept back presses.
+     *                          handle back presses while the custom view is shown. A null value
+     *                          can be passed to not
+     *                          intercept back presses.
+     * @param clearTabList      A boolean to indicate whether we should clear the tab list when
+     *                          showing the custom view.
      */
     @Override
-    public void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable) {
+    public void addCustomView(
+            @NonNull View customView, @Nullable Runnable backPressRunnable, boolean clearTabList) {
         assert mCustomView == null : "Only one client at a time is supported to add a custom view.";
 
         // Hide any tab grid dialog before we add the custom view.
         if (mTabGridDialogControllerSupplier != null
                 && mTabGridDialogControllerSupplier.hasValue()) {
             mTabGridDialogControllerSupplier.get().hideDialog(false);
+        }
+
+        if (clearTabList) {
+            mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
         }
 
         // The grid tab switcher for tablets translates up over top of the browser controls, causing
@@ -1014,6 +1022,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mCustomView = null;
         mCustomViewBackPressRunnable = null;
         notifyBackPressStateChangedInternal();
+        mResetHandler.resetWithTabList(
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
+                /*quickMode=*/false, mShowTabsInMruOrder);
     }
 
     /**
@@ -1093,20 +1104,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
 
         mContainerViewModel.set(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
-    }
-
-    void removeAccessibilityFocusFromCurrentTab() {
-        if (!mIsTabSwitcherShowing || !mTabModelSelector.isTabStateInitialized()) {
-            return;
-        }
-
-        if (!mTabModelSelector.isIncognitoSelected() || mIncognitoReauthController == null
-                || !mIncognitoReauthController.isReauthPageShowing()) {
-            return;
-        }
-
-        mContainerViewModel.set(TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
     }
 
@@ -1210,7 +1207,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mIncognitoReauthController != null
                 && mIncognitoReauthController.isIncognitoReauthPending()) {
             mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
-            removeAccessibilityFocusFromCurrentTab();
             return true;
         }
 

@@ -72,22 +72,4 @@ public class TabListContainerViewBinderUnitTest {
         verify(mViewMock).requestFocus();
         verify(mViewMock).sendAccessibilityEvent(eq(AccessibilityEvent.TYPE_VIEW_FOCUSED));
     }
-
-    @Test
-    @SmallTest
-    public void testUnfocusTabIndexForAccessibilityProperty() {
-        mMockViewHolder = spy(new MockViewHolder(mViewMock));
-        doReturn(mMockViewHolder)
-                .when(mTabListRecyclerViewMock)
-                .findViewHolderForAdapterPosition(eq(TAB_MODEL_FILTER_INDEX));
-
-        doReturn(TAB_MODEL_FILTER_INDEX)
-                .when(mPropertyModelMock)
-                .get(TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
-        TabListContainerViewBinder.bind(mPropertyModelMock, mTabListRecyclerViewMock,
-                TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
-        verify(mViewMock).clearFocus();
-        verify(mViewMock).sendAccessibilityEvent(
-                eq(AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE));
-    }
 }
