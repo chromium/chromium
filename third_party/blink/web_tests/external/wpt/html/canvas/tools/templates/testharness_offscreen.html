@@ -40,3 +40,6 @@ t.step(function() {
 });
 {% endif %}
 </script>
+{% for svgimage in svgimages %}
+<svg><image xlink:href="/images/{{ svgimage }}" id="{{ svgimage }}" class="resource"></svg>
+{% endfor %}
