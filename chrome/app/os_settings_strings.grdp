@@ -1018,6 +1018,15 @@
   <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" translateable="false" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
     Disconnected
   </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" translateable="false" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
+    Connect account
+  </message>
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" translateable="false" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
+    Disconnect
+  </message>
+  <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" translateable="false" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
+    Open OneDrive folder
+  </message>
   <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
     Microsoft 365
   </message>

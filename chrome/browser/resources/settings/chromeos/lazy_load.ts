@@ -77,6 +77,7 @@ import './os_apps_page/app_management_page/chrome_app_detail_view.js';
 import './os_apps_page/app_management_page/pin_to_shelf_item.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_files_page/google_drive_confirmation_dialog.js';
+import './os_files_page/one_drive_subpage.js';
 import './os_files_page/office_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';
@@ -153,6 +154,7 @@ export {AppManagementMainViewElement} from './os_apps_page/app_management_page/m
 export {AppManagementPinToShelfItemElement} from './os_apps_page/app_management_page/pin_to_shelf_item.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
+export {SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';

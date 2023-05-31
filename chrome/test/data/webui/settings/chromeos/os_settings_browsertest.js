@@ -540,6 +540,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
+ ['OsFilesPageOneDrivePage', 'os_files_page/one_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
  [

@@ -1,0 +1,19 @@
+<style include="settings-shared"></style>
+
+<div class="settings-box two-line first">
+  <div id="signedInAsLabel" class="start">[[signedInAsLabel_(connected_)]]</div>
+  <cr-button id="oneDriveConnectDisconnect"
+      on-click="onConnectDisconnectButtonClick_"
+      role="button">
+    [[connectDisconnectButtonLabel_(connected_)]]
+  </cr-button>
+</div>
+<template is="dom-if" if="[[connected_]]">
+  <cr-link-row class="hr"
+      on-click="onOpenOneDriveFolderClick_"
+      label="$i18n{openOneDriveFolder}"
+      external>
+  </cr-link-row>
+</template>
+
+<div class="hr"></div>

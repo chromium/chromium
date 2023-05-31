@@ -169,6 +169,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   NETWORK_DETAIL: Route;
   OFFICE: Route;
   ON_STARTUP: Route;
+  ONE_DRIVE: Route;
   OS_ACCESSIBILITY: Route;
   OS_LANGUAGES: Route;
   OS_LANGUAGES_EDIT_DICTIONARY: Route;
@@ -541,15 +542,19 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   if (!isGuest()) {
     r.FILES = createSection(
         r.ADVANCED, routesMojom.FILES_SECTION_PATH, Section.kFiles);
-    r.SMB_SHARES = createSubpage(
-        r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
-        Subpage.kNetworkFileShares);
     if (loadTimeData.getBoolean('enableDriveFsBulkPinning')) {
       r.GOOGLE_DRIVE = createSubpage(
           r.FILES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH, Subpage.kGoogleDrive);
     }
+    if (loadTimeData.getBoolean('showOfficeSettings')) {
+      r.ONE_DRIVE = createSubpage(
+          r.FILES, routesMojom.ONE_DRIVE_SUBPAGE_PATH, Subpage.kOneDrive);
+    }
     r.OFFICE = createSubpage(
         r.FILES, routesMojom.OFFICE_FILES_SUBPAGE_PATH, Subpage.kOfficeFiles);
+    r.SMB_SHARES = createSubpage(
+        r.FILES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
+        Subpage.kNetworkFileShares);
   }
 
   // Printing section.

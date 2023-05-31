@@ -145,7 +145,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   }
 
   private onTapOneDrive_() {
-    // TODO(jboulic): Add OneDrive subpage.
+    Router.getInstance().navigateTo(routes.ONE_DRIVE);
   }
 
   private onTapOffice_() {
