@@ -11,7 +11,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace offline_pages {
@@ -30,7 +30,7 @@ class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
   PrefetchServiceFactory& operator=(const PrefetchServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<PrefetchServiceFactory>;
+  friend base::NoDestructor<PrefetchServiceFactory>;
 
   PrefetchServiceFactory();
   ~PrefetchServiceFactory() override {}

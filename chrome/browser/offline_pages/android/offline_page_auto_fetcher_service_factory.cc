@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_notifier.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -29,7 +29,8 @@ class OfflinePageAutoFetcherServiceFactory::ServiceDelegate final
 // static
 OfflinePageAutoFetcherServiceFactory*
 OfflinePageAutoFetcherServiceFactory::GetInstance() {
-  return base::Singleton<OfflinePageAutoFetcherServiceFactory>::get();
+  static base::NoDestructor<OfflinePageAutoFetcherServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -59,7 +60,8 @@ OfflinePageAutoFetcherServiceFactory::OfflinePageAutoFetcherServiceFactory()
   // Depends on OfflinePageModelFactory in SimpleDependencyManager.
 }
 
-OfflinePageAutoFetcherServiceFactory::~OfflinePageAutoFetcherServiceFactory() {}
+OfflinePageAutoFetcherServiceFactory::~OfflinePageAutoFetcherServiceFactory() =
+    default;
 
 KeyedService* OfflinePageAutoFetcherServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
