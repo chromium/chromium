@@ -81,7 +81,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 using extensions::Extension;
@@ -537,6 +544,9 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
   }
 
   PrefService* local_state() { return testing_local_state_->Get(); }
+  ScopedTestingLocalState* testing_local_state() {
+    return testing_local_state_.get();
+  }
 
   Browser* GetBrowser() {
     if (!browser_) {
@@ -1139,14 +1149,28 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
 // Ash, if Lacros is the only browser.
 TEST_F(RenderViewContextMenuPrefsTest,
        LensImageSearchDisabledIfAshBrowserIsDisabled) {
-  auto scoped_lacros_primary =
-      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       {lens::features::kLensStandalone, lens::features::kEnableImageTranslate,
-       ash::features::kLacrosOnly},
+       ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
       {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
   ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ash::ProfileHelper::Get();
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal(), testing_local_state());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
 
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
@@ -1345,12 +1369,27 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
 // feature is enabled if Lacros is the only browser.
 TEST_F(RenderViewContextMenuPrefsTest,
        LensRegionSearchDisabledIfAshBrowserIsDisabled) {
-  auto scoped_lacros_primary =
-      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      {lens::features::kLensStandalone, ash::features::kLacrosOnly}, {});
+      {lens::features::kLensStandalone, ash::features::kLacrosSupport,
+       ash::features::kLacrosPrimary, ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
   ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ash::ProfileHelper::Get();
+
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal(), testing_local_state());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
 
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);

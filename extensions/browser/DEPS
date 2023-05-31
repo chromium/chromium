@@ -57,7 +57,9 @@ specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
     "+ash/constants/ash_features.h",
 
+    "+components/account_id",
     "+components/javascript_dialogs",
+    "+components/user_manager",
     "+components/user_prefs",
 
     "+storage/browser/test",
