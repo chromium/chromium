@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -170,35 +169,6 @@ class MODULES_EXPORT AXPosition final {
       const Node& child_node,
       const ContainerNode* container_node,
       const AXPositionAdjustmentBehavior adjustment_behavior);
-
-  // Adjusts the text content offset for non-contiguous mapping units.
-  // Normally mapping units are contiguous, with each unit's content start
-  // offset being the same as the previous unit's content end offset. One
-  // exception to this is the insertion of a break opportunity that does not
-  // have a corresponding node. Example:
-  //
-  // <div contenteditable="true" style="white-space: pre-wrap;">   Bar</div>
-  //
-  // `NGOffsetMapping::GetText` returns a string with seven characters:
-  //   * three spaces, mapping unit's content offsets 0-3
-  //   * one `kZeroWidthSpaceCharacter`, no corresponding mapping unit
-  //   * "Bar", mapping unit's content offsets 4-7
-  // Thus when the caret moves to the "B" in "Bar", the text content offset we
-  // get from `NGOffsetMapping` is 4. When an AT asks us for the character at
-  // offset 4 in order to present the new location, we will return "a" if we
-  // don't adjust the offset for the `kZeroWidthSpaceCharacter`. This mismatch
-  // is due to the fact that the text we expose to ATs consists of six
-  // characters taken from:
-  //   * the `InlineTextBox` with three spaces
-  //   * the `InlineTextBox` with "Bar"
-  //
-  // Note that `<wbr>`, whose text is also `kZeroWidthSpaceCharacter`, does
-  // have a mapping unit and corresponding node. This makes it possible for
-  // us to associate its content offsets with its node, which is an ignored
-  // object in the accessibility tree.
-  int AdjustContentOffsetForNonContiguousMappings(
-      const NGOffsetMapping* mapping,
-      int content_offset) const;
 
   // The |AXObject| in which the position is present.
   // Only valid during a single document lifecycle hence no need to maintain a
