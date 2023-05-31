@@ -8,6 +8,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
+#include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -124,8 +125,7 @@ std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
   graphite_textures.reserve(num_planes);
   for (int plane = 0; plane < num_planes; plane++) {
     SkISize sk_size = gfx::SizeToSkISize(format.GetPlaneSize(plane, size));
-    skgpu::graphite::BackendTexture backend_texture(sk_size,
-                                                    mtl_textures[plane].get());
+    graphite_textures.emplace_back(sk_size, mtl_textures[plane].get());
   }
   return graphite_textures;
 }
@@ -438,10 +438,10 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   }
 
   void EndWriteAccess() override {
-    backing_impl()->HandleEndAccessSync(/*readonly=*/false);
     for (auto& surface : write_surfaces_) {
-      surface->flush();
+      DCHECK(surface->unique());
     }
+    backing_impl()->HandleEndAccessSync(/*readonly=*/false);
     write_surfaces_.clear();
   }
 
@@ -1046,7 +1046,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return std::make_unique<SkiaGraphiteIOSurfaceRepresentation>(
-        manager, this, tracker, context_state->gpu_graphite_main_recorder(),
+        manager, this, tracker, context_state->gpu_main_graphite_recorder(),
         std::move(mtl_textures));
 #endif
   }
