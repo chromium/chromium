@@ -183,7 +183,7 @@ void PendingBeacon::SetDataInternal(const BeaconData& data,
 
   AtomicString content_type = request.HttpContentType();
   remote_->SetRequestData(std::move(request_body),
-                          content_type.IsNull() ? "" : content_type);
+                          content_type.IsNull() ? g_empty_atom : content_type);
 }
 
 base::TimeDelta PendingBeacon::GetBackgroundTimeout() const {

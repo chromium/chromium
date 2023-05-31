@@ -107,22 +107,22 @@ AtomicString GetFrameAttribute(HTMLFrameOwnerElement* frame_owner,
 AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
   switch (frame_owner->OwnerType()) {
     case FrameOwnerElementType::kNone:
-      return "window";
+      return AtomicString("window");
     case FrameOwnerElementType::kIframe:
-      return "iframe";
+      return html_names::kIFrameTag.LocalName();
     case FrameOwnerElementType::kObject:
-      return "object";
+      return html_names::kObjectTag.LocalName();
     case FrameOwnerElementType::kEmbed:
-      return "embed";
+      return html_names::kEmbedTag.LocalName();
     case FrameOwnerElementType::kFrame:
-      return "frame";
+      return html_names::kFrameTag.LocalName();
     case FrameOwnerElementType::kPortal:
-      return "portal";
+      return html_names::kPortalTag.LocalName();
     case FrameOwnerElementType::kFencedframe:
-      return "fencedframe";
+      return html_names::kFencedframeTag.LocalName();
   }
   NOTREACHED();
-  return "";
+  return g_empty_atom;
 }
 
 AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {
@@ -381,8 +381,9 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
   DOMWindow* culprit_dom_window = attribution.second;
   if (!culprit_dom_window || !culprit_dom_window->GetFrame() ||
       !culprit_dom_window->GetFrame()->DeprecatedLocalOwner()) {
-    AddLongTaskTiming(start_time, end_time, attribution.first, "window",
-                      g_empty_atom, g_empty_atom, g_empty_atom);
+    AddLongTaskTiming(start_time, end_time, attribution.first,
+                      AtomicString("window"), g_empty_atom, g_empty_atom,
+                      g_empty_atom);
   } else {
     HTMLFrameOwnerElement* frame_owner =
         culprit_dom_window->GetFrame()->DeprecatedLocalOwner();

@@ -48,9 +48,10 @@ AtomicString GetScriptName(ScriptTimingInfo* info,
     case ScriptTimingInfo::Type::kPromiseReject: {
       WTF::StringBuilder builder;
       if (info->ClassLikeName().empty() && info->PropertyLikeName().empty()) {
-        return info->GetType() == ScriptTimingInfo::Type::kPromiseResolve
-                   ? "Promise.resolve"
-                   : "Promise.reject";
+        return AtomicString(info->GetType() ==
+                                    ScriptTimingInfo::Type::kPromiseResolve
+                                ? "Promise.resolve"
+                                : "Promise.reject");
       }
 
       if (!info->ClassLikeName().empty()) {
@@ -84,20 +85,20 @@ PerformanceScriptTiming::PerformanceScriptTiming(
   cross_origin_isolated_capability_ = cross_origin_isolated_capability;
   DCHECK(info_->Window() && source);
   if (info_->Window() == source) {
-    window_attribution_ = "self";
+    window_attribution_ = AtomicString("self");
   } else if (!info_->Window()->GetFrame()) {
-    window_attribution_ = "other";
+    window_attribution_ = AtomicString("other");
   } else if (info_->Window()->GetFrame()->Tree().IsDescendantOf(
                  source->GetFrame())) {
-    window_attribution_ = "descendant";
+    window_attribution_ = AtomicString("descendant");
   } else if (source->GetFrame()->Tree().IsDescendantOf(
                  info_->Window()->GetFrame())) {
-    window_attribution_ = "ancestor";
+    window_attribution_ = AtomicString("ancestor");
   } else if (source->GetFrame()->Tree().Top() ==
              info_->Window()->GetFrame()->Top()) {
-    window_attribution_ = "same-page";
+    window_attribution_ = AtomicString("same-page");
   } else {
-    window_attribution_ = "other";
+    window_attribution_ = AtomicString("other");
   }
 }
 
@@ -138,22 +139,23 @@ LocalDOMWindow* PerformanceScriptTiming::window() const {
 const AtomicString& PerformanceScriptTiming::windowAttribution() const {
   return window_attribution_;
 }
+
 AtomicString PerformanceScriptTiming::type() const {
   switch (info_->GetType()) {
     case ScriptTimingInfo::Type::kClassicScript:
-      return "classic-script";
+      return AtomicString("classic-script");
     case ScriptTimingInfo::Type::kModuleScript:
-      return "module-script";
+      return AtomicString("module-script");
     case ScriptTimingInfo::Type::kExecuteScript:
-      return "execute-script";
+      return AtomicString("execute-script");
     case ScriptTimingInfo::Type::kEventHandler:
-      return "event-listener";
+      return AtomicString("event-listener");
     case ScriptTimingInfo::Type::kUserCallback:
-      return "user-callback";
+      return AtomicString("user-callback");
     case ScriptTimingInfo::Type::kPromiseResolve:
-      return "resolve-promise";
+      return AtomicString("resolve-promise");
     case ScriptTimingInfo::Type::kPromiseReject:
-      return "reject-promise";
+      return AtomicString("reject-promise");
   }
 }
 

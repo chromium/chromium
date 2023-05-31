@@ -1383,7 +1383,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
   response.SetEncodedDataLength(completion_status.encoded_data_length);
   response.SetHttpStatusCode(response_code);
   if (!normalized_server_timing.empty()) {
-    response.SetHttpHeaderField("Server-Timing",
+    response.SetHttpHeaderField(http_names::kServerTiming,
                                 AtomicString(normalized_server_timing));
   }
 

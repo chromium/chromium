@@ -337,12 +337,13 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::MaybeAddScript(
 
   script_timing_info->SetSourceLocation(pending_script_info_->source_location);
   if (pending_script_info_->class_like_name) {
-    script_timing_info->SetClassLikeName(pending_script_info_->class_like_name);
+    script_timing_info->SetClassLikeName(
+        AtomicString(pending_script_info_->class_like_name));
   }
 
   if (pending_script_info_->property_like_name) {
     script_timing_info->SetPropertyLikeName(
-        pending_script_info_->property_like_name);
+        AtomicString(pending_script_info_->property_like_name));
   }
 
   script_timing_info->SetPauseDuration(pending_script_info_->pause_duration);
@@ -633,7 +634,7 @@ void AnimationFrameTimingMonitor::Did(const probe::InvokeCallback& probe_data) {
     return;
   }
 
-  info->SetPropertyLikeName(probe_data.name);
+  info->SetPropertyLikeName(AtomicString(probe_data.name));
 }
 
 void AnimationFrameTimingMonitor::Will(

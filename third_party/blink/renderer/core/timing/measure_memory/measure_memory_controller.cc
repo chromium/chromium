@@ -201,7 +201,7 @@ struct RandomBitGenerator {
 };
 
 // These functions convert WebMemory* mojo structs to IDL and JS values.
-WTF::AtomicString ConvertScope(WebMemoryAttribution::Scope scope) {
+String ConvertScope(WebMemoryAttribution::Scope scope) {
   using Scope = WebMemoryAttribution::Scope;
   switch (scope) {
     case Scope::kDedicatedWorker:

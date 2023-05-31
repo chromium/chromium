@@ -128,7 +128,8 @@ AtomicString PerformanceResourceTiming::deliveryType() const {
 }
 
 AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
-  return info_->render_blocking_status ? "blocking" : "non-blocking";
+  return AtomicString(info_->render_blocking_status ? "blocking"
+                                                    : "non-blocking");
 }
 
 AtomicString PerformanceResourceTiming::contentType() const {
@@ -150,7 +151,7 @@ AtomicString PerformanceResourceTiming::GetNextHopProtocol(
   // string.
   // https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
   if (returnedProtocol == "unknown" || !info_->allow_timing_details) {
-    returnedProtocol = "";
+    returnedProtocol = g_empty_atom;
   }
 
   return returnedProtocol;

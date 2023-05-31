@@ -116,44 +116,44 @@ bool SavableResources::GetSavableResourceLinksForFrame(
 
 // static
 String SavableResources::GetSubResourceLinkFromElement(Element* element) {
-  const char* attribute_name = nullptr;
+  const QualifiedName* attribute_name = nullptr;
   if (element->HasTagName(html_names::kImgTag) ||
       element->HasTagName(html_names::kFrameTag) ||
       element->HasTagName(html_names::kIFrameTag) ||
       element->HasTagName(html_names::kScriptTag)) {
-    attribute_name = "src";
+    attribute_name = &html_names::kSrcAttr;
   } else if (element->HasTagName(html_names::kInputTag)) {
     HTMLInputElement* input = To<HTMLInputElement>(element);
     if (input->type() == input_type_names::kImage) {
-      attribute_name = "src";
+      attribute_name = &html_names::kSrcAttr;
     }
   } else if (element->HasTagName(html_names::kBodyTag) ||
              element->HasTagName(html_names::kTableTag) ||
              element->HasTagName(html_names::kTrTag) ||
              element->HasTagName(html_names::kTdTag)) {
-    attribute_name = "background";
+    attribute_name = &html_names::kBackgroundAttr;
   } else if (element->HasTagName(html_names::kBlockquoteTag) ||
              element->HasTagName(html_names::kQTag) ||
              element->HasTagName(html_names::kDelTag) ||
              element->HasTagName(html_names::kInsTag)) {
-    attribute_name = "cite";
+    attribute_name = &html_names::kCiteAttr;
   } else if (element->HasTagName(html_names::kObjectTag)) {
-    attribute_name = "data";
+    attribute_name = &html_names::kDataAttr;
   } else if (element->HasTagName(html_names::kLinkTag)) {
     // If the link element is not linked to css, ignore it.
-    String type = element->getAttribute("type");
-    String rel = element->getAttribute("rel");
+    String type = element->getAttribute(html_names::kTypeAttr);
+    String rel = element->getAttribute(html_names::kRelAttr);
     if ((type.ContainsOnlyASCIIOrEmpty() && type.LowerASCII() == "text/css") ||
         (rel.ContainsOnlyASCIIOrEmpty() && rel.LowerASCII() == "stylesheet")) {
       // TODO(jnd): Add support for extracting links of sub-resources which
       // are inside style-sheet such as @import, url(), etc.
       // See bug: http://b/issue?id=1111667.
-      attribute_name = "href";
+      attribute_name = &html_names::kHrefAttr;
     }
   }
   if (!attribute_name)
     return String();
-  String value = element->getAttribute(attribute_name);
+  String value = element->getAttribute(*attribute_name);
   // If value has content and not start with "javascript:" then return it,
   // otherwise return an empty string.
   if (!value.IsNull() && !value.empty() &&
