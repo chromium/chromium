@@ -43,6 +43,7 @@ import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.payments.PaymentFeatureList;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -74,6 +75,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static final ComponentName GPM_COMPONENT_NAME =
             ComponentName.createRelative("com.google.android.gms",
                     ".auth.api.credentials.credman.service.PasswordAndPasskeyService");
+    private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -823,6 +825,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         requestBundle.putBundle(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
+        requestBundle.putString(CHANNEL_KEY, getChannel());
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -1254,6 +1257,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
         publicKeyCredentialOptionBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
+        publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
         return publicKeyCredentialOptionBundle;
     }
 
@@ -1285,6 +1289,26 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         return PackageUtils.getPackageVersion("com.google.android.gms")
                 >= GMSCORE_MIN_VERSION_HYBRID_API
                 && DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+    }
+
+    private static final String getChannel() {
+        if (VersionInfo.isCanaryBuild()) {
+            return "canary";
+        }
+        if (VersionInfo.isDevBuild()) {
+            return "dev";
+        }
+        if (VersionInfo.isBetaBuild()) {
+            return "beta";
+        }
+        if (VersionInfo.isStableBuild()) {
+            return "stable";
+        }
+        if (VersionInfo.isLocalBuild()) {
+            return "built_locally";
+        }
+        assert false : "Channel must be canary, dev, beta, stable or chrome must be built locally.";
+        return null;
     }
 
     @VisibleForTesting

@@ -185,6 +185,8 @@ public class Fido2CredentialRequestRobolectricTest {
                                     "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
                 "{serialized_make_request}");
         Assert.assertTrue(credManRequest.getAlwaysSendAppInfoToProvider());
+        Assert.assertTrue(
+                credManRequest.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"));
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
     }
 
@@ -240,6 +242,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Assert.assertEquals(option.getCredentialRetrievalData().getString(
                                     "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
                 "{serialized_get_request}");
+        Assert.assertTrue(option.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"));
         Assert.assertFalse(option.isSystemProviderRequired());
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
