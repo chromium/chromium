@@ -10372,6 +10372,21 @@
             ]
         }
     ],
+    "PreconnectCreateNewTab": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Nonstable_20230531",
+                    "enable_features": [
+                        "PreconnectCreateNewTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
@@ -12759,6 +12774,33 @@
                         "AppendFrameOriginToNetworkIsolationKey",
                         "SplitCacheByNetworkIsolationKey",
                         "UseRegistrableDomainInNetworkIsolationKey"
+                    ]
+                }
+            ]
+        }
+    ],
+    "StartSurfaceSpareTab": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_InitializeRenderer_20230531",
+                    "params": {
+                        "spare_tab_initialize_renderer": "true"
+                    },
+                    "enable_features": [
+                        "StartSurfaceSpareTab"
+                    ]
+                },
+                {
+                    "name": "Enabled_NoInitializeRenderer_20230531",
+                    "params": {
+                        "spare_tab_initialize_renderer": "false"
+                    },
+                    "enable_features": [
+                        "StartSurfaceSpareTab"
                     ]
                 }
             ]
