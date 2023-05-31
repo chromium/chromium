@@ -14,10 +14,10 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, execute_command, get_tree, goto_url,
-                          read_JSON_message, send_JSON_command, subscribe,
-                          wait_for_event)
+from anys import ANY_DICT, ANY_STR
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
+                          get_tree, goto_url, read_JSON_message,
+                          send_JSON_command, subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -871,6 +871,60 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not Implemented")
-async def test_browsingContext_ignoreCache():
-    pass
+@pytest.mark.parametrize("ignoreCache", [True, False])
+async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
+    if not ignoreCache:
+        pytest.xfail(
+            reason="TODO: Find a way to distinguish cache hits from misses.")
+
+    url = "https://example.com/"
+
+    await subscribe(websocket, [
+        "network.beforeRequestSent",
+        "network.responseCompleted",
+    ])
+
+    await goto_url(websocket, context_id, url)
+
+    id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "ignoreCache": ignoreCache,
+                "wait": "complete",
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "network.beforeRequestSent",
+        "params": {
+            "context": context_id,
+            "initiator": ANY_DICT,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "timestamp": ANY_TIMESTAMP,
+        },
+    }
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "network.responseCompleted",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": ANY_DICT,
+            "response": AnyExtending({"fromCache": not ignoreCache}),
+            "timestamp": ANY_TIMESTAMP,
+        },
+    }
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "id": id,
+        "result": {},
+    }
