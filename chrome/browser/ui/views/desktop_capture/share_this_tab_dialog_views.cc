@@ -292,7 +292,7 @@ void ShareThisTabDialogView::Activate() {
 
   // In tests.
   if (ShouldAutoAccept()) {
-    Accept();
+    AcceptDialog();
   } else if (ShouldAutoReject()) {
     CancelDialog();
   }
