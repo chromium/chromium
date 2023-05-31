@@ -923,10 +923,6 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   DCHECK(identity_manager);
 
-  // TODO(crbug.com/1369982): |domain| is used to show the profile deletion
-  // dialog on turn off sync. This is no longer needed since users are allowed
-  // to turn off sync. Enterprise team to decide whether to show the delete
-  // profile dialog on signout.
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     CoreAccountInfo primary_account_info =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
