@@ -37,7 +37,6 @@ static_library("re2") {
     "src/re2/simplify.cc",
     "src/re2/sparse_array.h",
     "src/re2/sparse_set.h",
-    "src/re2/stringpiece.cc",
     "src/re2/stringpiece.h",
     "src/re2/tostring.cc",
     "src/re2/unicode_casefold.cc",
@@ -45,20 +44,17 @@ static_library("re2") {
     "src/re2/unicode_groups.cc",
     "src/re2/unicode_groups.h",
     "src/re2/walker-inl.h",
-    "src/util/flags.h",
     "src/util/logging.h",
-    "src/util/mix.h",
-    "src/util/mutex.h",
     "src/util/rune.cc",
     "src/util/strutil.cc",
     "src/util/strutil.h",
     "src/util/utf.h",
-    "src/util/util.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   public_configs = [ ":re2_config" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 fuzzer_test("third_party_re2_fuzzer") {

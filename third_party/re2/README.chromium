@@ -1,8 +1,8 @@
 Name: re2 - an efficient, principled regular expression library
 Short Name: re2
 URL: https://github.com/google/re2
-Version: ab12219ba56a47200385673446b5d371548c25db
-Date: 2019-10-15
+Version: 1e44e72d31ddc66b783a545e9d9fcaa876a146b7
+Date: 2023-05-31
 License: BSD 3-Clause
 License File: LICENSE
 Security Critical: yes
