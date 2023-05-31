@@ -279,7 +279,6 @@ crbug.com/1179570 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-
 crbug.com/1179570 virtual/off-main-thread-css-paint/http/tests/csspaint/shadow-scale-with-page-zoom.html [ Failure ]
 crbug.com/1179570 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-002.html [ Failure ]
 crbug.com/1179570 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]
-crbug.com/1179570 virtual/stable/media/stable/video-object-fit-stable.html [ Failure ]
 crbug.com/1179570 virtual/text-antialias/ellipsis-stroked.html [ Failure ]
 crbug.com/1179570 virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
 crbug.com/1179570 virtual/text-antialias/incorrect-fixed-pitch-font.html [ Failure ]
