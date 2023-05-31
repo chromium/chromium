@@ -8344,13 +8344,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front()
                 .bidding_browser_signals->prev_wins.size(),
             0u);
-  EXPECT_EQ(
-      storage_interest_groups.front()
-          .bidding_browser_signals->prev_wins.front()
-          ->ad_json,
-      JsReplace(
-          R"({"render_url":$1,"metadata":{"ad":"metadata","here":[1,2]}})",
-          ad1_url));
+  EXPECT_EQ(storage_interest_groups.front()
+                .bidding_browser_signals->prev_wins.front()
+                ->ad_json,
+            JsReplace(R"({"metadata":"{\"ad\":\"metadata\",\"here\":[1,2]}",)"
+                      R"("renderURL":$1})",
+                      ad1_url));
   EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
@@ -8380,7 +8379,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front()
                 .bidding_browser_signals->prev_wins.front()
                 ->ad_json,
-            JsReplace(R"({"render_url":$1})", ad2_url));
+            JsReplace(R"({"renderURL":$1})", ad2_url));
   // First interest group didn't bid this time.
   EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);
@@ -8416,7 +8415,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front()
                 .bidding_browser_signals->prev_wins.back()
                 ->ad_json,
-            JsReplace(R"({"render_url":$1})", ad2_url));
+            JsReplace(R"({"renderURL":$1})", ad2_url));
   // First interest group didn't bid this time.
   EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);

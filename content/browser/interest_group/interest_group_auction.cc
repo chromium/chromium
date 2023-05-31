@@ -20,6 +20,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -2019,17 +2020,16 @@ InterestGroupAuction::CreateReporter(
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
+  base::Value::Dict ad_metadata;
+  ad_metadata.Set("renderURL", winner->bid->ad_descriptor.url.spec());
   if (winner->bid->bid_ad->metadata) {
-    // `metadata` is already in JSON so no quotes are needed.
-    winning_bid_info.ad_metadata =
-        base::StringPrintf(R"({"render_url":"%s","metadata":%s})",
-                           winner->bid->ad_descriptor.url.spec().c_str(),
-                           winner->bid->bid_ad->metadata.value().c_str());
-  } else {
-    winning_bid_info.ad_metadata =
-        base::StringPrintf(R"({"render_url":"%s"})",
-                           winner->bid->ad_descriptor.url.spec().c_str());
+    ad_metadata.Set("metadata", winner->bid->bid_ad->metadata.value());
   }
+  if (winner->bid->bid_ad->ad_render_id) {
+    ad_metadata.Set("adRenderId", winner->bid->bid_ad->ad_render_id.value());
+  }
+  JSONStringValueSerializer serializer(&winning_bid_info.ad_metadata);
+  serializer.Serialize(base::Value(std::move(ad_metadata)));
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;

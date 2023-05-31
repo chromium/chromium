@@ -3701,9 +3701,11 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
   base::Time time2 = auction_start_time_ - delta - tiny_delta;
   base::Time future_time = auction_start_time_ + delta;
 
-  auto win1 = mojom::PreviousWin::New(time1, R"("ad1")");
-  auto win2 = mojom::PreviousWin::New(time2, R"(["ad2"])");
-  auto future_win = mojom::PreviousWin::New(future_time, R"("future_ad")");
+  auto win1 = mojom::PreviousWin::New(time1, R"({"renderURL":"ad1"})");
+  auto win2 = mojom::PreviousWin::New(
+      time2, R"({"renderURL":"ad2", "metadata":"{\"key\":\"value\"}"})");
+  auto future_win =
+      mojom::PreviousWin::New(future_time, R"({"renderURL":"future_ad"})");
   struct TestCase {
     std::vector<mojo::StructPtr<mojom::PreviousWin>> prev_wins;
     // Value to output as the ad data.
@@ -3719,37 +3721,40 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
       {
           CreateWinList(win1),
           "browserSignals.prevWins",
-          R"([[200,"ad1"]])",
+          R"([[200,{"renderURL":"ad1"}]])",
       },
       // Make sure it's passed on as an object and not a string.
       {
           CreateWinList(win1),
           "browserSignals.prevWins[0]",
-          R"([200,"ad1"])",
+          R"([200,{"renderURL":"ad1"}])",
       },
       // Test rounding.
       {
           CreateWinList(win2),
           "browserSignals.prevWins",
-          R"([[100,["ad2"]]])",
+          R"([[100,{"renderURL":"ad2","metadata":{"key":"value"}}]])",
       },
       // Multiple previous wins.
       {
           CreateWinList(win1, win2),
           "browserSignals.prevWins",
-          R"([[200,"ad1"],[100,["ad2"]]])",
+          R"([[200,{"renderURL":"ad1"}],)"
+          R"([100,{"renderURL":"ad2","metadata":{"key":"value"}}]])",
       },
       // Times are trimmed at 0.
       {
           CreateWinList(future_win),
           "browserSignals.prevWins",
-          R"([[0,"future_ad"]])",
+          R"([[0,{"renderURL":"future_ad"}]])",
       },
       // Out of order wins should be sorted.
       {
           CreateWinList(win2, future_win, win1),
           "browserSignals.prevWins",
-          R"([[200,"ad1"],[100,["ad2"]],[0,"future_ad"]])",
+          R"([[200,{"renderURL":"ad1"}],)"
+          R"([100,{"renderURL":"ad2","metadata":{"key":"value"}}],)"
+          R"([0,{"renderURL":"future_ad"}]])",
       },
   };
 

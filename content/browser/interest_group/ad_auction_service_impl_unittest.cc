@@ -4050,7 +4050,7 @@ function scoreAd(
   ASSERT_EQ(1u,
             storage_interest_group->bidding_browser_signals->prev_wins.size());
   ASSERT_EQ(
-      R"({"render_url":"https://example.com/render"})",
+      R"({"renderURL":"https://example.com/render"})",
       storage_interest_group->bidding_browser_signals->prev_wins[0]->ad_json);
 
   // The auction should also trigger a k-anon "join" for the winning ad.
@@ -7483,7 +7483,7 @@ function scoreAd(
       ASSERT_EQ(
           1u,
           storage_interest_group->bidding_browser_signals->prev_wins.size());
-      ASSERT_EQ(R"({"render_url":"https://example.com/render"})",
+      ASSERT_EQ(R"({"renderURL":"https://example.com/render"})",
                 storage_interest_group->bidding_browser_signals->prev_wins[0]
                     ->ad_json);
       EXPECT_THAT(

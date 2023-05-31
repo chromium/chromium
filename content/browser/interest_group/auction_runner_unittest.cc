@@ -2998,7 +2998,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
                        /*made_highest_scoring_other_bid=*/false)));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -3214,7 +3214,7 @@ TEST_F(AuctionRunnerTest, Basic) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_TRUE(result_.errors.empty());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -3794,7 +3794,7 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -4504,7 +4504,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // Bid count should only be incremented by 1.
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://component2-bid.test/"})",
+  EXPECT_EQ(R"({"renderURL":"https://component2-bid.test/"})",
             result_.winning_group_ad_metadata);
   // Currently an interest group participating twice in an auction is counted
   // twice.
@@ -4655,7 +4655,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -5042,7 +5042,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/41)))));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5142,7 +5142,7 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5247,7 +5247,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/41)))));
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(1)
@@ -5367,7 +5367,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(
       result_.errors,
@@ -5535,7 +5535,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors,
               testing::ElementsAre("https://anotheradthing.com/bids.js "
@@ -5772,7 +5772,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -5879,7 +5879,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -5960,7 +5960,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
                                   "Failed to load "
@@ -6052,7 +6052,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6132,7 +6132,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6203,7 +6203,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
@@ -6281,7 +6281,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
                                   "%s `reportResult` is not a function.",
@@ -6434,7 +6434,7 @@ function reportResult(auctionConfig, browserSignals) {
 
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -7991,7 +7991,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
 
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
-      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+      EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                 result_.winning_group_ad_metadata);
       // In the case where no SellerWorklet is available at the start of the
       // auction, the auction is blocked on scoring the ad until the
@@ -8795,7 +8795,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre(kBidder2Key));
-    EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+    EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
               result_.winning_group_ad_metadata);
     CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                      .SetNumInterestGroups(2)
@@ -9391,8 +9391,9 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
@@ -9505,8 +9506,9 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
       CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
@@ -9912,7 +9914,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder2Key));
-  EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+  EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
             result_.winning_group_ad_metadata);
   CheckMetrics(MetricsExpectations(AuctionResult::kSuccess)
                    .SetNumInterestGroups(2)
@@ -10011,8 +10013,9 @@ TEST_F(AuctionRunnerTest, Tie) {
       EXPECT_EQ(kBidder1Key, result_.winning_group_id);
       EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
       EXPECT_TRUE(result_.ad_component_descriptors.empty());
-      EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
-                result_.winning_group_ad_metadata);
+      EXPECT_EQ(
+          R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
+          result_.winning_group_ad_metadata);
     } else {
       seen_bidder2_win = true;
 
@@ -10025,7 +10028,7 @@ TEST_F(AuctionRunnerTest, Tie) {
       EXPECT_EQ(kBidder2Key, result_.winning_group_id);
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
       EXPECT_TRUE(result_.ad_component_descriptors.empty());
-      EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+      EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                 result_.winning_group_ad_metadata);
     }
 
@@ -10168,12 +10171,12 @@ TEST_F(AuctionRunnerTest, WorkletOrder) {
         EXPECT_EQ(kBidder1Key, result_.winning_group_id);
         EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
         EXPECT_EQ(
-            R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
       } else {
         EXPECT_EQ(kBidder2Key, result_.winning_group_id);
         EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
-        EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
+        EXPECT_EQ(R"({"renderURL":"https://ad2.com/"})",
                   result_.winning_group_ad_metadata);
       }
     }
@@ -12720,7 +12723,7 @@ TEST_F(AuctionRunnerTest,
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
 
   EXPECT_THAT(
@@ -16273,7 +16276,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key));
-  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+  EXPECT_EQ(R"({"metadata":"{\"ads\": true}","renderURL":"https://ad1.com/"})",
             result_.winning_group_ad_metadata);
 
   // Bidder2 lost, but debug_loss_report_urls is empty because bidder2's
