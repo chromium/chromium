@@ -54,6 +54,7 @@ class RealtimeReportingClient : public KeyedService,
                                 public policy::CloudPolicyClient::Observer {
  public:
   static const char kKeyProfileIdentifier[];
+  static const char kKeyProfileUserName[];
 
   explicit RealtimeReportingClient(content::BrowserContext* context);
 
@@ -112,7 +113,8 @@ class RealtimeReportingClient : public KeyedService,
   void ReportEventWithTimestamp(const std::string& name,
                                 const ReportingSettings& settings,
                                 base::Value::Dict event,
-                                const base::Time& time);
+                                const base::Time& time,
+                                bool include_profile_user_name);
 
   // Returns the profile identifier which is the path to the current profile on
   // managed browsers or the globally unique profile identifier otherwise.

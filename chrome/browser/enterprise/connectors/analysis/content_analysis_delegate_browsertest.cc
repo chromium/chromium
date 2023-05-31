@@ -106,8 +106,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
   void SetExpectedFinalAction(
       const std::string& request_token,
-      enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
-          final_action) {
+      ContentAnalysisAcknowledgement::FinalAction final_action) {
     request_tokens_to_final_actions_[request_token] = final_action;
   }
 
@@ -332,12 +331,10 @@ class ContentAnalysisDelegateBrowserTestBase
         machine_scope_ ? kBrowserDMToken : kProfileDMToken);
 #endif
     if (machine_scope_) {
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          browser()->profile())
+      RealtimeReportingClientFactory::GetForProfile(browser()->profile())
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
     } else {
-      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-          browser()->profile())
+      RealtimeReportingClientFactory::GetForProfile(browser()->profile())
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           ->SetBrowserCloudPolicyClientForTesting(client_.get());
 #else
@@ -348,8 +345,7 @@ class ContentAnalysisDelegateBrowserTestBase
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
-        browser()->profile())
+    RealtimeReportingClientFactory::GetForProfile(browser()->profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_->identity_manager());
   }

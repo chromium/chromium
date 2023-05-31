@@ -584,7 +584,8 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile_)
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
 

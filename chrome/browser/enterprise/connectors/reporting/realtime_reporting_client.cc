@@ -75,6 +75,7 @@ namespace enterprise_connectors {
 
 const char RealtimeReportingClient::kKeyProfileIdentifier[] =
     "profileIdentifier";
+const char RealtimeReportingClient::kKeyProfileUserName[] = "profileUserName";
 
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
@@ -331,21 +332,26 @@ void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event) {
-  ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now());
+  ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now(),
+                           /*include_profile_user_name=*/true);
 }
 
 void RealtimeReportingClient::ReportPastEvent(const std::string& name,
                                               const ReportingSettings& settings,
                                               base::Value::Dict event,
                                               const base::Time& time) {
-  ReportEventWithTimestamp(name, settings, std::move(event), time);
+  // Do not include profile information for past events because for crash events
+  // we do not necessarily know which profile caused the crash .
+  ReportEventWithTimestamp(name, settings, std::move(event), time,
+                           /*include_profile_user_name=*/false);
 }
 
 void RealtimeReportingClient::ReportEventWithTimestamp(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event,
-    const base::Time& time) {
+    const base::Time& time,
+    bool include_profile_user_name) {
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
     return;
   }
@@ -382,6 +388,9 @@ void RealtimeReportingClient::ReportEventWithTimestamp(
   base::Value::Dict wrapper;
   wrapper.Set("time", time_str);
   event.Set(kKeyProfileIdentifier, GetProfileIdentifier());
+  if (include_profile_user_name) {
+    event.Set(kKeyProfileUserName, GetProfileUserName());
+  }
   // TODO(b/270589536): also move other common field setting here.
   wrapper.Set(name, std::move(event));
 

@@ -713,18 +713,16 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
         ->SetTestingFactory(
             profile_, base::BindRepeating(
                           &safe_browsing::BuildSafeBrowsingPrivateEventRouter));
-    enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-        ->SetTestingFactory(
-            profile_,
-            base::BindRepeating(&safe_browsing::BuildRealtimeReportingClient));
-    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        profile())
+    RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
+        profile_,
+        base::BindRepeating(&safe_browsing::BuildRealtimeReportingClient));
+    RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetBrowserCloudPolicyClientForTesting(cloud_policy_client_.get());
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
         kUserName, signin::ConsentLevel::kSync);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile())
+    RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_->identity_manager());
 
@@ -746,8 +744,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
 
   void TearDown() override {
     // Needs to be called before destructor of cloud_policy_client_.
-    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-        profile())
+    RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
 
     BaseTest::TearDown();
@@ -768,10 +765,8 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     EXPECT_TRUE(future.Wait());
   }
 
-  enterprise_connectors::AnalysisSettings GetSettings() {
-    auto* service =
-        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-            profile());
+  AnalysisSettings GetSettings() {
+    auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile());
     // If the corresponding Connector policy isn't set, no scans can be
     // performed.
     EXPECT_TRUE(service);
@@ -1411,8 +1406,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
 
   std::vector<std::string> expected_filenames;
   std::vector<std::string> expected_shas;
-  std::vector<enterprise_connectors::ContentAnalysisResponse::Result>
-      expected_dlp_verdicts;
+  std::vector<ContentAnalysisResponse::Result> expected_dlp_verdicts;
   std::vector<std::string> expected_results;
   std::vector<std::string> expected_scan_ids;
 

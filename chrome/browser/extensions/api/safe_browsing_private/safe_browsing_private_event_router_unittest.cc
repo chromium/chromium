@@ -810,7 +810,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
       /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -833,7 +833,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       /*enabled_opt_in_events=*/{{"loginEvent", {"notexample.com"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -854,7 +854,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -877,7 +877,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
       /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -900,7 +900,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
       /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -932,7 +932,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"notexample.com"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -959,7 +959,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
       {{"passwordBreachEvent", {"secondexample.com"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
   identity_test_environment.MakePrimaryAccountAvailable(
@@ -1305,7 +1305,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
   event_router_->AddEventObserver(&event_observer);
 
   signin::IdentityTestEnvironment identity_test_environment;
-  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+  enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(profile_)
       ->SetIdentityManagerForTesting(
           identity_test_environment.identity_manager());
 
