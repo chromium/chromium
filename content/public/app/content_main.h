@@ -71,7 +71,7 @@ struct CONTENT_EXPORT ContentMainParams {
 
 #if BUILDFLAG(IS_MAC)
   // The outermost autorelease pool to pass to main entry points.
-  base::mac::ScopedNSAutoreleasePool* autorelease_pool = nullptr;
+  raw_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool = nullptr;
 #endif
 
   // Returns a copy of this ContentMainParams without the move-only data

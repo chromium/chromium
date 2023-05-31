@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/gfx_export.h"
@@ -167,7 +168,9 @@ class GFX_EXPORT NativeView {
 #if defined(__has_feature) && __has_feature(objc_arc)
   __unsafe_unretained NSView* ns_view_ = nullptr;
 #else
-  NSView* ns_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
 #endif
 };
 class GFX_EXPORT NativeWindow {
@@ -197,7 +200,9 @@ class GFX_EXPORT NativeWindow {
 #if defined(__has_feature) && __has_feature(objc_arc)
   __unsafe_unretained NSWindow* ns_window_ = nullptr;
 #else
-  NSWindow* ns_window_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer, #global-scope, #union
+  RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
 #endif
 };
 constexpr NativeView kNullNativeView = NativeView(nullptr);

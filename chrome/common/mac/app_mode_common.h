@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/stringize_macros.h"
 
 #ifdef __OBJC__
@@ -186,7 +187,9 @@ enum class MojoIpczConfig {
 struct ChromeAppModeInfo {
   // Original |argc| and |argv| of the App Mode shortcut.
   int argc;
-  char** argv;
+  // This field is not a raw_ptr<> because this struct is part of separate
+  // binary and must be a POD.
+  RAW_PTR_EXCLUSION char** argv;
 
   // Path of the Chromium Framework, as UTF-8. This will be the input to
   // SetOverrideFrameworkBundlePath().

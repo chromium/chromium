@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -232,7 +233,8 @@ void CollectAncestorRoles(
 @end
 
 @implementation AXPlatformNodeCocoa {
-  ui::AXPlatformNodeBase* _node;  // Weak. Retains us.
+  // This field is not a raw_ptr<> because it requires @property rewrite.
+  RAW_PTR_EXCLUSION ui::AXPlatformNodeBase* _node;  // Weak. Retains us.
   std::unique_ptr<ui::AXAnnouncementSpec> _pendingAnnouncement;
 }
 

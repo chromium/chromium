@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -29,7 +30,8 @@ const int kMessageTextMaxSlots = 2000;
 @interface AlertBridgeHelper : NSObject <NSAlertDelegate> {
  @private
   base::scoped_nsobject<NSAlert> _alert;
-  remote_cocoa::AlertBridge* _alertBridge;  // Weak.
+  // This field is not a raw_ptr<> because it requires @property rewrite.
+  RAW_PTR_EXCLUSION remote_cocoa::AlertBridge* _alertBridge;  // Weak.
   base::scoped_nsobject<NSTextField> _textField;
 }
 @property(assign, nonatomic) remote_cocoa::AlertBridge* alertBridge;
