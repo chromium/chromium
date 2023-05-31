@@ -613,6 +613,16 @@ void WaylandEventSource::OnTouchFrame() {
 }
 
 void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {
+  // If a window dragging session is active (and touch-based), transfer the
+  // touch points to it.
+  auto drag_source = connection_->window_drag_controller()->drag_source();
+  if (drag_source && window) {
+    DCHECK_EQ(*drag_source, mojom::DragEventSource::kTouch);
+    for (auto& touch_point : touch_points_) {
+      touch_point.second->window = window;
+    }
+  }
+
   window_manager_->SetTouchFocusedWindow(window);
 }
 

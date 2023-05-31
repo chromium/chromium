@@ -23,6 +23,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
@@ -800,6 +801,12 @@ TEST_P(WaylandWindowDragControllerTest,
         SendDndLeave();
         test_step = kEnteredTarget;
         SendDndEnter(target_window, {20, 20});
+        // Ensure the target window has focus.
+        EXPECT_EQ(target_window,
+                  window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+        EXPECT_EQ(target_window, static_cast<WaylandTouch::Delegate*>(
+                                     connection_->event_source())
+                                     ->GetTouchTarget(0 /*point id*/));
         move_loop_handler->EndMoveLoop();
       });
 
