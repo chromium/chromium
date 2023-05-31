@@ -106,8 +106,9 @@ public class Features {
             "SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL";
 
     /**
-     * Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER.
+     * @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name.
      */
+    @Deprecated()
     public static final String WEB_MESSAGE_GET_MESSAGE_PAYLOAD = "WEB_MESSAGE_GET_MESSAGE_PAYLOAD";
 
     // JsReplyProxy.postMessageWithPayload
