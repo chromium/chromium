@@ -8268,14 +8268,6 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
-  // Automatic beacons can only be sent if the initiating frame had transient
-  // user activation when it navigated.
-  if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
-      blink::mojom::NavigationInitiatorActivationAndAdStatus::
-          kDidNotStartWithTransientActivation) {
-    return;
-  }
-
   if (!navigation_request.GetInitiatorFrameToken().has_value()) {
     return;
   }
@@ -8283,10 +8275,31 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
   // Treat the automatic beacon as if it's being sent by the document that
   // initiated the top-level navigation. (You can think of it like a
   // reportEvent call from that document.)
+  // TODO(crbug.com/1450281): initiator_rfh may be null for some navigations on
+  // Android.
   RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
       navigation_request.GetInitiatorProcessID(),
       navigation_request.GetInitiatorFrameToken().value());
   if (!initiator_rfh) {
+    return;
+  }
+
+  // Automatic beacons can only be sent if the initiating frame had transient
+  // user activation when it navigated. For navigations originating from the
+  // contextual menu (i.e. "Open Link in X"), the navigation initiator
+  // activation status will not be set, so we check the initiator frame's user
+  // activation directly.
+  // For navigations originating from clicking a link directly, the navigation
+  // initiator will be set, but the initiator frame's transient user activation
+  // might have been consumed by navigation commit time, so we check the
+  // navigation request's initiator navigation status.
+  // It is safe to check both values at once. If one is not properly set, it
+  // will always be set to a false negative and not a false positive, so there
+  // is no way for that to cause an accidental beacon to be sent.
+  if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kDidNotStartWithTransientActivation &&
+      !initiator_rfh->HasTransientUserActivation()) {
     return;
   }
 
