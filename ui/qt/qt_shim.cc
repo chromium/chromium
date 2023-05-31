@@ -7,7 +7,7 @@
 
 #include "ui/qt/qt_shim.h"
 
-#include <stdio.h>
+#include <cmath>
 
 #include <QApplication>
 #include <QFont>
@@ -219,7 +219,24 @@ QtShim::QtShim(QtInterface::Delegate* delegate, int* argc, char** argv)
 QtShim::~QtShim() = default;
 
 double QtShim::GetScaleFactor() const {
-  return app_.devicePixelRatio();
+  constexpr double kDefaultPixelDpi = 96.0;
+  // Use the largest scale factor across all displays as the global scale
+  // factor.  This matches the behavior of `app_.devicePixelRatio()`, except
+  // this also takes into account the logical DPI.
+  // TODO(https://crbug.com/1450301): Unlike GTK, QT supports per-display
+  // scaling. Use this instead of the max scale factor.
+  double scale = 0.0;
+  for (QScreen* screen : app_.screens()) {
+    scale =
+        std::max(scale, screen->devicePixelRatio() *
+                            screen->logicalDotsPerInch() / kDefaultPixelDpi);
+  }
+  // Round to the nearest 16th so that UI can losslessly multiply and divide
+  // by the scale factor using floating point arithmetic.  GtkUi also rounds
+  // in this way, but to 1/64th.  1/16th is chosen here since that's what
+  // KDE settings uses.
+  scale = std::round(scale * 16) / 16;
+  return scale > 0 ? scale : 1.0;
 }
 
 FontRenderParams QtShim::GetFontRenderParams() const {
