@@ -227,8 +227,9 @@ void StatefulLacrosLoader::OnLoad(
       error == component_updater::CrOSComponentManager::Error::NONE &&
       !path.empty();
   LOG_IF(WARNING, !is_stateful_lacros_available)
-      << "Error loading lacros component image: " << static_cast<int>(error)
-      << ", " << path;
+      << "Error loading lacros component image in the "
+      << (callback ? "foreground" : "background") << ": "
+      << static_cast<int>(error) << ", " << path;
 
   version_ = is_stateful_lacros_available
                  ? browser_util::GetInstalledLacrosComponentVersion(
@@ -239,9 +240,11 @@ void StatefulLacrosLoader::OnLoad(
   if (callback) {
     std::move(callback).Run(version_.value(), path_.value());
   } else {
-    LOG(WARNING)
-        << "stateful lacros-chrome installation completed in the background in "
-        << path << ", version is " << version_.value();
+    if (is_stateful_lacros_available) {
+      LOG(WARNING) << "stateful lacros-chrome installation completed in the "
+                   << "background in " << path << ", version is "
+                   << version_.value();
+    }
   }
 }
 
