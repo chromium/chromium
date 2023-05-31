@@ -767,18 +767,12 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   scoped_refptr<ColorBuffer> canvas_resource_buffer =
       using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
 
-  SkImageInfo resource_info =
-      SkImageInfo::MakeN32Premul(canvas_resource_buffer->size.width(),
-                                 canvas_resource_buffer->size.height());
-  auto format = canvas_resource_buffer->format;
-  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
-      format == viz::SinglePlaneFormat::kRGBX_8888) {
-    resource_info = resource_info.makeColorType(kRGBA_8888_SkColorType);
-  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
-    resource_info = resource_info.makeColorType(kRGBA_F16_SkColorType);
-  } else {
-    NOTREACHED();
-  }
+  SkImageInfo resource_info = SkImageInfo::Make(
+      canvas_resource_buffer->size.width(),
+      canvas_resource_buffer->size.height(),
+      viz::ToClosestSkColorType(/*gpu_compositing=*/true,
+                                canvas_resource_buffer->format),
+      kPremul_SkAlphaType);
 
   return ExternalCanvasResource::Create(
       canvas_resource_buffer->mailbox, viz::ReleaseCallback(), gpu::SyncToken(),
