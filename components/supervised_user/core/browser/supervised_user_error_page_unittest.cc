@@ -90,7 +90,8 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
       param.profile_image_url2, param.custodian, param.custodian_email,
       param.second_custodian, param.second_custodian_email, param.reason,
       /*app_locale=*/"",
-      /*already_sent_request=*/false, /*is_main_frame=*/true);
+      /*already_sent_request=*/false, /*is_main_frame=*/true,
+      /*show_banner=*/true);
   // The result should contain the original HTML (with $i18n{} replacements)
   // plus scripts that plug values into it. The test can't easily check that the
   // scripts are correct, but can check that the output contains the expected

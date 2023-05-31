@@ -145,6 +145,9 @@ class SupervisedUserService : public KeyedService,
   // who haven't yet seen the banner.
   void MarkFirstTimeInterstitialBannerShown() const;
 
+  // Returns true if the interstitial banner needs to be shown to user.
+  bool ShouldShowFirstTimeInterstitialBanner() const;
+
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
   // Public to allow visibility to iOS factory.

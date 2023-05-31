@@ -23,7 +23,8 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
                                FilteringBehaviorReason reason,
                                const std::string& app_locale,
                                bool already_sent_remote_request,
-                               bool is_main_frame);
+                               bool is_main_frame,
+                               bool show_banner);
 
 }  //  namespace supervised_user
 
