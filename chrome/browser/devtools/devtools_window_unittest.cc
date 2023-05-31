@@ -6,6 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +33,10 @@ TEST_F(DevToolsWindowTest, GetDevtoolsURL) {
   std::string expected =
       "devtools://devtools/bundled/devtools_app.html?remoteBase=" +
       DevToolsUI::GetRemoteBaseURL().spec();
+  if (base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)) {
+    expected += "&targetType=tab";
+  }
+
   EXPECT_EQ(expected, GetURL(version_info::Channel::UNKNOWN));
   EXPECT_EQ(expected, GetURL(version_info::Channel::CANARY));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
