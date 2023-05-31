@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for the DecoderServiceHost.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusCallback,
                                                DecoderServiceHost.ImagesDecodedCallback {
     // The timeout (in milliseconds) to wait for the decoding.
