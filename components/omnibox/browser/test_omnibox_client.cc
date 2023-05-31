@@ -31,6 +31,7 @@ TestOmniboxClient::TestOmniboxClient()
           std::make_unique<TestSchemeClassifier>()) {}
 
 TestOmniboxClient::~TestOmniboxClient() {
+  template_url_service_ = nullptr;
   autocomplete_classifier_.Shutdown();
 }
 
