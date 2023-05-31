@@ -43,6 +43,9 @@ class AppBannerManagerDesktop
   virtual TestAppBannerManagerDesktop*
   AsTestAppBannerManagerDesktopForTesting();
 
+  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
+  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
+
  protected:
   explicit AppBannerManagerDesktop(content::WebContents* web_contents);
 

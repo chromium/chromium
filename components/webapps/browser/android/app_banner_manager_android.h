@@ -114,6 +114,11 @@ class AppBannerManagerAndroid : public AppBannerManager {
   void PerformWorkerCheckForAmbientBadge(InstallableParams params,
                                          InstallableCallback callback);
 
+  bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
+
+  // Locally installed apps do not exist on Android.
+  bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
+
  protected:
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;

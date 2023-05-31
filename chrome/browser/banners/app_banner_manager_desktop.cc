@@ -77,6 +77,21 @@ AppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
   return nullptr;
 }
 
+bool AppBannerManagerDesktop::IsAppFullyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return web_app::FindInstalledAppWithUrlInScope(
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+             site_url)
+      .has_value();
+}
+
+bool AppBannerManagerDesktop::IsAppPartiallyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return web_app::IsNonLocallyInstalledAppWithUrlInScope(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      site_url);
+}
+
 AppBannerManagerDesktop::AppBannerManagerDesktop(
     content::WebContents* web_contents)
     : AppBannerManager(web_contents),

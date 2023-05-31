@@ -320,6 +320,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
       const GURL& url,
       bool window_only = false) const;
 
+  // Returns true if there is an app that is not locally installed that has
+  // a scope which is a prefix of |url|.
+  bool IsNonLocallyInstalledAppWithUrlInScope(const GURL& url) const;
+
   // Returns whether the app is a shortcut app (as opposed to a PWA).
   bool IsShortcutApp(const AppId& app_id) const;
 
