@@ -4,37 +4,37 @@ Set timer for test function.
 Dumping console messages:
 
 injectedFunction()
-debugger-eval-while-paused-throws.js:51 Uncaught Error: injectedObj.func
-    at Object.func (debugger-eval-while-…sed-throws.js:51:15)
-    at injectedFunction (debugger-eval-while-…sed-throws.js:54:24)
-    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:1)
-    at testFunction (test.js:27:11)
-func @ debugger-eval-while-paused-throws.js:51
-injectedFunction @ debugger-eval-while-paused-throws.js:54
+debugger-eval-while-paused-throws.js:55 Uncaught Error: injectedObj.func
+    at Object.func (debugger-eval-while-…sed-throws.js:55:15)
+    at injectedFunction (debugger-eval-while-…sed-throws.js:58:24)
+    at eval (eval at testFunction (inspected-page.html:31:11), <anonymous>:1:1)
+    at testFunction (test.js:31:11)
+func @ debugger-eval-while-paused-throws.js:55
+injectedFunction @ debugger-eval-while-paused-throws.js:58
 eval @ VM:1
-testFunction @ test.js:27
+testFunction @ test.js:31
 setTimeout (async)
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 localObj.func()
-test.js:24 Uncaught Error: localObj.func
-    at Object.func (test.js:24:25)
-    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:10)
-    at testFunction (test.js:27:11)
-func @ test.js:24
+test.js:28 Uncaught Error: localObj.func
+    at Object.func (test.js:28:25)
+    at eval (eval at testFunction (inspected-page.html:31:11), <anonymous>:1:10)
+    at testFunction (test.js:31:11)
+func @ test.js:28
 eval @ VM:1
-testFunction @ test.js:27
+testFunction @ test.js:31
 setTimeout (async)
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1
 globalObj.func()
-test.js:15 Uncaught Error: globalObj.func
-    at Object.func (test.js:15:21)
-    at eval (eval at testFunction (inspected-page.html:27:11), <anonymous>:1:11)
-    at testFunction (test.js:27:11)
-func @ test.js:15
+test.js:19 Uncaught Error: globalObj.func
+    at Object.func (test.js:19:21)
+    at eval (eval at testFunction (inspected-page.html:31:11), <anonymous>:1:11)
+    at testFunction (test.js:31:11)
+func @ test.js:19
 eval @ VM:1
-testFunction @ test.js:27
+testFunction @ test.js:31
 setTimeout (async)
 scheduleTestFunction @ VM:3
 (anonymous) @ VM:1

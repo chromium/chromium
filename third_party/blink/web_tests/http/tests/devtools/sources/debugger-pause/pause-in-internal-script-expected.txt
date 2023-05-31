@@ -6,7 +6,7 @@ Script source was shown.
 Set timer for test function.
 Script execution paused.
 Call stack:
-    0)  (pause-in-internal-script.js:22)
-    1) testFunction (pause-in-internal-script.js:20)
+    0)  (pause-in-internal-script.js:25)
+    1) testFunction (pause-in-internal-script.js:23)
 Script execution resumed.
 

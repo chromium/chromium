@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames. Bug 64995\n`);
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <p>Tests that internal scripts unknown to front-end are processed correctly when appear in debugger call frames.
@@ -34,13 +37,13 @@
     async function didShowScriptSource(sourceFrame) {
       breakpointFunctionFrame = sourceFrame;
       TestRunner.addResult('Script source was shown.');
-      await SourcesTestRunner.setBreakpoint(sourceFrame, 21, '', true);
+      await SourcesTestRunner.setBreakpoint(sourceFrame, 24, '', true);
       SourcesTestRunner.runTestFunctionAndWaitUntilPaused(didPause);
     }
 
     async function didPause(callFrames) {
       await SourcesTestRunner.captureStackTrace(callFrames);
-      SourcesTestRunner.removeBreakpoint(breakpointFunctionFrame, 21);
+      SourcesTestRunner.removeBreakpoint(breakpointFunctionFrame, 24);
       next();
     }
   }]);

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   TestRunner.addResult('Check that return value can be changed.');
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
     function testFunction() {
@@ -14,7 +18,7 @@
     //# sourceURL=test.js
   `);
   await SourcesTestRunner.startDebuggerTestPromise();
-  await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 11, url: 'test.js', columnNumber: 37});
+  await TestRunner.DebuggerAgent.invoke_setBreakpointByUrl({lineNumber: 15, url: 'test.js', columnNumber: 37});
   let sidebarUpdated = TestRunner.addSnifferPromise(
         Sources.ScopeChainSidebarPane.prototype, 'sidebarPaneUpdatedForTest');
   await Promise.all([SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise(), sidebarUpdated]);
