@@ -1640,130 +1640,6 @@ TEST_P(GLES2DecoderManualInitTest, ActualAlphaMatchesRequestedAlpha) {
   EXPECT_EQ(8, result->GetData()[0]);
 }
 
-TEST_P(GLES2DecoderManualInitTest, ActualAlphaDoesNotMatchRequestedAlpha) {
-  InitState init;
-  init.has_alpha = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_ALPHA_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_ALPHA_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0, result->GetData()[0]);
-}
-
-TEST_P(GLES2DecoderManualInitTest, ActualDepthMatchesRequestedDepth) {
-  InitState init;
-  init.has_depth = true;
-  init.request_depth = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_BITS, _))
-      .WillOnce(SetArgPointee<1>(24))
-      .RetiresOnSaturation();
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_DEPTH_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_DEPTH_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(24, result->GetData()[0]);
-}
-
-TEST_P(GLES2DecoderManualInitTest, ActualDepthDoesNotMatchRequestedDepth) {
-  InitState init;
-  init.has_depth = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_BITS, _))
-      .WillOnce(SetArgPointee<1>(24))
-      .RetiresOnSaturation();
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_DEPTH_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_DEPTH_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0, result->GetData()[0]);
-}
-
-TEST_P(GLES2DecoderManualInitTest, ActualStencilMatchesRequestedStencil) {
-  InitState init;
-  init.has_stencil = true;
-  init.request_stencil = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_BITS, _))
-      .WillOnce(SetArgPointee<1>(8))
-      .RetiresOnSaturation();
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_STENCIL_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_STENCIL_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(8, result->GetData()[0]);
-}
-
-TEST_P(GLES2DecoderManualInitTest, ActualStencilDoesNotMatchRequestedStencil) {
-  InitState init;
-  init.has_stencil = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_BITS, _))
-      .WillOnce(SetArgPointee<1>(8))
-      .RetiresOnSaturation();
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_STENCIL_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_STENCIL_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0, result->GetData()[0]);
-}
-
 TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilReportsCorrectValues) {
   InitState init;
   init.extensions = "GL_OES_packed_depth_stencil";
@@ -1794,47 +1670,6 @@ TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilReportsCorrectValues) {
             result->GetNumResults());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(8, result->GetData()[0]);
-  result->size = 0;
-  cmd2.Init(GL_DEPTH_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_BITS, _))
-      .WillOnce(SetArgPointee<1>(24))
-      .RetiresOnSaturation();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_DEPTH_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(24, result->GetData()[0]);
-}
-
-TEST_P(GLES2DecoderManualInitTest, PackedDepthStencilNoRequestedStencil) {
-  InitState init;
-  init.extensions = "GL_OES_packed_depth_stencil";
-  init.gl_version = "OpenGL ES 2.0";
-  init.has_depth = true;
-  init.has_stencil = true;
-  init.request_depth = true;
-  init.bind_generates_resource = true;
-  InitDecoder(init);
-
-  EXPECT_CALL(*gl_, GetError())
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .WillOnce(Return(GL_NO_ERROR))
-      .RetiresOnSaturation();
-  auto* result =
-      static_cast<cmds::GetIntegerv::Result*>(shared_memory_address_);
-  result->size = 0;
-  cmds::GetIntegerv cmd2;
-  cmd2.Init(GL_STENCIL_BITS, shared_memory_id_, shared_memory_offset_);
-  EXPECT_CALL(*gl_, GetIntegerv(GL_STENCIL_BITS, _))
-      .WillOnce(SetArgPointee<1>(8))
-      .RetiresOnSaturation();
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd2));
-  EXPECT_EQ(decoder_->GetGLES2Util()->GLGetNumValuesReturned(GL_STENCIL_BITS),
-            result->GetNumResults());
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_EQ(0, result->GetData()[0]);
   result->size = 0;
   cmd2.Init(GL_DEPTH_BITS, shared_memory_id_, shared_memory_offset_);
   EXPECT_CALL(*gl_, GetIntegerv(GL_DEPTH_BITS, _))
@@ -3529,6 +3364,7 @@ TEST_P(GLES2DecoderManualInitTest,
   init.extensions = "GL_EXT_discard_framebuffer";
   init.gl_version = "OpenGL ES 2.0";
   init.has_alpha = true;
+  init.request_alpha = true;
   init.bind_generates_resource = true;
   InitDecoder(init);
 

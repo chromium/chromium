@@ -3880,14 +3880,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
         api()->glGetIntegervFn(GL_STENCIL_BITS, &stencil_bits);
       }
 
-      // This checks if the user requested RGBA and we have RGBA then RGBA. If
-      // the user requested RGB then RGB. If the user did not specify a
-      // preference than use whatever we were given. Same for DEPTH and STENCIL.
-      back_buffer_color_format_ =
-          (attrib_helper.alpha_size != 0 && alpha_bits > 0) ? GL_RGBA : GL_RGB;
-      back_buffer_has_depth_ = attrib_helper.depth_size != 0 && depth_bits > 0;
-      back_buffer_has_stencil_ =
-          attrib_helper.stencil_size != 0 && stencil_bits > 0;
+      back_buffer_color_format_ = alpha_bits > 0 ? GL_RGBA : GL_RGB;
+      back_buffer_has_depth_ = depth_bits > 0;
+      back_buffer_has_stencil_ = stencil_bits > 0;
       num_stencil_bits_ = stencil_bits;
     } else {
       num_stencil_bits_ = attrib_helper.stencil_size;
