@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 
+#include <string>
+
+#include "ash/bubble/bubble_utils.h"
+#include "ash/style/typography.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -19,6 +23,17 @@ std::unique_ptr<views::Label> CreateShareLabel(
   auto label = std::make_unique<views::Label>(text, text_context, text_style);
   label->SetLineHeight(line_height);
   label->SetEnabledColor(color);
+  label->SetHorizontalAlignment(alignment);
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateShareLabel(
+    const std::u16string& text,
+    const TypographyToken style,
+    const ui::ColorId color_id,
+    const gfx::HorizontalAlignment alignment) {
+  auto label = std::make_unique<views::Label>(text);
+  bubble_utils::ApplyStyle(label.get(), style, color_id);
   label->SetHorizontalAlignment(alignment);
   return label;
 }

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -29,12 +30,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/sharesheet/constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/closure_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -187,6 +190,9 @@ void SharesheetBubbleView::ShowBubble(
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  // TODO(melzhang): Clean this up after MTP Copy To Clipboard changes land,
+  // which makes Copy To Clipboard always visible.
+  //
   // When there are no targets, don't show any previews.
   bool show_content_previews = !targets.empty();
   header_view_ =
@@ -232,6 +238,9 @@ void SharesheetBubbleView::ShowBubble(
     if (show_content_previews) {
       header_body_separator_ =
           body_view_->AddChildView(std::make_unique<views::Separator>());
+      if (chromeos::features::IsJellyEnabled()) {
+        header_body_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+      }
     }
 
     const size_t targets_size = targets.size();
@@ -243,6 +252,9 @@ void SharesheetBubbleView::ShowBubble(
     if (expanded_view_) {
       body_footer_separator_ =
           body_view_->AddChildView(std::make_unique<views::Separator>());
+      if (chromeos::features::IsJellyEnabled()) {
+        body_footer_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+      }
       expand_button_ =
           footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
               base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
@@ -302,12 +314,19 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
         views::BoxLayout::Orientation::kVertical);
 
     expanded_view_container
-        ->AddChildView(CreateShareLabel(
-            l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
-            CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary),
-            gfx::ALIGN_CENTER))
+        ->AddChildView(
+            chromeos::features::IsJellyEnabled()
+                ? CreateShareLabel(
+                      l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+                      TypographyToken::kCrosHeadline1,
+                      cros_tokens::kCrosSysOnSurface, gfx::ALIGN_CENTER)
+                : CreateShareLabel(
+                      l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
+                      CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
+                      AshColorProvider::Get()->GetContentLayerColor(
+                          AshColorProvider::ContentLayerType::
+                              kTextColorPrimary),
+                      gfx::ALIGN_CENTER))
         ->SetProperty(views::kMarginsKey,
                       gfx::Insets::TLBR(kExpandViewPaddingTop, 0,
                                         kExpandViewPaddingBottom, 0));
@@ -331,6 +350,9 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
   if (expanded_view_container) {
     expanded_view_separator_ =
         scrollable_view->AddChildView(std::make_unique<views::Separator>());
+    if (chromeos::features::IsJellyEnabled()) {
+      expanded_view_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+    }
     expanded_view_separator_->SetProperty(views::kMarginsKey,
                                           gfx::Insets::VH(0, kSpacing));
     expanded_view_ =
