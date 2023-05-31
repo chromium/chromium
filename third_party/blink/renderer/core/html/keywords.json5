@@ -153,5 +153,12 @@
     "plaintext-only",
     "false",
     "inherit",
+
+    // controlslist attribute
+    // https://wicg.github.io/controls-list/html-output/multipage/embedded-content.html#attr-media-controlslist
+    "nodownload",
+    "nofullscreen",
+    "noplaybackrate",
+    "noremoteplayback",
   ],
 }
