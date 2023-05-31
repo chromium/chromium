@@ -15,6 +15,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,19 +27,27 @@
 
 namespace policy {
 
-FilesPolicyNotificationManager::FilesPolicyNotificationManager(
-    content::BrowserContext* context)
-    : context_(context) {
+namespace {
+file_manager::io_task::IOTaskController* GetIOTaskController(
+    content::BrowserContext* context) {
   DCHECK(context);
-
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(Profile::FromBrowserContext(context));
   if (!volume_manager) {
     LOG(ERROR) << "FilesPolicyNotificationManager failed to find "
                   "file_manager::VolumeManager";
-    return;
+    return nullptr;
   }
-  auto* io_task_controller = volume_manager->io_task_controller();
+  return volume_manager->io_task_controller();
+}
+}  // namespace
+
+FilesPolicyNotificationManager::FilesPolicyNotificationManager(
+    content::BrowserContext* context)
+    : context_(context) {
+  DCHECK(context);
+
+  auto* io_task_controller = GetIOTaskController(context_);
   if (!io_task_controller) {
     LOG(ERROR) << "FilesPolicyNotificationManager failed to find "
                   "file_manager::io_task::IOTaskController";
@@ -59,9 +69,8 @@ void FilesPolicyNotificationManager::ShowDialog(
       FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
   gfx::NativeWindow modal_parent =
       browser ? browser->window()->GetNativeWindow() : nullptr;
-
   if (modal_parent) {
-    ShowFilesPolicyDialog(type, modal_parent);
+    ShowFilesPolicyDialog(task_id, type, modal_parent);
     return;
   }
 
@@ -71,7 +80,7 @@ void FilesPolicyNotificationManager::ShowDialog(
   DCHECK(!pending_callback_);
   pending_callback_ =
       base::BindOnce(&FilesPolicyNotificationManager::ShowFilesPolicyDialog,
-                     weak_factory_.GetWeakPtr(), type);
+                     weak_factory_.GetWeakPtr(), task_id, type);
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.allowed_paths =
@@ -119,27 +128,44 @@ FilesPolicyNotificationManager::IOTaskInfo::IOTaskInfo(IOTaskInfo&& other) =
 FilesPolicyNotificationManager::IOTaskInfo::~IOTaskInfo() = default;
 
 void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
+    file_manager::io_task::IOTaskId task_id,
     FilesDialogType type,
     gfx::NativeWindow modal_parent) {
-  // TODO(b/282664769): Pass correct values. These should be stored by
-  // task_id.
+  if (!HasIOTask(task_id)) {
+    // Task already completed and removed.
+    return;
+  }
+
   views::Widget* widget;
   switch (type) {
     case FilesDialogType::kUnknown:
       LOG(WARNING) << "Unknown FilesDialogType passed";
       return;
-    case FilesDialogType::kWarning:
-      widget = views::DialogDelegate::CreateDialogWidget(
-          std::make_unique<FilesPolicyWarnDialog>(
-              base::DoNothing(), std::vector<DlpConfidentialFile>(),
-              DlpFileDestination(""), dlp::FileAction::kCopy, modal_parent),
-          /*context=*/nullptr, /*parent=*/modal_parent);
-      break;
     case FilesDialogType::kError:
+      if (!io_tasks_.at(task_id).blocked_files.empty()) {
+        return;
+      }
       widget = views::DialogDelegate::CreateDialogWidget(
           std::make_unique<FilesPolicyErrorDialog>(
-              std::map<DlpConfidentialFile, Policy>(), DlpFileDestination(""),
-              dlp::FileAction::kCopy, modal_parent),
+              std::move(io_tasks_.at(task_id).blocked_files),
+              DlpFileDestination(""), io_tasks_.at(task_id).action,
+              modal_parent),
+          /*context=*/nullptr, /*parent=*/modal_parent);
+      break;
+    case FilesDialogType::kWarning:
+      if (!io_tasks_.at(task_id).warning_info.has_value()) {
+        return;
+      }
+      OnDlpRestrictionCheckedCallback callback = base::BindOnce(
+          &FilesPolicyNotificationManager::OnWarningDialogClicked,
+          weak_factory_.GetWeakPtr(), task_id,
+          io_tasks_.at(task_id).warning_info->warning_reason);
+      widget = views::DialogDelegate::CreateDialogWidget(
+          std::make_unique<FilesPolicyWarnDialog>(
+              std::move(callback),
+              std::move(io_tasks_.at(task_id).warning_info->files),
+              DlpFileDestination(""), io_tasks_.at(task_id).action,
+              modal_parent),
           /*context=*/nullptr, /*parent=*/modal_parent);
       break;
   }
@@ -187,20 +213,29 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
   }
 }
 
-std::vector<DlpConfidentialFile>
-FilesPolicyNotificationManager::GetWarningFiles(
-    file_manager::io_task::IOTaskId task_id,
-    Policy warning_reason) const {
-  if (!HasIOTask(task_id) || !io_tasks_.at(task_id).warning_info.has_value() ||
-      io_tasks_.at(task_id).warning_info->warning_reason != warning_reason) {
-    return {};
-  }
-  return io_tasks_.at(task_id).warning_info->files;
-}
-
 bool FilesPolicyNotificationManager::HasBlockedFiles(
     file_manager::io_task::IOTaskId task_id) const {
   return HasIOTask(task_id) && !io_tasks_.at(task_id).blocked_files.empty();
+}
+
+void FilesPolicyNotificationManager::OnWarningDialogClicked(
+    file_manager::io_task::IOTaskId task_id,
+    Policy warning_reason,
+    bool should_proceed) {
+  auto* io_task_controller = GetIOTaskController(context_);
+  if (!io_task_controller) {
+    LOG(ERROR) << "FilesPolicyNotificationManager failed to find "
+                  "file_manager::io_task::IOTaskController";
+    return;
+  }
+
+  if (should_proceed) {
+    file_manager::io_task::ResumeParams params;
+    params.policy_params->type = warning_reason;
+    io_task_controller->Resume(task_id, std::move(params));
+  } else {
+    io_task_controller->Cancel(task_id);
+  }
 }
 
 }  // namespace policy
