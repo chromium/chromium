@@ -153,6 +153,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
+    style_builder.SetScrollbarColor(absl::nullopt);
     style_builder.SetWhiteSpace(EWhiteSpace::kPre);
     style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
     style_builder.SetTextOverflow(ToTextControl(host)->ValueForTextOverflow());
