@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <tuple>
@@ -26,23 +27,57 @@ class BufferSourceTest : public testing::Test {
   BufferSource source_ = {bytes_.data(), bytes_.size()};
 };
 
+TEST_F(BufferSourceTest, CtorWithOffset) {
+  ConstBufferView view(bytes_.data(), bytes_.size());
+  for (size_t offset = 0; offset < bytes_.size() * 2; ++offset) {
+    BufferSource source(view, offset);
+    size_t expected_remaining = bytes_.size() - std::min(bytes_.size(), offset);
+    EXPECT_EQ(expected_remaining, source.Remaining());
+  }
+
+  BufferSource source1(view, 5);
+  EXPECT_TRUE(source1.CheckNextBytes({0xBA, 0xDC, 0xFE, 0x10}));
+  BufferSource source2(view, 0);
+  EXPECT_TRUE(source2.CheckNextBytes({0x10, 0x32, 0x54, 0x76}));
+  BufferSource source3(view, 9);
+  EXPECT_TRUE(source3.CheckNextBytes({0x00}));
+}
+
 TEST_F(BufferSourceTest, Skip) {
   EXPECT_EQ(bytes_.size(), source_.Remaining());
-  source_.Skip(2);
+  EXPECT_TRUE(source_.Skip(2));
   EXPECT_EQ(bytes_.size() - 2, source_.Remaining());
-  source_.Skip(10);  // Skipping past end just moves cursor to end.
+  EXPECT_TRUE(source_.Skip(bytes_.size() - 2));  // Skip to end.
+  EXPECT_EQ(size_t(0), source_.Remaining());
+  EXPECT_FALSE(source_.Skip(1));
+  EXPECT_EQ(size_t(0), source_.Remaining());
+  EXPECT_FALSE(source_.Skip(4));
+  EXPECT_EQ(size_t(0), source_.Remaining());
+}
+
+TEST_F(BufferSourceTest, SkipAcrossEnd) {
+  EXPECT_EQ(bytes_.size(), source_.Remaining());
+  EXPECT_TRUE(source_.Skip(2));
+  EXPECT_EQ(bytes_.size() - 2, source_.Remaining());
+  EXPECT_TRUE(source_.Skip(5));
+  EXPECT_EQ(bytes_.size() - 7, source_.Remaining());
+  EXPECT_FALSE(source_.Skip(10));  // Skip past end.
+  EXPECT_EQ(size_t(0), source_.Remaining());
+  EXPECT_FALSE(source_.Skip(1));
+  EXPECT_EQ(size_t(0), source_.Remaining());
+  EXPECT_FALSE(source_.Skip(4));
   EXPECT_EQ(size_t(0), source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, CheckNextBytes) {
   EXPECT_TRUE(source_.CheckNextBytes({0x10, 0x32, 0x54, 0x76}));
-  source_.Skip(4);
+  EXPECT_TRUE(source_.Skip(4));
   EXPECT_TRUE(source_.CheckNextBytes({0x98, 0xBA, 0xDC, 0xFE}));
 
   // Cursor has not advanced, so check fails.
   EXPECT_FALSE(source_.CheckNextBytes({0x10, 0x00}));
 
-  source_.Skip(4);
+  EXPECT_TRUE(source_.Skip(4));
   EXPECT_EQ(size_t(2), source_.Remaining());
 
   // Goes beyond end by 2 bytes.
@@ -69,7 +104,7 @@ TEST_F(BufferSourceTest, CheckNextValue) {
   EXPECT_TRUE(source_.CheckNextValue(uint64_t(0xFEDCBA9876543210)));
   EXPECT_FALSE(source_.CheckNextValue(uint64_t(0x0)));
 
-  source_.Skip(8);
+  EXPECT_TRUE(source_.Skip(8));
   EXPECT_EQ(size_t(2), source_.Remaining());
 
   // Goes beyond end by 2 bytes.

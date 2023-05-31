@@ -33,17 +33,18 @@ class BufferSource : public ConstBufferView {
 
   using ConstBufferView::ConstBufferView;
   BufferSource() = default;
-  explicit BufferSource(ConstBufferView buffer);
+  explicit BufferSource(const ConstBufferView& buffer);
+
+  // Constructs view into |buffer| starting at |offset| (truncated if size
+  // exceeded).
+  BufferSource(const ConstBufferView& buffer, size_type offset);
+
   BufferSource(const BufferSource&) = default;
   BufferSource& operator=(BufferSource&&) = default;
 
-  // Moves the cursor forward by |n| bytes, or to the end if data is exhausted.
-  // Returns a reference to *this, to allow chaining, e.g.:
-  //   if (!buffer_source.Skip(1024).GetValue<uint32_t>(&value)) {
-  //      ... // Handle error.
-  //   }
-  // Notice that Skip() defers error handling to GetValue().
-  BufferSource& Skip(size_type n);
+  // Advances the cursor by |n| bytes and returns true if there are enough bytes
+  // remaining. Otherwise moves cursor to end and returns false.
+  bool Skip(size_type n);
 
   // Returns true if |value| matches data starting at the cursor when
   // reinterpreted as the integral type |T|.
@@ -52,8 +53,9 @@ class BufferSource : public ConstBufferView {
     static_assert(std::is_integral<T>::value,
                   "Value type must be an integral type");
     DCHECK_NE(begin(), nullptr);
-    if (Remaining() < sizeof(T))
+    if (Remaining() < sizeof(T)) {
       return false;
+    }
     T next_value = {};
     ::memcpy(&next_value, begin(), sizeof(T));
     return value == next_value;
@@ -76,8 +78,9 @@ class BufferSource : public ConstBufferView {
                   "Value type must be a standard layout type");
 
     DCHECK_NE(begin(), nullptr);
-    if (Remaining() < sizeof(T))
+    if (Remaining() < sizeof(T)) {
       return false;
+    }
     ::memcpy(value, begin(), sizeof(T));
     remove_prefix(sizeof(T));
     return true;
@@ -93,8 +96,9 @@ class BufferSource : public ConstBufferView {
                   "Value type must be a standard layout type");
 
     DCHECK_NE(begin(), nullptr);
-    if (Remaining() < sizeof(T))
+    if (Remaining() < sizeof(T)) {
       return nullptr;
+    }
     const T* ptr = reinterpret_cast<const T*>(begin());
     remove_prefix(sizeof(T));
     return ptr;
@@ -109,8 +113,9 @@ class BufferSource : public ConstBufferView {
     static_assert(std::is_standard_layout<T>::value,
                   "Value type must be a standard layout type");
 
-    if (Remaining() / sizeof(T) < count)
+    if (Remaining() / sizeof(T) < count) {
       return nullptr;
+    }
     const T* array = reinterpret_cast<const T*>(begin());
     remove_prefix(count * sizeof(T));
     return array;

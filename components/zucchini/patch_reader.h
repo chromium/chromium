@@ -45,8 +45,7 @@ bool ParseVarUInt(BufferSource* source, T* value) {
     return false;
   }
   // Advance |source| beyond the VarUInt value.
-  source->Skip(bytes_read);
-  return true;
+  return source->Skip(bytes_read);
 }
 
 // Parses |source| for the next VarInt.
@@ -59,8 +58,7 @@ bool ParseVarInt(BufferSource* source, T* value) {
     return false;
   }
   // Advance |source| beyond the VarInt value.
-  source->Skip(bytes_read);
-  return true;
+  return source->Skip(bytes_read);
 }
 
 }  // namespace patch
