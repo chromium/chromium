@@ -76,19 +76,6 @@ gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
   return event_screen_point;
 }
 
-aura::Window* GetRootWindowForCycleView() {
-  // Returns the root window for initializing cycle view if tablet mode is
-  // enabled, or if the feature for alt-tab to follow the cursor is disabled.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !features::DoWindowsFollowCursor()) {
-    return Shell::GetRootWindowForNewWindows();
-  }
-
-  // Return the root window the cursor is currently on.
-  return Shell::GetRootWindowForDisplayId(
-      Shell::Get()->cursor_manager()->GetDisplay().id());
-}
-
 }  // namespace
 
 WindowCycleList::WindowCycleList(const WindowList& windows, bool same_app_only)
@@ -345,7 +332,7 @@ void WindowCycleList::RemoveAllWindows() {
 void WindowCycleList::InitWindowCycleView() {
   if (cycle_view_)
     return;
-  aura::Window* root_window = GetRootWindowForCycleView();
+  aura::Window* root_window = Shell::GetRootWindowForNewWindows();
 
   // Close any tray bubbles that are opened before creating the cycle view.
   StatusAreaWidget* status_area_widget =

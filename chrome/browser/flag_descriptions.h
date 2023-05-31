@@ -2002,9 +2002,6 @@ extern const char kWebXrIncubationsDescription[];
 extern const char kWindowLayoutMenu[];
 extern const char kWindowLayoutMenuDescription[];
 
-extern const char kWindowsFollowCursorName[];
-extern const char kWindowsFollowCursorDescription[];
-
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 

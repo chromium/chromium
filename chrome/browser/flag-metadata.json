@@ -379,11 +379,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "ash-window-follow-cursor-multi-display",
-    "owners": [ "shidi", "tclaiborne" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 117

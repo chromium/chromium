@@ -1043,13 +1043,9 @@ TEST_F(WindowCycleControllerTest, AltKeyReleaseOnSystemTrayOpen) {
   EXPECT_GT(count, 0);
 }
 
-// Test alt-tab will be shown on the display where the cursor is located
-// when there are 2 displays,
+// Test alt-tab will be shown on the activated display when there are 2
+// displays.
 TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
-  // |features::kWindowsFollowCursor| enables alt-tab based on cursor position
-  // when there's multiple displays.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kWindowsFollowCursor}, {});
   UpdateDisplay("500x400,401+0-800x700");
 
   std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(200, 200));
@@ -1061,18 +1057,21 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   Shell::Get()->cursor_manager()->SetDisplay(
       display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
 
-  // Test alt-tab activates on second display where the cursor point at, not
-  // the display for new windows.
+  // Test alt-tab activates on first display, the display for new windows, not
+  // the second display where the cursor is at.
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
   cycle_controller->StartCycling(/*same_app_only=*/false);
   EXPECT_TRUE(cycle_controller->IsCycling());
   auto preview_items = GetWindowCycleItemViews();
   ASSERT_EQ(2u, preview_items.size());
-  // Ensure preview is generated in secondary display where cursor is at.
+  // Ensure preview is generated in first display where the activated window
+  // is at.
   auto preview_display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWindowCycleListWidget()->GetNativeWindow());
-  EXPECT_EQ(Shell::Get()->cursor_manager()->GetDisplay(), preview_display);
+  auto activated_window =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w0.get());
+  EXPECT_EQ(activated_window, preview_display);
   CompleteCycling(cycle_controller);
 }
 

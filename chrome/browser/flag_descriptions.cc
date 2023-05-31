@@ -67,12 +67,6 @@ const char kWindowLayoutMenuDescription[] =
     "Enables the new Window Layout menu for adjusting window layouts. Also "
     "enables Floating windows and partial split-screen layouts.";
 
-const char kWindowsFollowCursorName[] =
-    "Windows open on the display with the cursor";
-const char kWindowsFollowCursorDescription[] =
-    "When there are multiple displays, windows open on the display where "
-    "cursor is located.";
-
 const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";
