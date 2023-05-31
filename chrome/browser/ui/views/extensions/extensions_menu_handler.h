@@ -43,6 +43,11 @@ class ExtensionsMenuHandler {
   // Grants one time site access to `extension_id` on the current web contents.
   virtual void OnAllowExtensionClicked(
       const extensions::ExtensionId& extension_id) = 0;
+
+  // Dismiss the `extension_id` requests access in the menu and toolbar one time
+  // on the current web contents.
+  virtual void OnDismissExtensionClicked(
+      const extensions::ExtensionId& extension_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_

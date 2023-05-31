@@ -90,10 +90,11 @@ ExtensionMenuItemView* GetMenuItem(
 // depending on its state.
 class MessageSection : public views::BoxLayoutView {
  public:
-  explicit MessageSection(
-      base::RepeatingCallback<void()> reload_callback,
-      base::RepeatingCallback<void(const extensions::ExtensionId&)>
-          allow_callback);
+  MessageSection(base::RepeatingCallback<void()> reload_callback,
+                 base::RepeatingCallback<void(const extensions::ExtensionId&)>
+                     allow_callback,
+                 base::RepeatingCallback<void(const extensions::ExtensionId&)>
+                     dismiss_callback);
   MessageSection(const MessageSection&) = delete;
   const MessageSection& operator=(const MessageSection&) = delete;
   ~MessageSection() override = default;
@@ -151,8 +152,10 @@ class MessageSection : public views::BoxLayoutView {
   // A collection of all the extension entries in the request access container.
   std::map<extensions::ExtensionId, views::View*> extension_entries_;
 
-  // Callback for the allow button for the extension entries.
+  // Callback for the buttons in the extension entries.
   base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;
+  base::RepeatingCallback<void(const extensions::ExtensionId&)>
+      dismiss_callback_;
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, MessageSection, views::BoxLayoutView)
@@ -163,9 +166,12 @@ DEFINE_VIEW_BUILDER(/* No Export */, MessageSection)
 MessageSection::MessageSection(
     base::RepeatingCallback<void()> reload_callback,
     base::RepeatingCallback<void(const extensions::ExtensionId&)>
-        allow_callback)
+        allow_callback,
+    base::RepeatingCallback<void(const extensions::ExtensionId&)>
+        dismiss_callback)
     : reload_callback_(std::move(reload_callback)),
-      allow_callback_(std::move(allow_callback)) {
+      allow_callback_(std::move(allow_callback)),
+      dismiss_callback_(std::move(dismiss_callback)) {
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
@@ -290,11 +296,21 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
             .SetOrientation(views::LayoutOrientation::kHorizontal)
             .AddChildren(
                 views::Builder<views::ImageView>().SetImage(icon),
-                views::Builder<views::Label>().SetText(name),
+                views::Builder<views::Label>()
+                    .SetText(name)
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetProperty(views::kFlexBehaviorKey,
+                                 views::FlexSpecification(
+                                     views::MinimumFlexSizeRule::kScaleToZero,
+                                     views::MaximumFlexSizeRule::kUnbounded)),
                 views::Builder<views::MdTextButton>()
                     .SetCallback(base::BindRepeating(allow_callback_, id))
                     .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT)))
+                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT)),
+                views::Builder<views::MdTextButton>()
+                    .SetCallback(base::BindRepeating(dismiss_callback_, id))
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT)))
             .Build();
     extension_entries_.insert({id, item.get()});
     requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
@@ -474,6 +490,10 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   base::BindRepeating(
                                       &ExtensionsMenuHandler::
                                           OnAllowExtensionClicked,
+                                      base::Unretained(menu_handler_)),
+                                  base::BindRepeating(
+                                      &ExtensionsMenuHandler::
+                                          OnDismissExtensionClicked,
                                       base::Unretained(menu_handler_))))
                               .CopyAddressTo(&message_section_),
                           // Menu items section.
@@ -544,6 +564,7 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
     const extensions::ExtensionId& id) {
   message_section_->RemoveExtension(id);
+  SizeToPreferredSize();
 }
 
 std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()

@@ -55,6 +55,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_messages.h"
@@ -292,6 +293,17 @@ bool TabHelper::IsReloadRequired() {
   return reload_required_;
 }
 
+bool TabHelper::HasExtensionDismissedRequests(const ExtensionId& extension_id) {
+  return dismissed_extensions_.contains(extension_id);
+}
+
+void TabHelper::DismissExtensionRequests(const ExtensionId& extension_id) {
+  dismissed_extensions_.insert(extension_id);
+  PermissionsManager::Get(profile_)->NotifyExtensionDismissedRequests(
+      extension_id,
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+}
+
 void TabHelper::OnWatchedPageChanged(
     const std::vector<std::string>& css_selectors) {
   InvokeForContentRulesRegistries(
@@ -362,6 +374,15 @@ void TabHelper::DidFinishNavigation(
   // Reset the `reload_required_` data member, since a page navigation acts as a
   // page refresh.
   reload_required_ = false;
+
+  // Only clear the dismissed extensions for cross-origin navigations.
+  if (!navigation_handle->IsSameOrigin()) {
+    ClearDismissedExtensions();
+  }
+}
+
+void TabHelper::ClearDismissedExtensions() {
+  dismissed_extensions_.clear();
 }
 
 bool TabHelper::OnMessageReceived(const IPC::Message& message,
@@ -392,6 +413,7 @@ void TabHelper::WebContentsDestroyed() {
   });
 
   reload_required_ = false;
+  ClearDismissedExtensions();
 }
 
 void TabHelper::OnContentScriptsExecuting(

@@ -85,6 +85,14 @@ class TabHelper : public content::WebContentsObserver,
   // in the tab.
   bool IsReloadRequired();
 
+  // Returns whether `extension_id` has dismissed site access requests on this
+  // tab.
+  bool HasExtensionDismissedRequests(const ExtensionId& extension_id);
+
+  // Adds `extension_id` to the set of extensions that cannot show site access
+  // requests on this tab.
+  void DismissExtensionRequests(const ExtensionId& extension_id);
+
   ScriptExecutor* script_executor() {
     return script_executor_.get();
   }
@@ -108,6 +116,9 @@ class TabHelper : public content::WebContentsObserver,
   explicit TabHelper(content::WebContents* web_contents);
 
   friend class content::WebContentsUserData<TabHelper>;
+
+  // Removes all the entries in `dismissed_extensions_`.
+  void ClearDismissedExtensions();
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* host) override;
@@ -169,6 +180,9 @@ class TabHelper : public content::WebContentsObserver,
 
   // Whether the tab needs a page reload to apply the user site settings.
   bool reload_required_ = false;
+
+  // Extensions that have dismissed site access requests for this tab's origin.
+  std::set<ExtensionId> dismissed_extensions_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

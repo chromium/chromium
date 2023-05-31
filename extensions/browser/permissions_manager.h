@@ -119,6 +119,11 @@ class PermissionsManager : public KeyedService {
     virtual void OnShowAccessRequestsInToolbarChanged(
         const extensions::ExtensionId& extension_id,
         bool can_show_requests) {}
+
+    // Called when `extension_id` has dismissed site access requests in
+    // `origin`.
+    virtual void OnExtensionDismissedRequests(const ExtensionId& extension_id,
+                                              const url::Origin& origin) {}
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
@@ -262,6 +267,12 @@ class PermissionsManager : public KeyedService {
   void NotifyShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests);
+
+  // Notifies `observers_` that `extension_id` dismissed site access requests on
+  // `origin.
+  void NotifyExtensionDismissedRequests(
+      const extensions::ExtensionId& extension_id,
+      const url::Origin& origin);
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);

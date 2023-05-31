@@ -1162,3 +1162,63 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnClick);
 }
+
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       MessageSection_UserCustomizedAccess_DismissExtension) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+
+  // When extension is requesting site access:
+  //   - message section (menu) includes extension and is visible.
+  //   - request access button (toolbar) includes extension.
+  EXPECT_TRUE(
+      main_page()->GetRequestsAccessContainerForTesting()->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension->id()));
+  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
+              testing::ElementsAre(extension->id()));
+
+  // Click on the dismiss button for the extension.
+  views::View* extension_entry =
+      main_page()->GetExtensionRequestingAccessEntryForTesting(extension->id());
+  ASSERT_TRUE(extension_entry);
+  ASSERT_EQ(extension_entry->children().size(), 4u);
+  views::Button* extension_dismiss_button =
+      static_cast<views::Button*>(extension_entry->children()[3]);
+  ClickButton(extension_dismiss_button);
+
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+  LayoutMenuIfNecessary();
+
+  // When the extension requests are dismissed:
+  //   - message section (menu) does not include extension and is hidden
+  //   - request access button (toolbar) does not include extension
+  EXPECT_FALSE(
+      main_page()->GetRequestsAccessContainerForTesting()->GetVisible());
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
+
+  // Re navigate to the same page.
+  // Note: refreshing the page doesn't revoke tab permissions, thus we
+  // need to re navigate to the url.
+  web_contents_tester()->NavigateAndCommit(GURL("http://other-url.com"));
+  web_contents_tester()->NavigateAndCommit(url);
+
+  // Navigating to the same url should show again the extension requesting
+  // access, since dismiss is only one time tab permission:
+  //   - message section (menu) includes extension and is visible.
+  //   - request access button (toolbar) includes extension.
+  EXPECT_TRUE(
+      main_page()->GetRequestsAccessContainerForTesting()->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension->id()));
+  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
+              testing::ElementsAre(extension->id()));
+}

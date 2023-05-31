@@ -419,6 +419,15 @@ void ExtensionsMenuViewController::OnAllowExtensionClicked(
   // tab permission by one item but the action is not run.
 }
 
+void ExtensionsMenuViewController::OnDismissExtensionClicked(
+    const extensions::ExtensionId& extension_id) {
+  extensions::TabHelper* tab_helper =
+      extensions::TabHelper::FromWebContents(GetActiveWebContents());
+  if (tab_helper) {
+    tab_helper->DismissExtensionRequests(extension_id);
+  }
+}
+
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
@@ -495,10 +504,15 @@ void ExtensionsMenuViewController::UpdateMainPage(
           SitePermissionsHelper(browser_->profile())
               .GetSiteInteraction(*GetExtension(browser_, extension_id),
                                   web_contents);
+      bool dismissed_requests =
+          extensions::TabHelper::FromWebContents(web_contents)
+              ->HasExtensionDismissedRequests(extension_id);
+
       if (site_interaction ==
-          SitePermissionsHelper::SiteInteraction::kWithheld) {
+              SitePermissionsHelper::SiteInteraction::kWithheld &&
+          !dismissed_requests) {
         // Add or update the extension entry in the message section when
-        // the extension is requesting access.
+        // the extension is requesting access and can show requests.
         ToolbarActionViewController* action_controller =
             extensions_container_->GetActionForId(extension_id);
         std::u16string name = action_controller->GetActionName();
@@ -703,6 +717,27 @@ void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
   if (site_permissions_page &&
       site_permissions_page->extension_id() == extension_id) {
     site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
+  }
+}
+
+void ExtensionsMenuViewController::OnExtensionDismissedRequests(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
+  DCHECK(current_page_);
+
+  // Extension can only dismiss requests from the menu's main page. if it has
+  // navigated to another site in between, do nothing (navigation listeners will
+  // handle menu updates).
+  auto* main_page = GetMainPage(current_page_);
+  if (!main_page ||
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin() !=
+          origin) {
+    return;
+  }
+
+  main_page->RemoveExtensionRequestingAccess(extension_id);
+  if (bubble_delegate_->GetBubbleFrameView()) {
+    bubble_delegate_->SizeToContents();
   }
 }
 

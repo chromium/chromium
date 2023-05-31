@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -82,12 +83,16 @@ void ExtensionsToolbarControls::UpdateRequestAccessButton(
     content::WebContents* web_contents) {
   // Extensions are included in the request access button only when the site
   // allows customizing site access by extension, and when the extension
-  // itself can show access requests in the toolbar.
+  // itself can show access requests in the toolbar and hasn't been dismissed.
   std::vector<extensions::ExtensionId> extensions;
   if (site_setting ==
       extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension) {
     for (const auto& action : actions) {
-      if (action->ShouldShowSiteAccessRequestInToolbar(web_contents)) {
+      bool dismissed_requests =
+          extensions::TabHelper::FromWebContents(web_contents)
+              ->HasExtensionDismissedRequests(action->GetId());
+      if (action->ShouldShowSiteAccessRequestInToolbar(web_contents) &&
+          !dismissed_requests) {
         extensions.push_back(action->GetId());
       }
     }

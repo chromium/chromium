@@ -53,6 +53,8 @@ class ExtensionsMenuViewController
   void OnReloadPageButtonClicked() override;
   void OnAllowExtensionClicked(
       const extensions::ExtensionId& extension_id) override;
+  void OnDismissExtensionClicked(
+      const extensions::ExtensionId& extension_id) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
@@ -83,6 +85,8 @@ class ExtensionsMenuViewController
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
+  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
+                                    const url::Origin& origin) override;
 
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;

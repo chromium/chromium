@@ -618,6 +618,19 @@ void ExtensionsToolbarContainer::OnShowAccessRequestsInToolbarChanged(
   // button is updated.
 }
 
+void ExtensionsToolbarContainer::OnExtensionDismissedRequests(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
+  auto* web_contents = GetCurrentWebContents();
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  extensions_controls_->UpdateRequestAccessButton(actions_, site_setting,
+                                                  web_contents);
+}
+
 void ExtensionsToolbarContainer::ReorderViews() {
   const auto& pinned_action_ids = model_->pinned_action_ids();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i)

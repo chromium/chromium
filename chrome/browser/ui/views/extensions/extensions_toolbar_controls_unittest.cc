@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -381,6 +382,53 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   // Disallow extension B in the request access button. Verify button is not
   // visible anymore.
   permissions_helper.SetShowAccessRequestsInToolbar(extension_b->id(), false);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       RequestAccessButtonVisibility_ExtensionDismissedRequests) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  // Add two extensions that request access to all urls, and withhold their
+  // site access.
+  auto extension_a =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extension_b =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_a.get());
+  WithholdHostPermissions(extension_b.get());
+
+  // By default, both extensions should be allowed in the request
+  // access button. However, request access button is not visible because we
+  // haven't navigated to a site yet.
+  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  EXPECT_TRUE(
+      permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
+  EXPECT_TRUE(
+      permissions_helper.ShowAccessRequestsInToolbar(extension_b->id()));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to an url that both extensions requests access to.
+  const GURL url("http://www.example.com");
+  web_contents_tester->NavigateAndCommit(url);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_EQ(
+      request_access_button()->GetText(),
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
+
+  // Dismiss extension A's requests. Verify only extension B is visible in the
+  // button.
+  extensions::TabHelper* tab_helper = extensions::TabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  tab_helper->DismissExtensionRequests(extension_a->id());
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_EQ(
+      request_access_button()->GetText(),
+      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+
+  // Dismiss extension B's requests. Verify button is not visible anymore.
+  tab_helper->DismissExtensionRequests(extension_b->id());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 

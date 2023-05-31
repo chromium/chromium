@@ -761,6 +761,14 @@ void PermissionsManager::NotifyExtensionPermissionsUpdated(
   }
 }
 
+void PermissionsManager::NotifyExtensionDismissedRequests(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
+  for (Observer& observer : observers_) {
+    observer.OnExtensionDismissedRequests(extension_id, origin);
+  }
+}
+
 void PermissionsManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
