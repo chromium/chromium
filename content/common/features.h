@@ -34,6 +34,13 @@ BASE_DECLARE_FEATURE(kConsolidatedIPCForProxyCreation);
 // for documents outside of WebUI ones.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnsureAllowBindingsIsAlwaysForWebUI);
 
+// Adds "/prefetch:8" (which is the "other" category of process - i.e. not
+// browser, gpu, crashpad, etc.) to the info collection GPU process' command
+// line, in order to keep from polluting the GPU prefetch history.
+#if BUILDFLAG(IS_WIN)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kGpuInfoCollectionSeparatePrefetch);
+#endif
+
 // When enabled, CanAccessDataForOrigin can only be called from the UI thread.
 // This is related to Citadel desktop protections. See
 // https://crbug.com/1286501.
