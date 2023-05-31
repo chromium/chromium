@@ -27,6 +27,7 @@
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -119,9 +120,9 @@ TEST_F(MenuItemViewUnitTest, TestEmptyTopLevelWhenAllItemsAreHidden) {
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
   ASSERT_EQ(3u, submenu->children().size());
-  auto* empty_item = static_cast<MenuItemView*>(submenu->children().front());
+  const auto* empty_item =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
   ASSERT_TRUE(empty_item);
-  ASSERT_EQ(MenuItemView::kEmptyMenuItemViewID, empty_item->GetID());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }
@@ -150,13 +151,13 @@ TEST_F(MenuItemViewUnitTest, TestEmptySubmenuWhenAllChildItemsAreHidden) {
   // Because all of the submenu's children are hidden, an empty menu item should
   // have been added.
   ASSERT_EQ(3u, submenu->children().size());
-  auto* empty_item = static_cast<MenuItemView*>(submenu->children().front());
+  const auto* empty_item =
+      AsViewClass<EmptyMenuMenuItem>(submenu->children().front());
   ASSERT_TRUE(empty_item);
   // Not allowed to add an duplicated empty menu item
   // if it already has an empty menu item.
   root_menu.AddEmptyMenus();
   ASSERT_EQ(3u, submenu->children().size());
-  ASSERT_EQ(MenuItemView::kEmptyMenuItemViewID, empty_item->GetID());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU),
             empty_item->title());
 }

@@ -47,26 +47,25 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
 
 template <typename V>
 bool IsViewClass(const View* view) {
+  if (!view) {
+    return false;
+  }
   static_assert(std::is_base_of<View, V>::value, "Only View classes supported");
-  const ui::metadata::ClassMetaData* parent = V::MetaData();
   const ui::metadata::ClassMetaData* child = view->GetClassMetaData();
-  while (child && child != parent)
-    child = child->parent_class_meta_data();
+  for (const ui::metadata::ClassMetaData* parent = V::MetaData();
+       child && child != parent; child = child->parent_class_meta_data())
+    ;
   return !!child;
 }
 
 template <typename V>
 V* AsViewClass(View* view) {
-  if (!IsViewClass<V>(view))
-    return nullptr;
-  return static_cast<V*>(view);
+  return IsViewClass<V>(view) ? static_cast<V*>(view) : nullptr;
 }
 
 template <typename V>
 const V* AsViewClass(const View* view) {
-  if (!IsViewClass<V>(view))
-    return nullptr;
-  return static_cast<const V*>(view);
+  return IsViewClass<V>(view) ? static_cast<const V*>(view) : nullptr;
 }
 
 VIEWS_EXPORT void PrintViewHierarchy(View* view,

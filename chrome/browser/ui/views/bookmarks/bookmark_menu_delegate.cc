@@ -211,18 +211,16 @@ std::u16string BookmarkMenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
   auto i = menu_id_to_node_map_.find(id);
-  // When removing bookmarks it may be possible to end up here without a node.
-  if (i == menu_id_to_node_map_.end()) {
-    DCHECK(is_mutating_model_);
-    return std::u16string();
-  }
-
-  const BookmarkNode* node = i->second;
-  if (node->is_url()) {
-    const views::TooltipManager* tooltip_manager = parent_->GetTooltipManager();
-    return BookmarkBarView::CreateToolTipForURLAndTitle(
-        tooltip_manager->GetMaxWidth(screen_loc),
-        tooltip_manager->GetFontList(), node->url(), node->GetTitle());
+  // Ignore queries about unknown items, e.g. the empty menu item.
+  if (i != menu_id_to_node_map_.end()) {
+    const BookmarkNode* node = i->second;
+    if (node->is_url()) {
+      const views::TooltipManager* tooltip_manager =
+          parent_->GetTooltipManager();
+      return BookmarkBarView::CreateToolTipForURLAndTitle(
+          tooltip_manager->GetMaxWidth(screen_loc),
+          tooltip_manager->GetFontList(), node->url(), node->GetTitle());
+    }
   }
   return std::u16string();
 }

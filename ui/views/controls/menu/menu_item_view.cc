@@ -54,6 +54,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -64,36 +65,12 @@ namespace views {
 
 namespace {
 
-// EmptyMenuMenuItem ----------------------------------------------------------
-
-// EmptyMenuMenuItem is used when a menu has no menu items. EmptyMenuMenuItem
-// is itself a MenuItemView, but it uses a different ID so that it isn't
-// identified as a MenuItemView.
-
-class EmptyMenuMenuItem : public MenuItemView {
- public:
-  explicit EmptyMenuMenuItem(MenuItemView* parent)
-      : MenuItemView(parent, 0, Type::kEmpty) {
-    // Set this so that we're not identified as a normal menu item.
-    SetID(kEmptyMenuItemViewID);
-    SetTitle(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU));
-    SetEnabled(false);
-  }
-
-  EmptyMenuMenuItem(const EmptyMenuMenuItem&) = delete;
-  EmptyMenuMenuItem& operator=(const EmptyMenuMenuItem&) = delete;
-
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    // Empty menu items shouldn't have a tooltip.
-    return std::u16string();
-  }
-};
-
 // VerticalSeparator ----------------------------------------------------------
 
 class VerticalSeparator : public Separator {
  public:
   METADATA_HEADER(VerticalSeparator);
+
   VerticalSeparator();
   VerticalSeparator(const VerticalSeparator&) = delete;
   VerticalSeparator& operator=(const VerticalSeparator&) = delete;
@@ -123,13 +100,6 @@ END_METADATA
 static constexpr int kChildXPadding = 8;
 
 // MenuItemView ---------------------------------------------------------------
-
-// static
-const int MenuItemView::kMenuItemViewID = 1001;
-
-// static
-const int MenuItemView::kEmptyMenuItemViewID =
-    MenuItemView::kMenuItemViewID + 1;
 
 // static
 int MenuItemView::icon_area_width_ = 0;
@@ -195,12 +165,9 @@ std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
   }
 
   const MenuDelegate* delegate = GetDelegate();
-  if (!delegate)
-    return std::u16string();
-
-  gfx::Point location(p);
-  ConvertPointToScreen(this, &location);
-  return delegate->GetTooltipText(command_, location);
+  return delegate
+             ? delegate->GetTooltipText(command_, ConvertPointToScreen(this, p))
+             : std::u16string();
 }
 
 void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -899,9 +866,6 @@ MenuItemView::MenuItemView(MenuItemView* parent,
       parent_menu_item_(parent),
       type_(type),
       command_(command) {
-  // Assign our ID, this allows SubmenuItemView to find MenuItemViews.
-  SetID(kMenuItemViewID);
-
   if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
     radio_check_image_view_ = AddChildView(std::make_unique<ImageView>());
     bool show_check_radio_icon =
@@ -999,13 +963,12 @@ void MenuItemView::RemoveEmptyMenus() {
   // Copy the children, since we may mutate them as we go.
   const Views children = submenu_->children();
   for (View* child : children) {
-    if (child->GetID() == MenuItemView::kMenuItemViewID) {
-      MenuItemView* menu_item = static_cast<MenuItemView*>(child);
-      if (menu_item->HasSubmenu())
-        menu_item->RemoveEmptyMenus();
-    } else if (child->GetID() == EmptyMenuMenuItem::kEmptyMenuItemViewID) {
+    if (IsViewClass<EmptyMenuMenuItem>(child)) {
       submenu_->RemoveChildView(child);
       delete child;
+    } else if (MenuItemView* menu_item = AsViewClass<MenuItemView>(child);
+               menu_item && menu_item->HasSubmenu()) {
+      menu_item->RemoveEmptyMenus();
     }
   }
 }
@@ -1447,16 +1410,10 @@ int MenuItemView::GetLabelStartForThisItem() const {
 }
 
 std::u16string MenuItemView::GetMinorText() const {
-  if (GetID() == kEmptyMenuItemViewID) {
-    // Don't query the delegate for menus that represent no children.
-    return std::u16string();
-  }
-
   std::u16string accel_text;
-  if (MenuConfig::instance().ShouldShowAcceleratorText(this, &accel_text))
-    return accel_text;
-
-  return minor_text_;
+  return MenuConfig::instance().ShouldShowAcceleratorText(this, &accel_text)
+             ? accel_text
+             : minor_text_;
 }
 
 ui::ImageModel MenuItemView::GetMinorIcon() const {
@@ -1590,6 +1547,17 @@ bool MenuItemView::IsScheduledForDeletion() const {
 }
 
 BEGIN_METADATA(MenuItemView, View)
+END_METADATA
+
+// EmptyMenuMenuItem ----------------------------------------------------------
+
+EmptyMenuMenuItem::EmptyMenuMenuItem(MenuItemView* parent)
+    : MenuItemView(parent, 0, Type::kEmpty) {
+  SetTitle(l10n_util::GetStringUTF16(IDS_APP_MENU_EMPTY_SUBMENU));
+  SetEnabled(false);
+}
+
+BEGIN_METADATA(EmptyMenuMenuItem, MenuItemView)
 END_METADATA
 
 }  // namespace views

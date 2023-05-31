@@ -66,6 +66,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/widget.h"
 
@@ -1404,10 +1405,8 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
 
     // Find the first separator.
     views::SubmenuView* submenu = menu->GetSubmenu();
-    const auto i =
-        base::ranges::find_if_not(submenu->children(), [](const auto* child) {
-          return child->GetID() == views::MenuItemView::kMenuItemViewID;
-        });
+    const auto i = base::ranges::find_if_not(
+        submenu->children(), views::IsViewClass<views::MenuItemView>);
     ASSERT_FALSE(i == submenu->children().end());
 
     // Click on the separator. Clicking on the separator shouldn't visually
@@ -1928,13 +1927,13 @@ class BookmarkBarViewTest21 : public BookmarkBarViewEventTestBase {
     ASSERT_TRUE(submenu->IsShowing());
     ASSERT_EQ(1u, submenu->children().size());
 
-    views::View* view = submenu->children().front();
-    ASSERT_NE(nullptr, view);
-    EXPECT_EQ(views::MenuItemView::kEmptyMenuItemViewID, view->GetID());
+    auto* empty_item =
+        AsViewClass<views::EmptyMenuMenuItem>(submenu->children().front());
+    ASSERT_NE(nullptr, empty_item);
 
     // Right click on the first child to get its context menu.
     ui_test_utils::MoveMouseToCenterAndPress(
-        view, ui_controls::RIGHT, ui_controls::DOWN | ui_controls::UP,
+        empty_item, ui_controls::RIGHT, ui_controls::DOWN | ui_controls::UP,
         base::OnceClosure());
     // Step3 will be invoked by BookmarkContextMenuNotificationObserver.
   }
