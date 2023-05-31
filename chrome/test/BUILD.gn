@@ -7254,6 +7254,7 @@ test("unit_tests") {
       "../browser/ui/search/search_ipc_router_policy_unittest.cc",
       "../browser/ui/search/search_ipc_router_unittest.cc",
       "../browser/ui/serial/serial_chooser_controller_unittest.cc",
+      "../browser/ui/side_panel/companion/companion_utils_unittest.cc",
       "../browser/ui/singleton_tabs_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
       "../browser/ui/sync/sync_promo_ui_unittest.cc",

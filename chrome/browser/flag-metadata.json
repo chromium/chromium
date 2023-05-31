@@ -1303,6 +1303,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "csc-pinned-state",
+    "owners": ["stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "csc-vss",
     "owners": ["pstjuste@google.com", "stanfield@google.com", "mcrouse@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 120

@@ -3222,14 +3222,34 @@ constexpr FeatureEntry::FeatureVariation kLensPingVariations[] = {
 };
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-constexpr FeatureEntry::FeatureParam kCscVariation[] = {
+constexpr FeatureEntry::FeatureParam kCscStagingEnvVariation[] = {
     {"companion-homepage-url",
      "https://lens-staging.corp.google.com/companion"},
     {"companion-image-upload-url",
      "https://lens-staging.corp.google.com/v2/upload"}};
+constexpr FeatureEntry::FeatureParam kCscClobberVariation[] = {
+    {"open-links-in-current-tab", "true"},
+};
+constexpr FeatureEntry::FeatureParam kCscNewTabVariation[] = {
+    {"open-links-in-current-tab", "false"},
+};
 
 constexpr FeatureEntry::FeatureVariation kCscVariations[] = {
-    {"with staging URL", kCscVariation, std::size(kCscVariation), nullptr}};
+    {"with staging URL", kCscStagingEnvVariation,
+     std::size(kCscStagingEnvVariation), nullptr},
+    {"with clobber", kCscClobberVariation, std::size(kCscClobberVariation),
+     nullptr},
+    {"with new tab", kCscNewTabVariation, std::size(kCscNewTabVariation),
+     nullptr},
+};
+
+const FeatureEntry::Choice kSidePanelPinnedStateChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"Forced Pinned", companion::switches::kForceCompanionPinnedState,
+     "pinned"},
+    {"Forced Unpinned", companion::switches::kForceCompanionPinnedState,
+     "unpinned"},
+};
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -8791,6 +8811,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(companion::features::kSidePanelCompanion,
                                     kCscVariations,
                                     "CSC")},
+
+    {"csc-pinned-state", flag_descriptions::kCscPinnedName,
+     flag_descriptions::kCscPinnedDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kSidePanelPinnedStateChoices)},
 
     {"csc-vss", flag_descriptions::kCscVssName,
      flag_descriptions::kCscVssDescription, kOsDesktop,
