@@ -36,21 +36,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @end
 
 @implementation SignedInAccountsTableViewController {
-  ChromeBrowserState* _browserState;  // Weak.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewIdentityItem*>* _identityMap;
   // Account manager service to retrieve Chrome identities.
   ChromeAccountManagerService* _accountManagerService;
+  signin::IdentityManager* _identityManager;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithIdentityManager:
+                    (signin::IdentityManager*)identityManager
+                  accountManagerService:
+                      (ChromeAccountManagerService*)accountManagerService {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
-    _browserState = browserState;
-    _accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
+    _identityManager = identityManager;
+    _accountManagerService = accountManagerService;
     _accountManagerServiceObserver.reset(
         new ChromeAccountManagerServiceObserverBridge(self,
                                                       _accountManagerService));
@@ -80,9 +82,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSMutableDictionary<NSString*, TableViewIdentityItem*>* mutableIdentityMap =
       [[NSMutableDictionary alloc] init];
 
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(_browserState);
-  for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
+  for (const auto& account : _identityManager->GetAccountsWithRefreshTokens()) {
     id<SystemIdentity> identity =
         _accountManagerService->GetIdentityWithGaiaID(account.gaia);
 

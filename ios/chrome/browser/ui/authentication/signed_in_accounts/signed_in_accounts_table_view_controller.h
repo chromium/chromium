@@ -9,12 +9,18 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
-class ChromeBrowserState;
+class ChromeAccountManagerService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // TableView controller to show the list of identities.
 @interface SignedInAccountsTableViewController : ChromeTableViewController
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
