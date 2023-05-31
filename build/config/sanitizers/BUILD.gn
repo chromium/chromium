@@ -45,6 +45,9 @@ group("deps") {
       deps += [ "//third_party/instrumented_libraries:deps" ]
     }
   }
+  if (fail_on_san_warnings) {
+    data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
+  }
   if (is_asan) {
     if (is_win || is_apple) {
       data_deps = [ ":copy_asan_runtime" ]
