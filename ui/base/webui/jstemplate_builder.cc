@@ -86,7 +86,7 @@ void AppendJsTemplateProcessHtml(const base::Value::Dict& json,
   output->append(";");
   output->append("loadTimeData.data = pageData;");
   output->append("var tp = document.getElementById('");
-  output->append(template_id.data(), template_id.size());
+  output->append(template_id);
   output->append("');");
   output->append("jstProcess(new JsEvalContext(pageData), tp);");
   output->append("</script>");

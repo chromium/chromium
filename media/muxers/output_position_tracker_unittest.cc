@@ -20,7 +20,7 @@ TEST(OutputPositionTrackerTest, OutputPositionTracker) {
   OutputPositionTracker buffer(base::BindRepeating(
       [](std::string* written_data, base::OnceClosure run_loop_quit,
          base::StringPiece data) {
-        written_data->append(data.data(), data.size());
+        written_data->append(data);
         static int called_count = 0;
         if (++called_count == 3) {
           std::move(run_loop_quit).Run();

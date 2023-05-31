@@ -157,7 +157,7 @@ absl::optional<std::string> NetworkToDottedName(base::BigEndianReader& reader,
     if (!ret.empty())
       ret.append(".");
 
-    ret.append(label.data(), label.size());
+    ret.append(label);
   }
 
   if (require_complete)

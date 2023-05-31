@@ -118,11 +118,11 @@ void Beacon::Initialize(base::WStringPiece name) {
   if (scope_ == BeaconScope::PER_INSTALL ||
       !install_static::IsSystemInstall()) {
     key_path_ = install_details.GetClientStateKeyPath();
-    value_name_.assign(name.data(), name.size());
+    value_name_.assign(name);
   } else {
     key_path_ = install_details.GetClientStateMediumKeyPath();
     key_path_.push_back(L'\\');
-    key_path_.append(name.data(), name.size());
+    key_path_.append(name);
     // This should never fail. If it does, the beacon will be written in the
     // key's default value, which is okay since the majority case is likely a
     // machine with a single user.

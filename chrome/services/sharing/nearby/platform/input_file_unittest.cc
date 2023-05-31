@@ -76,7 +76,7 @@ class InputFileTest : public PlatformTest {
       if (byte_array.Empty())
         break;
 
-      file_data.append(byte_array.data(), byte_array.size());
+      file_data.append(byte_array.AsStringView());
     }
 
     EXPECT_EQ(expected_data_, file_data);

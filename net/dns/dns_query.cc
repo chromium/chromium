@@ -284,7 +284,7 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
     if (!reader->ReadPiece(&label, label_length)) {
       return false;
     }
-    out->append(label.data(), label.size());
+    out->append(label);
     if (!reader->ReadU8(&label_length)) {
       return false;
     }

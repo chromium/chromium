@@ -94,7 +94,7 @@ std::string GetStringFromDataElements(
     // Provide the length of the bytes explicitly, not to rely on the null
     // termination.
     const auto piece = e.As<network::DataElementBytes>().AsStringPiece();
-    result.append(piece.data(), piece.size());
+    result.append(piece);
   }
   return result;
 }

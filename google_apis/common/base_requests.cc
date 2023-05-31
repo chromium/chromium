@@ -351,8 +351,7 @@ void UrlFetchRequestBase::OnDataReceived(base::StringPiece string_piece,
     return;
   }
 
-  download_data_->response_body.append(string_piece.data(),
-                                       string_piece.size());
+  download_data_->response_body.append(string_piece);
   std::move(resume).Run();
 }
 

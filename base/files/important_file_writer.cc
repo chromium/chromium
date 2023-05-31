@@ -58,8 +58,7 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
   std::string histogram_full_name(histogram_name);
   if (!histogram_suffix.empty()) {
     histogram_full_name.append(".");
-    histogram_full_name.append(histogram_suffix.data(),
-                               histogram_suffix.length());
+    histogram_full_name.append(histogram_suffix);
   }
   UmaHistogramTimes(histogram_full_name, sample);
 }

@@ -30,7 +30,7 @@ scoped_refptr<MultivariantPlaylist> CreateMultivariantPlaylist(
     types::DecimalInteger version = Playlist::kDefaultVersion) {
   std::string source;
   for (auto line : lines) {
-    source.append(line.data(), line.size());
+    source.append(line);
     source.append("\n");
   }
 

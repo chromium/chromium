@@ -121,7 +121,7 @@ ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
   while (true) {
     // Append the substring leading to the variable, and abort if there was no
     // variable reference
-    string_buf.append(next_var.head.Str().data(), next_var.head.Str().size());
+    string_buf.append(next_var.head.Str());
     if (!next_var.tail) {
       break;
     }
@@ -132,7 +132,7 @@ ParseStatus::Or<ResolvedSourceString> VariableDictionary::Resolve(
       return ParseStatus(ParseStatusCode::kVariableUndefined)
           .WithData("key", next_var.tail->first.GetName());
     }
-    string_buf.append(value->data(), value->size());
+    string_buf.append(*value);
 
     next_var = GetNextVariable(next_var.tail->second);
   }

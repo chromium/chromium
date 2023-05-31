@@ -52,20 +52,22 @@ const char kWebrtcLogMultipartBoundary[] =
 // Adds the header section for a gzip file to the multipart |post_data|.
 void AddMultipartFileContentHeader(std::string* post_data,
                                    const std::string& content_name) {
-  post_data->append("--");
-  post_data->append(kWebrtcLogMultipartBoundary);
-  post_data->append("\r\nContent-Disposition: form-data; name=\"");
-  post_data->append(content_name);
-  post_data->append("\"; filename=\"");
-  post_data->append(content_name + ".gz");
-  post_data->append("\"\r\nContent-Type: application/gzip\r\n\r\n");
+  base::StrAppend(post_data, {
+                                 "--",
+                                 kWebrtcLogMultipartBoundary,
+                                 "\r\nContent-Disposition: form-data; name=\"",
+                                 content_name,
+                                 "\"; filename=\"",
+                                 content_name,
+                                 ".gz",
+                                 "\"\r\nContent-Type: application/gzip\r\n\r\n",
+                             });
 }
 
 // Adds |compressed_log| to |post_data|.
 void AddLogData(std::string* post_data, const std::string& compressed_log) {
   AddMultipartFileContentHeader(post_data, "webrtc_log");
-  post_data->append(compressed_log);
-  post_data->append("\r\n");
+  base::StrAppend(post_data, {compressed_log, "\r\n"});
 }
 
 // Adds the RTP dump data to |post_data|.
@@ -73,8 +75,7 @@ void AddRtpDumpData(std::string* post_data,
                     const std::string& name,
                     const std::string& dump_data) {
   AddMultipartFileContentHeader(post_data, name);
-  post_data->append(dump_data.data(), dump_data.size());
-  post_data->append("\r\n");
+  base::StrAppend(post_data, {dump_data, "\r\n"});
 }
 
 // Helper for WebRtcLogUploader::CompressLog().

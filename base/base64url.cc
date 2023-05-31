@@ -82,7 +82,7 @@ absl::optional<StringPieceOrString> Base64ToBase64URL(
 
   std::string base64_input;
   base64_input.reserve(out_size.ValueOrDie());
-  base64_input.append(input.data(), input.size());
+  base64_input.append(input);
 
   // Substitute the base64url URL-safe characters to their base64 equivalents.
   ReplaceChars(base64_input, "-", "+", &base64_input);

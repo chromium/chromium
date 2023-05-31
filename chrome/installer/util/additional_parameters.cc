@@ -279,7 +279,7 @@ bool AdditionalParameters::SetFullSuffix(bool set_full_suffix) {
     if (!value_) {
       value_ = std::wstring(kFullSuffix);
     } else {
-      value_->append(kFullSuffix.data(), kFullSuffix.size());
+      value_->append(kFullSuffix);
     }
   } else {
     DCHECK(value_);

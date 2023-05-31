@@ -23,7 +23,7 @@ TEST(Mp4MuxerContextTest, Default) {
       std::make_unique<OutputPositionTracker>(base::BindRepeating(
           [](std::string* written_data, base::OnceClosure run_loop_quit,
              base::StringPiece data) {
-            written_data->append(data.data(), data.size());
+            written_data->append(data);
             std::move(run_loop_quit).Run();
           },
           &written_data, run_loop.QuitClosure()));

@@ -31,7 +31,7 @@ Encryptor::Handle::~Handle() = default;
 void Encryptor::Handle::AddToRecord(base::StringPiece data,
                                     base::OnceCallback<void(Status)> cb) {
   // Append new data to the record.
-  record_.append(data.data(), data.size());
+  record_.append(data);
   std::move(cb).Run(Status::StatusOK());
 }
 

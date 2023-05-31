@@ -103,7 +103,7 @@ void DevToolsNetworkResourceLoader::DownloadAsStream() {
 
 void DevToolsNetworkResourceLoader::OnDataReceived(base::StringPiece chunk,
                                                    base::OnceClosure resume) {
-  content_.append(chunk.data(), chunk.size());
+  content_.append(chunk);
   std::move(resume).Run();
 }
 

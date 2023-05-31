@@ -92,7 +92,7 @@ void AppendValueAndShortTokens(
   for (const base::StringPiece16& token : tokens) {
     if (token.size() < kMinimumWordLength)
       short_tokens.emplace_back(token);
-    field_data_value->append(token.data(), token.size());
+    field_data_value->append(token);
   }
   // It is better to insert elements to a |base::flat_set| in one operation.
   field_data_short_tokens->insert(short_tokens.begin(), short_tokens.end());

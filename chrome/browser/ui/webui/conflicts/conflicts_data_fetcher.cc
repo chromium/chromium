@@ -67,7 +67,7 @@ constexpr char kAllowedSameDirectory[] =
 void AppendString(base::StringPiece input, std::string* output) {
   if (!output->empty())
     *output += ", ";
-  output->append(input.data(), input.size());
+  output->append(input);
 }
 
 // Returns a string describing the current module blocking status: loaded or
