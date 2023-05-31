@@ -772,6 +772,17 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+        <!-- Extension Safety Check Detail Page strings -->
+      <message name="IDS_SAFETY_CHECK_EXTENSIONS_MALWARE" desc="The text explaining the reason for disabling extension. The extension in question contains malware.">
+        This extension contains malware and is unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+       <message name="IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION" desc="The text explaining the reason for disabling extension. The extension in question violates Chrome Web Store policy.">
+          This extension violates the Chrome Web Store policy, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+      <message name="IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED" desc="The text explaining the reason for disabling extension. The extension in question was unpublished by the developer.">
+          This extension was unpublished by its developer, and might be unsafe. Remove it from Chrome so it can no longer see and change your data on sites you visit, including your personal info.
+      </message>
+
       <!-- chrome://settings/extensions page -->
       <message name="IDS_EXTENSIONS_ITEM_SHOW_ACCESS_REQUESTS_IN_TOOLBAR" desc="The label on the toggle to allow the extension to show site access requests in the toolbar.">
         Allow extension to show access requests in the Chrome toolbar

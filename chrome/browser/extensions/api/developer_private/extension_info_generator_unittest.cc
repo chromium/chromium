@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/google_chrome_strings.h"
 #include "components/crx_file/id_util.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/extension_registry.h"
@@ -48,6 +51,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
@@ -135,6 +139,12 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
           std::make_unique<developer::ExtensionInfo>(std::move(list[0]));
     }
     std::move(quit_closure_).Run();
+  }
+
+  api::developer_private::SafetyCheckStrings CreateSafetyCheckDisplayStringTest(
+      CWSInfoService::CWSInfo& cws_info) {
+    return ExtensionInfoGenerator(browser_context())
+        .CreateSafetyCheckDisplayString(cws_info);
   }
 
   std::unique_ptr<developer::ExtensionInfo> GenerateExtensionInfo(
@@ -498,6 +508,42 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
                                  InspectableViewsFinder::ViewList(),
                                  expected_outputs_path.AppendASCII(
                                      "bjafgdebaacbbbecmhlhpofkepfkgcpa.json"));
+}
+
+// Test the safety check display strings
+TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest) {
+  CWSInfoService::CWSInfo cws_info;
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kMalware;
+  cws_info.unpublished_long_ago = true;
+  developer::SafetyCheckStrings display_strings =
+      CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
+            display_strings.detail_string);
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kPolicy;
+  cws_info.unpublished_long_ago = true;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION),
+      display_strings.detail_string);
+  cws_info.is_present = true;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
+  cws_info.unpublished_long_ago = true;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
+            display_strings.detail_string);
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckEmptyStringTest) {
+  CWSInfoService::CWSInfo cws_info;
+  cws_info.is_present = false;
+  cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
+  cws_info.unpublished_long_ago = false;
+  developer::SafetyCheckStrings display_strings;
+  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  EXPECT_EQ(display_strings.detail_string, "");
+  EXPECT_EQ(display_strings.panel_string, "");
 }
 
 // Tests the generation of the runtime host permissions entries.
