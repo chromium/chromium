@@ -8118,7 +8118,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230519",
+                    "name": "Control_20230530",
                     "enable_features": [
                         "LoadNotificationsForSameDocumentNavigations"
                     ]
