@@ -47,6 +47,7 @@
     height: 158px;
     justify-content: center;
     margin-bottom: 12px;
+    position: relative;
     width: 272px;
   }
 
@@ -57,6 +58,25 @@
     height: 126px;
     margin-bottom: 0;
     width: 240px;
+    z-index: 1;
+  }
+
+  .overlay {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]) .overlay {
+    border-radius: inherit;
+    display: inherit;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  :host-context([chrome-refresh-2023]) .image-background:hover .overlay {
+    background-color: var(--cr-fallback-color-state-hover-on-subtle);
   }
 
   .theme-title {
@@ -75,6 +95,7 @@
           draggable="false"
           aria-labelledby="customThemeTitle">
       </img>
+      <div class="overlay"></div>
     </div>
     <div id="customThemeTitle" class="theme-title">
         [[theme_.backgroundImage.title]]
@@ -86,6 +107,7 @@
       <img id="miniNewTabPage" src="icons/mini_new_tab_page.svg"
           aria-labelledby="classicChromeThemeTitle">
       </img>
+      <div class="overlay"></div>
     </div>
     <div id="classicChromeThemeTitle" class="theme-title">
         $i18n{classicChrome}
@@ -98,6 +120,7 @@
             src="icons/uploaded_image.svg"
             aria-labelledby="uploadedThemeTitle">
       </img>
+      <div class="overlay"></div>
     </div>
     <div id="uploadedThemeTitle" class="theme-title">
         $i18n{uploadedImage}
