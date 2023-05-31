@@ -42926,6 +42926,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="ThirdPartyCookiesBlocked"/>
 </enum>
 
+<enum name="FedCmRpContext">
+  <int value="0" label="Sign in"/>
+  <int value="1" label="Sign up"/>
+  <int value="2" label="Use"/>
+  <int value="3" label="Continue"/>
+</enum>
+
 <enum name="FedCmSheetType">
   <int value="0" label="Account selection"/>
   <int value="1" label="Verifying"/>

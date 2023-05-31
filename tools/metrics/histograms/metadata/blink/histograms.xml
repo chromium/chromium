@@ -1176,6 +1176,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.RpContext" enum="FedCmRpContext"
+    expires_after="2023-11-30">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the RP Context used in a FedCM call. Records only when the RP
+    Context flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.SignInStatusSetToSignout.NetError"
     enum="NetErrorCodes" expires_after="2023-11-04">
   <owner>npm@chromium.org</owner>
