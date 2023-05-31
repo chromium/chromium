@@ -133,9 +133,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabButtonInkDropFrameInactive] = {
       kColorNewTabButtonInkDropFrameActive};
   mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
-  mixer[kColorOmniboxChipForegroundLowVisibility] = {
-      ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxChipForegroundLowVisibility] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysPrimary};
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};
