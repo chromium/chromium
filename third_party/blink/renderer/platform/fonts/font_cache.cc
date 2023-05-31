@@ -79,7 +79,6 @@ float FontCache::device_scale_factor_ = 1.0;
 #if BUILDFLAG(IS_WIN)
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
-bool FontCache::use_skia_font_fallback_ = false;
 static bool should_use_test_font_mgr = false;
 #endif  // BUILDFLAG(IS_WIN)
 

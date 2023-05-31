@@ -35,9 +35,6 @@
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
-#include "third_party/skia/include/core/SkFontMgr.h"
-#include "third_party/skia/include/core/SkTypeface.h"
-#include "third_party/skia/include/ports/SkTypeface_win.h"
 #include "ui/gfx/win/direct_write.h"
 #include "ui/gfx/win/text_analysis_source.h"
 
@@ -562,50 +559,6 @@ void DWriteFontProxyImpl::MatchUniqueFont(
     return;
   }
   std::move(callback).Run(std::move(font_file), ttc_index);
-}
-
-void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(
-    const std::string& base_family_name,
-    const std::string& locale_name,
-    uint32_t codepoint,
-    FallbackFamilyAndStyleForCodepointCallback callback) {
-  InitializeDirectWrite();
-  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback),
-      blink::mojom::FallbackFamilyAndStyle::New("",
-                                                /* weight */ 0,
-                                                /* width */ 0,
-                                                /* slant */ 0));
-
-  if (!codepoint || !collection_ || !factory_)
-    return;
-
-  sk_sp<SkFontMgr> font_mgr(
-      SkFontMgr_New_DirectWrite(factory_.Get(), collection_.Get()));
-
-  if (!font_mgr)
-    return;
-
-  const char* bcp47_locales[] = {locale_name.c_str()};
-  int num_locales = locale_name.empty() ? 0 : 1;
-  const char** locales = locale_name.empty() ? nullptr : bcp47_locales;
-
-  sk_sp<SkTypeface> typeface(font_mgr->matchFamilyStyleCharacter(
-      base_family_name.c_str(), SkFontStyle(), locales, num_locales,
-      codepoint));
-
-  if (!typeface)
-    return;
-
-  SkString family_name;
-  typeface->getFamilyName(&family_name);
-
-  SkFontStyle font_style = typeface->fontStyle();
-
-  auto result_fallback_and_style = blink::mojom::FallbackFamilyAndStyle::New(
-      family_name.c_str(), font_style.weight(), font_style.width(),
-      font_style.slant());
-  std::move(callback).Run(std::move(result_fallback_and_style));
 }
 
 void DWriteFontProxyImpl::InitializeDirectWrite() {

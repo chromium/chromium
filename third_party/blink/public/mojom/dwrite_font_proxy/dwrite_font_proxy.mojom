@@ -20,13 +20,6 @@ struct DWriteFontStyle {
   uint8 font_stretch;
 };
 
-struct FallbackFamilyAndStyle {
-  string fallback_family_name;
-  uint16 weight;
-  uint8 width;
-  uint8 slant;
-};
-
 struct MapCharactersResult {
   uint32 family_index;
   mojo_base.mojom.String16 family_name;
@@ -80,18 +73,4 @@ interface DWriteFontProxy {
                 uint32 reading_direction,
                 mojo_base.mojom.String16 base_family_name)
       => (MapCharactersResult out);
-
-  // For a given base family name, bcp47 language tag, and codepoint to look up,
-  // return a font family name that is available on the system to display the
-  // given codepoint. This internally calls Skia's
-  // SkFontMgr_DirectWrite::matchFamilyStyleCharacter which executes
-  // IDWriteTextLayout based fallback code, which cannot be run in the renderer
-  // due triggering loading the DWrite system font collection.
-  // Use only on Windows 8.0 and earlier - otherwise better fallback API is
-  // available through using a proxies IDWriteFontFallback.
-  [Sync]
-  FallbackFamilyAndStyleForCodepoint(string base_family_name,
-                                     string bcp47_language_tag,
-                                     uint32 codepoint)
-      => (FallbackFamilyAndStyle fallback_result);
 };

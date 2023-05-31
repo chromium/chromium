@@ -38,7 +38,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
@@ -60,11 +59,6 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/font_fallback_linux.h"
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom-blink.h"
-#include "third_party/blink/renderer/platform/fonts/win/fallback_family_style_cache_win.h"
 #endif
 
 class SkString;
@@ -241,13 +235,6 @@ class PLATFORM_EXPORT FontCache final {
   static const AtomicString& StatusFontFamily() {
     return *status_font_family_name_;
   }
-  static void SetUseSkiaFontFallback(bool use_skia_font_fallback) {
-    use_skia_font_fallback_ = use_skia_font_fallback;
-  }
-
-  // On Windows pre 8.1 establish a connection to the DWriteFontProxy service in
-  // order to retrieve family names for fallback lookup.
-  void EnsureServiceConnected();
 
   scoped_refptr<SimpleFontData> GetFallbackFamilyNameFromHardcodedChoices(
       const FontDescription&,
@@ -389,13 +376,10 @@ class PLATFORM_EXPORT FontCache final {
   static int32_t small_caption_font_height_;
   static AtomicString* status_font_family_name_;
   static int32_t status_font_height_;
-  static bool use_skia_font_fallback_;
 
   // Windows creates an SkFontMgr for unit testing automatically. This flag is
   // to ensure it's not happening in the production from the crash log.
   bool is_test_font_mgr_ = false;
-  mojo::Remote<mojom::blink::DWriteFontProxy> service_;
-  std::unique_ptr<FallbackFamilyStyleCache> fallback_params_cache_;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

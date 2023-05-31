@@ -34,7 +34,6 @@ class BLINK_EXPORT WebFontRendering {
                                    int32_t font_height);
   static void SetAntialiasedTextEnabled(bool);
   static void SetLCDTextEnabled(bool);
-  static void SetUseSkiaFontFallback(bool);
 };
 
 }  // namespace blink

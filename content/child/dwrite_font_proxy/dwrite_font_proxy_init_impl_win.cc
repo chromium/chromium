@@ -80,7 +80,6 @@ void InitializeDWriteFontProxy() {
   skia::OverrideDefaultSkFontMgr(std::move(skia_font_manager));
 
   DCHECK(g_font_fallback);
-  blink::WebFontRendering::SetUseSkiaFontFallback(true);
 }
 
 void UninitializeDWriteFontProxy() {
