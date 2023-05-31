@@ -23,21 +23,17 @@ using LoginState = IdentityRequestAccount::LoginState;
 
 // static
 std::unique_ptr<FederatedAuthUserInfoRequest>
-FederatedAuthUserInfoRequest::CreateAndStart(
+FederatedAuthUserInfoRequest::Create(
     std::unique_ptr<IdpNetworkRequestManager> network_manager,
-    FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
-    blink::mojom::IdentityProviderConfigPtr provider,
-    blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback) {
+    blink::mojom::IdentityProviderConfigPtr provider) {
   std::unique_ptr<FederatedAuthUserInfoRequest> request =
       base::WrapUnique<FederatedAuthUserInfoRequest>(
           new FederatedAuthUserInfoRequest(
               std::move(network_manager), permission_delegate,
-              render_frame_host, metrics, std::move(provider),
-              std::move(callback)));
-  request->Start(api_permission_delegate);
+              render_frame_host, metrics, std::move(provider)));
   return request;
 }
 
@@ -50,15 +46,13 @@ FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
-    blink::mojom::IdentityProviderConfigPtr provider,
-    blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback)
+    blink::mojom::IdentityProviderConfigPtr provider)
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
       metrics_(metrics),
       client_id_(provider->client_id),
       idp_config_url_(provider->config_url),
-      origin_(render_frame_host->GetLastCommittedOrigin()),
-      callback_(std::move(callback)) {
+      origin_(render_frame_host->GetLastCommittedOrigin()) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   DCHECK(main_frame->IsInPrimaryMainFrame());
   embedding_origin_ = main_frame->GetLastCommittedOrigin();
@@ -68,8 +62,11 @@ FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
       parent_frame ? parent_frame->GetLastCommittedOrigin() : url::Origin();
 }
 
-void FederatedAuthUserInfoRequest::Start(
+void FederatedAuthUserInfoRequest::SetCallbackAndStart(
+    blink::mojom::FederatedAuthRequest::RequestUserInfoCallback callback,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
+  callback_ = std::move(callback);
+
   // Renderer also checks that the origin is same origin with `idp_config_url_`.
   // The check is duplicated in case that the renderer is compromised.
   if (!origin_.IsSameOriginWith(idp_config_url_)) {

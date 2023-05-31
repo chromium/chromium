@@ -284,10 +284,11 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
     idp_ptr->nonce = kNonce;
 
     UserInfoCallbackHelper callback_helper;
-    request_ = FederatedAuthUserInfoRequest::CreateAndStart(
-        std::move(network_manager), api_permission_delegate_.get(),
-        permission_delegate_.get(), iframe_render_frame_host_, metrics_.get(),
-        std::move(idp_ptr), callback_helper.callback());
+    request_ = FederatedAuthUserInfoRequest::Create(
+        std::move(network_manager), permission_delegate_.get(),
+        iframe_render_frame_host_, metrics_.get(), std::move(idp_ptr));
+    request_->SetCallbackAndStart(callback_helper.callback(),
+                                  api_permission_delegate_.get());
     callback_helper.WaitForCallback();
 
     EXPECT_EQ(expected_user_info_status, callback_helper.user_info_status_);

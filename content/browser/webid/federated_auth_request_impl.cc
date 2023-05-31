@@ -417,13 +417,12 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
                              TokenStatus::kUnhandledRequest,
                              /*should_delay_callback=*/false);
   }
-  if (user_info_request_) {
-    // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
-    // info request. This is needed because otherwise some resources like
-    // `fedcm_metrics_` may no longer be usable when the destructor get invoked
-    // naturally.
-    user_info_request_.reset();
-  }
+  // Calls |FederatedAuthUserInfoRequest|'s destructor to complete the user
+  // info request. This is needed because otherwise some resources like
+  // `fedcm_metrics_` may no longer be usable when the destructor get invoked
+  // naturally.
+  user_info_requests_.clear();
+
   if (logout_callback_) {
     // We do not complete the logout request, so unset the
     // PendingWebIdentityRequest on the Page so that other frames in the
@@ -720,12 +719,6 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     return;
   }
 
-  if (user_info_request_) {
-    std::move(callback).Run(RequestUserInfoStatus::kErrorTooManyRequests,
-                            absl::nullopt);
-    return;
-  }
-
   if (!fedcm_metrics_) {
     fedcm_metrics_ = CreateFedCmMetrics(
         provider->config_url, render_frame_host().GetPageUkmSourceId(),
@@ -734,12 +727,15 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
   auto network_manager = IdpNetworkRequestManager::Create(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
-  user_info_request_ = FederatedAuthUserInfoRequest::CreateAndStart(
-      std::move(network_manager), api_permission_delegate_.get(),
-      permission_delegate_.get(), &render_frame_host(), fedcm_metrics_.get(),
-      std::move(provider),
+  auto user_info_request = FederatedAuthUserInfoRequest::Create(
+      std::move(network_manager), permission_delegate_.get(),
+      &render_frame_host(), fedcm_metrics_.get(), std::move(provider));
+  user_info_request->SetCallbackAndStart(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteUserInfoRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), user_info_request.get(),
+                     std::move(callback)),
+      api_permission_delegate_.get());
+  user_info_requests_.insert(std::move(user_info_request));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -1928,15 +1924,22 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
 }
 
 void FederatedAuthRequestImpl::CompleteUserInfoRequest(
+    FederatedAuthUserInfoRequest* request,
     RequestUserInfoCallback callback,
     blink::mojom::RequestUserInfoStatus status,
     absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info) {
-  if (!user_info_request_) {
+  auto it = std::find_if(
+      user_info_requests_.begin(), user_info_requests_.end(),
+      [request](const std::unique_ptr<FederatedAuthUserInfoRequest>& ptr) {
+        return ptr.get() == request;
+      });
+  if (it == user_info_requests_.end()) {
+    NOTREACHED() << "The completed user info request is nowhere to be found";
     return;
   }
 
   std::move(callback).Run(status, std::move(user_info));
-  user_info_request_.reset();
+  user_info_requests_.erase(it);
 }
 
 std::unique_ptr<IdpNetworkRequestManager>

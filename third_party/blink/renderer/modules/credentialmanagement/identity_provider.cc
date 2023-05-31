@@ -31,13 +31,6 @@ void OnRequestUserInfo(ScriptPromiseResolver* resolver,
                        absl::optional<Vector<mojom::blink::IdentityUserInfoPtr>>
                            all_user_info_ptr) {
   switch (status) {
-    case RequestUserInfoStatus::kErrorTooManyRequests: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError,
-          "Only one IdentityCredential.getUserInfo request may be outstanding "
-          "at one time."));
-      return;
-    }
     case RequestUserInfoStatus::kError: {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNetworkError, "Error retrieving user info."));
