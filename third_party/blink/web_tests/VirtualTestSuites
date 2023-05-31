@@ -989,7 +989,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/bluetooth", "external/wpt/bluetooth"],
     "args": ["--enable-features=WebBluetoothNewPermissionsBackend"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "trust-tokens",
