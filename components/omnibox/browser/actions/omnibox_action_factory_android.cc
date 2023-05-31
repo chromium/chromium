@@ -19,14 +19,9 @@ namespace {
 // base class.
 const char kOmniboxActionClass[] =
     "org/chromium/components/omnibox/action/OmniboxAction";
-JNI_REGISTRATION_EXPORT std::atomic<jclass>
-    g_org_chromium_components_omnibox_action_OmniboxAction_clazz(nullptr);
-inline jclass org_chromium_components_omnibox_action_OmniboxAction_clazz(
-    JNIEnv* env) {
-  return base::android::LazyGetClass(
-      env, kOmniboxActionClass,
-      &g_org_chromium_components_omnibox_action_OmniboxAction_clazz);
-}
+
+base::LazyInstance<base::android::ScopedJavaGlobalRef<jclass>>::DestructorAtExit
+    g_java_omnibox_action = LAZY_INSTANCE_INITIALIZER;
 
 base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
     DestructorAtExit g_java_factory = LAZY_INSTANCE_INITIALIZER;
@@ -35,7 +30,14 @@ base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
 /* static */ void JNI_OmniboxActionFactory_SetFactory(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& factory) {
-  g_java_factory.Get().Reset(factory);
+  if (factory) {
+    g_java_omnibox_action.Get().Reset(
+        base::android::GetClass(env, kOmniboxActionClass));
+    g_java_factory.Get().Reset(factory);
+  } else {
+    g_java_omnibox_action.Get().Reset(nullptr);
+    g_java_factory.Get().Reset(nullptr);
+  }
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
@@ -79,20 +81,27 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
 base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     JNIEnv* env,
     const std::vector<scoped_refptr<OmniboxAction>>& actions) {
-  jclass clazz =
-      org_chromium_components_omnibox_action_OmniboxAction_clazz(env);
-  // Fires if OmniboxAction is not part of this build target.
-  DCHECK(clazz);
-  base::android::ScopedJavaLocalRef<jobjectArray> jactions(
-      env, env->NewObjectArray(actions.size(), clazz, nullptr));
-  base::android::CheckException(env);
+  // Early return for cases where Action creation is not yet possible, e.g.
+  // if the control is passed from the IntentHandler.
+  if (!g_java_omnibox_action.IsCreated() || !g_java_factory.IsCreated()) {
+    return {};
+  }
 
-  for (size_t index = 0; index < actions.size(); index++) {
-    auto jobj = actions[index]->GetOrCreateJavaObject(env);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> jactions_vec;
+  for (const auto& action : actions) {
+    auto jobj = action->GetOrCreateJavaObject(env);
     if (jobj) {
-      env->SetObjectArrayElement(jactions.obj(), index, jobj.obj());
+      jactions_vec.emplace_back(std::move(jobj));
     }
   }
 
-  return jactions;
+  // Return only after all actions are created to capture cases where some
+  // actions were found, but none was applicable to Android.
+  if (!jactions_vec.size()) {
+    return {};
+  }
+
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, jactions_vec,
+      base::android::ScopedJavaLocalRef<jclass>(g_java_omnibox_action.Get()));
 }
