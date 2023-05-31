@@ -17,7 +17,6 @@ namespace updater {
 scoped_refptr<update_client::ActionHandler> MakeActionHandler();
 
 #if !BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1030863): implement the action handler for other platforms.
 inline scoped_refptr<update_client::ActionHandler> MakeActionHandler() {
   return nullptr;
 }

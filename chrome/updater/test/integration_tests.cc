@@ -953,9 +953,6 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
-// TODO(crbug.com/1097297) Enable these tests once the `Brand the updater and
-// qualification app ids` change is available on CIPD.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -1014,7 +1011,6 @@ TEST_F(IntegrationTest, MAYBE_UninstallIfUnusedSelfAndOldReal) {
 
   // Expect that the updater uninstalled itself as well as the lower version.
 }
-#endif  // #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.

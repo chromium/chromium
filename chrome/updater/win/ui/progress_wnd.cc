@@ -520,11 +520,6 @@ std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
     completion_texts.push_back(info.completion_text);
   }
 
-  // TODO(crbug.com/1353148): Legacy updater allows simple HTML elements in the
-  // completion message for better presentation of the installation result.
-  // Review if feature parity is needed, which also enables a better message
-  // layout.
-  //
   return base::JoinString(completion_texts, L"\n");
 }
 
