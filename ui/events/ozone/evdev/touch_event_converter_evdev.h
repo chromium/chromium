@@ -101,6 +101,8 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   static const char kPalmFilterTimerEventName[];
   static const char kPalmTouchCountEventName[];
   static const char kRepeatedTouchCountEventName[];
+  static const char kTouchGapBeforeStylusEventName[];
+  static const char kTouchTypeBeforeStylusEventName[];
   static const char kTouchSessionCountEventName[];
   static const char kTouchSessionLengthEventName[];
   static const char kStylusSessionCountEventName[];
@@ -168,6 +170,8 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void UpdateRadiusFromTouchWithOrientation(InProgressTouchEvdev* event) const;
 
   int NextTrackingId();
+
+  void UpdateSharedPalmState(base::TimeTicks timestamp);
 
   void DetectRepeatedTouch(base::TimeTicks timestamp);
 
@@ -294,6 +298,9 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   // new touch is reported during the 5s, the timer will be reset and restarted.
   // When the timer finishes, it will record session metrics.
   base::OneShotTimer record_session_timer_;
+
+  // Not owned!
+  const raw_ptr<SharedPalmDetectionFilterState> shared_palm_state_;
 
   base::WeakPtrFactory<TouchEventConverterEvdev> weak_factory_{this};
 };

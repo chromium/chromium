@@ -8886,26 +8886,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ozone.NeuralStylusReport.FingerAgeBeforeStylus"
-    units="duration" expires_after="2023-06-30">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <summary>
-    The time between a finger and a stylus touch. The finger may or may not
-    still be on the touchscreen.
-  </summary>
-</histogram>
-
-<histogram name="Ozone.NeuralStylusReport.PalmAgeBeforeStylus" units="duration"
-    expires_after="2023-06-30">
-  <owner>napper@chromium.org</owner>
-  <owner>robsc@chromium.org</owner>
-  <summary>
-    The time between a palm and a stylus touch. The palm may or may not still be
-    on the touchscreen.
-  </summary>
-</histogram>
-
 <histogram name="Ozone.TouchEventConverterEvdev.HoldCountAtCancel"
     units="touch event" expires_after="2023-09-03">
   <owner>robsc@chromium.org</owner>
@@ -8965,9 +8945,21 @@ chromium-metrics-reviews@google.com.
   <owner>jiwan@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
-    The length of stylus sessions. A touch session is a series of stylus events
+    The length of stylus sessions. A stylus session is a series of stylus events
     with no more than 5 seconds between them. Reported when a stylus session is
     concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchGapBeforeStylus"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The time between a stylus touch and the last finger touch before it. The
+    finger touch may or may not still be on the touchscreen, and may or may not
+    be detected as a palm. Reported when a stylus touch is started on the
+    touchscreen.
   </summary>
 </histogram>
 
@@ -8990,6 +8982,17 @@ chromium-metrics-reviews@google.com.
     The length of touch sessions. A touch session is a series of touch events
     with no more than 5 seconds between them. Reported when a touch session is
     concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchTypeBeforeStylus"
+    enum="TouchType" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The type of the last finger touch within 500ms before a stylus touch. It
+    could be finger, palm or none (no touch within 500ms). Reported when a
+    stylus touch is started on the touchscreen.
   </summary>
 </histogram>
 

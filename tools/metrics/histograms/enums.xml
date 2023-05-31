@@ -102956,6 +102956,12 @@ would be helpful to identify which type is being sent.
   <int value="3" label="Selected WebAuthn Credential"/>
 </enum>
 
+<enum name="TouchType">
+  <int value="0" label="None"/>
+  <int value="1" label="Finger"/>
+  <int value="2" label="Palm"/>
+</enum>
+
 <enum name="TPM12CommandOrdinal">
   <summary>The TPM 1.2 command ordinals.</summary>
   <int value="10" label="TPM_ORD_OIAP"/>

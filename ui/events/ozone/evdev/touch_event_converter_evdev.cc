@@ -49,6 +49,16 @@ const int kMaxTrackingId = 0xffff;  // TRKID_MAX in kernel.
 const int kMaxTouchGapInSeconds = 5;
 const int kMaxRepeatedTouchGapInSeconds = 2;
 const float kRepeatedTouchThresholdInSquareMillimeter = 7.0 * 7.0;
+const int kMaxTouchStylusGapInMs = 500;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Needs to match TouchType in enums.xml.
+enum class TouchType {
+  kNone = 0,
+  kFinger = 1,
+  kPalm = 2,
+  kMaxValue = kPalm,
+};
 
 // Convert tilt from [min, min + num_values] to [-90deg, +90deg]
 float ScaleTilt(int value, int min_value, int num_values) {
@@ -128,7 +138,8 @@ TouchEventConverterEvdev::TouchEventConverterEvdev(
       palm_on_touch_major_max_(
           base::FeatureList::IsEnabled(kEnablePalmOnMaxTouchMajor)),
       palm_on_tool_type_palm_(
-          base::FeatureList::IsEnabled(kEnablePalmOnToolTypePalm)) {
+          base::FeatureList::IsEnabled(kEnablePalmOnToolTypePalm)),
+      shared_palm_state_(shared_palm_state) {
   if (base::FeatureList::IsEnabled(kEnableNeuralPalmDetectionFilter) &&
       NeuralStylusPalmDetectionFilter::
           CompatibleWithNeuralStylusPalmDetectionFilter(devinfo)) {
@@ -609,7 +620,9 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
     }
   }
 
+  UpdateSharedPalmState(timestamp);
   DetectRepeatedTouch(timestamp);
+  RecordMetrics(timestamp);
 
   for (size_t i = 0; i < events_.size(); i++) {
     InProgressTouchEvdev* event = &events_[i];
@@ -664,8 +677,32 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
     event->was_held = event->held;
     event->altered = false;
   }
+}
 
-  RecordMetrics(timestamp);
+void TouchEventConverterEvdev::UpdateSharedPalmState(
+    base::TimeTicks timestamp) {
+  if (type() != InputDeviceType::INPUT_DEVICE_INTERNAL) {
+    return;
+  }
+  if (has_pen_) {
+    shared_palm_state_->latest_stylus_touch_time = timestamp;
+    return;
+  }
+
+  for (const auto& event : events_) {
+    if (event.touching) {
+      shared_palm_state_->latest_finger_touch_time = timestamp;
+      break;
+    }
+  }
+
+  shared_palm_state_->has_palm = false;
+  for (const auto& event : events_) {
+    if (event.touching && event.cancelled) {
+      shared_palm_state_->has_palm = true;
+      break;
+    }
+  }
 }
 
 void TouchEventConverterEvdev::DetectRepeatedTouch(base::TimeTicks timestamp) {
@@ -729,21 +766,23 @@ void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
                      timestamp - session_start_time_.value()));
 
   if (has_pen_) {
-    return;
-  }
-
-  bool is_palm = false;
-  for (const auto& event : events_) {
-    if (event.was_cancelled) {
-      is_palm = true;
-      break;
+    if (events_[0].touching && !events_[0].was_touching) {
+      base::TimeDelta gap =
+          timestamp - shared_palm_state_->latest_finger_touch_time;
+      UMA_HISTOGRAM_TIMES(kTouchGapBeforeStylusEventName, gap);
+      UMA_HISTOGRAM_ENUMERATION(
+          kTouchTypeBeforeStylusEventName,
+          gap.InMilliseconds() >= kMaxTouchStylusGapInMs
+              ? TouchType::kNone
+              : (shared_palm_state_->has_palm ? TouchType::kPalm
+                                              : TouchType::kFinger));
     }
+  } else {
+    if (shared_palm_state_->has_palm && !last_touch_is_palm_) {
+      UMA_HISTOGRAM_BOOLEAN(kPalmTouchCountEventName, true);
+    }
+    last_touch_is_palm_ = shared_palm_state_->has_palm;
   }
-
-  if (is_palm && !last_touch_is_palm_) {
-    UMA_HISTOGRAM_BOOLEAN(kPalmTouchCountEventName, true);
-  }
-  last_touch_is_palm_ = is_palm;
 }
 
 void TouchEventConverterEvdev::RecordSession(base::TimeDelta session_length) {
@@ -880,6 +919,10 @@ const char TouchEventConverterEvdev::kPalmTouchCountEventName[] =
     "Ozone.TouchEventConverterEvdev.PalmTouchCount";
 const char TouchEventConverterEvdev::kRepeatedTouchCountEventName[] =
     "Ozone.TouchEventConverterEvdev.RepeatedTouchCount";
+const char TouchEventConverterEvdev::kTouchGapBeforeStylusEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchGapBeforeStylus";
+const char TouchEventConverterEvdev::kTouchTypeBeforeStylusEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchTypeBeforeStylus";
 const char TouchEventConverterEvdev::kTouchSessionCountEventName[] =
     "Ozone.TouchEventConverterEvdev.TouchSessionCount";
 const char TouchEventConverterEvdev::kTouchSessionLengthEventName[] =
@@ -888,5 +931,4 @@ const char TouchEventConverterEvdev::kStylusSessionCountEventName[] =
     "Ozone.TouchEventConverterEvdev.StylusSessionCount";
 const char TouchEventConverterEvdev::kStylusSessionLengthEventName[] =
     "Ozone.TouchEventConverterEvdev.StylusSessionLength";
-
 }  // namespace ui
