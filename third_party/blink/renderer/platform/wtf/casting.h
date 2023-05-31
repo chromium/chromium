@@ -114,13 +114,12 @@ bool IsA(Base* from) {
   return from && IsA<Derived>(*from);
 }
 
-// Unconditionally downcasts from Base to Derived. Internally, this asserts
-// that |from| is a Derived to help catch bad casts in testing/fuzzing. For the
-// pointer overloads, returns nullptr if the input pointer is nullptr.
+// Unconditionally downcasts from Base to Derived. Internally, this asserts that
+// |from| is a Derived to help catch bad casts. For the pointer overloads,
+// returns nullptr if the input pointer is nullptr.
 template <typename Derived, typename Base>
 const Derived& To(const Base& from) {
-  // TODO(https://crbug.com/1448838): Upgrade this to a CHECK.
-  SECURITY_DCHECK(IsA<Derived>(from));
+  CHECK(IsA<Derived>(from));
   return static_cast<const Derived&>(from);
 }
 
@@ -131,8 +130,7 @@ const Derived* To(const Base* from) {
 
 template <typename Derived, typename Base>
 Derived& To(Base& from) {
-  // TODO(https://crbug.com/1448838): Upgrade this to a CHECK.
-  SECURITY_DCHECK(IsA<Derived>(from));
+  CHECK(IsA<Derived>(from));
   return static_cast<Derived&>(from);
 }
 template <typename Derived, typename Base>
