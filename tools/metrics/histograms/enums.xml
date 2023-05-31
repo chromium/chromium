@@ -34447,6 +34447,7 @@ Called by update_extension_histograms.py.-->
   <int value="520" label="DESK_EVENTS_ON_DESK_ADDED"/>
   <int value="521" label="DESK_EVENTS_ON_DESK_REMOVED"/>
   <int value="522" label="DESK_EVENTS_ON_DESK_SWITCHED"/>
+  <int value="523" label="SMART_CARD_PROVIDER_PRIVATE_ON_SET_ATTRIB_REQUESTED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

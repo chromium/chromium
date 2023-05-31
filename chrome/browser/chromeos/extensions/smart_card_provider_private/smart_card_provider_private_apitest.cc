@@ -75,6 +75,13 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
       }
     )";
 
+  static constexpr char kArrayEqualsJs[] =
+      R"(
+      const arrayEquals = (a, b) =>
+        a.length === b.length &&
+        a.every((v, i) => v === b[i]);
+    )";
+
   void LoadFakeProviderExtension(const std::string& background_js) {
     TestExtensionDir test_dir;
     constexpr char kManifest[] =
@@ -1072,12 +1079,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Transmit) {
-  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kArrayEqualsJs,
                              R"(
-      const equals = (a, b) =>
-        a.length === b.length &&
-        a.every((v, i) => v === b[i]);
-
       chrome.smartCardProviderPrivate.onTransmitRequested.addListener(
           transmit);
 
@@ -1087,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Transmit) {
         const expectedInputArray = new Uint8Array([3, 2, 1]);
 
         if (scardHandle !== validHandle || protocol != "T1"
-            || !equals(inputArray, expectedInputArray)) {
+            || !arrayEquals(inputArray, expectedInputArray)) {
           chrome.smartCardProviderPrivate.reportDataResult(requestId,
             new Uint8Array().buffer,
             "INVALID_PARAMETER");
@@ -1139,11 +1142,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, TransmitTimeout) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Control) {
-  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
-      const equals = (a, b) =>
-        a.length === b.length &&
-        a.every((v, i) => v === b[i]);
-
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kArrayEqualsJs,
+                             R"(
       chrome.smartCardProviderPrivate.onControlRequested.addListener(
           control);
 
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Control) {
         const expectedInputArray = new Uint8Array([3, 2, 1]);
 
         if (scardHandle !== validHandle || controlCode !== 111
-            || !equals(inputArray, expectedInputArray)) {
+            || !arrayEquals(inputArray, expectedInputArray)) {
           chrome.smartCardProviderPrivate.reportDataResult(requestId,
             new Uint8Array().buffer,
             "INVALID_PARAMETER");
@@ -1252,6 +1252,64 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetAttribTimeout) {
   connection->GetAttrib(111u, result_future.GetCallback());
 
   device::mojom::SmartCardDataResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttrib) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kArrayEqualsJs,
+                             R"(
+      chrome.smartCardProviderPrivate.onSetAttribRequested.addListener(
+          setAttrib);
+
+      function setAttrib(requestId, scardHandle, attribId, data) {
+
+        const inputArray = new Uint8Array(data);
+        const expectedInputArray = new Uint8Array([3, 2, 1]);
+
+        if (scardHandle !== validHandle || attribId != 111
+            || !arrayEquals(inputArray, expectedInputArray)) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+          "SUCCESS");
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
+
+  connection->SetAttrib(111u, std::vector<uint8_t>({3u, 2u, 1u}),
+                        result_future.GetCallback());
+
+  device::mojom::SmartCardResultPtr result = result_future.Take();
+  EXPECT_TRUE(result->is_success());
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttribTimeout) {
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
+      chrome.smartCardProviderPrivate.onSetAttribRequested.addListener(
+          function (requestId, scardHandle, attribId, data) {
+            // Do nothing.
+          });
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> result_future;
+
+  connection->SetAttrib(111u, std::vector<uint8_t>({3u, 2u, 1u}),
+                        result_future.GetCallback());
+
+  device::mojom::SmartCardResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
 }

@@ -182,6 +182,12 @@ namespace smartCardProviderPrivate {
     // reportDataResult.
     [maxListeners=1] static void onGetAttribRequested(long requestId,
         long scardHandle, long attribId);
+
+    // Browser requested a SCardSetAttrib call.
+    // Extension must report the result to the browser by calling
+    // reportPlainResult.
+    [maxListeners=1] static void onSetAttribRequested(long requestId,
+        long scardHandle, long attribId, ArrayBuffer data);
   };
 
   interface Functions {
