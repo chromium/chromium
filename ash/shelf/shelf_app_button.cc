@@ -388,14 +388,15 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
         const gfx::Rect small_ripple_area = host->CalculateSmallRippleArea();
         const int ripple_size = host->shelf_view_->GetShelfItemRippleSize();
 
+        auto* const ink_drop = views::InkDrop::Get(host);
+        const SkColor base_color = ink_drop->GetBaseColor();
+        const float base_alpha = SkColorGetA(base_color);
         return std::make_unique<views::SquareInkDropRipple>(
-            views::InkDrop::Get(host), gfx::Size(ripple_size, ripple_size),
-            views::InkDrop::Get(host)->GetLargeCornerRadius(),
-            small_ripple_area.size(),
-            views::InkDrop::Get(host)->GetSmallCornerRadius(),
-            small_ripple_area.CenterPoint(),
-            views::InkDrop::Get(host)->GetBaseColor(),
-            views::InkDrop::Get(host)->GetVisibleOpacity());
+            ink_drop, gfx::Size(ripple_size, ripple_size),
+            ink_drop->GetLargeCornerRadius(), small_ripple_area.size(),
+            ink_drop->GetSmallCornerRadius(), small_ripple_area.CenterPoint(),
+            SkColorSetA(base_color, SK_AlphaOPAQUE),
+            (base_alpha / SK_AlphaOPAQUE) * ink_drop->GetVisibleOpacity());
       },
       this));
 
