@@ -100,6 +100,7 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
 
   std::vector<wgpu::FeatureName> features;
   features.push_back(wgpu::FeatureName::DawnInternalUsages);
+  features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
   features.push_back(wgpu::FeatureName::DepthClipControl);
   features.push_back(wgpu::FeatureName::Depth32FloatStencil8);
   features.push_back(wgpu::FeatureName::ImplicitDeviceSynchronization);

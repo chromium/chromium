@@ -270,6 +270,22 @@ WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format, plane_index));
 }
 
+wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format) {
+  wgpu::TextureUsage usage =
+      wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc;
+
+  // The below usages are not supported for multiplanar formats in Dawn.
+  if (format.is_single_plane()) {
+    usage |= wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopyDst;
+  }
+
+  return usage;
+}
+
+WGPUTextureUsage GetSupportedWGPUTextureUsage(viz::SharedImageFormat format) {
+  return static_cast<WGPUTextureUsage>(GetSupportedDawnTextureUsage(format));
+}
+
 skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
@@ -307,10 +323,7 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
       skgpu::graphite::DawnTextureInfo dawn_texture_info;
       dawn_texture_info.fSampleCount = 1;
       dawn_texture_info.fFormat = wgpu_format;
-      dawn_texture_info.fUsage = wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding |
-                                 wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst;
+      dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(format);
       dawn_texture_info.fMipmapped =
           mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
       return dawn_texture_info;
