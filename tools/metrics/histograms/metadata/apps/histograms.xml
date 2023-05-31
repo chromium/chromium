@@ -2258,19 +2258,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.Launcher.InstallLocallyShortcutsCreated" enum="Boolean"
-    expires_after="2022-07-03">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of locally installed an app on the chrome://apps page,
-    which involves hooking up Os integration. Specifically, this records if the
-    shortcuts were created successfully. This happens whena user right-clicks on
-    a greyed out webapp icon in the chrome://apps page and clicks
-    &quot;Install&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
     enum="AppListSortOrder" expires_after="M112">
   <owner>andrewxu@chromium.org</owner>

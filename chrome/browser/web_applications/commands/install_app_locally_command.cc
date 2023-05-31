@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -106,10 +105,6 @@ void InstallAppLocallyCommand::StartWithLock(
 
 void InstallAppLocallyCommand::OnOsHooksInstalled(
     const OsHooksErrors os_hooks_errors) {
-  // TODO(dmurph): Once installation takes the OsHooksErrors bitfield, then
-  // use that to compare with the results, and record if they all were
-  // successful, instead of just shortcuts.
-  bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
   const base::Time& install_time = base::Time::Now();
   {
     // Updating install time on app.
@@ -120,8 +115,6 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
     }
   }
 
-  base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
-                            !error);
   app_lock_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id_);
   app_lock_->registrar().NotifyWebAppInstallTimeChanged(app_id_, install_time);
   debug_log_.Set("command_result", "success");
