@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
@@ -401,6 +402,8 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
 
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kMostVisitedTile, 0);
+  histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
 
   ContentSuggestionsMostVisitedItem* item =
       [[ContentSuggestionsMostVisitedItem alloc] init];
@@ -425,6 +428,8 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
   // ShouldShowStartSurface() to false.
   histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kMostVisitedTile, 1);
+  histogram_tester_->ExpectTotalCount(kStartTimeSpentHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kStartImpressionHistogram, 1);
   EXPECT_FALSE(
       NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
   [coordinator_ stop];
@@ -472,16 +477,27 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
     [coordinator_ start];
     EXPECT_TRUE(coordinator_.started);
     EXPECT_FALSE(coordinator_.visible);
+    if (!off_the_record) {
+      histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 0);
+    }
 
     // Open an NTP in a new web state.
     InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
     [coordinator_ didNavigateToNTPInWebState:web_state_];
+    if (!off_the_record) {
+      histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 0);
+      histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 1);
+    }
     EXPECT_TRUE(coordinator_.started);
     EXPECT_TRUE(coordinator_.visible);
 
     // Insert a non-NTP WebState.
     InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
     [coordinator_ didNavigateAwayFromNTP];
+    if (!off_the_record) {
+      histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 1);
+      histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 1);
+    }
     EXPECT_TRUE(coordinator_.started);
     EXPECT_FALSE(coordinator_.visible);
 
@@ -489,6 +505,10 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
     browser_->GetWebStateList()->CloseWebStateAt(
         /*index=*/1, /* close_flags= */ 0);
     [coordinator_ didNavigateToNTPInWebState:web_state_];
+    if (!off_the_record) {
+      histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 1);
+      histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 2);
+    }
     EXPECT_TRUE(coordinator_.started);
     EXPECT_TRUE(coordinator_.visible);
 
@@ -497,6 +517,10 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigateBetweenWebStates) {
     browser_->GetWebStateList()->CloseAllWebStates(
         WebStateList::CLOSE_NO_FLAGS);
     [coordinator_ stopIfNeeded];
+    if (!off_the_record) {
+      histogram_tester_->ExpectTotalCount(kNTPTimeSpentHistogram, 2);
+      histogram_tester_->ExpectTotalCount(kNTPImpressionHistogram, 2);
+    }
     EXPECT_FALSE(coordinator_.visible);
     EXPECT_FALSE(coordinator_.started);
   }

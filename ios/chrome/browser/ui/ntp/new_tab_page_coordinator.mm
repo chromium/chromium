@@ -1623,8 +1623,6 @@
   self.visible = visible;
 
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
-    [self updateStartForVisibilityChange:visible];
-
     if (visible) {
       if ([self isFollowingFeedAvailable]) {
         NewTabPageTabHelper* helper =
@@ -1663,10 +1661,12 @@
     } else {
       if (!self.didAppearTime.is_null()) {
         [self.NTPMetricsRecorder
-            recordTimeSpentInNTP:base::TimeTicks::Now() - self.didAppearTime];
+            recordTimeSpentInHome:(base::TimeTicks::Now() - self.didAppearTime)
+                   isStartSurface:[self isStartSurface]];
         self.didAppearTime = base::TimeTicks();
       }
     }
+    [self updateStartForVisibilityChange:visible];
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
     // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder

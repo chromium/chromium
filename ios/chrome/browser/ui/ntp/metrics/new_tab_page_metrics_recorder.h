@@ -44,8 +44,11 @@ enum class IOSHomeActionType {
 // Metrics recorder for the new tab page.
 @interface NewTabPageMetricsRecorder : NSObject
 
-// Logs a metric for the "Return to Recent Tab" tile being shown.
-- (void)recordTimeSpentInNTP:(base::TimeDelta)timeSpent;
+// Logs a metric for the time spent on the Home surface before leaving the
+// surface. `startSurface` is YES if Start is being shown, NO if a new tab page
+// is being opened.
+- (void)recordTimeSpentInHome:(base::TimeDelta)timeSpent
+               isStartSurface:(BOOL)startSurface;
 
 // Logs a metric with the feed visibility when Home is shown. `startSurface` is
 // YES if Start is being shown, NO if a new tab page is being opened.

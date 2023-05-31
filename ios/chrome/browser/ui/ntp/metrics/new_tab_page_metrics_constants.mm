@@ -22,6 +22,7 @@ const char kNTPIdentityDiscTappedAction[] = "MobileNTPIdentityDiscTapped";
 const char kActionOnNTPHistogram[] = "IOS.NTP.Click";
 const char kActionOnStartHistogram[] = "IOS.Start.Click";
 const char kNTPTimeSpentHistogram[] = "NewTabPage.TimeSpent";
+const char kStartTimeSpentHistogram[] = "IOS.Start.TimeSpent";
 const char kNTPImpressionHistogram[] = "IOS.NTP.Impression";
 const char kStartImpressionHistogram[] = "IOS.Start.Impression";
 const char kNTPOverscrollActionHistogram[] = "IOS.NTP.OverscrollAction";
