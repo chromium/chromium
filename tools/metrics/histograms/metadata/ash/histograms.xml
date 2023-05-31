@@ -4607,9 +4607,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
-    expires_after="2023-06-04">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The number of times the arrow keys are pressed in overview mode per session,
     i.e. between bringing up overview mode and ending it. This is only measured
@@ -4627,9 +4627,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.Items" units="units" expires_after="2023-10-22">
-  <owner>nupurjain@chromium.org</owner>
+<histogram name="Ash.Overview.Items" units="units" expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The number of items (single windows or groups of windows such as panels) in
     the overview mode, present at the start of each session.
@@ -4637,9 +4637,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
-    expires_after="2023-10-08">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The ratio between the arrow key presses and the number of overview items,
     expressed as a percentage for a single session. Recorded when an overview
@@ -4648,9 +4648,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
-    expires_after="2023-10-08">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The number of items closed from the window overview for a single session.
     Recorded when exiting an overview session.
@@ -4679,9 +4679,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.SelectionDepth" units="items"
-    expires_after="2023-10-08">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
     When a window is selected in overview mode, records that window's position
@@ -4701,9 +4701,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
-    expires_after="2023-10-08">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The amount of time between endings of overview mode sessions which were
     caused by the user selecting a window which was not previously active. Only
@@ -4713,9 +4713,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeBetweenUse" units="ms"
-    expires_after="2023-10-22">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The amount of time between uses of overview mode, recorded when overview
     mode is entered. Only recorded on the second and later times after startup
@@ -4724,9 +4724,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.TimeInOverview" units="ms"
-    expires_after="2023-11-12">
-  <owner>nupurjain@chromium.org</owner>
+    expires_after="2024-06-01">
   <owner>sammiequon@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
   <summary>
     The amount of time spent in overview mode. Overview mode is engaged by
     pressing the overview accelerator, overview button tray or swiping up from
@@ -6893,7 +6893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
-    units="%" expires_after="2023-06-25">
+    units="%" expires_after="2024-06-25">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -6909,7 +6909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
-    units="%" expires_after="2023-06-25">
+    units="%" expires_after="2024-06-25">
   <owner>sammiequon@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
