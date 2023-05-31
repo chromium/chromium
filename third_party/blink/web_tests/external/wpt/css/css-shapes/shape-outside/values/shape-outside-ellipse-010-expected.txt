@@ -1,31 +1,31 @@
 This is a testharness.js-based test.
-FAIL ellipse(farthest-side calc(10in)) - inline style assert_equals: expected "ellipse(farthest-side calc(960px) at 50% 50%)" but got "ellipse(farthest-side calc(10in) at 50% 50%)"
-PASS ellipse(farthest-side calc(10in + 20px)) - inline style
-PASS ellipse(farthest-side calc(30%)) - inline style
-PASS ellipse(farthest-side calc(100%/4)) - inline style
-PASS ellipse(farthest-side calc(25%*3)) - inline style
-FAIL ellipse(farthest-side calc(25%*3 - 10in)) - inline style assert_equals: expected "ellipse(farthest-side calc(75% - 960px) at 50% 50%)" but got "ellipse(farthest-side calc(75% - 10in) at 50% 50%)"
-FAIL ellipse(farthest-side calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "ellipse(farthest-side calc(18.75% + 240px) at 50% 50%)" but got "ellipse(farthest-side calc((75% + 10in) / 4) at 50% 50%)"
-FAIL ellipse(calc(10in) calc(10in)) - inline style assert_equals: expected "ellipse(calc(960px) calc(960px) at 50% 50%)" but got "ellipse(calc(10in) calc(10in) at 50% 50%)"
-PASS ellipse(calc(10in + 20px) calc(10in + 20px)) - inline style
-PASS ellipse(calc(30%) calc(30%)) - inline style
-PASS ellipse(calc(100%/4) calc(100%/4)) - inline style
-PASS ellipse(calc(25%*3) calc(25%*3)) - inline style
-FAIL ellipse(calc(25%*3 - 10in) calc(25%*3 - 10in)) - inline style assert_equals: expected "ellipse(calc(75% - 960px) calc(75% - 960px) at 50% 50%)" but got "ellipse(calc(75% - 10in) calc(75% - 10in) at 50% 50%)"
-FAIL ellipse(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "ellipse(calc(18.75% + 240px) calc(18.75% + 240px) at 50% 50%)" but got "ellipse(calc((75% + 10in) / 4) calc((75% + 10in) / 4) at 50% 50%)"
-PASS ellipse(farthest-side calc(10in)) - computed style
-PASS ellipse(farthest-side calc(10in + 20px)) - computed style
-PASS ellipse(farthest-side calc(30%)) - computed style
-PASS ellipse(farthest-side calc(100%/4)) - computed style
-PASS ellipse(farthest-side calc(25%*3)) - computed style
-PASS ellipse(farthest-side calc(25%*3 - 10in)) - computed style
-PASS ellipse(farthest-side calc((12.5%*6 + 10in) / 4)) - computed style
-PASS ellipse(calc(10in) calc(10in)) - computed style
-PASS ellipse(calc(10in + 20px) calc(10in + 20px)) - computed style
-PASS ellipse(calc(30%) calc(30%)) - computed style
-PASS ellipse(calc(100%/4) calc(100%/4)) - computed style
-PASS ellipse(calc(25%*3) calc(25%*3)) - computed style
-PASS ellipse(calc(25%*3 - 10in) calc(25%*3 - 10in)) - computed style
-PASS ellipse(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - computed style
+FAIL ellipse(farthest-side calc(10in)) - inline style assert_equals: expected "ellipse(farthest-side calc(960px) at 50% 50%)" but got "ellipse(farthest-side calc(10in))"
+FAIL ellipse(farthest-side calc(10in + 20px)) - inline style assert_equals: expected "ellipse(farthest-side calc(980px) at 50% 50%)" but got "ellipse(farthest-side calc(980px))"
+FAIL ellipse(farthest-side calc(30%)) - inline style assert_equals: expected "ellipse(farthest-side calc(30%) at 50% 50%)" but got "ellipse(farthest-side calc(30%))"
+FAIL ellipse(farthest-side calc(100%/4)) - inline style assert_equals: expected "ellipse(farthest-side calc(25%) at 50% 50%)" but got "ellipse(farthest-side calc(25%))"
+FAIL ellipse(farthest-side calc(25%*3)) - inline style assert_equals: expected "ellipse(farthest-side calc(75%) at 50% 50%)" but got "ellipse(farthest-side calc(75%))"
+FAIL ellipse(farthest-side calc(25%*3 - 10in)) - inline style assert_equals: expected "ellipse(farthest-side calc(75% - 960px) at 50% 50%)" but got "ellipse(farthest-side calc(75% - 10in))"
+FAIL ellipse(farthest-side calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "ellipse(farthest-side calc(18.75% + 240px) at 50% 50%)" but got "ellipse(farthest-side calc((75% + 10in) / 4))"
+FAIL ellipse(calc(10in) calc(10in)) - inline style assert_equals: expected "ellipse(calc(960px) calc(960px) at 50% 50%)" but got "ellipse(calc(10in) calc(10in))"
+FAIL ellipse(calc(10in + 20px) calc(10in + 20px)) - inline style assert_equals: expected "ellipse(calc(980px) calc(980px) at 50% 50%)" but got "ellipse(calc(980px) calc(980px))"
+FAIL ellipse(calc(30%) calc(30%)) - inline style assert_equals: expected "ellipse(calc(30%) calc(30%) at 50% 50%)" but got "ellipse(calc(30%) calc(30%))"
+FAIL ellipse(calc(100%/4) calc(100%/4)) - inline style assert_equals: expected "ellipse(calc(25%) calc(25%) at 50% 50%)" but got "ellipse(calc(25%) calc(25%))"
+FAIL ellipse(calc(25%*3) calc(25%*3)) - inline style assert_equals: expected "ellipse(calc(75%) calc(75%) at 50% 50%)" but got "ellipse(calc(75%) calc(75%))"
+FAIL ellipse(calc(25%*3 - 10in) calc(25%*3 - 10in)) - inline style assert_equals: expected "ellipse(calc(75% - 960px) calc(75% - 960px) at 50% 50%)" but got "ellipse(calc(75% - 10in) calc(75% - 10in))"
+FAIL ellipse(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "ellipse(calc(18.75% + 240px) calc(18.75% + 240px) at 50% 50%)" but got "ellipse(calc((75% + 10in) / 4) calc((75% + 10in) / 4))"
+FAIL ellipse(farthest-side calc(10in)) - computed style assert_equals: expected "ellipse(farthest-side 960px at 50% 50%)" but got "ellipse(farthest-side 960px)"
+FAIL ellipse(farthest-side calc(10in + 20px)) - computed style assert_equals: expected "ellipse(farthest-side 980px at 50% 50%)" but got "ellipse(farthest-side 980px)"
+FAIL ellipse(farthest-side calc(30%)) - computed style assert_equals: expected "ellipse(farthest-side 30% at 50% 50%)" but got "ellipse(farthest-side 30%)"
+FAIL ellipse(farthest-side calc(100%/4)) - computed style assert_equals: expected "ellipse(farthest-side 25% at 50% 50%)" but got "ellipse(farthest-side 25%)"
+FAIL ellipse(farthest-side calc(25%*3)) - computed style assert_equals: expected "ellipse(farthest-side 75% at 50% 50%)" but got "ellipse(farthest-side 75%)"
+FAIL ellipse(farthest-side calc(25%*3 - 10in)) - computed style assert_equals: expected "ellipse(farthest-side calc(75% - 960px) at 50% 50%)" but got "ellipse(farthest-side calc(75% - 960px))"
+FAIL ellipse(farthest-side calc((12.5%*6 + 10in) / 4)) - computed style assert_equals: expected "ellipse(farthest-side calc(18.75% + 240px) at 50% 50%)" but got "ellipse(farthest-side calc(18.75% + 240px))"
+FAIL ellipse(calc(10in) calc(10in)) - computed style assert_equals: expected "ellipse(960px 960px at 50% 50%)" but got "ellipse(960px 960px)"
+FAIL ellipse(calc(10in + 20px) calc(10in + 20px)) - computed style assert_equals: expected "ellipse(980px 980px at 50% 50%)" but got "ellipse(980px 980px)"
+FAIL ellipse(calc(30%) calc(30%)) - computed style assert_equals: expected "ellipse(30% 30% at 50% 50%)" but got "ellipse(30% 30%)"
+FAIL ellipse(calc(100%/4) calc(100%/4)) - computed style assert_equals: expected "ellipse(25% 25% at 50% 50%)" but got "ellipse(25% 25%)"
+FAIL ellipse(calc(25%*3) calc(25%*3)) - computed style assert_equals: expected "ellipse(75% 75% at 50% 50%)" but got "ellipse(75% 75%)"
+FAIL ellipse(calc(25%*3 - 10in) calc(25%*3 - 10in)) - computed style assert_equals: expected "ellipse(calc(75% - 960px) calc(75% - 960px) at 50% 50%)" but got "ellipse(calc(75% - 960px) calc(75% - 960px))"
+FAIL ellipse(calc((12.5%*6 + 10in) / 4) calc((12.5%*6 + 10in) / 4)) - computed style assert_equals: expected "ellipse(calc(18.75% + 240px) calc(18.75% + 240px) at 50% 50%)" but got "ellipse(calc(18.75% + 240px) calc(18.75% + 240px))"
 Harness: the test ran to completion.
 

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Test circle with negative easing on clip-path assert_equals: The radius of circle is clamped to zero at 61% expected "circle(0px at 50% 50%)" but got "circle(0px)"
+FAIL Test ellipse with negative easing on clip-path assert_equals: The radius of ellipse is clamped to zero at 61% expected "ellipse(0px 0px at 50% 50%)" but got "ellipse(0px 0px)"
+PASS Test inset with negative easing on clip-path
+Harness: the test ran to completion.
+

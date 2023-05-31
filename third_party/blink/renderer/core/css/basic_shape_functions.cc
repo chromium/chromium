@@ -171,10 +171,12 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       cssvalue::CSSBasicShapeCircleValue* circle_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeCircleValue>();
 
-      circle_value->SetCenterX(ValueForCenterCoordinate(
-          style, circle->CenterX(), EBoxOrient::kHorizontal));
-      circle_value->SetCenterY(ValueForCenterCoordinate(
-          style, circle->CenterY(), EBoxOrient::kVertical));
+      if (circle->HasExplicitCenter()) {
+        circle_value->SetCenterX(ValueForCenterCoordinate(
+            style, circle->CenterX(), EBoxOrient::kHorizontal));
+        circle_value->SetCenterY(ValueForCenterCoordinate(
+            style, circle->CenterY(), EBoxOrient::kVertical));
+      }
       circle_value->SetRadius(
           BasicShapeRadiusToCSSValue(style, circle->Radius()));
       return circle_value;
@@ -184,10 +186,12 @@ CSSValue* ValueForBasicShape(const ComputedStyle& style,
       auto* ellipse_value =
           MakeGarbageCollected<cssvalue::CSSBasicShapeEllipseValue>();
 
-      ellipse_value->SetCenterX(ValueForCenterCoordinate(
-          style, ellipse->CenterX(), EBoxOrient::kHorizontal));
-      ellipse_value->SetCenterY(ValueForCenterCoordinate(
-          style, ellipse->CenterY(), EBoxOrient::kVertical));
+      if (ellipse->HasExplicitCenter()) {
+        ellipse_value->SetCenterX(ValueForCenterCoordinate(
+            style, ellipse->CenterX(), EBoxOrient::kHorizontal));
+        ellipse_value->SetCenterY(ValueForCenterCoordinate(
+            style, ellipse->CenterY(), EBoxOrient::kVertical));
+      }
       ellipse_value->SetRadiusX(
           BasicShapeRadiusToCSSValue(style, ellipse->RadiusX()));
       ellipse_value->SetRadiusY(
@@ -371,9 +375,7 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     circle->SetCenterY(
         ConvertToCenterCoordinate(state, circle_value.CenterY()));
     circle->SetRadius(CssValueToBasicShapeRadius(state, circle_value.Radius()));
-    if (!circle_value.CenterX()) {
-      circle->SetHasExplicitCenter(false);
-    }
+    circle->SetHasExplicitCenter(circle_value.CenterX());
 
     basic_shape = std::move(circle);
   } else if (IsA<cssvalue::CSSBasicShapeEllipseValue>(basic_shape_value)) {
@@ -389,9 +391,7 @@ scoped_refptr<BasicShape> BasicShapeForValue(
         CssValueToBasicShapeRadius(state, ellipse_value.RadiusX()));
     ellipse->SetRadiusY(
         CssValueToBasicShapeRadius(state, ellipse_value.RadiusY()));
-    if (!ellipse_value.CenterX()) {
-      ellipse->SetHasExplicitCenter(false);
-    }
+    ellipse->SetHasExplicitCenter(ellipse_value.CenterX());
 
     basic_shape = std::move(ellipse);
   } else if (IsA<cssvalue::CSSBasicShapePolygonValue>(basic_shape_value)) {

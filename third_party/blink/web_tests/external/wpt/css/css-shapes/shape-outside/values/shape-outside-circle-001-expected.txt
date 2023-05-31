@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL circle() - inline assert_equals: expected "circle(at 50% 50%)" but got "circle()"
+FAIL circle(50px) - inline assert_equals: expected "circle(50px at 50% 50%)" but got "circle(50px)"
+FAIL circle(50%) - inline assert_equals: expected "circle(50% at 50% 50%)" but got "circle(50%)"
+FAIL circle(closest-side) - inline assert_equals: expected "circle(at 50% 50%)" but got "circle()"
+FAIL circle(farthest-side) - inline assert_equals: expected "circle(farthest-side at 50% 50%)" but got "circle(farthest-side)"
+FAIL circle() - computed assert_equals: expected "circle(at 50% 50%)" but got "circle()"
+FAIL circle(50px) - computed assert_equals: expected "circle(50px at 50% 50%)" but got "circle(50px)"
+FAIL circle(50%) - computed assert_equals: expected "circle(50% at 50% 50%)" but got "circle(50%)"
+FAIL circle(closest-side) - computed assert_equals: expected "circle(at 50% 50%)" but got "circle()"
+FAIL circle(farthest-side) - computed assert_equals: expected "circle(farthest-side at 50% 50%)" but got "circle(farthest-side)"
+Harness: the test ran to completion.
+
