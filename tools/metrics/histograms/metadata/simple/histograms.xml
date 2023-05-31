@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.ConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2023-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2024-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="SimpleCache.ConsistencyResultAfterIndexFilesDeleted"
-    enum="SimpleCacheConsistencyResult" expires_after="2023-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2024-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"
-    enum="SimpleCacheConsistencyResult" expires_after="2023-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2024-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SimpleCache.RetryConsistencyResult"
-    enum="SimpleCacheConsistencyResult" expires_after="2023-06-08">
+    enum="SimpleCacheConsistencyResult" expires_after="2024-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
