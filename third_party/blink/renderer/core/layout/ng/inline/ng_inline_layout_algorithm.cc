@@ -1343,7 +1343,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       DCHECK(score_line_break_context->LineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context->LineBreakPointsIndex(), 0u);
       NGScoreLineBreaker optimizer(Node(), ConstraintSpace(), line_opportunity,
-                                   break_token);
+                                   break_token, &ExclusionSpace());
       optimizer.OptimalBreakPoints(*score_line_break_context);
     }
 

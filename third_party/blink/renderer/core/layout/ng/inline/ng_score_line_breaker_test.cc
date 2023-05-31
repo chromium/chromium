@@ -32,12 +32,34 @@ void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
 
 class NGScoreLineBreakerTest : public RenderingTest {
  public:
+  void RunUntilSuspended(NGScoreLineBreaker& breaker,
+                         NGScoreLineBreakContext& context) {
+    NGLineInfoList& line_info_list = context.LineInfoList();
+    line_info_list.Clear();
+    NGLineBreakPoints& break_points = context.LineBreakPoints();
+    break_points.clear();
+    context.DidCreateLine();
+    for (;;) {
+      breaker.OptimalBreakPoints(context);
+      if (!context.IsActive() || !breaker.BreakToken() ||
+          line_info_list.IsEmpty()) {
+        break;
+      }
+
+      // Consume the first line in `line_info_list`.
+      line_info_list.RemoveFront();
+      context.DidCreateLine();
+    }
+  }
+
   Vector<float> ComputeScores(const NGInlineNode& node) {
     const LayoutUnit width = FragmentWidth(node);
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     NGLineLayoutOpportunity line_opportunity(width);
     const NGInlineBreakToken* break_token = nullptr;
-    NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
+    NGExclusionSpace exclusion_space;
+    NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
+                                 &exclusion_space);
     Vector<float> scores;
     optimizer.SetScoresOutForTesting(&scores);
     NGScoreLineBreakContext context;
@@ -73,7 +95,9 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   NGScoreLineBreakContext context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   const NGInlineBreakToken* break_token = nullptr;
-  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
+  NGExclusionSpace exclusion_space;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
+                               &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should cache
   // `NGLineInfoList::kCapacity` lines.
@@ -99,6 +123,75 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   EXPECT_FALSE(line_info_list.Back().BreakToken());
   constexpr wtf_size_t target_num_lines = 6;
   EXPECT_EQ(count, target_num_lines - NGLineInfoList::kCapacity);
+}
+
+class BlockInInlineTest : public NGScoreLineBreakerTest,
+                          public testing::WithParamInterface<int> {};
+INSTANTIATE_TEST_SUITE_P(NGScoreLineBreakerTest,
+                         BlockInInlineTest,
+                         testing::Range(0, 4));
+
+TEST_P(BlockInInlineTest, BeforeAfter) {
+  LoadAhem();
+  const int test_index = GetParam();
+  const bool has_before = test_index & 1;
+  const bool has_after = test_index & 2;
+  SetBodyInnerHTML(String::Format(
+      R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      width: 10ch;
+    }
+    </style>
+    <div id="target">
+      <span>%s<div>
+        Inside 89 1234 6789 1234 6789 1234 6789 12
+      </div>%s</span>
+    </div>
+  )HTML",
+      has_before ? "Before 89 1234 6789 1234 6789 1234 6789 12" : "",
+      has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
+  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const LayoutUnit width = FragmentWidth(node);
+  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  NGLineLayoutOpportunity line_opportunity(width);
+  NGScoreLineBreakContext context;
+  NGLineInfoList& line_info_list = context.LineInfoList();
+  NGLineBreakPoints& break_points = context.LineBreakPoints();
+  NGExclusionSpace exclusion_space;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity,
+                               /*break_token*/ nullptr, &exclusion_space);
+  // The `NGScoreLineBreaker` should suspend at before the block-in-inline.
+  RunUntilSuspended(optimizer, context);
+  if (has_before) {
+    // The content before the block-in-inline should be optimized.
+    EXPECT_NE(break_points.size(), 0u);
+  } else {
+    // The content before the block-in-inline is just a `<span>`.
+    EXPECT_EQ(break_points.size(), 0u);
+    EXPECT_EQ(line_info_list.Size(), 1u);
+    EXPECT_TRUE(line_info_list[0].HasForcedBreak());
+  }
+
+  // Then the block-in-inline comes. Since it's like an atomic inline, it's not
+  // optimized.
+  RunUntilSuspended(optimizer, context);
+  EXPECT_EQ(break_points.size(), 0u);
+  EXPECT_EQ(line_info_list.Size(), 1u);
+  EXPECT_TRUE(line_info_list[0].IsBlockInInline());
+  EXPECT_TRUE(line_info_list[0].HasForcedBreak());
+
+  // Then the content after the block-in-inline.
+  RunUntilSuspended(optimizer, context);
+  if (has_after) {
+    EXPECT_NE(break_points.size(), 0u);
+  } else {
+    EXPECT_EQ(break_points.size(), 0u);
+    EXPECT_EQ(line_info_list.Size(), 1u);
+  }
 }
 
 TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
@@ -127,7 +220,9 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
   const NGInlineBreakToken* break_token = nullptr;
-  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
+  NGExclusionSpace exclusion_space;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
+                               &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should stop at
   // `<br>` so that paragraphs separated by forced breaks are optimized
@@ -255,7 +350,9 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   NGLineLayoutOpportunity line_opportunity(width);
   NGScoreLineBreakContext context;
   const NGInlineBreakToken* break_token = nullptr;
-  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token);
+  NGExclusionSpace exclusion_space;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity, break_token,
+                               &exclusion_space);
   optimizer.OptimalBreakPoints(context);
   EXPECT_FALSE(context.IsActive());
   if (data.disabled) {

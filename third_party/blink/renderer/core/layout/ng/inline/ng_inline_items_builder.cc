@@ -1076,7 +1076,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
   // block-in-inline, before it and after it separately. See
   // `NGParagraphLineBreaker`.
   is_bisect_line_break_disabled_ = true;
-  is_score_line_break_disabled_ = true;
 }
 
 template <typename OffsetMappingBuilder>

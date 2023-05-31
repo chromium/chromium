@@ -45,10 +45,12 @@ class CORE_EXPORT NGScoreLineBreaker {
   NGScoreLineBreaker(const NGInlineNode& node,
                      const NGConstraintSpace& space,
                      const NGLineLayoutOpportunity& line_opportunity,
-                     const NGInlineBreakToken* break_token)
+                     const NGInlineBreakToken* break_token,
+                     NGExclusionSpace* exclusion_space)
       : node_(node),
         space_(space),
         line_opportunity_(line_opportunity),
+        exclusion_space_(exclusion_space),
         break_token_(break_token) {
     DCHECK(!node.IsScoreLineBreakDisabled());
   }
@@ -102,6 +104,7 @@ class CORE_EXPORT NGScoreLineBreaker {
   const NGInlineNode node_;
   const NGConstraintSpace& space_;
   const NGLineLayoutOpportunity& line_opportunity_;
+  NGExclusionSpace* exclusion_space_;
   const NGInlineBreakToken* break_token_;
   LayoutUnit available_width_;
   LayoutUnit first_line_indent_;
