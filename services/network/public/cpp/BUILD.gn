@@ -481,11 +481,7 @@ component("cpp_base") {
     ]
   }
 
-  # Since URLLoader is typedmapped in mojo and the class also uses the mojo
-  # interfaces a circular dependency exists. Allow this and ignore windows
-  # errors from it.
-  allow_circular_includes_from =
-      [ "//services/network/public/mojom:url_loader_base" ]
+  # TODO(crbug.com/1450273): Remove the need to ignore this warning.
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
   }
