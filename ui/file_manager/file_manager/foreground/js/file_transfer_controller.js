@@ -51,6 +51,14 @@ const MISSING_FILE_CONTENTS = 'missingFileContents';
 const SOURCE_ROOT_URL = 'sourceRootURL';
 
 /**
+ * The key under which we store the flag denoting that the dragged file is
+ * encrypted with Google Drive CSE. Given that decrypting of such files is not
+ * implemented at the moment (May 2023), this allows us to unset the drag effect
+ * when moving such a file outside Drive.
+ */
+const ENCRYPTED = 'encrypted';
+
+/**
  * @typedef {{file:?File, externalFileUrl:string}}
  */
 let FileAsyncData;
@@ -351,12 +359,18 @@ export class FileTransferController {
       });
     }
 
+    const encrypted = this.metadataModel_.getCache(entries, ['contentMimeType'])
+                          .some(
+                              (metadata, i) => FileType.isEncrypted(
+                                  entries[i], metadata.contentMimeType));
+
     const sourceURLs = util.entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
 
     clipboardData.effectAllowed = effectAllowed;
     clipboardData.setData('fs/effectallowed', effectAllowed);
 
+    clipboardData.setData(`fs/${ENCRYPTED}`, encrypted.toString());
     clipboardData.setData(
         `fs/${MISSING_FILE_CONTENTS}`, missingFileContents.toString());
   }
@@ -398,8 +412,10 @@ export class FileTransferController {
         storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     const missingFileContents = storage.getItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+    const encrypted =
+        storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`) === 'true';
     if (sourceRootURL !== null && missingFileContents !== null) {
-      return {sourceRootURL, missingFileContents};
+      return {sourceRootURL, missingFileContents, encrypted};
     }
     return null;
   }
@@ -758,6 +774,9 @@ export class FileTransferController {
     storage.setItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`,
         dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`));
+    storage.setItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`,
+        dataTransfer.getData(`fs/${ENCRYPTED}`));
   }
 
   /**
@@ -776,6 +795,7 @@ export class FileTransferController {
     const storage = window.localStorage;
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+    storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`);
   }
 
   /**
@@ -1493,6 +1513,13 @@ export class FileTransferController {
       // The disk device is not write-protected but read-only.
       // Currently, the only remaining possibility is that write access to
       // removable drives is restricted by device policy.
+      return DropEffectType.NONE;
+    }
+    // Decryption of CSE files is not currently supported on ChromeOS. However,
+    // moving such a file around Google Drive works fine.
+    if (dragAndDropData && dragAndDropData.encrypted &&
+        destinationLocationInfo.rootType !==
+            VolumeManagerCommon.RootType.DRIVE) {
       return DropEffectType.NONE;
     }
     const destinationMetadata =
