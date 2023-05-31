@@ -39,7 +39,8 @@ TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
 
 // static
 TemplateURLServiceFactory* TemplateURLServiceFactory::GetInstance() {
-  return base::Singleton<TemplateURLServiceFactory>::get();
+  static base::NoDestructor<TemplateURLServiceFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -78,7 +79,7 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
 }
 
-TemplateURLServiceFactory::~TemplateURLServiceFactory() {}
+TemplateURLServiceFactory::~TemplateURLServiceFactory() = default;
 
 KeyedService* TemplateURLServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

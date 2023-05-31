@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -25,7 +25,7 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<TemplateURLServiceFactory>;
+  friend base::NoDestructor<TemplateURLServiceFactory>;
 
   TemplateURLServiceFactory();
   ~TemplateURLServiceFactory() override;
