@@ -90,13 +90,14 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       const base::Time end_time,
       base::RepeatingCallback<bool(const GURL&)> url_matcher,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void DeleteExpiredDictionaries(
+      const base::Time now,
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
                                     base::Time last_used_time);
 
   // TODO(crbug.com/1413922): Add a method for the garbage collection logic of
   // SharedDictionaryDiskCache by using `disk_cache_key_token`.
-  // TODO(crbug.com/1413922): Add a method for the clearing expired dictionary
-  // logic using expiration time.
 
   base::WeakPtr<SQLitePersistentSharedDictionaryStore> GetWeakPtr();
 

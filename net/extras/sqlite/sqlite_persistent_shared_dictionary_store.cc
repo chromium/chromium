@@ -186,6 +186,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDictionaries)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearAllDictionaries)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(DeleteExpiredDictionaries)
 #undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
 
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
@@ -208,6 +209,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
       base::Time start_time,
       base::Time end_time,
       base::RepeatingCallback<bool(const GURL&)> url_matcher);
+  UnguessableTokenSetOrError DeleteExpiredDictionariesImpl(base::Time now);
 
   // If a matching dictionary exists, populates 'size_out' and
   // 'disk_cache_key_out' with the dictionary's respective values and returns
@@ -252,7 +254,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
       std::vector<int64_t>* primary_keys_out,
       std::vector<base::UnguessableToken>* tokens_out,
       int64_t* total_size_out);
-  // Delete a dictionary with `primary_key`.
+  // Deletes a dictionary with `primary_key`.
   Error DeleteDictionaryByPrimaryKey(int64_t primary_key);
 
   // Total number of pending last used time update operations (may not match the
@@ -765,6 +767,63 @@ SQLitePersistentSharedDictionaryStore::Backend::
   return Error::kOk;
 }
 
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
+    base::Time now) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return base::unexpected(Error::kFailedToInitializeDatabase);
+  }
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return base::unexpected(Error::kFailedToBeginTransaction);
+  }
+  static constexpr char kQuery[] =
+      // clang-format off
+      "DELETE FROM dictionaries "
+          "WHERE exp_time<=? "
+          "RETURNING size, token_high, token_low";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return base::unexpected(Error::kInvalidSql);
+  }
+
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, now);
+
+  std::vector<base::UnguessableToken> tokens;
+  base::CheckedNumeric<int64_t> checked_total_size = 0;
+  while (statement.Step()) {
+    const size_t size = statement.ColumnInt64(0);
+    const int64_t token_high = statement.ColumnInt64(1);
+    const int64_t token_low = statement.ColumnInt64(2);
+
+    checked_total_size += size;
+
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      LOG(WARNING) << "Invalid token";
+      continue;
+    }
+    tokens.emplace_back(*disk_cache_key_token);
+  }
+
+  int64_t total_size = checked_total_size.ValueOrDie();
+  if (total_size != 0) {
+    uint64_t total_dictionary_size = 0;
+    Error error = UpdateTotalDictionarySizeInMetaTable(-total_size,
+                                                       &total_dictionary_size);
+    if (error != Error::kOk) {
+      return base::unexpected(error);
+    }
+  }
+  transaction.Commit();
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
+}
+
 SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::DeleteDictionaryByPrimaryKey(
     int64_t primary_key) {
@@ -935,6 +994,14 @@ void SQLitePersistentSharedDictionaryStore::ClearDictionaries(
   backend_->ClearDictionaries(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
       start_time, end_time, std::move(url_matcher));
+}
+
+void SQLitePersistentSharedDictionaryStore::DeleteExpiredDictionaries(
+    const base::Time now,
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->DeleteExpiredDictionaries(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)), now);
 }
 
 void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastUsedTime(
