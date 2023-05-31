@@ -1130,9 +1130,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logged when a module was disabled by {Interaction}. Only logged on the 1P
-    NTP. Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
+    NTP.
+
+    Note: If the user has Google as their default search engine, Incognito and
+    Guest mode NTPs are not considered 1P and don't log this histogram.
+
+    Note: NewTabPage.Modules.Disabled.Customize is not recorded for pre-M116
+    users of Panorama.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
@@ -1175,9 +1179,13 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
     Logged when a module was enabled by {Interaction}. Only logged on the 1P
-    NTP. Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and don't log this
-    histogram.
+    NTP.
+
+    Note: If the user has Google as their default search engine, Incognito and
+    Guest mode NTPs are not considered 1P and don't log this histogram.
+
+    Note: NewTabPage.Modules.Enabled.Customize is not recorded for pre-M116
+    users of Panorama.
   </summary>
   <token key="Interaction">
     <variant name="" summary="any interaction"/>
