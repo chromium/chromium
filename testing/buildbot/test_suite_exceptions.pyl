@@ -2927,6 +2927,15 @@
       },
     },
   },
+  'lacros_chrome_browsertests_run_in_series': {
+    'modifications': {
+      'linux-lacros-asan-lsan-rel': {
+        'swarming': {
+          'shards': 5,
+        },
+      },
+    },
+  },
   'leveldb_unittests': {
     'remove_from': [
       # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
