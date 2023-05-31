@@ -3655,11 +3655,15 @@ TEST(CanonicalCookieTest, BuildCookieAttributesLine) {
   EXPECT_EQ("H=I; domain=example.com; path=/",
             CanonicalCookie::BuildCookieAttributesLine(*cookie));
   // BuildCookieAttributesLine should include all attributes.
-  cookie = CanonicalCookie::Create(
-      url, "A=B; domain=.example.com; path=/; secure; httponly; samesite=lax",
-      now, server_time, absl::nullopt /* cookie_partition_key */);
-  EXPECT_EQ("A=B; domain=.example.com; path=/; secure; httponly; samesite=lax",
-            CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  cookie = CanonicalCookie::Create(url,
+                                   "A=B; domain=.example.com; path=/; secure; "
+                                   "httponly; partitioned; samesite=lax",
+                                   now, server_time,
+                                   CookiePartitionKey::FromURLForTesting(url));
+  EXPECT_EQ(
+      "A=B; domain=.example.com; path=/; secure; httponly; partitioned; "
+      "samesite=lax",
+      CanonicalCookie::BuildCookieAttributesLine(*cookie));
 }
 
 // Confirm that input arguments are reflected in the output cookie.
