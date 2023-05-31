@@ -75,6 +75,11 @@ extern const char kLaunchedAfterRebuild[];
 // process.
 extern const char kIsNormalLaunch[];
 
+// Normally when running tests app shims are not supposed to try to launch
+// Chrome. Pass this flag to specify the executable to launch when the app shim
+// would normally launch Chrome.
+extern const char kLaunchChromeForTest[];
+
 #ifdef __OBJC__
 
 // Keys for specifying the file types handled by an app.

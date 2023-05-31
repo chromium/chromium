@@ -1712,10 +1712,12 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
 void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
                           const std::vector<GURL>& urls,
                           ShimLaunchedCallback launched_callback,
-                          ShimTerminatedCallback terminated_callback) {
+                          ShimTerminatedCallback terminated_callback,
+                          const base::FilePath& chromium_path) {
   base::CommandLine command_line = BuildCommandLineForShimLaunch();
   command_line.AppendSwitch(app_mode::kLaunchedForTest);
   command_line.AppendSwitch(app_mode::kIsNormalLaunch);
+  command_line.AppendSwitchPath(app_mode::kLaunchChromeForTest, chromium_path);
   if (mojo::core::IsMojoIpczEnabled()) {
     command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                    mojo::core::kMojoIpcz.name);
