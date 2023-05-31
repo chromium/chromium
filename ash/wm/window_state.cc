@@ -1352,6 +1352,16 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
                                           const void* key,
                                           intptr_t old) {
   DCHECK_EQ(window_, window);
+  if (key == aura::client::kRestoreBoundsKey) {
+    // Updates the window bounds restore history after updating the restore
+    // bounds to keep them always aligned. This is necessary to avoid getting
+    // incorrect restore bounds from the outdated restore history stack.
+    if (HasRestoreBounds() && !window_state_restore_history_.empty()) {
+      window_state_restore_history_.back().restore_bounds_in_screen =
+          GetRestoreBoundsInScreen();
+    }
+    return;
+  }
   if (key == aura::client::kShowStateKey) {
     if (!ignore_property_change_) {
       WMEvent event(WMEventTypeFromShowState(GetShowState()));
