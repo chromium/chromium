@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-import {SinonSpy, assert, spy} from 'sinon';
+import * as sinon from 'sinon';
 
 import {ITransport} from './transport.js';
 
-type TypedSpy<T extends (...args: any[]) => unknown> = SinonSpy<
+type TypedSpy<T extends (...args: any[]) => unknown> = sinon.SinonSpy<
   Parameters<T>,
   ReturnType<T>
 >;
 
-function typedSpy<T extends SinonSpy>() {
-  return spy() as T;
+function typedSpy<T extends sinon.SinonSpy>() {
+  return sinon.spy() as T;
 }
 
 export class StubTransport implements ITransport {
@@ -34,7 +34,7 @@ export class StubTransport implements ITransport {
   close: TypedSpy<ITransport['close']>;
 
   #getOnMessage(): (_: string) => unknown {
-    assert.called(this.setOnMessage);
+    sinon.assert.called(this.setOnMessage);
     return this.setOnMessage.getCall(0).args[0];
   }
 

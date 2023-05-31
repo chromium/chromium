@@ -54,6 +54,7 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:import/recommended',
     'plugin:prettier/recommended',
     'plugin:promise/recommended',
     // keep-sorted end
@@ -86,6 +87,7 @@ module.exports = {
     'import/first': 'error',
     'import/newline-after-import': 'warn',
     'import/no-duplicates': 'error',
+    'import/no-unresolved': 'off',
     'import/order': ['warn', {'newlines-between': 'always'}],
     'no-console': 'warn',
     'no-duplicate-imports': 'error',

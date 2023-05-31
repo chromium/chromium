@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {expect} from 'chai';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 
 import * as uuid from '../../../utils/uuid.js';
 

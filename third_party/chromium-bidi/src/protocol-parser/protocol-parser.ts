@@ -36,7 +36,7 @@ import {
 const MAX_INT = 9007199254740991 as const;
 
 export function parseObject<T extends ZodType>(
-  obj: unknown,
+  obj: object,
   schema: T
 ): zod.infer<T> {
   const parseResult = schema.safeParse(obj);
@@ -686,13 +686,13 @@ export namespace Input {
   const AnglePropertiesSchema = zod.object({
     altitudeAngle: zod
       .number()
-      .min(0.0)
+      .nonnegative()
       .max(Math.PI / 2)
       .default(0.0)
       .optional(),
     azimuthAngle: zod
       .number()
-      .min(0.0)
+      .nonnegative()
       .max(2 * Math.PI)
       .default(0.0)
       .optional(),
@@ -712,7 +712,7 @@ export namespace Input {
       height: zod.number().nonnegative().int().default(1),
       pressure: zod.number().min(0.0).max(1.0).default(0.0),
       tangentialPressure: zod.number().min(-1.0).max(1.0).default(0.0),
-      twist: zod.number().min(0).max(359).int().default(0),
+      twist: zod.number().nonnegative().max(359).int().default(0),
     })
     .and(zod.union([TiltPropertiesSchema, AnglePropertiesSchema]));
 
