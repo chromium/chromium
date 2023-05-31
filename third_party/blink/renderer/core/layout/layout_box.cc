@@ -1047,29 +1047,6 @@ void LayoutBox::LayoutSubtreeRootOld() {
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 }
 
-void LayoutBox::UpdateLayout() {
-  NOT_DESTROYED();
-  DCHECK(NeedsLayout());
-
-  if (ChildLayoutBlockedByDisplayLock())
-    return;
-
-  LayoutObject* child = SlowFirstChild();
-  if (!child) {
-    ClearNeedsLayout();
-    return;
-  }
-
-  while (child) {
-    child->LayoutIfNeeded();
-    DCHECK(!child->NeedsLayout());
-    child = child->NextSibling();
-  }
-  UpdateAfterLayout();
-  ClearNeedsLayout();
-  NotifyDisplayLockDidLayoutChildren();
-}
-
 // ClientWidth and ClientHeight represent the interior of an object excluding
 // border and scrollbar.
 DISABLE_CFI_PERF

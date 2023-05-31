@@ -3700,12 +3700,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   PhysicalOffset OffsetFromScrollableContainer(const LayoutObject*,
                                                bool ignore_scroll_offset) const;
 
-  void NotifyDisplayLockDidLayoutChildren() {
-    NOT_DESTROYED();
-    if (auto* context = GetDisplayLockContext())
-      context->DidLayoutChildren();
-  }
-
   bool BackgroundIsKnownToBeObscured() const {
     NOT_DESTROYED();
     DCHECK_GE(GetDocument().Lifecycle().GetState(),

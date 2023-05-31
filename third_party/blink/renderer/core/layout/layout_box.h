@@ -837,7 +837,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void LayoutSubtreeRoot();
   void LayoutSubtreeRootOld();
 
-  void UpdateLayout() override;
   void Paint(const PaintInfo&) const override;
 
   virtual bool IsInSelfHitTestingPhase(HitTestPhase phase) const {
