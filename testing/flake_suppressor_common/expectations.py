@@ -127,10 +127,10 @@ class ExpectationProcessor():
             self.ModifyFileForResult(suite, test, typ_tags, '', expected_result,
                                      group_by_tags, include_all_tags)
 
-  def CreateFailureExpectationsForAllResults(
-      self, result_map: ct.AggregatedResultsType, group_by_tags: bool,
+  def CreateExpectationsForAllResults(
+      self, result_map: ct.AggregatedStatusResultsType, group_by_tags: bool,
       include_all_tags: bool) -> None:
-    """Iterates over |result_map| and adds Failure expectations for its results.
+    """Iterates over |result_map| and adds expectations for its results.
 
     Args:
       result_map: Aggregated query results from results.AggregateResults to
@@ -147,8 +147,20 @@ class ExpectationProcessor():
         continue
       for test, tag_map in test_map.items():
         for typ_tags in tag_map.keys():
-          self.ModifyFileForResult(suite, test, typ_tags, '', 'Failure',
-                                   group_by_tags, include_all_tags)
+          status = set()
+          for test_result in tag_map[typ_tags]:
+            if test_result.status == ct.ResultStatus.CRASH:
+              status.add('Crash')
+            elif test_result.status == ct.ResultStatus.FAIL:
+              status.add('Failure')
+            elif test_result.status == ct.ResultStatus.ABORT:
+              status.add('Timeout')
+          if len(status) > 0:
+            status_list = list(status)
+            status_list.sort()
+            self.ModifyFileForResult(suite, test, typ_tags, '',
+                                     ' '.join(status_list), group_by_tags,
+                                     include_all_tags)
 
   # pylint: enable=too-many-locals,too-many-arguments
 

@@ -42,21 +42,24 @@ def main() -> int:
     querier_instance = web_tests_queries.WebTestsBigQueryQuerier(
         args.sample_period, args.project, results_processor)
 
-    if len(args.builder_names) > 0:
-        if args.non_hidden_failures:
+    if args.non_hidden_failures_only:
+        if len(args.builder_names) > 0:
             results = querier_instance.\
                 GetFailingBuildCulpritFromCiBuilders(args.builder_names)
         else:
+            results = querier_instance.GetFailingCiBuildCulpritTests()
+
+        aggregated_results = results_processor.AggregateTestStatusResults(
+            results)
+    else:
+        if len(args.builder_names) > 0:
             results = querier_instance.\
                 GetFlakyOrFailingTestsFromCiBuilders(args.builder_names)
-    else:
-        if args.non_hidden_failures:
-            results = querier_instance.GetFailingCiBuildCulpritTests()
         else:
             results = querier_instance.GetFlakyOrFailingCiTests()
             results.extend(querier_instance.GetFlakyOrFailingTryTests())
 
-    aggregated_results = results_processor.AggregateResults(results)
+        aggregated_results = results_processor.AggregateResults(results)
 
     if args.result_output_file:
         with open(args.result_output_file, 'w') as outfile:
@@ -73,8 +76,8 @@ def main() -> int:
         expectations_processor.IterateThroughResultsForUser(
             aggregated_results, args.group_by_tags, args.include_all_tags)
     else:
-        if args.non_hidden_failures:
-            expectations_processor.CreateFailureExpectationsForAllResults(
+        if args.non_hidden_failures_only:
+            expectations_processor.CreateExpectationsForAllResults(
                 aggregated_results, args.group_by_tags, args.include_all_tags)
         else:
             if len(args.builder_names) > 0:

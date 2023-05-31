@@ -67,7 +67,7 @@ def ParseArgs():
                             'conditions between updating the checkout and '
                             'running the script.'))
   parser.add_argument(
-      '--non-hidden-failures',
+      '--non-hidden-failures-only',
       action='store_true',
       default=False,
       help=
