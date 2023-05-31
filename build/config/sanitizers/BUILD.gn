@@ -57,7 +57,7 @@ group("deps") {
     # For executables which aren't actual fuzzers, we need stubs for
     # the sanitizer coverage symbols, because we'll still be generating
     # .o files which depend on them.
-    deps += [ "//third_party/centipede:centipede_weak_sancov_stubs" ]
+    deps += [ "//third_party/fuzztest:centipede_weak_sancov_stubs" ]
   }
 }
 

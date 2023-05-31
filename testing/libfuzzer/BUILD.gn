@@ -28,7 +28,7 @@ source_set("libfuzzer_main") {
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
   } else if (use_centipede) {
-    deps += [ "//third_party/centipede:centipede_runner_main" ]
+    deps += [ "//third_party/fuzztest:centipede_runner_main" ]
   } else {
     sources += [ "unittest_main.cc" ]
   }
@@ -44,7 +44,7 @@ if (fuzzing_engine_supports_custom_main) {
       deps += [ "//third_party/libFuzzer:libfuzzer" ]
       sources += [ "expose_fuzzer_run_driver.cc" ]
     } else if (use_centipede) {
-      deps += [ "//third_party/centipede:centipede_runner_no_main" ]
+      deps += [ "//third_party/fuzztest:centipede_runner_no_main" ]
     }
   }
 }
