@@ -1510,18 +1510,21 @@ void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
-static constexpr partition_alloc::PartitionOptions kOpts = {
-    .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-    .backup_ref_ptr = partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-};
-
 class BackupRefPtrTest : public testing::Test {
  protected:
   void SetUp() override {
     // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
     // new/delete once PartitionAlloc Everywhere is fully enabled.
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    allocator_.init(kOpts);
+    allocator_.init(
+        {.cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+         .backup_ref_ptr =
+             partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+         .memory_tagging =
+             base::CPU::GetInstanceNoAllocation().has_mte()
+                 ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                 : partition_alloc::PartitionOptions::MemoryTagging::
+                       kDisabled});
   }
 
   partition_alloc::PartitionAllocator allocator_;

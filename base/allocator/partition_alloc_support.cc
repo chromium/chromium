@@ -1176,34 +1176,42 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
           ? base::features::kPartitionAllocBucketDistributionParam.Get()
           : base::features::BucketDistributionMode::kDefault;
 
-#if PA_CONFIG(HAS_MEMORY_TAGGING)
-  bool enable_memory_tagging = ShouldEnableMemoryTagging(process_type);
-#if BUILDFLAG(IS_ANDROID)
-  if (enable_memory_tagging) {
-    partition_alloc::TagViolationReportingMode reporting_mode;
-    switch (base::features::kMemtagModeParam.Get()) {
-      case base::features::MemtagMode::kSync:
-        reporting_mode =
-            partition_alloc::TagViolationReportingMode::kSynchronous;
-        break;
-      case base::features::MemtagMode::kAsync:
-        reporting_mode =
-            partition_alloc::TagViolationReportingMode::kAsynchronous;
-        break;
-    }
-    partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
-        reporting_mode);
-    CHECK_EQ(partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
-             reporting_mode);
-  } else if (base::CPU::GetInstanceNoAllocation().has_mte()) {
-    partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
-        partition_alloc::TagViolationReportingMode::kDisabled);
-    CHECK_EQ(partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
-             partition_alloc::TagViolationReportingMode::kDisabled);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-#else   // PA_CONFIG(HAS_MEMORY_TAGGING)
   bool enable_memory_tagging = false;
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+  // If synchronous mode is enabled from startup it means this is a test and
+  // memory tagging should be enabled.
+  if (partition_alloc::internal::GetMemoryTaggingModeForCurrentThread() ==
+      partition_alloc::TagViolationReportingMode::kSynchronous) {
+    enable_memory_tagging = true;
+  } else {
+    enable_memory_tagging = ShouldEnableMemoryTagging(process_type);
+#if BUILDFLAG(IS_ANDROID)
+    if (enable_memory_tagging) {
+      partition_alloc::TagViolationReportingMode reporting_mode;
+      switch (base::features::kMemtagModeParam.Get()) {
+        case base::features::MemtagMode::kSync:
+          reporting_mode =
+              partition_alloc::TagViolationReportingMode::kSynchronous;
+          break;
+        case base::features::MemtagMode::kAsync:
+          reporting_mode =
+              partition_alloc::TagViolationReportingMode::kAsynchronous;
+          break;
+      }
+      partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+          reporting_mode);
+      CHECK_EQ(
+          partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+          reporting_mode);
+    } else if (base::CPU::GetInstanceNoAllocation().has_mte()) {
+      partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+          partition_alloc::TagViolationReportingMode::kDisabled);
+      CHECK_EQ(
+          partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+          partition_alloc::TagViolationReportingMode::kDisabled);
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 #endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
 
   allocator_shim::ConfigurePartitions(
