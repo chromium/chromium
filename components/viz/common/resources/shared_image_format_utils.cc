@@ -137,8 +137,46 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
 
 SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
     SkColorType color_type) {
-  return SharedImageFormat::SinglePlane(
-      SkColorTypeToResourceFormat(color_type));
+  switch (color_type) {
+    case kARGB_4444_SkColorType:
+      return SinglePlaneFormat::kRGBA_4444;
+    case kBGRA_8888_SkColorType:
+      return SinglePlaneFormat::kBGRA_8888;
+    case kRGBA_8888_SkColorType:
+      return SinglePlaneFormat::kRGBA_8888;
+    case kRGBA_F16_SkColorType:
+      return SinglePlaneFormat::kRGBA_F16;
+    case kAlpha_8_SkColorType:
+      return SinglePlaneFormat::kALPHA_8;
+    case kRGB_565_SkColorType:
+      return SinglePlaneFormat::kRGB_565;
+    case kGray_8_SkColorType:
+      return SinglePlaneFormat::kLUMINANCE_8;
+    case kRGB_888x_SkColorType:
+      return SinglePlaneFormat::kRGBX_8888;
+    case kRGBA_1010102_SkColorType:
+      return SinglePlaneFormat::kRGBA_1010102;
+    case kBGRA_1010102_SkColorType:
+      return SinglePlaneFormat::kBGRA_1010102;
+    // These colortypes are just for reading from - not to render to.
+    case kR8G8_unorm_SkColorType:
+    case kA16_float_SkColorType:
+    case kR16G16_float_SkColorType:
+    case kA16_unorm_SkColorType:
+    case kR16G16_unorm_SkColorType:
+    case kR16G16B16A16_unorm_SkColorType:
+    case kUnknown_SkColorType:
+    // These colortypes are don't have an equivalent in SharedImageFormat.
+    case kRGB_101010x_SkColorType:
+    case kBGR_101010x_SkColorType:
+    case kRGBA_F16Norm_SkColorType:
+    case kRGBA_F32_SkColorType:
+    case kSRGBA_8888_SkColorType:
+    // Default case is for new color types added to Skia.
+    default:
+      break;
+  }
+  NOTREACHED_NORETURN();
 }
 
 bool HasEquivalentBufferFormat(SharedImageFormat format) {

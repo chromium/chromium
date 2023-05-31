@@ -10,7 +10,6 @@
 #include "components/viz/common/viz_resource_format_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
-#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -20,8 +19,6 @@
 namespace viz {
 
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
-VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
-SkColorTypeToResourceFormat(SkColorType color_type);
 
 // The following functions use unsigned int instead of GLenum, since including
 // third_party/khronos/GLES2/gl2.h causes redefinition errors as

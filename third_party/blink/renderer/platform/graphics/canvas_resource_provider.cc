@@ -840,7 +840,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     texture_info.fID = resource_->GetBackBufferTextureId();
     texture_info.fTarget = resource_->TextureTarget();
     texture_info.fFormat = viz::TextureStorageFormat(
-        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            GetSkImageInfo().colorType())
+            .resource_format(),
         capabilities.angle_rgbx_internal_format);
 
     auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
