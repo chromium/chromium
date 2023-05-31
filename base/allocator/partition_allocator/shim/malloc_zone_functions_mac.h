@@ -9,8 +9,8 @@
 #include <stddef.h>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/third_party/apple_apsl/malloc.h"
 #include "base/base_export.h"
-#include "third_party/apple_apsl/malloc.h"
 
 namespace allocator_shim {
 

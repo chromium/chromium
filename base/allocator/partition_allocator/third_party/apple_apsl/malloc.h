@@ -21,8 +21,8 @@
  * @APPLE_LICENSE_HEADER_END@
  */
 
-#ifndef THIRD_PARTY_APPLE_APSL_MALLOC_H_
-#define THIRD_PARTY_APPLE_APSL_MALLOC_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_THIRD_PARTY_APPLE_APSL_MALLOC_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_THIRD_PARTY_APPLE_APSL_MALLOC_H_
 
 #include <mach/boolean.h>
 
@@ -99,4 +99,4 @@ typedef struct _ChromeMallocZone {
 //  * Check zone version to ensure zone struct is large enough to include the member.
 //  * Check that the function pointer is not null.
 
-#endif  // THIRD_PARTY_APPLE_APSL_MALLOC_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_THIRD_PARTY_APPLE_APSL_MALLOC_H_

@@ -32,10 +32,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
+#include "base/allocator/partition_allocator/third_party/apple_apsl/CFBase.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "build/build_config.h"
-#include "third_party/apple_apsl/CFBase.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/allocator/partition_allocator/partition_alloc_base/ios/ios_util.h"
