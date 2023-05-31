@@ -585,6 +585,12 @@
       =1 {1 weak password}
       other {{NUM_WEAK} weak passwords}}
   </message>
+  <message name="IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT" desc="This short text shows the amount of reused passwords that the Chrome password check found.">
+    {NUM_REUSED, plural,
+      =0 {No reused passwords}
+      =1 {1 reused password}
+      other {{NUM_REUSED} reused passwords}}
+  </message>
   <message name="IDS_SETTINGS_INSECURE_PASSWORDS_COUNT" desc="Number of insecure passwords present in the database">
     {COUNT, plural,
       =0 {No security issues found}

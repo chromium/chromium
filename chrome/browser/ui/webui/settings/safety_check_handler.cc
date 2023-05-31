@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -117,6 +118,16 @@ bool IsCredentialWeak(
       });
 }
 
+bool IsCredentialReused(
+    const extensions::api::passwords_private::PasswordUiEntry& entry) {
+  DCHECK(entry.compromised_info);
+  return base::ranges::any_of(
+      entry.compromised_info->compromise_types, [](auto type) {
+        return type ==
+               extensions::api::passwords_private::COMPROMISE_TYPE_REUSED;
+      });
+}
+
 }  // namespace
 
 base::Time TimestampDelegate::GetSystemTime() {
@@ -150,8 +161,8 @@ void SafetyCheckHandler::SendSafetyCheckStartedWebUiUpdates() {
                                     GetStringForUpdates(update_status_));
   FireBasicSafetyCheckWebUiListener(
       kPasswordsEvent, static_cast<int>(passwords_status_),
-      GetStringForPasswords(passwords_status_, Compromised(0), Weak(0), Done(0),
-                            Total(0)));
+      GetStringForPasswords(passwords_status_, Compromised(0), Weak(0),
+                            Reused(0), Done(0), Total(0)));
   FireBasicSafetyCheckWebUiListener(
       kSafeBrowsingEvent, static_cast<int>(safe_browsing_status_),
       GetStringForSafeBrowsing(safe_browsing_status_));
@@ -353,12 +364,13 @@ void SafetyCheckHandler::OnUpdateCheckResult(UpdateStatus status) {
 void SafetyCheckHandler::OnPasswordsCheckResult(PasswordsStatus status,
                                                 Compromised compromised,
                                                 Weak weak,
+                                                Reused reused,
                                                 Done done,
                                                 Total total) {
   base::Value::Dict event;
   event.Set(kNewState, static_cast<int>(status));
-  event.Set(kDisplayString,
-            GetStringForPasswords(status, compromised, weak, done, total));
+  event.Set(kDisplayString, GetStringForPasswords(status, compromised, weak,
+                                                  reused, done, total));
   FireWebUIListener(kPasswordsEvent, event);
   if (status != PasswordsStatus::kChecking) {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.PasswordsResult2",
@@ -471,6 +483,7 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
     PasswordsStatus status,
     Compromised compromised,
     Weak weak,
+    Reused reused,
     Done done,
     Total total) {
   switch (status) {
@@ -487,25 +500,37 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
       return l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT, 0);
     case PasswordsStatus::kCompromisedExist:
-      if (weak.value() == 0) {
-        // Only compromised passwords, no weak passwords.
-        return l10n_util::GetPluralStringFUTF16(
-            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT,
-            compromised.value());
-      } else {
-        // Both compromised and weak passwords.
-        return l10n_util::GetStringFUTF16(
-            IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT,
-                compromised.value()),
-            l10n_util::GetPluralStringFUTF16(
-                IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT, weak.value()));
-      }
     case PasswordsStatus::kWeakPasswordsExist:
-      // Only weak passwords.
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT, weak.value());
+    case PasswordsStatus::kReusedPasswordsExist:
+    case PasswordsStatus::kMutedCompromisedExist: {
+      // Keep the order since compromised issues should come first, then weak,
+      // then reused.
+      std::vector<std::u16string> issues;
+      if (compromised.value()) {
+        issues.push_back(l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT,
+            compromised.value()));
+      }
+      if (weak.value()) {
+        issues.push_back(l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT, weak.value()));
+      }
+      if (reused.value()) {
+        issues.push_back(l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_REUSED_PASSWORDS_COUNT_SHORT, reused.value()));
+      }
+
+      CHECK(!issues.empty());
+      if (issues.size() == 1) {
+        return issues[0];
+      }
+      if (issues.size() == 2) {
+        return l10n_util::GetStringFUTF16(IDS_CONCAT_TWO_STRINGS_WITH_COMMA,
+                                          issues[0], issues[1]);
+      }
+      return l10n_util::GetStringFUTF16(IDS_CONCAT_THREE_STRINGS_WITH_COMMA,
+                                        issues[0], issues[1], issues[2]);
+    }
     case PasswordsStatus::kOffline:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE);
@@ -524,11 +549,6 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
     case PasswordsStatus::kFeatureUnavailable:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_PASSWORDS_FEATURE_UNAVAILABLE);
-    case PasswordsStatus::kReusedPasswordsExist:
-    case PasswordsStatus::kMutedCompromisedExist:
-      // Reused and muted compromised warning results not yet supported on
-      // Desktop.
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -646,7 +666,7 @@ void SafetyCheckHandler::DetermineIfNoPasswordsOrSafe(
         passwords) {
   OnPasswordsCheckResult(passwords.empty() ? PasswordsStatus::kNoPasswords
                                            : PasswordsStatus::kSafe,
-                         Compromised(0), Weak(0), Done(0), Total(0));
+                         Compromised(0), Weak(0), Reused(0), Done(0), Total(0));
 }
 
 void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
@@ -655,8 +675,25 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
       insecure_credentials, &IsUnmutedCompromisedCredential);
   size_t num_weak =
       base::ranges::count_if(insecure_credentials, &IsCredentialWeak);
+  size_t num_reused =
+      base::ranges::count_if(insecure_credentials, &IsCredentialReused);
 
-  if (num_compromised == 0 && num_weak == 0) {
+  if (num_compromised > 0) {
+    // At least one compromised password. Treat as compromises.
+    OnPasswordsCheckResult(PasswordsStatus::kCompromisedExist,
+                           Compromised(num_compromised), Weak(num_weak),
+                           Reused(num_reused), Done(0), Total(0));
+  } else if (num_weak > 0) {
+    // No compromised but weak passwords. Treat as weak passwords only.
+    OnPasswordsCheckResult(PasswordsStatus::kWeakPasswordsExist,
+                           Compromised(num_compromised), Weak(num_weak),
+                           Reused(num_reused), Done(0), Total(0));
+  } else if (num_reused > 0) {
+    // No weak or compromised but reused passwords.
+    OnPasswordsCheckResult(PasswordsStatus::kReusedPasswordsExist,
+                           Compromised(num_compromised), Weak(num_weak),
+                           Reused(num_reused), Done(0), Total(0));
+  } else {
     // If there are no |OnCredentialDone| callbacks with is_leaked = true, no
     // need to wait for InsecureCredentialsManager callbacks any longer, since
     // there should be none for the current password check.
@@ -666,16 +703,6 @@ void SafetyCheckHandler::UpdatePasswordsResultOnCheckIdle() {
     passwords_delegate_->GetSavedPasswordsList(
         base::BindOnce(&SafetyCheckHandler::DetermineIfNoPasswordsOrSafe,
                        base::Unretained(this)));
-  } else if (num_compromised > 0) {
-    // At least one compromised password. Treat as compromises.
-    OnPasswordsCheckResult(PasswordsStatus::kCompromisedExist,
-                           Compromised(num_compromised), Weak(num_weak),
-                           Done(0), Total(0));
-  } else {
-    // No compromised but weak passwords. Treat as weak passwords only.
-    OnPasswordsCheckResult(PasswordsStatus::kWeakPasswordsExist,
-                           Compromised(num_compromised), Weak(num_weak),
-                           Done(0), Total(0));
   }
 }
 
@@ -707,29 +734,30 @@ void SafetyCheckHandler::OnStateChanged(
     }
     case BulkLeakCheckService::State::kRunning:
       OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0),
-                             Weak(0), Done(0), Total(0));
+                             Weak(0), Reused(0), Done(0), Total(0));
       // Non-terminal state, so nothing else needs to be done.
       return;
     case BulkLeakCheckService::State::kSignedOut:
       OnPasswordsCheckResult(PasswordsStatus::kSignedOut, Compromised(0),
-                             Weak(0), Done(0), Total(0));
+                             Weak(0), Reused(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kNetworkError:
       OnPasswordsCheckResult(PasswordsStatus::kOffline, Compromised(0), Weak(0),
-                             Done(0), Total(0));
+                             Reused(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kQuotaLimit:
       OnPasswordsCheckResult(PasswordsStatus::kQuotaLimit, Compromised(0),
-                             Weak(0), Done(0), Total(0));
+                             Weak(0), Reused(0), Done(0), Total(0));
       break;
     case BulkLeakCheckService::State::kTokenRequestFailure:
       OnPasswordsCheckResult(PasswordsStatus::kFeatureUnavailable,
-                             Compromised(0), Weak(0), Done(0), Total(0));
+                             Compromised(0), Weak(0), Reused(0), Done(0),
+                             Total(0));
       break;
     case BulkLeakCheckService::State::kHashingFailure:
     case BulkLeakCheckService::State::kServiceError:
       OnPasswordsCheckResult(PasswordsStatus::kError, Compromised(0), Weak(0),
-                             Done(0), Total(0));
+                             Reused(0), Done(0), Total(0));
       break;
   }
 
@@ -756,7 +784,7 @@ void SafetyCheckHandler::OnCredentialDone(
     Done done = Done(*(status.already_processed));
     Total total = Total(*(status.remaining_in_queue) + done.value());
     OnPasswordsCheckResult(PasswordsStatus::kChecking, Compromised(0), Weak(0),
-                           done, total);
+                           Reused(0), done, total);
   }
 }
 

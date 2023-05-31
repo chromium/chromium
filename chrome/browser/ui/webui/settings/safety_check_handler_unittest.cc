@@ -168,6 +168,10 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     weak_password_count_ = weak_password_count;
   }
 
+  void SetNumReusedCredentials(int reused_password_count) {
+    reused_password_count_ = reused_password_count;
+  }
+
   void SetPasswordCheckState(
       extensions::api::passwords_private::PasswordCheckState state) {
     state_ = state;
@@ -218,6 +222,11 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
           insecure.size(),
           extensions::api::passwords_private::COMPROMISE_TYPE_WEAK));
     }
+    for (int i = 0; i < reused_password_count_; ++i) {
+      insecure.push_back(CreateInsecureCredential(
+          insecure.size(),
+          extensions::api::passwords_private::COMPROMISE_TYPE_REUSED));
+    }
     return insecure;
   }
 
@@ -245,6 +254,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   int muted_leaked_password_count_ = 0;
   int phished_password_count_ = 0;
   int weak_password_count_ = 0;
+  int reused_password_count_ = 0;
   int done_ = 0;
   int total_ = 0;
   int test_credential_counter_ = 0;
@@ -1053,6 +1063,92 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
       SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
 }
 
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndReusedExist) {
+  constexpr int kCompromised = 7;
+  constexpr int kReused = 13;
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->SetNumReusedCredentials(kReused);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  ASSERT_TRUE(event2);
+  VerifyDisplayString(
+      event2, base::NumberToString(kCompromised) + " compromised passwords, " +
+                  base::NumberToString(kReused) + " reused passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult2",
+      SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest,
+       CheckPasswords_CompromisedAndWeakAndReusedExist) {
+  constexpr int kCompromised = 7;
+  constexpr int kWeak = 13;
+  constexpr int kReused = 6;
+  test_passwords_delegate_->SetNumLeakedCredentials(kCompromised);
+  test_passwords_delegate_->SetNumWeakCredentials(kWeak);
+  test_passwords_delegate_->SetNumReusedCredentials(kReused);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  ASSERT_TRUE(event2);
+  VerifyDisplayString(
+      event2, base::NumberToString(kCompromised) + " compromised passwords, " +
+                  base::NumberToString(kWeak) + " weak passwords, " +
+                  base::NumberToString(kReused) + " reused passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult2",
+      SafetyCheckHandler::PasswordsStatus::kCompromisedExist, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_WeakAndReusedExist) {
+  constexpr int kWeak = 13;
+  constexpr int kReused = 6;
+  test_passwords_delegate_->SetNumWeakCredentials(kWeak);
+  test_passwords_delegate_->SetNumReusedCredentials(kReused);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(
+          SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist));
+  ASSERT_TRUE(event2);
+  VerifyDisplayString(event2,
+                      base::NumberToString(kWeak) + " weak passwords, " +
+                          base::NumberToString(kReused) + " reused passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult2",
+      SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist, 1);
+}
+
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
   constexpr int kWeak = 13;
   test_passwords_delegate_->SetNumWeakCredentials(kWeak);
@@ -1075,6 +1171,31 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult2",
       SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist, 1);
+}
+
+TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyReusedExist) {
+  constexpr int kReused = 13;
+  test_passwords_delegate_->SetNumReusedCredentials(kReused);
+  safety_check_->PerformSafetyCheck();
+  // First, a "running" change of state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kRunning);
+  EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
+  // Compromised passwords found state.
+  test_leak_service_->set_state_and_notify(
+      password_manager::BulkLeakCheckService::State::kIdle);
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(
+          SafetyCheckHandler::PasswordsStatus::kReusedPasswordsExist));
+  ASSERT_TRUE(event);
+  VerifyDisplayString(event,
+                      base::NumberToString(kReused) + " reused passwords");
+  histogram_tester_.ExpectBucketCount(
+      "Settings.SafetyCheck.PasswordsResult2",
+      SafetyCheckHandler::PasswordsStatus::kReusedPasswordsExist, 1);
 }
 
 TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
