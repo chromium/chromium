@@ -4245,13 +4245,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Gfx.SaveHWUIStateDuration" units="ms"
-    expires_after="2023-12-01">
+<histogram name="Android.WebView.Gfx.SaveHWUIStateMicroseconds"
+    units="microseconds" expires_after="2023-12-01">
   <owner>blundell@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>
   <summary>
-    Tracks the amount of time that it took for WebView to save HWUI state.
-    Recorded once per saving of HWUI state.
+    Tracks the amount of time that it took for WebView to save HWUI's GL state.
+    Recorded once per saving of HWUI state when drawing with GL. This is
+    recorded only on devices that support high resolution timers.
   </summary>
 </histogram>
 

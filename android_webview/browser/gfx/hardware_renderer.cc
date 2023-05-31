@@ -549,6 +549,8 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
 
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
+  base::TimeTicks make_context_current_start_time = base::TimeTicks::Now();
+
   // Ensure that the context is current and that it is released before
   // returning. When using ANGLE, the former is not guaranteed to be true and
   // the latter is required for the external ANGLE context. For non-ANGLE case,
@@ -557,6 +559,18 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   ScopedCurrentContext scoped_context(
       output_surface_provider_.shared_context_state().get(),
       output_surface_provider_.gl_surface().get());
+
+  // When doing GL draws via ANGLE, state saving occurred within ANGLE as part
+  // of making the context current above (when not using ANGLE, this metric is
+  // recorded when state saving occurs in ScopedAppGLStateRestoreImpl
+  // creation).
+  if (!IsUsingVulkan() && gl::GLSurfaceEGL::GetGLDisplayEGL()
+                              ->IsANGLEExternalContextAndSurfaceSupported()) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Android.WebView.Gfx.SaveHWUIStateMicroseconds",
+        base::TimeTicks::Now() - make_context_current_start_time,
+        base::Microseconds(1), base::Seconds(1), 100);
+  }
 
   viz::FrameTimingDetailsMap timing_details;
 
