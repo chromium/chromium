@@ -110,8 +110,10 @@ void TabHandleLayer::SetProperties(
 
   layer_->SetPosition(gfx::PointF(x, y));
   DecorationTitle* title_layer = nullptr;
-  if (layer_title_cache_)
+  // Only pull if tab id is valid.
+  if (layer_title_cache_ && id != -1) {
     title_layer = layer_title_cache_->GetTitleLayer(id);
+  }
 
   if (title_layer) {
     title_layer->setOpacity(1.0f);

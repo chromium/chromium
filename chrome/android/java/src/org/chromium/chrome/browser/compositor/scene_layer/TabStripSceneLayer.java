@@ -157,9 +157,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
 
-            // TODO(https://crbug.com/1444817): Update to draw the placeholder tabs.
-            if (st.getIsPlaceholder()) continue;
-
             TabStripSceneLayerJni.get().putStripTabLayer(mNativePtr, TabStripSceneLayer.this,
                     st.getId(), st.getCloseButton().getResourceId(), st.getDividerResourceId(),
                     st.getResourceId(), st.getOutlineResourceId(), st.getCloseButton().getTint(),

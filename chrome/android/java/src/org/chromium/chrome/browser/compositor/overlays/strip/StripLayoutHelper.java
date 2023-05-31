@@ -1003,23 +1003,22 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      * partially visible tabs at the edge of the tab strip when min tab width is set to >=156dp.
      */
     private void updateCloseButtons() {
-        Tab selectedTab = mModel.getTabAt(mModel.index());
         final int count = mStripTabs.length;
-        if (selectedTab == null) return;
+        final int selectedIndex = mTabStateInitialized ? mModel.index() : mActiveTabIndexOnStartup;
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
+            boolean tabSelected = selectedIndex == i;
             boolean canShowCloseButton = tab.getWidth() >= TAB_WIDTH_MEDIUM
-                    || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab, i));
+                    || (tabSelected && shouldShowCloseButton(tab, i));
             mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
         }
     }
 
-    private void setForegroundTabContainerVisible(StripLayoutTab tab, int selectedTabId) {
+    private void setForegroundTabContainerVisible(StripLayoutTab tab, boolean selected) {
         // Don't interrupt tab group background tab visibility.
         if (tab.getContainerOpacity() != TAB_OPACITY_VISIBLE_BACKGROUND) {
-            float containerOpacity = tab.getId() == selectedTabId ? TAB_OPACITY_VISIBLE_FOREGROUND
-                                                                  : TAB_OPACITY_HIDDEN;
+            float containerOpacity = selected ? TAB_OPACITY_VISIBLE_FOREGROUND : TAB_OPACITY_HIDDEN;
             tab.setContainerOpacity(containerOpacity);
         }
     }
@@ -1033,13 +1032,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Validate the index. For example, the index can be {@link TabList.INVALID_TAB_INDEX} when
         // all tabs are closed.
-        int index = mModel.index();
-        if (index < 0 || index >= mStripTabs.length) return;
-        int selectedTabId = mStripTabs[index].getId();
+        int selectedIndex = mTabStateInitialized ? mModel.index() : mActiveTabIndexOnStartup;
+        if (selectedIndex < 0 || selectedIndex >= mStripTabs.length) return;
 
         // Divider is never shown for the first tab.
         mStripTabs[0].setStartDividerVisible(false);
-        setForegroundTabContainerVisible(mStripTabs[0], selectedTabId);
+        setForegroundTabContainerVisible(mStripTabs[0], selectedIndex == 0);
         // End divider for first tab is only shown in reorder mode when tab has trailing margin and
         // container is not visible.
         boolean endDividerVisible = mInReorderMode
@@ -1050,9 +1048,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         for (int i = 1; i < mStripTabs.length; i++) {
             final StripLayoutTab prevTab = mStripTabs[i - 1];
             final StripLayoutTab currTab = mStripTabs[i];
+            boolean prevTabSelected = selectedIndex == i - 1;
+            boolean currTabSelected = selectedIndex == i;
 
             // Set container opacity.
-            setForegroundTabContainerVisible(currTab, selectedTabId);
+            setForegroundTabContainerVisible(currTab, currTabSelected);
 
             /**
              * Start divider should be visible when:
@@ -1065,8 +1065,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
                             && (prevTab.getTrailingMargin() > 0
                                     || prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN))
-                    || (!mInReorderMode && prevTab.getId() != selectedTabId
-                            && currTab.getId() != selectedTabId);
+                    || (!mInReorderMode && !prevTabSelected && !currTabSelected);
             currTab.setStartDividerVisible(startDividerVisible);
 
             /**
@@ -1079,8 +1078,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             endDividerVisible =
                     (mInReorderMode && currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN
                             && (currTab.getTrailingMargin() > 0 || i == (mStripTabs.length - 1)))
-                    || (!mInReorderMode && i == (mStripTabs.length - 1)
-                            && currTab.getId() != selectedTabId);
+                    || (!mInReorderMode && i == (mStripTabs.length - 1) && !currTabSelected);
             currTab.setEndDividerVisible(endDividerVisible);
         }
     }
@@ -1341,7 +1339,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     @Override
     public void handleCloseButtonClick(final StripLayoutTab tab, long time) {
-        if (tab == null || tab.isDying()) return;
+        // Placeholder tabs are expected to have invalid tab ids.
+        if (tab == null || tab.isDying() || tab.getId() == Tab.INVALID_TAB_ID) return;
 
         mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndPushTabUpdates();
@@ -2100,9 +2099,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
         mLastPressedCloseButton = null;
 
-        // 2. Check to see if we have a valid tab to start dragging.
+        // 2. Check to see if we have a valid (non-null, non-dying, non-placeholder) tab to start
+        // dragging.
         mInteractingTab = getTabAtPosition(startX);
-        if (mInteractingTab == null || mInteractingTab.isDying()) return;
+        if (mInteractingTab == null || mInteractingTab.isDying()
+                || mInteractingTab.getId() == Tab.INVALID_TAB_ID) {
+            return;
+        }
 
         // 3. Set initial state parameters.
         finishAnimationsAndPushTabUpdates();
