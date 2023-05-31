@@ -5411,6 +5411,8 @@ static_library("ui") {
       "views/tabs/color_picker_view.h",
       "views/tabs/compound_tab_container.cc",
       "views/tabs/compound_tab_container.h",
+      "views/tabs/fade_footer_view.cc",
+      "views/tabs/fade_footer_view.h",
       "views/tabs/fade_label_view.cc",
       "views/tabs/fade_label_view.h",
       "views/tabs/fade_view.h",

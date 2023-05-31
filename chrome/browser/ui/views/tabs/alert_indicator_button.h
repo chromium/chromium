@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -37,6 +39,9 @@ class AlertIndicatorButton : public views::ImageButton,
   AlertIndicatorButton(const AlertIndicatorButton&) = delete;
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
   ~AlertIndicatorButton() override;
+
+  static ui::ImageModel GetTabAlertIndicatorImage(TabAlertState alert_state,
+                                                  ui::ColorId button_color);
 
   // Returns the current TabAlertState except, while the indicator image is
   // fading out, returns the prior TabAlertState.

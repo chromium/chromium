@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/performance_manager/public/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -400,17 +401,23 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
       views::style::CONTEXT_DIALOG_BODY_TEXT, 1));
 
-  if (TabHoverCardController::AreHoverCardImagesEnabled()) {
-    if (UseAlternateHoverCardFormat()) {
+  if (UseAlternateHoverCardFormat()) {
+    footer_view_ = AddChildViewAt(
+        std::make_unique<FooterView>(UseAlternateHoverCardFormat()), 0);
+    if (TabHoverCardController::AreHoverCardImagesEnabled()) {
       thumbnail_view_ =
-          AddChildViewAt(std::make_unique<ThumbnailView>(this), 0);
+          AddChildViewAt(std::make_unique<ThumbnailView>(this), 1);
       thumbnail_view_->SetRoundedCorners(
           ThumbnailView::RoundedCorners::kTopCorners, corner_radius_);
-    } else {
+    }
+  } else {
+    if (TabHoverCardController::AreHoverCardImagesEnabled()) {
       thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
       thumbnail_view_->SetRoundedCorners(
           ThumbnailView::RoundedCorners::kBottomCorners, corner_radius_);
     }
+    footer_view_ = AddChildView(
+        std::make_unique<FooterView>(UseAlternateHoverCardFormat()));
   }
 
   // Set up layout.
@@ -548,25 +555,36 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 
   const bool alternate_layout = UseAlternateHoverCardFormat();
   if (alert_state_ != old_alert_state) {
-    std::unique_ptr<views::Label> alert_label =
-        alert_state_.has_value() ? CreateAlertView(*alert_state_) : nullptr;
-    if (alternate_layout) {
-      if (alert_label) {
-        // Simulate the same look as the footnote view.
-        // TODO(dfried): should we add this as a variation of
-        // FootnoteContainerView? Currently it's only used here.
-        const auto* color_provider = GetColorProvider();
-        alert_label->SetBackground(views::CreateSolidBackground(
-            color_provider->GetColor(ui::kColorBubbleFooterBackground)));
-        alert_label->SetBorder(views::CreatePaddedBorder(
-            views::CreateSolidSidedBorder(
-                gfx::Insets::TLBR(0, 0, 1, 0),
-                color_provider->GetColor(ui::kColorBubbleFooterBorder)),
-            kAlertMargins));
-      }
-      GetBubbleFrameView()->SetHeaderView(std::move(alert_label));
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kDiscardedTabTreatment)) {
+      absl::optional<ui::ColorId> icon_color =
+          alert_state_.has_value()
+              ? absl::make_optional<SkColor>(
+                    tab->GetAlertIndicatorColor(alert_state_.value()))
+              : absl::nullopt;
+      footer_view_->GetAlertRow()->SetData(
+          {alert_state_, icon_color, views::View::GetContentsBounds().width()});
     } else {
-      GetBubbleFrameView()->SetFootnoteView(std::move(alert_label));
+      std::unique_ptr<views::Label> alert_label =
+          alert_state_.has_value() ? CreateAlertView(*alert_state_) : nullptr;
+      if (alternate_layout) {
+        if (alert_label) {
+          // Simulate the same look as the footnote view.
+          // TODO(dfried): should we add this as a variation of
+          // FootnoteContainerView? Currently it's only used here.
+          const auto* color_provider = GetColorProvider();
+          alert_label->SetBackground(views::CreateSolidBackground(
+              color_provider->GetColor(ui::kColorBubbleFooterBackground)));
+          alert_label->SetBorder(views::CreatePaddedBorder(
+              views::CreateSolidSidedBorder(
+                  gfx::Insets::TLBR(0, 0, 1, 0),
+                  color_provider->GetColor(ui::kColorBubbleFooterBorder)),
+              kAlertMargins));
+        }
+        GetBubbleFrameView()->SetHeaderView(std::move(alert_label));
+      } else {
+        GetBubbleFrameView()->SetFootnoteView(std::move(alert_label));
+      }
     }
 
     if (thumbnail_view_) {
@@ -587,6 +605,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 void TabHoverCardBubbleView::SetTextFade(double percent) {
   title_label_->SetFade(percent);
   domain_label_->SetFade(percent);
+  footer_view_->GetAlertRow()->SetFade(percent);
 }
 
 void TabHoverCardBubbleView::SetTargetTabImage(gfx::ImageSkia preview_image) {

@@ -747,7 +747,7 @@ absl::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
+ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
   const ui::ColorProvider* color_provider = GetColorProvider();
   if (!color_provider)
     return gfx::kPlaceholderColor;
@@ -786,10 +786,9 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
         kColorTabAlertAudioPlayingInactiveFrameActive},
        {kColorTabAlertAudioPlayingActiveFrameInactive,
         kColorTabAlertAudioPlayingActiveFrameActive}}};
-  return color_provider->GetColor(
-      color_ids[group][tab_style_views()->GetApparentActiveState() ==
-                       TabActive::kActive]
-               [controller_->ShouldPaintAsActiveFrame()]);
+  return color_ids[group][tab_style_views()->GetApparentActiveState() ==
+                          TabActive::kActive]
+                  [controller_->ShouldPaintAsActiveFrame()];
 }
 
 bool Tab::IsActive() const {
