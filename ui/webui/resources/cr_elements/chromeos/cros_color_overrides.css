@@ -182,6 +182,11 @@ To get ChromeOS Jelly colors, an element must:
   font: var(--cros-display-7-font);
 }
 
+/* Drawer */
+:host-context(body.jelly-enabled) cr-drawer {
+  --cr-drawer-background-color: var(--cros-sys-app_base_shaded);
+}
+
 /* Icon button */
 :host-context(body.jelly-enabled) cr-icon-button,
 :host-context(body.jelly-enabled) cr-link-row::part(icon),
