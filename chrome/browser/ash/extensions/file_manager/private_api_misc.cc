@@ -79,7 +79,6 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "google_apis/common/auth_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -92,8 +91,6 @@ namespace extensions {
 namespace {
 
 using api::file_manager_private::ProfileInfo;
-
-const char kCWSScope[] = "https://www.googleapis.com/auth/chromewebstore";
 
 // Thresholds for mountCrostini() API.
 constexpr base::TimeDelta kMountCrostiniSlowOperationThreshold =
@@ -326,69 +323,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
   }
   zoom::PageZoom::Zoom(GetSenderWebContents(), zoom_type);
   return RespondNow(NoArguments());
-}
-
-FileManagerPrivateRequestWebStoreAccessTokenFunction::
-    FileManagerPrivateRequestWebStoreAccessTokenFunction() = default;
-
-FileManagerPrivateRequestWebStoreAccessTokenFunction::
-    ~FileManagerPrivateRequestWebStoreAccessTokenFunction() = default;
-
-ExtensionFunction::ResponseAction
-FileManagerPrivateRequestWebStoreAccessTokenFunction::Run() {
-  std::vector<std::string> scopes;
-  scopes.emplace_back(kCWSScope);
-
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-
-  if (!identity_manager) {
-    drive::EventLogger* logger = file_manager::util::GetLogger(profile);
-    if (logger) {
-      logger->Log(logging::LOG_ERROR,
-                  "CWS Access token fetch failed. IdentityManager can't "
-                  "be retrieved.");
-    }
-    return RespondNow(Error("Unable to fetch token."));
-  }
-
-  // "Unconsented" because this class doesn't care about browser sync consent.
-  auth_service_ = std::make_unique<google_apis::AuthService>(
-      identity_manager,
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory(),
-      scopes);
-  auth_service_->StartAuthentication(
-      base::BindOnce(&FileManagerPrivateRequestWebStoreAccessTokenFunction::
-                         OnAccessTokenFetched,
-                     this));
-
-  return RespondLater();
-}
-
-void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
-    google_apis::ApiErrorCode code,
-    const std::string& access_token) {
-  drive::EventLogger* logger = file_manager::util::GetLogger(
-      Profile::FromBrowserContext(browser_context()));
-
-  if (code == google_apis::HTTP_SUCCESS) {
-    DCHECK(auth_service_->HasAccessToken());
-    DCHECK(access_token == auth_service_->access_token());
-    if (logger) {
-      logger->Log(logging::LOG_INFO, "CWS OAuth token fetch succeeded.");
-    }
-    Respond(WithArguments(access_token));
-  } else {
-    if (logger) {
-      logger->Log(logging::LOG_ERROR,
-                  "CWS OAuth token fetch failed. (ApiErrorCode: %s)",
-                  google_apis::ApiErrorCodeToString(code).c_str());
-    }
-    Respond(Error("Token fetch failed."));
-  }
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateGetProfilesFunction::Run() {

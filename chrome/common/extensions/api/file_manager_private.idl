@@ -1366,12 +1366,6 @@ callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 // |result| true if the length is in the valid range, false otherwise.
 callback ValidatePathNameLengthCallback = void(boolean result);
 
-// |accessToken| OAuth2 access token, or an empty string if failed to fetch.
-callback RequestWebStoreAccessTokenCallback = void(DOMString accessToken);
-
-// |url| Result url.
-callback GetUrlCallback = void(DOMString url);
-
 // |profiles| List of profile information.
 // |runningProfile| ID of the profile that runs the application instance.
 // |showingProfile| ID of the profile that shows the application window.
@@ -1718,18 +1712,6 @@ interface Functions {
   // Changes the zoom factor of the Files app.
   // |operation| Zooming mode.
   static void zoom(ZoomOperationType operation);
-
-  // Requests a Webstore API OAuth2 access token.
-  // |callback|
-  static void requestWebStoreAccessToken(
-      RequestWebStoreAccessTokenCallback callback);
-
-  // Requests a download url to download the file contents.
-  // |entry| The entry to download.
-  // |callback|
-  [nocompile]
-  static void getDownloadUrl([instanceOf=Entry] object entry,
-                             GetUrlCallback callback);
 
   // Obtains a list of profiles that are logged-in.
   static void getProfiles(GetProfilesCallback callback);

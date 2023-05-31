@@ -46,8 +46,6 @@ namespace fileManagerPrivateInternal {
       fileManagerPrivate.MediaMetadata result);
   callback ExecuteTaskCallback = void(fileManagerPrivate.TaskResult result);
   callback GetFileTasksCallback = void(fileManagerPrivate.ResultingTasks resultingTasks);
-  callback GetUrlCallback = void(DOMString url);
-  callback GetUrlCallback = void(DOMString url);
   callback GetDisallowedTransfersCallback =
       void(EntryDescription[] entries);
   callback GetDlpMetadataCallback =
@@ -112,7 +110,6 @@ namespace fileManagerPrivateInternal {
     static void getFileTasks(DOMString[] urls,
                              DOMString[] dlpSourceUrls,
                              GetFileTasksCallback callback);
-    static void getDownloadUrl(DOMString url, GetUrlCallback callback);
     static void getDisallowedTransfers(DOMString[] entries,
                                        DOMString destinationEntry,
                                        boolean isMove,

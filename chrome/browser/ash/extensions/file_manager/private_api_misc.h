@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "google_apis/common/api_error_codes.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
@@ -35,10 +34,6 @@ struct EntryDefinition;
 typedef std::vector<EntryDefinition> EntryDefinitionList;
 }  // namespace util
 }  // namespace file_manager
-
-namespace google_apis {
-class AuthServiceInterface;
-}  // namespace google_apis
 
 namespace extensions {
 
@@ -82,27 +77,6 @@ class FileManagerPrivateZoomFunction : public ExtensionFunction {
 
   // ExtensionFunction:
   ResponseAction Run() override;
-};
-
-class FileManagerPrivateRequestWebStoreAccessTokenFunction
-    : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.requestWebStoreAccessToken",
-                             FILEMANAGERPRIVATE_REQUESTWEBSTOREACCESSTOKEN)
-
-  FileManagerPrivateRequestWebStoreAccessTokenFunction();
-
- protected:
-  ~FileManagerPrivateRequestWebStoreAccessTokenFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;
-
-  void OnAccessTokenFetched(google_apis::ApiErrorCode code,
-                            const std::string& access_token);
 };
 
 class FileManagerPrivateGetProfilesFunction : public ExtensionFunction {
@@ -448,27 +422,6 @@ class FileManagerPrivateInternalGetRecentFilesFunction
   void OnConvertFileDefinitionListToEntryDefinitionList(
       std::unique_ptr<file_manager::util::EntryDefinitionList>
           entry_definition_list);
-};
-
-// Implements the chrome.fileManagerPrivate.getFrameColor method.
-// Returns the Chrome app frame color to launch foreground windows.
-// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
-class FileManagerPrivateGetFrameColorFunction : public LoggedExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getFrameColor",
-                             FILEMANAGERPRIVATE_GETFRAMECOLOR)
-  FileManagerPrivateGetFrameColorFunction() = default;
-
-  FileManagerPrivateGetFrameColorFunction(
-      const FileManagerPrivateGetFrameColorFunction&) = delete;
-  FileManagerPrivateGetFrameColorFunction operator=(
-      const FileManagerPrivateGetFrameColorFunction&) = delete;
-
- protected:
-  ~FileManagerPrivateGetFrameColorFunction() override = default;
-
- private:
-  ResponseAction Run() override;
 };
 
 // Implements the chrome.fileManagerPrivate.isTabletModeEnabled method.

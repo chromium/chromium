@@ -1376,21 +1376,6 @@ chrome.fileManagerPrivate.validatePathNameLength = function(parentEntry, name, c
 chrome.fileManagerPrivate.zoom = function(operation) {};
 
 /**
- * Requests a Webstore API OAuth2 access token. |callback|
- * @param {function(string): void} callback |accessToken| OAuth2 access token,
- *     or an empty string if failed to fetch.
- */
-chrome.fileManagerPrivate.requestWebStoreAccessToken = function(callback) {};
-
-/**
- * Requests a download url to download the file contents. |entry| The entry to
- * download. |callback|
- * @param {Entry} entry
- * @param {function(string): void} callback |url| Result url.
- */
-chrome.fileManagerPrivate.getDownloadUrl = function(entry, callback) {};
-
-/**
  * Obtains a list of profiles that are logged-in.
  * @param {function(!Array<!chrome.fileManagerPrivate.ProfileInfo>, string, string): void}
  *     callback |profiles| List of profile information. |runningProfile| ID of
