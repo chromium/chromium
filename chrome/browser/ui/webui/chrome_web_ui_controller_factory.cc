@@ -977,7 +977,8 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
 
 // static
 ChromeWebUIControllerFactory* ChromeWebUIControllerFactory::GetInstance() {
-  return base::Singleton<ChromeWebUIControllerFactory>::get();
+  static base::NoDestructor<ChromeWebUIControllerFactory> instance;
+  return instance.get();
 }
 
 // static

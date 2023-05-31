@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_ROUTER_UI_SERVICE_FACTORY_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -30,7 +30,7 @@ class MediaRouterUIServiceFactory : public ProfileKeyedServiceFactory {
   static MediaRouterUIServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<MediaRouterUIServiceFactory>;
+  friend base::NoDestructor<MediaRouterUIServiceFactory>;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterUIServiceFactoryUnitTest, CreateService);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterUIServiceFactoryUnitTest,
                            DoNotCreateActionControllerWhenDisabled);

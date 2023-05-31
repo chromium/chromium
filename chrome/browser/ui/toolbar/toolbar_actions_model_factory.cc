@@ -24,7 +24,8 @@ ToolbarActionsModel* ToolbarActionsModelFactory::GetForProfile(
 
 // static
 ToolbarActionsModelFactory* ToolbarActionsModelFactory::GetInstance() {
-  return base::Singleton<ToolbarActionsModelFactory>::get();
+  static base::NoDestructor<ToolbarActionsModelFactory> instance;
+  return instance.get();
 }
 
 ToolbarActionsModelFactory::ToolbarActionsModelFactory()
@@ -44,7 +45,7 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
   DependsOn(extensions::PermissionsManager::GetFactory());
 }
 
-ToolbarActionsModelFactory::~ToolbarActionsModelFactory() {}
+ToolbarActionsModelFactory::~ToolbarActionsModelFactory() = default;
 
 KeyedService* ToolbarActionsModelFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

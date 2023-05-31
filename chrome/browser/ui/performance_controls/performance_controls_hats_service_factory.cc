@@ -26,7 +26,8 @@ PerformanceControlsHatsServiceFactory::PerformanceControlsHatsServiceFactory()
 
 PerformanceControlsHatsServiceFactory*
 PerformanceControlsHatsServiceFactory::GetInstance() {
-  return base::Singleton<PerformanceControlsHatsServiceFactory>::get();
+  static base::NoDestructor<PerformanceControlsHatsServiceFactory> instance;
+  return instance.get();
 }
 
 PerformanceControlsHatsService*

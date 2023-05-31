@@ -30,7 +30,8 @@ OsSettingsManager* OsSettingsManagerFactory::GetForProfile(Profile* profile) {
 
 // static
 OsSettingsManagerFactory* OsSettingsManagerFactory::GetInstance() {
-  return base::Singleton<OsSettingsManagerFactory>::get();
+  static base::NoDestructor<OsSettingsManagerFactory> instance;
+  return instance.get();
 }
 
 OsSettingsManagerFactory::OsSettingsManagerFactory()

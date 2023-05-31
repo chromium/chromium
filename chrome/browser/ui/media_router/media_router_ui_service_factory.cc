@@ -24,7 +24,8 @@ MediaRouterUIService* MediaRouterUIServiceFactory::GetForBrowserContext(
 
 // static
 MediaRouterUIServiceFactory* MediaRouterUIServiceFactory::GetInstance() {
-  return base::Singleton<MediaRouterUIServiceFactory>::get();
+  static base::NoDestructor<MediaRouterUIServiceFactory> instance;
+  return instance.get();
 }
 
 MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
@@ -42,7 +43,7 @@ MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
   DependsOn(ToolbarActionsModelFactory::GetInstance());
 }
 
-MediaRouterUIServiceFactory::~MediaRouterUIServiceFactory() {}
+MediaRouterUIServiceFactory::~MediaRouterUIServiceFactory() = default;
 
 KeyedService* MediaRouterUIServiceFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

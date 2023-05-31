@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_FACTORY_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_NTP_RESOURCE_CACHE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class NTPResourceCache;
@@ -21,7 +21,7 @@ class NTPResourceCacheFactory : public ProfileKeyedServiceFactory {
   static NTPResourceCacheFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<NTPResourceCacheFactory>;
+  friend base::NoDestructor<NTPResourceCacheFactory>;
 
   NTPResourceCacheFactory();
   ~NTPResourceCacheFactory() override;

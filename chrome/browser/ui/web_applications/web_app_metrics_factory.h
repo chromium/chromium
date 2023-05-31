@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_FACTORY_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_METRICS_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -30,7 +30,7 @@ class WebAppMetricsFactory : public BrowserContextKeyedServiceFactory {
   static WebAppMetricsFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<WebAppMetricsFactory>;
+  friend base::NoDestructor<WebAppMetricsFactory>;
 
   WebAppMetricsFactory();
   ~WebAppMetricsFactory() override;
