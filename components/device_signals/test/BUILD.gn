@@ -23,6 +23,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/device_signals/core/browser",
     "//components/device_signals/core/common",
   ]
 }

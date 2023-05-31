@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
 
 namespace device_signals::test {
@@ -191,6 +192,11 @@ GetSignalsContract() {
       base::BindRepeating(VerifyUnset, names::kAllowScreenLock);
   contract[names::kImei] = base::BindRepeating(VerifyUnset, names::kImei);
   contract[names::kMeid] = base::BindRepeating(VerifyUnset, names::kMeid);
+  contract[names::kTrigger] =
+      base::BindLambdaForTesting([](const base::Value::Dict& signals) {
+        return signals.FindInt(names::kTrigger) ==
+               static_cast<int>(device_signals::Trigger::kBrowserNavigation);
+      });
 #else
   // Chrome OS Signals.
   contract[names::kAllowScreenLock] =
@@ -199,6 +205,8 @@ GetSignalsContract() {
       VerifyIsStringArray, names::kImei, /*enforce_value=*/false);
   contract[names::kMeid] = base::BindRepeating(
       VerifyIsStringArray, names::kMeid, /*enforce_value=*/false);
+  contract[names::kTrigger] =
+      base::BindRepeating(VerifyIsIntegerWithRange, names::kTrigger, 0, 2);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return contract;
