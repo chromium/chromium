@@ -1012,14 +1012,14 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
   return flush_result == GrSemaphoresSubmitted::kYes || end_semaphores.empty();
 }
 
-SkiaOutputSurfaceImplOnGpu::PlaneAccessData::PlaneAccessData() = default;
-SkiaOutputSurfaceImplOnGpu::PlaneAccessData::~PlaneAccessData() = default;
+SkiaOutputSurfaceImplOnGpu::MailboxAccessData::MailboxAccessData() = default;
+SkiaOutputSurfaceImplOnGpu::MailboxAccessData::~MailboxAccessData() = default;
 
 bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
     const SkYUVAInfo& yuva_info,
     const gfx::ColorSpace& color_space,
-    std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
-        plane_access_datas) {
+    std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
+        mailbox_access_datas) {
   std::array<SkISize, SkYUVAInfo::kMaxPlanes> plane_dimensions;
   int plane_number = yuva_info.planeDimensions(plane_dimensions.data());
 
@@ -1028,7 +1028,7 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
          "planes!";
 
   for (int i = 0; i < plane_number; ++i) {
-    PlaneAccessData& plane_data = plane_access_datas[i];
+    MailboxAccessData& mailbox_access_data = mailbox_access_datas[i];
     const SkISize& plane_size = plane_dimensions[i];
 
     const auto resource_format =
@@ -1044,19 +1044,20 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
 
     std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
-            /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
-            &plane_data.end_semaphores,
+            /*final_msaa_count=*/1, surface_props,
+            &mailbox_access_data.begin_semaphores,
+            &mailbox_access_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
     SkSurface* dest_surface = scoped_write->surface();
-    dest_surface->wait(plane_data.begin_semaphores.size(),
-                       plane_data.begin_semaphores.data());
+    dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
+                       mailbox_access_data.begin_semaphores.data());
 
-    // Semaphores have already been populated in `plane_data`.
+    // Semaphores have already been populated in `mailbox_access_data`.
     // Set the remaining fields.
-    plane_data.mailbox = representation->mailbox();
-    plane_data.representation = std::move(representation);
-    plane_data.scoped_write = std::move(scoped_write);
-    plane_data.size = plane_size;
+    mailbox_access_data.mailbox = representation->mailbox();
+    mailbox_access_data.representation = std::move(representation);
+    mailbox_access_data.scoped_write = std::move(scoped_write);
+    mailbox_access_data.size = plane_size;
   }
 
   return true;
@@ -1064,8 +1065,8 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
 
 bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
     const BlitRequest& blit_request,
-    std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
-        plane_access_datas) {
+    std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
+        mailbox_access_datas) {
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     const gpu::MailboxHolder& mailbox_holder = blit_request.mailbox(i);
 
@@ -1073,7 +1074,7 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
     // a CopyOutputResult and we only access `kNV12MaxPlanes` mailboxes.
     DCHECK(!mailbox_holder.mailbox.IsZero());
 
-    PlaneAccessData& plane_data = plane_access_datas[i];
+    MailboxAccessData& mailbox_access_data = mailbox_access_datas[i];
 
     auto representation = dependency_->GetSharedImageManager()->ProduceSkia(
         mailbox_holder.mailbox, context_state_->memory_type_tracker(),
@@ -1086,19 +1087,20 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
 
     std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
         scoped_write = representation->BeginScopedWriteAccess(
-            /*final_msaa_count=*/1, surface_props, &plane_data.begin_semaphores,
-            &plane_data.end_semaphores,
+            /*final_msaa_count=*/1, surface_props,
+            &mailbox_access_data.begin_semaphores,
+            &mailbox_access_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
     SkSurface* dest_surface = scoped_write->surface();
-    dest_surface->wait(plane_data.begin_semaphores.size(),
-                       plane_data.begin_semaphores.data());
+    dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
+                       mailbox_access_data.begin_semaphores.data());
 
-    // Semaphores have already been populated in `plane_data`.
+    // Semaphores have already been populated in `mailbox_access_data`.
     // Set the remaining fields.
-    plane_data.size = gfx::SizeToSkISize(representation->size());
-    plane_data.mailbox = representation->mailbox();
-    plane_data.representation = std::move(representation);
-    plane_data.scoped_write = std::move(scoped_write);
+    mailbox_access_data.size = gfx::SizeToSkISize(representation->size());
+    mailbox_access_data.mailbox = representation->mailbox();
+    mailbox_access_data.representation = std::move(representation);
+    mailbox_access_data.scoped_write = std::move(scoped_write);
   }
 
   return true;
@@ -1163,8 +1165,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   // blitted to the destination textures.
   const gfx::Size intermediate_dst_size = geometry.result_selection.size();
 
-  std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>
-      plane_access_datas;
+  std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>
+      mailbox_access_datas;
 
   SkYUVAInfo yuva_info;
 
@@ -1184,12 +1186,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     }
 
     destination_surfaces_ready = ImportSurfacesForNV12Planes(
-        request->blit_request(), plane_access_datas);
+        request->blit_request(), mailbox_access_datas);
 
     // The entire destination image size is the same as the size of the luma
     // plane of the image that was just imported:
     yuva_info = SkYUVAInfo(
-        plane_access_datas[0].size, SkYUVAInfo::PlaneConfig::kY_UV,
+        mailbox_access_datas[0].size, SkYUVAInfo::PlaneConfig::kY_UV,
         SkYUVAInfo::Subsampling::k420, kRec709_Limited_SkYUVColorSpace);
 
     // Check if the destination will fit in the blit target:
@@ -1197,7 +1199,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
         request->blit_request().destination_region_offset(),
         intermediate_dst_size);
     const gfx::Rect blit_target_image_rect(
-        gfx::SkISizeToSize(plane_access_datas[0].size));
+        gfx::SkISizeToSize(mailbox_access_datas[0].size));
 
     if (!blit_target_image_rect.Contains(blit_destination_rect)) {
       // Send empty result, the blit target image is not large enough to fit the
@@ -1210,8 +1212,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                            SkYUVAInfo::Subsampling::k420,
                            kRec709_Limited_SkYUVColorSpace);
 
-    destination_surfaces_ready =
-        CreateSurfacesForNV12Planes(yuva_info, color_space, plane_access_datas);
+    destination_surfaces_ready = CreateSurfacesForNV12Planes(
+        yuva_info, color_space, mailbox_access_datas);
   }
 
   if (!destination_surfaces_ready) {
@@ -1261,10 +1263,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   // `skia::BlitRGBAToYUVA()` requires a buffer with 4 SkSurface* elements,
   // let's allocate it and populate its first 2 entries with the surfaces
-  // obtained from |plane_access_datas|.
+  // obtained from |mailbox_access_datas|.
   std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> plane_surfaces = {
-      plane_access_datas[0].scoped_write->surface(),
-      plane_access_datas[1].scoped_write->surface(), nullptr, nullptr};
+      mailbox_access_datas[0].scoped_write->surface(),
+      mailbox_access_datas[1].scoped_write->surface(), nullptr, nullptr};
 
   // The region to be populated in caller's textures is derived from blit
   // request's |destination_region_offset()|, and from COR's
@@ -1292,11 +1294,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   // Collect mailbox holders for the destination textures. They will be needed
   // in case the result is kNativeTextures. It happens here in order to simplify
   // the code in case we are populating the GpuMemoryBuffer-backed textures.
-  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>
-      plane_mailbox_holders = {
-          gpu::MailboxHolder(plane_access_datas[0].mailbox, gpu::SyncToken(),
+  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailbox_holders =
+      {
+          gpu::MailboxHolder(mailbox_access_datas[0].mailbox, gpu::SyncToken(),
                              GL_TEXTURE_2D),
-          gpu::MailboxHolder(plane_access_datas[1].mailbox, gpu::SyncToken(),
+          gpu::MailboxHolder(mailbox_access_datas[1].mailbox, gpu::SyncToken(),
                              GL_TEXTURE_2D),
           gpu::MailboxHolder(),
       };
@@ -1317,21 +1319,20 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     // sending the CopyOutputResult:
     nv12_planes_ready = base::MakeRefCounted<NV12PlanesReadyContext>(
         weak_ptr_, std::move(request), geometry.result_selection,
-        plane_mailbox_holders, color_space);
+        mailbox_holders, color_space);
   }
 
   bool should_submit = false;
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
-    plane_access_datas[i].representation->SetCleared();
+    mailbox_access_datas[i].representation->SetCleared();
 
-    should_submit |= !plane_access_datas[i].end_semaphores.empty();
+    should_submit |= !mailbox_access_datas[i].end_semaphores.empty();
 
-    // Prepare a per-plane context that will notify the per-request context that
-    // GPU work that produces the contents of a plane that the GPU-side of the
-    // work has completed.
-    std::unique_ptr<NV12SinglePlaneReadyContext> nv12_plane_ready =
+    // Prepare a per-mailbox context that will notify the per-request context
+    // that the GPU-side work for this mailbox has completed.
+    std::unique_ptr<NV12SingleMailboxReadyContext> nv12_plane_ready =
         should_wait_for_gpu_work
-            ? std::make_unique<NV12SinglePlaneReadyContext>(nv12_planes_ready)
+            ? std::make_unique<NV12SingleMailboxReadyContext>(nv12_planes_ready)
             : nullptr;
 
     if (should_wait_for_gpu_work) {
@@ -1342,10 +1343,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     }
 
     if (!FlushSurface(
-            plane_surfaces[i], plane_access_datas[i].end_semaphores,
-            plane_access_datas[i].scoped_write.get(),
+            plane_surfaces[i], mailbox_access_datas[i].end_semaphores,
+            mailbox_access_datas[i].scoped_write.get(),
             should_wait_for_gpu_work
-                ? &NV12SinglePlaneReadyContext::OnNV12PlaneReady
+                ? &NV12SingleMailboxReadyContext::OnMailboxReady
                 : nullptr,
             should_wait_for_gpu_work ? nv12_plane_ready.release() : nullptr)) {
       // TODO(penghuang): handle vulkan device lost.
@@ -1361,7 +1362,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   if (should_wait_for_gpu_work) {
     // Flow will continue after GPU work is done - see
-    // `NV12PlanesReadyContext::OnNV12PlaneReady()` that eventually gets called.
+    // `NV12PlanesReadyContext::OnMailboxReady()` that eventually gets called.
     return;
   }
 
@@ -1381,13 +1382,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
         for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
           release_callbacks.push_back(
               CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
-                  std::move(plane_access_datas[i].representation)));
+                  std::move(mailbox_access_datas[i].representation)));
         }
       }
 
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
           CopyOutputResult::Format::NV12_PLANES, geometry.result_selection,
-          CopyOutputResult::TextureResult(plane_mailbox_holders, color_space),
+          CopyOutputResult::TextureResult(mailbox_holders, color_space),
           std::move(release_callbacks)));
 
       break;
@@ -1399,7 +1400,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       // Issue readbacks from the surfaces:
       for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
         SkImageInfo dst_info = SkImageInfo::Make(
-            plane_access_datas[i].size,
+            mailbox_access_datas[i].size,
             (i == 0) ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType,
             kUnpremul_SkAlphaType);
 
@@ -1408,7 +1409,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
         num_readbacks_pending_++;
         plane_surfaces[i]->asyncRescaleAndReadPixels(
-            dst_info, SkIRect::MakeSize(plane_access_datas[i].size),
+            dst_info, SkIRect::MakeSize(mailbox_access_datas[i].size),
             SkSurface::RescaleGamma::kSrc,
             SkSurface::RescaleMode::kRepeatedLinear,
             &CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone,

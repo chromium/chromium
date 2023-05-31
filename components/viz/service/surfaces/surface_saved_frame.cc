@@ -174,8 +174,8 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     slot->is_software = true;
   } else {
     auto output_copy_texture = *output_copy->GetTextureResult();
-    slot->mailbox = output_copy_texture.planes[0].mailbox;
-    slot->sync_token = output_copy_texture.planes[0].sync_token;
+    slot->mailbox = output_copy_texture.mailbox_holders[0].mailbox;
+    slot->sync_token = output_copy_texture.mailbox_holders[0].sync_token;
     slot->color_space = output_copy_texture.color_space;
 
     CopyOutputResult::ReleaseCallbacks release_callbacks =

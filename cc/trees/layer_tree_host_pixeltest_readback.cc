@@ -162,9 +162,10 @@ class LayerTreeHostReadbackPixelTest
     ASSERT_EQ(result->destination(),
               viz::CopyOutputResult::Destination::kNativeTextures);
 
-    gpu::Mailbox mailbox = result->GetTextureResult()->planes[0].mailbox;
+    gpu::Mailbox mailbox =
+        result->GetTextureResult()->mailbox_holders[0].mailbox;
     gpu::SyncToken sync_token =
-        result->GetTextureResult()->planes[0].sync_token;
+        result->GetTextureResult()->mailbox_holders[0].sync_token;
     gfx::ColorSpace color_space = result->GetTextureResult()->color_space;
     EXPECT_EQ(result->GetTextureResult()->color_space, output_color_space_);
 

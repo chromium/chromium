@@ -159,7 +159,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   // only one plane that is relevant in the |result|:
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   return mojo::MakeOptionalAsPointer(
-      &result->GetTextureResult()->planes[0].mailbox);
+      &result->GetTextureResult()->mailbox_holders[0].mailbox);
 }
 
 // static
@@ -177,7 +177,7 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
   // only one plane that is relevant in the |result|:
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
   return mojo::MakeOptionalAsPointer(
-      &result->GetTextureResult()->planes[0].sync_token);
+      &result->GetTextureResult()->mailbox_holders[0].sync_token);
 }
 
 // static

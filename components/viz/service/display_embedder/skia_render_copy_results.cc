@@ -328,44 +328,45 @@ NV12PlanesReadyContext::NV12PlanesReadyContext(
     std::unique_ptr<CopyOutputRequest> request,
     const gfx::Rect& result_rect,
     const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
-        plane_mailbox_holders,
+        mailbox_holders,
     const gfx::ColorSpace& color_space)
     : request_(std::move(request)),
       result_rect_(result_rect),
-      plane_mailbox_holders_(plane_mailbox_holders),
+      mailbox_holders_(mailbox_holders),
       color_space_(color_space) {}
 
 NV12PlanesReadyContext::~NV12PlanesReadyContext() {
-  DCHECK_EQ(outstanding_planes_, 0);
+  DCHECK_EQ(outstanding_mailboxes_, 0);
 }
 
-void NV12PlanesReadyContext::OnNV12PlaneReady() {
+void NV12PlanesReadyContext::OnMailboxReady() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (impl_on_gpu_) {
     impl_on_gpu_->ReadbackDone();
   }
 
-  outstanding_planes_--;
-  if (outstanding_planes_ == 0) {
+  outstanding_mailboxes_--;
+  if (outstanding_mailboxes_ == 0) {
     request_->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::NV12_PLANES, result_rect_,
-        CopyOutputResult::TextureResult(plane_mailbox_holders_, color_space_),
+        CopyOutputResult::TextureResult(mailbox_holders_, color_space_),
         CopyOutputResult::ReleaseCallbacks()));
   }
 }
 
-NV12SinglePlaneReadyContext::NV12SinglePlaneReadyContext(
+NV12SingleMailboxReadyContext::NV12SingleMailboxReadyContext(
     scoped_refptr<NV12PlanesReadyContext> nv12_planes_flushed)
     : nv12_planes_flushed(nv12_planes_flushed) {}
 
-NV12SinglePlaneReadyContext::~NV12SinglePlaneReadyContext() = default;
+NV12SingleMailboxReadyContext::~NV12SingleMailboxReadyContext() = default;
 
 // static
-void NV12SinglePlaneReadyContext::OnNV12PlaneReady(GrGpuFinishedContext c) {
-  auto context = base::WrapUnique(static_cast<NV12SinglePlaneReadyContext*>(c));
+void NV12SingleMailboxReadyContext::OnMailboxReady(GrGpuFinishedContext c) {
+  auto context =
+      base::WrapUnique(static_cast<NV12SingleMailboxReadyContext*>(c));
 
-  context->nv12_planes_flushed->OnNV12PlaneReady();
+  context->nv12_planes_flushed->OnMailboxReady();
 }
 
 }  // namespace viz

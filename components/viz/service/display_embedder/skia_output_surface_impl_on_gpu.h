@@ -286,11 +286,11 @@ class SkiaOutputSurfaceImplOnGpu
   base::ScopedClosureRunner GetCacheBackBufferCb();
 
  private:
-  struct PlaneAccessData {
-    PlaneAccessData();
-    PlaneAccessData(PlaneAccessData&& other);
-    PlaneAccessData& operator=(PlaneAccessData&& other);
-    ~PlaneAccessData();
+  struct MailboxAccessData {
+    MailboxAccessData();
+    MailboxAccessData(MailboxAccessData&& other);
+    MailboxAccessData& operator=(MailboxAccessData&& other);
+    ~MailboxAccessData();
 
     SkISize size;
     gpu::Mailbox mailbox;
@@ -393,21 +393,21 @@ class SkiaOutputSurfaceImplOnGpu
       GrGpuFinishedContext finished_context = nullptr);
 
   // Creates surfaces needed to store the data in NV12 format.
-  // |plane_access_datas| will be populated with information needed to access
+  // |mailbox_access_datas| will be populated with information needed to access
   // the NV12 planes.
   bool CreateSurfacesForNV12Planes(
       const SkYUVAInfo& yuva_info,
       const gfx::ColorSpace& color_space,
-      std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          plane_access_datas);
+      std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
+          mailbox_access_datas);
 
   // Imports surfaces needed to store the data in NV12 format from a blit
-  // request. |plane_access_datas| will be populated with information needed to
-  // access the NV12 planes.
+  // request. |mailbox_access_datas| will be populated with information needed
+  // to access the NV12 planes.
   bool ImportSurfacesForNV12Planes(
       const BlitRequest& blit_request,
-      std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          plane_access_datas);
+      std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
+          mailbox_access_datas);
 
   // Helper, blends `BlendBitmap`s set on the |blit_request| over the |canvas|.
   // Used to implement handling of `CopyOutputRequest`s that contain

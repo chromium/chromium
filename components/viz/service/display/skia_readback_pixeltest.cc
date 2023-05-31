@@ -176,14 +176,14 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                                   ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
-        ReadbackTextureOnGpuThread(shared_image_manager, context_state,
-                                   result.GetTextureResult()->planes[0].mailbox,
-                                   texture_size, kAlpha_8_SkColorType,
-                                   out_luma_plane);
+        ReadbackTextureOnGpuThread(
+            shared_image_manager, context_state,
+            result.GetTextureResult()->mailbox_holders[0].mailbox, texture_size,
+            kAlpha_8_SkColorType, out_luma_plane);
 
         ReadbackTextureOnGpuThread(
             shared_image_manager, context_state,
-            result.GetTextureResult()->planes[1].mailbox,
+            result.GetTextureResult()->mailbox_holders[1].mailbox,
             gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
             kR8G8_unorm_SkColorType, out_chroma_planes);
 
@@ -711,8 +711,8 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
     child_context_provider_->SharedImageInterface()->DestroySharedImage(
-        result->GetTextureResult()->planes[i].sync_token,
-        result->GetTextureResult()->planes[i].mailbox);
+        result->GetTextureResult()->mailbox_holders[i].sync_token,
+        result->GetTextureResult()->mailbox_holders[i].mailbox);
   }
 
   // Allocate new bitmap & populate it with Y & UV data.
