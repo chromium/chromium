@@ -96,3 +96,32 @@ The directory structure for a crate "foo" version 3.4.2 is:
                     0001-Edit-the-Cargo-toml.diff
                     0002-Other-changes.diff
 ```
+
+# Generating `BUILD.gn` files for stdlib crates
+
+To generate `BUILD.gn` files for the crates with the `gnrt` tool:
+1. Change directory to the root `src/` dir of Chromium.
+1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
+   tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
+1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen --for-std`.
+
+This will generate the `//build/rust/std/rules/BUILD.gn` file, with the changes
+visible in `git status` and can be added with `git add`.
+
+## Generating `BUILD.gn` files for stdlib crates when rolling Rust
+
+The above instructions generate GN rules from the installed Rust toolchain in
+//third_party/rust-toolchain. If you don't have an installed toolchain yet (or
+it's the wrong revision), you can generate from another Rust source root, such
+as in `//third_party/rust_src/src` by adding a value to the `--for-std`
+argument:
+1. Checkout the git revision you want to generate from in
+   `//third_party/rust_src/src`. This can be done with
+   `tools/clang/scripts/upload_revision.py  --no-git --skip-clang
+   --rust-git-hash DESIRED_GIT_HASH`.
+1. Update dependencies for the stdlib with `tools/rust/build_rust.py
+   --update-deps`.
+1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
+   tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
+1. Run `gnrt` with the `gen` action: `out/gnrt/release/gnrt gen
+   --for-std=third_party/rust_src/src`.
