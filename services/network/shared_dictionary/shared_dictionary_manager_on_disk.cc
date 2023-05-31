@@ -13,6 +13,80 @@
 
 namespace network {
 
+class SharedDictionaryManagerOnDisk::ClearDataTask
+    : public SharedDictionaryManagerOnDisk::SerializedTask {
+ public:
+  ClearDataTask(raw_ptr<SharedDictionaryManagerOnDisk> manager,
+                base::Time start_time,
+                base::Time end_time,
+                base::RepeatingCallback<bool(const GURL&)> url_matcher,
+                base::OnceClosure callback)
+      : manager_(manager),
+        start_time_(start_time),
+        end_time_(end_time),
+        url_matcher_(std::move(url_matcher)),
+        callback_(std::move(callback)) {}
+  ~ClearDataTask() override = default;
+
+  ClearDataTask(const ClearDataTask&) = delete;
+  ClearDataTask& operator=(const ClearDataTask&) = delete;
+
+  void Start() override {
+    manager_->metadata_store().ClearDictionaries(
+        start_time_, end_time_, std::move(url_matcher_),
+        base::BindOnce(&ClearDataTask::OnClearDictionariesFinished,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void OnClearDictionariesFinished(
+      net::SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+          result) {
+    if (result.has_value()) {
+      manager_->OnDictionaryDeletedFromDatabase(result.value());
+    }
+    std::move(callback_).Run();
+    manager_->OnFinishSerializedTask();
+  }
+
+  raw_ptr<SharedDictionaryManagerOnDisk> manager_;
+  const base::Time start_time_;
+  const base::Time end_time_;
+  base::RepeatingCallback<bool(const GURL&)> url_matcher_;
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<ClearDataTask> weak_factory_{this};
+};
+
+class SharedDictionaryManagerOnDisk::ClearDataTaskInfo
+    : public SharedDictionaryManagerOnDisk::SerializedTaskInfo {
+ public:
+  ClearDataTaskInfo(base::Time start_time,
+                    base::Time end_time,
+                    base::RepeatingCallback<bool(const GURL&)> url_matcher,
+                    base::OnceClosure callback)
+      : start_time_(start_time),
+        end_time_(end_time),
+        url_matcher_(std::move(url_matcher)),
+        callback_(std::move(callback)) {}
+  ~ClearDataTaskInfo() override = default;
+
+  ClearDataTaskInfo(const ClearDataTaskInfo&) = delete;
+  ClearDataTaskInfo& operator=(const ClearDataTaskInfo&) = delete;
+
+  std::unique_ptr<SerializedTask> CreateTask(
+      SharedDictionaryManagerOnDisk* manager) override {
+    return std::make_unique<ClearDataTask>(manager, start_time_, end_time_,
+                                           std::move(url_matcher_),
+                                           std::move(callback_));
+  }
+
+ private:
+  const base::Time start_time_;
+  const base::Time end_time_;
+  base::RepeatingCallback<bool(const GURL&)> url_matcher_;
+  base::OnceClosure callback_;
+};
+
 SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
     const base::FilePath& database_path,
     const base::FilePath& cache_directory_path,
@@ -132,6 +206,49 @@ void SharedDictionaryManagerOnDisk::UpdateDictionaryLastUsedTime(
   CHECK(info.primary_key_in_database());
   metadata_store_.UpdateDictionaryLastUsedTime(*info.primary_key_in_database(),
                                                info.last_used_time());
+}
+
+void SharedDictionaryManagerOnDisk::ClearData(
+    base::Time start_time,
+    base::Time end_time,
+    base::RepeatingCallback<bool(const GURL&)> url_matcher,
+    base::OnceClosure callback) {
+  PostSerializedTask(std::make_unique<ClearDataTaskInfo>(
+      start_time, end_time, std::move(url_matcher), std::move(callback)));
+}
+
+void SharedDictionaryManagerOnDisk::PostSerializedTask(
+    std::unique_ptr<SerializedTaskInfo> task_info) {
+  pending_serialized_task_info_.push_back(std::move(task_info));
+  MaybeStartSerializedTask();
+}
+
+void SharedDictionaryManagerOnDisk::OnFinishSerializedTask() {
+  CHECK(running_serialized_task_);
+  running_serialized_task_.reset();
+  MaybeStartSerializedTask();
+}
+
+void SharedDictionaryManagerOnDisk::MaybeStartSerializedTask() {
+  if (running_serialized_task_ || pending_serialized_task_info_.empty()) {
+    return;
+  }
+  std::unique_ptr<SerializedTaskInfo> serialized_task_info =
+      std::move(*pending_serialized_task_info_.begin());
+  pending_serialized_task_info_.pop_front();
+  running_serialized_task_ = serialized_task_info->CreateTask(this);
+  running_serialized_task_->Start();
+}
+
+void SharedDictionaryManagerOnDisk::OnDictionaryDeletedFromDatabase(
+    const std::set<base::UnguessableToken>& disk_cache_key_tokens) {
+  for (const base::UnguessableToken& token : disk_cache_key_tokens) {
+    disk_cache().DoomEntry(token.ToString(), base::DoNothing());
+  }
+  for (auto& it : storages()) {
+    reinterpret_cast<SharedDictionaryStorageOnDisk*>(it.second.get())
+        ->OnDictionaryDeleted(disk_cache_key_tokens);
+  }
 }
 
 }  // namespace network

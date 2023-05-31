@@ -8,8 +8,10 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
 
 namespace base {
@@ -74,6 +76,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   // Sets the max size of shared dictionary cache.
   virtual void SetCacheMaxSize(uint64_t cache_max_size) = 0;
+  virtual void ClearData(base::Time start_time,
+                         base::Time end_time,
+                         base::RepeatingCallback<bool(const GURL&)> url_matcher,
+                         base::OnceClosure callback) = 0;
 
  protected:
   SharedDictionaryManager();
@@ -84,6 +90,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       const net::SharedDictionaryStorageIsolationKey& isolation_key) = 0;
 
   base::WeakPtr<SharedDictionaryManager> GetWeakPtr();
+
+  std::map<net::SharedDictionaryStorageIsolationKey,
+           raw_ptr<SharedDictionaryStorage>>&
+  storages() {
+    return storages_;
+  }
 
  private:
   std::map<net::SharedDictionaryStorageIsolationKey,

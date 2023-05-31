@@ -89,6 +89,7 @@
 #include "services/network/brokered_client_socket_factory.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/cors/cors_url_loader_factory.h"
+#include "services/network/data_remover_util.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_copier.h"
@@ -2897,6 +2898,27 @@ void NetworkContext::SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) {
     return;
   }
   shared_dictionary_manager_->SetCacheMaxSize(cache_max_size);
+}
+
+void NetworkContext::ClearSharedDictionaryCache(
+    base::Time start_time,
+    base::Time end_time,
+    mojom::ClearDataFilterPtr filter,
+    ClearSharedDictionaryCacheCallback callback) {
+  if (!shared_dictionary_manager_) {
+    std::move(callback).Run();
+    return;
+  }
+  shared_dictionary_manager_->ClearData(
+      start_time, end_time,
+      filter
+          ? base::BindRepeating(&DoesUrlMatchFilter, filter->type,
+                                std::set<url::Origin>(filter->origins.begin(),
+                                                      filter->origins.end()),
+                                std::set<std::string>(filter->domains.begin(),
+                                                      filter->domains.end()))
+          : base::RepeatingCallback<bool(const GURL&)>(),
+      std::move(callback));
 }
 
 }  // namespace network

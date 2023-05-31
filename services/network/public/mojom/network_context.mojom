@@ -1060,6 +1060,15 @@ interface NetworkContext {
   ClearDomainReliability(ClearDataFilter? filter,
                          DomainReliabilityClearMode mode) => ();
 
+  // Clears dictionaries from the shared dictionary cache. A specific range of
+  // time can be specified with |start_time| and |end_time|. This supports
+  // unbounded deletes in either direction by using null Time values for either
+  // argument. If a non-null |filter| is specified, will clear only entries
+  // matching the filter.
+  ClearSharedDictionaryCache(mojo_base.mojom.Time start_time,
+                             mojo_base.mojom.Time end_time,
+                             ClearDataFilter? filter) => ();
+
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.
   // |reporting_source| is a token which identifies the document or worker with

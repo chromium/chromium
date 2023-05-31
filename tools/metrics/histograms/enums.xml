@@ -14050,6 +14050,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="14" label="kDeferredCookies"/>
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
+  <int value="17" label="kSharedDictionary"/>
 </enum>
 
 <enum name="BrowsingInstancePluralityVisibilityState">

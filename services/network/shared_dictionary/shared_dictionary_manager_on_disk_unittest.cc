@@ -33,9 +33,13 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using ::testing::ElementsAre;
+using ::testing::Pair;
 
 namespace network {
 
@@ -576,4 +580,163 @@ TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
             dictionary_map.begin()->second.begin()->second.last_used_time());
 }
 
+MATCHER_P(DictionaryUrlIs,
+          url,
+          std::string(negation ? "doesn't have" : "has") + " " + url +
+              " as the URL") {
+  return arg.url().spec() == url;
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/1"), "p1*",
+                    kTestData1);
+    WriteDictionary(storage.get(), GURL("https://target.test/1"), "p1*",
+                    kTestData1);
+    FlushCacheTasks();
+
+    // Move the clock forward by 1 day.
+    task_environment_.FastForwardBy(base::Days(1));
+    WriteDictionary(storage.get(), GURL("https://origin.test/2"), "p2*",
+                    kTestData1);
+    WriteDictionary(storage.get(), GURL("https://target.test/2"), "p2*",
+                    kTestData1);
+    WriteDictionary(storage.get(), GURL("https://target.test/3"), "p3*",
+                    kTestData2);
+    FlushCacheTasks();
+
+    // Move the clock forward by 1 day.
+    task_environment_.FastForwardBy(base::Days(1));
+    WriteDictionary(storage.get(), GURL("https://origin.test/3"), "p3*",
+                    kTestData1);
+    WriteDictionary(storage.get(), GURL("https://target.test/4"), "p4*",
+                    kTestData1);
+    FlushCacheTasks();
+
+    // Move the clock forward by 12 hours.
+    task_environment_.FastForwardBy(base::Hours(12));
+
+    // Get a dictionary before calling ClearData().
+    std::unique_ptr<SharedDictionary> dict =
+        storage->GetDictionary(GURL("https://target.test/p3?"));
+    ASSERT_TRUE(dict);
+
+    base::RunLoop run_loop;
+    manager->ClearData(base::Time::Now() - base::Days(2),
+                       base::Time::Now() - base::Days(1),
+                       base::BindRepeating([](const GURL& url) {
+                         return url == GURL("https://target.test/");
+                       }),
+                       run_loop.QuitClosure());
+    run_loop.Run();
+
+    // The dictionaries of "https://target.test/2" and "https://target.test/3"
+    // must be deleted.
+    EXPECT_THAT(
+        GetOnDiskDictionaryMap(storage.get()),
+        ElementsAre(
+            Pair(url::SchemeHostPort(GURL("https://origin.test/")),
+                 ElementsAre(
+                     Pair("/p1*", DictionaryUrlIs("https://origin.test/1")),
+                     Pair("/p2*", DictionaryUrlIs("https://origin.test/2")),
+                     Pair("/p3*", DictionaryUrlIs("https://origin.test/3")))),
+            Pair(url::SchemeHostPort(GURL("https://target.test/")),
+                 ElementsAre(
+                     Pair("/p1*", DictionaryUrlIs("https://target.test/1")),
+                     Pair("/p4*", DictionaryUrlIs("https://target.test/4"))))));
+
+    // We can still read the deleted dictionary from `dict`.
+    net::TestCompletionCallback read_callback;
+    EXPECT_EQ(net::OK,
+              read_callback.GetResult(dict->ReadAll(read_callback.callback())));
+    EXPECT_EQ(kTestData2,
+              std::string(reinterpret_cast<const char*>(dict->data()->data()),
+                          dict->size()));
+    // Releasing `dict`, `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  // The dictionaries of "https://target.test/2" and "https://target.test/3"
+  // must have been deleted also from the disk.
+  EXPECT_THAT(
+      GetOnDiskDictionaryMap(storage.get()),
+      ElementsAre(
+          Pair(url::SchemeHostPort(GURL("https://origin.test/")),
+               ElementsAre(
+                   Pair("/p1*", DictionaryUrlIs("https://origin.test/1")),
+                   Pair("/p2*", DictionaryUrlIs("https://origin.test/2")),
+                   Pair("/p3*", DictionaryUrlIs("https://origin.test/3")))),
+          Pair(url::SchemeHostPort(GURL("https://target.test/")),
+               ElementsAre(
+                   Pair("/p1*", DictionaryUrlIs("https://target.test/1")),
+                   Pair("/p4*", DictionaryUrlIs("https://target.test/4"))))));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataSerializedOperation) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  WriteDictionary(storage.get(), GURL("https://target1.test/d"), "p*",
+                  kTestData1);
+  WriteDictionary(storage.get(), GURL("https://target2.test/d"), "p*",
+                  kTestData1);
+  FlushCacheTasks();
+
+  EXPECT_THAT(
+      GetOnDiskDictionaryMap(storage.get()),
+      ElementsAre(
+          Pair(url::SchemeHostPort(GURL("https://target1.test/")),
+               ElementsAre(
+                   Pair("/p*", DictionaryUrlIs("https://target1.test/d")))),
+          Pair(url::SchemeHostPort(GURL("https://target2.test/")),
+               ElementsAre(
+                   Pair("/p*", DictionaryUrlIs("https://target2.test/d"))))));
+
+  base::RunLoop run_loop1;
+  manager->ClearData(base::Time(), base::Time::Max(),
+                     base::BindRepeating([](const GURL& url) {
+                       return url == GURL("https://target1.test/");
+                     }),
+                     run_loop1.QuitClosure());
+  base::RunLoop run_loop2;
+  manager->ClearData(base::Time(), base::Time::Max(),
+                     base::BindRepeating([](const GURL& url) {
+                       return url == GURL("https://target2.test/");
+                     }),
+                     run_loop2.QuitClosure());
+  run_loop1.Run();
+
+  // The dictionary of "https://target2.test/" must still alive, because the
+  // operation of ClearData is serialized.
+  EXPECT_THAT(GetOnDiskDictionaryMap(storage.get()),
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target2.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target2.test/d"))))));
+
+  run_loop2.Run();
+
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+}
 }  // namespace network

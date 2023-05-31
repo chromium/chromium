@@ -161,8 +161,23 @@ void SharedDictionaryStorageOnDisk::OnDictionaryWritten(
 
 void SharedDictionaryStorageOnDisk::OnRefCountedSharedDictionaryDeleted(
     const base::UnguessableToken& disk_cache_key_token) {
-  size_t removed_count = dictionaries_.erase(disk_cache_key_token);
-  CHECK_EQ(1U, removed_count);
+  dictionaries_.erase(disk_cache_key_token);
+}
+
+void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
+    const std::set<base::UnguessableToken>& disk_cache_key_tokens) {
+  std::erase_if(dictionaries_, [&disk_cache_key_tokens](const auto& it) {
+    return disk_cache_key_tokens.find(it.first) != disk_cache_key_tokens.end();
+  });
+
+  for (auto& it1 : dictionary_info_map_) {
+    std::erase_if(it1.second, [&disk_cache_key_tokens](const auto& it2) {
+      return disk_cache_key_tokens.find(it2.second.disk_cache_key_token()) !=
+             disk_cache_key_tokens.end();
+    });
+  }
+  std::erase_if(dictionary_info_map_,
+                [](const auto& it) { return it.second.empty(); });
 }
 
 }  // namespace network

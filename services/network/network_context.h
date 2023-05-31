@@ -510,6 +510,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       LookupProxyAuthCredentialsCallback callback) override;
 #endif
   void SetSharedDictionaryCacheMaxSize(uint64_t cache_max_size) override;
+  void ClearSharedDictionaryCache(
+      base::Time start_time,
+      base::Time end_time,
+      mojom::ClearDataFilterPtr filter,
+      ClearSharedDictionaryCacheCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);

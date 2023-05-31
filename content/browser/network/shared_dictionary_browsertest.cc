@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -382,6 +383,41 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
           ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
+  RunWriteDictionaryTest(
+      target_shell, FetchType::kLinkRelDictionary,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+
+  base::RunLoop loop;
+  content::ClearSiteData(
+      /*browser_context_getter=*/base::BindRepeating(
+          [](content::BrowserContext* browser_context) {
+            return browser_context;
+          },
+          base::Unretained(target_shell->web_contents()->GetBrowserContext())),
+      /*origin=*/url::Origin::Create(embedded_test_server()->GetURL("/")),
+      /*clear_cookies=*/true, /*clear_storage=*/false,
+      /*clear_cache=*/true,
+      /*storage_buckets_to_remove=*/{},
+      /*avoid_closing_connections=*/true,
+      /*cookie_partition_key=*/absl::nullopt,
+      /*storage_key=*/absl::nullopt,
+      /*partitioned_state_allowed_only=*/false,
+      /*callback=*/loop.QuitClosure());
+  loop.Run();
+
+  // TODO(crbug.com/1413922): Check that the dicitionary has been deleted when
+  // we implement shared dictionary decompression logic in network fetch.
 }
 
 }  // namespace

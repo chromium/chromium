@@ -306,6 +306,7 @@ chromium-metrics-reviews@google.com.
     <variant name="NetworkHistory" summary="NetworkHistory"/>
     <variant name="PreflightCache" summary="PreflightCache"/>
     <variant name="ReportingCache" summary="ReportingCache"/>
+    <variant name="SharedDictionary" summary="SharedDictionary"/>
     <variant name="SharedStorage" summary="SharedStorage"/>
     <variant name="StoragePartition" summary="StoragePartition"/>
     <variant name="Synchronous" summary="Synchronous"/>
