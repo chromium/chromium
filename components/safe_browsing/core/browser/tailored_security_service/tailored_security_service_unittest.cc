@@ -26,7 +26,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::Return;
+using ::testing::IsEmpty;
+using ::testing::Not;
 
 namespace safe_browsing {
 
@@ -399,8 +400,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value::Dict response_value =
       TestingTailoredSecurityService::ReadResponse(request.get());
-  EXPECT_TRUE(
-      response_value.FindBool("history_recording_enabled").value_or(false));
+  EXPECT_TRUE(response_value.FindBool("history_recording_enabled").value());
   // Test that properly formatted response with good response code returns false
   // as expected.
   std::unique_ptr<TailoredSecurityService::Request> request2(new TestRequest(
@@ -411,10 +411,9 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value::Dict response_value2 =
       TestingTailoredSecurityService::ReadResponse(request2.get());
-  EXPECT_FALSE(
-      response_value2.FindBool("history_recording_enabled").value_or(false));
+  EXPECT_FALSE(response_value2.FindBool("history_recording_enabled").value());
 
-  // Test that a bad response code returns false.
+  // Test that a bad response code returns an empty dictionary.
   std::unique_ptr<TailoredSecurityService::Request> request3(
       new TestRequest(GURL(kQueryTailoredSecurityServiceUrl), base::DoNothing(),
                       net::HTTP_UNAUTHORIZED,
@@ -424,9 +423,9 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value::Dict response_value3 =
       TestingTailoredSecurityService::ReadResponse(request3.get());
-  EXPECT_TRUE(response_value3.empty());
+  EXPECT_THAT(response_value3, IsEmpty());
 
-  // Test that improperly formatted response returns false.
+  // Test that improperly formatted response returns an empty dictionary.
   // Note: we expect to see a warning when running this test similar to
   //   "Non-JSON response received from history server".
   // This test tests how that situation is handled.
@@ -438,9 +437,12 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value::Dict response_value4 =
       TestingTailoredSecurityService::ReadResponse(request4.get());
-  EXPECT_TRUE(response_value4.empty());
+  EXPECT_THAT(response_value4, IsEmpty());
 
-  // Test that improperly formatted response (different key) returns false.
+  // Test that reading a response that doesn't contain the
+  // `history_recording_enabled` key, will not contain that key. This way
+  // callers of ReadResponse can distinguish between not present and false and
+  // can handle those situations appropriately.
   std::unique_ptr<TailoredSecurityService::Request> request5(new TestRequest(
       GURL(kQueryTailoredSecurityServiceUrl), base::DoNothing(), net::HTTP_OK,
       "{\n"
@@ -449,8 +451,9 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value::Dict response_value5 =
       TestingTailoredSecurityService::ReadResponse(request5.get());
+  EXPECT_THAT(response_value5, Not(IsEmpty()));
   EXPECT_FALSE(
-      response_value2.FindBool("history_recording_enabled").value_or(false));
+      response_value5.FindBool("history_recording_enabled").has_value());
 }
 
 TEST_F(TailoredSecurityServiceTest, TestShutdown) {
