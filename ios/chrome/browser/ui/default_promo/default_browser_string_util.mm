@@ -22,9 +22,6 @@ NSString* GetDefaultBrowserPromoTitle() {
 }
 
 NSString* GetDefaultBrowserLearnMoreText() {
-  if (IsInModifiedStringsGroup()) {
-    return GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE);
-  }
     return GetNSString(
         IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT);
 }

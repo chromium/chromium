@@ -1147,13 +1147,10 @@ void InjectNTP(Browser* browser) {
     return;
   }
 
-  BOOL isGeneralPromoEligibleUser =
-      !HasUserInteractedWithFullscreenPromoBefore() &&
+  if (!HasUserInteractedWithFullscreenPromoBefore() &&
       (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
        isSignedIn) &&
-      !UserInPromoCooldown();
-  if (isGeneralPromoEligibleUser ||
-      ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
+      !UserInPromoCooldown()) {
     self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
     self.sceneState.appState.defaultBrowserPromoTypeToShow =
         DefaultPromoTypeGeneral;

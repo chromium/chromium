@@ -86,6 +86,7 @@ NSString* const kUserInteractedWithNonModalPromoCount =
 // promo has been displayed.
 NSString* const kDisplayedPromoCount = @"displayedPromoCount";
 
+// TODO(crbug.com/1445218): Remove in M116+.
 // Key in storage containing an NSDate indicating the last time a user
 // interacted with the "remind me later" panel.
 NSString* const kRemindMeLaterPromoActionInteraction =
@@ -111,9 +112,6 @@ NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 NSString* const kTimestampAppLaunchOnColdStart =
     @"TimestampAppLaunchedOnColdStart";
 
-const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
-    "show_switch_description";
-
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
 
@@ -123,10 +121,6 @@ constexpr base::TimeDelta kUserActivityTimestampExpiration = base::Days(21);
 // Time threshold for the last URL open before no URL opens likely indicates
 // Chrome is no longer the default browser.
 constexpr base::TimeDelta kLatestURLOpenForDefaultBrowser = base::Days(21);
-
-// Delay for the user to be reshown the fullscreen promo when the user taps on
-// the "Remind Me Later" button.
-constexpr base::TimeDelta kRemindMeLaterPresentationDelay = base::Hours(50);
 
 // Cool down between fullscreen promos.
 constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
@@ -336,9 +330,6 @@ base::TimeDelta ComputeCooldown() {
 
 }  // namespace
 
-const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
-    "show_remind_me_later";
-
 void LogOpenHTTPURLFromExternalURL() {
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, [NSDate date]);
 }
@@ -348,12 +339,6 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
   times.push_back(base::Time::Now());
 
   StoreTimestampsForPromoType(type, std::move(times));
-}
-
-void LogRemindMeLaterPromoActionInteraction() {
-  DCHECK(IsInRemindMeLaterGroup());
-  SetObjectIntoStorageForKey(kRemindMeLaterPromoActionInteraction,
-                             [NSDate date]);
 }
 
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker) {
@@ -381,15 +366,6 @@ void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker) {
           feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
     }
   }
-}
-
-bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
-  if (!IsInRemindMeLaterGroup()) {
-    return false;
-  }
-
-  return HasRecordedEventForKeyMoreThanDelay(
-      kRemindMeLaterPromoActionInteraction, kRemindMeLaterPresentationDelay);
 }
 
 bool ShouldTriggerDefaultBrowserHighlightFeature(
@@ -421,20 +397,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   }
 
   return false;
-}
-
-bool IsInRemindMeLaterGroup() {
-  std::string paramValue = base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserFullscreenPromoExperiment,
-      kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam);
-  return !paramValue.empty();
-}
-
-bool IsInModifiedStringsGroup() {
-  std::string paramValue = base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserFullscreenPromoExperiment,
-      kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam);
-  return !paramValue.empty();
 }
 
 bool AreDefaultBrowserPromosEnabled() {
@@ -496,13 +458,6 @@ void LogUserInteractionWithFullscreenPromo() {
     kLastTimeUserInteractedWithPromo : [NSDate date],
     kDisplayedPromoCount : @(displayed_promo_count + 1),
   };
-
-  if (IsInRemindMeLaterGroup()) {
-    // Clear any possible Remind Me Later timestamp saved.
-    NSMutableDictionary<NSString*, NSObject*>* copy = [update mutableCopy];
-    copy[kRemindMeLaterPromoActionInteraction] = [NSNull null];
-    update = copy;
-  }
 
   UpdateStorageWithDictionary(update);
 }
@@ -689,12 +644,9 @@ bool IsTailoredPromoEligibleUser(bool is_signed_in) {
 }
 
 bool IsGeneralPromoEligibleUser(bool is_signed_in) {
-  bool isGeneralPromoEligibleUser =
-      !HasUserInteractedWithFullscreenPromoBefore() &&
-      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-       is_signed_in);
-  return isGeneralPromoEligibleUser ||
-         ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
+  return !HasUserInteractedWithFullscreenPromoBefore() &&
+         (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
+          is_signed_in);
 }
 
 bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker) {
@@ -716,4 +668,6 @@ void CleanupUnusedStorage() {
 
   // TODO(crbug.com/1445240): Remove in M116+.
   [defaults removeObjectForKey:kOpenSettingsActionInteraction];
+  // TODO(crbug.com/1445218): Remove in M116+.
+  [defaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
 }
