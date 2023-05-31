@@ -1288,7 +1288,9 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
   if (!old_style ||
       old_style->UsedColorScheme() != UsedColorSchemeScrollbars() ||
       old_style->ScrollbarWidth() !=
-          GetLayoutBox()->StyleRef().ScrollbarWidth()) {
+          GetLayoutBox()->StyleRef().ScrollbarWidth() ||
+      old_style->ScrollbarColor() !=
+          GetLayoutBox()->StyleRef().ScrollbarColor()) {
     SetScrollControlsNeedFullPaintInvalidation();
   }
 }
