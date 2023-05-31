@@ -241,11 +241,15 @@
   [self bookmarkModel]->GetNodesByURL([self bookmark]->url(), &nodesVector);
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
                                                  nodesVector.end());
-
-  [self.delegate
-      showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                              nodes, {[self bookmarkModel]}, _browserState)];
-  _bookmark = nullptr;
+  if (!nodesVector.empty()) {
+    // TODO (crbug.com/1445455): figure out why it is sometime empty and ensure
+    // it is not the case.
+    //  Temporary fix for crbug.com/1444667
+    [self.delegate
+        showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+                                nodes, {[self bookmarkModel]}, _browserState)];
+    _bookmark = nullptr;
+  }
 }
 
 #pragma mark - SyncObserverModelBridge
