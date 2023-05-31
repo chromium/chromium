@@ -134,8 +134,9 @@ public abstract class ChromeFeatureList {
             "AutofillEnableUpdateVirtualCardEnrollment";
     public static final String AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA =
             "AutofillEnableVirtualCardMetadata";
-    public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory";
-    public static final String AUTOFILL_MANUAL_FALLBACK_ANDROID = "AutofillManualFallbackAndroid";
+    public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory_LAUNCHED";
+    public static final String AUTOFILL_MANUAL_FALLBACK_ANDROID =
+            "AutofillManualFallbackAndroid_LAUNCHED";
     public static final String AUTOFILL_TOUCH_TO_FILL_FOR_CREDIT_CARDS_ANDROID =
             "AutofillTouchToFillForCreditCardsAndroid";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
@@ -366,7 +367,8 @@ public abstract class ChromeFeatureList {
     public static final String REACHED_CODE_PROFILER = "ReachedCodeProfiler";
     public static final String READER_MODE_IN_CCT = "ReaderModeInCCT";
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
-    public static final String RECOVER_FROM_NEVER_SAVE_ANDROID = "RecoverFromNeverSaveAndroid";
+    public static final String RECOVER_FROM_NEVER_SAVE_ANDROID =
+            "RecoverFromNeverSaveAndroid_LAUNCHED";
     public static final String REDUCE_TOOLBAR_UPDATES_FOR_SAME_DOC_NAVIGATIONS =
             "ReduceToolbarUpdatesForSameDocNavigations";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";

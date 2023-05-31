@@ -200,7 +200,7 @@ BASE_FEATURE(kPasswordsGrouping,
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 BASE_FEATURE(kRecoverFromNeverSaveAndroid,
-             "RecoverFromNeverSaveAndroid",
+             "RecoverFromNeverSaveAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

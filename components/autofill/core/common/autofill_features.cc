@@ -613,13 +613,13 @@ BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
 BASE_FEATURE(kAutofillKeyboardAccessory,
-             "AutofillKeyboardAccessory",
+             "AutofillKeyboardAccessory_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.
 BASE_FEATURE(kAutofillManualFallbackAndroid,
-             "AutofillManualFallbackAndroid",
+             "AutofillManualFallbackAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the touch to fill surface is shown for credit cards on

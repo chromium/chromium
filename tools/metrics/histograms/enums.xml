@@ -59933,6 +59933,8 @@ from previous Chrome versions.
   <int value="-1535694535" label="PageInfoPerformanceHints:enabled"/>
   <int value="-1535608870" label="JourneysLabel:enabled"/>
   <int value="-1534970225" label="FilesArchivemount:disabled"/>
+  <int value="-1533977596"
+      label="AutofillManualFallbackAndroid_LAUNCHED:disabled"/>
   <int value="-1533450851" label="EnablePerDeskZOrder:enabled"/>
   <int value="-1533258008" label="CalculateNativeWinOcclusion:enabled"/>
   <int value="-1532720464" label="WellKnownChangePassword:enabled"/>
@@ -62789,6 +62791,8 @@ from previous Chrome versions.
   <int value="-36007541"
       label="DataRetentionPoliciesDisableSyncTypesNeeded:enabled"/>
   <int value="-35745997" label="TabSearch:enabled"/>
+  <int value="-35618901"
+      label="AutofillManualFallbackAndroid_LAUNCHED:enabled"/>
   <int value="-35528548" label="LensImageFormatOptimizations:disabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
@@ -63827,6 +63831,7 @@ from previous Chrome versions.
   <int value="511179195" label="ShoppingAssist:disabled"/>
   <int value="511392922" label="SharedClipboardReceiver:enabled"/>
   <int value="512143128" label="LacrosOnly:enabled"/>
+  <int value="512376582" label="RecoverFromNeverSaveAndroid_LAUNCHED:disabled"/>
   <int value="512508240" label="WebViewExtraHeadersSameDomainOnly:disabled"/>
   <int value="513258875" label="WinrtSensorsImplementation:disabled"/>
   <int value="513356954" label="InstantTethering:disabled"/>
@@ -66231,6 +66236,7 @@ from previous Chrome versions.
   <int value="1800375282" label="UseDMSAAForTiles:disabled"/>
   <int value="1800509458" label="DriveFsChromeNetworking:disabled"/>
   <int value="1800603694" label="DXGIWaitableSwapChain:disabled"/>
+  <int value="1800633942" label="RecoverFromNeverSaveAndroid_LAUNCHED:enabled"/>
   <int value="1801297618" label="HelpAppAutoTriggerInstallDialog:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
   <int value="1802821192" label="VCBackgroundReplace:disabled"/>
