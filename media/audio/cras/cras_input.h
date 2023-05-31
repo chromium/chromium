@@ -104,6 +104,9 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
   // Return true to allow AGC on DSP for this input stream.
   inline bool DspBasedAgcIsAllowed() const;
 
+  // Return true if UI Gains should be ignored for this input stream.
+  inline bool IgnoreUiGains() const;
+
   // Called from the dtor and when the stream is reset.
   void ReportAndResetStats();
 

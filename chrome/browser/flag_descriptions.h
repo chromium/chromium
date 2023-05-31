@@ -3914,6 +3914,9 @@ extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 
 extern const char kTouchTextEditingRedesignName[];
 extern const char kTouchTextEditingRedesignDescription[];
+
+extern const char kIgnoreUiGainsName[];
+extern const char kIgnoreUiGainsDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)

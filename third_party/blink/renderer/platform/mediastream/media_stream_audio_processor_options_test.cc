@@ -106,4 +106,27 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_FALSE(settings_with_system_agc.automatic_gain_control);
 }
 
+TEST(AudioProcessingPropertiesTest,
+     GainControlEnabledReturnsTrueIfBrowserAgcEnabled) {
+  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
+      .goog_auto_gain_control = true};
+  EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
+}
+
+TEST(AudioProcessingPropertiesTest,
+     GainControlEnabledReturnsTrueIfSystemAgcEnabled) {
+  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
+      .system_gain_control_activated = true,
+      .goog_auto_gain_control = true,
+  };
+  EXPECT_TRUE(kPropertiesWithBrowserAgc.GainControlEnabled());
+}
+
+TEST(AudioProcessingPropertiesTest,
+     GainControlEnabledReturnsFalseIfAgcDisabled) {
+  constexpr AudioProcessingProperties kPropertiesWithBrowserAgc{
+      .goog_auto_gain_control = false};
+  EXPECT_FALSE(kPropertiesWithBrowserAgc.GainControlEnabled());
+}
+
 }  // namespace blink

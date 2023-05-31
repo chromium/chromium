@@ -4471,6 +4471,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "ignore-ui-gains",
+    "owners": ["eddyhsu"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

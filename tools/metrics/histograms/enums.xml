@@ -62191,6 +62191,7 @@ from previous Chrome versions.
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
   <int value="-349380607" label="AndroidNightMode:disabled"/>
   <int value="-349057743" label="extensions-on-chrome-urls"/>
+  <int value="-348141551" label="IgnoreUiGains:enabled"/>
   <int value="-347654657" label="CSSColorSchemeUARendering:enabled"/>
   <int value="-347036716" label="OmniboxDomainSuggestions:disabled"/>
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
@@ -63502,6 +63503,7 @@ from previous Chrome versions.
   <int value="341851350" label="EnableDbusAndX11StatusIcons:enabled"/>
   <int value="342431487" label="VizForWebView:enabled"/>
   <int value="342960463" label="SharingQRCodeGenerator:enabled"/>
+  <int value="343286828" label="IgnoreUiGains:disabled"/>
   <int value="343445783" label="AllowScrollSettings:enabled"/>
   <int value="345430155" label="CrOSDspBasedAgcAllowed:enabled"/>
   <int value="345611669"

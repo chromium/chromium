@@ -42,6 +42,10 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          goog_highpass_filter == other.goog_highpass_filter;
 }
 
+bool AudioProcessingProperties::GainControlEnabled() const {
+  return goog_auto_gain_control;
+}
+
 media::AudioProcessingSettings
 AudioProcessingProperties::ToAudioProcessingSettings(
     bool multi_channel_capture_processing) const {

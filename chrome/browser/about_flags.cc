@@ -7058,6 +7058,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecNs)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"ignore-ui-gains", flag_descriptions::kIgnoreUiGainsName,
+     flag_descriptions::kIgnoreUiGainsDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kIgnoreUiGains)},
+#endif
+
     {"enable-css-selector-fragment-anchor",
      flag_descriptions::kEnableCssSelectorFragmentAnchorName,
      flag_descriptions::kEnableCssSelectorFragmentAnchorDescription, kOsAll,

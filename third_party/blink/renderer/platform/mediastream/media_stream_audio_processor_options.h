@@ -39,6 +39,9 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   bool HasSameNonReconfigurableSettings(
       const AudioProcessingProperties& other) const;
 
+  // Returns if AGC is enabled in either WebRTC or system.
+  bool GainControlEnabled() const;
+
   // Converts this struct to an equivalent media::AudioProcessingSettings.
   media::AudioProcessingSettings ToAudioProcessingSettings(
       bool multi_channel_capture_processing) const;

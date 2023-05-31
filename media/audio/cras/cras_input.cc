@@ -224,6 +224,10 @@ inline bool CrasInputStream::DspBasedAgcIsAllowed() const {
   return params_.effects() & AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
 }
 
+inline bool CrasInputStream::IgnoreUiGains() const {
+  return params_.effects() & AudioParameters::IGNORE_UI_GAINS;
+}
+
 void CrasInputStream::Start(AudioInputCallback* callback) {
   DCHECK(client_);
   DCHECK(callback);
@@ -327,6 +331,10 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
 
   if (DspBasedAgcIsAllowed()) {
     libcras_stream_params_allow_agc_on_dsp(stream_params);
+  }
+
+  if (IgnoreUiGains()) {
+    libcras_stream_params_ignore_ui_gains(stream_params);
   }
 
   // Adding the stream will start the audio callbacks.

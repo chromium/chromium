@@ -6722,6 +6722,10 @@ const char kCrOSEnforceSystemAecNsAgcName[] =
 const char kCrOSEnforceSystemAecNsAgcDescription[] =
     "Enforces using the system variants in CrAS of the AEC, NS and AGC.";
 
+const char kIgnoreUiGainsName[] = "Ignore UI Gains in system mic gain setting";
+const char kIgnoreUiGainsDescription[] =
+    "Ignore UI Gains in system mic gain setting";
+
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 

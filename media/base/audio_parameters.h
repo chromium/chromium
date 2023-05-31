@@ -209,6 +209,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     FUCHSIA_RENDER_USAGE_INTERRUPTION = 1 << 14,
     FUCHSIA_RENDER_USAGE_SYSTEM_AGENT = 1 << 15,
     FUCHSIA_RENDER_USAGE_COMMUNICATION = 1 << 16,
+
+    IGNORE_UI_GAINS = 1 << 17,
   };
 
   struct HardwareCapabilities {
