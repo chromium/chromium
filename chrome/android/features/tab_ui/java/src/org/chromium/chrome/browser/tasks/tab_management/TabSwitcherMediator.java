@@ -877,10 +877,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return true;
         }
 
-        if (mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) {
-            // crbug.com/1420410: intentionally do nothing to wait for transition to be finished.
-            // Note this has to be before following if-branch since during transition, the container
-            // is still invisible.
+        if (!mIsTablet && mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) {
+            // crbug.com/1420410: intentionally do nothing to wait for tab-to-GTS transition to be
+            // finished. Note this has to be before following if-branch since during transition, the
+            // container is still invisible. On tablet, the translation transition replaces the
+            // tab-to-GTS (expand/shrink) animation, which does not suffer from the same issue.
             return true;
         }
 
@@ -1184,7 +1185,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (isDialogVisible()) return true;
         if (mCustomViewBackPressRunnable != null) return true;
 
-        if (mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) return true;
+        if (!mIsTablet && mIsTransitionInProgress && mMode == TabListCoordinator.TabListMode.GRID) {
+            return true;
+        }
 
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 
