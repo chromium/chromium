@@ -14,6 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
+namespace views {
+class LabelButton;
+class View;
+}  // namespace views
+
 namespace ash {
 
 struct AnchoredNudgeData;
@@ -42,9 +47,13 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void OnNudgeHoverStateChanged(const std::string& id,
                                 bool is_hovering) override;
 
+  // Returns true if `id` is stored in `shown_nudges_`.
   bool IsNudgeShown(const std::string& id);
-  const std::u16string& GetNudgeText(const std::string& id);
-  views::View* GetNudgeAnchorView(const std::string& id);
+
+  const std::u16string& GetNudgeTextForTest(const std::string& id);
+  views::View* GetNudgeAnchorViewForTest(const std::string& id);
+  views::LabelButton* GetNudgeDismissButtonForTest(const std::string& id);
+  views::LabelButton* GetNudgeSecondButtonForTest(const std::string& id);
 
   // Default nudge duration that is used for nudges that expire.
   static constexpr base::TimeDelta kAnchoredNudgeDuration = base::Seconds(6);

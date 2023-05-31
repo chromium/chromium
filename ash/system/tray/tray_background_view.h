@@ -213,7 +213,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Callbacks for Animations
   void OnAnimationAborted();
-  void OnAnimationEnded();
+  virtual void OnAnimationEnded();
 
   void SetIsActive(bool is_active);
   bool is_active() const { return is_active_; }

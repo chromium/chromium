@@ -4,10 +4,14 @@
 
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 
+#include <string>
+
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/containers/contains.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -213,16 +217,28 @@ bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
   return base::Contains(shown_nudges_, id);
 }
 
-const std::u16string& AnchoredNudgeManagerImpl::GetNudgeText(
+const std::u16string& AnchoredNudgeManagerImpl::GetNudgeTextForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id]->GetText();
 }
 
-views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorView(
+views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorViewForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id]->GetAnchorView();
+}
+
+views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeDismissButtonForTest(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetDismissButton();
+}
+
+views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondButtonForTest(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetSecondButton();
 }
 
 base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(

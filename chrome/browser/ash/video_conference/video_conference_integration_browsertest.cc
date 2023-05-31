@@ -54,11 +54,11 @@ bool IsNudgeShown(const std::string& id) {
 }
 
 const std::u16string& GetNudgeText(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeText(id);
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeTextForTest(id);
 }
 
 views::View* GetNudgeAnchorView(const std::string& id) {
-  return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorView(id);
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorViewForTest(id);
 }
 
 }  // namespace

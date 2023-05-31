@@ -302,6 +302,14 @@ void VideoConferenceTray::AnchorUpdated() {
   }
 }
 
+void VideoConferenceTray::OnAnimationEnded() {
+  TrayBackgroundView::OnAnimationEnded();
+
+  // `MaybeShowSpeakOnMuteOptInNudge()` will only attempt to show the nudge if
+  // the tray was made visible.
+  VideoConferenceTrayController::Get()->MaybeShowSpeakOnMuteOptInNudge(this);
+}
+
 void VideoConferenceTray::OnHasMediaAppStateChange() {
   SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());
 }
@@ -381,6 +389,8 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
     CloseBubble();
     return;
   }
+
+  VideoConferenceTrayController::Get()->CloseAllVcNudges();
 
   // Create top-level bubble.
   auto bubble_view = std::make_unique<video_conference::BubbleView>(

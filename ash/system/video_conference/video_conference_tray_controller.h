@@ -22,6 +22,8 @@ class UnguessableToken;
 
 namespace ash {
 
+class VideoConferenceTray;
+
 using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
 // Controller that will act as a "bridge" between VC apps management and the VC
@@ -84,6 +86,18 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Whether the tray should be shown.
   bool ShouldShowTray() const;
+
+  // Attempts showing the speak-on-mute opt-in nudge.
+  void MaybeShowSpeakOnMuteOptInNudge(
+      VideoConferenceTray* video_conference_tray);
+
+  // Callbacks to update prefs whenever a user opts in or out of the
+  // speak-on-mute feature.
+  void OnSpeakOnMuteNudgeOptIn();
+  void OnSpeakOnMuteNudgeOptOut();
+
+  // Closes all nudges that are shown anchored to the VC tray, if any.
+  void CloseAllVcNudges();
 
   // Returns whether `state_` indicates permissions are granted for different
   // mediums.

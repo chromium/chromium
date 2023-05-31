@@ -128,6 +128,7 @@ class ASH_EXPORT VideoConferenceTray
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;
   void AnchorUpdated() override;
+  void OnAnimationEnded() override;
 
   // VideoConferenceTrayController::Observer:
   void OnHasMediaAppStateChange() override;
@@ -155,6 +156,7 @@ class ASH_EXPORT VideoConferenceTray
   friend class video_conference::ReturnToAppPanelTest;
   friend class video_conference::ResourceDependencyTest;
   friend class video_conference::ToggleEffectsViewTest;
+  friend class VideoConferenceTrayControllerTest;
   friend class VideoConferenceTrayTest;
 
   // SessionObserver:

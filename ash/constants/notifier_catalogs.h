@@ -268,7 +268,8 @@ enum class AnchoredNudgeCatalogName {
   kTest = 0,
   kVideoConferenceTraySpeakOnMuteDetected = 1,
   kVideoConferenceTrayUseWhileDisabled = 2,
-  kMaxValue = kVideoConferenceTrayUseWhileDisabled
+  kVideoConferenceTraySpeakOnMuteOptIn = 3,
+  kMaxValue = kVideoConferenceTraySpeakOnMuteOptIn
 };
 
 }  // namespace ash
