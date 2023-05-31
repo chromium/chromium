@@ -19,7 +19,8 @@ ContentIndexProviderImpl* ContentIndexProviderFactory::GetForProfile(
 
 // static
 ContentIndexProviderFactory* ContentIndexProviderFactory::GetInstance() {
-  return base::Singleton<ContentIndexProviderFactory>::get();
+  static base::NoDestructor<ContentIndexProviderFactory> instance;
+  return instance.get();
 }
 
 ContentIndexProviderFactory::ContentIndexProviderFactory()
