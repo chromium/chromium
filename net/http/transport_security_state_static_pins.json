@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2023-05-17 12:54 UTC
+// Last updated: 2023-05-31 12:56 UTC
 //
 {
   "pinsets": [
@@ -77,10 +77,26 @@
     {
       "name": "facebook",
       "static_spki_hashes": [
-        "SymantecClass3EVG3",
-        "DigiCertECCSecureServerCA",
+        "ComodoRSACertificationAuthority",
+        "ComodoECCCertificationAuthority",
+        "UserTrustRSACertificationAuthority",
+        "UserTrustECCCertificationAuthority",
+        "DigiCertGlobalRoot",
+        "DigiCertGlobalRootG2",
+        "DigiCertGlobalRootG3",
         "DigiCertEVRoot",
-        "FacebookBackup"
+        "DigiCertTrustedRootG4",
+        "DigiCertTLSRSA4096RootG5",
+        "DigiCertTLSECCP384RootG5",
+        "GlobalSignRootCA",
+        "GlobalSignRootCA_R3",
+        "GlobalSignRootCA_R6",
+        "GlobalSignRootR46",
+        "ISRGRootX1",
+        "ISRGRootX2",
+        "FacebookBackup",
+        "SymantecClass3EVG3",
+        "DigiCertECCSecureServerCA"
       ]
     },
     {
