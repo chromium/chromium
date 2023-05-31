@@ -44,12 +44,14 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "trigger_data_wrong_type",
           R"json({"trigger_data":123})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventTriggerDataValueInvalid),
       },
       {
           "trigger_data_invalid",
           R"json({"trigger_data":"-5"})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventTriggerDataValueInvalid),
       },
       {
           "priority_valid",
@@ -60,12 +62,14 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "priority_wrong_type",
           R"json({"priority":123})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventPriorityValueInvalid),
       },
       {
           "priority_invalid",
           R"json({"priority":"abc"})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventPriorityValueInvalid),
       },
       {
           "dedup_key_valid",
@@ -76,12 +80,14 @@ TEST(EventTriggerDataTest, FromJSON) {
       {
           "dedup_key_wrong_type",
           R"json({"deduplication_key":123})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventDedupKeyValueInvalid),
       },
       {
           "dedup_key_invalid",
           R"json({"deduplication_key":"abc"})json",
-          EventTriggerData(),
+          base::unexpected(
+              TriggerRegistrationError::kEventDedupKeyValueInvalid),
       },
       {
           "filters_valid",

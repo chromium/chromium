@@ -51,38 +51,63 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   return out.str();
 }
 
-absl::optional<uint64_t> ParseUint64(const base::Value::Dict& dict,
-                                     base::StringPiece key) {
-  const std::string* s = dict.FindString(key);
-  if (!s)
-    return absl::nullopt;
+bool ParseUint64(const base::Value::Dict& dict,
+                 base::StringPiece key,
+                 absl::optional<uint64_t>& out) {
+  const base::Value* value = dict.Find(key);
+  if (!value) {
+    out = absl::nullopt;
+    return true;
+  }
 
-  uint64_t value;
-  return base::StringToUint64(*s, &value) ? absl::make_optional(value)
-                                          : absl::nullopt;
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    out = absl::nullopt;
+    return false;
+  }
+
+  uint64_t parsed_val;
+  out = base::StringToUint64(*str, &parsed_val)
+            ? absl::make_optional(parsed_val)
+            : absl::nullopt;
+  return out.has_value();
 }
 
-absl::optional<int64_t> ParseInt64(const base::Value::Dict& dict,
-                                   base::StringPiece key) {
-  const std::string* s = dict.FindString(key);
-  if (!s)
-    return absl::nullopt;
+bool ParseInt64(const base::Value::Dict& dict,
+                base::StringPiece key,
+                absl::optional<int64_t>& out) {
+  const base::Value* value = dict.Find(key);
+  if (!value) {
+    out = absl::nullopt;
+    return true;
+  }
 
-  int64_t value;
-  return base::StringToInt64(*s, &value) ? absl::make_optional(value)
-                                         : absl::nullopt;
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    out = absl::nullopt;
+    return false;
+  }
+
+  int64_t parsed_val;
+  out = base::StringToInt64(*str, &parsed_val) ? absl::make_optional(parsed_val)
+                                               : absl::nullopt;
+  return out.has_value();
 }
 
-int64_t ParsePriority(const base::Value::Dict& dict) {
-  return ParseInt64(dict, kPriority).value_or(0);
+bool ParsePriority(const base::Value::Dict& dict,
+                   absl::optional<int64_t>& out) {
+  return ParseInt64(dict, kPriority, out);
 }
 
 absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
-  return ParseUint64(dict, kDebugKey);
+  absl::optional<uint64_t> debug_key;
+  std::ignore = ParseUint64(dict, kDebugKey, debug_key);
+  return debug_key;
 }
 
-absl::optional<uint64_t> ParseDeduplicationKey(const base::Value::Dict& dict) {
-  return ParseUint64(dict, kDeduplicationKey);
+bool ParseDeduplicationKey(const base::Value::Dict& dict,
+                           absl::optional<uint64_t>& out) {
+  return ParseUint64(dict, kDeduplicationKey, out);
 }
 
 bool ParseDebugReporting(const base::Value::Dict& dict) {

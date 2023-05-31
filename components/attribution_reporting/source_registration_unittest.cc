@@ -69,12 +69,12 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "source_event_id_wrong_type",
           R"json({"source_event_id":1,"destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kSourceEventIdValueInvalid),
       },
       {
-          "source_event_id_invalid_defaults_to_0",
+          "source_event_id_invalid",
           R"json({"source_event_id":"-1","destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kSourceEventIdValueInvalid),
       },
       {
           "destination_missing",
@@ -88,14 +88,14 @@ TEST(SourceRegistrationTest, Parse) {
               destination, [](SourceRegistration& r) { r.priority = -5; }),
       },
       {
-          "priority_wrong_type_defaults_to_0",
+          "priority_wrong_type",
           R"json({"priority":-5,"destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kPriorityValueInvalid),
       },
       {
-          "priority_invalid_defaults_to_0",
+          "priority_invalid",
           R"json({"priority":"abc","destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kPriorityValueInvalid),
       },
       {
           "expiry_valid",
@@ -107,12 +107,12 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "expiry_wrong_type",
           R"json({"expiry":172800,"destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
       },
       {
           "expiry_invalid",
           R"json({"expiry":"abc","destination":"https://d.example"})json",
-          SourceRegistration(destination),
+          base::unexpected(SourceRegistrationError::kExpiryValueInvalid),
       },
       {
           "event_report_window_valid",
@@ -128,17 +128,15 @@ TEST(SourceRegistrationTest, Parse) {
           "event_report_window_wrong_type",
           R"json({"expiry":"172801","event_report_window":86401,
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(
-              destination,
-              [](SourceRegistration& r) { r.expiry = base::Seconds(172801); }),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
           "event_report_window_invalid",
           R"json({"expiry":"172801","event_report_window":"abc",
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(
-              destination,
-              [](SourceRegistration& r) { r.expiry = base::Seconds(172801); }),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowValueInvalid),
       },
       {
           "aggregatable_report_window_valid",
@@ -155,17 +153,15 @@ TEST(SourceRegistrationTest, Parse) {
           "aggregatable_report_window_wrong_type",
           R"json({"expiry":"172801","aggregatable_report_window":86401,
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(
-              destination,
-              [](SourceRegistration& r) { r.expiry = base::Seconds(172801); }),
+          base::unexpected(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
       },
       {
           "aggregatable_report_window_invalid",
           R"json({"expiry":"172801","aggregatable_report_window":"abc",
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(
-              destination,
-              [](SourceRegistration& r) { r.expiry = base::Seconds(172801); }),
+          base::unexpected(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
       },
       {
           "debug_key_valid",
@@ -227,7 +223,7 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   static constexpr char kSourceRegistrationErrorMetric[] =
-      "Conversions.SourceRegistrationError2";
+      "Conversions.SourceRegistrationError3";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;

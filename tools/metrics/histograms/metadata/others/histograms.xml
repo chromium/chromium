@@ -4034,10 +4034,10 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError2"
+<histogram name="Conversions.SourceRegistrationError3"
     enum="ConversionSourceRegistrationError" expires_after="2023-11-12">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often source registration parsing failed and why. Recorded only
@@ -4123,10 +4123,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerRegistrationError5"
+<histogram name="Conversions.TriggerRegistrationError6"
     enum="ConversionTriggerRegistrationError" expires_after="2023-11-12">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often trigger registration parsing failed and why. Recorded

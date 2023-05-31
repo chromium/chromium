@@ -1436,7 +1436,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
 
-  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError2",
+  histograms.ExpectUniqueSample("Conversions.SourceRegistrationError3",
                                 SourceRegistrationError::kInvalidJson, 1);
 }
 
