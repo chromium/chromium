@@ -232,14 +232,13 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
+     <dimen name="bookmark_favicon_display_size">20dp</dimen>
 
      <!-- Improved bookmark row properties. -->
      <!-- The size of the start image for compact rows.. -->
     <dimen name="improved_bookmark_start_image_size_compact">48dp</dimen>
      <!-- The size of the start image for visual rows.. -->
     <dimen name="improved_bookmark_start_image_size_visual">80dp</dimen>
-    <!-- The size of displayed favicons for each row. -->
-    <dimen name="improved_bookmark_favicon_display_size">24dp</dimen>
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
     <dimen name="bookmark_search_hint_horizontal_padding">30dp</dimen>
 
@@ -249,7 +248,6 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
-     <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
      <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->

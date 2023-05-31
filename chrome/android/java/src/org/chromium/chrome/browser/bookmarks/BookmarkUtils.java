@@ -715,13 +715,7 @@ public class BookmarkUtils {
     /** Returns the size to use when displaying the favicon. */
     public static int getFaviconDisplaySize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return resources.getDimensionPixelSize(R.dimen.improved_bookmark_favicon_display_size);
-        }
-
-        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
-                : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
+        return resources.getDimensionPixelSize(R.dimen.bookmark_favicon_display_size);
     }
 
     /** Returns whether the given folder can have a new folder added to it. */
