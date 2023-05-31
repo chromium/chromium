@@ -11,23 +11,25 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
 #include "sql/sqlite_result_code_values.h"
 
 namespace base {
+struct Feature;
 class FilePath;
 }
 
 namespace sql {
 
-// WARNING: This API is still experimental. If you're looking to add corruption
-// recovery to your feature that uses SQLite, use the `Recovery` class below...
-// for now! See https://crbug.com/1385500.
+// WARNING: This API is still experimental. See https://crbug.com/1385500.
 //
 // Uses SQLite's built-in corruption recovery module to recover the database.
 // See https://www.sqlite.org/recovery.html
+//
+// For now, feature teams should use only the `RecoverIfPossible()` method -
+// which falls back to the legacy `sql::Recovery` below if necessary - in lieu
+// of calling `RecoverDatabase()` directly.
 class COMPONENT_EXPORT(SQL) BuiltInRecovery {
  public:
   enum class Strategy {
@@ -87,15 +89,7 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
     kMaxValue = kFailedBackupRun,
   };
 
-  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
-  // Fuchsia.
-  static bool IsSupported() {
-#if BUILDFLAG(IS_FUCHSIA)
-    return false;
-#else
-    return true;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-  }
+  [[nodiscard]] static bool IsSupported();
 
   // Returns true if `RecoverDatabase()` can plausibly fix `database` given this
   // `extended_error`. This does not guarantee that `RecoverDatabase()` will
@@ -103,8 +97,12 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   //
   // Note that even if this method returns true, the database's error callback
   // must be reset before recovery can be attempted.
-  static bool ShouldAttemptRecovery(Database* database, int extended_error);
+  [[nodiscard]] static bool ShouldAttemptRecovery(Database* database,
+                                                  int extended_error);
 
+  // WARNING: This API is experimental. For now, please use
+  // `RecoverIfPossible()` below rather than using this method directly.
+  //
   // Attempts to recover `database`, and razes the database if it could not be
   // recovered according to `strategy`. After attempting recovery, the database
   // can be re-opened and assumed to be free of corruption.
@@ -128,6 +126,39 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   // successfully recovered.
   [[nodiscard]] static SqliteResultCode RecoverDatabase(Database* database,
                                                         Strategy strategy);
+
+  // Similar to `RecoverDatabase()` above, but with a few key differences:
+  //   - Uses `BuiltInRecovery` or the legacy `Recovery` to recover the
+  //     database, as appropriate. This method facilitates the migration to the
+  //     newer recovery module with minimal impact on feature teams. The
+  //     expectation is that `Recovery` will eventually be removed entirely.
+  //     See https://crbug.com/1385500.
+  //   - Can be called without first checking `ShouldAttemptRecovery()`.
+  //   - `database`'s error callback will be reset if recovery is attempted.
+  //   - Must only be called from within a database error callback.
+  //   - Includes the option to pass a per-database feature flag indicating
+  //     whether `BuiltInRecovery` should be used to recover this database, if
+  //     it's supported.
+  //
+  // Recommended usage from within a database error callback:
+  //
+  //  // Attempt to recover the database, if recovery is possible.
+  //  if (sql::BuiltInRecovery::RecoverIfPossible(
+  //          &db, extended_error,
+  //          sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze,
+  //          &features::kMyFeatureTeamShouldUseBuiltInRecoveryIfSupported)) {
+  //    // Recovery was attempted. The database handle has been poisoned and the
+  //    // error callback has been reset.
+  //
+  //    // ...
+  //  }
+  //
+  [[nodiscard]] static bool RecoverIfPossible(
+      Database* database,
+      int extended_error,
+      Strategy strategy,
+      const base::Feature* const use_builtin_recovery_if_supported_flag =
+          nullptr);
 
   BuiltInRecovery(const BuiltInRecovery&) = delete;
   BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;

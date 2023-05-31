@@ -10,10 +10,12 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -21,8 +23,10 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/test/paths.h"
@@ -50,10 +54,10 @@ std::string GetSchema(Database* db) {
   return ExecuteWithResults(db, kSql, "|", "\n");
 }
 
-class SqlRecoveryTest : public testing::TestWithParam<bool> {
+// Base class for all recovery-related tests. Each subclass must initialize
+// `scoped_feature_list_`, as appropriate.
+class SqlRecoveryTestBase : public testing::Test {
  public:
-  ~SqlRecoveryTest() override = default;
-
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("recovery_test.sqlite");
@@ -83,20 +87,59 @@ class SqlRecoveryTest : public testing::TestWithParam<bool> {
     return file.Write(0, kText, kTextBytes) == kTextBytes;
   }
 
-  bool UseBuiltIn() { return GetParam() && BuiltInRecovery::IsSupported(); }
-
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   Database db_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
-  if (UseBuiltIn()) {
-    return;
+// Tests both the legacy `sql::Recovery` interface and the newer
+// `sql::BuiltInRecovery` interface, if it's supported.
+class SqlRecoveryTest : public SqlRecoveryTestBase,
+                        public testing::WithParamInterface<bool> {
+ public:
+  SqlRecoveryTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseBuiltInRecoveryIfSupported, GetParam());
   }
 
+  bool UseBuiltIn() { return GetParam() && BuiltInRecovery::IsSupported(); }
+};
+
+// Tests specific to the newer `sql::BuiltInRecovery` interface.
+//
+// Creating a new `SqlRecoveryTest` should be preferred, if possible.
+// These tests should include a comment indicating why it is not relevant to
+// the legacy `sql::Recovery` module.
+class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
+ public:
+  SqlBuiltInRecoveryTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kUseBuiltInRecoveryIfSupported);
+  }
+};
+
+// Tests specific to the legacy `sql::Recovery` interface.
+//
+// Creating a new `SqlRecoveryTest` should be preferred, if possible.
+// These tests should include a comment indicating why it is not relevant to
+// the new `sql::BuiltInRecovery` module.
+class SqlLegacyRecoveryTest : public SqlRecoveryTestBase {
+ public:
+  SqlLegacyRecoveryTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kUseBuiltInRecoveryIfSupported);
+  }
+};
+
+TEST_F(SqlBuiltInRecoveryTest, ShouldAttemptRecovery) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
+  // Fuchsia.
+  ASSERT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+#else
   // Attempt to recover from corruption.
   ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
 
@@ -120,19 +163,17 @@ TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
   // the error callback should be reset before recovery is attempted.
   db_.set_error_callback(base::DoNothing());
   EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-// Baseline Recovery test covering the different ways to dispose of the
-// scoped pointer received from Recovery::Begin().
-TEST_P(SqlRecoveryTest, RecoverBasic) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, this tests what happens to the
-    // Recovery object when it goes out of scope. The new API does not publicly
-    // expose such an object.
-    return;
-  }
-
+// Baseline Recovery test covering the different ways to dispose of the scoped
+// pointer received from Recovery::Begin().
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, this tests what happens to the Recovery
+// object when it goes out of scope. The new API does not publicly expose such
+// an object.
+TEST_F(SqlLegacyRecoveryTest, RecoverBasic) {
   static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
   static const char kInsertSql[] = "INSERT INTO x VALUES ('This is a test')";
   static const char kAltInsertSql[] =
@@ -235,17 +276,14 @@ TEST_P(SqlRecoveryTest, RecoverBasic) {
 }
 
 // Test operation of the virtual table used by Recovery.
-TEST_P(SqlRecoveryTest, VirtualTable) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, this tests what happens to virtual
-    // tables added to the recovery database. The new API does not manually
-    // create the recovery database. Virtual table support is required to use
-    // the built-in module, but many of the other tests in this file would fail
-    // if virtual tables were not supported.
-    return;
-  }
-
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, this tests what happens to virtual
+// tables added to the recovery database. The new API does not manually
+// create the recovery database. Virtual table support is required to use
+// the built-in module, but many of the other tests in this file would fail
+// if virtual tables were not supported.
+TEST_F(SqlLegacyRecoveryTest, VirtualTable) {
   static const char kCreateSql[] = "CREATE TABLE x (t TEXT)";
   ASSERT_TRUE(db_.Execute(kCreateSql));
   ASSERT_TRUE(db_.Execute("INSERT INTO x VALUES ('This is a test')"));
@@ -288,14 +326,11 @@ TEST_P(SqlRecoveryTest, VirtualTable) {
 // Our corruption handling assumes that a corrupt index doesn't impact
 // SQL statements that only operate on the associated table. This test verifies
 // the assumption.
-TEST_P(SqlRecoveryTest, TableIndependentFromCorruptIndex) {
-  if (UseBuiltIn()) {
-    // This tests an assumption of the old corruption recovery module which is
-    // irrelevant to the new API. Specifically, that a corrupt index doesn't
-    // impact SQL statements that only operate on the associated table.
-    return;
-  }
-
+//
+// This tests an assumption of the legacy corruption recovery module which is
+// irrelevant to the new API. Specifically, that a corrupt index doesn't
+// impact SQL statements that only operate on the associated table.
+TEST_F(SqlLegacyRecoveryTest, TableIndependentFromCorruptIndex) {
   static const char kCreateTable[] =
       "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL)";
   ASSERT_TRUE(db_.Execute(kCreateTable));
@@ -735,16 +770,13 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithDefault) {
 // correctly.  In the wild, this would probably happen due to
 // corruption, but here it is simulated by recovering a table which
 // allowed nulls into a table which does not.
-TEST_P(SqlRecoveryTest, AutoRecoverTableNullFilter) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, this tests what happens to tables
-    // with NULL values in non-nullable columns. This test is not easily
-    // replicated, since SQLite does not support ALTER COLUMN. We'll trust that
-    // it's handled properly upstream.
-    return;
-  }
-
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, this tests what happens to tables
+// with NULL values in non-nullable columns. This test is not easily
+// replicated, since SQLite does not support ALTER COLUMN. We'll trust that
+// it's handled properly upstream.
+TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableNullFilter) {
   static const char kOrigSchema[] = "CREATE TABLE x (id INTEGER, t TEXT)";
   static const char kFinalSchema[] =
       "CREATE TABLE x (id INTEGER, t TEXT NOT NULL)";
@@ -821,14 +853,11 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithRowid) {
 }
 
 // Test that a compound primary key doesn't fire the ROWID code.
-TEST_P(SqlRecoveryTest, AutoRecoverTableWithCompoundKey) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, this tests how ROWID tables are
-    // handled.
-    return;
-  }
-
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, this tests how ROWID tables are
+// handled.
+TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableWithCompoundKey) {
   static const char kCreateSql[] =
       "CREATE TABLE x ("
       "id INTEGER NOT NULL,"
@@ -873,14 +902,11 @@ TEST_P(SqlRecoveryTest, AutoRecoverTableWithCompoundKey) {
 }
 
 // Test recovering from a table with fewer columns than the target.
-TEST_P(SqlRecoveryTest, AutoRecoverTableMissingColumns) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, this tests how tables with missing
-    // columns are handled.
-    return;
-  }
-
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, this tests how tables with missing
+// columns are handled.
+TEST_F(SqlLegacyRecoveryTest, AutoRecoverTableMissingColumns) {
   static const char kCreateSql[] =
       "CREATE TABLE x (id INTEGER PRIMARY KEY, t0 TEXT)";
   static const char kAlterSql[] =
@@ -961,13 +987,10 @@ TEST_P(SqlRecoveryTest, Bug387868) {
 
 // Memory-mapped I/O interacts poorly with I/O errors.  Make sure the recovery
 // database doesn't accidentally enable it.
-TEST_P(SqlRecoveryTest, NoMmap) {
-  if (UseBuiltIn()) {
-    // This tests behavior of the old corruption recovery module which is not
-    // needed in the new API. Specifically, that MMAPing is disabled.
-    return;
-  }
-
+//
+// This tests behavior of the legacy corruption recovery module which is not
+// needed in the new API. Specifically, that MMAPing is disabled.
+TEST_F(SqlLegacyRecoveryTest, NoMmap) {
   std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
   ASSERT_TRUE(recovery.get());
 
@@ -977,59 +1000,157 @@ TEST_P(SqlRecoveryTest, NoMmap) {
   EXPECT_TRUE(!s.Step() || !s.ColumnInt64(0));
 }
 
-TEST_P(SqlRecoveryTest, RecoverDatabase) {
+void TestRecoverDatabase(Database& db,
+                         const base::FilePath& db_path,
+                         bool with_meta,
+                         base::OnceClosure run_recovery) {
+  const int kVersion = 3;
+  const int kCompatibleVersion = 2;
+
+  if (with_meta) {
+    MetaTable meta;
+    EXPECT_TRUE(meta.Init(&db, kVersion, kCompatibleVersion));
+    EXPECT_EQ(kVersion, meta.GetVersionNumber());
+    EXPECT_EQ(kCompatibleVersion, meta.GetCompatibleVersionNumber());
+  }
+
   // As a side effect, AUTOINCREMENT creates the sqlite_sequence table for
   // RecoverDatabase() to handle.
-  ASSERT_TRUE(db_.Execute(
+  ASSERT_TRUE(db.Execute(
       "CREATE TABLE table1(id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('turtle')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('truck')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('trailer')"));
+  EXPECT_TRUE(db.Execute("INSERT INTO table1(value) VALUES('turtle')"));
+  EXPECT_TRUE(db.Execute("INSERT INTO table1(value) VALUES('truck')"));
+  EXPECT_TRUE(db.Execute("INSERT INTO table1(value) VALUES('trailer')"));
 
   // This table needs index and a unique index to work.
-  ASSERT_TRUE(db_.Execute("CREATE TABLE table2(name TEXT, value TEXT)"));
-  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX table2_name ON table2(name)"));
-  ASSERT_TRUE(db_.Execute("CREATE INDEX table2_value ON table2(value)"));
-  EXPECT_TRUE(db_.Execute(
-      "INSERT INTO table2(name, value) VALUES('jim', 'telephone')"));
+  ASSERT_TRUE(db.Execute("CREATE TABLE table2(name TEXT, value TEXT)"));
+  ASSERT_TRUE(db.Execute("CREATE UNIQUE INDEX table2_name ON table2(name)"));
+  ASSERT_TRUE(db.Execute("CREATE INDEX table2_value ON table2(value)"));
   EXPECT_TRUE(
-      db_.Execute("INSERT INTO table2(name, value) VALUES('bob', 'truck')"));
+      db.Execute("INSERT INTO table2(name, value) VALUES('jim', 'telephone')"));
   EXPECT_TRUE(
-      db_.Execute("INSERT INTO table2(name, value) VALUES('dean', 'trailer')"));
+      db.Execute("INSERT INTO table2(name, value) VALUES('bob', 'truck')"));
+  EXPECT_TRUE(
+      db.Execute("INSERT INTO table2(name, value) VALUES('dean', 'trailer')"));
 
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
-  const std::string original_schema = GetSchema(&db_);
-  ASSERT_EQ(4, base::ranges::count(original_schema, '\n')) << original_schema;
+  const std::string original_schema = GetSchema(&db);
+  ASSERT_EQ(with_meta ? 6 : 4, base::ranges::count(original_schema, '\n'))
+      << original_schema;
 
   static constexpr char kTable1Sql[] = "SELECT * FROM table1 ORDER BY 1";
   static constexpr char kTable2Sql[] = "SELECT * FROM table2 ORDER BY 1";
   EXPECT_EQ("1|turtle\n2|truck\n3|trailer",
-            ExecuteWithResults(&db_, kTable1Sql, "|", "\n"));
+            ExecuteWithResults(&db, kTable1Sql, "|", "\n"));
   EXPECT_EQ("bob|truck\ndean|trailer\njim|telephone",
-            ExecuteWithResults(&db_, kTable2Sql, "|", "\n"));
+            ExecuteWithResults(&db, kTable2Sql, "|", "\n"));
 
   // Database handle is valid before recovery, poisoned after.
   static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
-  EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
-  if (UseBuiltIn()) {
-    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
-                  &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
-              SqliteResultCode::kOk);
-  } else {
-    Recovery::RecoverDatabase(&db_, db_path_);
-  }
+  EXPECT_TRUE(db.IsSQLValid(kTrivialSql));
 
-  EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
+  std::move(run_recovery).Run();
+
+  EXPECT_FALSE(db.is_open());
 
   // Since the database was not corrupt, the entire schema and all data should
-  // be recovered.
-  ASSERT_TRUE(Reopen());
-  ASSERT_EQ(original_schema, GetSchema(&db_));
+  // be recovered. Re-open the database.
+  db.Close();
+  ASSERT_TRUE(db.Open(db_path));
+  ASSERT_EQ(original_schema, GetSchema(&db));
   EXPECT_EQ("1|turtle\n2|truck\n3|trailer",
-            ExecuteWithResults(&db_, kTable1Sql, "|", "\n"));
+            ExecuteWithResults(&db, kTable1Sql, "|", "\n"));
   EXPECT_EQ("bob|truck\ndean|trailer\njim|telephone",
-            ExecuteWithResults(&db_, kTable2Sql, "|", "\n"));
+            ExecuteWithResults(&db, kTable2Sql, "|", "\n"));
+
+  if (with_meta) {
+    MetaTable meta;
+    EXPECT_TRUE(meta.Init(&db, kVersion, kCompatibleVersion));
+    EXPECT_EQ(kVersion, meta.GetVersionNumber());
+    EXPECT_EQ(kCompatibleVersion, meta.GetCompatibleVersionNumber());
+  }
+}
+
+TEST_P(SqlRecoveryTest, RecoverDatabase) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    if (UseBuiltIn()) {
+      EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
+                    &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
+                SqliteResultCode::kOk);
+    } else {
+      Recovery::RecoverDatabase(&db_, db_path_);
+    }
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
+                      std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverDatabaseMeta) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    if (UseBuiltIn()) {
+      EXPECT_EQ(
+          BuiltInRecovery::RecoverDatabase(
+              &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+          SqliteResultCode::kOk);
+    } else {
+      Recovery::RecoverDatabaseWithMetaVersion(&db_, db_path_);
+    }
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossible) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
+                      std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossibleMeta) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_TRUE(BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT,
+        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze));
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithErrorCallback) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    db_.set_error_callback(base::DoNothing());
+    // The error callback should be reset during `RecoverIfPossible()` if
+    // recovery was attempted.
+    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT,
+        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+    EXPECT_TRUE(recovery_was_attempted);
+    EXPECT_NE(db_.has_error_callback(), recovery_was_attempted);
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithClosedDatabase) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    // Recovery should not be attempted on a closed database.
+    db_.Close();
+
+    EXPECT_FALSE(BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/false,
+                      std::move(run_recovery));
 }
 
 TEST_P(SqlRecoveryTest, RecoverDatabaseWithView) {
@@ -1304,16 +1425,6 @@ TEST_P(SqlRecoveryTest, PageSize) {
   }
 }
 
-TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
-  if (UseBuiltIn()) {
-    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
-                           nullptr, BuiltInRecovery::Strategy::kRecoverOrRaze));
-  } else {
-    // TODO(https://crbug.com/1255316): Ideally the line below should work.
-    // EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(nullptr, db_path_))
-  }
-}
-
 TEST_P(SqlRecoveryTest, CannotRecoverClosedDb) {
   db_.Close();
 
@@ -1336,19 +1447,37 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
   }
 }
 
-TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
+#if !BUILDFLAG(IS_FUCHSIA)
+// TODO(https://crbug.com/1255316): Ideally this would be a
+// `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
+// that it is passed a non-null database pointer and will instead likely result
+// in unexpected behavior or crashes.
+TEST_F(SqlBuiltInRecoveryTest, CannotRecoverNullDb) {
+  EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
+                         nullptr, BuiltInRecovery::Strategy::kRecoverOrRaze));
+}
+
+// TODO(https://crbug.com/1255316): Ideally this would be a
+// `SqlRecoveryTest`, but `Recovery::RecoverDatabase()` does not DCHECK
+// whether the database is in-memory and will instead likely result in
+// unexpected behavior or crashes.
+TEST_F(SqlBuiltInRecoveryTest, CannotRecoverInMemoryDb) {
   Database in_memory_db;
   ASSERT_TRUE(in_memory_db.OpenInMemory());
 
-  if (UseBuiltIn()) {
-    EXPECT_CHECK_DEATH(
-        std::ignore = BuiltInRecovery::RecoverDatabase(
-            &in_memory_db, BuiltInRecovery::Strategy::kRecoverOrRaze));
-  } else {
-    // TODO(https://crbug.com/1255316): Ideally the line below should work.
-    // EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&in_memory_db, db_path_))
-  }
+  EXPECT_CHECK_DEATH(
+      std::ignore = BuiltInRecovery::RecoverDatabase(
+          &in_memory_db, BuiltInRecovery::Strategy::kRecoverOrRaze));
 }
+
+TEST_P(SqlRecoveryTest, BuiltInRecoveryNotAttempedIfNotEnabled) {
+  // `BuiltInRecovery` will return early if the kill switch is disabled.
+  EXPECT_EQ(
+      base::FeatureList::IsEnabled(features::kUseBuiltInRecoveryIfSupported),
+      IsSqliteSuccessCode(BuiltInRecovery::RecoverDatabase(
+          &db_, BuiltInRecovery::Strategy::kRecoverOrRaze)));
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Bool());
 
