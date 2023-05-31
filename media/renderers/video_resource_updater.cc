@@ -35,6 +35,7 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -1340,8 +1341,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     const size_t upload_image_stride = cc::MathUtil::CheckedRoundUp<size_t>(
         bytes_per_row, kDefaultUnpackAlignment);
 
-    const size_t resource_bit_depth = static_cast<size_t>(
-        viz::BitsPerPixel(plane_si_format.resource_format()));
+    const size_t resource_bit_depth =
+        static_cast<size_t>(plane_si_format.BitsPerPixel());
 
     // Data downshifting is needed if the resource bit depth is not enough.
     const bool needs_bit_downshifting = bits_per_channel > resource_bit_depth;

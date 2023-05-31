@@ -617,7 +617,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       DCHECK(buffer_size);
 
       base::CheckedNumeric<uint32_t> checked_bytes_per_row(
-          BitsPerPixel(format) / 8);
+          format.BitsPerPixel() / 8);
       checked_bytes_per_row *= size.width();
 
       uint32_t packed_bytes_per_row;

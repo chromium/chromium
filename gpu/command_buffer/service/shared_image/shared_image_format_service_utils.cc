@@ -19,10 +19,6 @@
 
 namespace gpu {
 
-int BitsPerPixel(viz::SharedImageFormat format) {
-  return viz::BitsPerPixel(format.resource_format());
-}
-
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return viz::SinglePlaneSharedImageFormatToBufferFormat(format);

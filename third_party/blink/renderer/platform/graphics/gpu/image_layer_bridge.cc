@@ -262,10 +262,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
       recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
       [&size, &format](const RegisteredBitmap& registered) {
         unsigned src_bytes_per_pixel =
-            viz::BitsPerPixel(registered.bitmap->format().resource_format()) /
-            8;
-        unsigned target_bytes_per_pixel =
-            viz::BitsPerPixel(format.resource_format()) / 8;
+            registered.bitmap->format().BitsPerPixel() / 8;
+        unsigned target_bytes_per_pixel = format.BitsPerPixel() / 8;
         return (registered.bitmap->size().GetArea() * src_bytes_per_pixel !=
                 size.GetArea() * target_bytes_per_pixel);
       });

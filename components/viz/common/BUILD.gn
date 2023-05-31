@@ -11,11 +11,16 @@ import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 
-source_set("resource_format") {
+viz_component("resource_format") {
+  output_name = "viz_resource_format"
+
+  defines = [ "VIZ_RESOURCE_FORMAT_IMPLEMENTATION" ]
+
   sources = [
     "resources/resource_format.h",
     "resources/shared_image_format.cc",
     "resources/shared_image_format.h",
+    "viz_resource_format_export.h",
   ]
   public_deps = [
     "//base",
@@ -47,7 +52,6 @@ viz_component("resource_format_utils") {
     "resources/resource_sizes.h",
     "resources/shared_image_format_utils.cc",
     "resources/shared_image_format_utils.h",
-    "viz_resource_format_export.h",
   ]
 
   configs = [ "//third_party/khronos:khronos_headers" ]

@@ -771,7 +771,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
       return nullptr;
     }
 
-    int bytes_per_pixel = BitsPerPixel(format) / 8;
+    int bytes_per_pixel = format.BitsPerPixel() / 8;
 
     // NOTE: hwb_info.stride is in pixels
     int dst_stride = bytes_per_pixel * hwb_info.stride;
