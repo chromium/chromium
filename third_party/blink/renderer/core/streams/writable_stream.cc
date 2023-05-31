@@ -338,10 +338,9 @@ v8::Local<v8::Promise> WritableStream::Abort(ScriptState* script_state,
     return PromiseResolveWithUndefined(script_state);
   }
 
-  //  2. Signal abort on stream.[[controller]].[[signal]] with reason.
+  //  2. Signal abort on stream.[[controller]].[[abortController]] with reason.
   auto* isolate = script_state->GetIsolate();
-  stream->Controller()->signal()->SignalAbort(script_state,
-                                              ScriptValue(isolate, reason));
+  stream->Controller()->Abort(script_state, ScriptValue(isolate, reason));
 
   //  3. Let state be stream.[[state]].
   const auto state = stream->state_;
