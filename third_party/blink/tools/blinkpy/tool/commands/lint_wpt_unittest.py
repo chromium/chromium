@@ -465,6 +465,22 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(description,
                          "Test key 'restart-after' always has value '@True'")
 
+    def test_metadata_section_checks_exclusive(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?does-not-exist]
+              [subtest]
+                expected: FAIL
+            """, 'variant.html.ini')
+        # `META-SECTION-TOO-DEEP` should not be shown, since the test type
+        # cannot be determined.
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-UNKNOWN-TEST')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Test ID does not exist: 'variant.html?does-not-exist'")
+
     def test_metadata_condition_checks_exclusive(self):
         always_flaky, always_ok, unreachable_value = self._check_metadata(
             """\

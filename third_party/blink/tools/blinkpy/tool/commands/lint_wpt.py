@@ -519,7 +519,7 @@ class MetadataLinter(static.Compiler):
                     pathlib.Path(self.path).as_posix(), node.data)
                 if not self.manifest.is_test_url(test_id):
                     self._error(MetadataUnknownTest, test=test_id)
-                elif self.test_type == 'testharness':
+                if self.test_type == 'testharness':
                     next_type = SectionType.SUBTEST
             if not node.children:
                 assert heading
