@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -164,17 +165,23 @@ class ImageService::SuggestEntityImageURLFetcher {
 };
 
 ImageService::ImageService(
-    std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
+    TemplateURLService* template_url_service,
+    RemoteSuggestionsService* remote_suggestions_service,
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
-    syncer::SyncService* sync_service)
-    : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
+    syncer::SyncService* sync_service,
+    std::unique_ptr<AutocompleteSchemeClassifier>
+        autocomplete_scheme_classifier)
+    : template_url_service_(template_url_service),
+      remote_suggestions_service_(remote_suggestions_service),
       history_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(sync_service)),
       bookmarks_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
-                  sync_service)) {
+                  sync_service)),
+      autocomplete_scheme_classifier_(
+          std::move(autocomplete_scheme_classifier)) {
   if (opt_guide && base::FeatureList::IsEnabled(
                        kImageServiceOptimizationGuideSalientImages)) {
     opt_guide_ = opt_guide;
@@ -241,28 +248,24 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
   }
 
   if (options.suggest_images &&
-      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages)) {
-    // TODO(b/244507194): Get our "own" TemplateURLService.
-    if (auto* template_url_service =
-            autocomplete_provider_client_->GetTemplateURLService()) {
-      auto search_metadata =
-          template_url_service->ExtractSearchMetadata(page_url);
-      // Fetch entity-keyed images for Google SRP visits only, because only
-      // Google SRP visits can expect to have a reasonable entity from Google
-      // Suggest.
-      if (search_metadata && search_metadata->template_url &&
-          search_metadata->template_url->GetEngineType(
-              template_url_service->search_terms_data()) ==
-              SEARCH_ENGINE_GOOGLE) {
-        UmaHistogramEnumerationForClient(kBackendHistogramName,
-                                         PageImageServiceBackend::kSuggest,
-                                         client_id);
-        return FetchSuggestImage(search_metadata->template_url,
-                                 template_url_service->search_terms_data(),
-                                 client_id,
-                                 /*search_query=*/search_metadata->search_terms,
-                                 /*entity_id=*/"", std::move(callback));
-      }
+      base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages) &&
+      template_url_service_ && remote_suggestions_service_) {
+    auto search_metadata =
+        template_url_service_->ExtractSearchMetadata(page_url);
+    // Fetch entity-keyed images for Google SRP visits only, because only
+    // Google SRP visits can expect to have a reasonable entity from Google
+    // Suggest.
+    if (search_metadata && search_metadata->template_url &&
+        search_metadata->template_url->GetEngineType(
+            template_url_service_->search_terms_data()) ==
+            SEARCH_ENGINE_GOOGLE) {
+      UmaHistogramEnumerationForClient(
+          kBackendHistogramName, PageImageServiceBackend::kSuggest, client_id);
+      return FetchSuggestImage(search_metadata->template_url,
+                               template_url_service_->search_terms_data(),
+                               client_id,
+                               /*search_query=*/search_metadata->search_terms,
+                               /*entity_id=*/"", std::move(callback));
     }
   }
 
@@ -289,16 +292,13 @@ void ImageService::FetchSuggestImage(const TemplateURL* template_url,
                                      const std::string& entity_id,
                                      ResultCallback callback) {
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
-      autocomplete_provider_client_->GetSchemeClassifier(), client_id,
-      search_query, entity_id);
+      *autocomplete_scheme_classifier_, client_id, search_query, entity_id);
 
   // Use a raw pointer temporary so we can give ownership of the unique_ptr to
   // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
   fetcher_raw_ptr->Start(
-      template_url, search_terms_data,
-      autocomplete_provider_client_->GetRemoteSuggestionsService(
-          /*create_if_necessary=*/true),
+      template_url, search_terms_data, remote_suggestions_service_,
       base::BindOnce(&ImageService::OnSuggestImageFetched,
                      weak_factory_.GetWeakPtr(), std::move(fetcher),
                      std::move(callback)));
