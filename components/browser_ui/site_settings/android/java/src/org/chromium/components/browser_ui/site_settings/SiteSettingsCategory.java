@@ -27,7 +27,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.subresource_filter.SubresourceFilterFeatureList;
+import org.chromium.components.subresource_filter.SubresourceFilterFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.text.SpanApplier;
@@ -332,8 +332,7 @@ public class SiteSettingsCategory {
      * Returns whether the Ads category is enabled via an experiment flag.
      */
     public static boolean adsCategoryEnabled() {
-        return SubresourceFilterFeatureList.isEnabled(
-                SubresourceFilterFeatureList.SUBRESOURCE_FILTER);
+        return SubresourceFilterFeatureMap.isSubresourceFilterEnabled();
     }
 
     /**
