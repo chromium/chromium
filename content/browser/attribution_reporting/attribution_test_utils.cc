@@ -1177,7 +1177,7 @@ std::ostream& operator<<(std::ostream& out, const OsRegistration& r) {
 
 namespace {
 
-void CheckAttributionReportingEligibleHeader(
+void CheckAttributionReportingHeader(
     const std::string& header,
     const std::vector<std::string>& required_keys,
     const std::vector<std::string>& prohibited_keys) {
@@ -1200,7 +1200,7 @@ void CheckAttributionReportingEligibleHeader(
 
 void ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
     const std::string& header) {
-  CheckAttributionReportingEligibleHeader(
+  CheckAttributionReportingHeader(
       header,
       /*required_keys=*/{"event-source"},
       /*prohibited_keys=*/{"navigation-source", "trigger"});
@@ -1208,18 +1208,38 @@ void ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
 
 void ExpectValidAttributionReportingEligibleHeaderForImg(
     const std::string& header) {
-  CheckAttributionReportingEligibleHeader(
-      header,
-      /*required_keys=*/{"event-source", "trigger"},
-      /*prohibited_keys=*/{"navigation-source"});
+  CheckAttributionReportingHeader(header,
+                                  /*required_keys=*/{"event-source", "trigger"},
+                                  /*prohibited_keys=*/{"navigation-source"});
 }
 
 void ExpectValidAttributionReportingEligibleHeaderForNavigation(
     const std::string& header) {
-  CheckAttributionReportingEligibleHeader(
+  CheckAttributionReportingHeader(
       header,
       /*required_keys=*/{"navigation-source"},
       /*prohibited_keys=*/{"event-source", "trigger"});
+}
+
+void ExpectValidAttributionReportingSupportHeader(const std::string& header,
+                                                  bool web_expected,
+                                                  bool os_expected) {
+  std::vector<std::string> required_keys;
+  std::vector<std::string> prohibited_keys;
+
+  if (web_expected) {
+    required_keys.emplace_back("web");
+  } else {
+    prohibited_keys.emplace_back("web");
+  }
+
+  if (os_expected) {
+    required_keys.emplace_back("os");
+  } else {
+    prohibited_keys.emplace_back("os");
+  }
+
+  CheckAttributionReportingHeader(header, required_keys, prohibited_keys);
 }
 
 }  // namespace content

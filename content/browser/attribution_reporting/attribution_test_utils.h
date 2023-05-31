@@ -744,6 +744,10 @@ void ExpectValidAttributionReportingEligibleHeaderForImg(
 void ExpectValidAttributionReportingEligibleHeaderForNavigation(
     const std::string& header);
 
+void ExpectValidAttributionReportingSupportHeader(const std::string& header,
+                                                  bool web_expected,
+                                                  bool os_expected);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_
