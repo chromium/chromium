@@ -102,6 +102,7 @@ constexpr struct {
                                         .max = kScrollHistogramMax,
                                         .count = kScrollHistogramBucketCount,
                                         .version_suffix = "2"}}),
+    EVENT_TYPE(MouseMoved, ui::ET_MOUSE_MOVED),
 #undef EVENT_TYPE
 };
 static_assert(std::size(kInterestingEvents) ==

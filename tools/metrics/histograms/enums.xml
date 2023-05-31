@@ -33572,6 +33572,7 @@ Called by update_document_policy_enum.py.-->
   <int value="23" label="GesturePinchEnd"/>
   <int value="24" label="GesturePinchUpdate"/>
   <int value="25" label="InertialGesturePinchUpdate"/>
+  <int value="26" label="MouseMoved"/>
 </enum>
 
 <enum name="EventLatencyPinchInputType">

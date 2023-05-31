@@ -3381,6 +3381,7 @@ chromium-metrics-reviews@google.com.
     <variant name="KeyPressed"/>
     <variant name="KeyReleased"/>
     <variant name="MouseDragged"/>
+    <variant name="MouseMoved"/>
     <variant name="MousePressed"/>
     <variant name="MouseReleased"/>
     <variant name="MouseWheel"/>

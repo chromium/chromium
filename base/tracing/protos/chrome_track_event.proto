@@ -789,6 +789,7 @@ message EventLatency {
     GESTURE_PINCH_END = 24;
     GESTURE_PINCH_UPDATE = 25;
     INERTIAL_GESTURE_SCROLL_UPDATE = 26;
+    MOUSE_MOVED_EVENT = 27;
   }
 
   optional EventType event_type = 1;
