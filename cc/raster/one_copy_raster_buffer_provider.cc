@@ -419,9 +419,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   if (staging_buffer->mailbox.IsZero()) {
     const uint32_t usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE;
     staging_buffer->mailbox = sii->CreateSharedImage(
-        staging_buffer->gpu_memory_buffer.get(), gpu_memory_buffer_manager_,
-        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-        "OneCopyRasterStaging");
+        format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, usage, "OneCopyRasterStaging",
+        staging_buffer->gpu_memory_buffer.get()->CloneHandle());
   } else {
     sii->UpdateSharedImage(staging_buffer->sync_token, staging_buffer->mailbox);
   }
