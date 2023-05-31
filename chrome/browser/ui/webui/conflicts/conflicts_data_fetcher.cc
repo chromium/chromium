@@ -405,7 +405,7 @@ void ConflictsDataFetcher::GetListOfModules() {
   module_list_ = base::Value::List();
 
   auto* module_database = ModuleDatabase::GetInstance();
-  module_database->ForceStartInspection();
+  module_database->StartInspection();
   module_database->AddObserver(this);
 }
 

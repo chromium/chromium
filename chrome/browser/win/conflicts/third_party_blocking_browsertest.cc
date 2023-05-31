@@ -168,9 +168,6 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyBlockingBrowserTest,
       base::BindLambdaForTesting([quit_closure = run_loop.QuitClosure()]() {
         ModuleDatabase* module_database = ModuleDatabase::GetInstance();
 
-        // Speed up the test.
-        module_database->ForceStartInspection();
-
         base::FilePath module_list_path;
         ASSERT_NO_FATAL_FAILURE(CreateModuleList(&module_list_path));
         ASSERT_FALSE(module_list_path.empty());
