@@ -22926,6 +22926,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="1" label="Not enough free memory"/>
   <int value="2" label="Not enough free disk space"/>
   <int value="3" label="Update Engine is active"/>
+  <int value="4" label="Hiberimage is not set up"/>
 </enum>
 
 <enum name="CrosHibernateCycleEvent">
