@@ -64,6 +64,9 @@ function initializeOobe() {
 
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {
+    // Required on body to apply cros_color_overrides
+    document.body.classList.add('jelly-enabled');
+
     // Start listening for color changes in 'chrome://theme/colors.css'. Force
     // reload it once to account for any missed color change events between
     // loading oobe.html and here.
