@@ -14,6 +14,11 @@ const char kAccountsPrefAllowNewUser[] = "cros.accounts.allowGuest";
 const char kAccountsPrefShowUserNamesOnSignIn[] =
     "cros.accounts.showUserNamesOnSignIn";
 const char kAccountsPrefUsers[] = "cros.accounts.users";
+// Only `ChromeUserManagerImpl` is allowed to directly use this setting. All
+// other clients have to use `UserManager::IsEphemeralAccountId()` function to
+// get ephemeral mode for account ID. Such rule is needed because there are
+// new policies(e.g.kiosk ephemeral mode) that overrides behaviour of
+// the current setting for some accounts.
 const char kAccountsPrefEphemeralUsersEnabled[] =
     "cros.accounts.ephemeralUsersEnabled";
 const char kAccountsPrefDeviceLocalAccounts[] =

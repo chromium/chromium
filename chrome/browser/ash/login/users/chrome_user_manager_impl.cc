@@ -224,6 +224,11 @@ user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
   DCHECK(cros_settings);
 
   bool ephemeral_users_enabled = false;
+  // Only `ChromeUserManagerImpl` is allowed to directly use this setting. All
+  // other clients have to use `UserManager::IsEphemeralAccountId()` function to
+  // get ephemeral mode for account ID. Such rule is needed because there are
+  // new policies(e.g.kiosk ephemeral mode) that overrides behaviour of
+  // the current setting for some accounts.
   cros_settings->GetBoolean(ash::kAccountsPrefEphemeralUsersEnabled,
                             &ephemeral_users_enabled);
 
