@@ -92,6 +92,7 @@ class MockShoppingService : public commerce::ShoppingService {
               (uint64_t cluster_id, base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
+  MOCK_METHOD(bool, IsPriceInsightsEligible, (), (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -112,6 +113,7 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
   void SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
+  void SetIsPriceInsightsEligible(bool is_eligible);
 };
 
 }  // namespace commerce

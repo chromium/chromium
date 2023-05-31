@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarkProductInfo, PageCallbackRouter, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
+// TODO(b:283833590): Rename this file since it serves for all shopping features
+// now.
+import {BookmarkProductInfo, PageCallbackRouter, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
 
 let instance: ShoppingListApiProxy|null = null;
 
@@ -13,6 +15,7 @@ export interface ShoppingListApiProxy {
       Promise<{productInfos: BookmarkProductInfo[]}>;
   trackPriceForBookmark(bookmarkId: bigint): void;
   untrackPriceForBookmark(bookmarkId: bigint): void;
+  getProductInfoForCurrentUrl(): Promise<{productInfo: ProductInfo}>;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -45,6 +48,10 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   untrackPriceForBookmark(bookmarkId: bigint) {
     this.handler.untrackPriceForBookmark(bookmarkId);
+  }
+
+  getProductInfoForCurrentUrl() {
+    return this.handler.getProductInfoForCurrentUrl();
   }
 
   getCallbackRouter() {

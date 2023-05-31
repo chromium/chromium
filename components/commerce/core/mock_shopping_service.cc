@@ -44,6 +44,7 @@ MockShoppingService::MockShoppingService()
       std::vector<const bookmarks::BookmarkNode*>());
   SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*>());
+  SetIsPriceInsightsEligible(true);
 }
 
 MockShoppingService::~MockShoppingService() = default;
@@ -187,6 +188,11 @@ void MockShoppingService::SetGetAllShoppingBookmarksValue(
     std::vector<const bookmarks::BookmarkNode*> bookmarks) {
   ON_CALL(*this, GetAllShoppingBookmarks)
       .WillByDefault(testing::Return(bookmarks));
+}
+
+void MockShoppingService::SetIsPriceInsightsEligible(bool is_eligible) {
+  ON_CALL(*this, IsPriceInsightsEligible)
+      .WillByDefault(testing::Return(is_eligible));
 }
 
 }  // namespace commerce

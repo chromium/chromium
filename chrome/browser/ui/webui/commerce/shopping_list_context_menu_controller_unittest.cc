@@ -38,7 +38,8 @@ class MockShoppingListHandler : public ShoppingListHandler {
             shopping_service,
             nullptr,
             nullptr,
-            "") {}
+            "",
+            nullptr) {}
 
   MOCK_METHOD(void, TrackPriceForBookmark, (int64_t bookmark_id));
   MOCK_METHOD(void, UntrackPriceForBookmark, (int64_t bookmark_id));

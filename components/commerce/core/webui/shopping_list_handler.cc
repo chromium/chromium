@@ -27,6 +27,45 @@
 
 namespace commerce {
 namespace {
+
+shopping_list::mojom::ProductInfoPtr ProductInfoToMojoProduct(
+    const GURL& url,
+    const absl::optional<ProductInfo>& info,
+    const std::string& locale) {
+  auto product_info = shopping_list::mojom::ProductInfo::New();
+
+  if (!info.has_value()) {
+    return product_info;
+  }
+
+  product_info->title = info->title;
+  product_info->domain = base::UTF16ToUTF8(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          GURL(url)));
+  product_info->product_url = url;
+  product_info->image_url = info->image_url;
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(info->currency_code,
+                                                    locale);
+  formatter->SetMaxFractionalDigits(2);
+
+  product_info->current_price =
+      base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+          static_cast<float>(info->amount_micros) / kToMicroCurrency)));
+
+  // Only send the previous price if it is higher than the current price.
+  if (info->previous_amount_micros.has_value() &&
+      info->previous_amount_micros.value() > info->amount_micros) {
+    product_info->previous_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(info->previous_amount_micros.value()) /
+            kToMicroCurrency)));
+  }
+
+  return product_info;
+}
+
 shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
     bookmarks::BookmarkModel& model,
     const bookmarks::BookmarkNode* node,
@@ -87,14 +126,16 @@ ShoppingListHandler::ShoppingListHandler(
     ShoppingService* shopping_service,
     PrefService* prefs,
     feature_engagement::Tracker* tracker,
-    const std::string& locale)
+    const std::string& locale,
+    std::unique_ptr<Delegate> delegate)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
       pref_service_(prefs),
       tracker_(tracker),
-      locale_(locale) {
+      locale_(locale),
+      delegate_(std::move(delegate)) {
   scoped_observation_.Observe(shopping_service_);
   // It is safe to schedule updates and observe bookmarks. If the feature is
   // disabled, no new information will be fetched or provided to the frontend.
@@ -254,4 +295,26 @@ void ShoppingListHandler::onPriceTrackResult(int64_t bookmark_id,
   // failed.
   remote_page_->OperationFailedForBookmark(bookmark_id, is_tracking);
 }
+
+void ShoppingListHandler::GetProductInfoForCurrentUrl(
+    GetProductInfoForCurrentUrlCallback callback) {
+  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
+      !delegate_->GetCurrentTabUrl().has_value()) {
+    std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+    return;
+  }
+
+  shopping_service_->GetProductInfoForUrl(
+      delegate_->GetCurrentTabUrl().value(),
+      base::BindOnce(&ShoppingListHandler::OnFetchProductInfoForCurrentUrl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
+    GetProductInfoForCurrentUrlCallback callback,
+    const GURL& url,
+    const absl::optional<ProductInfo>& info) {
+  std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
+}
+
 }  // namespace commerce
