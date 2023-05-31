@@ -171,7 +171,10 @@
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
       // Switching accounts is not possible without sign-out.
-      NOTREACHED_NORETURN();
+      // TODO(crbug.com/1410747): DCHECK failures are reported for this
+      // codepath that requires more investigation.
+      NOTREACHED();
+      break;
     }
   }
 }
