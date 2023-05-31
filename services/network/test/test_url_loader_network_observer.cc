@@ -64,13 +64,6 @@ void TestURLLoaderNetworkObserver::OnDataUseUpdate(
     int64_t recv_bytes,
     int64_t sent_bytes) {}
 
-void TestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
-    const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageOperationPtr> operations,
-    OnSharedStorageHeaderReceivedCallback callback) {
-  std::move(callback).Run();
-}
-
 void TestURLLoaderNetworkObserver::Clone(
     mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) {
   receivers_.Add(this, std::move(observer));

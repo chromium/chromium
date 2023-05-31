@@ -92,7 +92,6 @@ class PrivateAggregationManager;
 class PushMessagingContext;
 class ResourceCacheManager;
 class QuotaContext;
-class SharedStorageHeaderObserver;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
 class SubresourceProxyingURLLoaderService;
@@ -143,9 +142,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverrideSharedStorageWorkletHostManagerForTesting(
       std::unique_ptr<SharedStorageWorkletHostManager>
           shared_storage_worklet_host_manager);
-  void OverrideSharedStorageHeaderObserverForTesting(
-      std::unique_ptr<SharedStorageHeaderObserver>
-          shared_storage_header_observer);
   void OverrideAggregationServiceForTesting(
       std::unique_ptr<AggregationService> aggregation_service);
   void OverrideAttributionManagerForTesting(
@@ -355,14 +351,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
                        int64_t recv_bytes,
                        int64_t sent_bytes) override;
-  void OnSharedStorageHeaderReceived(
-      const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageOperationPtr> operations,
-      OnSharedStorageHeaderReceivedCallback callback) override;
-
-  SharedStorageHeaderObserver* shared_storage_header_observer() {
-    return shared_storage_header_observer_.get();
-  }
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
     return url_loader_factory_getter_;
@@ -688,9 +676,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // it.
   std::unique_ptr<SharedStorageWorkletHostManager>
       shared_storage_worklet_host_manager_;
-
-  // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
-  std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
 
   std::unique_ptr<PrivateAggregationManager> private_aggregation_manager_;
 

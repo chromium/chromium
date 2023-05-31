@@ -23,7 +23,6 @@ include_rules = [
   "+components/network_session_configurator/common/network_switches.h",
   "+components/services/storage/privileged",
   "+components/services/storage/public",
-  "+components/services/storage/shared_storage",
   "+components/startup_metric_utils/browser",
   "+components/ukm/test_ukm_recorder.h",
   "+components/viz/client",
@@ -72,8 +71,5 @@ specific_include_rules = {
   ],
   "browser_test_utils.cc": [
     "+ash/webui/grit/ash_webui_common_resources.h"
-  ],
-  "test_shared_storage_header_observer.h": [
-    "+content/browser/shared_storage/shared_storage_header_observer.h"
   ]
 }

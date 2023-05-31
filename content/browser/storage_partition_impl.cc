@@ -93,7 +93,6 @@
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
@@ -1502,8 +1501,6 @@ void StoragePartitionImpl::Initialize(
                        : path.Append(storage::kSharedStoragePath);
     shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
         shared_storage_path, special_storage_policy_);
-    shared_storage_header_observer_ =
-        std::make_unique<SharedStorageHeaderObserver>(this);
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
@@ -2155,22 +2152,6 @@ void StoragePartitionImpl::OnDataUseUpdate(
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
       render_frame_host_id, network_traffic_annotation_id_hash, recv_bytes,
       sent_bytes);
-}
-
-void StoragePartitionImpl::OnSharedStorageHeaderReceived(
-    const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageOperationPtr> operations,
-    OnSharedStorageHeaderReceivedCallback callback) {
-  if (!shared_storage_header_observer_) {
-    std::move(callback).Run();
-    return;
-  }
-  auto* navigation_or_document =
-      url_loader_network_observers_.current_context().navigation_or_document();
-  DCHECK(navigation_or_document);
-  RenderFrameHost* rfh = navigation_or_document->GetDocument();
-  shared_storage_header_observer_->HeaderReceived(
-      request_origin, rfh, std::move(operations), std::move(callback));
 }
 
 void StoragePartitionImpl::Clone(
@@ -3074,13 +3055,6 @@ void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
   DCHECK(initialized_);
   shared_storage_worklet_host_manager_ =
       std::move(shared_storage_worklet_host_manager);
-}
-
-void StoragePartitionImpl::OverrideSharedStorageHeaderObserverForTesting(
-    std::unique_ptr<SharedStorageHeaderObserver>
-        shared_storage_header_observer) {
-  DCHECK(initialized_);
-  shared_storage_header_observer_ = std::move(shared_storage_header_observer);
 }
 
 void StoragePartitionImpl::OverrideAggregationServiceForTesting(

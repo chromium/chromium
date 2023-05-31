@@ -327,13 +327,6 @@ void NetworkServiceClient::OnDataUseUpdate(
       sent_bytes);
 }
 
-void NetworkServiceClient::OnSharedStorageHeaderReceived(
-    const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageOperationPtr> operations,
-    OnSharedStorageHeaderReceivedCallback callback) {
-  std::move(callback).Run();
-}
-
 void NetworkServiceClient::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {
