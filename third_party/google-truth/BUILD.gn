@@ -7,7 +7,7 @@ import("//build/config/android/rules.gni")
 java_prebuilt("google_truth_java") {
   testonly = true
 
-  # Uses the difflib package, which doesn't exist in third_party.
+  # Uses the autovalue package, which doesn't exist in third_party.
   enable_bytecode_checks = false
   supports_android = true
 
@@ -16,6 +16,7 @@ java_prebuilt("google_truth_java") {
 
   jar_path = "lib/truth-0.45.jar"
   deps = [
+    "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/junit:junit",
   ]
