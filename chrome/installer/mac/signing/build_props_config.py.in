@@ -43,4 +43,4 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
 
     @property
     def notarization_tool(self):
-        return self._notarization_tool or NotarizationTool.NOTARYTOOL
+        return NotarizationTool.NOTARYTOOL
