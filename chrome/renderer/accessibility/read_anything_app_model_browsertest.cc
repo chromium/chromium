@@ -844,6 +844,45 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest,
+       SelectionParentIsListItem_SelectionStateCorrect) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(4);
+  update.nodes[0].id = 1;
+  update.nodes[1].id = 2;
+  update.nodes[2].id = 3;
+  update.nodes[3].id = 4;
+  update.nodes[0].child_ids = {2, 3};
+  update.nodes[2].child_ids = {4};
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].role = ax::mojom::Role::kLink;
+  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                     "block");
+  update.nodes[3].role = ax::mojom::Role::kStaticText;
+  update.nodes[3].AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                     "list-item");
+  AccessibilityEventReceived({update});
+
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  ProcessSelection();
+
+  ASSERT_TRUE(HasSelection());
+  ASSERT_EQ(StartNodeId(), 4);
+  ASSERT_EQ(EndNodeId(), 4);
+
+  ASSERT_TRUE(SelectionNodeIdsContains(1));
+  ASSERT_FALSE(SelectionNodeIdsContains(2));
+  ASSERT_TRUE(SelectionNodeIdsContains(3));
+  ASSERT_TRUE(SelectionNodeIdsContains(4));
+}
+
+TEST_F(ReadAnythingAppModelTest,
        SelectionParentIsGenericContainerAndInline_SelectionStateCorrect) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
