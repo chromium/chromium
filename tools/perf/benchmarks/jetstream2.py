@@ -78,3 +78,23 @@ class JetStream2(JetStream20):
 
   def CreateStorySet(self, options):
     return page_sets.JetStream2StorySet(options.test_list)
+
+
+@benchmark.Info(
+    emails=['omerkatz@chromium.org'],
+    component='Blink>JavaScript>GarbageCollection',
+    documentation_url='https://browserbench.org/JetStream/in-depth.html')
+class JetStream2MinorMC(JetStream20):
+  """Latest JetStream2 with the MinorMC flag.
+
+  Shows the performance of upcoming MinorMC young generation GC in V8.
+  """
+  @classmethod
+  def Name(cls):
+    return 'jetstream2-minormc'
+
+  def CreateStorySet(self, options):
+    return page_sets.JetStream2StorySet(options.test_list)
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')

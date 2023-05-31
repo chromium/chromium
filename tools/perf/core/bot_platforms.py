@@ -229,6 +229,8 @@ OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
 OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'power.mobile',
     'blink_perf.sanitizer-api',
+    'jetstream2-minormc',
+    'octane-minormc',
     'speedometer2-minormc',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
@@ -383,6 +385,8 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _LINUX_BENCHMARK_CONFIGS_WITH_MINORMC = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Add(
     [
+        'jetstream2-minormc',
+        'octane-minormc',
         'speedometer2-minormc',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
@@ -414,7 +418,7 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
-    ]).Add(['speedometer2-minormc'])
+    ]).Add(['jetstream2-minormc', 'speedometer2-minormc'])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('speedometer2'),

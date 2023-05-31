@@ -12,6 +12,7 @@ UNDOCUMENTED_BENCHMARKS = {
     'load_library_perf_tests',
     'memory.desktop',
     'octane',
+    'octane-minormc',
     'performance_browser_tests',
     'startup.mobile',
     'system_health.webview_startup',
