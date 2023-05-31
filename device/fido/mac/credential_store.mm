@@ -259,10 +259,7 @@ TouchIdCredentialStore::CreateCredential(
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
   // The credential can only be used for signing, and the device needs to be in
   // an unlocked state.
-  auto flags =
-      base::FeatureList::IsEnabled(kWebAuthnMacPlatformAuthenticatorOptionalUv)
-          ? kSecAccessControlPrivateKeyUsage
-          : kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence;
+  auto flags = kSecAccessControlPrivateKeyUsage;
   base::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,

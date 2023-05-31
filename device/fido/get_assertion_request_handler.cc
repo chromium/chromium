@@ -294,11 +294,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
 
-  if (request.allow_list.empty() &&
-      (authenticator.AuthenticatorTransport() !=
-           FidoTransportProtocol::kInternal ||
-       !base::FeatureList::IsEnabled(
-           kWebAuthnMacPlatformAuthenticatorOptionalUv))) {
+  if (request.allow_list.empty() && authenticator.AuthenticatorTransport() !=
+                                        FidoTransportProtocol::kInternal) {
     // Resident credential requests on external authenticators always require
     // user verification.
     specialized_request.user_verification =

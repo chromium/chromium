@@ -73,18 +73,14 @@ void TouchIdAuthenticator::GetPlatformCredentialInfoForRequest(
     return;
   }
   std::vector<DiscoverableCredentialMetadata> result;
-  if (base::FeatureList::IsEnabled(
-          kWebAuthnMacPlatformAuthenticatorOptionalUv) ||
-      request.allow_list.empty()) {
-    // With `kWebAuthnMacPlatformAuthenticatorOptionalUv`, always report the
-    // list of credentials, because the UI will show a confirmation prompt for
-    // one randomly chosen credential and run through the same pre-select flow
-    // as for empty allow lists.
-    for (const auto& credential : *credentials) {
-      result.emplace_back(
-          AuthenticatorType::kTouchID, request.rp_id, credential.credential_id,
-          credential.metadata.ToPublicKeyCredentialUserEntity());
-    }
+  // With `kWebAuthnMacPlatformAuthenticatorOptionalUv`, always report the
+  // list of credentials, because the UI will show a confirmation prompt for
+  // one randomly chosen credential and run through the same pre-select flow
+  // as for empty allow lists.
+  for (const auto& credential : *credentials) {
+    result.emplace_back(AuthenticatorType::kTouchID, request.rp_id,
+                        credential.credential_id,
+                        credential.metadata.ToPublicKeyCredentialUserEntity());
   }
   std::move(callback).Run(
       std::move(result),

@@ -144,10 +144,7 @@ std::string Cryptor::DeriveKey(Algorithm alg) const {
 
 // static
 CredentialMetadata::Version CredentialMetadata::CurrentVersion() {
-  return base::FeatureList::IsEnabled(
-             kWebAuthnMacPlatformAuthenticatorOptionalUv)
-             ? CredentialMetadata::Version::kV4
-             : CredentialMetadata::Version::kV3;
+  return CredentialMetadata::Version::kV4;
 }
 
 // static

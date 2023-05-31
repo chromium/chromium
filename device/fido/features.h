@@ -43,10 +43,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Support optional UV for new credentials in the macOS platform authenticator.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnMacPlatformAuthenticatorOptionalUv);
-
 // Show a "Use the passkey from your phone" sheet instead of the mechanism
 // selection screen if we are confident a request can be resolved using an
 // already paired phone.

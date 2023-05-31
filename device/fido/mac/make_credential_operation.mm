@@ -58,8 +58,6 @@ void MakeCredentialOperation::Run() {
   }
 
   const bool require_uv =
-      !base::FeatureList::IsEnabled(
-          kWebAuthnMacPlatformAuthenticatorOptionalUv) ||
       DeviceHasBiometricsAvailable() ||
       request_.user_verification == UserVerificationRequirement::kRequired;
   if (require_uv) {
