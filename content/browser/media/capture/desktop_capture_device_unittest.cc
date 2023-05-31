@@ -64,11 +64,6 @@ const int kFrameRate = 30;
 
 constexpr base::TimeDelta kVirtualTestDurationSeconds = base::Seconds(100);
 
-// We schedule a new attempt to capture a refresh frame within ~2 times the
-// specified frame duration which is ~33 ms given kFrameRate (30 fps).
-constexpr base::TimeDelta kDelayBeforeNextRefreshAttempt =
-    base::Milliseconds(66);
-
 // The value of the padding bytes in unpacked frames.
 const uint8_t kFramePaddingValue = 0;
 
@@ -266,13 +261,6 @@ class FormatChecker {
   int frame_count_;
 };
 
-class MockRefreshFrameCallbackClient
-    : public DesktopCaptureDevice::RefreshFrameCallback {
- public:
-  MockRefreshFrameCallbackClient() = default;
-  MOCK_METHOD0(OnCaptureFrameIsRefresh, void(void));
-};
-
 }  // namespace
 
 class DesktopCaptureDeviceTest : public testing::Test {
@@ -310,11 +298,6 @@ class DesktopCaptureDeviceTest : public testing::Test {
           return media::VideoCaptureDevice::Client::ReserveResult::kSucceeded;
         }));
     return result;
-  }
-
-  std::unique_ptr<MockRefreshFrameCallbackClient>
-  CreateMockRefreshFrameCallbackClient() {
-    return std::make_unique<NiceMock<MockRefreshFrameCallbackClient>>();
   }
 
   std::unique_ptr<DesktopCaptureDevice> capture_device_;
@@ -641,11 +624,6 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameBeforeStart) {
   EXPECT_CALL(*client, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
       .Times(0);
 
-  std::unique_ptr<MockRefreshFrameCallbackClient> rrf_client(
-      CreateMockRefreshFrameCallbackClient());
-  EXPECT_CALL(*rrf_client, OnCaptureFrameIsRefresh()).Times(0);
-
-  capture_device_->SetRefreshFrameCallbackForTesting(rrf_client.get());
   capture_device_->RequestRefreshFrame();
   capture_device_->StopAndDeAllocate();
 }
@@ -672,10 +650,6 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameAfterStop) {
       .WillRepeatedly(
           InvokeWithoutArgs(&done_event, &base::WaitableEvent::Signal));
 
-  std::unique_ptr<MockRefreshFrameCallbackClient> rrf_client(
-      CreateMockRefreshFrameCallbackClient());
-  EXPECT_CALL(*rrf_client, OnCaptureFrameIsRefresh()).Times(0);
-
   media::VideoCaptureParams capture_params;
   capture_params.requested_format.frame_size.SetSize(kTestFrameWidth1,
                                                      kTestFrameHeight1);
@@ -685,7 +659,6 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameAfterStop) {
   // AllocateAndStart() should trigger one call to OnIncomingCapturedData() but
   // RequestRefreshFrame() should not trigger a second call to
   // OnIncomingCapturedData() since it is is called after StopAndDeAllocate();
-  capture_device_->SetRefreshFrameCallbackForTesting(rrf_client.get());
   capture_device_->AllocateAndStart(capture_params, std::move(client));
   EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
   done_event.Reset();
@@ -931,178 +904,6 @@ TEST_F(DesktopCaptureDeviceThrottledTest, ThrottledOn_Async) {
   // The test succeeds if the actual framerate is near the expected_framerate.
   EXPECT_GE(actual_framerate, expected_framerate);
   EXPECT_LE(actual_framerate, expected_framerate + 0.1);
-}
-
-class DesktopCaptureDeviceRequestRefreshFrameTest
-    : public DesktopCaptureDeviceTest {
- public:
-  struct Case {
-    base::TimeDelta last_capture_duration;
-    bool emulate_rrf;
-  };
-
-  // Capture one frame for each test case of type Case in `cases_` and emulate
-  // capture times given by the `last_capture_duration` record in each test
-  // case. If the `emulate_rrf` record is set to true, a call to
-  // RequestRefreshFrame() is triggered. Given a frame rate of 30 fps, the ideal
-  // time between two successive frames is 33 ms but the capturer allows a max
-  // CPU load or 50% (on a single core) and throttles/reduces the effective
-  // frame rate if the screen capturer is too slow. Hence, throttling takes
-  // place when `last_capture_duration` is larger than 16 ms in this test.
-  // Examples:
-  //    1) last_capture_duration = 10 ms => time to next capture event = 23 ms
-  //    2) last_capture_duration = 15 ms => time to next capture event = 18 ms
-  //    3) last_capture_duration = 20 ms => time to next capture event = 20 ms
-  //    4) last_capture_duration = 30 ms => time to next capture event = 30 ms
-  //    5) last_capture_duration = 70 ms => time to next capture event = 70 ms
-  // In the examples above, (1) and (2) leads to the ideal time between two
-  // captured frames of 33 ms <=> no throttling while (3), (4), and (5) all
-  // result in times between two successive captured frames larger than 33 ms
-  // which corresponds to throttling. Finally, when a refresh frame is
-  // requested, a timer delay of 2 * 33 = 66 ms is used which means that the RRF
-  // timer will fire only if the RequestRefreshFrame() API is called directly
-  // after a capture call that took more than 66 ms (case (5) above). In all
-  // other cases, the RRF timer will be canceled bu default capture events
-  // before being triggered.
-  int CaptureFrames(int expected_number_of_rrfs) {
-    auto capturer = std::make_unique<FakeScreenCapturer>();
-    CreateScreenCaptureDevice(std::move(capturer));
-
-    FormatChecker format_checker(
-        gfx::Size(kTestFrameWidth3, kTestFrameHeight3),
-        gfx::Size(kTestFrameWidth3, kTestFrameHeight3));
-
-    base::WaitableEvent done_event(
-        base::WaitableEvent::ResetPolicy::AUTOMATIC,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-
-    scoped_refptr<base::SingleThreadTaskRunner> message_loop_task_runner;
-    scoped_refptr<base::TestMockTimeTaskRunner> task_runner;
-    int num_frames = 0;
-
-    // Observer of RRF callbacks. Only used for testing purposes.
-    std::unique_ptr<MockRefreshFrameCallbackClient> rrf_client(
-        CreateMockRefreshFrameCallbackClient());
-    EXPECT_CALL(*rrf_client, OnCaptureFrameIsRefresh())
-        .Times(expected_number_of_rrfs);
-
-    std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
-        CreateMockVideoCaptureDeviceClient());
-    EXPECT_CALL(*client, OnError(_, _, _)).Times(0);
-    // On started is called from the internal desktopCaptureThread which has its
-    // own message loop.
-    EXPECT_CALL(*client, OnStarted())
-        .WillOnce(
-            InvokeWithoutArgs([this, &task_runner, &message_loop_task_runner] {
-              message_loop_task_runner =
-                  base::SingleThreadTaskRunner::GetCurrentDefault();
-              task_runner = new base::TestMockTimeTaskRunner(
-                  base::Time::Now(), base::TimeTicks::Now(),
-                  base::TestMockTimeTaskRunner::Type::kStandalone);
-              capture_device_->SetMockTimeForTesting(
-                  task_runner, task_runner->GetMockTickClock());
-            }));
-
-    EXPECT_CALL(*client, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
-        .WillRepeatedly(DoAll(WithArg<2>(
-            Invoke([this, &format_checker, &done_event, &num_frames,
-                    &task_runner, &message_loop_task_runner](
-                       const media::VideoCaptureFormat& frame_format) {
-              format_checker.ExpectAcceptableSize(frame_format);
-
-              Case test_case = cases_[num_frames];
-
-              // Possibly request a refresh frame as part of the test.
-              if (test_case.emulate_rrf) {
-                capture_device_->RequestRefreshFrame();
-              }
-
-              // Simulate real device capture time. Indeed the time spent
-              // here in OnIncomingCapturedData is take into account for
-              // the capture duration.
-              task_runner->FastForwardBy(test_case.last_capture_duration);
-
-              ++num_frames;
-
-              // Stop advancing when we run out of expected frames.
-              if (num_frames == NumTestCases()) {
-                done_event.Signal();
-              } else {
-                // 'PostNonNestable' is required to make sure the next one
-                // shot capture timer is already pushed when forwarding the
-                // virtual time by the next pending task delay.
-                message_loop_task_runner->PostNonNestableTask(
-                    FROM_HERE,
-                    base::BindOnce(
-                        [](scoped_refptr<base::TestMockTimeTaskRunner>
-                               task_runner) {
-                          task_runner->FastForwardBy(
-                              task_runner->NextPendingTaskDelay());
-                        },
-                        task_runner));
-              }
-            }))));
-
-    media::VideoCaptureParams capture_params;
-    capture_params.requested_format.frame_size.SetSize(kTestFrameWidth3,
-                                                       kTestFrameHeight3);
-    capture_params.requested_format.frame_rate = kFrameRate;
-    capture_params.requested_format.pixel_format = media::PIXEL_FORMAT_I420;
-    capture_params.resolution_change_policy =
-        media::ResolutionChangePolicy::FIXED_RESOLUTION;
-
-    capture_device_->SetRefreshFrameCallbackForTesting(rrf_client.get());
-    capture_device_->AllocateAndStart(capture_params, std::move(client));
-
-    EXPECT_TRUE(done_event.TimedWait(TestTimeouts::action_max_timeout()));
-    done_event.Reset();
-
-    EXPECT_GT(num_frames, 0);
-
-    capture_device_->StopAndDeAllocate();
-
-    return num_frames;
-  }
-
- protected:
-  int NumTestCases() const { return static_cast<int>(cases_.size()); }
-
-  std::vector<Case> cases_;
-};
-
-// Tests that asking for a request frame directly after a capture call that
-// took longer than kDelayBeforeNextRefreshAttempt triggers a request frame
-// instead of a default capture frame.
-TEST_F(DesktopCaptureDeviceRequestRefreshFrameTest,
-       RequestRefreshFrameAfterLongEnoughCaptureDelayTriggersRefresh) {
-  cases_ = {
-      {kDelayBeforeNextRefreshAttempt + base::Milliseconds(5), true},
-      {base::Milliseconds(5), false},
-      {base::Milliseconds(10), false},
-  };
-
-  const int expected_number_of_rrfs = 1;
-  int num_frames = CaptureFrames(expected_number_of_rrfs);
-  EXPECT_EQ(num_frames, NumTestCases());
-}
-
-// Tests that asking for a request frame directly after a capture call that
-// took slightly less than kDelayBeforeNextRefreshAttempt does not triggers a
-// request frame instead of a default capture frame. The pending RRF event
-// shall be canceled by the default capture event since it is due before the
-// RRF timer triggers (61 ms in the test below).
-TEST_F(
-    DesktopCaptureDeviceRequestRefreshFrameTest,
-    RequestRefreshFrameAfterNotLongEnoughCaptureDelayDoesNotTriggersRefresh) {
-  cases_ = {
-      {kDelayBeforeNextRefreshAttempt - base::Milliseconds(5), true},
-      {base::Milliseconds(10), false},
-      {base::Milliseconds(20), false},
-  };
-
-  const int expected_number_of_rrfs = 0;
-  int num_frames = CaptureFrames(expected_number_of_rrfs);
-  EXPECT_EQ(num_frames, NumTestCases());
 }
 
 }  // namespace content

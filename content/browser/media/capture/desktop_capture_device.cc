@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -72,10 +73,6 @@ const int kDefaultMaximumCpuConsumptionPercentage = 50;
 // (EMA) filter used to calculate the current frame rate (in frames per second).
 constexpr float kAlpha = 0.1;
 
-// The maximum refresh delay. Callers of the API that request a refresh
-// frame may end up waiting up to this long.
-static constexpr base::TimeDelta kMaxRefreshDelay = base::Seconds(1);
-
 webrtc::DesktopRect ComputeLetterboxRect(
     const webrtc::DesktopSize& max_size,
     const webrtc::DesktopSize& source_size) {
@@ -130,6 +127,17 @@ void LogDesktopCaptureFrameRate(DesktopMediaID::Type capturer_type,
   }
 }
 
+void LogDesktopCaptureRequestRefreshRate(DesktopMediaID::Type capturer_type,
+                                         int rrf_rate_fps) {
+  if (capturer_type == DesktopMediaID::TYPE_SCREEN) {
+    UMA_HISTOGRAM_COUNTS_100("WebRTC.DesktopCapture.RefreshRate.Screen",
+                             rrf_rate_fps);
+  } else {
+    UMA_HISTOGRAM_COUNTS_100("WebRTC.DesktopCapture.RefreshRate.Window",
+                             rrf_rate_fps);
+  }
+}
+
 }  // namespace
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
@@ -159,8 +167,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
 
-  void SetRefreshFrameCallbackForTesting(RefreshFrameCallback* rrf_callback);
-
   base::WeakPtr<Core> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
@@ -173,13 +179,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // Method that is scheduled on |task_runner_| to be called on regular interval
   // to capture a frame.
   void OnCaptureTimer();
-
-  // Method that is scheduled on |task_runner_| and called as a result of a
-  // previous call to |RequestRefreshFrame|. Leads to capturing of a new frame
-  // when the default captured stream did not provide frames on time for some
-  // reason. No-op if a default capture event is already pending by the time
-  // this method is called.
-  void OnRequestRefreshFrameTimer();
 
   // Captures a frame. Upon completion, schedules the next frame. The frame type
   // is a refresh frame if `is_refresh_frame` is true and a default frame
@@ -219,6 +218,11 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   // sample. Unit is in frames per second (fps).
   float frame_rate_;
 
+  // Contains the measured request-refresh rate using an exponential moving
+  // average (EMA) filter. Uses a simple filter with 0.1 weight of the current
+  // sample. Unit is in frames per second (fps).
+  float rrf_rate_;
+
   // Records time of last call to CaptureFrame.
   base::TimeTicks capture_start_time_;
 
@@ -247,12 +251,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
   // Timer used to capture the frame.
   std::unique_ptr<base::OneShotTimer> capture_timer_;
-
-  // This timer is started whenever the consumer needs another frame delivered.
-  // This might be because: 1) the consumer was just started and needs an
-  // initial frame; 2) the capture target changed; 3) to satisfy explicit
-  // requests for a refresh frame, when RequestRefreshFrame() has been called.
-  std::unique_ptr<base::OneShotTimer> request_refresh_frame_timer_;
 
   // See above description of kDefaultMaximumCpuConsumptionPercentage.
   int max_cpu_consumption_percentage_;
@@ -286,12 +284,15 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
   // The time when Core::CaptureFrame() is called. Used to derive the delta
   // time since last call. The delta time then drives the frame-rate filter
-  // which results in an average capture frame rate in `frame_ra>e_`.
+  // which results in an average capture frame rate in `frame_rate_`.
   base::TimeTicks last_capture_time_;
 
-  std::unique_ptr<webrtc::BasicDesktopFrame> black_frame_;
+  // The time when Core::RequestRefreshFrame() is called. Used to derive the
+  // delta time since last call. The delta time then drives the refresh-rate
+  // filter which results in an average refresh rate in `rrf_rate_`.
+  base::TimeTicks last_rrf_time_;
 
-  raw_ptr<RefreshFrameCallback> rrf_callback_ = nullptr;
+  std::unique_ptr<webrtc::BasicDesktopFrame> black_frame_;
 
   // TODO(jiayl): Remove wake_lock_ when there is an API to keep the
   // screen from sleeping for the drive-by web.
@@ -308,7 +309,6 @@ DesktopCaptureDevice::Core::Core(
     : task_runner_(task_runner),
       desktop_capturer_(std::move(capturer)),
       capture_timer_(new base::OneShotTimer()),
-      request_refresh_frame_timer_(new base::OneShotTimer()),
       max_cpu_consumption_percentage_(kDefaultMaximumCpuConsumptionPercentage),
       capture_in_progress_(false),
       first_capture_returned_(false),
@@ -337,6 +337,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   client_ = std::move(client);
   requested_frame_rate_ = params.requested_format.frame_rate;
   frame_rate_ = requested_frame_rate_;
+  rrf_rate_ = 0;
   requested_frame_duration_ = base::Microseconds(static_cast<int64_t>(
       static_cast<double>(base::Time::kMicrosecondsPerSecond) /
           requested_frame_rate_ +
@@ -374,25 +375,25 @@ void DesktopCaptureDevice::Core::RequestRefreshFrame() {
     return;
   }
 
-  // Ignore this request if one is already pending.
-  if (request_refresh_frame_timer_->IsRunning()) {
-    return;
+  const base::TimeTicks now = NowTicks();
+  if (last_rrf_time_.is_null()) {
+    last_rrf_time_ = now;
+  } else {
+    const base::TimeDelta delta_ms = now - last_rrf_time_;
+    // We use an exponential moving average (EMA) filter to calculate the
+    // current RRF frame rate (in frames per second).
+    const float input_frame_rate_fps = (1000.0 / delta_ms.InMillisecondsF());
+    rrf_rate_ = kAlpha * input_frame_rate_fps + (1.0 - kAlpha) * rrf_rate_;
+    last_rrf_time_ = now;
+    VLOG(2) << " rrf_delta_ms=" << delta_ms.InMillisecondsF()
+            << ", rrf_rate=" << frame_rate_ << " [fps]";
+    const int rrf_rate_fps = base::saturated_cast<int>(frame_rate_ + 0.5);
+    LogDesktopCaptureRequestRefreshRate(capturer_type_, rrf_rate_fps);
   }
 
-  // Schedule a new attempt to capture a refresh frame within ~2 times the
-  // specified frame duration. The attempt will be canceled if a default capture
-  // event is triggered before this timer fires.
-  request_refresh_frame_timer_->Start(FROM_HERE,
-                                      GetDelayBeforeNextRefreshAttempt(), this,
-                                      &Core::OnRequestRefreshFrameTimer);
-}
-
-base::TimeDelta DesktopCaptureDevice::Core::GetDelayBeforeNextRefreshAttempt()
-    const {
-  // The delay should be long enough to prevent interrupting the smooth timing
-  // of captured frames. However, the delay should not be excessively long
-  // either. Two default frame periods should be "just right."
-  return std::min(kMaxRefreshDelay, 2 * requested_frame_duration_);
+  if (!capture_in_progress_) {
+    CaptureFrame(/*is_refresh_frame=*/true);
+  }
 }
 
 void DesktopCaptureDevice::Core::SetNotificationWindowId(
@@ -408,14 +409,6 @@ void DesktopCaptureDevice::Core::SetMockTimeForTesting(
   tick_clock_ = tick_clock;
   capture_timer_ = std::make_unique<base::OneShotTimer>(tick_clock_);
   capture_timer_->SetTaskRunner(task_runner);
-  request_refresh_frame_timer_ =
-      std::make_unique<base::OneShotTimer>(tick_clock_);
-  request_refresh_frame_timer_->SetTaskRunner(task_runner);
-}
-
-void DesktopCaptureDevice::Core::SetRefreshFrameCallbackForTesting(
-    RefreshFrameCallback* rrf_callback) {
-  rrf_callback_ = rrf_callback;
 }
 
 void DesktopCaptureDevice::Core::OnCaptureResult(
@@ -427,6 +420,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
   capture_in_progress_ = false;
   const bool frame_is_refresh = refresh_in_progress_;
   refresh_in_progress_ = false;
+  TRACE_EVENT1("webrtc", __func__, "frame_is_refresh", frame_is_refresh);
 
   bool success = result == webrtc::DesktopCapturer::Result::SUCCESS;
 
@@ -465,17 +459,17 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
 
   // Continue capturing frames when there are no changes in updated regions
   // since the last captured frame but don't send the same frame again to the
-  // client. Clients may call RequestRefreshFrame() to ask for a copy of the
-  // last captured frame. Checking `first_ref_time_` ensures that at least one
-  // frame has been captured before 0Hz can be activated. The zero-hertz mode
-  // is disabled if the captured frame is a refresh frame to guarantee that the
-  // client actually receives a new frame when explicitly asking for it.
+  // client. Checking `first_ref_time_` ensures that at least one frame has been
+  // captured before 0Hz can be activated. The zero-hertz mode is disabled if
+  // the captured frame is a refresh frame to guarantee that the client actually
+  // receives a new frame when explicitly asking for it.
   // |zero_hertz_is_supported()| can be false in combination with capturers that
   // do not support the 0Hz mode, e.g. Windows capturers using the WGC API.
   const bool zero_hertz_is_active =
       zero_hertz_is_supported() && !first_ref_time_.is_null() &&
       !frame_is_refresh && frame->updated_region().is_empty();
-  VLOG(2) << __func__ << " [SUCCESS]" << (zero_hertz_is_active ? "[0Hz]" : "");
+  VLOG(2) << __func__ << " [SUCCESS]" << (frame_is_refresh ? "[RRF]" : "")
+          << (zero_hertz_is_active ? "[0Hz]" : "");
   if (zero_hertz_is_supported()) {
     LogDesktopCaptureZeroHzIsActive(capturer_type_, zero_hertz_is_active);
   }
@@ -609,10 +603,6 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
       now - first_ref_time_);
 
-  if (rrf_callback_ && frame_is_refresh) {
-    rrf_callback_->OnCaptureFrameIsRefresh();
-  }
-
   ScheduleNextCaptureFrame();
 }
 
@@ -622,20 +612,7 @@ void DesktopCaptureDevice::Core::OnCaptureTimer() {
   if (!client_)
     return;
 
-  request_refresh_frame_timer_->Stop();
   CaptureFrame(/*is_refresh_frame=*/false);
-}
-
-void DesktopCaptureDevice::Core::OnRequestRefreshFrameTimer() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-
-  if (!client_) {
-    return;
-  }
-
-  if (!capture_in_progress_) {
-    CaptureFrame(/*is_refresh_frame=*/true);
-  }
 }
 
 void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
@@ -649,40 +626,36 @@ void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
 
   if (!is_refresh_frame) {
     capture_in_progress_ = true;
-    // Cancel any outstanding refresh attempts when we are about to capture a
-    // frame the default way. The following is a no-op, if the timer was not
-    // running.
-    request_refresh_frame_timer_->Stop();
-    capture_in_progress_ = true;
   } else {
     refresh_in_progress_ = true;
-    // Cancel any outstanding default capture attempts since we know that a
-    // request frame is about to be captured. If we don't do this there is a
-    // risk that the pending default capture event triggers back-to-back with
-    // the RRF and that can cause a spike in the frame rate.
-    capture_timer_->Stop();
   }
 
-  if (last_capture_time_.is_null()) {
-    last_capture_time_ = capture_start_time_;
-  } else {
-    const base::TimeDelta delta_ms = capture_start_time_ - last_capture_time_;
-    // We use an exponential moving average (EMA) filter to calculate the
-    // current frame rate (in frames per second). The filter has the following
-    // difference (time-domain) equation:
-    //   y[i]=α⋅x[i]+(1-α)⋅y[i−1]
-    // where
-    //   y is the output, [i] denotes the sample number, x is the input, and α
-    //   is a constant which sets the cutoff frequency (a value between 0 and
-    //   1 where 1 corresponds to "no filtering").
-    // A value of α=0.1 results in a suitable amount of smoothing.
-    const float input_frame_rate_fps = (1000.0 / delta_ms.InMillisecondsF());
-    frame_rate_ = kAlpha * input_frame_rate_fps + (1.0 - kAlpha) * frame_rate_;
-    last_capture_time_ = capture_start_time_;
-    VLOG(2) << " delta_ms=" << delta_ms.InMillisecondsF()
-            << ", frame_rate=" << frame_rate_ << " [fps]";
-    const int frame_rate_fps = base::saturated_cast<int>(frame_rate_ + 0.5);
-    LogDesktopCaptureFrameRate(capturer_type_, frame_rate_fps);
+  // Track the average frame rate for the default capture path. Frame rate for
+  // request refresh frames is tracked separately by calls to
+  // RequestRefreshFrame (see `rrf_rate_`);
+  if (!is_refresh_frame) {
+    if (last_capture_time_.is_null()) {
+      last_capture_time_ = capture_start_time_;
+    } else {
+      const base::TimeDelta delta_ms = capture_start_time_ - last_capture_time_;
+      // We use an exponential moving average (EMA) filter to calculate the
+      // current frame rate (in frames per second). The filter has the following
+      // difference (time-domain) equation:
+      //   y[i]=α⋅x[i]+(1-α)⋅y[i−1]
+      // where
+      //   y is the output, [i] denotes the sample number, x is the input, and α
+      //   is a constant which sets the cutoff frequency (a value between 0 and
+      //   1 where 1 corresponds to "no filtering").
+      // A value of α=0.1 results in a suitable amount of smoothing.
+      const float input_frame_rate_fps = (1000.0 / delta_ms.InMillisecondsF());
+      frame_rate_ =
+          kAlpha * input_frame_rate_fps + (1.0 - kAlpha) * frame_rate_;
+      last_capture_time_ = capture_start_time_;
+      VLOG(2) << " delta_ms=" << delta_ms.InMillisecondsF()
+              << ", frame_rate=" << frame_rate_ << " [fps]";
+      const int frame_rate_fps = base::saturated_cast<int>(frame_rate_ + 0.5);
+      LogDesktopCaptureFrameRate(capturer_type_, frame_rate_fps);
+    }
   }
 
   desktop_capturer_->CaptureFrame();
@@ -904,11 +877,6 @@ void DesktopCaptureDevice::SetMockTimeForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock) {
   core_->SetMockTimeForTesting(task_runner, tick_clock);  // IN-TEST
-}
-
-void DesktopCaptureDevice::SetRefreshFrameCallbackForTesting(
-    RefreshFrameCallback* rrf_callback) {
-  core_->SetRefreshFrameCallbackForTesting(rrf_callback);  // IN-TEST
 }
 
 }  // namespace content

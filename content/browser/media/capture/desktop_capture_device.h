@@ -36,14 +36,6 @@ namespace content {
 // not on Chrome OS (which uses AuraWindowCaptureMachine instead).
 class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
  public:
-  class RefreshFrameCallback {
-   public:
-    virtual void OnCaptureFrameIsRefresh() = 0;
-
-   protected:
-    virtual ~RefreshFrameCallback() = default;
-  };
-
   // Creates capturer for the specified |source| and then creates
   // DesktopCaptureDevice for it. May return NULL in case of a failure (e.g. if
   // requested window was destroyed).
@@ -88,8 +80,6 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   void SetMockTimeForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
-
-  void SetRefreshFrameCallbackForTesting(RefreshFrameCallback* rrf_callback);
 
   std::unique_ptr<Core> core_;
 
