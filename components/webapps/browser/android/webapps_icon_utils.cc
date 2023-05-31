@@ -120,38 +120,34 @@ bool WebappsIconUtils::DoesAndroidSupportMaskableIcons() {
 
 SkBitmap WebappsIconUtils::FinalizeLauncherIconInBackground(
     const SkBitmap& bitmap,
-    bool is_icon_maskable,
     const GURL& url,
     bool* is_generated) {
   base::AssertLongCPUWorkAllowed();
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> result;
   *is_generated = false;
 
   if (!bitmap.isNull()) {
     if (Java_WebappsIconUtils_isIconLargeEnoughForLauncher(env, bitmap.width(),
                                                            bitmap.height())) {
-      ScopedJavaLocalRef<jobject> java_bitmap =
-          gfx::ConvertToJavaBitmap(bitmap);
-      result = Java_WebappsIconUtils_createHomeScreenIconFromWebIcon(
-          base::android::AttachCurrentThread(), java_bitmap, is_icon_maskable);
+      return bitmap;
     }
   }
 
-  if (result.is_null()) {
-    ScopedJavaLocalRef<jobject> java_url =
-        url::GURLAndroid::FromNativeGURL(env, url);
-    SkColor mean_color = SkColorSetRGB(0x91, 0x91, 0x91);
+  ScopedJavaLocalRef<jobject> java_url =
+      url::GURLAndroid::FromNativeGURL(env, url);
+  SkColor mean_color = SkColorSetRGB(0x91, 0x91, 0x91);
 
-    if (!bitmap.isNull())
-      mean_color = color_utils::CalculateKMeanColorOfBitmap(bitmap);
-
-    *is_generated = true;
-    result = Java_WebappsIconUtils_generateHomeScreenIcon(
-        env, java_url, SkColorGetR(mean_color), SkColorGetG(mean_color),
-        SkColorGetB(mean_color));
+  if (!bitmap.isNull()) {
+    mean_color = color_utils::CalculateKMeanColorOfBitmap(bitmap);
   }
+
+  *is_generated = true;
+
+  ScopedJavaLocalRef<jobject> result =
+      Java_WebappsIconUtils_generateHomeScreenIcon(
+          env, java_url, SkColorGetR(mean_color), SkColorGetG(mean_color),
+          SkColorGetB(mean_color));
 
   return result.obj()
              ? gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(result))

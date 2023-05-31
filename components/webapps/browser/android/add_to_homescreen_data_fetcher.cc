@@ -78,12 +78,11 @@ InstallableParams ParamsToPerformInstallableCheck() {
 void CreateLauncherIconInBackground(
     const GURL& start_url,
     const SkBitmap& icon,
-    bool maskable,
     scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
     base::OnceCallback<void(const SkBitmap&, bool)> callback) {
   bool is_generated = false;
   SkBitmap primary_icon = WebappsIconUtils::FinalizeLauncherIconInBackground(
-      icon, maskable, start_url, &is_generated);
+      icon, start_url, &is_generated);
   ui_thread_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), primary_icon, is_generated));
@@ -103,8 +102,7 @@ void CreateLauncherIconFromFaviconInBackground(
     gfx::PNGCodec::Decode(bitmap_result.bitmap_data->front(),
                           bitmap_result.bitmap_data->size(), &decoded);
   }
-  CreateLauncherIconInBackground(start_url, decoded,
-                                 /*maskable=*/false, ui_thread_task_runner,
+  CreateLauncherIconInBackground(start_url, decoded, ui_thread_task_runner,
                                  std::move(callback));
 }
 
@@ -122,7 +120,6 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
       installable_manager_(InstallableManager::FromWebContents(web_contents)),
       observer_(observer),
       shortcut_info_(GetShortcutUrl(web_contents)),
-      has_maskable_primary_icon_(false),
       data_timeout_ms_(base::Milliseconds(data_timeout_ms)),
       is_waiting_for_manifest_(true) {
   DCHECK(shortcut_info_.url.is_valid());
@@ -221,7 +218,7 @@ void AddToHomescreenDataFetcher::OnDataTimedout() {
   observer_->OnUserTitleAvailable(shortcut_info_.user_title, shortcut_info_.url,
                                   /*is_webapk_compatible=*/false);
 
-  CreateIconForView(raw_primary_icon_, /*use_for_launcher=*/true);
+  CreateIconForView(raw_primary_icon_);
 }
 
 void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
@@ -252,7 +249,6 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   }
 
   raw_primary_icon_ = *data.primary_icon;
-  has_maskable_primary_icon_ = data.has_maskable_primary_icon;
   shortcut_info_.best_primary_icon_url = (*data.primary_icon_url);
   shortcut_info_.is_primary_icon_maskable = data.has_maskable_primary_icon;
 
@@ -283,23 +279,19 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);
 
-  bool should_use_created_icon_for_launcher = true;
   if (webapk_compatible) {
     // WebAPKs should always use the raw icon for the launcher whether or not
     // that icon is maskable.
-    should_use_created_icon_for_launcher = false;
     primary_icon_ = raw_primary_icon_;
     shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
-    if (!has_maskable_primary_icon_) {
-      // We can skip creating an icon for the view because the raw icon is
-      // sufficient when WebAPK-compatible and the icon is non-maskable.
-      OnIconCreated(should_use_created_icon_for_launcher, raw_primary_icon_,
-                    /*is_icon_generated=*/false);
-      return;
-    }
+    // We can skip creating an icon for the view because the raw icon is
+    // sufficient when WebAPK-compatible.
+    OnIconCreated(raw_primary_icon_,
+                  /*is_icon_generated=*/false);
+    return;
   }
 
-  CreateIconForView(raw_primary_icon_, should_use_created_icon_for_launcher);
+  CreateIconForView(raw_primary_icon_);
 }
 
 void AddToHomescreenDataFetcher::FetchFavicon() {
@@ -345,12 +337,10 @@ void AddToHomescreenDataFetcher::OnFaviconFetched(
                      shortcut_info_.url, bitmap_result,
                      base::SingleThreadTaskRunner::GetCurrentDefault(),
                      base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    /*use_for_launcher=*/true)));
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
-void AddToHomescreenDataFetcher::CreateIconForView(const SkBitmap& base_icon,
-                                                   bool use_for_launcher) {
+void AddToHomescreenDataFetcher::CreateIconForView(const SkBitmap& base_icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // The user is waiting for the icon to be processed before they can proceed
@@ -360,25 +350,24 @@ void AddToHomescreenDataFetcher::CreateIconForView(const SkBitmap& base_icon,
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          &CreateLauncherIconInBackground, shortcut_info_.url, base_icon,
-          has_maskable_primary_icon_,
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
-                         weak_ptr_factory_.GetWeakPtr(), use_for_launcher)));
+      base::BindOnce(&CreateLauncherIconInBackground, shortcut_info_.url,
+                     base_icon,
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     base::BindOnce(&AddToHomescreenDataFetcher::OnIconCreated,
+                                    weak_ptr_factory_.GetWeakPtr())));
 }
 
-void AddToHomescreenDataFetcher::OnIconCreated(bool use_for_launcher,
-                                               const SkBitmap& icon_for_view,
+void AddToHomescreenDataFetcher::OnIconCreated(const SkBitmap& icon_for_view,
                                                bool is_icon_generated) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents_)
     return;
 
-  if (use_for_launcher)
-    primary_icon_ = icon_for_view;
-  if (is_icon_generated)
+  primary_icon_ = icon_for_view;
+  if (is_icon_generated) {
     shortcut_info_.best_primary_icon_url = GURL();
+    shortcut_info_.is_primary_icon_maskable = false;
+  }
 
   observer_->OnDataAvailable(shortcut_info_, icon_for_view,
                              installable_status_code_);

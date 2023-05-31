@@ -73,7 +73,6 @@ class AddToHomescreenDataFetcher {
   content::WebContents* web_contents() { return web_contents_.get(); }
   const SkBitmap& primary_icon() const { return primary_icon_; }
   ShortcutInfo& shortcut_info() { return shortcut_info_; }
-  bool has_maskable_primary_icon() const { return has_maskable_primary_icon_; }
 
  private:
   // Called to stop the timeout timer.
@@ -96,12 +95,10 @@ class AddToHomescreenDataFetcher {
   // Creates an icon to display to the user to confirm the add to home screen
   // from the given |base_icon|. If |use_for_launcher| is true, the created icon
   // will also be used as the launcher icon.
-  void CreateIconForView(const SkBitmap& base_icon, bool use_for_launcher);
+  void CreateIconForView(const SkBitmap& base_icon);
 
   // Notifies the observer that the shortcut data is all available.
-  void OnIconCreated(bool use_for_launcher,
-                     const SkBitmap& icon_for_view,
-                     bool is_icon_generated);
+  void OnIconCreated(const SkBitmap& icon_for_view, bool is_icon_generated);
 
   base::WeakPtr<content::WebContents> web_contents_;
 
@@ -115,7 +112,6 @@ class AddToHomescreenDataFetcher {
   SkBitmap raw_primary_icon_;
   SkBitmap primary_icon_;
   ShortcutInfo shortcut_info_;
-  bool has_maskable_primary_icon_;
 
   base::CancelableTaskTracker favicon_task_tracker_;
   base::OneShotTimer data_timeout_timer_;
