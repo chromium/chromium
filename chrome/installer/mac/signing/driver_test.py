@@ -222,6 +222,4 @@ class TestCommandLine(unittest.TestCase):
         self.assertEquals('Team1',
                           config.invoker.notarizer._notarizer._notary_team_id)
         self.assertEquals(model.NotarizationTool.NOTARYTOOL,
-                          config.notarization_tool)
-        self.assertEquals(model.NotarizationTool.NOTARYTOOL,
                           config.invoker.notarizer.notarization_tool)

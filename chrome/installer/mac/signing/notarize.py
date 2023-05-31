@@ -41,7 +41,7 @@ class Invoker(invoker.Base):
             '--notarization-tool',
             choices=list(model.NotarizationTool),
             type=model.NotarizationTool,
-            default=None,
+            default=model.NotarizationTool.ALTOOL,
             help='The tool to use to communicate with the Apple notary service.'
         )
         _AltoolNotarizer.register_arguments(parser)
@@ -50,10 +50,7 @@ class Invoker(invoker.Base):
     def __init__(self, args, config):
         self._notary_user = args.notary_user
         self._notary_password = args.notary_password
-        # TODO(rsesek): Remove this logic once `notarization_tool` is removed
-        # from `CodeSignConfig`.
-        self._notarization_tool = (
-            args.notarization_tool or config.notarization_tool)
+        self._notarization_tool = args.notarization_tool
 
         if not config.notarize.should_notarize():
             return
@@ -85,12 +82,6 @@ class Invoker(invoker.Base):
         return self._notarizer.get_result(uuid, config)
 
 
-def _get_notarizaton_tool_cmd(config):
-    if config.notarization_tool_path:
-        return [config.notarization_tool_path]
-    return ['xcrun', str(config.invoker.notarizer.notarization_tool)]
-
-
 class _AltoolNotarizer(invoker.Interface.Notarizer):
 
     @staticmethod
@@ -109,11 +100,11 @@ class _AltoolNotarizer(invoker.Interface.Notarizer):
         self._parent = parent
 
     def submit(self, path, config):
-        command = _get_notarizaton_tool_cmd(config) + [
-            '--notarize-app', '--file', path, '--primary-bundle-id',
-            config.base_bundle_id, '--username', self._parent._notary_user,
-            '--password', self._parent._notary_password, '--output-format',
-            'xml'
+        command = [
+            'xcrun', 'altool', '--notarize-app', '--file', path,
+            '--primary-bundle-id', config.base_bundle_id, '--username',
+            self._parent._notary_user, '--password',
+            self._parent._notary_password, '--output-format', 'xml'
         ]
         if self._notary_asc_provider is not None:
             command.extend(['--asc-provider', self._notary_asc_provider])
@@ -145,8 +136,8 @@ class _AltoolNotarizer(invoker.Interface.Notarizer):
 
     def get_result(self, uuid, config):
         try:
-            command = _get_notarizaton_tool_cmd(config) + [
-                '--notarization-info', uuid, '--username',
+            command = [
+                'xcrun', 'altool', '--notarization-info', uuid, '--username',
                 self._parent._notary_user, '--password',
                 self._parent._notary_password, '--output-format', 'xml'
             ]
@@ -213,7 +204,9 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
                 'a --notary-team-id.')
 
     def submit(self, path, config):
-        command = _get_notarizaton_tool_cmd(config) + [
+        command = [
+            'xcrun',
+            'notarytool',
             'submit',
             path,
             '--apple-id',
@@ -240,7 +233,9 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
                 .format(output))
 
     def get_result(self, uuid, config):
-        command = _get_notarizaton_tool_cmd(config) + [
+        command = [
+            'xcrun',
+            'notarytool',
             'info',
             uuid,
             '--apple-id',
@@ -270,9 +265,9 @@ class _NotarytoolNotarizer(invoker.Interface.Notarizer):
         return NotarizationResult(Status.ERROR, status, output, log)
 
     def _get_log(self, uuid, config):
-        command = _get_notarizaton_tool_cmd(config) + [
-            'log', uuid, '--apple-id', self._parent._notary_user, '--team-id',
-            self._notary_team_id
+        command = [
+            'xcrun', 'notarytool', 'log', uuid, '--apple-id',
+            self._parent._notary_user, '--team-id', self._notary_team_id
         ]
         return commands.run_password_command_output(
             command,

@@ -118,26 +118,6 @@ class CodeSignConfig(object):
         is the default team ID if one is not specified on the command line.
         """
         return None
-
-    @property
-    def notarization_tool(self):
-        """Returns the name of the tool to use for communicating with Apple's
-        notary service. The values are from the signing.model.NotarizationTool
-        enum.
-        """
-        default = NotarizationTool.ALTOOL
-        if self.invoker:
-            return self.invoker.notarizer.notarization_tool or default
-        return default
-
-    @property
-    def notarization_tool_path(self):
-        """Returns the path to the notarization tool binary, or None if this
-        Config does not override the default. The default is to invoke the tool
-        via xcrun(1). If a Config does override this value, it must be
-        appropriate for the active Config.notarization_tool.
-        """
-        return None
     # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     # TODO(rsesek): Remove from here and above.
 
