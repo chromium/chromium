@@ -1,6 +1,7 @@
 {
   "ci": {
     "Cast Linux": "Ubuntu-22.04",
+    "Cast Linux ARM64": "Ubuntu-22.04",
     "Cast Linux Debug": "Ubuntu-22.04",
     "Linux Builder": "Ubuntu-22.04",
     "Linux Builder (Wayland)": "Ubuntu-22.04",
