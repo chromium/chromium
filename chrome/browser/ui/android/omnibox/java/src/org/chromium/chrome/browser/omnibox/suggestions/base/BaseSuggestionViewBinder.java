@@ -283,8 +283,9 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @return @ColorInt value representing the color to be applied.
      */
     public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
-        return isIncognito(model)
-                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
+        return isIncognito(model) ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
+                : OmniboxFeatures.shouldShowModernizeVisualUpdate(ctx)
+                ? ChromeColors.getSurfaceColor(ctx, R.dimen.omnibox_suggestion_bg_elevation_modern)
                 : ChromeColors.getSurfaceColor(ctx, R.dimen.omnibox_suggestion_bg_elevation);
     }
 
