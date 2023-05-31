@@ -176,12 +176,7 @@ class VectorIconGallery : public View, public TextfieldController {
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::ReadFileToString(path, &contents_);
-    // Skip over comments.
-    for (size_t slashes = contents_.find("//"); slashes != std::string::npos;
-         slashes = contents_.find("//")) {
-      size_t eol = contents_.find("\n", slashes);
-      contents_.erase(slashes, eol - slashes);
-    }
+    contents_ = CleanUpContents(contents_);
     Update();
   }
 
@@ -224,25 +219,10 @@ class VectorIconGallery : public View, public TextfieldController {
         std::string file_content;
         base::ReadFileToString(file, &file_content);
 
-        // Skip over comments.
-        // This handles very basic cases of // and /*. More complicated edge
-        // cases such as /* /* */ */ are not handled.
-        for (size_t slashes = file_content.find("//");
-             slashes != std::string::npos; slashes = file_content.find("//")) {
-          size_t eol = file_content.find("\n", slashes);
-          file_content.erase(slashes, eol - slashes);
-        }
-
-        for (size_t slashes = file_content.find("/*");
-             slashes != std::string::npos; slashes = file_content.find("/*")) {
-          size_t eol = file_content.find("*/", slashes);
-          file_content.erase(slashes, eol - slashes + 2);
-        }
-
         ImageView* icon_view =
             image_view_container_->AddChildView(std::make_unique<ImageView>());
-        icon_view->SetImage(
-            gfx::CreateVectorIconFromSource(file_content, size_, color_));
+        icon_view->SetImage(gfx::CreateVectorIconFromSource(
+            CleanUpContents(file_content), size_, color_));
         icon_view->SetTooltipText(file.BaseName().AsUTF16Unsafe());
         file = file_iter.Next();
       }
@@ -256,6 +236,43 @@ class VectorIconGallery : public View, public TextfieldController {
           gfx::CreateVectorIconFromSource(contents_, size_, color_));
     }
     InvalidateLayout();
+  }
+
+  std::string CleanUpContents(const std::string& file_content) {
+    // Skip over comments.
+    // This handles very basic cases of // and /*. More complicated edge
+    // cases such as /* /* */ */ are not handled.
+    std::string output = file_content;
+    for (size_t slashes = output.find("//"); slashes != std::string::npos;
+         slashes = output.find("//")) {
+      size_t eol = output.find("\n", slashes);
+      // Add 1 to erase the \n token at the end of the line.
+      output.erase(slashes, eol - slashes + 1);
+    }
+
+    for (size_t slashes = output.find("/*"); slashes != std::string::npos;
+         slashes = output.find("/*")) {
+      size_t eol = output.find("*/", slashes);
+      output.erase(slashes, eol - slashes + 2);
+    }
+
+    // CreateVectorIconFromSource does not work well if there are multiple icon
+    // sizes in the same file. Fetch the first icon source in the file.
+    std::string result = output;
+    size_t start = 0;
+    std::string token = "\n\n";
+    size_t end = output.find(token);
+    while (end != std::string::npos) {
+      std::string section = output.substr(start, end - start);
+      if (!section.empty() &&
+          section.find_first_not_of("\t\n\v\f\r") != std::string::npos) {
+        result = section;
+        break;
+      }
+      start = end;
+      end = output.find(token, end + token.length());
+    }
+    return result;
   }
 
   // 36dp is one of the natural sizes for MD icons, and corresponds roughly to a
