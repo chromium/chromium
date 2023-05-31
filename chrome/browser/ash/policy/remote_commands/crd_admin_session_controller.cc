@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/chromeos/remote_support_host_ash.h"
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
@@ -67,34 +68,25 @@ std::ostream& operator<<(
             << "}";
 }
 
-}  // namespace
-
-class CrdAdminSessionController::CrdHostSession
-    : public remoting::mojom::SupportHostObserver {
+class SupportHostObserver : public remoting::mojom::SupportHostObserver {
  public:
-  CrdHostSession(const SessionParameters& parameters,
-                 AccessCodeCallback success_callback,
-                 ErrorCallback error_callback,
-                 SessionEndCallback session_finished_callback)
-      : parameters_(parameters),
-        success_callback_(std::move(success_callback)),
+  SupportHostObserver(AccessCodeCallback success_callback,
+                      ErrorCallback error_callback,
+                      SessionEndCallback session_finished_callback)
+      : success_callback_(std::move(success_callback)),
         error_callback_(std::move(error_callback)),
         session_finished_callback_(std::move(session_finished_callback)) {}
-  CrdHostSession(const CrdHostSession&) = delete;
-  CrdHostSession& operator=(const CrdHostSession&) = delete;
-  ~CrdHostSession() override = default;
 
-  void Start(
-      CrdAdminSessionController::RemotingServiceProxy& remoting_service) {
-    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
+  SupportHostObserver(const SupportHostObserver&) = delete;
+  SupportHostObserver& operator=(const SupportHostObserver&) = delete;
+  ~SupportHostObserver() override = default;
 
-    remoting_service.StartSession(
-        GetSessionParameters(), GetEnterpriseParameters(),
-        base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
-                       weak_factory_.GetWeakPtr()));
+  void Bind(
+      mojo::PendingReceiver<remoting::mojom::SupportHostObserver> receiver) {
+    receiver_.Bind(std::move(receiver));
   }
 
-  // remoting::mojom::SupportHostObserver implementation:
+  // `remoting::mojom::SupportHostObserver` implementation:
   void OnHostStateStarting() override { CRD_DVLOG(3) << __FUNCTION__; }
   void OnHostStateRequestedAccessCode() override {
     CRD_DVLOG(3) << __FUNCTION__;
@@ -148,11 +140,67 @@ class CrdAdminSessionController::CrdHostSession
     ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "invalid domain error");
   }
 
+  void ReportError(ResultCode error_code, const std::string& error_message) {
+    if (error_callback_) {
+      std::move(error_callback_).Run(error_code, error_message);
+      success_callback_.Reset();
+    }
+  }
+
+ private:
+  void ReportSuccess(const std::string& access_code) {
+    if (success_callback_) {
+      std::move(success_callback_).Run(access_code);
+      error_callback_.Reset();
+    }
+  }
+
+  void ReportSessionTermination(base::TimeDelta session_duration) {
+    if (session_finished_callback_) {
+      std::move(session_finished_callback_).Run(session_duration);
+    }
+  }
+
+  AccessCodeCallback success_callback_;
+  ErrorCallback error_callback_;
+  SessionEndCallback session_finished_callback_;
+  absl::optional<base::Time> session_connected_time_;
+  mojo::Receiver<remoting::mojom::SupportHostObserver> receiver_{this};
+};
+
+}  // namespace
+
+class CrdAdminSessionController::CrdHostSession {
+ public:
+  CrdHostSession(const SessionParameters& parameters,
+                 AccessCodeCallback success_callback,
+                 ErrorCallback error_callback,
+                 SessionEndCallback session_finished_callback)
+      : parameters_(parameters),
+        observer_(std::move(success_callback),
+                  std::move(error_callback),
+                  std::move(session_finished_callback)) {}
+  CrdHostSession(const CrdHostSession&) = delete;
+  CrdHostSession& operator=(const CrdHostSession&) = delete;
+  ~CrdHostSession() = default;
+
+  void Start(
+      CrdAdminSessionController::RemotingServiceProxy& remoting_service) {
+    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters_;
+
+    remoting_service.StartSession(
+        GetSessionParameters(), GetEnterpriseParameters(),
+        base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
+                       weak_factory_.GetWeakPtr()));
+  }
+
  private:
   void OnStartSupportSessionResponse(
       remoting::mojom::StartSupportSessionResponsePtr response) {
     if (response->is_support_session_error()) {
-      ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "");
+      // Since `observer_` owns all the callbacks we must ask it to invoke the
+      // error callback.
+      observer_.ReportError(ResultCode::FAILURE_CRD_HOST_ERROR, "");
       return;
     }
 
@@ -181,39 +229,9 @@ class CrdAdminSessionController::CrdHostSession
     };
   }
 
-  void ReportSuccess(const std::string& access_code) {
-    if (success_callback_) {
-      std::move(success_callback_).Run(access_code);
-
-      success_callback_.Reset();
-      error_callback_.Reset();
-    }
-  }
-
-  void ReportError(ResultCode error_code, const std::string& error_message) {
-    if (error_callback_) {
-      std::move(error_callback_).Run(error_code, error_message);
-
-      success_callback_.Reset();
-      error_callback_.Reset();
-    }
-  }
-
-  void ReportSessionTermination(base::TimeDelta session_duration) {
-    if (session_finished_callback_) {
-      std::move(session_finished_callback_).Run(session_duration);
-
-      session_finished_callback_.Reset();
-    }
-  }
-
   SessionParameters parameters_;
-  AccessCodeCallback success_callback_;
-  ErrorCallback error_callback_;
-  SessionEndCallback session_finished_callback_;
-  absl::optional<base::Time> session_connected_time_;
+  SupportHostObserver observer_;
 
-  mojo::Receiver<remoting::mojom::SupportHostObserver> observer_{this};
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
 };
 
@@ -241,7 +259,7 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
     AccessCodeCallback success_callback,
     ErrorCallback error_callback,
     SessionEndCallback session_finished_callback) {
-  DCHECK(!active_session_);
+  CHECK(!active_session_);
   active_session_ = std::make_unique<CrdHostSession>(
       parameters, std::move(success_callback), std::move(error_callback),
       std::move(session_finished_callback));
