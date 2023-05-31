@@ -625,7 +625,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
 // Tests the behavior of the ThirdPartyCookies preference API.
 // kCookieControlsMode should be set to kOff/kBlockThirdParty if
 // ThirdPartyCookiesAllowed is set to true/false by an extension.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
+IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiEventPageTest,
+                       ThirdPartyCookiesAllowed) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_clear("cleared",
