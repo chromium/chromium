@@ -1563,6 +1563,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineSyncStatus(),
         TestCase("driveInlineSyncStatusParentFolder").EnableInlineSyncStatus(),
+        TestCase("driveInlineSyncStatusSingleFileProgressEvents")
+            .EnableInlineSyncStatusProgressEvents(),
+        TestCase("driveInlineSyncStatusParentFolderProgressEvents")
+            .EnableInlineSyncStatusProgressEvents(),
         TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
