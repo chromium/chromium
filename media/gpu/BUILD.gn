@@ -116,7 +116,7 @@ component("gpu") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     public_deps += [ "//media/gpu/mac" ]
   }
 

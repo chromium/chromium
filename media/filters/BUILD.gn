@@ -200,7 +200,7 @@ source_set("filters") {
     deps += [ "//media/base/android" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "mac/audio_toolbox_audio_decoder.cc",
       "mac/audio_toolbox_audio_decoder.h",

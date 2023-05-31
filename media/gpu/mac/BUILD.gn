@@ -8,7 +8,7 @@ import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//ui/gl/features.gni")
 
-assert(is_mac)
+assert(is_apple)
 
 import("//build/config/mac/mac_sdk.gni")
 

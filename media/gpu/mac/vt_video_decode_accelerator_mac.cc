@@ -305,6 +305,9 @@ bool CreateVideoToolboxSession(
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
+  // iOS is always hardware-accelerate while on mac, decoder configuration
+  // handling is necessary.
   CFDictionarySetValue(
       decoder_config,
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
@@ -313,6 +316,7 @@ bool CreateVideoToolboxSession(
       decoder_config,
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
       require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
+#endif
 
   // VideoToolbox scales the visible rect to the output size, so we set the
   // output size for a 1:1 ratio. (Note though that VideoToolbox does not handle
@@ -356,9 +360,12 @@ bool InitializeVideoToolboxInternal() {
   if (base::FeatureList::IsEnabled(kSkipVideoToolboxPreload)) {
     // When skipping preload we still need to register vp9, otherwise it won't
     // work at all.
+#if BUILDFLAG(IS_MAC)
+    // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
     if (__builtin_available(macOS 11.0, *)) {
       VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
     }
+#endif
     return true;
   }
 
@@ -400,6 +407,8 @@ bool InitializeVideoToolboxInternal() {
 
   session.reset();
 
+#if BUILDFLAG(IS_MAC)
+  // TODO: Enable VP9 for a iOS platform(https://crbug.com/1449877)
   if (__builtin_available(macOS 11.0, *)) {
     VTRegisterSupplementalVideoDecoderIfAvailable(kCMVideoCodecType_VP9);
 
@@ -414,6 +423,7 @@ bool InitializeVideoToolboxInternal() {
       // We don't return false here since VP9 support is optional.
     }
   }
+#endif
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {

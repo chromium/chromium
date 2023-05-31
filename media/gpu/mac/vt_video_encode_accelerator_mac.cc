@@ -148,6 +148,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
                                      VideoCodecProfile profile) {
   VideoEncoderInfo info;
   info.implementation_name = "VideoToolbox";
+#if BUILDFLAG(IS_MAC)
   info.is_hardware_accelerated = false;
 
   base::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
@@ -157,6 +158,10 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
           kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
     info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware);
   }
+#else
+  // iOS is always hardware-accelerated.
+  info.is_hardware_accelerated = true;
+#endif
 
   absl::optional<int> max_frame_delay_property;
   base::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
@@ -792,17 +797,24 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
     const gfx::Size& input_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<CFTypeRef> encoder_keys{
-      kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder};
-  std::vector<CFTypeRef> encoder_values{required_encoder_type_ ==
-                                                Config::EncoderType::kHardware
-                                            ? kCFBooleanTrue
-                                            : kCFBooleanFalse};
+  std::vector<CFTypeRef> encoder_keys;
+  std::vector<CFTypeRef> encoder_values;
+  // iOS is always hardware-accelerate while on mac, encoder configuration
+  // handling is necessary.
+#if BUILDFLAG(IS_MAC)
+  encoder_keys.push_back(
+      kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder);
+  encoder_values.push_back(required_encoder_type_ ==
+                                   Config::EncoderType::kHardware
+                               ? kCFBooleanTrue
+                               : kCFBooleanFalse);
+
   if (required_encoder_type_ == Config::EncoderType::kSoftware) {
     encoder_keys.push_back(
         kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder);
     encoder_values.push_back(kCFBooleanFalse);
   }
+#endif
 
   if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
     // Remove the validation once HEVC SVC mode is supported on macOS.
