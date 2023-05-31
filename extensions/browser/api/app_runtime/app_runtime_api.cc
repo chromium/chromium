@@ -80,8 +80,7 @@ void DispatchOnLaunchedEventImpl(const std::string& extension_id,
                 "The value of extensions::" #Name                          \
                 " and app_runtime::LAUNCH_" #Name2 " should be the same");
 
-app_runtime::LaunchSource GetLaunchSourceEnum(
-    extensions::AppLaunchSource source) {
+app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
   ASSERT_ENUM_EQUAL(kSourceNone, kNone);
   ASSERT_ENUM_EQUAL(kSourceUntracked, kUntracked);
   ASSERT_ENUM_EQUAL(kSourceAppLauncher, kAppLauncher);
@@ -107,15 +106,6 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
   ASSERT_ENUM_EQUAL(kSourceArc, kArc);
   ASSERT_ENUM_EQUAL(kSourceIntentUrl, kIntentUrl);
 
-  // We don't allow extensions to launch an app specifying RunOnOSLogin,
-  // ProtocolHandler or Reparenting as the source. In this case we map
-  // it to SOURCE_CHROME_INTERNAL.
-  if (source == extensions::AppLaunchSource::kSourceRunOnOsLogin ||
-      source == extensions::AppLaunchSource::kSourceProtocolHandler ||
-      source == extensions::AppLaunchSource::kSourceReparenting) {
-    source = extensions::AppLaunchSource::kSourceChromeInternal;
-  }
-
   // The +3 accounts for kSourceRunOnOsLogin, kSourceProtocolHandler and
   // kSourceReparenting not having a corresponding entry in
   // app_runtime::LaunchSource.
@@ -124,7 +114,48 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
           base::to_underlying(app_runtime::LaunchSource::kMaxValue) + 3,
       "");
 
-  return static_cast<app_runtime::LaunchSource>(source);
+  switch (source) {
+    case AppLaunchSource::kSourceNone:
+    case AppLaunchSource::kSourceUntracked:
+    case AppLaunchSource::kSourceAppLauncher:
+    case AppLaunchSource::kSourceNewTabPage:
+    case AppLaunchSource::kSourceReload:
+    case AppLaunchSource::kSourceRestart:
+    case AppLaunchSource::kSourceLoadAndLaunch:
+    case AppLaunchSource::kSourceCommandLine:
+    case AppLaunchSource::kSourceFileHandler:
+    case AppLaunchSource::kSourceUrlHandler:
+    case AppLaunchSource::kSourceSystemTray:
+    case AppLaunchSource::kSourceAboutPage:
+    case AppLaunchSource::kSourceKeyboard:
+    case AppLaunchSource::kSourceExtensionsPage:
+    case AppLaunchSource::kSourceManagementApi:
+    case AppLaunchSource::kSourceEphemeralAppDeprecated:
+    case AppLaunchSource::kSourceBackground:
+    case AppLaunchSource::kSourceKiosk:
+    case AppLaunchSource::kSourceChromeInternal:
+    case AppLaunchSource::kSourceTest:
+    case AppLaunchSource::kSourceInstalledNotification:
+    case AppLaunchSource::kSourceContextMenu:
+    case AppLaunchSource::kSourceArc:
+    case AppLaunchSource::kSourceIntentUrl:
+      return static_cast<app_runtime::LaunchSource>(source);
+
+    // We don't allow extensions to launch an app specifying
+    // kSourceRunOnOsLogin, kSourceProtocolHandler or kSourceReparenting as the
+    // source. In this case we map it to LaunchSource::kChromeInternal.
+    case AppLaunchSource::kSourceRunOnOsLogin:
+    case AppLaunchSource::kSourceProtocolHandler:
+    case AppLaunchSource::kSourceReparenting:
+      return app_runtime::LaunchSource::kChromeInternal;
+
+    // New enumerators must be added here. Because the three previous entries in
+    // AppLaunchSource are missing entries in LaunchSource, we need to subtract
+    // three to remain in sync with LaunchSource.
+    case AppLaunchSource::kSourceAppHomePage:
+      return static_cast<app_runtime::LaunchSource>(
+          base::to_underlying(source) - 3);
+  }
 }
 
 }  // namespace
