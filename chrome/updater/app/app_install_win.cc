@@ -681,16 +681,29 @@ void AppInstallControllerImpl::HandleOsNotSupported() {
   InstallComplete(UpdateService::Result::kInstallFailed);
 }
 
-// TODO(crbug.com/1218219) - propagate error code in case of errors.
 void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  if (result == UpdateService::Result::kServiceFailed) {
+
+  // Create a best-effort `UpdateState` instance if one is not available because
+  // state change callbacks were never posted for this install. This happens if
+  // the execution path returns early, before it has reached the state machine
+  // of the component in the `update_client`.
+  if (!observer_completion_info_.has_value()) {
     UpdateService::UpdateState update_state;
     update_state.app_id = app_id_;
     update_state.state = UpdateService::UpdateState::State::kUpdateError;
-    update_state.error_category = UpdateService::ErrorCategory::kService;
-    update_state.error_code = -1;
+    update_state.error_code = static_cast<int>(result);
+    update_state.error_category = [result] {
+      switch (result) {
+        case UpdateService::Result::kUpdateCheckFailed:
+          return UpdateService::ErrorCategory::kUpdateCheck;
+        case UpdateService::Result::kInstallFailed:
+          return UpdateService::ErrorCategory::kInstall;
+        default:
+          return UpdateService::ErrorCategory::kService;
+      }
+    }();
     observer_completion_info_ = HandleInstallResult(update_state);
   }
   update_service_ = nullptr;
