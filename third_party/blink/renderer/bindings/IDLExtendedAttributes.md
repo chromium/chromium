@@ -114,6 +114,26 @@ Extended attributes are generally not inherited: only extended attributes on the
 
 These are defined in the [ECMAScript-specific extended attributes](https://webidl.spec.whatwg.org/#es-extended-attributes) section of the [Web IDL spec](https://webidl.spec.whatwg.org/), and alter the binding behavior.
 
+### [AllowShared]
+
+Standard: [AllowShared](https://webidl.spec.whatwg.org/#AllowShared)
+
+Summary: `[AllowShared]` indicates that a parameter, which must be an ArrayBufferView (or subtype of, e.g. typed arrays), is allowed to be backed by a SharedArrayBuffer. It also indicates that an ArrayBuffer parameter allows a SharedArrayBuffer to be passed.
+
+Usage: `[AllowShared]` must be specified on a parameter to a method:
+
+```webidl
+interface Context {
+    void bufferData1([AllowShared] ArrayBufferView buffer);
+    void bufferData2([AllowShared] Float32Array buffer);
+    void bufferData3([AllowShared] ArrayBuffer buffer);
+}
+```
+
+A SharedArrayBuffer is a distinct type from an ArrayBuffer, but both types use ArrayBufferViews to view the data in the buffer. Most methods do not permit an ArrayBufferView that is backed by a SharedArrayBuffer, and will throw an exception. This attribute indicates that this method permits a shared ArrayBufferView.
+
+When applied to an ArrayBuffer argument, the underlying C++ method called by the bindings receives a `DOMArrayBufferBase*` instead of `DOMArrayBuffer*`.
+
 ### [CEReactions]
 
 Standard: [CEReactions](https://html.spec.whatwg.org/C/#cereactions)
@@ -264,77 +284,6 @@ Summary: `[LegacyLenientSetter]` indicates that a no-op setter will be generated
 
 `[LegacyLenientSetter]` must take no arguments, and must not appear on anything other than a readonly regular attribute.
 
-### [LegacyUnenumerableNamedProperties]
-
-Standard: [LegacyUnenumerableNamedProperties](https://webidl.spec.whatwg.org/#LegacyUnenumerableNamedProperties)
-
-Summary: If an IDL interface [supports named properties](https://webidl.spec.whatwg.org/#dfn-support-named-properties), this extended attribute causes those properties not to be enumerable.
-
-```webidl
-[
-    LegacyUnenumerableNamedProperties
-] interface HTMLCollection {
-    ...
-    getter Element? namedItem(DOMString name);
-}
-```
-
-In the example above, named properties in `HTMLCollection` instances (such as those returned by `document.getElementsByTagName()`) are not enumerable. In other words, `for-in` loops do not iterate over them, they are not listed by `Object.keys()` calls and the property descriptor returned by `Object.getPropertyDescriptor()` has its `enumerable` property set to `false`.
-
-The `[LegacyUnenumerableNamedProperties]` extended attribute must be used **only** in interfaces that support named properties.
-
-### [LegacyWindowAlias]
-
-Standard: [LegacyWindowAlias](https://webidl.spec.whatwg.org/#LegacyWindowAlias)
-
-### [LegacyWindowAlias_Measure]
-
-Summary: The same as `[Measure]` but applied to the property exposed as `[LegacyWindowAlias]`.
-
-### [LegacyWindowAlias_MeasureAs]
-
-Summary: The same as `[MeasureAs]` but applied to the property exposed as `[LegacyWindowAlias]`.
-
-### [LegacyWindowAlias_RuntimeEnabled]
-
-Summary: The same as `[RuntimeEnabled]` but applied to the property exposed as `[LegacyWindowAlias]`.
-
-### [NamedConstructor]
-
-Standard: [NamedConstructor](https://webidl.spec.whatwg.org/#NamedConstructor)
-
-Summary: If you want to allow JavaScript to create a DOM object of XXX using a different name constructor (i.e. allow JavaScript to create an XXX object using "new YYY()", where YYY != XXX), you can use `[NamedConstructor]`.
-
-Usage: The possible usage is `[NamedConstructor=YYY(...)]`. Just as with constructors, an empty argument list can be omitted, as: `[NamedConstructor=YYY]`. `[NamedConstructor]` can be specified on interfaces. The spec allows multiple named constructors, but the Blink IDL compiler currently only supports at most one.
-
-```webidl
-[
-    NamedConstructor=Audio(DOMString data),
-] interface HTMLAudioElement {
-    ...
-};
-```
-
-The semantics are the same as `[Constructor]`, except that the name changes: JavaScript can make a DOM object by `new Audio()` instead of by `new HTMLAudioElement()`.
-
-Whether you should allow an interface to have a named constructor or not depends on the spec of each interface.
-
-### [NamedConstructor_CallWith]
-
-Summary: The same as `[CallWith]` but applied to the named constructors.
-
-### [NamedConstructor_RaisesException]
-
-Summary: The same as `[RaisesException]` but applied to the named constructors.
-
-### [NewObject]
-
-Standard: [NewObject](https://webidl.spec.whatwg.org/#NewObject)
-
-Summary: Signals that a method that returns an object type always returns a new object or promise.
-
-When a method returns an interface type, this extended attribute generates a test in debug mode to ensure that no wrapper object for the returned DOM object exists yet. Also see `[DoNotTestNewObject]`. When a method returns a Promise, this extended attribute currently does nothing.
-
 ### [LegacyNoInterfaceObject]
 
 Standard: [LegacyNoInterfaceObject](https://webidl.spec.whatwg.org/#NoInterfaceObject)
@@ -371,6 +320,74 @@ Note that `[LegacyNoInterfaceObject]` **MUST** be specified on testing interface
 Standard: [LegacyOverrideBuiltIns](https://webidl.spec.whatwg.org/#LegacyOverrideBuiltIns)
 
 Summary: Affects named property operations, making named properties shadow built-in properties of the object.
+
+### [LegacyUnenumerableNamedProperties]
+
+Standard: [LegacyUnenumerableNamedProperties](https://webidl.spec.whatwg.org/#LegacyUnenumerableNamedProperties)
+
+Summary: If an IDL interface [supports named properties](https://webidl.spec.whatwg.org/#dfn-support-named-properties), this extended attribute causes those properties not to be enumerable.
+
+```webidl
+[
+    LegacyUnenumerableNamedProperties
+] interface HTMLCollection {
+    ...
+    getter Element? namedItem(DOMString name);
+}
+```
+
+In the example above, named properties in `HTMLCollection` instances (such as those returned by `document.getElementsByTagName()`) are not enumerable. In other words, `for-in` loops do not iterate over them, they are not listed by `Object.keys()` calls and the property descriptor returned by `Object.getPropertyDescriptor()` has its `enumerable` property set to `false`.
+
+The `[LegacyUnenumerableNamedProperties]` extended attribute must be used **only** in interfaces that support named properties.
+
+### [LegacyUnforgeable]
+
+Standard: [LegacyUnforgeable](https://webidl.spec.whatwg.org/#Unforgeable)
+
+Summary: Makes interface members unconfigurable and also controls where the member is defined.
+
+Usage: Can be specified on interface methods or non-static interface attributes:
+
+```webidl
+[LegacyUnforgeable] void func();
+[LegacyUnforgeable] attribute DOMString str;
+```
+
+By default, interface members are configurable (i.e. you can modify a property descriptor corresponding to the member and also you can delete the property). `[LegacyUnforgeable]` makes the member unconfiguable so that you cannot modify or delete the property corresponding to the member.
+
+`[LegacyUnforgeable]` changes where the member is defined, too. By default, attribute getters/setters and methods are defined on a prototype chain. `[LegacyUnforgeable]` defines the member on the instance object instead of the prototype object.
+
+### [LegacyWindowAlias]
+
+Standard: [LegacyWindowAlias](https://webidl.spec.whatwg.org/#LegacyWindowAlias)
+
+### [NamedConstructor]
+
+Standard: [NamedConstructor](https://webidl.spec.whatwg.org/#NamedConstructor)
+
+Summary: If you want to allow JavaScript to create a DOM object of XXX using a different name constructor (i.e. allow JavaScript to create an XXX object using "new YYY()", where YYY != XXX), you can use `[NamedConstructor]`.
+
+Usage: The possible usage is `[NamedConstructor=YYY(...)]`. Just as with constructors, an empty argument list can be omitted, as: `[NamedConstructor=YYY]`. `[NamedConstructor]` can be specified on interfaces. The spec allows multiple named constructors, but the Blink IDL compiler currently only supports at most one.
+
+```webidl
+[
+    NamedConstructor=Audio(DOMString data),
+] interface HTMLAudioElement {
+    ...
+};
+```
+
+The semantics are the same as `[Constructor]`, except that the name changes: JavaScript can make a DOM object by `new Audio()` instead of by `new HTMLAudioElement()`.
+
+Whether you should allow an interface to have a named constructor or not depends on the spec of each interface.
+
+### [NewObject]
+
+Standard: [NewObject](https://webidl.spec.whatwg.org/#NewObject)
+
+Summary: Signals that a method that returns an object type always returns a new object or promise.
+
+When a method returns an interface type, this extended attribute generates a test in debug mode to ensure that no wrapper object for the returned DOM object exists yet. Also see `[DoNotTestNewObject]`. When a method returns a Promise, this extended attribute currently does nothing.
 
 ### [PutForwards]
 
@@ -466,6 +483,20 @@ Summary: Serializable objects support being serialized, and later deserialized, 
 
 This attribute has no effect on code generation and should simply be used in Blink IDL files if the specification uses it. Code to perform the serialization/deserialization must be added to `V8ScriptValueSerializer` for types in `core/` or `V8ScriptValueDeserializerForModules` for types in `modules/`.
 
+### [StringContext=TrustedHTML|TrustedScript|TrustedScriptURL]
+
+Standard: [TrustedType](https://w3c.github.io/trusted-types/dist/spec/#!trustedtypes-extended-attribute)
+
+Summary: Indicate that a DOMString for HTMLs and scripts or USVString for script URLs is to be supplemented with additional Trusted Types enforcement logic.
+
+Usage: Must be specified on a DOMString or a USVString type.
+
+```webidl
+typedef [StringContext=TrustedHTML] DOMString TrustedString;
+attribute TrustedString str;
+void func(TrustedString str);
+```
+
 ### [Transferable]
 
 Standard: [Transferable](https://html.spec.whatwg.org/C/#transferable)
@@ -494,37 +525,6 @@ void func([TreatNullAs=Emptytring] DOMString str);
 ```
 
 Implementation: Given `[TreatNullAs=EmptyString]`, a JavaScript null is converted to a Blink empty string, for which `String::IsEmpty()` returns true, but `String::IsNull()` return false.
-
-### [StringContext=TrustedHTML|TrustedScript|TrustedScriptURL]
-
-Standard: [TrustedType](https://w3c.github.io/trusted-types/dist/spec/#!trustedtypes-extended-attribute)
-
-Summary: Indicate that a DOMString for HTMLs and scripts or USVString for script URLs is to be supplemented with additional Trusted Types enforcement logic.
-
-Usage: Must be specified on a DOMString or a USVString type.
-
-```webidl
-typedef [StringContext=TrustedHTML] DOMString TrustedString;
-attribute TrustedString str;
-void func(TrustedString str);
-```
-
-### [LegacyUnforgeable]
-
-Standard: [LegacyUnforgeable](https://webidl.spec.whatwg.org/#Unforgeable)
-
-Summary: Makes interface members unconfigurable and also controls where the member is defined.
-
-Usage: Can be specified on interface methods or non-static interface attributes:
-
-```webidl
-[LegacyUnforgeable] void func();
-[LegacyUnforgeable] attribute DOMString str;
-```
-
-By default, interface members are configurable (i.e. you can modify a property descriptor corresponding to the member and also you can delete the property). `[LegacyUnforgeable]` makes the member unconfiguable so that you cannot modify or delete the property corresponding to the member.
-
-`[LegacyUnforgeable]` changes where the member is defined, too. By default, attribute getters/setters and methods are defined on a prototype chain. `[LegacyUnforgeable]` defines the member on the instance object instead of the prototype object.
 
 ### [Unscopable]
 
@@ -573,26 +573,25 @@ class XMLHttpRequest : public ActiveScriptWrappable<XMLHttpRequest> {
 }
 ```
 
-### [PerWorldBindings]
+### [Affects]
 
-Summary: Generates faster bindings code by avoiding check for isMainWorld().
+Summary: `[Affects=Nothing]` indicates that a function must not produce JS-observable side effects, while `[Affects=Everything]` indicates that a function may produce JS-observable side effects. Functions which are not considered free of JS-observable side effects will never be invoked by V8 with throwOnSideEffect.
 
-This optimization only makes sense for wrapper-types (i.e. types that have a corresponding IDL interface), as we don't need to check in which world we are for other types.
+Usage for attributes and operations: `[Affects=Nothing]` and `[Affects=Everything]` can be specified on an operation, or on an attribute to indicate that its getter callback is side effect free or side effecting:
 
-*** note
-This optimization works by generating 2 separate code paths for the main world and for isolated worlds. As a consequence, using this extended attribute will increase binary size and we should refrain from overusing it.
-***
+```webidl
+interface HTMLFoo {
+    [Affects=Everything] attribute Bar bar;
+    [Affects=Nothing] Bar baz();
+    void removeItems();
+};
+```
 
-### [LogActivity]
+When neither `[Affects=Nothing]` nor `[Affects=Everything]` is specified, the default for operations is `[Affects=Everything]`, while for attributes it's `[Affects=Nothing]`. Functions marked as side effect free are allowed to be nondeterministic, throw exceptions, force layout, and recalculate style, but must not set values, cache objects, or schedule execution that will be observable after the function completes. If a marked function calls into V8, it must properly handle cases when the V8 call returns an MaybeHandle.
 
-Summary: logs activity, using V8PerContextData::activityLogger. Widely used. Interacts with `[PerWorldBindings]`, `[LogAllWorlds]`.
+All DOM constructors are assumed to side effects. However, an exception can be explicitly indicated when calling constructors using the V8 API method Function::NewInstanceWithSideEffectType().
 
-Usage:
-
-* Valid values for attributes are: `GetterOnly`, `SetterOnly`, (no value)
-* Valid values for methods are: (no value)
-
-For methods all calls are logged, and by default for attributes all access (calls to getter or setter) are logged, but this can be restricted to just read (getter) or just write (setter).
+There is not yet support for marking SymbolKeyedMethodConfigurations as side-effect free. This requires additional support in V8 to allow Intrinsics.
 
 ### [CallWith], [GetterCallWith], [SetterCallWith]
 
@@ -716,111 +715,21 @@ When applied to an interface, the generated code for the relevant global object 
 
 Note that `[ContextEnabled]` is not mututally exclusive to `[RuntimeEnabled]`, and a feature which may be enabled by either mechanism will be enabled if the appropriate `[RuntimeEnabled]` feature is enabled; _or_ if the appropriate `[ContextEnabled]` feature is enabled; _or_ if both are enabled.
 
-### [Custom]
+### [DeprecateAs]
 
-Summary: They allow you to write bindings code manually as you like: full bindings for methods and attributes, certain functions for interfaces.
+Summary: Measures usage of a deprecated feature via `UseCounter`, and notifies developers about deprecation via a devtools issue.
 
-Custom bindings are _strongly discouraged_. They are likely to be buggy, a source of security holes, and represent a significant maintenance burden. Before using `[Custom]`, you should doubly consider if you really need custom bindings. You are recommended to modify code generators and add specialized extended attributes or special cases if necessary to avoid using `[Custom]`.
+`[DeprecateAs]` can be considered an extended form of `[MeasureAs]`: it both measures the feature's usage via the same `UseCounter` mechanism, and also sends out an issue to devtools in order to inform developers that the code they've written will stop working at some point in the relatively near future.
 
-Usage: `[Custom]` can be specified on methods or attributes. `[Custom=Getter]` and `[Custom=Setter]` can be specified on attributes. `[Custom=A|B]` can be specified on interfaces, with various values (see below).
-
-On read only attributes (that are not `[Replaceable]`), `[Custom]` is equivalent to `[Custom=Getter]` (since there is no setter) and `[Custom=Getter]` is preferred.
-
-The bindings generator largely _ignores_ the specified type information of `[Custom]` members (signature of methods and type of attributes), but they must be valid types. It is best if the signature exactly matches the spec, but if one of the types is an interface that is not implemented, you can use object as the type instead, to indicate "unspecified object type".
-
-`[Replaceable]` is _incompatible_ with `[Custom]` and `[Custom=Setter]` (because replaceable attributes have a single interface-level setter callback, rather than individual attribute-level callbacks); if you need custom binding for a replaceable attribute, remove `[Replaceable]` and readonly.
+Usage: `[DeprecateAs]` can be specified on methods, attributes, and constants.
 
 ```webidl
-[Custom] void func();
-[Custom] attribute DOMString str1;
-[Custom=Getter] readonly attribute DOMString str2;
-[Custom=Setter] attribute DOMString str3;
+    [DeprecateAs=DeprecatedPrefixedAttribute] attribute Node prefixedAttribute;
+    [DeprecateAs=DeprecatedPrefixedMethod] Node prefixedGetInterestingNode();
+    [DeprecateAs=DeprecatedPrefixedConstant] const short DEPRECATED_PREFIXED_CONSTANT = 1;
 ```
 
-Before explaining the details, let us clarify the relationship of these IDL attributes.
-
-* `[Custom]` on a method indicates that you can write V8 custom bindings for the method.
-* `[Custom=Getter]` or `[Custom=Setter]` on an attribute means custom bindings for the attribute getter or setter.
-* `[Custom]` on an attribute means custom bindings for both the getter and the setter
-
-Methods:
-
-```webidl
-interface XXX {
-    [Custom] void func();
-};
-```
-
-You can write custom bindings in third_party/blink/renderer/bindings/{core,modules}/v8/custom/v8_xxx_custom.cc:
-
-```c++
-void V8XXX::FuncMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  ...;
-}
-```
-
-Attribute getter:
-
-```webidl
-interface XXX {
-    [Custom=Getter] attribute DOMString str;
-};
-```
-
-You can write custom bindings in Source/bindings/v8/custom/V8XXXCustom.cpp:
-
-```c++
-void V8XXX::StrAttributeGetterCustom(const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ...;
-}
-```
-
-Attribute setter:
-
-```webidl
-interface XXX {
-    [Custom=Setter] attribute DOMString str;
-};
-```
-
-You can write custom bindings in Source/bindings/v8/custom/V8XXXCustom.cpp:
-
-```c++
-void V8XXX::StrAttributeSetterCustom(v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
-  ...;
-}
-```
-
-`[Custom]` may also be specified on special operations:
-
-```webidl
-interface XXX {  // anonymous special operations
-    [Custom] getter Node (unsigned long index);
-    [Custom] setter Node (unsigned long index, Node value);
-    [Custom] deleter boolean (unsigned long index);
-
-    [Custom] getter Node (DOMString name);
-    [Custom] setter Node (DOMString name, Node value);
-    [Custom] deleter boolean (DOMString name);
-}
-interface YYY {  // special operations with identifiers
-    [Custom] getter Node item(unsigned long index);
-    [Custom] getter Node namedItem(DOMString name);
-}
-```
-
-`[Custom]` may also be specified on callback functions:
-
-```webidl
-[Custom] callback SomeCallback = void ();
-interface XXX {
-    void func(SomeCallback callback);
-};
-```
-
-When`[Custom]` is specified on a callback function, the code generator doesn't
-generate bindings for the callback function. The binding layer uses a
-`ScriptValue` instead.
+For more documentation on deprecations, see [the documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/core/frame/deprecation/README.md).
 
 ### [HighEntropy]
 
@@ -842,21 +751,37 @@ For now, this label is only supported for attribute getters, although the `[High
 [HighEntropy=Direct, MeasureAs=SimpleNamedAttribute] attribute unsigned long simpleNamedAttribute;
 ```
 
-### [DeprecateAs]
+### [ImplementedAs]
 
-Summary: Measures usage of a deprecated feature via `UseCounter`, and notifies developers about deprecation via a devtools issue.
+Summary: `[ImplementedAs]` specifies a method name in Blink, if the method name in an IDL file and the method name in Blink are different.
 
-`[DeprecateAs]` can be considered an extended form of `[MeasureAs]`: it both measures the feature's usage via the same `UseCounter` mechanism, and also sends out an issue to devtools in order to inform developers that the code they've written will stop working at some point in the relatively near future.
+[ImplementedAs] can also be used for dictionary members.
 
-Usage: `[DeprecateAs]` can be specified on methods, attributes, and constants.
+`[ImplementedAs]` is _discouraged_. Please use only if absolutely necessary: rename Blink internal names to align with IDL.
+
+Usage: The possible usage is `[ImplementedAs=XXX]`, where XXX is a method name in Blink. `[ImplementedAs]` can be specified on interfaces, methods and attributes.
 
 ```webidl
-    [DeprecateAs=DeprecatedPrefixedAttribute] attribute Node prefixedAttribute;
-    [DeprecateAs=DeprecatedPrefixedMethod] Node prefixedGetInterestingNode();
-    [DeprecateAs=DeprecatedPrefixedConstant] const short DEPRECATED_PREFIXED_CONSTANT = 1;
+[
+    ImplementedAs=DOMPath
+] interface Path {
+    [ImplementedAs=classAttribute] attribute int class;
+    [ImplementedAs=deleteFunction] void delete();
+};
 ```
 
-For more documentation on deprecations, see [the documentation](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/blink/renderer/core/frame/deprecation/README.md).
+Method names in Blink default to being the same as the name in an IDL file. In some cases this is not possible, e.g., `delete` is a C++ reserved word. In such cases, you can explicitly specify the method name in Blink by `[ImplementedAs]`. Generally the `[ImplementedAs]` name should be in lowerCamelCase. You should _not_ use `[ImplementedAs]` simply to avoid renaming Blink methods.
+
+### [LogActivity]
+
+Summary: logs activity, using V8PerContextData::activityLogger. Widely used. Interacts with `[PerWorldBindings]`, `[LogAllWorlds]`.
+
+Usage:
+
+* Valid values for attributes are: `GetterOnly`, `SetterOnly`, (no value)
+* Valid values for methods are: (no value)
+
+For methods all calls are logged, and by default for attributes all access (calls to getter or setter) are logged, but this can be restricted to just read (getter) or just write (setter).
 
 ### [Measure]
 
@@ -1126,6 +1051,35 @@ When specified, caches the resulting object and returns it in later calls so tha
 
 These extended attributes are rarely used, generally only in one or two places. These are often replacements for `[Custom]` bindings, and may be candidates for deprecation and removal.
 
+### [CachedAccessor]
+
+Summary: Caches the accessor result in a private property (not directly accessible from JS). Improves accessor reads (getter) at the expense of extra memory and manual invalidation which should be trivial in most cases.
+
+
+*** note
+* The getter cannot have any side effects since calls to the getter will be replaced by a cheap property load.
+* It uses a **push approach**, so updates must be _pushed_ every single time, it **DOES NOT** invalidate/update the cache automatically.
+* Despite being cached, the getter can still be called on certain circumstances, consistency is a must.
+* The cache **MUST** be initialized before using it. There's no default value like _undefined_ or a _hole_.
+***
+
+
+Usage: `[CachedAccessor]` takes no arguments, can be specified on attributes.
+
+```webidl
+interface HTMLFoo {
+    [CachedAccessor] readonly attribute Bar bar;
+};
+```
+
+
+Register the required property in V8PrivateProperty.h.
+To update the cached value (e.g. for HTMLFoo.bar) proceed as follows:
+
+```c++
+V8PrivateProperty::GetHTMLFooBarCachedAccessor().Set(context, object, new_value);
+```
+
 ### [CachedAttribute]
 
 Summary: For performance optimization, `[CachedAttribute]` indicates that a wrapped object should be cached on a DOM object. Rarely used.
@@ -1259,25 +1213,225 @@ The FlexibleArrayBufferView extended attribute always requires the AllowShared e
 
 Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextBase.idl for an example.
 
-### [AllowShared]
+### [IsolatedContext]
 
-Summary: `[AllowShared]` indicates that a parameter, which must be an ArrayBufferView (or subtype of, e.g. typed arrays), is allowed to be backed by a SharedArrayBuffer. It also indicates that an ArrayBuffer parameter allows a SharedArrayBuffer to be passed.
+Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
+This attribute is primarily intended for Isolated Apps (see [explainer](https://github.com/reillyeon/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
 
-Usage: `[AllowShared]` must be specified on a parameter to a method:
+Note that it's likely for these requirements to shift over time: <https://crbug.com/1206150>.
+
+Usage: The `[IsolatedContext]` extended attribute may be specified on interfaces, attributes, and operations:
 
 ```webidl
-interface Context {
-    void bufferData1([AllowShared] ArrayBufferView buffer);
-    void bufferData2([AllowShared] Float32Array buffer);
-    void bufferData3([AllowShared] ArrayBuffer buffer);
+[IsolatedContext]
+interface TCPSocket {
+  ...
+};
+```
+
+### [LegacyWindowAlias_Measure]
+
+Summary: The same as `[Measure]` but applied to the property exposed as `[LegacyWindowAlias]`.
+
+### [LegacyWindowAlias_MeasureAs]
+
+Summary: The same as `[MeasureAs]` but applied to the property exposed as `[LegacyWindowAlias]`.
+
+### [LegacyWindowAlias_RuntimeEnabled]
+
+Summary: The same as `[RuntimeEnabled]` but applied to the property exposed as `[LegacyWindowAlias]`.
+
+### [NamedConstructor_CallWith]
+
+Summary: The same as `[CallWith]` but applied to the named constructors.
+
+### [NamedConstructor_RaisesException]
+
+Summary: The same as `[RaisesException]` but applied to the named constructors.
+
+### [NoAllocDirectCall]
+
+Summary: `[NoAllocDirectCall]` marks a given method as being usable with the fast API calls implemented in V8. They get their value conversions inlined in TurboFan, leading to overall better performance.
+
+Usage: The method must adhere to the following requirements:
+
+1. Doesn't trigger GC, i.e., doesn't allocate Blink or V8 objects;
+2. Doesn't trigger JavaScript execution;
+3. Has no side effect.
+
+Those requirements lead to the specific inability to throw JS exceptions and to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If any such error reporting needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
+
+Note: if `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
+
+Note: the [NoAllocDirectCall] extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
+
+### [PerWorldBindings]
+
+Summary: Generates faster bindings code by avoiding check for isMainWorld().
+
+This optimization only makes sense for wrapper-types (i.e. types that have a corresponding IDL interface), as we don't need to check in which world we are for other types.
+
+*** note
+This optimization works by generating 2 separate code paths for the main world and for isolated worlds. As a consequence, using this extended attribute will increase binary size and we should refrain from overusing it.
+***
+
+### [URL]
+
+Summary: `[URL]` indicates that a given DOMString represents a URL.
+
+Usage: `[URL]` can be specified on DOMString attributes that have `[Reflect]` extended attribute specified only:
+
+```webidl
+[Reflect, URL] attribute DOMString url;
+```
+
+You need to specify `[URL]` if a given DOMString represents a URL, since getters of URL attributes need to be realized in a special routine in Blink, i.e. `Element::getURLAttribute(...)`. If you forgot to specify `[URL]`, then the attribute getter might cause a bug.
+
+Only used in some HTML*ELement.idl files and one other place.
+
+## Temporary Blink-specific IDL Extended Attributes
+
+These extended attributes are _temporary_ and are only in use while some change is in progress. Unless you are involved with the change, you can generally ignore them, and should not use them.
+
+### [IsCodeLike]
+
+This implements the TC39 "Dynamic Code Brand Checks" proposal. By attaching
+the [IsCodeLike] attribute to a type, its instances will be treated as
+"code like" objects, as detailed in the spec.
+
+Standard: [TC39 Dynamic Code Brand Checks](https://github.com/tc39/proposal-dynamic-code-brand-checks)
+
+### [LegacyTreatAsPartialInterface]
+
+Summary: `[LegacyTreatAsPartialInterface]` on an interface mixin means that the mixin is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of mixins, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
+
+## Discouraged Blink-specific IDL Extended Attributes
+
+These extended attributes are _discouraged_ - they are not deprecated, but they should be avoided and removed if possible.
+
+### [BufferSourceTypeNoSizeLimit]
+
+Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
+
+Consult with the bindings team before you use this extended attribute.
+
+### [Custom]
+
+Summary: They allow you to write bindings code manually as you like: full bindings for methods and attributes, certain functions for interfaces.
+
+Custom bindings are _strongly discouraged_. They are likely to be buggy, a source of security holes, and represent a significant maintenance burden. Before using `[Custom]`, you should doubly consider if you really need custom bindings. You are recommended to modify code generators and add specialized extended attributes or special cases if necessary to avoid using `[Custom]`.
+
+Usage: `[Custom]` can be specified on methods or attributes. `[Custom=Getter]` and `[Custom=Setter]` can be specified on attributes. `[Custom=A|B]` can be specified on interfaces, with various values (see below).
+
+On read only attributes (that are not `[Replaceable]`), `[Custom]` is equivalent to `[Custom=Getter]` (since there is no setter) and `[Custom=Getter]` is preferred.
+
+The bindings generator largely _ignores_ the specified type information of `[Custom]` members (signature of methods and type of attributes), but they must be valid types. It is best if the signature exactly matches the spec, but if one of the types is an interface that is not implemented, you can use object as the type instead, to indicate "unspecified object type".
+
+`[Replaceable]` is _incompatible_ with `[Custom]` and `[Custom=Setter]` (because replaceable attributes have a single interface-level setter callback, rather than individual attribute-level callbacks); if you need custom binding for a replaceable attribute, remove `[Replaceable]` and readonly.
+
+```webidl
+[Custom] void func();
+[Custom] attribute DOMString str1;
+[Custom=Getter] readonly attribute DOMString str2;
+[Custom=Setter] attribute DOMString str3;
+```
+
+Before explaining the details, let us clarify the relationship of these IDL attributes.
+
+* `[Custom]` on a method indicates that you can write V8 custom bindings for the method.
+* `[Custom=Getter]` or `[Custom=Setter]` on an attribute means custom bindings for the attribute getter or setter.
+* `[Custom]` on an attribute means custom bindings for both the getter and the setter
+
+Methods:
+
+```webidl
+interface XXX {
+    [Custom] void func();
+};
+```
+
+You can write custom bindings in third_party/blink/renderer/bindings/{core,modules}/v8/custom/v8_xxx_custom.cc:
+
+```c++
+void V8XXX::FuncMethodCustom(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  ...;
 }
 ```
 
-A SharedArrayBuffer is a distinct type from an ArrayBuffer, but both types use ArrayBufferViews to view the data in the buffer. Most methods do not permit an ArrayBufferView that is backed by a SharedArrayBuffer, and will throw an exception. This attribute indicates that this method permits a shared ArrayBufferView.
+Attribute getter:
 
-When applied to an ArrayBuffer argument, the underlying C++ method called by the bindings receives a `DOMArrayBufferBase*` instead of `DOMArrayBuffer*`.
+```webidl
+interface XXX {
+    [Custom=Getter] attribute DOMString str;
+};
+```
 
-### [PermissiveDictionaryConversion] _(d)_
+You can write custom bindings in Source/bindings/v8/custom/V8XXXCustom.cpp:
+
+```c++
+void V8XXX::StrAttributeGetterCustom(const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ...;
+}
+```
+
+Attribute setter:
+
+```webidl
+interface XXX {
+    [Custom=Setter] attribute DOMString str;
+};
+```
+
+You can write custom bindings in Source/bindings/v8/custom/V8XXXCustom.cpp:
+
+```c++
+void V8XXX::StrAttributeSetterCustom(v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
+  ...;
+}
+```
+
+`[Custom]` may also be specified on special operations:
+
+```webidl
+interface XXX {  // anonymous special operations
+    [Custom] getter Node (unsigned long index);
+    [Custom] setter Node (unsigned long index, Node value);
+    [Custom] deleter boolean (unsigned long index);
+
+    [Custom] getter Node (DOMString name);
+    [Custom] setter Node (DOMString name, Node value);
+    [Custom] deleter boolean (DOMString name);
+}
+interface YYY {  // special operations with identifiers
+    [Custom] getter Node item(unsigned long index);
+    [Custom] getter Node namedItem(DOMString name);
+}
+```
+
+`[Custom]` may also be specified on callback functions:
+
+```webidl
+[Custom] callback SomeCallback = void ();
+interface XXX {
+    void func(SomeCallback callback);
+};
+```
+
+When`[Custom]` is specified on a callback function, the code generator doesn't
+generate bindings for the callback function. The binding layer uses a
+`ScriptValue` instead.
+
+### [TargetOfExposed]
+
+Summary: Interfaces specified with `[Global]` expose top-level IDL constructs specified with `[Exposed]` as JS data properties, however `[Global]` means a lot more (e.g. global object, named properties object, etc.). Interfaces specified with `[TargetOfExposed]` only expose top-level IDL constructs specified with `[Exposed]` and means nothing else.
+
+This extended attribute should be used only for pseudo namespace(-ish) objects like `globalThis.chromeos`. Consult with the bindings team before you use this extended attribute.
+
+## Deprecated Blink-specific IDL Extended Attributes
+
+These extended attributes are _deprecated_, or are under discussion for deprecation. They should be avoided.
+
+### [PermissiveDictionaryConversion]
 
 Summary: `[PermissiveDictionaryConversion]` relaxes the rules about what types of values may be passed for an argument of dictionary type.
 
@@ -1310,166 +1464,6 @@ The counters specified in the IDL file also need to be defined in Source/platfor
   BINDINGS_ATTRIBUTE(V, NodeTextContent)             \
   BINDINGS_METHOD(V, NodeHasChildNodes)
 ```
-
-### [URL]
-
-Summary: `[URL]` indicates that a given DOMString represents a URL.
-
-Usage: `[URL]` can be specified on DOMString attributes that have `[Reflect]` extended attribute specified only:
-
-```webidl
-[Reflect, URL] attribute DOMString url;
-```
-
-You need to specify `[URL]` if a given DOMString represents a URL, since getters of URL attributes need to be realized in a special routine in Blink, i.e. `Element::getURLAttribute(...)`. If you forgot to specify `[URL]`, then the attribute getter might cause a bug.
-
-Only used in some HTML*ELement.idl files and one other place.
-
-## Temporary Blink-specific IDL Extended Attributes
-
-These extended attributes are _temporary_ and are only in use while some change is in progress. Unless you are involved with the change, you can generally ignore them, and should not use them.
-
-### [LegacyTreatAsPartialInterface]
-
-Summary: `[LegacyTreatAsPartialInterface]` on an interface mixin means that the mixin is treated as a partial interface, meaning members are accessed via static member functions in a separate class, rather than as instance methods on the instance object `*impl` or class methods on the C++ class implementing the (main) interface. This is legacy from original implementation of mixins, and is being removed ([Bug 360435](https://crbug.com/360435), nbarth@).
-
-
-### [CachedAccessor]
-
-Summary: Caches the accessor result in a private property (not directly accesible from JS). Improves accessor reads (getter) at the expense of extra memory and manual invalidation which should be trivial in most cases.
-
-
-*** note
-* The getter cannot have any side effects since calls to the getter will be replaced by a cheap property load.
-* It uses a **push approach**, so updates must be _pushed_ every single time, it **DOES NOT** invalidate/update the cache automatically.
-* Despite being cached, the getter can still be called on certain circumstances, consistency is a must.
-* The cache **MUST** be initialized before using it. There's no default value like _undefined_ or a _hole_.
-***
-
-
-Usage: `[CachedAccessor]` takes no arguments, can be specified on attributes.
-
-```webidl
-interface HTMLFoo {
-    [CachedAccessor] readonly attribute Bar bar;
-};
-```
-
-
-Register the required property in V8PrivateProperty.h.
-To update the cached value (e.g. for HTMLFoo.bar) proceed as follows:
-
-```c++
-V8PrivateProperty::GetHTMLFooBarCachedAccessor().Set(context, object, new_value);
-```
-
-
-### [Affects]
-
-Summary: `[Affects=Nothing]` indicates that a function must not produce JS-observable side effects, while `[Affects=Everything]` indicates that a function may produce JS-observable side effects. Functions which are not considered free of JS-observable side effects will never be invoked by V8 with throwOnSideEffect.
-
-Usage for attributes and operations: `[Affects=Nothing]` and `[Affects=Everything]` can be specified on an operation, or on an attribute to indicate that its getter callback is side effect free or side effecting:
-
-```webidl
-interface HTMLFoo {
-    [Affects=Everything] attribute Bar bar;
-    [Affects=Nothing] Bar baz();
-    void removeItems();
-};
-```
-
-When neither `[Affects=Nothing]` nor `[Affects=Everything]` is specified, the default for operations is `[Affects=Everything]`, while for attributes it's `[Affects=Nothing]`. Functions marked as side effect free are allowed to be nondeterministic, throw exceptions, force layout, and recalculate style, but must not set values, cache objects, or schedule execution that will be observable after the function completes. If a marked function calls into V8, it must properly handle cases when the V8 call returns an MaybeHandle.
-
-All DOM constructors are assumed to side effects. However, an exception can be explicitly indicated when calling constructors using the V8 API method Function::NewInstanceWithSideEffectType().
-
-There is not yet support for marking SymbolKeyedMethodConfigurations as side-effect free. This requires additional support in V8 to allow Intrinsics.
-
-
-### [IsolatedContext]
-
-Summary: Interfaces and interface members with a `IsolatedContext` extended attribute are exposed only inside isolated contexts.
-This attribute is primarily intended for Isolated Apps (see [explainer](https://github.com/reillyeon/isolated-web-apps)) with an option for the embedder to include their own additional scenarios.
-
-Note that it's likely for these requirements to shift over time: <https://crbug.com/1206150>.
-
-Usage: The `[IsolatedContext]` extended attribute may be specified on interfaces, attributes, and operations:
-
-```webidl
-[IsolatedContext]
-interface TCPSocket {
-  ...
-};
-```
-
-
-### [NoAllocDirectCall]
-
-Summary: `[NoAllocDirectCall]` marks a given method as being usable with the fast API calls implemented in V8. They get their value conversions inlined in TurboFan, leading to overall better performance.
-
-Usage: The method must adhere to the following requirements:
-
-1. Doesn't trigger GC, i.e., doesn't allocate Blink or V8 objects;
-2. Doesn't trigger JavaScript execution;
-3. Has no side effect.
-
-Those requirements lead to the specific inability to throw JS exceptions and to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If any such error reporting needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
-
-Note: if `[NoAllocDirectCall]` is applied to a method, then the corresponding implementation C++ class must **also** derive from the [`NoAllocDirectCallHost` class](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h).
-
-Note: the [NoAllocDirectCall] extended attribute can only be applied to methods, and not attributes. An attribute getter's V8 return value constitutes a V8 allocation, and setters likely allocate on the Blink side.
-
-### [IsCodeLike]
-
-This implements the TC39 "Dynamic Code Brand Checks" proposal. By attaching
-the [IsCodeLike] attribute to a type, its instances will be treated as
-"code like" objects, as detailed in the spec.
-
-Standard: [TC39 Dynamic Code Brand Checks](https://github.com/tc39/proposal-dynamic-code-brand-checks)
-
-## Discouraged Blink-specific IDL Extended Attributes
-
-These extended attributes are _discouraged_ - they are not deprecated, but they should be avoided and removed if possible.
-
-### [BufferSourceTypeNoSizeLimit]
-
-Summary: The byte length of buffer source types is currently restricted to be under 2 GB (exactly speaking, it must be less than the max size of a direct mapped memory of PartitionAlloc, which is a little less than 2 GB).  This extended attribute removes this limitation.
-
-Consult with the bindings team before you use this extended attribute.
-
-### [ImplementedAs]
-
-Summary: `[ImplementedAs]` specifies a method name in Blink, if the method name in an IDL file and the method name in Blink are different.
-
-[ImplementedAs] can also be used for dictionary members.
-
-`[ImplementedAs]` is _discouraged_. Please use only if absolutely necessary: rename Blink internal names to align with IDL.
-
-Usage: The possible usage is `[ImplementedAs=XXX]`, where XXX is a method name in Blink. `[ImplementedAs]` can be specified on interfaces, methods and attributes.
-
-```webidl
-[
-    ImplementedAs=DOMPath
-] interface Path {
-    [ImplementedAs=classAttribute] attribute int class;
-    [ImplementedAs=deleteFunction] void delete();
-};
-```
-
-Method names in Blink default to being the same as the name in an IDL file. In some cases this is not possible, e.g., `delete` is a C++ reserved word. In such cases, you can explicitly specify the method name in Blink by `[ImplementedAs]`. Generally the `[ImplementedAs]` name should be in lowerCamelCase. You should _not_ use `[ImplementedAs]` simply to avoid renaming Blink methods.
-
-### [TargetOfExposed]
-
-Summary: Interfaces specified with `[Global]` expose top-level IDL constructs specified with `[Exposed]` as JS data properties, however `[Global]` means a lot more (e.g. global object, named properties object, etc.). Interfaces specified with `[TargetOfExposed]` only expose top-level IDL constructs specified with `[Exposed]` and means nothing else.
-
-This extended attribute should be used only for pseudo namespace(-ish) objects like `globalThis.chromeos`. Consult with the bindings team before you use this extended attribute.
-
-## Deprecated Blink-specific IDL Extended Attributes
-
-These extended attributes are _deprecated_, or are under discussion for deprecation. They should be avoided.
-
-## Internal-use Blink-specific IDL Extended Attributes
-
-These extended attributes are added internally by the compiler, and not intended to be literally included in `.idl` files; they are documented here for clarity and completeness.
 
 -------------
 
