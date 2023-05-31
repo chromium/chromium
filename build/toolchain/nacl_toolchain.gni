@@ -68,6 +68,10 @@ template("nacl_toolchain") {
       if (use_remoteexec_links) {
         rbe_link_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_linux_link.cfg"
       }
+
+      # TODO(b/282032209): Re-enable remote nacl links once mismatches due to
+      # linking with absolute paths has been fixed.
+      use_remoteexec_links = false
     }
   }
 }
