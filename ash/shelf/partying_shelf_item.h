@@ -36,6 +36,7 @@ namespace ash {
 // 11-`mockup_duration_`|The item travels from `bounce_side_` to `target_side_`.
 // -----------------------------------------------------------------------------
 // When it ends, it restarts with `bounce_side_` set to the old `target_side_`.
+// TODO(b/284500985): Delete this class. It was used by feature kShelfParty.
 class PartyingShelfItem : public gfx::LinearAnimation,
                           public gfx::AnimationDelegate {
  public:
