@@ -356,20 +356,26 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
   }
 
   double bid = seller_info->bid;
-  absl::optional<blink::AdCurrency> bid_currency;
+  double winning_bid_for_aggregation = bid;
+  absl::optional<blink::AdCurrency> bid_currency = seller_info->bid_currency;
+  absl::optional<blink::AdCurrency> highest_scoring_other_bid_currency;
   double highest_scoring_other_bid = seller_info->highest_scoring_other_bid;
   if (seller_info->auction_config->non_shared_params.seller_currency
           .has_value()) {
-    bid = seller_info->bid_in_seller_currency;
+    // While reportResult() gets the bid that actually participated in the
+    // auction, for private aggregation and second-highest we want to do things
+    // in seller currency if it's enabled.
+    winning_bid_for_aggregation = seller_info->bid_in_seller_currency;
     highest_scoring_other_bid =
         seller_info->highest_scoring_other_bid_in_seller_currency.value_or(0.0);
-    bid_currency =
+    highest_scoring_other_bid_currency =
         *seller_info->auction_config->non_shared_params.seller_currency;
   }
 
   // top-level auctions with components don't report highest_scoring_other_bid.
   if (top_level_with_components) {
     highest_scoring_other_bid = 0.0;
+    highest_scoring_other_bid_currency = absl::nullopt;
   }
 
   // Send in buyer_and_seller_reporting_id if it's configured on the winning
@@ -403,16 +409,15 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
                                  kFledgeScoreReportingBits.Get()),
       RoundStochasticallyToKBits(highest_scoring_other_bid,
                                  kFledgeBidReportingBits.Get()),
-      /*browser_signal_highest_scoring_other_bid_currency=*/
-      top_level_with_components ? absl::nullopt : bid_currency,
+      highest_scoring_other_bid_currency,
       std::move(browser_signals_component_auction_report_result_params),
       seller_info->scoring_signals_data_version.value_or(0),
       seller_info->scoring_signals_data_version.has_value(),
       seller_info->trace_id,
       base::BindOnce(
           &InterestGroupAuctionReporter::OnSellerReportResultComplete,
-          weak_ptr_factory_.GetWeakPtr(), base::Unretained(seller_info), bid,
-          highest_scoring_other_bid));
+          weak_ptr_factory_.GetWeakPtr(), base::Unretained(seller_info),
+          winning_bid_for_aggregation, highest_scoring_other_bid));
 }
 
 void InterestGroupAuctionReporter::OnSellerReportResultComplete(

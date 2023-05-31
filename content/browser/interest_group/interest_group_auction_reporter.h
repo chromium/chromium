@@ -118,6 +118,11 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // returned by the component seller. Otherwise, it's the bid from the
     // bidder.
     double bid;
+
+    // Currency the bid is in.
+    absl::optional<blink::AdCurrency> bid_currency;
+
+    // Bid converted to the appropriate auction's sellerCurrency;
     double bid_in_seller_currency;
 
     // Score this seller assigned the bid.

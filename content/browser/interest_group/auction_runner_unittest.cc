@@ -694,7 +694,7 @@ std::string MakeDecisionScript(
       // Currency-adjust the bidKey in metadata if needed.
       if (auctionConfig.sellerCurrency && bid !== 0.0)
         adMetadata.bidKey += "0";
-      return {desirability: computeScore(convertedBid ? convertedBid : bid),
+      return {desirability: computeScore(bid),
               incomingBidInSellerCurrency: convertedBid,
               bid: convertedBid,
               // Only allow a component auction when the passed in ad is from
@@ -798,11 +798,6 @@ std::string MakeDecisionScript(
       privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 70n, value: 80});
 
-      // Convert the bid back into bidder currency if we're covering that.
-      if (auctionConfig.sellerCurrency) {
-        browserSignals.bid /= 10.0;
-      }
-
       return browserSignals;
     }
 
@@ -863,10 +858,6 @@ const char kBasicReportResult[] = R"(
     registerAdBeacon({
       "click": "https://reporting.example.com/" + 2*browserSignals.bid,
     });
-    // Convert the bid back into bidder currency if we're covering that.
-    if (auctionConfig.sellerCurrency) {
-      browserSignals.bid /= 10.0;
-    }
     return browserSignals;
   }
 )";
@@ -2990,7 +2981,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           ReportWinUrl(/*bid=*/1,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/0,
@@ -3147,7 +3138,7 @@ TEST_F(AuctionRunnerTest, Basic) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=1&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           ReportWinUrl(/*bid=*/2,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/1,
@@ -3738,11 +3729,11 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           GURL("https://component2-report.test/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=2"),
+               "bidCurrency=USD&bid=2"),
           ReportWinUrl(/*bid=*/2,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/0,
@@ -3914,12 +3905,14 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
+          // Top-level gets a bid of 18USD from the component.
           GURL("https://seller-reporting-50.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
-               "bidCurrency=CAD&bid=180"),
+               "bidCurrency=USD&bid=18"),
+          // Bid in component is 2USD.
           GURL("https://seller-reporting-20.example.com/"
                "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
-               "bidCurrency=USD&bid=20"),
+               "bidCurrency=USD&bid=2"),
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=10&highestScoringOtherBidCurrency=USD&"
                "bidCurrency=USD&bid=2")));
@@ -3958,13 +3951,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
                   BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2021),
                   // scoreAd(), highest-scoring-other-bid, incoming bid 2
                   BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/2022),
-                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  // reportResult(), winning-bid, browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/20,
-                                                 /*value=*/20031),
+                                                 /*value=*/2031),
                   // reportResult(), highest-scoring-other-bid,
-                  // browserSignals.bid is 20
+                  // browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/10,
-                                                 /*value=*/20032))),
+                                                 /*value=*/2032))),
           testing::Pair(
               kSeller,
               ElementsAreRequests(
@@ -3973,12 +3966,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
                                                  /*value=*/18051),
                   // scoreAd(), highest-scoring-other-bid is 0.
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/18052),
-                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  // reportResult(), winning-bid, browserSignals.bid is 18.
                   BuildPrivateAggregationRequest(/*bucket=*/180,
-                                                 /*value=*/180061),
+                                                 /*value=*/18061),
                   // reportResult() highest-scoring-other-bid is 0.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/180062)))));
+                                                 /*value=*/18062)))));
 }
 
 // Test of a component auction where top-level seller and intermediate one use
@@ -4096,12 +4089,15 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
   EXPECT_THAT(
       result_.report_urls,
       testing::UnorderedElementsAre(
+          // Component's bid in top-level is 18MXN.
           GURL("https://seller-reporting-60.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=???&"
-               "bidCurrency=CAD&bid=180"),
+               "bidCurrency=MXN&bid=18"),
+          // Buyer's bid in component is 2USD.
           GURL("https://seller-reporting-40.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
-               "bidCurrency=MXN&bid=20"),
+               "bidCurrency=USD&bid=2"),
+          // Winning buyer's bid is 2USD.
           GURL("https://buyer-reporting.example.com/"
                "?highestScoringOtherBid=0&highestScoringOtherBidCurrency=MXN&"
                "bidCurrency=USD&bid=2")));
@@ -4144,13 +4140,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                   BuildPrivateAggregationRequest(/*bucket=*/20, /*value=*/2041),
                   // scoreAd(), highest-scoring-other-bid, incoming bid 2
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/2042),
-                  // reportResult(), winning-bid, browserSignals.bid is 20
+                  // reportResult(), winning-bid, browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/20,
-                                                 /*value=*/20051),
+                                                 /*value=*/2051),
                   // reportResult(), highest-scoring-other-bid,
-                  // browserSignals.bid is 20
+                  // browserSignals.bid is 2
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/20052))),
+                                                 /*value=*/2052))),
           testing::Pair(
               kSeller,
               ElementsAreRequests(
@@ -4167,13 +4163,13 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
                   // on top-level.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
                                                  /*value=*/18062),
-                  // reportResult(), winning-bid, browserSignals.bid is 180.
+                  // reportResult(), winning-bid, browserSignals.bid is 18.
                   BuildPrivateAggregationRequest(/*bucket=*/180,
-                                                 /*value=*/180071),
+                                                 /*value=*/18071),
                   // reportResult() highest-scoring-other-bid is 0, since not
                   // set on top-level.
                   BuildPrivateAggregationRequest(/*bucket=*/0,
-                                                 /*value=*/180072)))));
+                                                 /*value=*/18072)))));
 }
 
 // Test of currency handling in a component auction where bid is passed
@@ -4602,11 +4598,11 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
           GURL("https://reporting.example.com/"
                "?highestScoringOtherBid=0&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           GURL("https://component1-report.test/"
                "?highestScoringOtherBid=2&"
                "highestScoringOtherBidCurrency=???&"
-               "bidCurrency=???&bid=1"),
+               "bidCurrency=USD&bid=1"),
           ReportWinUrl(/*bid=*/1,
                        /*bid_currency=*/blink::AdCurrency::From("USD"),
                        /*highest_scoring_other_bid=*/2,
@@ -4879,7 +4875,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
       EXPECT_THAT(result_.report_urls,
                   testing::UnorderedElementsAre(
                       GURL("https://buyer-reporting.example.com/2"),
-                      GURL("https://component.seller1.test/20_3"),
+                      GURL("https://component.seller1.test/2_3"),
                       GURL("https://adstuff.publisher1.com/3")));
       EXPECT_THAT(
           result_.ad_beacon_map,
@@ -4891,7 +4887,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
               testing::Pair(
                   ReportingDestination::kComponentSeller,
                   testing::ElementsAre(testing::Pair(
-                      "click", GURL("https://component.seller1.test/40_3")))),
+                      "click", GURL("https://component.seller1.test/4_3")))),
               testing::Pair(
                   ReportingDestination::kBuyer,
                   testing::ElementsAre(testing::Pair(
@@ -12167,10 +12163,6 @@ TEST_F(AuctionRunnerTest,
     //   kInvalidBid (1).
     // If sellerCurrency is on:
     //   winning-bid is 10, everything else is the same.
-    //
-    // Some things use 100 * browserSignals.bid in their
-    // reportResultcalculation, that's in seller currency, so also needs to be
-    // adjusted.
     int winning_bid = use_seller_currency ? 10 : 1;
 
     EXPECT_THAT(
@@ -12218,10 +12210,10 @@ TEST_F(AuctionRunnerTest,
                     // a supported base value in reportResult().
                     BuildPrivateAggregationRequest(
                         /*bucket=*/winning_bid,
-                        /*value=*/100 * winning_bid + 31),
+                        /*value=*/131),
                     BuildPrivateAggregationRequest(
                         /*bucket=*/0,
-                        /*value=*/100 * winning_bid + 32)))));
+                        /*value=*/132)))));
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   }
 }
@@ -12385,10 +12377,10 @@ TEST_F(AuctionRunnerTest,
                     // a supported base value in reportResult().
                     BuildPrivateAggregationRequest(
                         /*bucket=*/winning_bid,
-                        /*value=*/winning_bid * 100 + 31),
+                        /*value=*/231),
                     BuildPrivateAggregationRequest(
                         /*bucket=*/highest_scoring_other_bid,
-                        /*value=*/winning_bid * 100 + 32)))));
+                        /*value=*/232)))));
   }
 }
 
@@ -14956,11 +14948,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=40&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=4&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(4), ModeCurrency(),
@@ -15042,11 +15034,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=30&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=40")
+                                        "bidCurrency=USD&bid=4")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=3&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=4"),
+                                        "bidCurrency=USD&bid=4"),
               ReportWinUrl(
                   /*bid=*/4, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(3), ModeCurrency(),
@@ -15105,26 +15097,26 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=1&"
                        "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=???&bid=3",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec) ||
         base::Contains(result_.report_urls,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=10&"
                        "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=EUR&bid=30",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=2&"
                               "highestScoringOtherBidCurrency=???&"
-                              "bidCurrency=???&bid=3",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
                base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=20&"
                               "highestScoringOtherBidCurrency=EUR&"
-                              "bidCurrency=EUR&bid=30",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -15210,11 +15202,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=10&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=1&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
@@ -15295,11 +15287,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=20&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=2&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
@@ -15353,26 +15345,26 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=1&"
                        "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=???&bid=3",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec) ||
         base::Contains(result_.report_urls,
                        "https://reporting.example.com/"
                        "?highestScoringOtherBid=10&"
                        "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=EUR&bid=30",
+                       "bidCurrency=USD&bid=3",
                        &GURL::spec)) {
       highest_scoring_other_bid = 1;
     } else if (base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=2&"
                               "highestScoringOtherBidCurrency=???&"
-                              "bidCurrency=???&bid=3",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
                base::Contains(result_.report_urls,
                               "https://reporting.example.com/"
                               "?highestScoringOtherBid=20&"
                               "highestScoringOtherBidCurrency=EUR&"
-                              "bidCurrency=EUR&bid=30",
+                              "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
@@ -15453,11 +15445,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=10&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=1&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(1), ModeCurrency(),
@@ -15538,11 +15530,11 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
               SellerCurrencyOn() ? GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=20&"
                                         "highestScoringOtherBidCurrency=EUR&"
-                                        "bidCurrency=EUR&bid=30")
+                                        "bidCurrency=USD&bid=3")
                                  : GURL("https://reporting.example.com/"
                                         "?highestScoringOtherBid=2&"
                                         "highestScoringOtherBidCurrency=???&"
-                                        "bidCurrency=???&bid=3"),
+                                        "bidCurrency=USD&bid=3"),
               ReportWinUrl(
                   /*bid=*/3, /*bid_currency=*/blink::AdCurrency::From("USD"),
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),

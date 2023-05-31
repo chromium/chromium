@@ -2038,6 +2038,23 @@ InterestGroupAuction::CreateReporter(
   top_level_seller_winning_bid_info.subresource_url_builder =
       std::move(subresource_url_builder_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
+
+  if (winner->bid->auction == this) {
+    // Bid came directly from bidder, not a component auction.
+    top_level_seller_winning_bid_info.bid_currency =
+        winning_bid_info.bid_currency;
+  } else {
+    // Bid comes from component auction, so we redact the config expectation of
+    // the bid of component auction in top-level auction.
+    InterestGroupAuction* component_auction = winner->bid->auction;
+    top_level_seller_winning_bid_info.bid_currency =
+        component_auction->config_->non_shared_params.seller_currency;
+    if (!top_level_seller_winning_bid_info.bid_currency) {
+      top_level_seller_winning_bid_info.bid_currency =
+          PerBuyerCurrency(component_auction->config_->seller, *config_);
+    }
+  }
+
   top_level_seller_winning_bid_info.bid_in_seller_currency =
       winner->bid_in_seller_currency.value_or(0.0);
   top_level_seller_winning_bid_info.score = winner->score;
@@ -2074,6 +2091,10 @@ InterestGroupAuction::CreateReporter(
         std::move(component_auction->subresource_url_builder_);
     const LeaderInfo& component_leader = component_auction->leader_info();
     component_seller_winning_bid_info->bid = component_leader.top_bid->bid->bid;
+    // The bidder in this auction was the actual bidder, so the currency comes
+    // from it, too.
+    component_seller_winning_bid_info->bid_currency =
+        winning_bid_info.bid_currency;
     component_seller_winning_bid_info->bid_in_seller_currency =
         component_leader.top_bid->bid_in_seller_currency.value_or(0.0);
     component_seller_winning_bid_info->score = component_leader.top_bid->score;
