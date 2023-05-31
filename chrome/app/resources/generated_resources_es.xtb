@@ -1440,6 +1440,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;no se muestra 1 línea&gt;}other{&lt;no se muestran <ph name="NUMBER_OF_LINES" /> líneas&gt;}}</translation>
 <translation id="2218019600945559112">Ratón y panel táctil</translation>
 <translation id="2218515861914035131">Pegar como texto sin formato</translation>
+<translation id="221872881068107022">Invertir desplazamiento</translation>
 <translation id="2220409419896228519">Añade marcadores a tus aplicaciones de Google favoritas</translation>
 <translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
@@ -4371,6 +4372,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4777458362738635055">Otros usuarios de este dispositivo pueden usar la red</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nombres de la red</translation>
+<translation id="4778653490315793244">Aún no hay nada que mostrar</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Cambiar nombre de la red móvil de eSIM</translation>
@@ -4792,7 +4794,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5155327081870541046">En la barra de direcciones, escribe el atajo del sitio en el que quieras buscar, como "@bookmarks". A continuación, pulsa tu atajo preferido y escribe el término de búsqueda.</translation>
 <translation id="5156638757840305347">El cursor se destaca cuando aparece o se mueve</translation>
 <translation id="5157250307065481244">Ver detalles del sitio</translation>
-<translation id="5157635116769074044">Fijar esta página a la pantalla de inicio...</translation>
 <translation id="5158206172605340248">Menú de acentos cerrado.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
 <translation id="5159419673777902220">Tus padres han inhabilitado los permisos de extensiones</translation>
@@ -5878,7 +5879,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
 <translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
-<translation id="6120205520491252677">Fijar esta página en la pantalla de inicio...</translation>
 <translation id="6120707837086723438">Estás viendo sugerencias de recetas basadas en tu reciente actividad de búsqueda de recetas.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8361,7 +8361,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función en Ajustes &gt; Configuración avanzada &gt; Enviar automáticamente los datos de uso y diagnóstico a Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si has activado la opción Actividad en la Web y en Aplicaciones, es posible que estos datos se guarden en la cuenta de Google de tu hijo. Consulta más información sobre estos ajustes y sobre cómo configurarlos en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificado de cliente no válido</translation>
-<translation id="8270162672241199380">Instalador de Steam</translation>
 <translation id="827097179112817503">Mostrar el botón de página principal</translation>
 <translation id="8271268254812352141">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Los pasos siguientes son para los padres. Puedes devolverle el <ph name="DEVICE_TYPE" /> al niño/a después de configurar la cuenta.</translation>

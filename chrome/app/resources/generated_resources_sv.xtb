@@ -1452,6 +1452,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rad visas inte&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rader visas inte&gt;}}</translation>
 <translation id="2218019600945559112">Mus och styrplatta</translation>
 <translation id="2218515861914035131">Klistra in som oformaterad text</translation>
+<translation id="221872881068107022">Omvänd rullning</translation>
 <translation id="2220409419896228519">Lägg till bokmärken i appar från Google</translation>
 <translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
@@ -4387,6 +4388,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4777458362738635055">Andra användare på enheten kan använda det här nätverket</translation>
 <translation id="4777825441726637019">Play Butik</translation>
 <translation id="4777943778632837590">Konfigurera nätverkets namnservrar</translation>
+<translation id="4778653490315793244">Det finns inget att visa än</translation>
 <translation id="4779083564647765204">Zooma in</translation>
 <translation id="4779136857077979611">Onigiri (risbollar)</translation>
 <translation id="4779766576531456629">Byt namn på eSIM-mobilnätverket</translation>
@@ -4808,7 +4810,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5155327081870541046">Skriv genvägen till webbplatsen du vill söka på i adressfältet, till exempel @bookmarks. Tryck sedan på önskat kortkommando och ange söktermen.</translation>
 <translation id="5156638757840305347">Markören markeras när den visas eller flyttas</translation>
 <translation id="5157250307065481244">Visa webbplatsinformation</translation>
-<translation id="5157635116769074044">Fäst den här sidan på startskärmen ...</translation>
 <translation id="5158206172605340248">Menyn för accenttecken har stängts.</translation>
 <translation id="5159094275429367735">Konfigurera Crostini</translation>
 <translation id="5159419673777902220">Din förälder har inaktiverat behörigheter för tillägg</translation>
@@ -5894,7 +5895,6 @@ Du kan skicka den till Google för att kontrollera om den är säker. Genomsökn
 <translation id="6113942107547980621">Du måste byta till den primära användarprofilen på telefonen om du vill använda Smart Lock</translation>
 <translation id="6116921718742659598">Ändra språk- och inmatningsinställningar</translation>
 <translation id="6119927814891883061">Namnge enheten <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Fäst den här sidan på startskärmen ...</translation>
 <translation id="6120707837086723438">Receptförslag visas utifrån dina senaste receptsökningar på Sök.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8377,7 +8377,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
     <ph name="BEGIN_PARAGRAPH3" />Ägaren kan styra denna funktion via Inställningar &gt; Avancerat &gt; Skicka diagnostik- och användningsdata automatiskt till Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Om tillvalsinställningen Webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i barnets Google-konto. Läs mer om de här inställningarna och hur du kan ändra dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ogiltigt klientcertifikat</translation>
-<translation id="8270162672241199380">Installationsprogram för Steam</translation>
 <translation id="827097179112817503">Visa hemknappen</translation>
 <translation id="8271268254812352141">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text. Anpassa språken för översättning via <ph name="LINK_BEGIN" />Språk på webbplatser<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Nästa steg är till för dig som är förälder. Du kan lämna tillbaka <ph name="DEVICE_TYPE" /> till barnet när konfigureringen av kontot är klar.</translation>

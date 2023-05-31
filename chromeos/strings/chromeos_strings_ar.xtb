@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1020274983236703756">مواد العرض الحصرية لأجهزة <ph name="PRODUCT_NAME" /> متاحة الآن</translation>
-<translation id="1022433422498218992">عناصر التحكّم العامة</translation>
 <translation id="1022628058306505708">انسياب أرضي</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">نوع المصادقة</translation>
 <translation id="1776228893584526149">الدرجة اللونية للخلفية</translation>
 <translation id="1782199038061388045">الترجمة</translation>
-<translation id="1790209694022261219">النوافذ وأسطح المكتب</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
 <translation id="1807246157184219062">فاتح</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
-<translation id="3020183492814296499">الاختصارات</translation>
 <translation id="3027578600144895987">إغلاق الكاميرا</translation>
 <translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
 <translation id="6017514345406065928">أخضر</translation>
+<translation id="6019566113895157499">اختصارات لوحة المفاتيح</translation>
 <translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>

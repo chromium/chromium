@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">暫停播放媒體</translation>
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
-<translation id="1618835956950524778">醒目顯示檔案櫃中的啟動器按鈕</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="163517899691012366">「零打擾」模式開啟時，系統會忽略通知</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">已與 1 部裝置連線</translation>
 <translation id="2791421900609674576">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要按住建議項目即可移除。</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />，已選取</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2814448776515246190">局部擷取</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">安裝應用程式、擴充功能和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
-<translation id="29859347674873492">開啟「探索」應用程式中的「說明」</translation>
 <translation id="2992327365391326550">裝置的麥克風按鈕已關閉。</translation>
 <translation id="2996462380875591307">停駐放大鏡已啟用。再次按下 Ctrl 鍵 + 搜尋鍵 + D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音訊</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">開啟檔案</translation>
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
 <translation id="3039939407102840004">觸控筆電量：<ph name="PERCENTAGE" />%。</translation>
+<translation id="304097922505898963">開啟 Key Shortcuts 應用程式</translation>
 <translation id="3045488863354895414">午安，</translation>
 <translation id="3047761520276763270">試著說出：</translation>
 <translation id="3055162170959710888">你今天的裝置使用時間：<ph name="USED_TIME" /></translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">顯示深色主題設定</translation>
 <translation id="3413817803639110246">目前還沒有任何通知</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
-<translation id="3423744722495840645">開啟/關閉啟動器</translation>
 <translation id="3428447136709161042">中斷與「<ph name="NETWORK_NAME" />」的連線</translation>
 <translation id="3430396595145920809">由右向左滑動即可返回</translation>
 <translation id="3431517721463707585">桌面 14</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">檔案櫃中的應用程式</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 無線基地台</translation>
 <translation id="3542066395059568317">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要在建議項目上按一下滑鼠右鍵即可移除。</translation>
-<translation id="3546121235777416274">聚焦在子母畫面視窗</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏開發人員工具面板</translation>
 <translation id="3554637740840164787">已固定「<ph name="ITEM_TITLE" />」</translation>
@@ -1061,7 +1057,6 @@
 <translation id="5760866832697883462">連結 <ph name="NAME" /></translation>
 <translation id="5762420912707163638">切換標記。<ph name="STATE_TEXT" /> 你可以使用觸控板、觸控螢幕或觸控筆在螢幕上繪圖。</translation>
 <translation id="576341972084747908">下載危險檔案 <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Shelf Party 已關閉。</translation>
 <translation id="576453121877257266">夜燈模式已開啟。</translation>
 <translation id="5764569119212455782">切換到最後選取的語言</translation>
 <translation id="5769373120130404283">隱私保護畫面</translation>
@@ -1116,6 +1111,7 @@
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="601304062528754300">醒目顯示檔案櫃中的下一個項目</translation>
 <translation id="6018164090099858612">退出鏡像模式</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6022924867608035986">清除搜尋框文字</translation>
 <translation id="602472752137106327">顯示所有桌面的視窗，已點選圓形按鈕</translation>
@@ -1269,7 +1265,6 @@
 <translation id="6707693040195709527">未在期限內將裝置復原為先前的版本</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6723839937902243910">電源</translation>
-<translation id="6727005317916125192">上一個窗格</translation>
 <translation id="6727969043791803658">已連線，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">攝影機</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1316,7 +1311,6 @@
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6920245099716267363">切換無線基地台。無線基地台已開啟，有 1 部裝置已連線。</translation>
 <translation id="6931576957638141829">儲存至</translation>
-<translation id="6941333068993625698">提供意見</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6945922087561257829">手機目前使用的是行動網路。請確定你的手機和 Chromebook 已連上同一個 Wi-Fi 網路，然後再試一次。<ph name="LEARN_MORE" /></translation>
@@ -1336,7 +1330,6 @@
 <translation id="7014684956566476813">已連線至名為「<ph name="DEVICE_NAME" />」的裝置</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="70168403932084660">桌面 6</translation>
-<translation id="7025325401470358758">下一個窗格</translation>
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結到你的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>
@@ -1365,7 +1358,6 @@
 <translation id="7126996685418858413">過去一週開啟過</translation>
 <translation id="7130207228079676353">最有可能選擇的應用程式</translation>
 <translation id="7131634465328662194">系統會自動將你登出。</translation>
-<translation id="7138316363520807689">將目前的分頁儲存為書籤</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144942256906679589">電池狀態</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
@@ -1390,7 +1382,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
-<translation id="731589979057211264">Shelf Party 已開啟。</translation>
 <translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
@@ -1459,7 +1450,6 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視畫面，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
-<translation id="7611271430932669992">將焦點移至彈出式視窗和對話方塊</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7634648064048557203">攝影機已對齊右下角</translation>
@@ -1623,7 +1613,6 @@
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8349964124165471584">在新視窗中開啟連結</translation>
 <translation id="8351131234907093545">寫筆記</translation>
-<translation id="8364673525741149932">切換 Shelf Party。<ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />使用中。</translation>
 <translation id="8369166482916924789">已儲存的桌面，「<ph name="SAVE_AND_RECALL_DESK_NAME" />」</translation>
 <translation id="8371779926711439835">移至下一個字母</translation>

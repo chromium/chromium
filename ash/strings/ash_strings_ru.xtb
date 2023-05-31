@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">Приостановить воспроизведение</translation>
 <translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
-<translation id="1618835956950524778">Выделить кнопку запуска на панели запуска</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="163517899691012366">Вы не будете получать уведомления.</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">Подключено 1 устройство.</translation>
 <translation id="2791421900609674576">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них и удерживайте, чтобы удалить.</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
-<translation id="2797741504905337289">Совместный просмотр панели запуска</translation>
 <translation id="2802938996245446490">Выделен текст "<ph name="BUTTON_LABEL" />"</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2814448776515246190">Запись части экрана</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">Устанавливать приложения, расширения и темы.</translation>
 <translation id="2977598380246111477">Следующая цифра</translation>
 <translation id="2985148236010982088">Посмотреть все приложения</translation>
-<translation id="29859347674873492">Открыть справку в приложении "Возможности"</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
 <translation id="2996462380875591307">Закрепленная лупа включена. Чтобы отключить ее, нажмите Ctrl + Поиск + D.</translation>
 <translation id="3000461861112256445">Монофо­нический звук</translation>
@@ -529,7 +526,6 @@
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
 <translation id="3413817803639110246">Уведомлений нет.</translation>
 <translation id="3417835166382867856">Поиск по вкладкам</translation>
-<translation id="3423744722495840645">Открыть или закрыть панель запуска</translation>
 <translation id="3428447136709161042">Отключиться от сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="3430396595145920809">Чтобы вернуться, проведите по экрану от правого края</translation>
 <translation id="3431517721463707585">Рабочий стол 14</translation>
@@ -558,7 +554,6 @@
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
 <translation id="3539957339480430241">Точка доступа устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
-<translation id="3546121235777416274">Переключиться на окно "Картинка в картинке"</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554215588514239132">Показать или скрыть панель инструментов разработчика</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
@@ -1064,7 +1059,6 @@
 <translation id="5760866832697883462">Подключите <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Статус фломастера: <ph name="STATE_TEXT" /> В зависимости от типа экрана для рисования можно использовать сенсорную панель, палец или стилус.</translation>
 <translation id="576341972084747908">Скачивание опасного файла <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Режим отключен.</translation>
 <translation id="576453121877257266">Ночная подсветка включена</translation>
 <translation id="5764569119212455782">Переключиться на последний выбранный язык</translation>
 <translation id="5769373120130404283">Экран конфиденциальности</translation>
@@ -1273,7 +1267,6 @@
 <translation id="6707693040195709527">Срок возврата к предыдущей версии ОС истек</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Питание</translation>
-<translation id="6727005317916125192">Предыдущая панель</translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">ещё <ph name="COUNT" /></translation>
@@ -1320,7 +1313,6 @@
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="6920245099716267363">Включить или отключить точку доступа. Точка доступа работает. К ней подключено одно устройство.</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
-<translation id="6941333068993625698">Отправить отзыв</translation>
 <translation id="6942518653766415536">Меню форматов записи</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6945922087561257829">Телефон использует мобильный интернет. Подключите его и Chromebook к одной сети Wi-Fi и повторите попытку. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1332,6 @@
 <translation id="7014684956566476813">Установлено подключение к устройству "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Увидимся снова в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Рабочий стол 6</translation>
-<translation id="7025325401470358758">Следующая панель</translation>
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
@@ -1369,7 +1360,6 @@
 <translation id="7126996685418858413">Открыто на прошлой неделе</translation>
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
-<translation id="7138316363520807689">Добавить текущую вкладку в закладки</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
@@ -1394,7 +1384,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
-<translation id="731589979057211264">Режим включен.</translation>
 <translation id="7340731148882810149">Меню автоматического нажатия</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
@@ -1463,7 +1452,6 @@
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7609951632080598826">Календарь: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="7611213136657090146">Камера переподключена.</translation>
-<translation id="7611271430932669992">Перейти к всплывающим и диалоговым окнам.</translation>
 <translation id="761736749114493194">Включить или отключить автомасштабирование. <ph name="STATE_TEXT" />.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
@@ -1627,7 +1615,6 @@
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8349964124165471584">Открыть ссылку в новом окне</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
-<translation id="8364673525741149932">Включить или отключить совместный просмотр панели запуска. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">Используется <ph name="CAPTURE_MEDIUM" /></translation>
 <translation id="8369166482916924789">Сохраненный рабочий стол "<ph name="SAVE_AND_RECALL_DESK_NAME" />"</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>

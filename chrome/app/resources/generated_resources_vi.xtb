@@ -1453,6 +1453,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 dòng không hiển thị&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> dòng không hiển thị&gt;}}</translation>
 <translation id="2218019600945559112">Chuột và bàn di chuột</translation>
 <translation id="2218515861914035131">Dán dưới dạng văn bản thuần túy</translation>
+<translation id="221872881068107022">Cuộn ngược</translation>
 <translation id="2219007152108311874">Hỏi mỗi lần truy cập</translation>
 <translation id="2220409419896228519">Thêm dấu trang vào các ứng dụng của Google mà bạn ưa thích</translation>
 <translation id="2220529011494928058">Báo cáo sự cố</translation>
@@ -4398,6 +4399,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4777458362738635055">Những người dùng khác trên thiết bị này có thể sử dụng mạng này</translation>
 <translation id="4777825441726637019">Cửa hàng Play</translation>
 <translation id="4777943778632837590">Định cấu hình các máy chủ định danh trong mạng</translation>
+<translation id="4778653490315793244">Chưa có nội dung nào để hiển thị</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4779136857077979611">Cơm nắm Onigiri</translation>
 <translation id="4779766576531456629">Đổi tên mạng di động của eSIM</translation>
@@ -4822,7 +4824,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5155327081870541046">Trong thanh địa chỉ, hãy nhập lối tắt cho trang web bạn muốn tìm kiếm, chẳng hạn như "@bookmarks". Sau đó, nhấn phím tắt ưu tiên của bạn rồi nhập cụm từ tìm kiếm.</translation>
 <translation id="5156638757840305347">Con trỏ được đánh dấu khi xuất hiện hoặc di chuyển</translation>
 <translation id="5157250307065481244">Xem thông tin chi tiết về trang web</translation>
-<translation id="5157635116769074044">Ghim trang này vào màn hình bắt đầu...</translation>
 <translation id="5157701529792771331">Tự động dịch phụ đề</translation>
 <translation id="5158206172605340248">Trình đơn dấu phụ đã đóng.</translation>
 <translation id="5159094275429367735">Thiết lập Crostini</translation>
@@ -5913,7 +5914,6 @@ Bạn có thể gửi tệp này cho Google để kiểm tra xem tệp có an to
 <translation id="6113942107547980621">Để sử dụng Smart Lock, hãy chuyển sang hồ sơ người dùng chính trên điện thoại của bạn</translation>
 <translation id="6116921718742659598">Thay đổi chế độ cài đặt ngôn ngữ và phương thức nhập</translation>
 <translation id="6119927814891883061">Đặt tên cho thiết bị <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Ghim trang này vào màn hình Bắt đầu...</translation>
 <translation id="6120707837086723438">Bạn đang xem các công thức nấu ăn được đề xuất dựa trên hoạt động Tìm kiếm công thức nấu ăn gần đây của bạn.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8401,7 +8401,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
     <ph name="BEGIN_PARAGRAPH3" />Chủ sở hữu có thể kiểm soát tính năng này trong mục Cài đặt &gt; Nâng cao &gt; Tự động gửi dữ liệu chẩn đoán và dữ liệu sử dụng cho Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung cho con bạn, thì dữ liệu này có thể được lưu vào Tài khoản Google của con. Bạn có thể tìm hiểu thêm về các tùy chọn cài đặt này cùng cách điều chỉnh tại families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Chứng chỉ ứng dụng khách không hợp lệ</translation>
-<translation id="8270162672241199380">Trình cài đặt Steam</translation>
 <translation id="827097179112817503">Hiển thị nút trang chủ</translation>
 <translation id="8271268254812352141">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản. Tùy chỉnh ngôn ngữ dịch trong <ph name="LINK_BEGIN" />Ngôn ngữ cho trang web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Cha mẹ chỉ cần thực hiện một vài bước nữa là xong. Bạn có thể đưa <ph name="DEVICE_TYPE" /> lại cho trẻ sau khi thiết lập tài khoản.</translation>

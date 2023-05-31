@@ -3769,20 +3769,6 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="441686537793821907">Harici uzantıların yüklenmesini engelle</translation>
 <translation id="4423597592074154136">Proxy ayarlarını el ile belirle</translation>
 <translation id="4424004842303301809">Veri sızıntısı önleme etkinliklerinin raporlanmasını devre dışı bırak</translation>
-<translation id="4426288704078471820">Chrome Uygulamaları <ph name="WEBVIEW_TAG_NAME" />, <ph name="PRODUCT_NAME" /> ürününden kaldırılma sürecinde olan davranışlara izin verir.
-
-Önceki davranışta <ph name="WEBVIEW_TAG_NAME" />, geçersiz SSL sertifikasına sahip bir sayfaya gidiyorsa ara sayfa gösteriliyordu. Bu ara sayfa, kullanıcıya güvenli olmayan bir
-şekilde devam etme seçeneği sunmaktadır. Yeni davranış, güvenli olmayan şekilde devam etme seçeneğinin
-sunulmadığı bir hata sayfası gösterir.
-
-Önceki davranış ayrıca <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> etkinliğinin
-(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow), yeni pencereyi <ph name="WEBVIEW_TAG_NAME" /> kaynağından ayrı bir uygulama penceresindeki <ph name="WEBVIEW_TAG_NAME" /> öğesine eklemesine de izin verir. Yeni davranışla birlikte bu ekleme işlemine yine izin verilir, ancak <ph name="WEBVIEW_TAG_NAME" /> kaynağındaki <ph name="WINDOW_OPEN_NAME" /> çağrısından dolayı döndürülen pencere referansı geçersiz kılınır.
-
-Politika etkinleştirilirse önceki davranış kullanılır.
-Politika devre dışı bırakılırsa veya ayarlanmazsa davranış değişikliği, <ph name="PRODUCT_NAME" /> sürümüyle kullanıma sunulduğunda geçerli olur.
-
-Bu politika, kuruluşların bu değişikliklerden dolayı kesinti yaşaması ihtimaline karşı geçici bir çözümdür. Bu politika 117 sürümünde
-kaldırılacaktır.</translation>
 <translation id="4426601693403743089">Family Link kullanıcıları için Ekran Kaydı test sürümünü devre dışı bırak</translation>
 <translation id="4427173305799125784">PDF görüntüleyici PDF'lere not ekleyemez</translation>
 <translation id="4432762137771104529">Güvenli Tarama Genişletilmiş Raporlamasını Etkinleştir</translation>
@@ -8513,7 +8499,6 @@ Politika ayarlanmadan bırakılırsa kayıtlı şifreler ilk çalıştırma sır
 
       Politikayı ayarlarsanız kullanıcılar bu fonksiyonu değiştiremez. Ayarlamadan bırakırsanız kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="8707790573162457301">Giriş sırasında otomatik disk temizlemeyi çalıştır</translation>
-<translation id="8708628595824806312">Yerel güven çapalarının yayınladığı sunucu sertifikaları için RSA anahtarı kullanımını kontrol et</translation>
 <translation id="8713535263782304771">Güvenli Tarama'yı devre dışı bırak</translation>
 <translation id="8715181294371649277">Gerçek Zamanlı Güvenli Tarama İndirme Koruması'na izin ver</translation>
 <translation id="8715885991031124968">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutularına izin verilir.</translation>

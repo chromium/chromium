@@ -1243,6 +1243,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4031179711345676612">Microfone permitido</translation>
 <translation id="4040350669425716613">Faculdades e universidades</translation>
 <translation id="4047351652147966654">18 x 24 pol.</translation>
+<translation id="404831776305217138">O URL de atualização da extensão com o ID "<ph name="EXTENSION_ID" />" é inválido ou usa um esquema sem suporte. Os esquemas com suporte são: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ele poderá ser usado em todos os produtos do Google</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -2293,6 +2294,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6569366777234823130">Filmes de drama</translation>
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
 <translation id="6576181918031900030">Começar a transmissão</translation>
+<translation id="6578434528542148658">ID de extensão inválido.</translation>
 <translation id="657902945730878902">Desenho e pintura</translation>
 <translation id="6579630537141957243">Conectar dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa-claro</translation>
@@ -3032,7 +3034,6 @@ Mais detalhes:
 <translation id="8298115750975731693">O Wi-Fi que você está usando (<ph name="WIFI_NAME" />) pode exigir a visita a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Seção "<ph name="SECTION" />" exibida</translation>
 <translation id="830498451218851433">Dobra simples</translation>
-<translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8329068931308448247">Envelope 14</translation>

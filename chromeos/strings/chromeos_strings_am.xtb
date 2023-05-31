@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="1018656279737460067">ተሰርዟል</translation>
 <translation id="1020274983236703756">ለሚመለከተው የተወሰኑ የ<ph name="PRODUCT_NAME" /> ንብረቶች አሁን ይገኛሉ</translation>
-<translation id="1022433422498218992">አጠቃላይ መቆጣጠሪያዎች</translation>
 <translation id="1022628058306505708">የዓለም ፍሰት</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1047773237499189053">አዲስ ባህሪ ይገኛል፣ የበለጠ ለመረዳት የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">የማረጋገጫ ዓይነት</translation>
 <translation id="1776228893584526149">የልጣፍ ቀለም</translation>
 <translation id="1782199038061388045">ትርጉም</translation>
-<translation id="1790209694022261219">መስኮቶች እና ዴስኮች</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
 <translation id="1801418420130173017">ጠቆር ያለ ገጽታን አሰናክል</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3017079585324758401">ጀርባ</translation>
-<translation id="3020183492814296499">አቋራጮች</translation>
 <translation id="3027578600144895987">ካሜራን ዝጋ</translation>
 <translation id="3031560714565892478">መሣሪያ የቪዲዮ ካሜራ ነው።</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>
+<translation id="6019566113895157499">የቁልፍ አቋራጮች</translation>
 <translation id="6034694447310538551">ራስ-ሰር ወርሃዊ ዳግም ማስጀመርን አንቃ</translation>
 <translation id="6037291330010597344">የቃኚው ሰነድ መጋቢ ባዶ ነው። ሰነዶችን ያክሉ እና እንደገና ይሞክሩ።</translation>
 <translation id="6040143037577758943">ዝጋ</translation>

@@ -1440,6 +1440,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред није приказан&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ред није приказан&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> реда нису приказана&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> редова није приказано&gt;}}</translation>
 <translation id="2218019600945559112">Миш и тачпед</translation>
 <translation id="2218515861914035131">Лепљење у облику отвореног текста</translation>
+<translation id="221872881068107022">Обрнуто померање</translation>
 <translation id="2219007152108311874">Питај при свакој посети</translation>
 <translation id="2220409419896228519">Додајте обележиваче у омиљене Google апликације</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
@@ -4381,6 +4382,7 @@
 <translation id="4777458362738635055">Други корисници овог уређаја могу да користе ову мрежу</translation>
 <translation id="4777825441726637019">Play продавница</translation>
 <translation id="4777943778632837590">Конфигуриши називе сервера мреже</translation>
+<translation id="4778653490315793244">Немамо шта да вам прикажемо</translation>
 <translation id="4779083564647765204">Зумирање</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4779766576531456629">Преименујте мобилну мрежу за eSIM</translation>
@@ -4805,7 +4807,6 @@
 <translation id="5155327081870541046">У траци за адресу унесите пречицу за сајт који желите да претражите, на пример, „@bookmarks“. Затим притисните жељену тастерску пречицу и унесите термин за претрагу.</translation>
 <translation id="5156638757840305347">Курсор се истиче кад се појави или помери</translation>
 <translation id="5157250307065481244">Прикажи детаље сајта</translation>
-<translation id="5157635116769074044">Закачи ову страницу на почетни екран...</translation>
 <translation id="5157701529792771331">Аутоматски преводи титл</translation>
 <translation id="5158206172605340248">Мени са ознакама за акценат је одбачен.</translation>
 <translation id="5159094275429367735">Подесите Crostini</translation>
@@ -5896,7 +5897,6 @@
 <translation id="6113942107547980621">Да бисте користили Smart Lock, пређите на примарни кориснички профил на телефону</translation>
 <translation id="6116921718742659598">Промени подешавања језика и уноса</translation>
 <translation id="6119927814891883061">Промените назив уређаја у <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Закачи ову страницу на Почетни екран...</translation>
 <translation id="6120707837086723438">Приказују вам се предложени рецепти на основу недавне активности претраге за рецепте.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8388,7 +8388,6 @@
     <ph name="BEGIN_PARAGRAPH3" />Власник може да управља овом функцијом у одељку Подешавања &gt; Напредно &gt; Аутоматски шаљи дијагностику и податке о коришћењу Google-у.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ако за дете укључите додатне Активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. Сазнајте више о овим подешавањима и о томе како да их прилагодите на families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Неважећи сертификат клијента</translation>
-<translation id="8270162672241199380">Steam програм за инсталацију</translation>
 <translation id="827097179112817503">Прикажи дугме за почетну страницу</translation>
 <translation id="8271268254812352141">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите. Прилагодите језике за превод у <ph name="LINK_BEGIN" />Језицима за веб-сајтове<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родитељи, следећих неколико корака су за вас. Можете да вратите <ph name="DEVICE_TYPE" /> детету после отварања налога.</translation>

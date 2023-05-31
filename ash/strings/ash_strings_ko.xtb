@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">미디어 일시중지</translation>
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
-<translation id="1618835956950524778">앱 표시줄의 런처 버튼 강조 표시</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
 <translation id="163517899691012366">방해 금지 모드가 사용 설정되어 있으면 알림이 음소거됩니다.</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">기기 1대 연결됨</translation>
 <translation id="2791421900609674576">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 길게 터치하세요.</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, 선택됨</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2814448776515246190">부분 캡처</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">앱, 확장 프로그램 및 테마 설치</translation>
 <translation id="2977598380246111477">다음 번호</translation>
 <translation id="2985148236010982088">앱 모두 보기</translation>
-<translation id="29859347674873492">살펴보기 앱에서 도움말 열기</translation>
 <translation id="2992327365391326550">기기의 마이크 버튼이 사용 중지되어 있습니다.</translation>
 <translation id="2996462380875591307">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 다시 Ctrl+Search+D를 누르세요.</translation>
 <translation id="3000461861112256445">모노 오디오</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">파일 열기</translation>
 <translation id="3038571455154067151">로그인하려면 Family Link 부모 액세스 코드를 입력하세요</translation>
 <translation id="3039939407102840004">스타일러스 배터리 잔량이 <ph name="PERCENTAGE" />%입니다.</translation>
+<translation id="304097922505898963">단축키 앱 열기</translation>
 <translation id="3045488863354895414">즐거운 오후 보내세요</translation>
 <translation id="3047761520276763270">다음과 같이 말해 보세요.</translation>
 <translation id="3055162170959710888">오늘 이 기기를 <ph name="USED_TIME" /> 동안 사용했습니다.</translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">어두운 테마 설정 표시</translation>
 <translation id="3413817803639110246">표시할 내용 없음</translation>
 <translation id="3417835166382867856">탭 검색</translation>
-<translation id="3423744722495840645">런처 열기/닫기</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />에서 연결 해제</translation>
 <translation id="3430396595145920809">돌아가려면 오른쪽에서 스와이프하세요.</translation>
 <translation id="3431517721463707585">데스크 14</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">앱 표시줄의 앱</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 핫스팟</translation>
 <translation id="3542066395059568317">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 마우스 오른쪽 버튼으로 클릭하세요.</translation>
-<translation id="3546121235777416274">PIP 모드 창에 포커스</translation>
 <translation id="3552189655002856821">Wi-Fi가 사용 중지됨</translation>
 <translation id="3554215588514239132">개발자 도구 패널 표시 또는 숨기기</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> 고정됨</translation>
@@ -1064,7 +1060,6 @@
 <translation id="5760866832697883462"><ph name="NAME" />에 연결</translation>
 <translation id="5762420912707163638">마커를 전환합니다. <ph name="STATE_TEXT" /> 화면에 그리려면 트랙패드, 터치스크린 또는 스타일러스를 사용하세요.</translation>
 <translation id="576341972084747908">위험한 <ph name="FILENAME" /> 파일을 다운로드합니다</translation>
-<translation id="5763928712329149804">Shelf Party가 꺼져 있습니다.</translation>
 <translation id="576453121877257266">야간 조명이 켜졌습니다.</translation>
 <translation id="5764569119212455782">최근 선택된 언어로 전환</translation>
 <translation id="5769373120130404283">개인 정보 보호 화면</translation>
@@ -1119,6 +1114,7 @@
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" />페이지</translation>
 <translation id="601304062528754300">앱 표시줄의 다음 항목 강조 표시</translation>
 <translation id="6018164090099858612">미러링 모드 종료 중</translation>
+<translation id="6019566113895157499">주요 단축키</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
 <translation id="6022924867608035986">검색창 텍스트 삭제</translation>
 <translation id="602472752137106327">모든 데스크의 창 표시, 라디오 버튼 선택됨</translation>
@@ -1273,7 +1269,6 @@
 <translation id="6707693040195709527">이전 버전으로 기기를 롤백할 기한 만료됨</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6723839937902243910">전원</translation>
-<translation id="6727005317916125192">이전 창</translation>
 <translation id="6727969043791803658">연결됨, 배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="6920245099716267363">핫스팟을 전환합니다. 핫스팟이 켜져 있으며 기기 1대가 연결되어 있습니다.</translation>
 <translation id="6931576957638141829">저장 위치</translation>
-<translation id="6941333068993625698">의견 보내기</translation>
 <translation id="6942518653766415536">녹화 형식 메뉴</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6945922087561257829">휴대전화가 모바일 네트워크에 연결되어 있습니다. 휴대전화와 Chromebook이 동일한 Wi-Fi 네트워크에 연결되어 있는지 확인한 후 다시 시도해 보세요. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@
 <translation id="7014684956566476813">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="70168403932084660">데스크 6</translation>
-<translation id="7025325401470358758">다음 창</translation>
 <translation id="7025533177575372252">휴대전화와 <ph name="DEVICE_NAME" /> 연결</translation>
 <translation id="7026338066939101231">줄이기</translation>
 <translation id="7029814467594812963">세션 종료</translation>
@@ -1369,7 +1362,6 @@
 <translation id="7126996685418858413">지난주에 열림</translation>
 <translation id="7130207228079676353">사용할 만한 앱</translation>
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
-<translation id="7138316363520807689">북마크로 현재 탭 저장</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144942256906679589">배터리 상태</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1386,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
-<translation id="731589979057211264">Shelf Party가 켜져 있습니다.</translation>
 <translation id="7340731148882810149">자동 클릭 메뉴</translation>
 <translation id="7346909386216857016">확인</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
@@ -1463,7 +1454,6 @@
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7609951632080598826">캘린더 보기, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">카메라가 다시 연결되었습니다.</translation>
-<translation id="7611271430932669992">포커스를 팝업 및 대화상자로 이동</translation>
 <translation id="761736749114493194">카메라 프레이밍을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7634648064048557203">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다</translation>
@@ -1627,7 +1617,6 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
 <translation id="8349964124165471584">새 창에서 링크 열기</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
-<translation id="8364673525741149932">Shelf Party를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> 앱을 사용 중입니다.</translation>
 <translation id="8369166482916924789">저장된 데스크, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>

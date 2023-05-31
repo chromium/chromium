@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">میڈیا موقوف کریں</translation>
 <translation id="1610778689852195798">"کالعدم کریں"</translation>
 <translation id="1611993646327628135">آن</translation>
-<translation id="1618835956950524778">لانچر بٹن کو شیلف پر نمایاں کریں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="163517899691012366">ڈسٹرب نہ کریں کے آن ہونے پر اطلاعات خاموش ہو جاتی ہیں</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">1 آلہ منسلک ہے</translation>
 <translation id="2791421900609674576">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے  ٹچ کر کے دبائے رکھ سکتے ہیں۔</translation>
 <translation id="2792498699870441125">‏Alt+تلاش</translation>
-<translation id="2797741504905337289">شیلف پارٹی</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />، منتخب کیا گیا</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2814448776515246190">جزوی کیپچر</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">ایپس، ایکسٹینشنز اور تھیمز انسٹال کریں</translation>
 <translation id="2977598380246111477">اگلا نمبر</translation>
 <translation id="2985148236010982088">سبھی ایپس دیکھیں</translation>
-<translation id="29859347674873492">'دریافت' ایپ میں 'مدد' کھولیں</translation>
 <translation id="2992327365391326550">آلے کا مائیکروفون بٹن آف ہے۔</translation>
 <translation id="2996462380875591307">‏ڈاک کردہ میگنیفائر فعال ہے۔ اسے ٹوگل کر کے بند کرنے کیلئے Ctrl+Search+D کو دوبارہ دبائیں۔</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
@@ -530,7 +527,6 @@
 <translation id="3410336247007142655">گہری تھیم کی ترتیبات دکھائیں</translation>
 <translation id="3413817803639110246">ابھی تک دیکھنے کیلئے کچھ نہیں ہے</translation>
 <translation id="3417835166382867856">ٹیبز تلاش کریں</translation>
-<translation id="3423744722495840645">لانچر کھولیں/بند کریں</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> سے غیر منسلک کریں</translation>
 <translation id="3430396595145920809">پیچھے جانے کیلئے دائیں سے سوائپ کریں</translation>
 <translation id="3431517721463707585">ڈیسک 14</translation>
@@ -559,7 +555,6 @@
 <translation id="3533126039236445965">شیلف میں ایپس</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ</translation>
 <translation id="3542066395059568317">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے دائیں طرف کلک کر سکتے ہیں۔</translation>
-<translation id="3546121235777416274">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
 <translation id="3552189655002856821">‏Wi-Fi آف ہے</translation>
 <translation id="3554215588514239132">ڈویلپر ٹولز پینل دکھائیں یا چھپائیں</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> کو پن کر دیا گیا</translation>
@@ -1065,7 +1060,6 @@
 <translation id="5760866832697883462">اپنا <ph name="NAME" /> منسلک کریں</translation>
 <translation id="5762420912707163638">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /> اسکرین پر ڈرا کرنے کے لیے ٹریک پیڈ، ٹچ اسکرین یا اسٹائلس کا استعمال کریں۔</translation>
 <translation id="576341972084747908">خطرناک <ph name="FILENAME" /> ڈاؤن لوڈ کریں</translation>
-<translation id="5763928712329149804">شیلف پارٹی آف ہے۔</translation>
 <translation id="576453121877257266">نائٹ لائٹ آن ہے۔</translation>
 <translation id="5764569119212455782">منتخب کردہ آخری زبان پر جائیں</translation>
 <translation id="5769373120130404283">رازداری کی اسکرین</translation>
@@ -1274,7 +1268,6 @@
 <translation id="6707693040195709527">گزشتہ ورژن میں آلہ کی تبدیلی کا وقت گزر گیا ہے</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6723839937902243910">پاور</translation>
-<translation id="6727005317916125192">سابقہ پین</translation>
 <translation id="6727969043791803658">منسلک ہے، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1314,6 @@
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
 <translation id="6920245099716267363">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ منسلک ہے، 1 آلہ منسلک ہے۔</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
-<translation id="6941333068993625698">تاثرات جمع کرائیں</translation>
 <translation id="6942518653766415536">ریکارڈنگ فارمیٹ مینیو</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6945922087561257829">‏آپ کا فون موبائل نیٹ ورک استعمال کر رہا ہے۔ یقینی بنائیں کہ آپ کا فون اور Chromebook ایک ہی Wi-Fi نیٹ ورک پر ہیں اور پھر دوبارہ کوشش کریں۔ <ph name="LEARN_MORE" /></translation>
@@ -1341,7 +1333,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک ہے</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="70168403932084660">ڈیسک 6</translation>
-<translation id="7025325401470358758">اگلا پین</translation>
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7029814467594812963">سیشن سے خارج ہوں</translation>
@@ -1370,7 +1361,6 @@
 <translation id="7126996685418858413">پچھلے ہفتے میں کھولا گیا</translation>
 <translation id="7130207228079676353">غالبأ</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
-<translation id="7138316363520807689">موجودہ ٹیب کو بُک مارک کے طور پر محفوظ کریں</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144942256906679589">بیٹری کا اسٹیٹس</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1395,7 +1385,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7313193732017069507">کیمرا پھیلائیں</translation>
-<translation id="731589979057211264">شیلف پارٹی آن ہے۔</translation>
 <translation id="7340731148882810149">خودکار کلکس مینیو</translation>
 <translation id="7346909386216857016">ٹھیک ہے، سمجھ آ گئی</translation>
 <translation id="7348093485538360975">آن اسکرین کی بورڈ</translation>
@@ -1464,7 +1453,6 @@
 <translation id="7607002721634913082">موقوف</translation>
 <translation id="7609951632080598826">کیلنڈر کا منظر، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">کیمرا دوبارہ منسلک ہو گیا۔</translation>
-<translation id="7611271430932669992">فوکس پوپ اپس اور ڈائیلاگز پر منتقل کریں</translation>
 <translation id="761736749114493194">کیمرا فریمنگ کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
 <translation id="7634648064048557203">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے</translation>
@@ -1628,7 +1616,6 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ونڈو کا انتخاب کیا گیا</translation>
 <translation id="8349964124165471584">لنک نئے ونڈو میں کھولیں</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
-<translation id="8364673525741149932">شیلف پارٹی کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">زیر استعمال <ph name="CAPTURE_MEDIUM" />۔</translation>
 <translation id="8369166482916924789">محفوظ کردہ ڈیسک، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ایک حرف آگے جائیں</translation>

@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">Παύση μέσων</translation>
 <translation id="1610778689852195798">"Αναίρεση"</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
-<translation id="1618835956950524778">Επισήμανση κουμπιού εφαρμογής εκκίνησης στο ράφι</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="163517899691012366">Οι ειδοποιήσεις είναι σε σίγαση όταν είναι ενεργή η λειτουργία Μην ενοχλείτε</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">1 συνδεδεμένη συσκευή</translation>
 <translation id="2791421900609674576">Θα βλέπετε προτάσεις για να συνεχίσετε από εκεί που σταματήσατε. Μπορείτε να αγγίξετε παρατεταμένα για να καταργήσετε προτάσεις.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, επιλεγμένο</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2814448776515246190">Μερική λήψη</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">Εγκαταστήσει εφαρμογές, επεκτάσεις και θέματα</translation>
 <translation id="2977598380246111477">Επόμενος αριθμός</translation>
 <translation id="2985148236010982088">Εμφάνιση όλων των εφαρμογών</translation>
-<translation id="29859347674873492">Άνοιγμα Βοήθειας στην εφαρμογή Εξερεύνηση</translation>
 <translation id="2992327365391326550">Το κουμπί μικροφώνου της συσκευής είναι απενεργοποιημένο.</translation>
 <translation id="2996462380875591307">Ο Μεγεθυντικός φακός σε παράθυρο ενεργοποιήθηκε. Πατήστε Ctrl+Αναζήτηση+D ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="3000461861112256445">Μονοφωνικός ήχος</translation>
@@ -530,7 +527,6 @@
 <translation id="3410336247007142655">Εμφάνιση ρυθμίσεων Σκούρου θέματος</translation>
 <translation id="3413817803639110246">Δεν υπάρχει ακόμη περιεχόμενο για εμφάνιση</translation>
 <translation id="3417835166382867856">Αναζήτηση στις καρτέλες</translation>
-<translation id="3423744722495840645">Άνοιγμα/κλείσιμο εφαρμογής εκκίνησης</translation>
 <translation id="3428447136709161042">Αποσύνδεση από το δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Για να επιστρέψετε, σύρετε από τα δεξιά.</translation>
 <translation id="3431517721463707585">Γραφείο 14</translation>
@@ -559,7 +555,6 @@
 <translation id="3533126039236445965">Εφαρμογές στο ράφι</translation>
 <translation id="3539957339480430241">Σημείο πρόσβασης Wi-Fi <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Θα βλέπετε προτάσεις για να συνεχίσετε από εκεί που σταματήσατε. Μπορείτε να κάνετε δεξί κλικ για να καταργήσετε προτάσεις.</translation>
-<translation id="3546121235777416274">Εστίαση στο παράθυρο picture-in-picture</translation>
 <translation id="3552189655002856821">Το Wi-Fi είναι απενεργοποιημένο</translation>
 <translation id="3554215588514239132">Εμφάνιση ή απόκρυψη του πλαισίου Εργαλείων για προγραμματιστές</translation>
 <translation id="3554637740840164787">Το στοιχείο <ph name="ITEM_TITLE" /> καρφιτσώθηκε</translation>
@@ -1065,7 +1060,6 @@
 <translation id="5760866832697883462">Σύνδεση της συσκευής <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Επιλέξτε τον μαρκαδόρο. <ph name="STATE_TEXT" /> Χρησιμοποιήστε την επιφάνεια αφής, την οθόνη αφής ή τη γραφίδα για να σχεδιάσετε στην οθόνη.</translation>
 <translation id="576341972084747908">Επικίνδυνη λήψη <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Το Shelf Party είναι ανενεργό.</translation>
 <translation id="576453121877257266">Νυχτερινός φωτισμός ενεργός.</translation>
 <translation id="5764569119212455782">Εναλλαγή στην τελευταία επιλεγμένη γλώσσα</translation>
 <translation id="5769373120130404283">Οθόνη απορρήτου</translation>
@@ -1275,7 +1269,6 @@
 <translation id="6707693040195709527">Η αλλαγή της συσκευής στην προηγούμενη έκδοση είναι εκπρόθεσμη</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
-<translation id="6727005317916125192">Προηγούμενο παράθυρο</translation>
 <translation id="6727969043791803658">Συνδεδεμένη, μπαταρία <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">κάμερα</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1322,7 +1315,6 @@
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
 <translation id="6920245099716267363">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ενεργό. 1 συνδεδεμένη συσκευή.</translation>
 <translation id="6931576957638141829">Αποθήκευση σε</translation>
-<translation id="6941333068993625698">Υποβολή σχολίων</translation>
 <translation id="6942518653766415536">Μενού μορφής εγγραφής</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6945922087561257829">Το τηλέφωνό σας χρησιμοποιεί δίκτυο κινητής τηλεφωνίας. Βεβαιωθείτε ότι το τηλέφωνό σας και το Chromebook βρίσκονται στο ίδιο δίκτυο Wi-Fi και έπειτα δοκιμάστε ξανά. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1334,6 @@
 <translation id="7014684956566476813">Πραγματοποιήθηκε σύνδεση σε συσκευή με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Επιστρέψτε ξανά στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Γραφείο 6</translation>
-<translation id="7025325401470358758">Επόμενο παράθυρο</translation>
 <translation id="7025533177575372252">Συνδέστε τη συσκευή <ph name="DEVICE_NAME" /> με το τηλέφωνό σας</translation>
 <translation id="7026338066939101231">Μείωση</translation>
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
@@ -1371,7 +1362,6 @@
 <translation id="7126996685418858413">Ανοίχτηκαν την προηγούμενη εβδομάδα</translation>
 <translation id="7130207228079676353">ΔΗΜΟΦΙΛΕΣΤΕΡΕΣ</translation>
 <translation id="7131634465328662194">Θα αποσυνδεθείτε αυτόματα.</translation>
-<translation id="7138316363520807689">Αποθήκευση τρέχουσας καρτέλας ως σελιδοδείκτη</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144942256906679589">Κατάσταση μπαταρίας</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1396,7 +1386,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="7313193732017069507">Επέκταση κάμερας</translation>
-<translation id="731589979057211264">Το Shelf Party είναι ενεργό.</translation>
 <translation id="7340731148882810149">Μενού αυτόματων κλικ</translation>
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="7348093485538360975">Πληκτρολόγιο οθόνης</translation>
@@ -1465,7 +1454,6 @@
 <translation id="7607002721634913082">Έγινε παύση</translation>
 <translation id="7609951632080598826">Προβολή ημερολογίου, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Επανασύνδεση κάμερας.</translation>
-<translation id="7611271430932669992">Μετατόπιση εστίασης σε αναδυόμενα παράθυρα και παράθυρα διαλόγου</translation>
 <translation id="761736749114493194">Εναλλαγή καδραρίσματος κάμερας. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Η προεπισκόπηση κάμερας τοποθετήθηκε στην κάτω δεξιά γωνία</translation>
@@ -1629,7 +1617,6 @@
 <translation id="8345019317483336363">Επιλέχτηκε το παράθυρο <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349964124165471584">Άνοιγμα συνδέσμου σε νέο παράθυρο</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
-<translation id="8364673525741149932">Εναλλαγή Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> σε χρήση.</translation>
 <translation id="8369166482916924789">Αποθηκευμένο γραφείο, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>

@@ -144,7 +144,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1604857178818051494">Pausar mídia</translation>
 <translation id="1610778689852195798">"Desfazer"</translation>
 <translation id="1611993646327628135">Ativado</translation>
-<translation id="1618835956950524778">Destacar o botão do acesso rápido na estante</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
 <translation id="163517899691012366">As notificações são silenciadas quando o modo "Não perturbe" está ativado</translation>
@@ -395,7 +394,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, toque na tela e a mantenha pressionada.</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
-<translation id="2797741504905337289">Grupo de estantes</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selecionado</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -433,7 +431,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2970920913501714344">instalar apps, extensões e temas;</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2985148236010982088">Ver todos os apps</translation>
-<translation id="29859347674873492">Abrir a Ajuda no app Explorar</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
 <translation id="2996462380875591307">Lupa em área fixa ativada. Pressione Ctrl+Pesquisa+D novamente para desativá-la.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
@@ -447,6 +444,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
 <translation id="3038571455154067151">Para fazer login, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="3039939407102840004">Bateria da stylus em <ph name="PERCENTAGE" />%.</translation>
+<translation id="304097922505898963">Abrir o app Atalhos do teclado</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
 <translation id="3047761520276763270">Tente dizer:</translation>
 <translation id="3055162170959710888">Você usou este dispositivo por <ph name="USED_TIME" /> hoje</translation>
@@ -529,7 +527,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3410336247007142655">Mostrar configurações do tema escuro</translation>
 <translation id="3413817803639110246">Nada para ver ainda</translation>
 <translation id="3417835166382867856">Pesquisar guias</translation>
-<translation id="3423744722495840645">Abrir/fechar acesso rápido</translation>
 <translation id="3428447136709161042">Desconectar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize da direita para voltar</translation>
 <translation id="3431517721463707585">Espaço de trabalho 14</translation>
@@ -558,7 +555,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3533126039236445965">Apps na estante</translation>
 <translation id="3539957339480430241">Ponto de acesso do <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Serão mostradas recomendações para que você continue de onde parou. Se quiser que elas sejam removidas, clique com o botão direito do mouse.</translation>
-<translation id="3546121235777416274">Focar na janela picture-in-picture</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel "Ferramentas para desenvolvedores"</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado</translation>
@@ -1064,7 +1060,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5760866832697883462">Conecte seu dispositivo <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Ativar ou desativar o marcador. <ph name="STATE_TEXT" /> Use o trackpad, a tela touchscreen ou a stylus para desenhar na tela.</translation>
 <translation id="576341972084747908">Fazendo o download do arquivo perigoso <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">O modo Grupo de estantes está desativado.</translation>
 <translation id="576453121877257266">O Modo noturno está ativado.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
 <translation id="5769373120130404283">Tela de privacidade</translation>
@@ -1119,6 +1114,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destacar próximo item na estante</translation>
 <translation id="6018164090099858612">Saindo do modo espelhado</translation>
+<translation id="6019566113895157499">Atalhos do teclado</translation>
 <translation id="602001110135236999">Rolar para a esquerda</translation>
 <translation id="6022924867608035986">Limpar texto da caixa de pesquisa</translation>
 <translation id="602472752137106327">Mostrar janelas de todos os espaços de trabalho, botão de opção selecionado</translation>
@@ -1273,7 +1269,6 @@ Nova instalação</translation>
 <translation id="6707693040195709527">A mudança do dispositivo para a versão anterior está atrasada</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Energia</translation>
-<translation id="6727005317916125192">Painel anterior</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732087373923685049">câmera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@ Nova instalação</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer seu cartão inteligente. Tente novamente.</translation>
 <translation id="6920245099716267363">Alterne o status do ponto de acesso. O ponto de acesso está ativado e 1 dispositivo está conectado.</translation>
 <translation id="6931576957638141829">Salvar em</translation>
-<translation id="6941333068993625698">Enviar feedback</translation>
 <translation id="6942518653766415536">Menu de formato de gravação</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6945922087561257829">O smartphone está usando uma rede móvel. Garanta que ele e o Chromebook estejam na mesma rede Wi-Fi e tente de novo. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@ Nova instalação</translation>
 <translation id="7014684956566476813">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Volte às <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Espaço de trabalho 6</translation>
-<translation id="7025325401470358758">Próximo painel</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
 <translation id="7026338066939101231">Reduzir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
@@ -1369,7 +1362,6 @@ Nova instalação</translation>
 <translation id="7126996685418858413">Aberto na última semana</translation>
 <translation id="7130207228079676353">MUITO PROVAVELMENTE</translation>
 <translation id="7131634465328662194">Você será automaticamente desconectado.</translation>
-<translation id="7138316363520807689">Salvar a guia atual como favorita</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Status da bateria</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1386,6 @@ Nova instalação</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">O administrador está redefinindo o eSIM. Isso pode levar alguns minutos.</translation>
 <translation id="7313193732017069507">Abrir câmera</translation>
-<translation id="731589979057211264">O modo Grupo de estantes está ativado.</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">Ok, entendi.</translation>
 <translation id="7348093485538360975">Teclado virtual</translation>
@@ -1463,7 +1454,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7609951632080598826">Visualização da agenda (<ph name="DATE" />, <ph name="TIME" />)</translation>
 <translation id="7611213136657090146">Câmera reconectada.</translation>
-<translation id="7611271430932669992">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="761736749114493194">Alterne o enquadramento da câmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Câmera alinhada ao canto direito de baixo</translation>
@@ -1627,7 +1617,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8349964124165471584">Abrir link em uma nova janela</translation>
 <translation id="8351131234907093545">Criar nota</translation>
-<translation id="8364673525741149932">Alterne o modo Grupo de estantes. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em uso.</translation>
 <translation id="8369166482916924789">Espaço de trabalho salvo: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>

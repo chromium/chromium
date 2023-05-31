@@ -3459,6 +3459,14 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet instelt of leeg laat, wordt de standaardpagina 'Nieuw tabblad' gebruikt.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="4164511138197196839">Als je dit beleid toepast, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet in <ph name="PRODUCT_NAME" />.
+Dit beleid geldt alleen voor extensies die zijn geïnstalleerd en geüpdatet via de Chrome Web Store.
+
+Extensies van buiten de Chrome Web Store, zoals uitgepakte extensies die zijn geïnstalleerd via de ontwikkelaarsmodus en extensies die zijn geïnstalleerd met de opdrachtregelschakelaar, worden genegeerd.
+Afgedwongen geïnstalleerde extensies die zelf worden gehost, worden genegeerd. Alle vastgezette extensies worden ook genegeerd.
+
+Als je het beleid instelt op <ph name="ALLOW_UNPUBLISHED" /> (0) of niet instelt, zijn extensies toegestaan waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.
+Als je het beleid instelt op <ph name="DISABLE_UNPUBLISHED" /> (1), worden extensies uitgezet waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4166174702671320480">Als je het beleid toepast, worden beleidsregels van een atomische groep genegeerd die niet dezelfde bron met de hoogste prioriteit van die groep hebben.
 
@@ -3717,16 +3725,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="441686537793821907">Installatie van externe extensies blokkeren</translation>
 <translation id="4423597592074154136">Proxyinstellingen handmatig specificeren</translation>
 <translation id="4424004842303301809">Rapportage van gebeurtenissen ter voorkoming van datalekken uitzetten</translation>
-<translation id="4426288704078471820"><ph name="WEBVIEW_TAG_NAME" /> voor Chrome-apps maakt gedrag mogelijk dat momenteel wordt verwijderd uit <ph name="PRODUCT_NAME" />.
-
-Bij het vorige gedrag werd een interstitial-pagina getoond als een <ph name="WEBVIEW_TAG_NAME" /> naar een pagina met een ongeldig SSL-certificaat navigeert. Met deze interstitial kan de gebruiker onveilig doorgaan. Bij het nieuwe gedrag wordt een foutpagina getoond zonder de optie om onveilig door te gaan.
-
-Bij het vorige gedrag is ook de gebeurtenis <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) toegestaan. Hiermee wordt het nieuwe venster in een ander app-venster dan de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> gekoppeld aan een <ph name="WEBVIEW_TAG_NAME" />-element. Met het nieuwe gedrag is deze koppeling nog steeds toegestaan, maar wordt de vensterverwijzing die van de <ph name="WINDOW_OPEN_NAME" />-aanroep wordt geretourneerd in de oorspronkelijke <ph name="WEBVIEW_TAG_NAME" /> ongeldig gemaakt.
-
-Als je het beleid toepast, wordt het vorige gedrag gebruikt.
-Als je het beleid niet toepast of niet instelt, wordt de gedragswijziging van kracht als deze is uitgerold via het releaseproces van <ph name="PRODUCT_NAME" />.
-
-Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden vanwege deze wijzigingen. Dit beleid wordt verwijderd in versie 117.</translation>
 <translation id="4426601693403743089">Dogfood-versie van Screencast uitzetten voor gebruikers van Family Link</translation>
 <translation id="4427173305799125784">Er kunnen geen annotaties in pdf's worden gemaakt met de pdf-viewer</translation>
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
@@ -5196,6 +5194,21 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="583627479140113555">Import van opgeslagen wachtwoorden bij eerste uitvoering aanzetten</translation>
 <translation id="5838452040629810808">Cursormarkering aanzetten</translation>
 <translation id="5842283830553218200">Standaard wordt het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren gebruikt.</translation>
+<translation id="5844880038533636588">Als je het beleid instelt, wordt een lijst met apps en extensies gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers. Rechten worden impliciet verleend, waaronder voor de extensie-API's enterprise.deviceAttributes en enterprise.platformKeys. (Deze 2 API's zijn niet beschikbaar voor apps en extensies die niet afgedwongen zijn geïnstalleerd.)
+
+Als je dit beleid niet instelt, worden apps of extensies niet automatisch geïnstalleerd en kunnen gebruikers elke app of extensie in <ph name="PRODUCT_NAME" /> verwijderen.
+
+Dit beleid vervangt het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Als een eerder afgedwongen geïnstalleerde app of extensie wordt verwijderd uit deze lijst, verwijdert <ph name="PRODUCT_NAME" /> de app of extensie automatisch.
+
+Voor <ph name="MS_WIN_NAME" />-instanties kunnen apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein, <ph name="MS_AAD_NAME" /> of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Voor <ph name="MAC_OS_NAME" />-instanties kunnen apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, aan een domein is gekoppeld via MCX of is ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Gebruikers kunnen de broncode van een extensie wijzigen via de ontwikkelaarstools, waardoor de extensie mogelijk niet meer functioneert. Als je je hierover zorgen maakt, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.
+
+Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest (https://developer.chrome.com/extensions/autoupdate). De update-URL moet een van de volgende schema's gebruiken: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> of <ph name="FILE_SCHEME" />. Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
+
+Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Lees meer informatie over het hosten van extensies (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="5847509620317822100">Deze functie is verwijderd in Chrome 100.
 
       Als je dit beleid activeert, worden aanbevelingen gedaan voor apps die de gebruiker eerder heeft geïnstalleerd op andere apparaten. Deze aanbevelingen worden in de Launcher getoond na de aanbevelingen voor lokale apps als er geen zoektekst is ingevoerd.

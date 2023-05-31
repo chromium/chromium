@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
 <translation id="2982481275546140226">データを削除</translation>
 <translation id="298306318844797842">お支払い方法を追加...</translation>
+<translation id="2988274366244053197">Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
+
+パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="2989805286512600854">新しいタブで開く</translation>
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3037605927509011580">エラー</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">パスワードや履歴などを同期します。</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} 件のサイトまたはアプリ}other{{COUNT} 件のサイトとアプリ}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
+<translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
 <translation id="3478058380795961209">有効期限（月）</translation>
 <translation id="3482959374254649722">タブを同期しています...</translation>
 <translation id="3484946776651937681">ダウンロード フォルダを開く</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">表示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
+<translation id="5325595483440111327">閲覧履歴を表示します。</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="536067926684072644">ブックマークを表示する</translation>
 <translation id="5360976571138293719">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>

@@ -211,6 +211,7 @@
 <translation id="1442987760062738829">パンチ</translation>
 <translation id="1446396933673057385">正確性チェック</translation>
 <translation id="1447067628680007684">（x86_64）</translation>
+<translation id="1452803302401719440">あなたがインターネットをより安全に利用できるよう、保護者の方が設定しました</translation>
 <translation id="1453974140256777690">貼り付けまたは添付したテキストは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされます。</translation>
 <translation id="1455413310270022028">消しゴム</translation>
 <translation id="1459693405370120464">天気</translation>
@@ -268,6 +269,7 @@
 <translation id="1569487616857761740">有効期限の入力</translation>
 <translation id="1569694109004336106">Google Chrome がパスワード入力で Windows Hello を有効にしようとしています。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" /> インチ</translation>
+<translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1584492003828271317">ブラウジング中に表示される広告がパーソナライズされるかどうかは、この設定、サイト提案広告、Cookie の設定、アクセスしたサイトが広告をパーソナライズしているかどうかによって決まります</translation>
@@ -1241,6 +1243,7 @@
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4040350669425716613">大学</translation>
 <translation id="4047351652147966654">18x24 インチ</translation>
+<translation id="404831776305217138">ID「<ph name="EXTENSION_ID" />」の拡張機能の更新 URL は無効であるか、サポートされていないスキームが使用されています。サポートされているスキームは <ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" />、<ph name="FILE_SCHEME" /> です。</translation>
 <translation id="4050392779074832022">Google サービス全体で使用できるようになります</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
@@ -1268,6 +1271,7 @@
 <translation id="410148943680000050">DTP</translation>
 <translation id="4103249731201008433">デバイスのシリアル番号が無効です</translation>
 <translation id="4106133539597032659">[サイトを作成] ボタンです。Enter キーを押すと、Google サイトで新しいサイトをすばやく作成します</translation>
+<translation id="4106887816571530227">埋め込みコンテンツは許可されていません</translation>
 <translation id="4110652170750985508">お支払いの確認</translation>
 <translation id="4111546256784973544">ペイントボール</translation>
 <translation id="4112140312785995938">後方に移動</translation>
@@ -1605,6 +1609,7 @@
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{なし}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、<ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> を検索</translation>
+<translation id="4877521229462766300">埋め込みコンテンツを許可しますか？</translation>
 <translation id="4879491255372875719">自動（デフォルト）</translation>
 <translation id="4880827082731008257">履歴を検索</translation>
 <translation id="4881695831933465202">開く</translation>
@@ -1802,6 +1807,7 @@
 <translation id="5314967030527622926">ブックレット メーカー</translation>
 <translation id="5316812925700871227">反時計回りに回転</translation>
 <translation id="5317780077021120954">保存</translation>
+<translation id="5323043727018853753">埋め込みコンテンツは許可されています</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />、<ph name="MATCH_POSITION" />/<ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
@@ -2179,6 +2185,7 @@
 <translation id="6306713302480826305">この住所は、このデバイスとログインしている他のデバイスから削除されます</translation>
 <translation id="6312113039770857350">ウェブページへのアクセス不可</translation>
 <translation id="6316226860534107313">スクーター、モペッド</translation>
+<translation id="6316723751983724988">新規: Chrome 向けファミリー リンクの設定が適用されています</translation>
 <translation id="63172326633386613">ユーザー補助設定を管理</translation>
 <translation id="6319249456820053699">カメラ、ビデオカメラ</translation>
 <translation id="6321917430147971392">DNS 設定を確認してください</translation>
@@ -2287,6 +2294,7 @@
 <translation id="6569366777234823130">ドラマ映画</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
 <translation id="6576181918031900030">キャストを開始</translation>
+<translation id="6578434528542148658">拡張機能 ID が無効です。</translation>
 <translation id="657902945730878902">お絵かき、塗り絵</translation>
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
@@ -2731,6 +2739,7 @@
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> 未満</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> では現在このリクエストを処理できません。</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
+<translation id="7601297359530599375">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
 <translation id="7613889955535752492">有効期限: <ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でパスワードを表示、管理します</translation>
@@ -2831,6 +2840,7 @@
 <translation id="7822320754433038727">狩猟、射撃</translation>
 <translation id="782886543891417279">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
+<translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">その後にアクセスしたサイトは、表示する広告をパーソナライズするためのトピックを Chrome に要求できます。Chrome では、共有するトピックを 3 つまでにして、閲覧履歴と個人情報を保護します。</translation>
@@ -2975,6 +2985,7 @@
 <translation id="8217748145574471584">人事</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> がご利用のネットワーク上のデバイスへのアクセスを求めています。</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">スポーツゲーム</translation>
@@ -3023,7 +3034,6 @@
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
 <translation id="830498451218851433">2 つ折り</translation>
-<translation id="8307888238279532626">インストールしたアプリと使用頻度</translation>
 <translation id="831997045666694187">夕方</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8329068931308448247">#14 封筒</translation>

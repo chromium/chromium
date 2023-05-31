@@ -1244,6 +1244,7 @@
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4040350669425716613">Коллеж, их сургууль</translation>
 <translation id="4047351652147966654">18 x 24 инч</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID-тай өргөтгөлийн шинэчлэлтийн URL буруу эсвэл дэмжигдээгүй схем ашиглаж байна. Дэмжигдсэн схемүүд нь: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> болон <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Та үүнийг Google-н бүтээгдэхүүнүүдэд ашиглах боломжтой болно</translation>
 <translation id="405399507749852140">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай</translation>
 <translation id="4056223980640387499">Сепиа</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">Драмын кино</translation>
 <translation id="6573200754375280815">Баруун ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6576181918031900030">Дамжуулж эхлэх</translation>
+<translation id="6578434528542148658">Буруу өргөтгөлийн ID.</translation>
 <translation id="657902945730878902">Зурах, будах</translation>
 <translation id="6579630537141957243">MIDI төхөөрөмжийг холбох уу?</translation>
 <translation id="6579990219486187401">Бүдэг ягаан</translation>
@@ -3032,7 +3034,6 @@
 <translation id="8298115750975731693">Таны ашиглаж буй Wi-Fi сүлжээ (<ph name="WIFI_NAME" />) таныг <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> нэвтрэхийг шаардах магадлалтай.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" хэсгийг харуулсан</translation>
 <translation id="830498451218851433">Хагас нугалаа</translation>
-<translation id="8307888238279532626">Суулгасан аппууд болон тэдгээрийг ашигладаг давтамж</translation>
 <translation id="831997045666694187">Үдэш</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
 <translation id="8329068931308448247">Дугтуй #14</translation>

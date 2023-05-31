@@ -3541,6 +3541,18 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política não for configurada ou for deixada em branco, a página Nova guia padrão será usada.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
+<translation id="4164511138197196839">Se a política for ativada, as extensões não publicadas na Chrome Web
+Store serão desativadas no <ph name="PRODUCT_NAME" />.
+Esta política se aplica apenas às extensões instaladas e atualizadas pela
+Chrome Web Store.
+
+Extensões de fora da loja, como as descompactadas instaladas no modo de
+desenvolvedor e as instaladas usando a opção de linha de comando, são ignoradas.
+As extensões de instalação forçada que são auto-hospedadas são ignoradas. Todas
+as extensões fixadas na versão também são ignoradas.
+
+Se a política for definida como <ph name="ALLOW_UNPUBLISHED" /> (0) ou for deixada sem definição, as extensões não publicadas na Chrome Web Store serão permitidas.
+Se a política for definida como <ph name="DISABLE_UNPUBLISHED" /> (1), as extensões não publicadas na Chrome Web Store serão desativadas.</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4166174702671320480">Se a política for definida como "Ativada", as políticas vindas de um grupo atômico que não compartilha a origem com a maior prioridade do grupo serão ignoradas.
 
@@ -3799,35 +3811,6 @@ A remoção foi feita na versão M112.</translation>
 <translation id="441686537793821907">Bloquear a instalação de extensões externas</translation>
 <translation id="4423597592074154136">Especificar manualmente as configurações de proxy</translation>
 <translation id="4424004842303301809">Desativar relatórios de eventos para prevenção de vazamento de dados</translation>
-<translation id="4426288704078471820">Os apps do Chrome com a <ph name="WEBVIEW_TAG_NAME" /> permitem um
-comportamento que está sendo removido do
-<ph name="PRODUCT_NAME" />.
-
-O comportamento anterior mostraria uma página intersticial se a tag
-<ph name="WEBVIEW_TAG_NAME" /> navegasse para uma página
-com um certificado SSL inválido. Essa página intersticial oferece ao usuário a opção
-de prosseguir sem segurança. O novo comportamento mostra uma página de erro sem a opção
-de continuar sem segurança.
-
-O comportamento anterior também permite o evento
-<ph name="NEWWINDOW_EVENT_NAME" />
-da <ph name="WEBVIEW_TAG_NAME" />
-(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
-para anexar a nova janela a uma tag <ph name="WEBVIEW_TAG_NAME" />
-em uma janela de app separada da origem
-<ph name="WEBVIEW_TAG_NAME" />. Com o novo comportamento, esse
-anexo ainda é permitido, mas a referência da janela retornada da
-chamada para <ph name="WINDOW_OPEN_NAME" /> na <ph name="WEBVIEW_TAG_NAME" />
-de origem é invalidada.
-
-Se a política for ativada, o comportamento anterior será usado.
-Se for desativada ou não for definida, a mudança de comportamento entrará em vigor à medida que for lançada
-no processo de lançamento do
-<ph name="PRODUCT_NAME" />.
-
-Essa política é uma solução temporária caso as experiências de empresas
-sofram interrupções por causa dessas mudanças. Esta política será removida
-na versão 117.</translation>
 <translation id="4426601693403743089">Desativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="4427173305799125784">O visualizador de PDF não pode fazer anotações em PDFs</translation>
 <translation id="4432762137771104529">Ativar relatórios estendidos do Navegação segura</translation>
@@ -5365,6 +5348,21 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="583627479140113555">Ativar a importação de senhas salvas na primeira execução</translation>
 <translation id="5838452040629810808">Ativar destaque do cursor</translation>
 <translation id="5842283830553218200">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado por padrão.</translation>
+<translation id="5844880038533636588">Se definida, a política vai especificar uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
+
+      Se a política for deixada sem definição, nenhum app ou extensão será instalado automaticamente, e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.
+
+      Esta política substitui a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se um app ou extensão de instalação forçada for removido da lista, será automaticamente desinstalado pelo <ph name="PRODUCT_NAME" />.
+
+      Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store poderão ter a instalação forçada apenas se a instância for gerenciada via MDM, associada a um domínio via MCX ou registrada no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />
+
+      O código-fonte de qualquer extensão pode ser modificado pelos usuários com ferramentas para desenvolvedores, o que pode prejudicar a funcionalidade da extensão. Se isso for uma preocupação, defina a política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização vai apontar para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). O URL de atualização usará um destes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ou <ph name="FILE_SCHEME" />. Por padrão, o URL de atualização da Chrome Web Store é usado. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL indicado no manifesto da extensão.
+
+       Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre a hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="5847509620317822100">Este recurso foi removido no Chrome 100.
 
       Se a política for definida como "Ativada", apps instalados anteriormente pelo usuário em outros dispositivos serão recomendados. Eles vão aparecer no acesso rápido depois das recomendações de apps locais quando nenhum texto de pesquisa tiver sido inserido.
@@ -8647,7 +8645,6 @@ Se a política for deixada sem definição, nenhuma senha salva será importada 
 
       Se você definir a política, os usuários não poderão mudar essa função. Se ela não for definida, os usuários poderão mudar a configuração.</translation>
 <translation id="8707790573162457301">Executar a limpeza de disco automática durante o login</translation>
-<translation id="8708628595824806312">Verificar o uso da Chave RSA em certificados de servidor emitidos por âncoras de confiança locais</translation>
 <translation id="8713535263782304771">Desativar o Navegação segura</translation>
 <translation id="8715181294371649277">Permitir a proteção de downloads em tempo real da Navegação segura</translation>
 <translation id="8715885991031124968">Permitir caixas de diálogo de JavaScript acionadas por um subframe de origem diferente.</translation>

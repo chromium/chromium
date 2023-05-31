@@ -1440,6 +1440,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 red nije prikazan&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> red nije prikazan&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> reda nisu prikazana&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> redova nije prikazano&gt;}}</translation>
 <translation id="2218019600945559112">Miš i tačped</translation>
 <translation id="2218515861914035131">Lepljenje u obliku otvorenog teksta</translation>
+<translation id="221872881068107022">Obrnuto pomeranje</translation>
 <translation id="2219007152108311874">Pitaj pri svakoj poseti</translation>
 <translation id="2220409419896228519">Dodajte obeleživače u omiljene Google aplikacije</translation>
 <translation id="2220529011494928058">Prijavi problem</translation>
@@ -4381,6 +4382,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu da koriste ovu mrežu</translation>
 <translation id="4777825441726637019">Play prodavnica</translation>
 <translation id="4777943778632837590">Konfiguriši nazive servera mreže</translation>
+<translation id="4778653490315793244">Nemamo šta da vam prikažemo</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Preimenujte mobilnu mrežu za eSIM</translation>
@@ -4805,7 +4807,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5155327081870541046">U traci za adresu unesite prečicu za sajt koji želite da pretražite, na primer, „@bookmarks“. Zatim pritisnite željenu tastersku prečicu i unesite termin za pretragu.</translation>
 <translation id="5156638757840305347">Kursor se ističe kad se pojavi ili pomeri</translation>
 <translation id="5157250307065481244">Prikaži detalje sajta</translation>
-<translation id="5157635116769074044">Zakači ovu stranicu na početni ekran...</translation>
 <translation id="5157701529792771331">Automatski prevodi titl</translation>
 <translation id="5158206172605340248">Meni sa oznakama za akcenat je odbačen.</translation>
 <translation id="5159094275429367735">Podesite Crostini</translation>
@@ -5896,7 +5897,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6113942107547980621">Da biste koristili Smart Lock, pređite na primarni korisnički profil na telefonu</translation>
 <translation id="6116921718742659598">Promeni podešavanja jezika i unosa</translation>
 <translation id="6119927814891883061">Promenite naziv uređaja u <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Zakači ovu stranicu na Početni ekran...</translation>
 <translation id="6120707837086723438">Prikazuju vam se predloženi recepti na osnovu nedavne aktivnosti pretrage za recepte.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8388,7 +8388,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
     <ph name="BEGIN_PARAGRAPH3" />Vlasnik može da upravlja ovom funkcijom u odeljku Podešavanja &gt; Napredno &gt; Automatski šalji dijagnostiku i podatke o korišćenju Google-u.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ako za dete uključite dodatne Aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. Saznajte više o ovim podešavanjima i o tome kako da ih prilagodite na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nevažeći sertifikat klijenta</translation>
-<translation id="8270162672241199380">Steam program za instalaciju</translation>
 <translation id="827097179112817503">Prikaži dugme za početnu stranicu</translation>
 <translation id="8271268254812352141">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite. Prilagodite jezike za prevod u <ph name="LINK_BEGIN" />Jezicima za veb-sajtove<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Roditelji, sledećih nekoliko koraka su za vas. Možete da vratite <ph name="DEVICE_TYPE" /> detetu posle otvaranja naloga.</translation>

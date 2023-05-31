@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Nu se poate rezolva solicitarea DNS</translation>
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1020274983236703756">Sunt disponibile elemente <ph name="PRODUCT_NAME" /> exclusive</translation>
-<translation id="1022433422498218992">Comenzi generale</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Tip de autentificare</translation>
 <translation id="1776228893584526149">Tonul imaginii de fundal</translation>
 <translation id="1782199038061388045">traducere</translation>
-<translation id="1790209694022261219">Ferestre și desktopuri</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1801418420130173017">Dezactivează tema întunecată</translation>
 <translation id="1807246157184219062">Luminos</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3017079585324758401">Fundal</translation>
-<translation id="3020183492814296499">Comenzi rapide</translation>
 <translation id="3027578600144895987">Închide camera foto</translation>
 <translation id="3031560714565892478">Dispozitivul este o cameră video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagine de fundal prestabilită</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Activează resetarea lunară automată</translation>
 <translation id="6037291330010597344">Alimentatorul de documente al scanerului este gol. Adaugă documente și încearcă din nou.</translation>
 <translation id="6040143037577758943">Închide</translation>

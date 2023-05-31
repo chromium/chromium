@@ -1456,6 +1456,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 vrstica ni prikazana&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> vrstica ni prikazana&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> vrstici nista prikazani&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> vrstice niso prikazane&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> vrstic ni prikazanih&gt;}}</translation>
 <translation id="2218019600945559112">Miška in sledilna ploščica</translation>
 <translation id="2218515861914035131">Prilepi kot navadno besedilo</translation>
+<translation id="221872881068107022">Obratno pomikanje</translation>
 <translation id="2219007152108311874">Vprašaj ob vsakem obisku</translation>
 <translation id="2220409419896228519">Dodajte zaznamke do priljubljenih Googlovih aplikacij</translation>
 <translation id="2220529011494928058">Prijavite težavo</translation>
@@ -4401,6 +4402,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4777458362738635055">Drugi uporabniki te naprave lahko uporabljajo to omrežje.</translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
 <translation id="4777943778632837590">Konfiguriranje imenskih strežnikov omrežja</translation>
+<translation id="4778653490315793244">Ničesar ni za prikaz</translation>
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Preimenovanje mobilnega omrežja eSIM</translation>
@@ -4825,7 +4827,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5155327081870541046">V naslovni vrstici vnesite bližnjico za spletno mesto, po katerem želite iskati, na primer »@bookmarks«. Nato pritisnite želene bližnjične tipke in vnesite iskalno poizvedbo.</translation>
 <translation id="5156638757840305347">Kazalec je označen, ko se pojavi ali premika.</translation>
 <translation id="5157250307065481244">Ogled podrobnosti spletnega mesta</translation>
-<translation id="5157635116769074044">Pripni to stran na začetni zaslon ...</translation>
 <translation id="5157701529792771331">Samodejno prevajanje podnapisov</translation>
 <translation id="5158206172605340248">Meni z naglasnimi znamenji je opuščen.</translation>
 <translation id="5159094275429367735">Nastavitev Crostinija</translation>
@@ -5918,7 +5919,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6113942107547980621">Če želite uporabljati Smart Lock, v telefonu preklopite na primarni uporabniški profil</translation>
 <translation id="6116921718742659598">Spreminjanje nastavitev jezika in vnosa</translation>
 <translation id="6119927814891883061">Poimenovanje naprave v <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Pripnite to stran na začetni zaslon ...</translation>
 <translation id="6120707837086723438">Prikazani so predlagani recepti na podlagi nedavne dejavnosti v Iskanju Google glede receptov.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8412,7 +8412,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
     <ph name="BEGIN_PARAGRAPH3" />Lastnik lahko nadzira to funkcijo v »Nastavitve« &gt; »Dodatno« &gt; »Samodejno pošiljanje diagnostičnih podatkov in podatkov o uporabi Googlu«.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem Google Računu. Na spletnem mestu families.google.com si podatke lahko ogledate, jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Neveljavno potrdilo odjemalca</translation>
-<translation id="8270162672241199380">Namestitveni program za storitev Steam</translation>
 <translation id="827097179112817503">Pokaži gumb za domačo stran</translation>
 <translation id="8271268254812352141">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite. Prilagodite jezike za prevajanje v razdelku z <ph name="LINK_BEGIN" />jeziki spletnih mest<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Starši, naslednji koraki so za vas. Po nastavitvi računa lahko napravo <ph name="DEVICE_TYPE" /> vrnete otroku.</translation>

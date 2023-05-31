@@ -304,6 +304,7 @@
 <translation id="1243436884219965846">비밀번호 검토</translation>
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
+<translation id="1244917379075403655">'설정'을 클릭합니다</translation>
 <translation id="1245628370644070008">로컬 데이터 복구</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
@@ -1453,6 +1454,8 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1줄이 표시되지 않음&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />줄이 표시되지 않음&gt;}}</translation>
 <translation id="2218019600945559112">마우스 및 터치패드</translation>
 <translation id="2218515861914035131">일반 텍스트로 붙여넣기</translation>
+<translation id="221872881068107022">역방향 스크롤</translation>
+<translation id="2219007152108311874">방문할 때마다 확인</translation>
 <translation id="2220409419896228519">즐겨찾는 Google 앱에 책갈피를 추가합니다.</translation>
 <translation id="2220529011494928058">문제 신고</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
@@ -1941,6 +1944,7 @@
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
 <translation id="2612676031748830579">카드번호</translation>
+<translation id="2612685984116544489">큰 메모리 절감 효과</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />에서 모든 확장 프로그램을 허용하지 않음</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
 <translation id="2616008379779647117">자막 언어</translation>
@@ -2477,6 +2481,7 @@
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
+<translation id="306179102415443347">바로가기를 사용하여 Google 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -2638,6 +2643,7 @@
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
 <translation id="3234251228180563751">사용자 이름이 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="3234978181857588512">기기에 저장</translation>
+<translation id="3236322872705622658">매우 큰 메모리 절감 효과</translation>
 <translation id="3238192140106069382">연결 및 확인 중</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />의 시간제한이 삭제되었습니다.</translation>
 <translation id="3241638166094654466">각 행의 셀 수:</translation>
@@ -2869,6 +2875,7 @@
 <translation id="3444726579402183581"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
+<translation id="3445315354416458913">중간 메모리 절감 효과</translation>
 <translation id="344537926140058498">파일에 민감하거나 위험한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
@@ -2943,6 +2950,7 @@
 <translation id="3496995426334945408">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 JavaScript를 사용합니다.</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />의 USB 기기(제품 <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">기념일 로고 공유</translation>
+<translation id="3497915391670770295">내 기기로 보내기(&amp;D)</translation>
 <translation id="3500417806337761827">공유를 마운트하는 중에 오류가 발생했습니다. 너무 많은 SMB 공유가 이미 마운트되었습니다.</translation>
 <translation id="3503995387997205657">이전 앱을 복원할 수 있습니다.</translation>
 <translation id="3505100368357440862">쇼핑 추천</translation>
@@ -3029,6 +3037,7 @@
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />에 관해 자세히 알아보기</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3588790464166520201">결제 핸들러 설치가 허용됨</translation>
+<translation id="358966288223211204">매우 큰 메모리 절감 효과</translation>
 <translation id="3589766037099229847">안전하지 않은 콘텐츠가 차단됨</translation>
 <translation id="3590194807845837023">프로필 잠금 해제 및 다시 시작</translation>
 <translation id="3590295622232282437">관리 세션을 시작합니다.</translation>
@@ -3509,6 +3518,7 @@
 <translation id="397703832102027365">완료 중...</translation>
 <translation id="3977145907578671392">시크릿 모드에서는 일부 사이트의 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="3977886311744775419">이러한 네트워크 유형에서는 자동 업데이트가 다운로드되지 않지만 수동으로 업데이트를 확인할 수 있습니다.</translation>
+<translation id="3978325380690188371">ChromeVox가 사용 설정된 경우 고정키를 사용할 수 없음</translation>
 <translation id="3979395879372752341">새 확장 프로그램이 추가됨(<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> 사용</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> 동안 주변 기기에 <ph name="DEVICE_NAME" />(으)로 표시됩니다.</translation>
@@ -3895,6 +3905,7 @@
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
 <translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
 <translation id="434404122609091467">현재 서비스 제공업체 이용</translation>
+<translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
 <translation id="4345587454538109430">설정...</translation>
 <translation id="4345732373643853732">서버에 알려지지 않은 사용자 이름</translation>
 <translation id="4348426576195894795">계정을 삭제하면 이 계정으로 로그인된 Chrome 프로필도 모두 삭제됩니다.</translation>
@@ -4087,6 +4098,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="450552327874992444">이미 추가된 단어입니다.</translation>
 <translation id="4507128560633489176">데이터가 지워졌습니다.</translation>
 <translation id="4507373251891673233"><ph name="HOST" />의 모든 확장 프로그램을 차단했습니다.</translation>
+<translation id="4507401683427517298">'바로가기 추가'를 클릭합니다</translation>
 <translation id="4508032221004253235">수락하면 위치 정보 액세스 권한이 앱 및 웹사이트와 ChromeOS에서 Wi-Fi 또는 모바일 네트워크를 통해 확인된 위치를 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="450867954911715010">접근성 설정</translation>
 <translation id="4508765956121923607">소스 보기(&amp;O)</translation>
@@ -4387,6 +4399,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4777458362738635055">기기의 다른 사용자가 이 네트워크를 사용할 수 있음</translation>
 <translation id="4777825441726637019">Play 스토어</translation>
 <translation id="4777943778632837590">네트워크 네임서버 구성</translation>
+<translation id="4778653490315793244">표시할 콘텐츠 없음</translation>
 <translation id="4779083564647765204">확대/축소</translation>
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4779766576531456629">eSIM 셀룰러 네트워크 이름 바꾸기</translation>
@@ -4535,6 +4548,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4893336867552636863">기기에서 인터넷 사용 기록이 완전히 삭제됩니다.</translation>
 <translation id="4893454800196085005">좋음 - DVD</translation>
 <translation id="4893522937062257019">잠금 화면에서</translation>
+<translation id="4895799941222633551">바로가기 만들기(&amp;S)...</translation>
 <translation id="4898011734382862273">'<ph name="CERTIFICATE_NAME" />' 인증서는 인증 기관을 나타냅니다.</translation>
 <translation id="4899052647152077033">색상 반전</translation>
 <translation id="4899696330053002588">광고 포함</translation>
@@ -4631,6 +4645,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>
 <translation id="4994426888044765950">키를 길게 누르면 키 문자가 반복되어 입력됩니다.</translation>
+<translation id="4994719343483700883">중간 메모리 절감 효과</translation>
 <translation id="4994754230098574403">설정 중입니다.</translation>
 <translation id="4995293419989417004">광고 주제에 관해 자세히 알아보기</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> VM 없음}=1{<ph name="VM_TYPE" /> VM 1개 발견됨: <ph name="VM_NAME_LIST" />}other{<ph name="VM_TYPE" /> VM {NUM_VMS}개 발견됨: <ph name="VM_NAME_LIST" />}}</translation>
@@ -4638,6 +4653,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4998430619171209993">사용</translation>
 <translation id="4999804342505941663">방해 금지 모드 사용 설정</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
+<translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5006118752738286774">2년 전</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
@@ -4808,7 +4824,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5155327081870541046">주소 표시줄에 '@bookmarks'와 같이 검색하려는 사이트의 바로가기를 입력하세요. 그런 다음 원하는 단축키를 누르고 검색어를 입력하세요.</translation>
 <translation id="5156638757840305347">커서가 나타나거나 이동할 때 이를 강조표시합니다</translation>
 <translation id="5157250307065481244">사이트 세부정보 보기</translation>
-<translation id="5157635116769074044">이 페이지를 시작 화면에 고정...</translation>
+<translation id="5157701529792771331">자막 자동 번역</translation>
 <translation id="5158206172605340248">발음 구별 부호 메뉴를 닫았습니다.</translation>
 <translation id="5159094275429367735">Crostini 설정</translation>
 <translation id="5159419673777902220">부모님이 확장 프로그램 권한을 사용 중지했습니다.</translation>
@@ -5029,6 +5045,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5359910752122114278">검색결과 1개</translation>
 <translation id="5359944933953785675">탭 <ph name="NUM" />개</translation>
 <translation id="5360150013186312835">툴바에서 보기</translation>
+<translation id="5362064243740598112">적은 메모리 절감 효과</translation>
 <translation id="5362741141255528695">비공개 키 파일을 선택합니다.</translation>
 <translation id="5363109466694494651">Powerwash 및 되돌리기</translation>
 <translation id="5365881113273618889">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 쓰기 액세스 권한을 부여하시겠습니까?</translation>
@@ -5093,6 +5110,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5420438158931847627">텍스트와 이미지의 선명도를 결정합니다.</translation>
 <translation id="5422781158178868512">죄송합니다. 외부 저장장치를 인식하지 못했습니다.</translation>
 <translation id="5423505005476604112">Crostini</translation>
+<translation id="5423753908060469325">바로가기 만들기(&amp;S)...</translation>
 <translation id="5423829801105537712">기본 맞춤법 검사</translation>
 <translation id="5425042808445046667">다운로드 계속</translation>
 <translation id="5425863515030416387">모든 기기에서 간편하게 로그인</translation>
@@ -5529,6 +5547,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="5810809306422959727">자녀 보호 기능을 사용할 수 없는 계정</translation>
 <translation id="5811614940486072060">일반적으로 다운로드하지 않는 파일이며 위험할 수 있습니다</translation>
 <translation id="5812674658566766066">모두 펼치기</translation>
+<translation id="5814764845837381214">적은 메모리 절감 효과</translation>
 <translation id="5815645614496570556">X.400 주소</translation>
 <translation id="5816434091619127343">프린터 변경을 요청하면 프린터를 사용할 수 없게 됩니다.</translation>
 <translation id="581659025233126501">동기화 사용 설정</translation>
@@ -5863,6 +5882,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
+<translation id="6088475950266477163">설정(&amp;G)</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
@@ -5894,7 +5914,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6113942107547980621">Smart Lock을 사용하려면 휴대전화의 기본 사용자 프로필로 전환하세요.</translation>
 <translation id="6116921718742659598">언어 및 입력 설정 변경</translation>
 <translation id="6119927814891883061">기기 이름을 다음으로 지정: <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">이 페이지를 시작 화면에 고정...</translation>
 <translation id="6120707837086723438">최근 레시피 검색 활동을 기반으로 표시되는 추천 레시피입니다.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6240,6 +6259,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6434104957329207050">지점 스캔 속도</translation>
 <translation id="6434309073475700221">삭제</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 업데이트해야 합니다.</translation>
+<translation id="6435339218366409950">자막을 번역할 언어를 선택합니다</translation>
 <translation id="6436164536244065364">웹 스토어에서 보기</translation>
 <translation id="6436610005579237680">나에게 맞는 답변을 듣고 싶다면 내가 질문할 때 Google 어시스턴트가 화면에 표시된 항목의 스크린샷에 액세스하도록 허용하세요. 어시스턴트는 재생 중인 노래나 동영상에 관한 정보를 사용할 수도 있습니다.</translation>
 <translation id="6436778875248895551">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램을 차단했습니다.</translation>
@@ -7058,6 +7078,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="7141844554192012199">진단</translation>
 <translation id="7143207342074048698">연결 중</translation>
+<translation id="7144856456372460176"><ph name="APP" /> 설치(&amp;I)…</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7148426638542880639">사이트가 제대로 작동하지 않을 수 있습니다. 방문하는 사이트에 관한 정보를 기기에 저장하지 않으려면 이 옵션을 선택하세요.</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
@@ -7353,6 +7374,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7411614333737930931">기기를 재시작한 후 다시 시도해 주세요.</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7412226954991670867">GPU 메모리</translation>
+<translation id="7412494426921990001">Chrome 메뉴를 클릭합니다</translation>
 <translation id="7414464185801331860">18배</translation>
 <translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> 검토</translation>
@@ -7440,6 +7462,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7481358317100446445">준비</translation>
 <translation id="748138892655239008">인증서 기본 제약조건</translation>
 <translation id="7483145199632798061">Chrome Refresh 2023</translation>
+<translation id="748385830131645364">큰 메모리 절감 효과</translation>
 <translation id="7484645889979462775">이 사이트 제외</translation>
 <translation id="7487141338393529395">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="7487969577036436319">설치된 구성요소가 없습니다.</translation>
@@ -7866,6 +7889,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7842062217214609161">단축키 없음</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
 <translation id="784273751836026224">Linux 제거</translation>
+<translation id="784475655832336580">ChromeVox가 사용 설정된 경우 키보드 포커스로 항목을 강조 표시할 수 없음</translation>
 <translation id="7844992432319478437">diff 업데이트 중</translation>
 <translation id="7846634333498149051">키보드</translation>
 <translation id="7847212883280406910">Ctrl + Alt + S 키를 눌러 <ph name="IDS_SHORT_PRODUCT_OS_NAME" />(으)로 전환합니다.</translation>
@@ -8377,7 +8401,6 @@ https://support.google.com/chromebook/?p=sm</translation>
     <ph name="BEGIN_PARAGRAPH3" />소유자는 설정 &gt; 고급 &gt; 진단 및 사용 데이터를 Google에 자동 전송에서 이 기능을 제어할 수 있습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />자녀에게 추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 자녀의 Google 계정에 저장됩니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아볼 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">잘못된 클라이언트 인증서</translation>
-<translation id="8270162672241199380">Steam 설치 프로그램</translation>
 <translation id="827097179112817503">홈 버튼 표시</translation>
 <translation id="8271268254812352141">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다. <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />에서 번역 언어를 맞춤 설정하세요.</translation>
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
@@ -8721,6 +8744,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8581809080475256101">앞으로 이동하려면 앞으로 버튼을 누르고, 방문 기록을 보려면 컨텍스트 메뉴 키를 누릅니다.</translation>
 <translation id="8584280235376696778">새 탭에서 동영상 열기(&amp;O)</translation>
 <translation id="8584427708066927472">비밀번호가 이 기기에서 삭제되었습니다.</translation>
+<translation id="858451212965845553">내 기기로 보내기(&amp;D)</translation>
 <translation id="8584843865238667486">사용량 페이지 <ph name="USAGE_PAGE" />의 HID 기기(사용량: <ph name="USAGE" />)</translation>
 <translation id="8585480574870650651">Crostini 삭제</translation>
 <translation id="8585841788766257444">다음 사이트는 기본 설정이 아닌 맞춤 설정을 따릅니다.</translation>

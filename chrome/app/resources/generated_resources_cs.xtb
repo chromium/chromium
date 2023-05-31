@@ -1442,6 +1442,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 řádek není zobrazen&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> řádky nejsou zobrazeny&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> řádku není zobrazeno&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> řádků není zobrazeno&gt;}}</translation>
 <translation id="2218019600945559112">Myš a touchpad</translation>
 <translation id="2218515861914035131">Vložit jako prostý text</translation>
+<translation id="221872881068107022">Opačné posouvání</translation>
 <translation id="2220409419896228519">Přidejte záložky svých oblíbeným aplikací Google</translation>
 <translation id="2220529011494928058">Nahlásit problém</translation>
 <translation id="2220572644011485463">PIN nebo heslo</translation>
@@ -4372,6 +4373,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4777458362738635055">Tuto síť mohou používat ostatní uživatelé tohoto zařízení</translation>
 <translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4777943778632837590">Konfigurovat názvové servery sítě</translation>
+<translation id="4778653490315793244">Zatím tu nic není</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4779136857077979611">Rýže onigiri</translation>
 <translation id="4779766576531456629">Přejmenovat mobilní síť eSIM</translation>
@@ -4793,7 +4795,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5155327081870541046">Do adresního řádku zadejte zkratku pro web, na kterém chcete vyhledávat, například „@bookmarks“. Potom stiskněte požadovanou klávesovou zkratku a zadejte vyhledávací dotaz.</translation>
 <translation id="5156638757840305347">Když se kurzor zobrazí nebo pohne, zvýrazní se</translation>
 <translation id="5157250307065481244">Zobrazit podrobnosti o webu</translation>
-<translation id="5157635116769074044">Připnout tuto stránku na úvodní obrazovku...</translation>
 <translation id="5158206172605340248">Nabídka diakritiky byla zavřena.</translation>
 <translation id="5159094275429367735">Nastavit Crostini</translation>
 <translation id="5159419673777902220">Oprávnění pro rozšíření zakázal rodič</translation>
@@ -5876,7 +5877,6 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="6113942107547980621">Chcete-li použít funkci Smart Lock, přejděte na primární uživatelský profil na telefonu</translation>
 <translation id="6116921718742659598">Změnit nastavení jazyka a vstupu</translation>
 <translation id="6119927814891883061">Nastavit název zařízení na <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Připnout tuto stránku na úvodní obrazovku...</translation>
 <translation id="6120707837086723438">Zobrazují se vám navrhované recepty na základě nedávné aktivity ve vyhledávání receptů.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8362,7 +8362,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
     <ph name="BEGIN_PARAGRAPH3" />Vlastník tuto funkci může ovládat pomocí možnosti Nastavení &gt; Rozšířená nastavení &gt; Automaticky do Googlu odesílat diagnostické údaje a údaje o využití.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Pokud je pro dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. Další informace o těchto nastaveních a o tom, jak je upravit, najdete na stránce families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Neplatný certifikát klienta</translation>
-<translation id="8270162672241199380">Instalační program Steamu</translation>
 <translation id="827097179112817503">Zobrazit tlačítko Domovská stránka</translation>
 <translation id="8271268254812352141">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek. Jazyky překladu můžete upravit v sekci <ph name="LINK_BEGIN" />Jazyky webových stránek<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Rodiče, další kroky jsou pro vás. Až nastavení účtu dokončíte, budete zařízení <ph name="DEVICE_TYPE" /> moci vrátit dítěti.</translation>

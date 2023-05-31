@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1020274983236703756">이제 독점 <ph name="PRODUCT_NAME" /> 애셋 사용 가능</translation>
-<translation id="1022433422498218992">일반 컨트롤</translation>
 <translation id="1022628058306505708">지구의 흐름</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1776228893584526149">배경화면 색조</translation>
 <translation id="1782199038061388045">번역</translation>
-<translation id="1790209694022261219">창 및 데스크</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
-<translation id="3020183492814296499">바로가기</translation>
 <translation id="3027578600144895987">카메라 종료</translation>
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
 <translation id="6017514345406065928">녹색</translation>
+<translation id="6019566113895157499">주요 단축키</translation>
 <translation id="6034694447310538551">월간 자동 재설정 사용 설정</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>

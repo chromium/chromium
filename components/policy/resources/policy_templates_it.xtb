@@ -3745,16 +3745,6 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="441686537793821907">Blocca l'installazione di estensioni esterne</translation>
 <translation id="4423597592074154136">Specifica manualmente le impostazioni proxy</translation>
 <translation id="4424004842303301809">Disattiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>
-<translation id="4426288704078471820">L'elemento <ph name="WEBVIEW_TAG_NAME" /> delle app di Chrome consente un comportamento che verrà rimosso da <ph name="PRODUCT_NAME" />.
-
-Il comportamento precedente mostrerebbe una pagina interstitial se un elemento <ph name="WEBVIEW_TAG_NAME" /> dovesse accedere a una pagina con un certificato SSL non valido. Questa pagina interstitial offre all'utente l'opzione per procedere in modo non sicuro. Il nuovo comportamento mostra una pagina di errore senza l'opzione per procedere in modo non sicuro.
-
-Il comportamento precedente consente inoltre all'evento <ph name="NEWWINDOW_EVENT_NAME" /> dell'elemento <ph name="WEBVIEW_TAG_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) di aggiungere la nuova finestra a un elemento <ph name="WEBVIEW_TAG_NAME" /> in una finestra dell'app separata da quella dell'elemento <ph name="WEBVIEW_TAG_NAME" /> originario. Con il nuovo comportamento, questa aggiunta è ancora consentita, ma il riferimento alla finestra restituito dalla chiamata a <ph name="WINDOW_OPEN_NAME" /> nell'elemento <ph name="WEBVIEW_TAG_NAME" /> originario non è più valido.
-
-Se il criterio viene attivato, viene utilizzato il comportamento precedente.
-Se il criterio viene disattivato o se non viene configurato, la modifica del comportamento viene applicata a mano a mano che viene implementata tramite il processo di rilascio di <ph name="PRODUCT_NAME" />.
-
-Questo criterio è una soluzione alternativa temporanea qualora le aziende riscontrino danni a causa di queste modifiche. Questo criterio verrà rimosso nella versione 117.</translation>
 <translation id="4426601693403743089">Disattiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="4427173305799125784">Il visualizzatore PDF non può aggiungere annotazioni nei PDF</translation>
 <translation id="4432762137771104529">Attiva rapporti estesi su Navigazione sicura</translation>
@@ -8437,7 +8427,6 @@ Se il criterio non viene configurato, alla prima esecuzione non vengono importat
 
       Se imposti il criterio, gli utenti non possono modificare questa funzione. Se non viene impostato, gli utenti possono cambiare l'impostazione.</translation>
 <translation id="8707790573162457301">Esegui la pulizia automatica del disco durante l'accesso</translation>
-<translation id="8708628595824806312">Controlla l'utilizzo delle chiavi RSA per i certificati server emessi da trust anchor locali</translation>
 <translation id="8713535263782304771">Disattiva Navigazione sicura</translation>
 <translation id="8715181294371649277">Consenti la protezione dei download in tempo reale con Navigazione sicura</translation>
 <translation id="8715885991031124968">Consenti le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>

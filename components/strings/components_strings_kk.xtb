@@ -1242,6 +1242,7 @@
 <translation id="4031179711345676612">Микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="4040350669425716613">Колледждер мен университеттер</translation>
 <translation id="4047351652147966654">18 x 24 дюйм</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" идентификаторы бар кеңейтімге арналған жаңарту URL мекенжайы жарамсыз немесе қолдау көрсетілмейтін схеманы пайдаланады. Қолдау көрсетілетін схемалар: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> және <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Оны Google өнімдерінде пайдалана аласыз.</translation>
 <translation id="405399507749852140">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -2292,6 +2293,7 @@
 <translation id="6569366777234823130">Драмалық фильмдер</translation>
 <translation id="6573200754375280815">Оң жағын екі рет тесу</translation>
 <translation id="6576181918031900030">Трансляциялауды бастау</translation>
+<translation id="6578434528542148658">Кеңейтім идентификаторы жарамсыз.</translation>
 <translation id="657902945730878902">Сурет салу және бояу</translation>
 <translation id="6579630537141957243">MIDI құрылғысы байланыстырылсын ба?</translation>
 <translation id="6579990219486187401">Ашық қызғылт</translation>
@@ -3031,7 +3033,6 @@
 <translation id="8298115750975731693">Сіз пайдаланып жатқан Wi-Fi желісі (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" бөлімі көрсетілді.</translation>
 <translation id="830498451218851433">Жартылай бүктеу</translation>
-<translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
 <translation id="831997045666694187">Кеш</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
 <translation id="8329068931308448247">#14 хатқалта</translation>

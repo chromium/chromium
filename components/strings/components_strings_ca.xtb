@@ -1243,6 +1243,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
 <translation id="4040350669425716613">Universitats i facultats</translation>
 <translation id="4047351652147966654">18 x 24 polzades</translation>
+<translation id="404831776305217138">L'URL d'actualització de l'extensió amb l'identificador "<ph name="EXTENSION_ID" />" no és vàlid o utilitza un esquema no admès. S'admeten els esquemes següents: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Podràs utilitzar-la en tots els productes de Google</translation>
 <translation id="405399507749852140">Si el preu baixa en qualsevol lloc web, rebràs una alerta</translation>
 <translation id="4056223980640387499">Sèpia</translation>
@@ -2293,6 +2294,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6569366777234823130">Pel·lícules de drama</translation>
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
 <translation id="6576181918031900030">Inicia una emissió</translation>
+<translation id="6578434528542148658">L'identificador d'extensió no és vàlid.</translation>
 <translation id="657902945730878902">Dibuix i pintura</translation>
 <translation id="6579630537141957243">Vols connectar el dispositiu MIDI?</translation>
 <translation id="6579990219486187401">Rosa clar</translation>
@@ -3032,7 +3034,6 @@ Detalls addicionals:
 <translation id="8298115750975731693">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">S'ha mostrat la secció "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Plegat per la meitat</translation>
-<translation id="8307888238279532626">Aplicacions instal·lades i freqüència d'utilització</translation>
 <translation id="831997045666694187">Tarda</translation>
 <translation id="8321476692217554900">notificacions</translation>
 <translation id="8329068931308448247">Sobre número 14</translation>

@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">مکث رسانه</translation>
 <translation id="1610778689852195798">«واگرد»</translation>
 <translation id="1611993646327628135">روشن</translation>
-<translation id="1618835956950524778">برجسته کردن دکمه راه‌انداز در قفسه</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="163517899691012366">وقتی «مزاحم نشوید» روشن باشد، اعلان‌ها بی‌صدا هستند</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">یک دستگاه متصل است</translation>
 <translation id="2791421900609674576">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید لمس کنید و نگه دارید.</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
-<translation id="2797741504905337289">گروه قفسه‌ها</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />، انتخاب شده</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2814448776515246190">ضبط جزئی</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">نصب برنامه‌ها، افزونه‌ها و طرح‌های زمینه</translation>
 <translation id="2977598380246111477">عدد بعدی</translation>
 <translation id="2985148236010982088">دیدن همه برنامه‌ها</translation>
-<translation id="29859347674873492">باز کردن «راهنما» در برنامه «کاوش»</translation>
 <translation id="2992327365391326550">دکمه میکروفون دستگاه خاموش است.</translation>
 <translation id="2996462380875591307">‏«ذره‌بین متصل» فعال شد. برای خاموش کردن آن، Ctrl+Search+D را دوباره فشار دهید.</translation>
 <translation id="3000461861112256445">صدای مونو</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">باز کردن فایل‌ها</translation>
 <translation id="3038571455154067151">‏برای ورود به سیستم، کد دسترسی ولی Family Link خود را وارد کنید</translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
+<translation id="304097922505898963">باز کردن برنامه «میان‌برهای کلیدی»</translation>
 <translation id="3045488863354895414">بعدازظهر به‌خیر،</translation>
 <translation id="3047761520276763270">بگویید:</translation>
 <translation id="3055162170959710888">امروز از این دستگاه به‌مدت <ph name="USED_TIME" /> استفاده کردید</translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">نمایش تنظیمات زمینه تیره</translation>
 <translation id="3413817803639110246">هنوز چیزی برای دیدن وجود ندارد</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
-<translation id="3423744722495840645">بازکردن/ بستن راه‌انداز</translation>
 <translation id="3428447136709161042">قطع ارتباط از <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">برای برگشتن به عقب از سمت چپ تند بکشید</translation>
 <translation id="3431517721463707585">میزکار ۱۴</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">برنامه‌های موجود در قفسه</translation>
 <translation id="3539957339480430241">نقطه اتصال <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید کلیک راست کنید.</translation>
-<translation id="3546121235777416274">کانونی کردن پنجره تصویر در تصویر</translation>
 <translation id="3552189655002856821">‏Wi-Fi خاموش است</translation>
 <translation id="3554215588514239132">نشان دادن یا پنهان کردن پانل «ابزار توسعه‌دهندگان»</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> پین شد</translation>
@@ -1063,7 +1059,6 @@
 <translation id="5760866832697883462">متصل کردن <ph name="NAME" /></translation>
 <translation id="5762420912707163638">روشن/ خاموش کردن نشانگر. <ph name="STATE_TEXT" /> برای کشیدن طرح روی صفحه از پد لمسی، صفحه لمسی، یا قلم استفاده کنید.</translation>
 <translation id="576341972084747908">بارگیری <ph name="FILENAME" /> خطرناک</translation>
-<translation id="5763928712329149804">«گروه قفسه‌ها» خاموش است.</translation>
 <translation id="576453121877257266">«نور شب» روشن است.</translation>
 <translation id="5764569119212455782">رفتن به آخرین زبان انتخاب‌شده</translation>
 <translation id="5769373120130404283">صفحه حریم خصوصی</translation>
@@ -1118,6 +1113,7 @@
 <translation id="6012623610530968780">صفحه <ph name="SELECTED_PAGE" /> از <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">برجسته کردن مورد بعدی در قفسه</translation>
 <translation id="6018164090099858612">خروج از حالت آینه</translation>
+<translation id="6019566113895157499">میان‌برهای کلیدی</translation>
 <translation id="602001110135236999">پیمایش به چپ</translation>
 <translation id="6022924867608035986">پاک کردن نوشتار چارگوش جستجو</translation>
 <translation id="602472752137106327">نمایش پنجره‌ها از همه میزکارها، دکمه رادیو انتخاب شد</translation>
@@ -1272,7 +1268,6 @@
 <translation id="6707693040195709527">زمان تغییر دادن دستگاه به نسخه قبلی از موعد مقرر گذشته است</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6723839937902243910">نیرو</translation>
-<translation id="6727005317916125192">چارچوب قبلی</translation>
 <translation id="6727969043791803658">متصل، <ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6732800389263199929">بیش‌از <ph name="COUNT" /></translation>
@@ -1319,7 +1314,6 @@
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6920245099716267363">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، یک دستگاه متصل است.</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
-<translation id="6941333068993625698">ارسال بازخورد</translation>
 <translation id="6942518653766415536">منوی قالب ضبط</translation>
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6945922087561257829">‏تلفن شما از شبکه تلفن همراه استفاده می‌کند. مطمئن شوید تلفن و Chromebook به یک شبکه Wi-Fi متصل باشند و سپس دوباره امتحان کنید. <ph name="LEARN_MORE" /></translation>
@@ -1339,7 +1333,6 @@
 <translation id="7014684956566476813">متصل به دستگاهی با نام <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">ساعت <ph name="COME_BACK_TIME" /> دوباره برگردید.</translation>
 <translation id="70168403932084660">میزکار ۶</translation>
-<translation id="7025325401470358758">چارچوب بعدی</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> را به تلفنتان متصل کنید</translation>
 <translation id="7026338066939101231">کاهش</translation>
 <translation id="7029814467594812963">خروج از جلسه</translation>
@@ -1368,7 +1361,6 @@
 <translation id="7126996685418858413">هفته گذشته باز شده است</translation>
 <translation id="7130207228079676353">به احتمال خیلی زیاد</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
-<translation id="7138316363520807689">ذخیره کردن برگه کنونی به‌عنوان نشانک</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1393,7 +1385,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7313193732017069507">گسترده کردن دوربین</translation>
-<translation id="731589979057211264">«گروه قفسه‌ها» روشن است.</translation>
 <translation id="7340731148882810149">منوی کلیک‌های خودکار</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
@@ -1462,7 +1453,6 @@
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7609951632080598826">نمای «تقویم» ،<ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">دوربین دوباره متصل شد.</translation>
-<translation id="7611271430932669992">انتقال تمرکز به پنجره‌های بازشو و کادرهای گفتگو</translation>
 <translation id="761736749114493194">روشن/خاموش کردن قاب‌بندی دوربین. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجه فارنهایت</translation>
 <translation id="7634648064048557203">دوربین به گوشه پایین سمت راست چسبید</translation>
@@ -1626,7 +1616,6 @@
 <translation id="8345019317483336363">پنجره <ph name="WINDOW_TITLE" /> انتخاب شد</translation>
 <translation id="8349964124165471584">باز کردن پیوند در پنجره جدید</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
-<translation id="8364673525741149932">روشن/ خاموش کردن «گروه قفسه‌ها». <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> درحال استفاده است.</translation>
 <translation id="8369166482916924789">میزکار ذخیره‌شده، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">جلو رفتن حرف‌به‌حرف</translation>

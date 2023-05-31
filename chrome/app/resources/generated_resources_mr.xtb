@@ -1452,6 +1452,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;एक ओळ दाखवलेली नाही&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ओळी दाखवलेल्या नाहीत&gt;}}</translation>
 <translation id="2218019600945559112">माउस आणि टचपॅड</translation>
 <translation id="2218515861914035131">साधा मजकूर म्हणून पेस्ट करा</translation>
+<translation id="221872881068107022">स्क्रोलिंग उलट करा</translation>
 <translation id="2219007152108311874">भेट देताना प्रत्येक वेळी विचारा</translation>
 <translation id="2220409419896228519">तुमच्या आवडत्या Google Apps वर बुकमार्क जोडा</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
@@ -4395,6 +4396,7 @@
 <translation id="4777458362738635055">या डिव्हाइसचे इतर वापरकर्ते हे नेटवर्क वापरू शकतात</translation>
 <translation id="4777825441726637019">Play स्टोअर</translation>
 <translation id="4777943778632837590">नेटवर्क नाव सर्व्हर कॉंफिगर करा</translation>
+<translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
 <translation id="4779083564647765204">झूम</translation>
 <translation id="4779136857077979611">ओनिगिरी</translation>
 <translation id="4779766576531456629">eSIM मोबाइल नेटवर्कचे नाव बदला</translation>
@@ -4819,7 +4821,6 @@
 <translation id="5155327081870541046">तुम्हाला शोधायच्या असलेल्या साइटचा शॉर्टकट अ‍ॅड्रेस बारमध्ये एंटर करा जसे की, "@bookmarks". त्यानंतर, तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट प्रेस करा आणि तुमची शोध संज्ञा एंटर करा.</translation>
 <translation id="5156638757840305347">तो दिसतो किंवा हलतो तेव्हा कर्सर हायलाइट केला जातो</translation>
 <translation id="5157250307065481244">साइटचे तपशील पहा</translation>
-<translation id="5157635116769074044">स्टार्ट स्क्रीनवर हे पेज पिन करा...</translation>
 <translation id="5157701529792771331">कॅप्शन आपोआप भाषांतरित करते</translation>
 <translation id="5158206172605340248">अ‍ॅक्सेंटच्या खुणांचा मेनू डिसमिस केला आहे.</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
@@ -5911,7 +5912,6 @@
 <translation id="6113942107547980621">स्मार्ट लॉक वापरण्यासाठी, तुमच्या फोनवर प्राथमिक वापरकर्ता प्रोफाइलवर स्विच करा</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
 <translation id="6119927814891883061">डिव्हाइसला नाव <ph name="DEVICE_NAME" /> द्या</translation>
-<translation id="6120205520491252677">या पृष्‍ठास सुरू स्‍क्रीनवर पिन करा...</translation>
 <translation id="6120707837086723438">तुम्हाला तुमच्या अलीकडील पाककृतींच्या शोध अ‍ॅक्टिव्हिटीच्या आधारावर सुचवलेल्या पाककृती दिसत आहेत.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8397,7 +8397,6 @@
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग्ज &gt; प्रगत &gt; Google ला आपोआप निदान आणि वापरलेला डेटा पाठवा वरून मालक हे वैशिष्ट्य नियंत्रित करू शकतो.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />तुमची अतिरिक्त वेब आणि ॲप ॲक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, ही माहिती त्यांच्या Google खात्यावर सेव्ह केली जाऊ शकते. तुम्ही families.google.com वर या सेटिंग्ज कशा ॲडजस्ट करायच्या आणि त्याबद्दल अधिक जाणून घ्या.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">चुकीचे क्लायंट सर्टिफिकेट</translation>
-<translation id="8270162672241199380">Steam इंस्टॉलर</translation>
 <translation id="827097179112817503">होम बटण दर्शवा</translation>
 <translation id="8271268254812352141">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा, व्याख्या, भाषांतरे अथवा युनिट रूपांतरे मिळवा. <ph name="LINK_BEGIN" />वेबसाइटच्या भाषा<ph name="LINK_END" /> मध्ये भाषांतराच्या भाषा कस्टमाइझ करा.</translation>
 <translation id="8271379370373330993">पालकांनो, पुढील काही पायऱ्या तुमच्यासाठी आहेत. खाते सेट करून झाल्यानंतर तुम्ही लहान मुलाकडे <ph name="DEVICE_TYPE" /> परत सोपवू शकता.</translation>

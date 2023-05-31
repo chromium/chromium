@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">마이크 허용됨</translation>
 <translation id="4040350669425716613">대학(단과/종합)</translation>
 <translation id="4047351652147966654">18x24인치</translation>
+<translation id="404831776305217138">ID가 "<ph name="EXTENSION_ID" />"인 확장 프로그램의 업데이트 URL이 잘못되었거나 지원되지 않는 스키마를 사용합니다. 지원되는 스키마는 <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" />, <ph name="FILE_SCHEME" />입니다.</translation>
 <translation id="4050392779074832022">Google 제품에서 사용할 수 있습니다.</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">드라마 영화</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
 <translation id="6576181918031900030">전송 시작</translation>
+<translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="657902945730878902">그리기 및 색칠하기</translation>
 <translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
@@ -3031,7 +3033,6 @@
 <translation id="8298115750975731693">사용 중인 Wi-Fi(<ph name="WIFI_NAME" />)에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
 <translation id="8303854710873047864">‘<ph name="SECTION" />’ 섹션 표시됨</translation>
 <translation id="830498451218851433">폴드 하프</translation>
-<translation id="8307888238279532626">설치된 앱 및 앱의 사용 빈도</translation>
 <translation id="831997045666694187">저녁</translation>
 <translation id="8321476692217554900">알림</translation>
 <translation id="8329068931308448247">봉투 #14</translation>

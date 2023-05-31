@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">השהיית המדיה</translation>
 <translation id="1610778689852195798">‏"Undo" (ביטול הפעולה)</translation>
 <translation id="1611993646327628135">פועל</translation>
-<translation id="1618835956950524778">הדגשת הלחצן של מרכז האפליקציות במדף</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="163517899691012366">ההתראות מושתקות כשהמצב 'נא לא להפריע' מופעל</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">מכשיר אחד מחובר</translation>
 <translation id="2791421900609674576">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ארוכה.</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
-<translation id="2797741504905337289">קבוצת מדפים</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, נבחר</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2814448776515246190">צילום חלקי</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">התקנת אפליקציות, תוספים ועיצובים</translation>
 <translation id="2977598380246111477">המספר הבא</translation>
 <translation id="2985148236010982088">הצגת כל האפליקציות</translation>
-<translation id="29859347674873492">‏פתיחת העזרה באפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="2992327365391326550">לחצן המיקרופן של המכשיר כבוי.</translation>
 <translation id="2996462380875591307">‏הזכוכית המגדלת במצב עגינה הופעלה. כדי לכבות אותה, יש להקיש שוב על Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">אודיו במונו</translation>
@@ -529,7 +526,6 @@
 <translation id="3410336247007142655">הגדרות של הצגת עיצוב כהה</translation>
 <translation id="3413817803639110246">עדיין אין מה לראות</translation>
 <translation id="3417835166382867856">חיפוש כרטיסיות</translation>
-<translation id="3423744722495840645">פתיחה/סגירה של מרכז האפליקציות</translation>
 <translation id="3428447136709161042">התנתקות מ-<ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">יש להחליק מצד ימין כדי לחזור אחורה</translation>
 <translation id="3431517721463707585">שולחן עבודה וירטואלי מספר 14</translation>
@@ -558,7 +554,6 @@
 <translation id="3533126039236445965">אפליקציות במדף</translation>
 <translation id="3539957339480430241">הנקודה לשיתוף אינטרנט של <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
-<translation id="3546121235777416274">התמקדות בחלון תמונה בתוך תמונה</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
 <translation id="3554215588514239132">הצגה או הסתרה של חלונית הכלים למפתחים</translation>
 <translation id="3554637740840164787">הפריט <ph name="ITEM_TITLE" /> הוצמד</translation>
@@ -1064,7 +1059,6 @@
 <translation id="5760866832697883462">חיבור של <ph name="NAME" /></translation>
 <translation id="5762420912707163638">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /> אפשר להשתמש במשטח המגע, במסך המגע או בסטיילוס כדי לשרטט במסך.</translation>
 <translation id="576341972084747908">הורדת קובץ (<ph name="FILENAME" />) מסוכן</translation>
-<translation id="5763928712329149804">מצב קבוצת המדפים כבוי.</translation>
 <translation id="576453121877257266">תאורת הלילה פועלת.</translation>
 <translation id="5764569119212455782">מעבר לשפה האחרונה שנבחרה</translation>
 <translation id="5769373120130404283">מסך פרטיות</translation>
@@ -1273,7 +1267,6 @@
 <translation id="6707693040195709527">מועד שינוי המכשיר לגרסה קודמת כבר חלף</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6723839937902243910">חשמל</translation>
-<translation id="6727005317916125192">החלונית הקודמת</translation>
 <translation id="6727969043791803658">‏מחובר, ‎<ph name="BATTERY_PERCENTAGE" />%‎ סוללה</translation>
 <translation id="6732087373923685049">מצלמה</translation>
 <translation id="6732800389263199929">‎+<ph name="COUNT" /></translation>
@@ -1320,7 +1313,6 @@
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="6920245099716267363">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
-<translation id="6941333068993625698">שליחת משוב</translation>
 <translation id="6942518653766415536">התפריט של פורמט הצילום</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6945922087561257829">‏הטלפון מחובר לרשת הסלולרית. צריך לוודא שהטלפון ו-Chromebook מחוברים לאותה רשת Wi-Fi ולנסות שוב. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1332,6 @@
 <translation id="7014684956566476813">המכשיר <ph name="DEVICE_NAME" /> מחובר</translation>
 <translation id="7015766095477679451">אפשר לחזור בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">שולחן עבודה וירטואלי 6</translation>
-<translation id="7025325401470358758">החלונית הבאה</translation>
 <translation id="7025533177575372252">חיבור <ph name="DEVICE_NAME" /> לטלפון</translation>
 <translation id="7026338066939101231">הפחתה</translation>
 <translation id="7029814467594812963">יציאה מההפעלה</translation>
@@ -1369,7 +1360,6 @@
 <translation id="7126996685418858413">נפתח בשבוע האחרון</translation>
 <translation id="7130207228079676353">סבירות גבוהה</translation>
 <translation id="7131634465328662194">המערכת תוציא אותך מהחשבון באופן אוטומטי.</translation>
-<translation id="7138316363520807689">שמירת הכרטיסייה הנוכחית כסימנייה</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144942256906679589">מצב הסוללה</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1384,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="7313193732017069507">הרחבת המצלמה</translation>
-<translation id="731589979057211264">מצב קבוצת המדפים פועל.</translation>
 <translation id="7340731148882810149">תפריט קליקים אוטומטיים</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
@@ -1465,7 +1454,6 @@
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7609951632080598826">תצוגת היומן, <ph name="DATE" />,‏ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">המצלמה מחוברת שוב.</translation>
-<translation id="7611271430932669992">העברת ההדגשה אל חלונות קופצים ותיבות דו-שיח</translation>
 <translation id="761736749114493194">החלפת מצב של הפריים האוטומטי במצלמה. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">‎<ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">המצלמה מוצמדת לפינה השמאלית התחתונה</translation>
@@ -1629,7 +1617,6 @@
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">פתיחת הקישור בחלון חדש</translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
-<translation id="8364673525741149932">החלפת המצב של קבוצת המדפים. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> בשימוש.</translation>
 <translation id="8369166482916924789">שולחן העבודה הווירטואלי נשמר, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">אות אחת קדימה</translation>

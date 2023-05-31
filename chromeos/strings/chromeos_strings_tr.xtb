@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS çözümlenemiyor</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> cihazlara özel öğeler artık kullanılabilir</translation>
-<translation id="1022433422498218992">Genel Kontroller</translation>
 <translation id="1022628058306505708">Toprak Kayması</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Kimlik doğrulama türü</translation>
 <translation id="1776228893584526149">Duvar kağıdı tonu</translation>
 <translation id="1782199038061388045">çeviri</translation>
-<translation id="1790209694022261219">Pencereler ve Masalar</translation>
 <translation id="1792647875738159689">Tarama iptal ediliyor</translation>
 <translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1807246157184219062">Açık</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3017079585324758401">Arka plan</translation>
-<translation id="3020183492814296499">Kısayollar</translation>
 <translation id="3027578600144895987">Kamerayı kapat</translation>
 <translation id="3031560714565892478">Cihazın türü video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>

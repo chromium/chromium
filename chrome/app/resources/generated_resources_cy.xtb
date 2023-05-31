@@ -4390,6 +4390,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4777458362738635055">Gall defnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Ffurfweddu gweinyddwyr enw rhwydwaith</translation>
+<translation id="4778653490315793244">Nid oes unrhyw beth i'w ddangos eto</translation>
 <translation id="4779083564647765204">Chwyddo</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Ail-enwi rhwydwaith symudol eSIM</translation>
@@ -4811,7 +4812,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5155327081870541046">Yn y bar cyfeiriad, defnyddiwch y llwybr byr ar gyfer y wefan rydych am ei chwilio, megis "@bookmarks". Yna, pwyswch eich llwybr byr bysellffwrdd a ffefrir, a rhowch eich term chwilio.</translation>
 <translation id="5156638757840305347">Amlygir cyrchwr pan fydd yn ymddangos neu'n symud</translation>
 <translation id="5157250307065481244">Gweld manylion y wefan</translation>
-<translation id="5157635116769074044">Pinio'r Dudalen Hon i'r Sgrîn Dechrau…</translation>
 <translation id="5158206172605340248">Gwrthodwyd y ddewislen nodau acen.</translation>
 <translation id="5159094275429367735">Gosod Crostini</translation>
 <translation id="5159419673777902220">Mae eich rhiant wedi analluogi caniatadau estyniad</translation>
@@ -5897,7 +5897,6 @@ Gallwch ei hanfon at Google i wirio a yw'n anniogel. Mae sganiau fel arfer yn cy
 <translation id="6113942107547980621">Er mwyn defnyddio Smart Lock, newidiwch i broffil y prif ddefnyddiwr ar eich ffôn</translation>
 <translation id="6116921718742659598">Newid gosodiadau iaith a mewnbynnu</translation>
 <translation id="6119927814891883061">Enwi'r ddyfais i <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Pinio'r dudalen hon i'r sgrîn Dechrau...</translation>
 <translation id="6120707837086723438">Rydych yn gweld ryseitiau a awgrymir yn seiliedig ar eich Gweithgarwch chwilio diweddar ar gyfer ryseitiau.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8387,7 +8386,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
     <ph name="BEGIN_PARAGRAPH3" />Gall y perchennog reoli'r nodwedd hon o Gosodiadau &gt; Uwch &gt; Anfon data diagnostig a defnydd at Google yn awtomatig.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Os yw'r gosodiad Gweithgarwch ar y We ac Apiau ychwanegol wedi'i droi ymlaen ar gyfer eich plentyn, gellir cadw'r data hyn i'w gyfrif Google. Dysgu rhagor am y gosodiadau hyn a sut i'w haddasu yn family.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Tystysgrif cleient annilys</translation>
-<translation id="8270162672241199380">Gosodwr Steam</translation>
 <translation id="827097179112817503">Dangos y botwm hafan</translation>
 <translation id="8271268254812352141">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun. Personoleiddio ieithoedd cyfieithu yn <ph name="LINK_BEGIN" />Ieithoedd Gwefannau<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Rhieni, mae'r camau nesaf ar eich cyfer chi. Gallwch roi'r ddyfais <ph name="DEVICE_TYPE" /> yn ôl i'r plentyn ar ôl gosod y cyfrif.</translation>

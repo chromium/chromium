@@ -1448,6 +1448,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ред не е показан&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> реда не са показани&gt;}}</translation>
 <translation id="2218019600945559112">Мишка и сензорен панел</translation>
 <translation id="2218515861914035131">Поставяне като неформатиран текст</translation>
+<translation id="221872881068107022">Обръщане на посоката на превъртане</translation>
 <translation id="2220409419896228519">Добавяйте отметки към любимите си приложения в Google</translation>
 <translation id="2220529011494928058">Подаване на сигнал за проблем</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
@@ -4384,6 +4385,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4777458362738635055">Другите потребители на устройството могат да използват тази мрежа</translation>
 <translation id="4777825441726637019">Google Play Магазин</translation>
 <translation id="4777943778632837590">Конфигуриране на сървърите за имена в мрежата</translation>
+<translation id="4778653490315793244">Още няма нищо за показване</translation>
 <translation id="4779083564647765204">Промяна на мащаба</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4779766576531456629">Преименуване на мобилната мрежа за електронната SIM карта</translation>
@@ -4805,7 +4807,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5155327081870541046">В адресната лента въведете прекия път за сайта или частта от Chrome, в които искате да търсите, като например @bookmarks. След това натиснете предпочитаната от вас клавишна комбинация и въведете дума за търсене.</translation>
 <translation id="5156638757840305347">Курсорът е откроен, когато се показва или се движи</translation>
 <translation id="5157250307065481244">Преглед на подробностите за сайта</translation>
-<translation id="5157635116769074044">Фиксиране на тази страница в стартовия екран...</translation>
 <translation id="5158206172605340248">Менюто за диакритични знаци е отхвърлено.</translation>
 <translation id="5159094275429367735">Настройване на Crostini</translation>
 <translation id="5159419673777902220">Родителят ви е деактивирал разрешенията за разширенията</translation>
@@ -5892,7 +5893,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6113942107547980621">За да използвате Smart Lock, превключете към основния потребителски профил на телефона си</translation>
 <translation id="6116921718742659598">Промяна на настройките за език и въвеждане</translation>
 <translation id="6119927814891883061">Задаване на <ph name="DEVICE_NAME" /> като име на устройството</translation>
-<translation id="6120205520491252677">Фиксиране на тази страница в стартовия екран...</translation>
 <translation id="6120707837086723438">Показват се рецепти въз основа на скорошната ви активност при търсене на такива.
         <ph name="BREAK" />
 <ph name="BREAK" />
@@ -8375,7 +8375,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BEGIN_PARAGRAPH3" />Собственикът може да контролира тази функция от „Настройки“ &gt; „Разширени“ &gt; „Автоматично изпращане до Google на данни за диагностиката и употребата“.<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />Ако сте включили Допълнителна активност в мрежата и приложенията за детето си, тези данни може да се запазват в профила му в Google. Научете повече за съответните настройки и как да ги коригирате на адрес families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Невалиден клиентски сертификат</translation>
-<translation id="8270162672241199380">Инсталационна програма за Steam</translation>
 <translation id="827097179112817503">Показване на бутона за начална страница</translation>
 <translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>

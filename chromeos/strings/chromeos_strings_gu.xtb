@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="1018656279737460067">રદ કરેલા</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ અસેટ હવે ઉપલબ્ધ છે</translation>
-<translation id="1022433422498218992">સામાન્ય નિયંત્રણો</translation>
 <translation id="1022628058306505708">અર્થ ફ્લો</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">નવી સુવિધા ઉપલબ્ધ છે, વધુ જાણવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">પ્રમાણીકરણનો પ્રકાર</translation>
 <translation id="1776228893584526149">વૉલપેપર ટોન</translation>
 <translation id="1782199038061388045">અનુવાદ</translation>
-<translation id="1790209694022261219">વિન્ડો અને ડેસ્ક</translation>
 <translation id="1792647875738159689">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ</translation>
 <translation id="1801418420130173017">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
-<translation id="3020183492814296499">શૉર્ટકટ</translation>
 <translation id="3027578600144895987">કૅમેરા બંધ કરો</translation>
 <translation id="3031560714565892478">ડિવાઇસ એક વીડિયો કૅમેરા છે.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">એન્જિન અપડેટ કરો</translation>
 <translation id="5984145644188835034">ડિફૉલ્ટ વૉલપેપર</translation>
 <translation id="6017514345406065928">લીલો</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ઑટોમૅટિક રીતે માસિક રીસેટ ચાલુ કરો</translation>
 <translation id="6037291330010597344">સ્કૅનરનું દસ્તાવેજ ફીડર ખાલી છે. દસ્તાવેજો ઉમેરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>

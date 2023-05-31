@@ -3724,16 +3724,6 @@ Cette fonctionnalité a été supprimée dans M112.</translation>
 <translation id="441686537793821907">Bloquer l'installation d'extensions externes</translation>
 <translation id="4423597592074154136">Spécifier manuellement les paramètres de proxy</translation>
 <translation id="4424004842303301809">Désactiver la création de rapports sur les événements de prévention des fuites de données</translation>
-<translation id="4426288704078471820">Le <ph name="WEBVIEW_TAG_NAME" /> des applications Chrome autorise un comportement qui est en cours de suppression dans <ph name="PRODUCT_NAME" />.
-
-Le comportement précédent affichait une page interstitielle si un <ph name="WEBVIEW_TAG_NAME" /> accédait à une page dont le certificat SSL n'était pas valide. Cet interstitiel donne à l'utilisateur l'option de poursuivre de manière non sécurisée. Le nouveau comportement affiche une page d'erreur sans cette option.
-
-Le comportement précédent permet également à l'événement <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) d'associer la nouvelle fenêtre à un élément <ph name="WEBVIEW_TAG_NAME" /> dans une fenêtre d'appli distincte du <ph name="WEBVIEW_TAG_NAME" /> d'origine. Avec le nouveau comportement, cette association est toujours autorisée, mais la référence de fenêtre renvoyée par l'appel à <ph name="WINDOW_OPEN_NAME" /> dans le <ph name="WEBVIEW_TAG_NAME" /> d'origine n'est pas valide.
-
-Si cette règle est activée, le comportement précédent est utilisé.
-Si elle est désactivée ou qu'elle n'est pas configurée, le changement de comportement prend effet au fur et à mesure de son déploiement lors du processus de lancement de <ph name="PRODUCT_NAME" />.
-
-Cette règle constitue une solution temporaire au cas où des entreprises rencontreraient des problèmes dus à ces modifications. Cette règle sera supprimée dans la version 117.</translation>
 <translation id="4426601693403743089">Désactiver la version dogfood de l'enregistreur d'écran pour les utilisateurs de Family Link</translation>
 <translation id="4427173305799125784">La visionneuse de PDF ne peut pas annoter les PDF</translation>
 <translation id="4432762137771104529">Autoriser la création de rapports détaillés dans le cadre de la navigation sécurisée</translation>

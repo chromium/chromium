@@ -144,7 +144,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1604857178818051494">Jeda media</translation>
 <translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
-<translation id="1618835956950524778">Tandai tombol peluncur di rak</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="163517899691012366">Notifikasi dibisukan saat Jangan ganggu aktif</translation>
@@ -395,7 +394,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2785499565474703580">1 perangkat terhubung</translation>
 <translation id="2791421900609674576">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat menyentuh lama untuk menghapus rekomendasi.</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, dipilih</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
 <translation id="2814448776515246190">Tangkapan layar sebagian</translation>
@@ -433,7 +431,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
 <translation id="2985148236010982088">Lihat semua aplikasi</translation>
-<translation id="29859347674873492">Buka Bantuan di aplikasi Jelajahi</translation>
 <translation id="2992327365391326550">Tombol mikrofon perangkat dinonaktifkan.</translation>
 <translation id="2996462380875591307">Kaca Pembesar Tersemat diaktifkan. Tekan Ctrl+Search+D lagi untuk menonaktifkannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -447,6 +444,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3036649622769666520">Buka File</translation>
 <translation id="3038571455154067151">Untuk login, masukkan kode akses orang tua Family Link</translation>
 <translation id="3039939407102840004">Baterai stilus <ph name="PERCENTAGE" /> persen.</translation>
+<translation id="304097922505898963">Buka aplikasi Pintasan Keyboard</translation>
 <translation id="3045488863354895414">Selamat siang,</translation>
 <translation id="3047761520276763270">Coba ucapkan:</translation>
 <translation id="3055162170959710888">Anda menggunakan perangkat ini selama <ph name="USED_TIME" /> hari ini</translation>
@@ -529,7 +527,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3410336247007142655">Tampilkan setelan tema gelap</translation>
 <translation id="3413817803639110246">Belum ada notifikasi</translation>
 <translation id="3417835166382867856">Telusuri tab</translation>
-<translation id="3423744722495840645">Buka/tutup peluncur</translation>
 <translation id="3428447136709161042">Putuskan sambungan dari <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Geser dari kanan untuk kembali</translation>
 <translation id="3431517721463707585">Desktop 14</translation>
@@ -558,7 +555,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3533126039236445965">Aplikasi di rak</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat mengklik kanan untuk menghapus rekomendasi.</translation>
-<translation id="3546121235777416274">Fokus pada jendela Picture-in-Picture</translation>
 <translation id="3552189655002856821">Wi-Fi dinonaktifkan</translation>
 <translation id="3554215588514239132">Tampilkan atau sembunyikan panel Developer Tools</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> telah dipasangi pin</translation>
@@ -1064,7 +1060,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5760866832697883462">Hubungkan <ph name="NAME" /> Anda</translation>
 <translation id="5762420912707163638">Aktifkan/nonaktifkan penanda. <ph name="STATE_TEXT" /> Gunakan trackpad, layar sentuh, atau stilus untuk menggambar pada layar.</translation>
 <translation id="576341972084747908">Download <ph name="FILENAME" /> berbahaya</translation>
-<translation id="5763928712329149804">Shelf Party nonaktif.</translation>
 <translation id="576453121877257266">Mode Cahaya Malam aktif.</translation>
 <translation id="5764569119212455782">Beralih ke bahasa terakhir yang dipilih</translation>
 <translation id="5769373120130404283">Layar privasi</translation>
@@ -1119,6 +1114,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6012623610530968780">Halaman <ph name="SELECTED_PAGE" /> dari <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Tandai item berikutnya di rak</translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
+<translation id="6019566113895157499">Pintasan Keyboard</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
 <translation id="6022924867608035986">Hapus teks dari kotak penelusuran</translation>
 <translation id="602472752137106327">Menampilkan jendela dari semua desktop, tombol pilihan dipilih</translation>
@@ -1273,7 +1269,6 @@ Baru diinstal</translation>
 <translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Daya</translation>
-<translation id="6727005317916125192">Panel sebelumnya</translation>
 <translation id="6727969043791803658">Terhubung, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@ Baru diinstal</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
 <translation id="6920245099716267363">Aktifkan/nonaktifkan Hotspot. Hotspot aktif, 1 perangkat terhubung.</translation>
 <translation id="6931576957638141829">Simpan ke</translation>
-<translation id="6941333068993625698">Mengirim masukan</translation>
 <translation id="6942518653766415536">Menu format rekaman</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6945922087561257829">Ponsel Anda menggunakan jaringan seluler. Pastikan ponsel dan Chromebook berada di jaringan Wi-Fi yang sama, lalu coba lagi. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@ Baru diinstal</translation>
 <translation id="7014684956566476813">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Coba lagi pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desktop 6</translation>
-<translation id="7025325401470358758">Panel berikutnya</translation>
 <translation id="7025533177575372252">Hubungkan <ph name="DEVICE_NAME" /> dengan ponsel Anda</translation>
 <translation id="7026338066939101231">Pengurangan</translation>
 <translation id="7029814467594812963">Hentikan sesi</translation>
@@ -1369,7 +1362,6 @@ Baru diinstal</translation>
 <translation id="7126996685418858413">Dibuka dalam seminggu terakhir</translation>
 <translation id="7130207228079676353">MUNGKIN DICARI</translation>
 <translation id="7131634465328662194">Anda akan logout otomatis.</translation>
-<translation id="7138316363520807689">Simpan tab saat ini sebagai bookmark</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144942256906679589">Status baterai</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1386,6 @@ Baru diinstal</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7313193732017069507">Luaskan kamera</translation>
-<translation id="731589979057211264">Shelf Party aktif.</translation>
 <translation id="7340731148882810149">Menu klik otomatis</translation>
 <translation id="7346909386216857016">Oke, mengerti</translation>
 <translation id="7348093485538360975">Keyboard di layar</translation>
@@ -1463,7 +1454,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7607002721634913082">Dijeda</translation>
 <translation id="7609951632080598826">Tampilan kalender, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera dihubungkan kembali.</translation>
-<translation id="7611271430932669992">Pindahkan fokus ke pop-up dan dialog</translation>
 <translation id="761736749114493194">Aktifkan/nonaktifkan framing kamera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Kamera dipaskan ke pojok kanan bawah</translation>
@@ -1627,7 +1617,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8345019317483336363">Jendela <ph name="WINDOW_TITLE" /> dipilih</translation>
 <translation id="8349964124165471584">Buka link di jendela baru</translation>
 <translation id="8351131234907093545">Buat catatan</translation>
-<translation id="8364673525741149932">Aktifkan/Nonaktifkan Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> digunakan.</translation>
 <translation id="8369166482916924789">Desktop tersimpan, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Maju per huruf</translation>

@@ -1439,6 +1439,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 wiersz jest niewidoczny&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> wiersze są niewidoczne&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> wierszy jest niewidocznych&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> wiersza jest niewidoczne&gt;}}</translation>
 <translation id="2218019600945559112">Myszka i touchpad</translation>
 <translation id="2218515861914035131">Wklej jako zwykły tekst</translation>
+<translation id="221872881068107022">Odwrotne przewijanie</translation>
 <translation id="2219007152108311874">Pytaj przy każdej wizycie</translation>
 <translation id="2220409419896228519">Dodaj zakładki do swoich ulubionych aplikacji Google</translation>
 <translation id="2220529011494928058">Zgłoś problem</translation>
@@ -4369,6 +4370,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4777458362738635055">Inni użytkownicy tego urządzenia mogą używać tej sieci</translation>
 <translation id="4777825441726637019">Sklep Play</translation>
 <translation id="4777943778632837590">Skonfiguruj serwery nazw sieci</translation>
+<translation id="4778653490315793244">Nie ma nic do wyświetlenia</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Zmień nazwę sieci komórkowej eSIM</translation>
@@ -4793,7 +4795,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5155327081870541046">Na pasku adresu wpisz skrót obszaru, w którym chcesz coś wyszukać, na przykład „@bookmarks”. Następnie naciśnij preferowany skrót klawiszowy i wpisz wyszukiwane słowa.</translation>
 <translation id="5156638757840305347">Gdy kursor się pojawia się lub porusza, jest podświetlany</translation>
 <translation id="5157250307065481244">Wyświetl szczegóły witryny</translation>
-<translation id="5157635116769074044">Przypnij tę stronę do ekranu startowego...</translation>
 <translation id="5157701529792771331">Automatyczne tłumaczenie napisów</translation>
 <translation id="5158206172605340248">Menu znaków akcentu zostało zamknięte.</translation>
 <translation id="5159094275429367735">Skonfiguruj Crostini</translation>
@@ -5883,7 +5884,6 @@ Możesz go wysłać do Google, aby sprawdzić, czy jest bezpieczny. Skanowanie z
 <translation id="6113942107547980621">Aby używać Smart Lock, przełącz telefon na profil głównego użytkownika</translation>
 <translation id="6116921718742659598">Zmień język i ustawienia wprowadzania</translation>
 <translation id="6119927814891883061">Nazwij urządzenie dla: <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Przypnij tę stronę do ekranu startowego...</translation>
 <translation id="6120707837086723438">Widzisz przepisy sugerowane na podstawie Twojej ostatniej aktywności związanej z ich wyszukiwaniem.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8372,7 +8372,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
     <ph name="BEGIN_PARAGRAPH3" />Właściciel może włączyć lub wyłączyć tę funkcję, wybierając Ustawienia &gt; Zaawansowane &gt; Automatycznie wysyłaj do Google dane diagnostyczne i informacje o użytkowaniu.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jeśli dodatkowo Twoje dziecko ma włączoną Aktywność w internecie i aplikacjach, dane mogą być zapisywane na jego koncie Google. Więcej informacji o tych ustawieniach i ich zmienianiu znajdziesz na families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nieprawidłowy certyfikat klienta</translation>
-<translation id="8270162672241199380">Instalator Steam</translation>
 <translation id="827097179112817503">Pokaż przycisk strony głównej</translation>
 <translation id="8271268254812352141">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek. Dostosuj języki tłumaczenia w sekcji <ph name="LINK_BEGIN" />Języki wyświetlania stron internetowych<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Rodzice, kilka kolejnych kroków jest przeznaczonych dla Was. Po skonfigurowaniu konta <ph name="DEVICE_TYPE" /> może wrócić w ręce dziecka.</translation>

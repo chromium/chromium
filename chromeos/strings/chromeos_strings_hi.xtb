@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">डीएनएस की समस्या को ठीक नहीं किया जा सकता</translation>
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1020274983236703756">खास <ph name="PRODUCT_NAME" /> ऐसेट अब उपलब्ध हैं</translation>
-<translation id="1022433422498218992">सामान्य कंट्रोल</translation>
 <translation id="1022628058306505708">अर्थ फ़्लो</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
 <translation id="1047773237499189053">नई सुविधा उपलब्ध है, ज़्यादा जानने के लिए अप ऐरो बटन इस्तेमाल करें.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">पुष्टि करने का तरीका</translation>
 <translation id="1776228893584526149">वॉलपेपर का रंग</translation>
 <translation id="1782199038061388045">अनुवाद</translation>
-<translation id="1790209694022261219">विंडो और डेस्क</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
-<translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3027578600144895987">कैमरा बंद करें</translation>
 <translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>

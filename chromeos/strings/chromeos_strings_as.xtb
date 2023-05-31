@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS সমাধান কৰিব নোৱাৰি</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" />ৰ বিশেষ সম্পদসমূহ এতিয়া উপলব্ধ</translation>
-<translation id="1022433422498218992">সাধাৰণ নিয়ন্ত্ৰণ</translation>
 <translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ প্ৰকাৰ</translation>
 <translation id="1776228893584526149">ৱালপেপাৰ ৰং</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
-<translation id="1790209694022261219">ৱিণ্ড’ আৰু ডেস্ক</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1801418420130173017">গাঢ় ৰঙৰ থীম অক্ষম কৰক</translation>
 <translation id="1807246157184219062">পাতল</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
-<translation id="3020183492814296499">শ্বৰ্টকাট</translation>
 <translation id="3027578600144895987">কেমেৰাটো বন্ধ কৰক</translation>
 <translation id="3031560714565892478">ডিভাইচটো এটা ভিডিঅ’ কেমেৰা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />এমএ</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">স্বয়ংক্ৰিয়ভাৱে মাহিলী ৰিছেট হোৱাৰ সুবিধাটো সক্ষম কৰক</translation>
 <translation id="6037291330010597344">স্কেনাৰৰ নথিৰ ফীডাৰটো খালী আছে। নথি যোগ দি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>

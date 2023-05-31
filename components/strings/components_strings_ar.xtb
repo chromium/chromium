@@ -1245,6 +1245,7 @@
 <translation id="4031179711345676612">تم السماح باستخدام الميكروفون</translation>
 <translation id="4040350669425716613">كليات وجامعات</translation>
 <translation id="4047351652147966654">18 × 24 بوصة</translation>
+<translation id="404831776305217138">‏عنوان URL الخاص بتحديث الإضافة التي تتضمّن رقم التعريف <ph name="EXTENSION_ID" /> إما أنّه عنوان غير صالح أو يستخدم مخططًا غير متوافق. المخطَّطات المتوافقة هي: <ph name="HTTP_SCHEME" /> و<ph name="HTTPS_SCHEME" /> و<ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏سيكون بإمكانك استخدامه في جميع منتجات Google.</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
@@ -2297,6 +2298,7 @@
 <translation id="6569366777234823130">أفلام درامية</translation>
 <translation id="6573200754375280815">عمل ثقبَين يمينًا</translation>
 <translation id="6576181918031900030">بدء البثّ</translation>
+<translation id="6578434528542148658">رقم تعريف الإضافة غير صالح.</translation>
 <translation id="657902945730878902">رسم وتلوين</translation>
 <translation id="6579630537141957243">‏هل تريد الاتصال بجهاز MIDI؟</translation>
 <translation id="6579990219486187401">وردي فاتح</translation>
@@ -3037,7 +3039,6 @@
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
-<translation id="8307888238279532626">التطبيقات المثبَّتة وعدد مرات استخدامها</translation>
 <translation id="831997045666694187">مساءً</translation>
 <translation id="8321476692217554900">الإشعارات</translation>
 <translation id="8329068931308448247">ظرف رقم 14</translation>

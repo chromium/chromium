@@ -144,7 +144,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1604857178818051494">Onderbreek media</translation>
 <translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
-<translation id="1618835956950524778">Merk lanseerderknoppie op rak</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="163517899691012366">Kennisgewings is gedemp wanneer Moenie Steur Nie aan is</translation>
@@ -395,7 +394,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2785499565474703580">1 toestel is gekoppel</translation>
 <translation id="2791421900609674576">Jy sal aanbevelings sien sodat jy kan aanhou waar jy opgehou het. Jy kan raak en hou om aanbevelings te verwyder.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Rakgroep</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, gekies</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2814448776515246190">Gedeeltelike opname</translation>
@@ -433,7 +431,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2970920913501714344">Installeer programme, uitbreidings en temas</translation>
 <translation id="2977598380246111477">Volgende syfer</translation>
 <translation id="2985148236010982088">Sien alle programme</translation>
-<translation id="29859347674873492">Maak Hulp in Verken-app oop</translation>
 <translation id="2992327365391326550">Toestel se mikrofoonknoppie is afgeskakel.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
@@ -530,7 +527,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3410336247007142655">Wys Donkertema-instellings</translation>
 <translation id="3413817803639110246">Nog niks om te sien nie</translation>
 <translation id="3417835166382867856">Soek oortjies</translation>
-<translation id="3423744722495840645">Maak lanseerder oop/toe</translation>
 <translation id="3428447136709161042">Ontkoppel vanaf <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Swiep van regs af om terug te gaan</translation>
 <translation id="3431517721463707585">Lessenaar 14</translation>
@@ -559,7 +555,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3533126039236445965">Apps op rak</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-warmkol</translation>
 <translation id="3542066395059568317">Jy sal aanbevelings sien sodat jy kan aangaan waar jy opgehou het. Jy kan regsklik om aanbevelings te verwyder.</translation>
-<translation id="3546121235777416274">Fokus op die prent-in-prent-venster</translation>
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
 <translation id="3554215588514239132">Wys of versteek ontwikkelaarnutsgoedpaneel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vasgespeld</translation>
@@ -1066,7 +1061,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5760866832697883462">Koppel jou <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Wissel merker. <ph name="STATE_TEXT" /> Gebruik die stuurpaneel, raakskerm of stilus om op die skerm te teken.</translation>
 <translation id="576341972084747908">Laai gevaarlike <ph name="FILENAME" /> af</translation>
-<translation id="5763928712329149804">Rakgroep is af.</translation>
 <translation id="576453121877257266">Aandbeligting is aan.</translation>
 <translation id="5764569119212455782">Skakel oor na die laaste taal wat gekies is</translation>
 <translation id="5769373120130404283">Privaatheidskerm</translation>
@@ -1276,7 +1270,6 @@ Nuwe installasie</translation>
 <translation id="6707693040195709527">Toestelverandering na vorige weergawe is laat</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
-<translation id="6727005317916125192">Vorige paneel</translation>
 <translation id="6727969043791803658">Gekoppel, <ph name="BATTERY_PERCENTAGE" />% batterykrag</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1323,7 +1316,6 @@ Nuwe installasie</translation>
 <translation id="6919251195245069855">Kon nie jou slimkaart herken nie. Probeer weer.</translation>
 <translation id="6920245099716267363">Wissel warmkol. Warmkol is aan; 1 toestel is gekoppel</translation>
 <translation id="6931576957638141829">Stoor in</translation>
-<translation id="6941333068993625698">Dien terugvoer in</translation>
 <translation id="6942518653766415536">Opnameformaatkieslys</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6945922087561257829">Jou foon gebruik ’n selnetwerk. Maak seker dat jou foon en Chromebook in dieselfde wi-fi-netwerk is, en probeer dan weer. <ph name="LEARN_MORE" /></translation>
@@ -1343,7 +1335,6 @@ Nuwe installasie</translation>
 <translation id="7014684956566476813">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Lessenaar 6</translation>
-<translation id="7025325401470358758">Volgende paneel</translation>
 <translation id="7025533177575372252">Koppel jou <ph name="DEVICE_NAME" /> aan jou foon</translation>
 <translation id="7026338066939101231">Verminder</translation>
 <translation id="7029814467594812963">Verlaat sessie</translation>
@@ -1372,7 +1363,6 @@ Nuwe installasie</translation>
 <translation id="7126996685418858413">In die afgelope week oopgemaak</translation>
 <translation id="7130207228079676353">MEES WAARSKYNLIK</translation>
 <translation id="7131634465328662194">Jy sal outomaties afgemeld word.</translation>
-<translation id="7138316363520807689">Stoor huidige oortjie as boekmerk</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144942256906679589">Batterystatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1397,7 +1387,6 @@ Nuwe installasie</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Jou administrateur stel tans jou e-SIM terug. Dit kan 'n paar minute neem.</translation>
 <translation id="7313193732017069507">Vou kamera uit</translation>
-<translation id="731589979057211264">Rakgroep is aan</translation>
 <translation id="7340731148882810149">Outomatiese Klikke-kieslys</translation>
 <translation id="7346909386216857016">OK, het dit</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
@@ -1466,7 +1455,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7609951632080598826">Kalenderaansig, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera is herkoppel.</translation>
-<translation id="7611271430932669992">Skuif fokus na opspringers en dialoë</translation>
 <translation id="761736749114493194">Kamera se raamfunksie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kamera is geglip na hoek onder regs</translation>
@@ -1630,7 +1618,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" />-venster gekies</translation>
 <translation id="8349964124165471584">Maak skakel in nuwe venster oop</translation>
 <translation id="8351131234907093545">Skep nota</translation>
-<translation id="8364673525741149932">Wissel rakgroep. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> word gebruik.</translation>
 <translation id="8369166482916924789">Gestoorde lessenaar, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Vorentoe per letter</translation>

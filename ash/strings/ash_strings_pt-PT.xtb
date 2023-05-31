@@ -144,7 +144,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1604857178818051494">Pausar o conteúdo multimédia</translation>
 <translation id="1610778689852195798">"Anular"</translation>
 <translation id="1611993646327628135">Ativado</translation>
-<translation id="1618835956950524778">Realçar o botão do Launcher na prateleira</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="163517899691012366">O som das notificações está desativado quando o modo Não incomodar está ativado</translation>
@@ -395,7 +394,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2785499565474703580">1 dispositivo ligado</translation>
 <translation id="2791421900609674576">Verá recomendações para poder continuar onde parou. Pode tocar sem soltar para remover recomendações.</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selecionado</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -433,7 +431,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2985148236010982088">Ver todas as apps</translation>
-<translation id="29859347674873492">Abrir a Ajuda na app Explore</translation>
 <translation id="2992327365391326550">O botão do microfone do dispositivo está desativado.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
@@ -529,7 +526,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3410336247007142655">Mostre as definições do tema escuro.</translation>
 <translation id="3413817803639110246">Ainda não existe nada para ver</translation>
 <translation id="3417835166382867856">Pesquisar separadores</translation>
-<translation id="3423744722495840645">Abrir/fechar o Launcher</translation>
 <translation id="3428447136709161042">Desligar da rede <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Deslize rapidamente a partir da direita para retroceder.</translation>
 <translation id="3431517721463707585">Espaço de trabalho 14</translation>
@@ -558,7 +554,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3533126039236445965">Apps na prateleira</translation>
 <translation id="3539957339480430241">Zona Wi-Fi do <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Verá recomendações para poder continuar onde parou. Pode clicar com o botão direito do rato para remover recomendações.</translation>
-<translation id="3546121235777416274">Focar a janela de ecrã no ecrã</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar o painel Ferramentas para programadores</translation>
 <translation id="3554637740840164787">O item <ph name="ITEM_TITLE" /> foi fixado.</translation>
@@ -1064,7 +1059,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5760866832697883462">Ligue o dispositivo <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Ative/desative o marcador. <ph name="STATE_TEXT" /> Use o trackpad, o ecrã tátil ou a caneta stylus para desenhar no ecrã.</translation>
 <translation id="576341972084747908">Transferir ficheiro <ph name="FILENAME" /> perigoso</translation>
-<translation id="5763928712329149804">O Shelf Party está desativado.</translation>
 <translation id="576453121877257266">A Luz noturna está ativada.</translation>
 <translation id="5764569119212455782">Mudar para o último idioma selecionado</translation>
 <translation id="5769373120130404283">Ecrã de privacidade</translation>
@@ -1273,7 +1267,6 @@ Nova instalação</translation>
 <translation id="6707693040195709527">Alteração do dispositivo para a versão anterior vencida</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentação</translation>
-<translation id="6727005317916125192">Painel anterior</translation>
 <translation id="6727969043791803658">Ligado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732087373923685049">câmara</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1313,6 @@ Nova instalação</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="6920245099716267363">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, 1 dispositivo ligado.</translation>
 <translation id="6931576957638141829">Guardar em</translation>
-<translation id="6941333068993625698">Enviar feedback</translation>
 <translation id="6942518653766415536">Menu de formato de gravação</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6945922087561257829">O telemóvel está a usar uma rede móvel. Certifique-se de que o telemóvel e o Chromebook estão ligados à mesma rede Wi-Fi e, de seguida, tente novamente. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1332,6 @@ Nova instalação</translation>
 <translation id="7014684956566476813">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Volte à(s) <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Espaço de trabalho 6</translation>
-<translation id="7025325401470358758">Painel seguinte</translation>
 <translation id="7025533177575372252">Ligue o dispositivo <ph name="DEVICE_NAME" /> ao telemóvel.</translation>
 <translation id="7026338066939101231">Diminuir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
@@ -1369,7 +1360,6 @@ Nova instalação</translation>
 <translation id="7126996685418858413">Aberto na semana passada</translation>
 <translation id="7130207228079676353">MUITO PROVAVELMENTE</translation>
 <translation id="7131634465328662194">A sessão será terminada automaticamente.</translation>
-<translation id="7138316363520807689">Guardar o separador atual como marcador</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144942256906679589">Estado da bateria</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1384,6 @@ Nova instalação</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
-<translation id="731589979057211264">O Shelf Party está ativado.</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
@@ -1463,7 +1452,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7607002721634913082">Em pausa</translation>
 <translation id="7609951632080598826">Vista de calendário, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">A câmara restabeleceu a ligação.</translation>
-<translation id="7611271430932669992">Mover o foco para pop-ups e caixas de diálogo</translation>
 <translation id="761736749114493194">Ative/desative o enquadramento da câmara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
@@ -1627,7 +1615,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8349964124165471584">Abrir o link numa nova janela</translation>
 <translation id="8351131234907093545">Criar nota</translation>
-<translation id="8364673525741149932">Ative/desative o Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em utilização.</translation>
 <translation id="8369166482916924789">Espaço de trabalho guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>

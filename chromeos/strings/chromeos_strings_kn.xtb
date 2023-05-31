@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1020274983236703756">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ <ph name="PRODUCT_NAME" /> ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
-<translation id="1022433422498218992">ಸಾಮಾನ್ಯ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
 <translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">ಪ್ರಮಾಣೀಕರಣದ ಪ್ರಕಾರ</translation>
 <translation id="1776228893584526149">ವಾಲ್‌ಪೇಪರ್ ಟೋನ್</translation>
 <translation id="1782199038061388045">ಅನುವಾದ</translation>
-<translation id="1790209694022261219">ವಿಂಡೋಗಳು ಮತ್ತು ಡೆಸ್ಕ್‌ಗಳು</translation>
 <translation id="1792647875738159689">ಸ್ಕ್ಯಾನಿಂಗ್ ಮಾಡುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1801418420130173017">ಡಾರ್ಕ್‌ ಥೀಮ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3017079585324758401">ಹಿನ್ನೆಲೆ</translation>
-<translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3027578600144895987">ಕ್ಯಾಮರಾವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3031560714565892478">ಸಾಧನವು ವೀಡಿಯೊ ಕ್ಯಾಮರಾ ಆಗಿದೆ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5984145644188835034">ಡೀಫಾಲ್ಟ್ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ಸ್ವಯಂಚಾಲಿತ ಮಾಸಿಕ ರೀಸೆಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6037291330010597344">ಸ್ಕ್ಯಾನರ್‌ನ ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ ಖಾಲಿಯಾಗಿದೆ. ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು ಸೇರಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>

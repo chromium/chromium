@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">No es pot resoldre el DNS</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1020274983236703756">Els recursos exclusius de <ph name="PRODUCT_NAME" /> ja estan disponibles</translation>
-<translation id="1022433422498218992">Controls generals</translation>
 <translation id="1022628058306505708">Moviment de la Terra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Tipus d'autenticació</translation>
 <translation id="1776228893584526149">To del fons de pantalla</translation>
 <translation id="1782199038061388045">traducció</translation>
-<translation id="1790209694022261219">Finestres i escriptoris</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
 <translation id="1801418420130173017">Desactiva el tema fosc</translation>
 <translation id="1807246157184219062">Clar</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
-<translation id="3020183492814296499">Dreceres</translation>
 <translation id="3027578600144895987">Tanca la càmera</translation>
 <translation id="3031560714565892478">El dispositiu és una càmera de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
 <translation id="6017514345406065928">Verd</translation>
+<translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
 <translation id="6037291330010597344">L'alimentador de documents de l'escàner està buit. Afegeix documents i torna-ho a provar.</translation>
 <translation id="6040143037577758943">Tanca</translation>

@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">Мультимедианы кідірту</translation>
 <translation id="1610778689852195798">"Қайтару"</translation>
 <translation id="1611993646327628135">Қосулы</translation>
-<translation id="1618835956950524778">Сөредегі іске қосу тақтасының түймесін ерекшелеу</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="163517899691012366">Мазаламау режимі қосулы кезде хабарландырулар дыбысы өшіріледі</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">1 құрылғы жалғанған.</translation>
 <translation id="2791421900609674576">Көретін ұсыныстардың арқасында тоқтаған жеріңізден жалғастыра аласыз.  Ұсыныстарды өшіру үшін басып тұрыңыз.</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, таңдалған</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">Қолданбаларды, кеңейтімдерді және тақырыптарды орнатыңыз</translation>
 <translation id="2977598380246111477">Келесі сан</translation>
 <translation id="2985148236010982088">Барлық қолданбаны қарау</translation>
-<translation id="29859347674873492">Explore қолданбасында "Анықтама" бөлімін ашу</translation>
 <translation id="2992327365391326550">Құрылғы микрофоны өшірулі.</translation>
 <translation id="2996462380875591307">Бекітілген ұлғайтқыш қосылды. Оны өшіру үшін Ctrl+Search+D пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">Файлдарды ашу</translation>
 <translation id="3038571455154067151">Аккаунтқа кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="3039939407102840004">Стилус батареясының заряды – <ph name="PERCENTAGE" /> пайыз.</translation>
+<translation id="304097922505898963">Перне таңбашалары қолданбасын ашу</translation>
 <translation id="3045488863354895414">Қайырлы күн!</translation>
 <translation id="3047761520276763270">Былай айтып көріңіз:</translation>
 <translation id="3055162170959710888">Бүгін бұл құрылғыны <ph name="USED_TIME" /> рет пайдаландыңыз</translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">Қараңғы режим параметрлерін көрсету</translation>
 <translation id="3413817803639110246">Ештеңе жоқ</translation>
 <translation id="3417835166382867856">Қойындыларды іздеу</translation>
-<translation id="3423744722495840645">Іске қосу тақтасын ашу/жабу</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> желісінен ажырату</translation>
 <translation id="3430396595145920809">Артқа оралу үшін оңнан солға қарай сырғытыңыз.</translation>
 <translation id="3431517721463707585">14-жұмыс үстелі</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">Сөредегі қолданбалар</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> хотспоты</translation>
 <translation id="3542066395059568317">Көретін ұсыныстардың арқасында тоқтаған жеріңізден жалғастыра аласыз. Ұсыныстарды өшіру үшін тінтуірдің оң жақ түймесін басыңыз.</translation>
-<translation id="3546121235777416274">"Суреттегі сурет" терезесін ерекшелеу</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
 <translation id="3554215588514239132">"Әзірлеуші құралдары" панелін көрсету немесе жасыру</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> бекітілді</translation>
@@ -1064,7 +1060,6 @@
 <translation id="5760866832697883462"><ph name="NAME" /> құрылғысын жалғаңыз</translation>
 <translation id="5762420912707163638">Ауыстырғыш белгілегіші. <ph name="STATE_TEXT" /> Экранда сурет салу үшін сенсорлық тақтаны, сенсорлық экранды және стилусты пайдаланыңыз.</translation>
 <translation id="576341972084747908">Қауіпті <ph name="FILENAME" /> файлы жүктеп алынуда</translation>
-<translation id="5763928712329149804">Shelf Party режимі өшірулі.</translation>
 <translation id="576453121877257266">"Түнгі жарық" функциясы қосулы.</translation>
 <translation id="5764569119212455782">Соңғы таңдалған тілге ауысу</translation>
 <translation id="5769373120130404283">Құпиялық экраны</translation>
@@ -1119,6 +1114,7 @@
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /> бет</translation>
 <translation id="601304062528754300">Сөредегі келесі элементті ерекшелеу</translation>
 <translation id="6018164090099858612">Айна режимінен шығуда</translation>
+<translation id="6019566113895157499">Перне таңбашалары</translation>
 <translation id="602001110135236999">Солға айналдыру</translation>
 <translation id="6022924867608035986">Іздеу жолағының мәтінін өшіру</translation>
 <translation id="602472752137106327">Терезелерді барлық жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды</translation>
@@ -1273,7 +1269,6 @@
 <translation id="6707693040195709527">Құрылғыны алдыңғы нұсқаға қайтару мерзімі өтіп кетті</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6723839937902243910">Күш</translation>
-<translation id="6727005317916125192">Алдыңғы тақта</translation>
 <translation id="6727969043791803658">Жалғанды, батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6920245099716267363">Хотспотты қосу/өшіру. Хотспот қосулы, 1 құрылғы жалғанған.</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
-<translation id="6941333068993625698">Пікір жіберу</translation>
 <translation id="6942518653766415536">Жазба форматының мәзірі</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6945922087561257829">Телефоныңыз мобильдік желіні пайдаланып жатыр. Телефоныңыз бен Chromebook бір Wi-Fi желісінде екеніне көз жеткізіп, әрекетті қайталаңыз. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@
 <translation id="7014684956566476813">"<ph name="DEVICE_NAME" />" деп аталатын құрылғыға қосылды.</translation>
 <translation id="7015766095477679451">Сағат <ph name="COME_BACK_TIME" /> болғанда, қайта қолданып көріңіз.</translation>
 <translation id="70168403932084660">6-шы жұмыс үстелі</translation>
-<translation id="7025325401470358758">Келесі тақта</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> құрылғысын телефонға жалғаңыз</translation>
 <translation id="7026338066939101231">Кему</translation>
 <translation id="7029814467594812963">Сеанстан шығу</translation>
@@ -1369,7 +1362,6 @@
 <translation id="7126996685418858413">Өткен аптада ашылды.</translation>
 <translation id="7130207228079676353">ЕҢ ЫҚТИМАЛ</translation>
 <translation id="7131634465328662194">Аккаунттан автоматты түрде шығасыз.</translation>
-<translation id="7138316363520807689">Ағымдағы қойындыны бетбелгі ретінде сақтау</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144942256906679589">Батарея күйі</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1386,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Әкімші eSIM-ді қайта орнатуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="7313193732017069507">Өлшемді өзгерту түймесін көрсету</translation>
-<translation id="731589979057211264">Shelf Party режимі қосулы.</translation>
 <translation id="7340731148882810149">Автоматты басулар мәзірі</translation>
 <translation id="7346909386216857016">Жарайды, түсінікті</translation>
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
@@ -1463,7 +1454,6 @@
 <translation id="7607002721634913082">Кідіртілген</translation>
 <translation id="7609951632080598826">Күнтізбе көрінісі: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера қайта жалғанды.</translation>
-<translation id="7611271430932669992">Қалқымалы терезелерге және диалогтарға өту</translation>
 <translation id="761736749114493194">Камерамен кадрлауды ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камера төменгі оң жақ бұрышқа ауыстырылды.</translation>
@@ -1627,7 +1617,6 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8349964124165471584">Сілтемені жаңа терезеде ашу</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
-<translation id="8364673525741149932">Shelf Party режимін қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> қолданыста.</translation>
 <translation id="8369166482916924789">Сақталған жұмыс үстелі: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>

@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Imeshindwa kusuluhisha DNS</translation>
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1020274983236703756">Vipengee vya kipekee vya <ph name="PRODUCT_NAME" /> sasa vinapatikana</translation>
-<translation id="1022433422498218992">Vidhibiti vya Jumla</translation>
 <translation id="1022628058306505708">Kulingana na Dunia</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Aina ya uthibitishaji</translation>
 <translation id="1776228893584526149">Rangi ya mandhari</translation>
 <translation id="1782199038061388045">tafsiri</translation>
-<translation id="1790209694022261219">Windows na Eneokazi</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
 <translation id="1801418420130173017">Zima mandhari meusi</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3017079585324758401">Mandhari ya nyuma</translation>
-<translation id="3020183492814296499">Njia za mkato</translation>
 <translation id="3027578600144895987">Funga kamera</translation>
 <translation id="3031560714565892478">Kifaa hiki ni kamera ya video.</translation>
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>

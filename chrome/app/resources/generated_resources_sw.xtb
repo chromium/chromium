@@ -1448,6 +1448,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Haijaonyesha mstari wa 1&gt;}other{&lt;Haijaonyesha mistari <ph name="NUMBER_OF_LINES" />&gt;}}</translation>
 <translation id="2218019600945559112">Kipanya na padi ya kugusa</translation>
 <translation id="2218515861914035131">Bandika kama matini makavu</translation>
+<translation id="221872881068107022">Usogezaji wa nyuma</translation>
 <translation id="2220409419896228519">Ongeza alamisho kwenye Programu za Google unazopenda</translation>
 <translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2220572644011485463">PIN au nenosiri</translation>
@@ -4382,6 +4383,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4777458362738635055">Watumiaji wengine wa kifaa hiki wanaweza kutumia mtandao huu</translation>
 <translation id="4777825441726637019">Duka la Google Play</translation>
 <translation id="4777943778632837590">Weka mipangilio ya majina ya seva za mtandao</translation>
+<translation id="4778653490315793244">Bado hakuna picha za kuonyesha</translation>
 <translation id="4779083564647765204">Kuza</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Badilisha jina la Mtandao wa simu wa eSIM</translation>
@@ -4803,7 +4805,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5155327081870541046">Katika sehemu ya anwani, weka njia ya mkato ya tovuti unayotaka kutafuta, kama vile "@alamisho". Kisha, bonyeza mikato ya kibodi unayopendelea na uweke hoja yako ya utafutaji.</translation>
 <translation id="5156638757840305347">Kiteuzi kinaangaziwa kinapoonekana au kusogea</translation>
 <translation id="5157250307065481244">Angalia maelezo ya tovuti</translation>
-<translation id="5157635116769074044">Bana ukurasa huu kwenye Skrini ya Kuanza...</translation>
 <translation id="5158206172605340248">Menyu ya alama ya jinsi herufi inavyotamkwa imeondolewa.</translation>
 <translation id="5159094275429367735">Weka mipangilio ya Crostini</translation>
 <translation id="5159419673777902220">Mzazi wako amezima ruhusa za viendelezi</translation>
@@ -5889,7 +5890,6 @@ Unaweza kuituma kwa Google ili kuikagua kama si salama. Kwa kawaida, uchanganuzi
 <translation id="6113942107547980621">Ili utumie Smart Lock, badilisha wasifu wa mtumiaji wa msingi kwenye simu yako</translation>
 <translation id="6116921718742659598">Badilisha mipangilio ya lugha na uingizaji</translation>
 <translation id="6119927814891883061">Kipe kifaa jina la <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Bana ukurasa huu kwenye skirini ya Kuanza...</translation>
 <translation id="6120707837086723438">Unaona mapishi yaliyopendekezwa kulingana na shughuli zako za utafutaji za hivi karibuni za utafutaji wa mapishi.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8373,7 +8373,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
     <ph name="BEGIN_PARAGRAPH3" />Mmiliki anaweza kudhibiti kipengele hiki katika Mipangilio &gt; Mipangilio ya Kina &gt; Tuma kiotomatiki data ya uchunguzi na matumizi kwa Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ikiwa umewasha mipangilio ya ziada ya Historia ya Shughuli kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa katika Akaunti yake ya Google. Pata maelezo zaidi kuhusu mipangilio hii na jinsi ya kuirekebisha katika families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Cheti cha kiteja si sahihi</translation>
-<translation id="8270162672241199380">Kisakinishaji cha Programu ya Steam</translation>
 <translation id="827097179112817503">Onyesha kitufe cha mwanzo</translation>
 <translation id="8271268254812352141">Pata ufafanuzi, tafsiri au ubadilishaji wa vipimo unapobofya kulia au unapogusa na kushikilia maandishi. Weka mapendeleo ya lugha za tafsiri katika sehemu ya <ph name="LINK_BEGIN" />Lugha zinazotumika kwenye tovuti<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Mzazi, hatua chache zinazofuata ni zako. Ukishaweka mipangilio ya akaunti, unaweza kumrudishia mtoto <ph name="DEVICE_TYPE" />.</translation>

@@ -1439,6 +1439,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 qator kod berkitilgan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> qator kod berkitilgan&gt;}}</translation>
 <translation id="2218019600945559112">Sichqoncha va sensorli panel</translation>
 <translation id="2218515861914035131">Oddiy matn sifatida joylash</translation>
+<translation id="221872881068107022">Teskari aylantirish</translation>
 <translation id="2220409419896228519">Sevimli Google ilovalaringizga bukmark qo‘shing</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
@@ -4374,6 +4375,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4777458362738635055">Bu qurilmadagi boshqa foydalanuvchilar tarmoqdan foydalanishlari mumkin</translation>
 <translation id="4777825441726637019">Play Market</translation>
 <translation id="4777943778632837590">Tarmoq nomi serverlarini sozlash</translation>
+<translation id="4778653490315793244">Hech narsa topilmadi</translation>
 <translation id="4779083564647765204">Masshtab</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">eSIM mobil tarmoqni qayta nomlash</translation>
@@ -4795,7 +4797,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5155327081870541046">Manzil qatorida qidiriladigan sayt uchun “@bookmarks” kabi buyruqni kiriting. Keyin oldindan belgilangan tezkor tugmani bosib, qidiruv iborasini kiriting.</translation>
 <translation id="5156638757840305347">Kursor chiqqanda yoki surilganda ajratib belgilanadi</translation>
 <translation id="5157250307065481244">Sayt axborotini ochish</translation>
-<translation id="5157635116769074044">Ushbu sahifani bosh ekranga qadab qo‘yish...</translation>
 <translation id="5158206172605340248">Urgʻu belgilari menyusi yopildi.</translation>
 <translation id="5159094275429367735">Crostini taʼminotini sozlash</translation>
 <translation id="5159419673777902220">Ota-onangiz bu kengaytma ruxsatlarini olib tashlagan</translation>
@@ -5881,7 +5882,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6113942107547980621">Smart Lock himoyasini yoqish uchun telefondagi asosiy profilga oʻting</translation>
 <translation id="6116921718742659598">Til va kiritish usuli sozlamalarini o‘zgartirish</translation>
 <translation id="6119927814891883061">Qurilmani nomlash: <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Ushbu sahifani bosh ekranga qadab qo‘yish...</translation>
 <translation id="6120707837086723438">Tavsiya etilgan retseptlar oxirgi qidiruv tarixi asosida chiqyapti.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8362,7 +8362,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
     <ph name="BEGIN_PARAGRAPH3" />Qurilma egasi bu funksiyani “Sozlamalar &gt; Qoʻshimcha &gt; Foydalanish statistikasi va ichdan chiqish hisobotlarining Google serverlariga avtomatik yuborilishi” orqali boshqarishi mumkin.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Bundan tashqari farzandingiz uchun Veb va ilovalar faoliyati sozlamasi yoniq boʻlsa, bu maʼlumotlar Google hisobingizda saqlanishi mumkin. Bularni families.google.com sahifasidan boshqarish mumkin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Yaroqsiz mijoz sertifikati</translation>
-<translation id="8270162672241199380">Steam oʻrnatish vositasi</translation>
 <translation id="827097179112817503">“Boshi” tugmasini ko‘rsatish</translation>
 <translation id="8271268254812352141">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing. Tillarni <ph name="LINK_BEGIN" />Sayt tillari<ph name="LINK_END" /> orqali moslash mumkin.</translation>
 <translation id="8271379370373330993">Ota-onalar, keyingi bosqichlar siz uchun. Hisobni sozlaganingizdan keyin <ph name="DEVICE_TYPE" /> qurilmasini farzandingizga berishingiz mumkin.</translation>

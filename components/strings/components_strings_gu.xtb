@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4040350669425716613">કૉલેજ અને યુનિવર્સિટી</translation>
 <translation id="4047351652147966654">18 x 24 ઇંચ</translation>
+<translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ધરાવતા એક્સ્ટેન્શનને અપડેટ કરવા માટે ઉપયોગમાં લેવાયેલું URL અમાન્ય છે અથવા અનસપોર્ટેડ સ્કીમનો ઉપયોગ કરે છે. સપોર્ટેડ સ્કીમ આ છે: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> અને <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">તમે Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરી શકશો</translation>
 <translation id="405399507749852140">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">ડ્રામા મૂવી</translation>
 <translation id="6573200754375280815">જમણી બાજુએ બે કાણાં પાડો</translation>
 <translation id="6576181918031900030">કાસ્ટ કરવાનું શરૂ કરો</translation>
+<translation id="6578434528542148658">અમાન્ય એક્સ્ટેન્શન ID.</translation>
 <translation id="657902945730878902">ડ્રોઇંગ અને રંગ ભરવા</translation>
 <translation id="6579630537141957243">MIDI ડિવાઇસ કનેક્ટ કરીએ?</translation>
 <translation id="6579990219486187401">આછો ગુલાબી</translation>
@@ -3032,7 +3034,6 @@
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" વિભાગ બતાવ્યો</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
-<translation id="8307888238279532626">ઇન્સ્ટૉલ થયેલી ઍપ અને તેમનો ઉપયોગ કેટલી વાર કરવામાં આવે છે</translation>
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
 <translation id="8329068931308448247">એન્વલપ #14</translation>

@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Tidak dapat menyelesaikan DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
-<translation id="1022433422498218992">Kawalan Umum</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Jenis pengesahan</translation>
 <translation id="1776228893584526149">Ton hiasan latar</translation>
 <translation id="1782199038061388045">terjemahan</translation>
-<translation id="1790209694022261219">Tetingkap dan Meja</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
-<translation id="3020183492814296499">Pintasan</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Enjin Kemaskinian</translation>
 <translation id="5984145644188835034">Kertas Dinding Lalai</translation>
 <translation id="6017514345406065928">Hijau</translation>
+<translation id="6019566113895157499">Pintasan Kekunci</translation>
 <translation id="6034694447310538551">Dayakan tetapan semula bulanan automatik</translation>
 <translation id="6037291330010597344">Penyuap dokumen pengimbas kosong. Tambah dokumen dan cuba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>

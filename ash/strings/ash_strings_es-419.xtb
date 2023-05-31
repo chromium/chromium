@@ -144,7 +144,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1604857178818051494">Pausar contenido multimedia</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
-<translation id="1618835956950524778">Destacar el botón del selector en la barra</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="163517899691012366">Se silencian las notificaciones cuando está activada la función No interrumpir.</translation>
@@ -395,7 +394,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2785499565474703580">1 dispositivo conectado</translation>
 <translation id="2791421900609674576">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, manténlas presionadas.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
-<translation id="2797741504905337289">Grupo de barras</translation>
 <translation id="2802938996245446490">Se seleccionó <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -433,7 +431,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2970920913501714344">Instalar apps, extensiones y temas</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2985148236010982088">Ver todas las apps</translation>
-<translation id="29859347674873492">Abrir la Ayuda en la app de Explorar</translation>
 <translation id="2992327365391326550">El botón del micrófono del dispositivo está desactivado.</translation>
 <translation id="2996462380875591307">Se habilitó la lupa con vista acoplada. Presiona Ctrl+Buscar+D de nuevo para desactivarla.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
@@ -529,7 +526,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3410336247007142655">Mostrar la configuración del Tema oscuro</translation>
 <translation id="3413817803639110246">No hay nada para ver</translation>
 <translation id="3417835166382867856">Buscar pestañas</translation>
-<translation id="3423744722495840645">Abrir o cerrar el selector</translation>
 <translation id="3428447136709161042">Desconectar de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Para volver, desliza el dedo desde la derecha</translation>
 <translation id="3431517721463707585">Escritorio 14</translation>
@@ -558,7 +554,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3533126039236445965">Apps en la barra</translation>
 <translation id="3539957339480430241">Hotspot de <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, haz clic con el botón derecho.</translation>
-<translation id="3546121235777416274">Enfocar la ventana pantalla en pantalla</translation>
 <translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
 <translation id="3554215588514239132">Ocultar o mostrar el panel Herramientas para desarrolladores</translation>
 <translation id="3554637740840164787">Se fijó <ph name="ITEM_TITLE" /></translation>
@@ -1065,7 +1060,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5760866832697883462">Conecta tu <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Cómo activar o desactivar el marcador. <ph name="STATE_TEXT" /> Utiliza el panel táctil, la pantalla táctil o la pluma stylus para dibujar en la pantalla.</translation>
 <translation id="576341972084747908">Descarga peligrosa: <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">El modo Grupo de barras está desactivado.</translation>
 <translation id="576453121877257266">La luz nocturna está activada.</translation>
 <translation id="5764569119212455782">Cambiar al último idioma seleccionado</translation>
 <translation id="5769373120130404283">Pantalla de privacidad</translation>
@@ -1274,7 +1268,6 @@ Nueva instalación</translation>
 <translation id="6707693040195709527">Se superó la fecha límite para cambiar el dispositivo a la versión anterior</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentación</translation>
-<translation id="6727005317916125192">Panel anterior</translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1314,6 @@ Nueva instalación</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6920245099716267363">Activar o desactivar el hotspot. El hotspot está activado y hay 1 dispositivo conectado.</translation>
 <translation id="6931576957638141829">Guardar en</translation>
-<translation id="6941333068993625698">Enviar comentarios</translation>
 <translation id="6942518653766415536">Menú de formato de grabación</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6945922087561257829">El teléfono está usando una red móvil. Asegúrate de que el teléfono y la Chromebook estén conectados a la misma red Wi-Fi y vuelve a intentarlo. <ph name="LEARN_MORE" /></translation>
@@ -1341,7 +1333,6 @@ Nueva instalación</translation>
 <translation id="7014684956566476813">Se estableció la conexión con un dispositivo llamado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Regresa a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Escritorio 6</translation>
-<translation id="7025325401470358758">Siguiente panel</translation>
 <translation id="7025533177575372252">Conectar tu dispositivo <ph name="DEVICE_NAME" /> a tu teléfono</translation>
 <translation id="7026338066939101231">Disminuir</translation>
 <translation id="7029814467594812963">Salir de la sesión</translation>
@@ -1370,7 +1361,6 @@ Nueva instalación</translation>
 <translation id="7126996685418858413">Se abrió la semana pasada</translation>
 <translation id="7130207228079676353">MUY PROBABLES</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
-<translation id="7138316363520807689">Guardar la pestaña actual como favorito</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144942256906679589">Estado de la batería</translation>
 <translation id="7165278925115064263">Alt+mayúscula+K</translation>
@@ -1395,7 +1385,6 @@ Nueva instalación</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
 <translation id="7313193732017069507">Expandir la cámara</translation>
-<translation id="731589979057211264">El modo Grupo de barras está activado.</translation>
 <translation id="7340731148882810149">Menú de clics automáticos</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
@@ -1464,7 +1453,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7609951632080598826">Vista del calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Se volvió a conectar la cámara.</translation>
-<translation id="7611271430932669992">Mover el foco a ventanas emergentes y diálogos</translation>
 <translation id="761736749114493194">Activa o desactiva el encuadre de la cámara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Se ajustó la cámara a la esquina inferior derecha</translation>
@@ -1628,7 +1616,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8349964124165471584">Abrir el vínculo en una ventana nueva</translation>
 <translation id="8351131234907093545">Crear nota</translation>
-<translation id="8364673525741149932">Activa o desactiva el modo Grupo de barras. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en uso</translation>
 <translation id="8369166482916924789">Escritorio guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avanzar letra por letra</translation>

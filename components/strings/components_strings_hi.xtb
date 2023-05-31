@@ -2316,7 +2316,7 @@
 <translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6645291930348198241">कुकी और साइट के डेटा को ऐक्सेस करना चाहती है.</translation>
 <translation id="6645478838938543427">कीमत में कमी की सूचनाएं <ph name="EMAIL_ADDRESS" /> पर भेजी जाएंगी</translation>
-<translation id="6646269444027925224">{COUNT,plural, =0{कोई नहीं}=1{1 साइट से (आप अपने Google खाते से साइन आउट नहीं होंगे)}one{# साइटों से (आप अपने Google खाते से साइन आउट नहीं होंगे)}other{# साइटों से (आप अपने Google खाते से साइन आउट नहीं होंगे)}}</translation>
+<translation id="6646269444027925224">{COUNT,plural, =0{कोई नहीं}=1{1 साइट से (आपको अपने Google खाते से साइन आउट नहीं किया जाएगा)}one{# साइटों से (आपको अपने Google खाते से साइन आउट नहीं किया जाएगा)}other{# साइटों से (आपको अपने Google खाते से साइन आउट नहीं किया जाएगा)}}</translation>
 <translation id="6648459603387803038">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chrome से बाहर भी प्रबंधित किया जा सकता है.</translation>
 <translation id="6648524591329069940">Serif फ़ॉन्ट</translation>
 <translation id="6649510485211003056">195 x 270 मि॰मी॰</translation>
@@ -3032,7 +3032,6 @@
 <translation id="8298115750975731693">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं (<ph name="WIFI_NAME" />) उसके लिए आपको <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> पर जाने की ज़रूरत हो सकती है.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" वाला सेक्शन दिखाया गया</translation>
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
-<translation id="8307888238279532626">इंस्टॉल किए गए ऐप्लिकेशन और उनका कितनी बार इस्तेमाल किया जाता है</translation>
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
 <translation id="8329068931308448247">#14 साइज़ का लिफ़ाफ़ा</translation>

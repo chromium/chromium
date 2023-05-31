@@ -1453,6 +1453,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 lína er ekki sýnd&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> lína er ekki sýnd&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> línur eru ekki sýndar&gt;}}</translation>
 <translation id="2218019600945559112">Mús og snertiflötur</translation>
 <translation id="2218515861914035131">Líma sem ósniðinn texta</translation>
+<translation id="221872881068107022">Öfug fletting</translation>
 <translation id="2220409419896228519">Bæta bókamerkjum við eftirlætis Google forritin þín</translation>
 <translation id="2220529011494928058">Tilkynna vandamál</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
@@ -4388,6 +4389,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4777458362738635055">Aðrir notendur tækisins geta notað þetta netkerfi</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Stilla nafnaþjóna netkerfis</translation>
+<translation id="4778653490315793244">Ekkert að sjá enn sem komið er</translation>
 <translation id="4779083564647765204">Aðdráttur</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Endurnefna eSIM-farsímakerfi</translation>
@@ -4809,7 +4811,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5155327081870541046">Sláðu flýtileiðina inn í veffangastikuna fyrir vefsvæðið sem þú vilt leita á, t.d. „@bookmarks“. Ýttu svo á valinn flýtilykil og sláðu inn leitarfyrirspurnina.</translation>
 <translation id="5156638757840305347">Bendill fær yfirstrikun þegar hann birtist eða hreyfist</translation>
 <translation id="5157250307065481244">Skoða upplýsingar um vefsvæði</translation>
-<translation id="5157635116769074044">Festa þessa síðu á upphafsskjánum...</translation>
 <translation id="5158206172605340248">Valmynd áherslumerkja lokað.</translation>
 <translation id="5159094275429367735">Setja upp Crostini</translation>
 <translation id="5159419673777902220">Foreldri þitt hefur gert heimildir fyrir viðbót óvirkar</translation>
@@ -5895,7 +5896,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6113942107547980621">Til að nota Smart Lock skaltu skipta yfir í prófíl aðalnotanda símans</translation>
 <translation id="6116921718742659598">Breyta tungumála- og innsláttarstillingum</translation>
 <translation id="6119927814891883061">Breyta heiti tækis í <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Festa þessa síðu á upphafsskjánum...</translation>
 <translation id="6120707837086723438">Þú sérð uppskriftatillögur sem byggjast á nýlegum leitum þínum að uppskriftum.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8379,7 +8379,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
     <ph name="BEGIN_PARAGRAPH3" />Eigandinn getur stjórnað þessum eiginleika með því að fara í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á stillingu fyrir viðbótarvef- og forritavirkni hjá barninu verða þessar upplýsingar hugsanlega geymdar á Google reikningi þess. Á families.google.com geturðu fengið frekari upplýsingar um þessar stillingar og hvernig á að breyta þeim.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ógilt biðlaravottorð</translation>
-<translation id="8270162672241199380">Uppsetningarforrit fyrir Steam</translation>
 <translation id="827097179112817503">Sýna heimahnapp</translation>
 <translation id="8271268254812352141">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni. Sérstilltu þýðingartungumál í <ph name="LINK_BEGIN" />„Tungumál vefsvæða“<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldrar, það sem kemur næst er ætlað ykkur. Þið getið rétt barninu <ph name="DEVICE_TYPE" /> aftur þegar uppsetningu reikningsins er lokið.</translation>

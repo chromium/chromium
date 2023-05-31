@@ -1453,6 +1453,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 garisan tidak ditunjukkan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> garisan tidak ditunjukkan&gt;}}</translation>
 <translation id="2218019600945559112">Tetikus dan pad sentuh</translation>
 <translation id="2218515861914035131">Tampalkan sebagai teks kosong</translation>
+<translation id="221872881068107022">Penatalan songsang</translation>
 <translation id="2219007152108311874">Tanya Setiap Kali Melawat</translation>
 <translation id="2220409419896228519">Tambahkan penanda halaman pada Google Apps kegemaran anda</translation>
 <translation id="2220529011494928058">Laporkan isu</translation>
@@ -4398,6 +4399,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4777458362738635055">Pengguna lain peranti ini boleh menggunakan rangkaian ini</translation>
 <translation id="4777825441726637019">Gedung Play</translation>
 <translation id="4777943778632837590">Konfigurasikan pelayan nama rangkaian</translation>
+<translation id="4778653490315793244">Belum ada apa-apa untuk ditunjukkan</translation>
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Namakan semula rangkaian Selular eSIM</translation>
@@ -4822,7 +4824,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5155327081870541046">Dalam bar alamat, masukkan pintasan bagi laman tempat anda ingin melakukan carian, seperti "@bookmarks". Kemudian, tekan pintasan papan kekunci pilihan anda dan masukkan istilah carian anda.</translation>
 <translation id="5156638757840305347">Kursor diserlahkan apabila dipaparkan atau bergerak</translation>
 <translation id="5157250307065481244">Lihat butiran laman</translation>
-<translation id="5157635116769074044">Pin halaman ini pada Skrin Mula...</translation>
 <translation id="5157701529792771331">Terjemah sari kata secara automatik</translation>
 <translation id="5158206172605340248">Menu tanda aksen diketepikan.</translation>
 <translation id="5159094275429367735">Sediakan Crostini</translation>
@@ -5913,7 +5914,6 @@ Anda boleh menghantar fail ini kepada Google untuk menyemak sama ada fail terseb
 <translation id="6113942107547980621">Untuk menggunakan Smart Lock, beralih kepada profil pengguna utama pada telefon anda</translation>
 <translation id="6116921718742659598">Tukar tetapan bahasa dan input</translation>
 <translation id="6119927814891883061">Namakan peranti kepada <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Pin halaman ini pada skrin Mula...</translation>
 <translation id="6120707837086723438">Anda melihat resipi yang dicadangkan berdasarkan aktiviti Carian resipi anda baru-baru ini.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8401,7 +8401,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
     <ph name="BEGIN_PARAGRAPH3" />Pemilik boleh mengawal ciri ini daripada Tetapan &gt; Terperinci &gt; Hantar data diagnostik dan penggunaan kepada Google secara automatik.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account mereka. Ketahui lebih lanjut tentang tetapan ini dan cara menyelaraskan tetapan ini pada families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Sijil pelanggan tidak sah</translation>
-<translation id="8270162672241199380">Pemasang Steam</translation>
 <translation id="827097179112817503">Paparkan butang laman utama</translation>
 <translation id="8271268254812352141">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks. Sesuaikan bahasa terjemahan dalam <ph name="LINK_BEGIN" />Bahasa laman web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Ibu bapa, beberapa langkah yang seterusnya adalah untuk anda. Anda boleh menyerahkan <ph name="DEVICE_TYPE" /> ini semula kepada anak anda selepas persediaan akaun selesai.</translation>

@@ -144,7 +144,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1604857178818051494">Tạm dừng nội dung nghe nhìn</translation>
 <translation id="1610778689852195798">"Huỷ"</translation>
 <translation id="1611993646327628135">Bật</translation>
-<translation id="1618835956950524778">Đánh dấu nút trình chạy trên kệ</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="163517899691012366">Thông báo bị tắt tiếng khi tính năng Không làm phiền đang bật</translation>
@@ -395,7 +394,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2785499565474703580">1 thiết bị đã kết nối</translation>
 <translation id="2791421900609674576">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể chạm và giữ để xoá đề xuất.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, đã chọn</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2814448776515246190">Chụp một phần màn hình</translation>
@@ -433,7 +431,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
 <translation id="2977598380246111477">Số tiếp theo</translation>
 <translation id="2985148236010982088">Xem tất cả ứng dụng</translation>
-<translation id="29859347674873492">Mở trang Trợ giúp trong ứng dụng Khám phá</translation>
 <translation id="2992327365391326550">Nút micrô trên thiết bị đang tắt.</translation>
 <translation id="2996462380875591307">Đã bật tính năng Phóng to ở vị trí cố định. Hãy nhấn lại tổ hợp phím Ctrl+Search+D để tắt tính năng này.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
@@ -530,7 +527,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3410336247007142655">Hiển thị các tùy chọn cài đặt giao diện tối</translation>
 <translation id="3413817803639110246">Chưa có thông báo nào để xem</translation>
 <translation id="3417835166382867856">Tìm kiếm thẻ</translation>
-<translation id="3423744722495840645">Mở/đóng trình chạy</translation>
 <translation id="3428447136709161042">Ngắt kết nối khỏi <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Vuốt từ phải sang để quay lại</translation>
 <translation id="3431517721463707585">Không gian làm việc 14</translation>
@@ -559,7 +555,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
-<translation id="3546121235777416274">Lấy tiêu điểm ở cửa sổ Hình trong hình</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
 <translation id="3554637740840164787">Đã ghim <ph name="ITEM_TITLE" /></translation>
@@ -1065,7 +1060,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="5760866832697883462">Kết nối với <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Bật/tắt tính năng đánh dấu. <ph name="STATE_TEXT" /> Dùng bàn di chuột, màn hình cảm ứng hoặc bút cảm ứng để vẽ trên màn hình.</translation>
 <translation id="576341972084747908">Tải <ph name="FILENAME" /> xuống có thể gây nguy hiểm</translation>
-<translation id="5763928712329149804">Đã tắt chế độ Shelf Party.</translation>
 <translation id="576453121877257266">Chế độ Ánh sáng đêm đang bật.</translation>
 <translation id="5764569119212455782">Chuyển sang ngôn ngữ vừa được chọn</translation>
 <translation id="5769373120130404283">Màn hình bảo vệ quyền riêng tư</translation>
@@ -1275,7 +1269,6 @@ Mới cài đặt</translation>
 <translation id="6707693040195709527">Việc hạ cấp hệ điều hành trên thiết bị về phiên bản trước đã quá hạn</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6723839937902243910">Nguồn</translation>
-<translation id="6727005317916125192">Ngăn trước đó</translation>
 <translation id="6727969043791803658">Đã kết nối, <ph name="BATTERY_PERCENTAGE" />% pin</translation>
 <translation id="6732087373923685049">máy ảnh</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
@@ -1322,7 +1315,6 @@ Mới cài đặt</translation>
 <translation id="6919251195245069855">Không nhận dạng được thẻ thông minh của bạn. Vui lòng thử lại.</translation>
 <translation id="6920245099716267363">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có 1 thiết bị đã kết nối.</translation>
 <translation id="6931576957638141829">Lưu vào</translation>
-<translation id="6941333068993625698">Gửi phản hồi</translation>
 <translation id="6942518653766415536">Trình đơn định dạng bản ghi</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6945922087561257829">Điện thoại của bạn đang sử dụng mạng di động. Hãy đảm bảo điện thoại và Chromebook của bạn kết nối với cùng một mạng Wi-Fi, rồi thử lại. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1334,6 @@ Mới cài đặt</translation>
 <translation id="7014684956566476813">Đã kết nối với thiết bị có tên <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Quay lại lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Không gian làm việc 6</translation>
-<translation id="7025325401470358758">Ngăn tiếp theo</translation>
 <translation id="7025533177575372252">Kết nối <ph name="DEVICE_NAME" /> với điện thoại của bạn</translation>
 <translation id="7026338066939101231">Giảm dần</translation>
 <translation id="7029814467594812963">Thoát khỏi phiên</translation>
@@ -1371,7 +1362,6 @@ Mới cài đặt</translation>
 <translation id="7126996685418858413">Mở tuần trước</translation>
 <translation id="7130207228079676353">RẤT CÓ THỂ</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
-<translation id="7138316363520807689">Lưu thẻ hiện tại làm dấu trang</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144942256906679589">Trạng thái pin</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1396,7 +1386,6 @@ Mới cài đặt</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7313193732017069507">Mở rộng máy ảnh</translation>
-<translation id="731589979057211264">Đã bật chế độ Shelf Party.</translation>
 <translation id="7340731148882810149">Trình đơn nhấp tự động</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7348093485538360975">Bàn phím ảo</translation>
@@ -1465,7 +1454,6 @@ Mới cài đặt</translation>
 <translation id="7607002721634913082">Đã tạm dừng</translation>
 <translation id="7609951632080598826">Chế độ xem lịch, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Đã kết nối lại với máy ảnh.</translation>
-<translation id="7611271430932669992">Di chuyển tiêu điểm đến cửa sổ bật lên và hộp thoại</translation>
 <translation id="761736749114493194">Bật/tắt tính năng lấy khung hình của máy ảnh. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7634648064048557203">Máy ảnh đang bám theo góc dưới bên phải</translation>
@@ -1629,7 +1617,6 @@ Mới cài đặt</translation>
 <translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Mở đường liên kết trong cửa sổ mới</translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
-<translation id="8364673525741149932">Bật/tắt chế độ Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">Đang sử dụng <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Không gian làm việc đã lưu, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Tiến một ký tự</translation>

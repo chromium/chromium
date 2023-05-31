@@ -1437,6 +1437,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rresht nuk shfaqet&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rreshta nuk shfaqen&gt;}}</translation>
 <translation id="2218019600945559112">Miu dhe blloku me prekje</translation>
 <translation id="2218515861914035131">Ngjite si tekst të thjeshtë</translation>
+<translation id="221872881068107022">Lëvizje e kundërt</translation>
 <translation id="2220409419896228519">Shto faqeshënuesit në "Aplikacionet e Google" që preferon</translation>
 <translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
@@ -4369,6 +4370,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4777458362738635055">Përdoruesit e tjerë të kësaj pajisjeje mund të përdorin këtë rrjet</translation>
 <translation id="4777825441726637019">Dyqani i Play</translation>
 <translation id="4777943778632837590">Konfiguro serverët e emrave të rrjetit</translation>
+<translation id="4778653490315793244">Nuk shfaqet ende asgjë</translation>
 <translation id="4779083564647765204">Zmadho</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Riemërto rrjetin celular të eSIM</translation>
@@ -4790,7 +4792,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5155327081870541046">Në shiritin e adresave, fut shkurtoren për sajtin në të cilin dëshiron të kërkosh, si p.sh. "@faqeshënuesit". Më pas shtyp shkurtoren e preferuar të tastierës dhe fut termin e kërkimit.</translation>
 <translation id="5156638757840305347">Kursori theksohet kur shfaqet ose kur lëviz</translation>
 <translation id="5157250307065481244">Shiko detajet e sajtit</translation>
-<translation id="5157635116769074044">Gozhdoje këtë faqe në ekranin e nisje...</translation>
 <translation id="5158206172605340248">Menyja e shenjave të theksimit u hoq.</translation>
 <translation id="5159094275429367735">Konfiguro Crostini</translation>
 <translation id="5159419673777902220">Prindi yt ka çaktivizuar lejet e shtesës</translation>
@@ -5876,7 +5877,6 @@ Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt.
 <translation id="6113942107547980621">Për të përdorur Smart Lock, kalo te profili parësor i përdoruesit në telefonin tënd</translation>
 <translation id="6116921718742659598">Ndrysho cilësimet e gjuhës dhe të hyrjes</translation>
 <translation id="6119927814891883061">Emërtoje pajisjen në <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Gozhdoje këtë faqe tek ekrani i Nisjes...</translation>
 <translation id="6120707837086723438">Po shikon receta të sugjeruara bazuar në aktivitetin tënd të fundit të kërkimit për receta.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8357,7 +8357,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
     <ph name="BEGIN_PARAGRAPH3" />Zotëruesi mund ta kontrollojë këtë veçori nga "Cilësimet &gt; "Të përparuara" &gt; "Dërgoji automatikisht te Google të dhënat diagnostikuese dhe të përdorimit".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Nëse aktivizon cilësimin shtesë "Aktiviteti i uebit dhe i aplikacioneve" për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të tij. Mëso më shumë rreth këtyre cilësimeve dhe si t'i rregullosh ato te families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certifikatë e pavlefshme e klientit</translation>
-<translation id="8270162672241199380">Instaluesi i Steam</translation>
 <translation id="827097179112817503">Shfaq butonin "kreu"</translation>
 <translation id="8271268254812352141">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose troket dhe mban shtypur tekstin. Personalizo gjuhët e përkthimit te <ph name="LINK_BEGIN" />Gjuhët e sajteve të uebit<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Prindër, këto hapa në vijim janë për ju. Mund t'ia jepni pajisjen <ph name="DEVICE_TYPE" /> përsëri fëmijës pas konfigurimit të llogarisë.</translation>

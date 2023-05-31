@@ -1440,6 +1440,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 riga non mostrata&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> righe non mostrate&gt;}}</translation>
 <translation id="2218019600945559112">Mouse e touchpad</translation>
 <translation id="2218515861914035131">Incolla come solo testo</translation>
+<translation id="221872881068107022">Scorrimento invertito</translation>
 <translation id="2220409419896228519">Aggiungi le tue app Google preferite ai Preferiti</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
 <translation id="2220572644011485463">PIN o password</translation>
@@ -4371,6 +4372,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4777458362738635055">Altri utenti del dispositivo possono usare questa rete</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configura server dei nomi di rete</translation>
+<translation id="4778653490315793244">Nessun contenuto da mostrare</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Rinomina rete mobile eSIM</translation>
@@ -4792,7 +4794,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5155327081870541046">Nella barra degli indirizzi, inserisci la scorciatoia relativa al sito in cui vuoi eseguire la ricerca, come "@segnalibri". Successivamente, digita la tua scorciatoia da tastiera preferita e inserisci il termine di ricerca.</translation>
 <translation id="5156638757840305347">Il cursore è evidenziato quando viene visualizzato o spostato</translation>
 <translation id="5157250307065481244">Visualizza i dettagli del sito</translation>
-<translation id="5157635116769074044">Esponi questa pagina nella schermata iniziale...</translation>
 <translation id="5158206172605340248">Menu degli accenti ignorato.</translation>
 <translation id="5159094275429367735">Configura Crostini</translation>
 <translation id="5159419673777902220">Uno dei tuoi genitori ha disattivato le autorizzazioni per le estensioni</translation>
@@ -5875,7 +5876,6 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6113942107547980621">Per usare Smart Lock, passa al profilo utente principale del telefono</translation>
 <translation id="6116921718742659598">Modifica impostazioni della lingua e di immissione</translation>
 <translation id="6119927814891883061">Cambia il nome del dispositivo in <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Blocca questa pagina in schermata iniziale...</translation>
 <translation id="6120707837086723438">Visualizzi ricette suggerite in base alla tua attività di ricerca recente per le ricette.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8358,7 +8358,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
     <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzione da Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione aggiuntiva Attività web e app è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. Leggi ulteriori informazioni su queste impostazioni e su come configurarle alla pagina families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificato client non valido</translation>
-<translation id="8270162672241199380">Programma di installazione di Steam</translation>
 <translation id="827097179112817503">Mostra pulsante Home</translation>
 <translation id="8271268254812352141">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse. Personalizza le lingue di traduzione nella sezione <ph name="LINK_BEGIN" />Lingue dei siti web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">I prossimi passaggi devono essere eseguiti dai genitori. Il dispositivo <ph name="DEVICE_TYPE" /> può essere restituito al bambino dopo la creazione dell'account.</translation>

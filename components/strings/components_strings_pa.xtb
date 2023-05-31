@@ -1240,6 +1240,7 @@
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4040350669425716613">ਕਾਲਜ ਅਤੇ ਯੂਨੀਵਰਸਟੀਆਂ</translation>
 <translation id="4047351652147966654">18 x 24 ਇੰਚ</translation>
+<translation id="404831776305217138">ਆਈਡੀ "<ph name="EXTENSION_ID" />" ਵਾਲੀ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਅੱਪਡੇਟ URL ਅਵੈਧ ਹੈ ਜਾਂ ਇਹ ਅਸਮਰਥਿਤ ਸਕੀਮ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। ਸਮਰਥਿਤ ਸਕੀਮਾਂ ਇਹ ਹਨ: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ਅਤੇ <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">ਤੁਸੀਂ ਇਸਨੂੰ ਸਾਰੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਵਰਤ ਸਕੋਗੇ</translation>
 <translation id="405399507749852140">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਸੁਚੇਤਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2289,6 +2290,7 @@
 <translation id="6569366777234823130">ਡਰਾਮਾ ਫ਼ਿਲਮਾਂ</translation>
 <translation id="6573200754375280815">ਸੱਜੇ ਦੋ ਮੋਰੀਆਂ</translation>
 <translation id="6576181918031900030">ਕਾਸਟ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="6578434528542148658">ਅਵੈਧ ਐਕਸਟੈਂਸ਼ਨ ਆਈਡੀ।</translation>
 <translation id="657902945730878902">ਚਿੱਤਰਕਾਰੀ ਅਤੇ ਰੰਗਾਈ</translation>
 <translation id="6579630537141957243">ਕੀ MIDI ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6579990219486187401">ਹਲਕਾ ਗੁਲਾਬੀ</translation>
@@ -3028,7 +3030,6 @@
 <translation id="8298115750975731693">ਜੋ Wi-Fi (<ph name="WIFI_NAME" />) ਤੁਸੀਂ ਵਰਤ ਰਹੇ ਹੋ, ਉਸ ਲਈ ਤੁਹਾਨੂੰ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ਤੇ ਵਿਜਿਟ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਦਿਖਾਇਆ ਗਿਆ</translation>
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
-<translation id="8307888238279532626">ਸਥਾਪਤ ਐਪਾਂ ਅਤੇ ਐਪਾਂ ਵਰਤਣ ਦਾ ਸਮਾਂ</translation>
 <translation id="831997045666694187">ਸ਼ਾਮ</translation>
 <translation id="8321476692217554900">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="8329068931308448247">#14 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>

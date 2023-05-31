@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS sa nedá preložiť</translation>
 <translation id="1018656279737460067">Zrušené</translation>
 <translation id="1020274983236703756">K dispozícii sú exkluzívne podklady pre zariadenie <ph name="PRODUCT_NAME" /></translation>
-<translation id="1022433422498218992">Všeobecné ovládanie</translation>
 <translation id="1022628058306505708">Tok zeme</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Typ overenia</translation>
 <translation id="1776228893584526149">Odtieň tapety</translation>
 <translation id="1782199038061388045">preklad</translation>
-<translation id="1790209694022261219">Okná a plochy</translation>
 <translation id="1792647875738159689">Ruší sa skenovanie</translation>
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
-<translation id="3020183492814296499">Skratky</translation>
 <translation id="3027578600144895987">Zavrieť kameru</translation>
 <translation id="3031560714565892478">Zariadenie je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Predvolená tapeta</translation>
 <translation id="6017514345406065928">Zelená</translation>
+<translation id="6019566113895157499">Klávesové skratky</translation>
 <translation id="6034694447310538551">Povoliť automatický mesačný reset</translation>
 <translation id="6037291330010597344">Podávač dokumentov skenera je prázdny. Pridajte dokumenty a skúste to znova.</translation>
 <translation id="6040143037577758943">Zavrieť</translation>

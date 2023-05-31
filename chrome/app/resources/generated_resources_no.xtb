@@ -1448,6 +1448,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
 <translation id="2218019600945559112">Mus og styreflate</translation>
 <translation id="2218515861914035131">Lim inn som ren tekst</translation>
+<translation id="221872881068107022">Omvendt rulling</translation>
 <translation id="2219007152108311874">Spør for hvert besøk</translation>
 <translation id="2220409419896228519">Legg til bokmerker i favorittappene dine fra Google</translation>
 <translation id="2220529011494928058">Rapporter et problem</translation>
@@ -4390,6 +4391,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4777458362738635055">Andre brukere av denne enheten kan bruke dette nettverket</translation>
 <translation id="4777825441726637019">Play Butikk</translation>
 <translation id="4777943778632837590">Konfigurer navnetjenere for nettverket</translation>
+<translation id="4778653490315793244">Ingenting å vise ennå</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Gi nytt navn til mobilnettverket for eSIM-kortet</translation>
@@ -4814,7 +4816,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5155327081870541046">I adressefeltet skriver du inn snarveien til nettstedet du vil søke på, for eksempel «@bookmarks». Deretter trykker du på hurtigtasten du foretrekker, og skriver inn søketermen.</translation>
 <translation id="5156638757840305347">Markøren fremheves når den vises eller flyttes</translation>
 <translation id="5157250307065481244">Se nettstedsdetaljer</translation>
-<translation id="5157635116769074044">Fest denne siden til startsiden</translation>
 <translation id="5157701529792771331">Oversetter teksting automatisk</translation>
 <translation id="5158206172605340248">Menyen med aksenttegn er lukket.</translation>
 <translation id="5159094275429367735">Konfigurer Crostini</translation>
@@ -5904,7 +5905,6 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="6113942107547980621">For å bruke Smart Lock, bytt til den primære brukerprofilen på telefonen din</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
 <translation id="6119927814891883061">Gi enheten navnet <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Fest denne siden til startsiden</translation>
 <translation id="6120707837086723438">Du ser forslag til oppskrifter basert på nylig søkeaktivitet knyttet til oppskrifter.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8392,7 +8392,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
     <ph name="BEGIN_PARAGRAPH3" />Eieren kan kontrollere funksjonen fra Innstillinger &gt; Avansert &gt; Send diagnostikk og bruksdata til Google automatisk.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Hvis ytterligere nett- og appaktivitet er slått på for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. Finn ut mer om disse innstillingene og hvordan du justerer dem, på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ugyldig klientsertifikat</translation>
-<translation id="8270162672241199380">Steam-installasjonsprogram</translation>
 <translation id="827097179112817503">Vis startsideknapp</translation>
 <translation id="8271268254812352141">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder på tekst. Tilpass språk for oversettelse i <ph name="LINK_BEGIN" />Nettstedsspråk<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldre, dere må utføre de neste trinnene. Dere kan gi <ph name="DEVICE_TYPE" /> tilbake til barnet etter kontokonfigureringen.</translation>

@@ -1442,6 +1442,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;O linie nu este afișată&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> linii nu sunt afișate&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> de linii nu sunt afișate&gt;}}</translation>
 <translation id="2218019600945559112">Mouse și touchpad</translation>
 <translation id="2218515861914035131">Inserează ca text simplu</translation>
+<translation id="221872881068107022">Derulare inversă</translation>
 <translation id="2219007152108311874">Întreabă la fiecare accesare</translation>
 <translation id="2220409419896228519">Adaugă marcaje la aplicațiile Google preferate</translation>
 <translation id="2220529011494928058">Semnalați o problemă</translation>
@@ -4383,6 +4384,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4777458362738635055">Alți utilizatori ai dispozitivului pot folosi această rețea</translation>
 <translation id="4777825441726637019">Magazin Play</translation>
 <translation id="4777943778632837590">Configurează serverele de nume din rețea</translation>
+<translation id="4778653490315793244">Nimic nou încă</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Redenumește rețeaua de date mobile eSIM</translation>
@@ -4807,7 +4809,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5155327081870541046">În bara de adrese, introdu comanda rapidă pentru site-ul pe care vrei să-l cauți, de exemplu, „@marcaje”. Apoi introdu comanda rapidă de la tastatură preferată și termenul de căutare.</translation>
 <translation id="5156638757840305347">Cursorul este evidențiat când apare sau se mișcă</translation>
 <translation id="5157250307065481244">Vezi detaliile site-ului</translation>
-<translation id="5157635116769074044">Fixați această pagină pe ecranul de pornire...</translation>
 <translation id="5157701529792771331">Traduce automat subtitrările</translation>
 <translation id="5158206172605340248">S-a închis meniul cu semne diacritice pentru accent.</translation>
 <translation id="5159094275429367735">Configurează Crostini</translation>
@@ -5898,7 +5899,6 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="6113942107547980621">Pentru a folosi Smart Lock, comută la profilul de utilizator principal de pe telefon</translation>
 <translation id="6116921718742659598">Schimbați setările pentru limbă și introducere de text</translation>
 <translation id="6119927814891883061">Denumește dispozitivul <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Fixați această pagină pe ecranul de pornire...</translation>
 <translation id="6120707837086723438">Vezi rețete sugerate în funcție de rețetele pe care le-ai căutat recent.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8388,7 +8388,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
     <ph name="BEGIN_PARAGRAPH3" />Proprietarul poate controla această funcție în Setări &gt; Avansate &gt; Trimite automat la Google statistici de diagnosticare și utilizare.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Dacă este activată setarea suplimentară „Activitatea de pe web și din aplicații” pentru copilul tău, datele pot fi salvate în Contul Google al acestuia. Află mai multe despre aceste setări și cum să le modifici la families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat de client nevalid</translation>
-<translation id="8270162672241199380">Program de instalare Steam</translation>
 <translation id="827097179112817503">Afișează butonul Pagina principală</translation>
 <translation id="8271268254812352141">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung textul. Personalizează limbile pentru traduceri în <ph name="LINK_BEGIN" />Limbi pentru site-uri<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Pașii următori sunt pentru părinți. Poți să îi înapoiezi copilului dispozitivul <ph name="DEVICE_TYPE" /> după crearea contului.</translation>

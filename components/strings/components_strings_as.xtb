@@ -1240,6 +1240,7 @@
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4040350669425716613">মহাবিদ্যালয় আৰু বিশ্ববিদ্যালয়</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডিযুক্ত এক্সটেনশ্বনৰ আপডে’ট URL মান্য নহয় অথবা সেইটোৱে অসমৰ্থিত স্কীম ব্যৱহাৰ কৰে। সমৰ্থিত স্কীমসমূহ হৈছে: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> আৰু <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">আপুনি Googleৰ আটাইবোৰ প্ৰ'ডাক্টত এইটো ব্যৱহাৰ কৰিব পাৰিব</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
@@ -2288,6 +2289,7 @@
 <translation id="6569366777234823130">নাটকীয় চলচ্চিত্ৰ</translation>
 <translation id="6573200754375280815">সোঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6576181918031900030">কাষ্ট কৰিবলৈ আৰম্ভ কৰক</translation>
+<translation id="6578434528542148658">এক্সটেনশ্বন আইডি মান্য নহয়।</translation>
 <translation id="657902945730878902">অংকন আৰু ৰং কৰা</translation>
 <translation id="6579630537141957243">MIDI ডিভাইচ সংযোগ কৰিবনে?</translation>
 <translation id="6579990219486187401">পাতল গুলপীয়া</translation>
@@ -3027,7 +3029,6 @@
 <translation id="8298115750975731693">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাই (<ph name="WIFI_NAME" />)ৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাবলগীয়া হ'ব পাৰে।</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" শাখাটো দেখুওৱা হৈছে</translation>
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>
-<translation id="8307888238279532626">কি এপ্‌ ইনষ্টল কৰা হৈছে আৰু সেইবোৰ কিমান সঘনাই ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="831997045666694187">সন্ধিয়া</translation>
 <translation id="8321476692217554900">জাননী</translation>
 <translation id="8329068931308448247">এনভেল’প #১৪</translation>

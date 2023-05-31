@@ -1243,7 +1243,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4040350669425716613">Fakulteti i univerziteti</translation>
 <translation id="4047351652147966654">18 x 24 in</translation>
-<translation id="404831776305217138">URL ažuriranja za proširenje s ID-jem "<ph name="EXTENSION_ID" />" nije važeći ili koristi nepodržanu shemu. Podržane su sljedeće sheme: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
+<translation id="404831776305217138">URL ažuriranja za ekstenziju s ID-om "<ph name="EXTENSION_ID" />" nije važeći ili koristi nepodržanu šemu. Nepodržane šeme su <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> i <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Moći ćete je koristiti na Googleovim proizvodima</translation>
 <translation id="405399507749852140">Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -2294,7 +2294,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6569366777234823130">Dramski filmovi</translation>
 <translation id="6573200754375280815">Dvostruko bušenje na desnoj strani</translation>
 <translation id="6576181918031900030">Pokreni emitiranje</translation>
-<translation id="6578434528542148658">Nevažeći ID proširenja.</translation>
+<translation id="6578434528542148658">Nevažeći ID ekstenzije.</translation>
 <translation id="657902945730878902">Crtanje i bojenje</translation>
 <translation id="6579630537141957243">Povezati MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svijetlo ružičasta</translation>
@@ -3034,7 +3034,6 @@ Dodatni detalji:
 <translation id="8298115750975731693">WiFi koji koristite (<ph name="WIFI_NAME" />) može tražiti da posjetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Prikazan je odjeljak "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
-<translation id="8307888238279532626">Instalirane aplikacije i koliko često se koriste</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obavještenja</translation>
 <translation id="8329068931308448247">Koverta #14</translation>

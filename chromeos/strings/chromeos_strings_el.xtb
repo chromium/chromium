@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Δεν είναι δυνατή η επίλυση του DNS.</translation>
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1020274983236703756">Διατίθενται πλέον αποκλειστικά στοιχεία <ph name="PRODUCT_NAME" /></translation>
-<translation id="1022433422498218992">Γενικοί έλεγχοι</translation>
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Τύπος ελέγχου ταυτότητας</translation>
 <translation id="1776228893584526149">Τόνος ταπετσαρίας</translation>
 <translation id="1782199038061388045">μετάφραση</translation>
-<translation id="1790209694022261219">Παράθυρα και γραφεία</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3017079585324758401">Φόντο</translation>
-<translation id="3020183492814296499">Συντομεύσεις</translation>
 <translation id="3027578600144895987">Κλείστε την κάμερα</translation>
 <translation id="3031560714565892478">Η συσκευή είναι κάμερα βίντεο.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Προεπιλεγμένη ταπετσαρία</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
+<translation id="6019566113895157499">Συντομεύσεις πληκτρολογίου</translation>
 <translation id="6034694447310538551">Ενεργοποίηση αυτόματης μηνιαίας επαναφοράς</translation>
 <translation id="6037291330010597344">Ο τροφοδότης εγγράφων του σαρωτή είναι άδειος. Προσθέστε έγγραφα και δοκιμάστε ξανά.</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>

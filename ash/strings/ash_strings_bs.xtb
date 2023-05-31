@@ -144,7 +144,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1604857178818051494">Pauziranje medija</translation>
 <translation id="1610778689852195798">"Opozovite"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
-<translation id="1618835956950524778">Istaknite dugme pokretača na polici</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Prekidač za pristup se može onemogućiti u meniju Postavke &gt; Pristupačnost.</translation>
 <translation id="163517899691012366">Obavještenja su isključena kada je funkcija Ne ometaj uključena</translation>
@@ -395,7 +394,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2785499565474703580">Povezan je 1 uređaj</translation>
 <translation id="2791421900609674576">Vidjet ćete preporuke da možete nastaviti gdje ste stali.  Možete dodirnuti i zadržati da uklonite preporuke.</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, odabrano</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Djelimično snimanje</translation>
@@ -433,7 +431,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2970920913501714344">Instalirati aplikacije, ekstenzije i teme</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
-<translation id="29859347674873492">Otvorite Pomoć u aplikaciji Istražite</translation>
 <translation id="2992327365391326550">Dugme za mikrofon uređaja je isključeno.</translation>
 <translation id="2996462380875591307">Omogućeno je priključeno uvećalo. Pritisnite ponovo Ctrl + tipku za pretraživanje + D da ga isključite.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
@@ -447,7 +444,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3036649622769666520">Otvori fajlove</translation>
 <translation id="3038571455154067151">Da se prijavite, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="3039939407102840004">Postotak baterije olovke je <ph name="PERCENTAGE" />.</translation>
-<translation id="304097922505898963">Otvaranje aplikacije Tipkovni prečaci</translation>
+<translation id="304097922505898963">Otvorite aplikaciju Key Shortcuts</translation>
 <translation id="3045488863354895414">Dobar dan,</translation>
 <translation id="3047761520276763270">Pokušajte izgovoriti:</translation>
 <translation id="3055162170959710888">Danas je uređaj korišten <ph name="USED_TIME" /></translation>
@@ -530,7 +527,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3410336247007142655">Pogledajte postavke tamne teme</translation>
 <translation id="3413817803639110246">Još uvijek nema sadržaja za prikaz</translation>
 <translation id="3417835166382867856">Pretraživanje kartica</translation>
-<translation id="3423744722495840645">Otvorite/zatvorite pokretač</translation>
 <translation id="3428447136709161042">Prekidanje veze s mrežom <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Prevucite prstom zdesna nalijevo da se vratite</translation>
 <translation id="3431517721463707585">14. radna površina</translation>
@@ -559,7 +555,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
 <translation id="3539957339480430241">Pristupna tačka za <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Vidjet ćete preporuke da možete nastavite gdje ste stali. Možete koristiti desni klik da uklonite preporuke.</translation>
-<translation id="3546121235777416274">Fokusiranje na prozor slike u slici</translation>
 <translation id="3552189655002856821">WiFi je isključen</translation>
 <translation id="3554215588514239132">Prikazivanje ili sakrivanje ploče s alatima za programere</translation>
 <translation id="3554637740840164787">Stavka <ph name="ITEM_TITLE" /> je zakačena</translation>
@@ -1065,7 +1060,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5760866832697883462">Povežite uređaj <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Uključivanje/isključivanje označivača. <ph name="STATE_TEXT" /> Koristite dodirnu tablu, ekran na dodir ili olovku da crtate po ekranu.</translation>
 <translation id="576341972084747908">Preuzimanje opasnog fajla <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Shelf Party je isključen.</translation>
 <translation id="576453121877257266">Noćno svjetlo je uključeno.</translation>
 <translation id="5764569119212455782">Prebacivanje na posljednji odabrani jezik</translation>
 <translation id="5769373120130404283">Ekran za privatnost</translation>
@@ -1120,7 +1114,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6012623610530968780">Stranica <ph name="SELECTED_PAGE" /> od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Istaknite sljedeće stavke na polici</translation>
 <translation id="6018164090099858612">Izlazak iz načina rada za preslikavanje</translation>
-<translation id="6019566113895157499">Tipkovni prečaci</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Listaj ulijevo</translation>
 <translation id="6022924867608035986">Brisanje teksta u okviru za pretraživanje</translation>
 <translation id="602472752137106327">Prikazivanje prozora sa svih radnih površina, odabrano je dugme za izbor</translation>
@@ -1275,7 +1269,6 @@ Nova instalacija</translation>
 <translation id="6707693040195709527">Kasnite s vraćanjem uređaja na prethodnu verziju</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>
-<translation id="6727005317916125192">Prethodno okno</translation>
 <translation id="6727969043791803658">Povezano, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
@@ -1322,7 +1315,6 @@ Nova instalacija</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
 <translation id="6920245099716267363">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena, povezan je 1 uređaj.</translation>
 <translation id="6931576957638141829">Sačuvaj u</translation>
-<translation id="6941333068993625698">Slanje povratnih informacija</translation>
 <translation id="6942518653766415536">Meni formata snimanja</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6945922087561257829">Telefon koristi mobilnu mrežu. Provjerite jesu li telefon i Chromebook na istoj WiFi mreži, a zatim pokušajte ponovo. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1334,6 @@ Nova instalacija</translation>
 <translation id="7014684956566476813">Povezano je s uređajem pod nazivom <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vratite se u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Radna površina 6</translation>
-<translation id="7025325401470358758">Sljedeće okno</translation>
 <translation id="7025533177575372252">Povežite uređaj <ph name="DEVICE_NAME" /> sa svojim telefonom</translation>
 <translation id="7026338066939101231">Smanjivanje</translation>
 <translation id="7029814467594812963">Napusti sesiju</translation>
@@ -1371,7 +1362,6 @@ Nova instalacija</translation>
 <translation id="7126996685418858413">Otvoreno u protekloj sedmici</translation>
 <translation id="7130207228079676353">VEOMA VJEROVATNO</translation>
 <translation id="7131634465328662194">Automatski ćete se odjaviti.</translation>
-<translation id="7138316363520807689">Pohranjivanje trenutne kartice kao oznake</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144942256906679589">Status baterije</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1396,7 +1386,6 @@ Nova instalacija</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
-<translation id="731589979057211264">Shelf Party je uključen.</translation>
 <translation id="7340731148882810149">Meni automatskih klikova</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="7348093485538360975">Tastatura na ekranu</translation>
@@ -1465,7 +1454,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
-<translation id="7611271430932669992">Prebaci fokus na skočne prozore i dijaloge</translation>
 <translation id="761736749114493194">Uključite/isključite kadriranje kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kamera se uklopila u donji desni ugao</translation>
@@ -1629,7 +1617,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Otvaranje linka u novom prozoru</translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
-<translation id="8364673525741149932">Uključite Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">Aplikacija <ph name="CAPTURE_MEDIUM" /> se koristi.</translation>
 <translation id="8369166482916924789">Sačuvana radna površina, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>

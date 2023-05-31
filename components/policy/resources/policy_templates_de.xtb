@@ -969,7 +969,7 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
         Mit |BLOCK| kann der Nutzer nicht mehr auf die App zugreifen. Wenn zusammen mit der |BLOCK|-Beschränkung ein |daily_limit_mins| angegeben ist, wird das |daily_limit_mins| ignoriert.
         |TIME_LIMITS| geben ein tägliches Nutzungslimit vor. Ist das Limit erreicht, ist die App an diesem Tag nicht mehr verfügbar. Das Nutzungslimit ist in |daily_limit_mins| angegeben. Das Limit wird täglich zur unter |reset_at| angegebenen UTC-Zeit zurückgesetzt.
         Diese Richtlinie wird nur für minderjährige Nutzer angewendet.
-        Diese Richtlinie ergänzt "UsageTimeLimit". In "UsageTimeLimit" angegebene Beschränkungen wie Gerätenutzungsdauer und Schlafenszeit werden unabhängig von den "PerAppTimeLimits" erzwungen.</translation>
+        Diese Richtlinie ergänzt "UsageTimeLimit". In "UsageTimeLimit" angegebene Beschränkungen wie Bildschirmzeit und Schlafenszeit werden unabhängig von den "PerAppTimeLimits" erzwungen.</translation>
 <translation id="1913629775420987861">Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
 <translation id="1916266055944569995">Wenn diese Richtlinie konfiguriert ist, kannst du den Rückgabewert der Managed Configuration API für einen bestimmten Ursprung definieren.
 
@@ -3742,16 +3742,6 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="441686537793821907">Installation externer Erweiterungen blockieren</translation>
 <translation id="4423597592074154136">Proxy-Einstellungen manuell angeben</translation>
 <translation id="4424004842303301809">Berichte zur Verhinderung von Datenlecks deaktivieren</translation>
-<translation id="4426288704078471820"><ph name="WEBVIEW_TAG_NAME" /> für Chrome-Apps ermöglicht ein Verhalten, das derzeit aus <ph name="PRODUCT_NAME" /> entfernt wird.
-
-Das bisherige Verhalten bestand darin, eine Interstitial-Seite einzublenden, wenn <ph name="WEBVIEW_TAG_NAME" /> eine Seite mit einem ungültigen SSL-Zertifikat aufgerufen hat. Über dieses Interstitial konnte der Nutzer trotz Sicherheitswarnung fortfahren. Beim neuen Verhalten wird eine Fehlerseite angezeigt und keine Möglichkeit angeboten, trotzdem fortzufahren.
-
-Das bisherige Verhalten ermöglicht dem <ph name="NEWWINDOW_EVENT_NAME" />-Ereignis (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) des <ph name="WEBVIEW_TAG_NAME" />-Tags auch, das neue Fenster an ein <ph name="WEBVIEW_TAG_NAME" />-Tag in einem separaten App-Fenster des entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tags anzufügen. Mit dem neuen Verhalten ist dieses Anfügen weiterhin zulässig, der vom Aufruf an „<ph name="WINDOW_OPEN_NAME" />“ zurückgegebene Fensterverweis im entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tag wird jedoch ungültig.
-
-Wenn diese Option aktiviert ist, wird das bisherige Verhalten verwendet.
-Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Verhaltensänderung wirksam, während sie über den <ph name="PRODUCT_NAME" />-Veröffentlichungsprozess eingeführt wird.
-
-Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass diese Änderungen zu Ausfällen in Unternehmen führen. Diese Richtlinie wird in Version 117 entfernt.</translation>
 <translation id="4426601693403743089">Screencast-Dogfood für Family Link-Nutzer deaktivieren</translation>
 <translation id="4427173305799125784">Mit dem PDF-Viewer können PDFs nicht mit Anmerkungen versehen werden</translation>
 <translation id="4432762137771104529">Erweiterte Berichterstellung bei der Verwendung von Safe Browsing aktivieren</translation>
@@ -8422,7 +8412,6 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 
       Nach dem Konfigurieren der Richtlinie kann diese Funktion von den Nutzern nicht mehr geändert werden. Ist sie dagegen nicht konfiguriert, kann der Nutzer die Einstellung ändern.</translation>
 <translation id="8707790573162457301">Automatische Datenträgerbereinigung während der Anmeldung ausführen</translation>
-<translation id="8708628595824806312">RSA-Schlüsselverwendung für Serverzertifikate prüfen, die von lokalen Trust-Anchors ausgestellt wurden</translation>
 <translation id="8713535263782304771">Safe Browsing deaktivieren</translation>
 <translation id="8715181294371649277">Safe Browsing-Downloadschutz in Echtzeit zulassen</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>

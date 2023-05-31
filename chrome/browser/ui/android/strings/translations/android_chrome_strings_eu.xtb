@@ -427,6 +427,7 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3290249595466894471">Gainera, orrien, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitu ahal izateko.</translation>
 <translation id="3293181007446299124">Arakatze-historia pribatu mantentzen da gailuan eta txostenak beranduago bidaltzen dira, zure identitatea babesteko.</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
+<translation id="3305130791745726624">Bidali gailuetara</translation>
 <translation id="3305795716056605962">Itzuli orriak Aukera gehiago botoiaren bidez</translation>
 <translation id="3319664549618064419">Webgunea hobeki ikusteko, aldatu ordenagailuetarako webgunera</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
@@ -945,7 +946,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6138832295072039549">Aldatu webgunearen ezarpenak hemen</translation>
 <translation id="6140709049082532940">Babes hobetua:</translation>
 <translation id="6140912465461743537">Herrialdea/Lurraldea</translation>
-<translation id="6148266338772765473">Utzi kanpoan esteka</translation>
 <translation id="6150320133806434356">Gorde da laster-marka</translation>
 <translation id="6154478581116148741">Gailu honetako pasahitzak esportatzeko, aktibatu pantailaren blokeoa Ezarpenak atalean</translation>
 <translation id="6159729262978459665">Sinkronizatuta dauden gailu guztietako historia garbitzen du</translation>
@@ -1178,6 +1178,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7304072650267745798">Baliteke Android-eko gailuak antzeko ezarpen bat izatea. Chrome-n eta Android-eko gailuan ezarpen hori aktibatuta badaukazu, erabiltzen dituzun webgune eta aplikazioetan agertzen diren iragarkien eraginkortasuna neurtu ahal izango dute enpresek.</translation>
 <translation id="7304873321153398381">Konexiorik gabe. Chrome-k ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="7313188324932846546">Sakatu hau sinkronizazioa konfiguratzeko</translation>
+<translation id="7324354302972299151">Bidali Do Not Track eskaera bat</translation>
 <translation id="7332075081379534664">Hasi da saioa</translation>
 <translation id="7333232495927792353">Sinkronizatu datuak Google-k edukirik egokiena eskain diezazun</translation>
 <translation id="7339898014177206373">Leiho berria</translation>

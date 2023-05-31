@@ -1439,6 +1439,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Non se mostra 1 liña&gt;}other{&lt;Non se mostran <ph name="NUMBER_OF_LINES" /> liñas&gt;}}</translation>
 <translation id="2218019600945559112">Rato e panel táctil</translation>
 <translation id="2218515861914035131">Pegar como texto sen formato</translation>
+<translation id="221872881068107022">Inverter desprazamento</translation>
 <translation id="2220409419896228519">Engade marcadores ás túas aplicacións de Google favoritas</translation>
 <translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
@@ -4370,6 +4371,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4777458362738635055">Os demais usuarios deste dispositivo poden usar esta rede</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurar servidores de nomes de redes</translation>
+<translation id="4778653490315793244">Aínda non hai contido</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Cambiar nome da rede de telefonía móbil de eSIM</translation>
@@ -4791,7 +4793,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5155327081870541046">Na barra de enderezos, escribe o atallo do sitio no que queres realizar buscas (por exemplo: "@marcadores"). Despois preme o atallo de teclado que prefiras e escribe o termo de busca.</translation>
 <translation id="5156638757840305347">Destácase o cursor cando aparece ou cando se move</translation>
 <translation id="5157250307065481244">Ver detalles do sitio</translation>
-<translation id="5157635116769074044">Fixar esta páxina á pantalla de inicio...</translation>
 <translation id="5158206172605340248">Pechouse o menú de acentos.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
 <translation id="5159419673777902220">Teu pai ou túa nai desactivou os permisos para as extensións</translation>
@@ -5874,7 +5875,6 @@ Podes envialo a Google para comprobar se é seguro ou non. As análises adoitan 
 <translation id="6113942107547980621">Para utilizar Smart Lock, cambia ao perfil do usuario principal do teléfono</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma e entrada</translation>
 <translation id="6119927814891883061">Cambiar nome de dispositivo a <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Fixar esta páxina á pantalla de inicio...</translation>
 <translation id="6120707837086723438">Estás vendo suxestións de receitas baseadas na túa actividade recente na Busca en relación con este tema.
         <ph name="BREAK" />
 <ph name="BREAK" />
@@ -8356,7 +8356,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
     <ph name="BEGIN_PARAGRAPH3" />O propietario pode controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se está activada para o teu fillo a Actividade web e das aplicacións adicional, estes datos pódense gardar na súa Conta de Google. Obtén máis información acerca destas opcións de configuración e de como se axustan en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">O certificado de cliente non é válido</translation>
-<translation id="8270162672241199380">Instalador de Steam</translation>
 <translation id="827097179112817503">Mostrar botón de inicio</translation>
 <translation id="8271268254812352141">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido. Personaliza os idiomas de tradución en <ph name="LINK_BEGIN" />Idiomas dos sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Se es o pai ou a nai, os seguintes pasos están pensados para ti. Podes devolverlle o dispositivo (<ph name="DEVICE_TYPE" />) ao neno ou nena despois de configurar a conta.</translation>

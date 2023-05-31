@@ -1436,6 +1436,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 sətir göstərilmir&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> sətir görünmür&gt;}}</translation>
 <translation id="2218019600945559112">Maus və taçped</translation>
 <translation id="2218515861914035131">Tam mətn olaraq yerləşdirin</translation>
+<translation id="221872881068107022">Tərs skrolinq</translation>
 <translation id="2220409419896228519">Əlfəcinləri sevimli Google Tətbiqlərinizə əlavə edin</translation>
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
 <translation id="2220572644011485463">PIN və ya parol</translation>
@@ -4368,6 +4369,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4777458362738635055">Bu cihazın digər istifadəçiləri şəbəkədən istifadə edə bilər</translation>
 <translation id="4777825441726637019">Play Mağaza</translation>
 <translation id="4777943778632837590">Şəbəkə adı serverlərini konfiqurasiya edin</translation>
+<translation id="4778653490315793244">Göstəriləsi heç nə yoxdur</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Oniqiri</translation>
 <translation id="4779766576531456629">eSIM Mobil şəbəkəsinin adını dəyişin</translation>
@@ -4789,7 +4791,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5155327081870541046">Ünvan panelinə axtarmaq istədiyiniz saytın qısayolunu daxil edin (məsələn: "@əlfəcinlər"). Sonra, istədiyiniz klaviatura qısayolunu basın və axtarış sözünü daxil edin.</translation>
 <translation id="5156638757840305347">Kursor göründükdə və ya hərəkət etdikdə vurğulanır</translation>
 <translation id="5157250307065481244">Sayt detallarına baxın</translation>
-<translation id="5157635116769074044">Ekrana başlamaq üçün bu səhifəyə sancın...</translation>
 <translation id="5158206172605340248">Vurğu işarələri menyusu qapadılıb.</translation>
 <translation id="5159094275429367735">Crostini'ni ayarlayın</translation>
 <translation id="5159419673777902220">Valideyniniz artırma icazələrini deaktiv edib</translation>
@@ -5873,7 +5874,6 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="6113942107547980621">Smart Lock istifadə etmək üçün telefonda əsas istifadəçi profilinə keçin</translation>
 <translation id="6116921718742659598">Dil və daxiletmə ayarlarını dəyişdirin...</translation>
 <translation id="6119927814891883061">Cihazı <ph name="DEVICE_NAME" /> adlandırın</translation>
-<translation id="6120205520491252677">Ekrana başlamaq üçün bu səhifəni sancın...</translation>
 <translation id="6120707837086723438">Reseptlər üçün son Axtarış fəaliyyətinizə əsasən təklif olunan reseptləri görürsünüz.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8355,7 +8355,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
     <ph name="BEGIN_PARAGRAPH3" />Sahibi bu funksiyanı Ayarlar &gt; Qabaqcıl &gt; Diaqnostikanı və istifadə datasını avtomatik olaraq Google'a göndərin bölməsindən idarə edə bilər.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlanılacaq. Families.google.com ünvanından bu ayarlar və onların tənzimlənməsi haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Yanlış klient sertifikatı</translation>
-<translation id="8270162672241199380">Steam Quraşdırıcısı</translation>
 <translation id="827097179112817503">Əsas səhifə düyməsini göstərin</translation>
 <translation id="8271268254812352141">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin. <ph name="LINK_BEGIN" />Vebsayt dillərində<ph name="LINK_END" /> tərcümə dillərini fərdiləşdirin.</translation>
 <translation id="8271379370373330993">Valideynlər, növbəti bir neçə addım sizin üçündür. Hesab ayarlandıqdan sonra <ph name="DEVICE_TYPE" /> cihazını uşağa qaytara bilərsiniz.</translation>

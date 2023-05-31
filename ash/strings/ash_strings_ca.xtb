@@ -144,7 +144,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1604857178818051494">Posa en pausa el contingut multimèdia</translation>
 <translation id="1610778689852195798">"Desfés"</translation>
 <translation id="1611993646327628135">Activat</translation>
-<translation id="1618835956950524778">Marca el botó del menú d'aplicacions al prestatge</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="163517899691012366">Les notificacions estan silenciades quan el mode No molestis està activat</translation>
@@ -395,7 +394,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2785499565474703580">1 dispositiu connectat</translation>
 <translation id="2791421900609674576">Veuràs recomanacions per poder continuar des d'on ho vas deixar. Pots mantenir premuda qualsevol recomanació per suprimir-la.</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
-<translation id="2797741504905337289">Grup de prestatges</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seleccionat</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
@@ -433,7 +431,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
-<translation id="29859347674873492">Obre l'ajuda a l'aplicació Explora</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
@@ -447,6 +444,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3036649622769666520">Obre fitxers</translation>
 <translation id="3038571455154067151">Per iniciar la sessió, introdueix el codi d'accés parental de Family Link</translation>
 <translation id="3039939407102840004">El llapis òptic té un <ph name="PERCENTAGE" /> de bateria.</translation>
+<translation id="304097922505898963">Obre l'aplicació Tecles de drecera</translation>
 <translation id="3045488863354895414">Bona tarda,</translation>
 <translation id="3047761520276763270">Prova de dir:</translation>
 <translation id="3055162170959710888">Avui has fet servir aquest dispositiu durant <ph name="USED_TIME" /></translation>
@@ -529,7 +527,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3410336247007142655">Mostra la configuració del tema fosc</translation>
 <translation id="3413817803639110246">Encara no hi ha res per veure</translation>
 <translation id="3417835166382867856">Cerca pestanyes</translation>
-<translation id="3423744722495840645">Obre/Tanca el menú d'aplicacions</translation>
 <translation id="3428447136709161042">Desconnecta't de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Llisca des de la dreta per tornar enrere</translation>
 <translation id="3431517721463707585">Escriptori 14</translation>
@@ -558,7 +555,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3533126039236445965">Aplicacions del prestatge</translation>
 <translation id="3539957339480430241">Punt d'accés Wi‑Fi de <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Veuràs recomanacions per poder continuar des d'on ho vas deixar. Pots fer clic amb el botó dret en qualsevol recomanació per suprimir-la.</translation>
-<translation id="3546121235777416274">Posa el focus a la finestra d'imatge sobre imatge</translation>
 <translation id="3552189655002856821">La Wi-Fi està desactivada</translation>
 <translation id="3554215588514239132">Mostra o amaga el tauler d'eines per a desenvolupadors</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> s'ha fixat</translation>
@@ -1064,7 +1060,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5760866832697883462">Connecta el dispositiu <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Commuta el marcador. <ph name="STATE_TEXT" /> Utilitza el ratolí tàctil, la pantalla tàctil o el llapis òptic per dibuixar a la pantalla.</translation>
 <translation id="576341972084747908">Baixa el fitxer perillós <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">L'opció Grup de prestatges està desactivada.</translation>
 <translation id="576453121877257266">La funció Llum nocturna està activada.</translation>
 <translation id="5764569119212455782">Canvia al darrer idioma seleccionat</translation>
 <translation id="5769373120130404283">Pantalla de privadesa</translation>
@@ -1119,6 +1114,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Marca l'element següent al prestatge</translation>
 <translation id="6018164090099858612">S'està sortint del mode de mirall</translation>
+<translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="602001110135236999">Desplaça't cap a l'esquerra</translation>
 <translation id="6022924867608035986">Esborra el text del quadre de cerca</translation>
 <translation id="602472752137106327">Mostra les finestres de tots els escriptoris amb el botó d'opció seleccionat</translation>
@@ -1273,7 +1269,6 @@ Instal·lació nova</translation>
 <translation id="6707693040195709527">El canvi del dispositiu a la versió anterior ha vençut</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Bateria</translation>
-<translation id="6727005317916125192">Subfinestra anterior</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@ Instal·lació nova</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6920245099716267363">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha 1 dispositiu connectat.</translation>
 <translation id="6931576957638141829">Desa a</translation>
-<translation id="6941333068993625698">Envia suggeriments</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6945922087561257829">El telèfon està utilitzant una xarxa mòbil. Assegura't que el telèfon i el Chromebook estiguin connectats a la mateixa xarxa Wi‐Fi i torna-ho a provar. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@ Instal·lació nova</translation>
 <translation id="7014684956566476813">Connectat a un dispositiu Bluetooth anomenat <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Escriptori 6</translation>
-<translation id="7025325401470358758">Subfinestra següent</translation>
 <translation id="7025533177575372252">Connecta <ph name="DEVICE_NAME" /> al telèfon</translation>
 <translation id="7026338066939101231">Disminueix</translation>
 <translation id="7029814467594812963">Tanca la sessió</translation>
@@ -1369,7 +1362,6 @@ Instal·lació nova</translation>
 <translation id="7126996685418858413">Obert durant la darrera setmana</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
-<translation id="7138316363520807689">Desa la pestanya actual com a adreça d'interès</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
@@ -1391,7 +1383,6 @@ Instal·lació nova</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
 <translation id="7313193732017069507">Desplega la càmera</translation>
-<translation id="731589979057211264">L'opció Grup de prestatges està activada.</translation>
 <translation id="7340731148882810149">Menú de clics automàtics</translation>
 <translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
@@ -1460,7 +1451,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Visualització de calendari, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
-<translation id="7611271430932669992">Mou el focus a les finestres emergents i als quadres de diàleg</translation>
 <translation id="761736749114493194">Commuta l'enquadrament de la càmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
@@ -1624,7 +1614,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8345019317483336363">S'ha seleccionat <ph name="WINDOW_TITLE" /> finestra</translation>
 <translation id="8349964124165471584">Obre l'enllaç en una finestra nova</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
-<translation id="8364673525741149932">Commutador Grup de prestatges.<ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en ús.</translation>
 <translation id="8369166482916924789">Escriptori desat <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>

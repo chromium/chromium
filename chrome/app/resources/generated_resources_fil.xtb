@@ -1454,6 +1454,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linya ang hindi ipinapakita&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linya ang hindi ipinapakita&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> (na) linya ang hindi ipinapakita&gt;}}</translation>
 <translation id="2218019600945559112">Mouse at touchpad</translation>
 <translation id="2218515861914035131">I-paste bilang plain text</translation>
+<translation id="221872881068107022">Reverse na pag-scroll</translation>
 <translation id="2219007152108311874">Magtanong sa Bawat Pagbisita</translation>
 <translation id="2220409419896228519">Magdagdag ng mga bookmark sa iyong paboritong Google Apps</translation>
 <translation id="2220529011494928058">Mag-ulat ng isyu</translation>
@@ -4399,6 +4400,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4777458362738635055">Magagamit ng iba pang user ng device na ito ang network na ito</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">I-configure ang mga name server ng network</translation>
+<translation id="4778653490315793244">Wala pang maipapakita</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">I-rename ang Cellular network ng eSIM</translation>
@@ -4823,7 +4825,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5155327081870541046">Sa address bar, ilagay ang shortcut para sa site kung saan mo gustong maghanap, gaya ng "@bookmarks." Pagkatapos ay pindutin ang iyong gustong keyboard shortcut, at ilagay ang termino para sa paghahanap mo.</translation>
 <translation id="5156638757840305347">Iha-highlight ang cursor kapag lumabas o gumalaw ito</translation>
 <translation id="5157250307065481244">Tingnan ang mga detalye ng site</translation>
-<translation id="5157635116769074044">I-pin ang Pahinang ito sa Screen ng Simula...</translation>
 <translation id="5157701529792771331">Awtomatikong isinasalin ang mga caption</translation>
 <translation id="5158206172605340248">Na-dismiss ang menu ng mga accent mark.</translation>
 <translation id="5159094275429367735">I-set up ang Crostini</translation>
@@ -5914,7 +5915,6 @@ Puwede mo itong ipadala sa Google para masuri kung hindi ito ligtas. Kadalasang 
 <translation id="6113942107547980621">Para gamitin ang Smart Lock, lumipat sa profile ng pangunahing user sa iyong telepono</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
 <translation id="6119927814891883061">Pangalanan ang device na <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">I-pin ang pahinang ito screen ng Simula...</translation>
 <translation id="6120707837086723438">Nakikita mo ang mga iminumungkahing recipe batay sa iyong kamakailang Aktibidad sa paghahanap para sa mga recipe.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8404,7 +8404,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
     <ph name="BEGIN_PARAGRAPH3" />Makokontrol ng may-ari ang feature na ito mula sa Mga Setting &gt; Advanced &gt; Awtomatikong ipadala sa Google ang data ng diagnostic at paggamit.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Kung naka-on ang karagdagang Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Di-wasto ang certificate ng client</translation>
-<translation id="8270162672241199380">Installer ng Steam</translation>
 <translation id="827097179112817503">Ipakita ang button ng home</translation>
 <translation id="8271268254812352141">Makakuha ng mga kahulugan, pagsasalin, o pag-convert ng unit kapag nag-right click ka o pinindot mo nang matagal ang text. I-customize ang mga wika sa pagsasalin sa <ph name="LINK_BEGIN" />Mga wika ng website<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Mga magulang, para sa inyo ang ilang susunod na hakbang. Puwede ninyong ibalik ang <ph name="DEVICE_TYPE" /> sa bata pagkatapos ng pag-setup ng account.</translation>

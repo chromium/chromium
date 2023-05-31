@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">Médiatartalom szüneteltetése</translation>
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
-<translation id="1618835956950524778">Az indítógomb kiemelése a polcon</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">A Kapcsolóalapú hozzáférés a Beállítások Kisegítő lehetőségek pontjában kapcsolható ki.</translation>
 <translation id="163517899691012366">Az értesítések némítva vannak, amikor a Ne zavarjanak mód be van kapcsolva.</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">1 csatlakoztatott eszköz</translation>
 <translation id="2791421900609674576">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Érintéssel és nyomva tartással eltávolíthatja az ajánlásokat.</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, kiválasztva</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2814448776515246190">Részleges rögzítés</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">Alkalmazások, bővítmények és témák telepítése</translation>
 <translation id="2977598380246111477">Következő szám</translation>
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
-<translation id="29859347674873492">A Súgó megnyitása a Felfedezés alkalmazásban</translation>
 <translation id="2992327365391326550">Az eszköz mikrofongombját kikapcsolták.</translation>
 <translation id="2996462380875591307">Dokkolt nagyító bekapcsolva. A kikapcsoláshoz nyomja le ismét a Ctrl+Keresés+D billentyűparancsot.</translation>
 <translation id="3000461861112256445">Monó hang</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">Fájlok megnyitása</translation>
 <translation id="3038571455154067151">A bejelentkezéshez adja meg a Family Link szülői hozzáférési kódot</translation>
 <translation id="3039939407102840004">Az érintőceruza töltöttségi szintje <ph name="PERCENTAGE" /> százalékon áll.</translation>
+<translation id="304097922505898963">A Billentyűparancsok alkalmazás megnyitása</translation>
 <translation id="3045488863354895414">Jó napot!</translation>
 <translation id="3047761520276763270">Mondja azt, hogy:</translation>
 <translation id="3055162170959710888">Az eszköz mai használatának teljes időtartama: <ph name="USED_TIME" /></translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">Sötét téma beállításainak megjelenítése</translation>
 <translation id="3413817803639110246">Itt most nem látható semmi</translation>
 <translation id="3417835166382867856">Lapok keresése</translation>
-<translation id="3423744722495840645">Indító megnyitása/bezárása</translation>
 <translation id="3428447136709161042">Kapcsolat bontása: <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">A visszalépéshez csúsztasson jobbról balra</translation>
 <translation id="3431517721463707585">14. asztal</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">Alkalmazások a polcon</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3542066395059568317">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Jobb gombbal való kattintással eltávolíthatja az ajánlásokat.</translation>
-<translation id="3546121235777416274">Fókuszálás a kép a képben ablakra</translation>
 <translation id="3552189655002856821">A Wi-Fi ki van kapcsolva</translation>
 <translation id="3554215588514239132">A Fejlesztői eszközök panel megjelenítése vagy elrejtése</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> rögzítve</translation>
@@ -1065,7 +1061,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5760866832697883462"><ph name="NAME" /> csatlakoztatása</translation>
 <translation id="5762420912707163638">Jelölő be- vagy kikapcsolása. <ph name="STATE_TEXT" /> Érintőpad, érintőképernyő vagy érintőceruza használatával rajzolhat a képernyőn.</translation>
 <translation id="576341972084747908">A veszélyes <ph name="FILENAME" /> fájl letöltése</translation>
-<translation id="5763928712329149804">A Shelf Party funkció ki van kapcsolva.</translation>
 <translation id="576453121877257266">Az éjszakai fény be van kapcsolva.</translation>
 <translation id="5764569119212455782">Váltás a legutóbb kiválasztott nyelvre</translation>
 <translation id="5769373120130404283">Adatvédelmi képernyő</translation>
@@ -1120,6 +1115,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />/<ph name="SELECTED_PAGE" />. oldal</translation>
 <translation id="601304062528754300">Következő elem kiemelése a polcon</translation>
 <translation id="6018164090099858612">Kilépés a tükrözési módból</translation>
+<translation id="6019566113895157499">Billentyűparancsok</translation>
 <translation id="602001110135236999">Görgetés balra</translation>
 <translation id="6022924867608035986">A keresőmezőben lévő szöveg törlése</translation>
 <translation id="602472752137106327">Az összes asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
@@ -1274,7 +1270,6 @@ Frissen telepítve</translation>
 <translation id="6707693040195709527">Az eszköz előző verzióra való módosítása késésben van</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6723839937902243910">Energiaellátás</translation>
-<translation id="6727005317916125192">Előző ablaktábla</translation>
 <translation id="6727969043791803658">Csatlakoztatva, <ph name="BATTERY_PERCENTAGE" />%-os töltöttség</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1316,6 @@ Frissen telepítve</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
 <translation id="6920245099716267363">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, 1 eszköz csatlakozik.</translation>
 <translation id="6931576957638141829">Mentés ide</translation>
-<translation id="6941333068993625698">Visszajelzés küldése</translation>
 <translation id="6942518653766415536">Rögzítési formátum menüje</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6945922087561257829">Telefonja mobilhálózathoz csatlakozik. Győződjön meg arról, hogy a telefon és a Chromebook ugyanahhoz a Wi-Fi-hálózathoz csatlakozik, majd próbálja újra. <ph name="LEARN_MORE" />.</translation>
@@ -1341,7 +1335,6 @@ Frissen telepítve</translation>
 <translation id="7014684956566476813">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz</translation>
 <translation id="7015766095477679451">Térjen vissza ekkor: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. asztal</translation>
-<translation id="7025325401470358758">Következő ablaktábla</translation>
 <translation id="7025533177575372252">A(z) <ph name="DEVICE_NAME" /> eszköz csatlakoztatása a telefonjával</translation>
 <translation id="7026338066939101231">Csökkentés</translation>
 <translation id="7029814467594812963">Kilépés</translation>
@@ -1370,7 +1363,6 @@ Frissen telepítve</translation>
 <translation id="7126996685418858413">Az elmúlt héten nyitotta meg</translation>
 <translation id="7130207228079676353">NAGY VALÓSZÍNŰSÉGGEL</translation>
 <translation id="7131634465328662194">A rendszer automatikusan kijelentkezteti.</translation>
-<translation id="7138316363520807689">Aktuális lap mentése könyvjelzőként</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144942256906679589">Akkumulátorállapot</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1395,7 +1387,6 @@ Frissen telepítve</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">A rendszergazda visszaállítja az Ön eSIM-jét. Ez eltarthat néhány percig.</translation>
 <translation id="7313193732017069507">Kamera kibontása</translation>
-<translation id="731589979057211264">A Shelf Party mód be van kapcsolva.</translation>
 <translation id="7340731148882810149">Automatikus kattintások menü</translation>
 <translation id="7346909386216857016">Rendben, értem</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
@@ -1464,7 +1455,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7609951632080598826">Naptárnézet, <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
-<translation id="7611271430932669992">A fókusz áthelyezése az előugró és párbeszédablakokra</translation>
 <translation id="761736749114493194">A keretezés be- vagy kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7634648064048557203">Kamera a jobb alsó sarokhoz igazítva</translation>
@@ -1628,7 +1618,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8345019317483336363">A következő ablak van kiválasztva: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">A link megnyitása új ablakban</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
-<translation id="8364673525741149932">A Shelf Party mód be- és kikapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">A(z) <ph name="CAPTURE_MEDIUM" /> használatban van</translation>
 <translation id="8369166482916924789">Mentett asztal, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Előrelépés betűnként</translation>

@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4040350669425716613">Факултети и универзитети</translation>
 <translation id="4047351652147966654">18 x 24 инчи</translation>
+<translation id="404831776305217138">URL-адресата за ажурирање екстензија со ID „<ph name="EXTENSION_ID" />“ е неважечка или користи неподдржана шема. Поддржани се следниве шеми: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> и <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Ќе може да ја користите на производите на Google</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">Драми</translation>
 <translation id="6573200754375280815">Две дупки десно</translation>
 <translation id="6576181918031900030">Започни со емитување</translation>
+<translation id="6578434528542148658">Неважечки ID на екстензија.</translation>
 <translation id="657902945730878902">Цртање и боење</translation>
 <translation id="6579630537141957243">Да се поврзе MIDI-уред?</translation>
 <translation id="6579990219486187401">Светлорозова</translation>
@@ -3032,7 +3034,6 @@
 <translation id="8298115750975731693">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Прикажан е делот „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Превиткување на половина</translation>
-<translation id="8307888238279532626">Инсталирани апликации и колку често се користат</translation>
 <translation id="831997045666694187">Приквечер</translation>
 <translation id="8321476692217554900">известувања</translation>
 <translation id="8329068931308448247">Плик #14</translation>

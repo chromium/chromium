@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS-oversættelse kan ikke udføres</translation>
 <translation id="1018656279737460067">Annulleret</translation>
 <translation id="1020274983236703756">Eksklusive <ph name="PRODUCT_NAME" />-aktiver er nu tilgængelige</translation>
-<translation id="1022433422498218992">Generelle styringsfunktioner</translation>
 <translation id="1022628058306505708">Flow med Jorden</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråde, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nye funktioner er tilgængelige. Tryk på pil op for at få flere oplysninger.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Godkendelsestype</translation>
 <translation id="1776228893584526149">Baggrundstone</translation>
 <translation id="1782199038061388045">oversættelse</translation>
-<translation id="1790209694022261219">Vinduer og skriveborde</translation>
 <translation id="1792647875738159689">Annullerer scanning</translation>
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017079585324758401">Baggrund</translation>
-<translation id="3020183492814296499">Genveje</translation>
 <translation id="3027578600144895987">Luk kamera</translation>
 <translation id="3031560714565892478">Enheden er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>

@@ -145,7 +145,6 @@
 <translation id="1604857178818051494">الإيقاف المؤقت للوسائط</translation>
 <translation id="1610778689852195798">"تراجع"</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
-<translation id="1618835956950524778">تمييز زر مشغّل التطبيقات على الرف</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="163517899691012366">يتم كتم صوت الإشعارات عندما تكون ميزة "عدم الإزعاج" مفعَّلة.</translation>
@@ -396,7 +395,6 @@
 <translation id="2785499565474703580">هناك جهاز واحد متصل.</translation>
 <translation id="2791421900609674576">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر مع الاستمرار لإزالة هذه الاقتراحات.</translation>
 <translation id="2792498699870441125">‏Alt+مفتاح البحث</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490">تم اختيار <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="2814448776515246190">تصوير جزئي</translation>
@@ -434,7 +432,6 @@
 <translation id="2970920913501714344">تثبيت التطبيقات والإضافات والتصاميم</translation>
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2985148236010982088">عرض كل التطبيقات</translation>
-<translation id="29859347674873492">فتح المساعدة في تطبيق "استكشاف"</translation>
 <translation id="2992327365391326550">زر ميكروفون الجهاز غير مفعَّل.</translation>
 <translation id="2996462380875591307">‏تم تفعيل المكبّر. يمكنك إيقافه بالضغط على Ctrl+Search+D مرة أخرى.</translation>
 <translation id="3000461861112256445">صوت أحادي</translation>
@@ -448,6 +445,7 @@
 <translation id="3036649622769666520">فتح الملفات</translation>
 <translation id="3038571455154067151">‏لتسجيل الدخول، يُرجى إدخال رمز الدخول المخصّص للوالدَين في Family Link</translation>
 <translation id="3039939407102840004">مستوى شحن بطارية قلم الشاشة <ph name="PERCENTAGE" /> في المئة.</translation>
+<translation id="304097922505898963">فتح تطبيق "اختصارات لوحة المفاتيح"</translation>
 <translation id="3045488863354895414">مساء الخير،</translation>
 <translation id="3047761520276763270">حاوِِل قول:</translation>
 <translation id="3055162170959710888">استخدمت هذا الجهاز لمدة <ph name="USED_TIME" /> اليوم</translation>
@@ -530,7 +528,6 @@
 <translation id="3410336247007142655">عرض إعدادات المظهر الداكن</translation>
 <translation id="3413817803639110246">ليس لديك شيء للمشاهدة حتى الآن</translation>
 <translation id="3417835166382867856">البحث في علامات التبويب</translation>
-<translation id="3423744722495840645">فتح/إغلاق مشغّل التطبيقات</translation>
 <translation id="3428447136709161042">تم قطع الاتصال بالشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">يُرجى التمرير السريع من اليمين للرجوع.</translation>
 <translation id="3431517721463707585">سطح المكتب 14</translation>
@@ -559,7 +556,6 @@
 <translation id="3533126039236445965">التطبيقات المثبَّتة في الرف</translation>
 <translation id="3539957339480430241">نقطة الاتصال في <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">ستظهر لك اقتراحات كي تتمكّن من المتابعة من حيث توقفت، ويمكنك النقر بزر الماوس الأيمن لإزالة هذه الاقتراحات.</translation>
-<translation id="3546121235777416274">التركيز على نافذة ميزة "نافذة ضمن النافذة"</translation>
 <translation id="3552189655002856821">‏تم إيقاف شبكة Wi-Fi.</translation>
 <translation id="3554215588514239132">إظهار لوحة "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="3554637740840164787">تم تثبيت <ph name="ITEM_TITLE" /></translation>
@@ -1066,7 +1062,6 @@
 <translation id="5760866832697883462">توصيل جهاز <ph name="NAME" /></translation>
 <translation id="5762420912707163638">حالة إيقاف/تفعيل أداة التحديد: <ph name="STATE_TEXT" />. يمكنك استخدام لوحة اللمس أو شاشة تعمل باللمس أو قلم الشاشة للرسم على الشاشة.</translation>
 <translation id="576341972084747908">تنزيل الملف <ph name="FILENAME" /> الضار</translation>
-<translation id="5763928712329149804">‏الوضع Shelf Party غير مفعَّل.</translation>
 <translation id="576453121877257266">ميزة "الإضاءة الليلية" مفعّلة.</translation>
 <translation id="5764569119212455782">التبديل إلى آخر لغة تم اختيارها</translation>
 <translation id="5769373120130404283">شاشة الخصوصية</translation>
@@ -1121,6 +1116,7 @@
 <translation id="6012623610530968780">صفحة <ph name="SELECTED_PAGE" /> من <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">تمييز العنصر التالي على الرف</translation>
 <translation id="6018164090099858612">جارٍ الخروج من وضع المرآة</translation>
+<translation id="6019566113895157499">اختصارات لوحة المفاتيح</translation>
 <translation id="602001110135236999">التمرير لليسار</translation>
 <translation id="6022924867608035986">محو نص مربع البحث</translation>
 <translation id="602472752137106327">عرض النوافذ المفتوحة في جميع أسطح المكتب، تم النقر على زر الاختيار.</translation>
@@ -1275,7 +1271,6 @@
 <translation id="6707693040195709527">إعادة الجهاز إلى الإصدار السابق متأخرة</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6723839937902243910">الطاقة</translation>
-<translation id="6727005317916125192">الجزء السابق</translation>
 <translation id="6727969043791803658">البلوتوث متصل، ومستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1322,7 +1317,6 @@
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="6920245099716267363">يمكنك تفعيل نقطة الاتصال أو إيقافها. نقطة الاتصال مفعَّلة، وهناك جهاز واحد متصل بها.</translation>
 <translation id="6931576957638141829">حفظ في</translation>
-<translation id="6941333068993625698">إرسال التعليقات</translation>
 <translation id="6942518653766415536">قائمة صيَغ التسجيل</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6945922087561257829">‏يستخدم هاتفك شبكة جوّال. تأكَّد من أنّ هاتفك وجهاز Chromebook متصلان بشبكة Wi-Fi نفسها، ثم أعِد المحاولة. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1336,6 @@
 <translation id="7014684956566476813">تم الربط بالجهاز الذي يحمل الاسم <ph name="DEVICE_NAME" />.</translation>
 <translation id="7015766095477679451">يمكنك العودة لاستخدام الجهاز في <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">سطح المكتب 6</translation>
-<translation id="7025325401470358758">الجزء التالي</translation>
 <translation id="7025533177575372252">يمكنك ربط الجهاز <ph name="DEVICE_NAME" /> بهاتفك</translation>
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
@@ -1371,7 +1364,6 @@
 <translation id="7126996685418858413">تم فتحه في الأسبوع الماضي.</translation>
 <translation id="7130207228079676353">التطبيقات التي يرجح النقر عليها</translation>
 <translation id="7131634465328662194">سيتم تسجيل خروجك تلقائيًا.</translation>
-<translation id="7138316363520807689">حفظ علامة التبويب الحالية كإشارة مرجعية</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144942256906679589">حالة البطارية</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1396,7 +1388,6 @@
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
 <translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="7313193732017069507">توسيع الكاميرا</translation>
-<translation id="731589979057211264">‏الوضع Shelf Party مفعَّل.</translation>
 <translation id="7340731148882810149">قائمة النقرات التلقائية</translation>
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7348093485538360975">لوحة المفاتيح على الشاشة</translation>
@@ -1465,7 +1456,6 @@
 <translation id="7607002721634913082">تعليق التحميل</translation>
 <translation id="7609951632080598826">عرض التقويم، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">تمت إعادة توصيل الكاميرا.</translation>
-<translation id="7611271430932669992">نقل التركيز إلى النوافذ المنبثقة ومربعات الحوار</translation>
 <translation id="761736749114493194">إيقاف/تفعيل ميزة "تكبير تلقائي". <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجة فهرنهايت</translation>
 <translation id="7634648064048557203">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى.</translation>
@@ -1629,7 +1619,6 @@
 <translation id="8345019317483336363">تم اختيار النافذة <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8349964124165471584">فتح الرابط في نافذة جديدة</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
-<translation id="8364673525741149932">‏تبديل الوضع Shelf Party <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">يتم حاليًا استخدام <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">سطح المكتب المحفوظ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">نقل للأمام بمقدار حرف واحد</translation>

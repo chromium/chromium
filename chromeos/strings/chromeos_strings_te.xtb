@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
 <translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
-<translation id="1022433422498218992">జనరల్ కంట్రోల్స్</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">ప్రామాణీకరణ రకం</translation>
 <translation id="1776228893584526149">వాల్‌పేపర్ రంగు</translation>
 <translation id="1782199038061388045">అనువాదం</translation>
-<translation id="1790209694022261219">విండోలు, డెస్క్‌లు</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
 <translation id="1801418420130173017">ముదురు రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="1807246157184219062">లేత</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
-<translation id="3020183492814296499">షార్ట్‌కట్‌లు</translation>
 <translation id="3027578600144895987">కెమెరాను మూసివేయండి</translation>
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>

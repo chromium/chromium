@@ -144,7 +144,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1604857178818051494">Peata meediasisu</translation>
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
-<translation id="1618835956950524778">Tõsta riiulil esile käivitaja nupp</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="163517899691012366">Kui funktsioon Mitte segada on sisse lülitatud, on märguanded vaigistatud</translation>
@@ -395,7 +394,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2785499565474703580">1 seade on ühendatud</translation>
 <translation id="2791421900609674576">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite pikalt puudutada.</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valitud</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2814448776515246190">Osaline jäädvustamine</translation>
@@ -433,7 +431,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2970920913501714344">Installige rakendusi, laiendusi ja teemasid</translation>
 <translation id="2977598380246111477">Järgmine number</translation>
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
-<translation id="29859347674873492">Ava rakenduses Avastamine jaotis Abi</translation>
 <translation id="2992327365391326550">Seadme mikrofoninupp on välja lülitatud.</translation>
 <translation id="2996462380875591307">Dokitud luup on lubatud. Vajutage selle väljalülitamiseks klahvikombinatsiooni Ctrl + otsinguklahv + D.</translation>
 <translation id="3000461861112256445">Monoheli</translation>
@@ -529,7 +526,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3410336247007142655">Kuva tumeda teema seaded</translation>
 <translation id="3413817803639110246">Veel ei ole midagi kuvada</translation>
 <translation id="3417835166382867856">Otsige vahelehtedelt</translation>
-<translation id="3423744722495840645">Ava/sule käivitaja</translation>
 <translation id="3428447136709161042">Katkesta ühendus võrguga <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Tagasiliikumiseks pühkige paremalt vasakule</translation>
 <translation id="3431517721463707585">Töölaud 14</translation>
@@ -558,7 +554,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3533126039236445965">Riiulil olevad rakendused</translation>
 <translation id="3539957339480430241">Teenuse <ph name="DEVICE_NAME" /> kuumkoht</translation>
 <translation id="3542066395059568317">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite paremklõpsata.</translation>
-<translation id="3546121235777416274">Fookusta pilt pildis aken</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3554215588514239132">Arendajatööriistade paneeli kuvamine või peitmine</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kinnitati</translation>
@@ -1065,7 +1060,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5760866832697883462">Ühendage oma <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Markeri sisse-/väljalülitamine. <ph name="STATE_TEXT" /> Kasutage ekraanikuvale joonistamiseks puuteplaati, puuteekraani või elektronpliiatsit.</translation>
 <translation id="576341972084747908">Ohtliku faili <ph name="FILENAME" /> allalaadimine</translation>
-<translation id="5763928712329149804">Shelf Party on välja lülitatud.</translation>
 <translation id="576453121877257266">Öövalgus on sees.</translation>
 <translation id="5764569119212455782">Lülitu viimati valitud keelele</translation>
 <translation id="5769373120130404283">Privaatsuskuva</translation>
@@ -1274,7 +1268,6 @@ Uus installimine</translation>
 <translation id="6707693040195709527">Seadme operatsioonisüsteemi eelmisele versioonile ülemineku tähtaeg on möödunud</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6723839937902243910">Toide</translation>
-<translation id="6727005317916125192">Eelmine paan</translation>
 <translation id="6727969043791803658">Ühendatud, <ph name="BATTERY_PERCENTAGE" />% akut</translation>
 <translation id="6732087373923685049">kaamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1314,6 @@ Uus installimine</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="6920245099716267363">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, 1 seade on ühendatud.</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
-<translation id="6941333068993625698">Võimaldab saata tagasisidet</translation>
 <translation id="6942518653766415536">Salvestise vormingu menüü</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6945922087561257829">Teie telefon kasutab mobiilsidevõrku. Veenduge, et teie telefon ja Chromebook oleksid samas WiFi-võrgus, ning seejärel proovige uuesti. <ph name="LEARN_MORE" /></translation>
@@ -1341,7 +1333,6 @@ Uus installimine</translation>
 <translation id="7014684956566476813">Ühendatud seadmega <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Tulge tagasi kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Töölaud 6</translation>
-<translation id="7025325401470358758">Järgmine paan</translation>
 <translation id="7025533177575372252">Ühendage seade <ph name="DEVICE_NAME" /> oma telefoniga</translation>
 <translation id="7026338066939101231">Vähenemine</translation>
 <translation id="7029814467594812963">Välju seansist</translation>
@@ -1370,7 +1361,6 @@ Uus installimine</translation>
 <translation id="7126996685418858413">Avatud viimase nädala jooksul</translation>
 <translation id="7130207228079676353">KÕIGE TÕENÄOLISEMAD</translation>
 <translation id="7131634465328662194">Teid logitakse automaatselt välja.</translation>
-<translation id="7138316363520807689">Praeguse vahelehe salvestamine järjehoidjana</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144942256906679589">Aku olek</translation>
 <translation id="7165278925115064263">Alt + Tõstuklahv + K</translation>
@@ -1395,7 +1385,6 @@ Uus installimine</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administraator lähtestab teie eSIM-i. See võib võtta mõne minuti.</translation>
 <translation id="7313193732017069507">Kaamera laiendamine</translation>
-<translation id="731589979057211264">Shelf Party on sisse lülitatud.</translation>
 <translation id="7340731148882810149">Automaatsete klikkide menüü</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
@@ -1464,7 +1453,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7609951632080598826">Kalendrivaade, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kaamera ühendati uuesti.</translation>
-<translation id="7611271430932669992">Teisaldab fookuse hüpik- ja dialoogiakendele</translation>
 <translation id="761736749114493194">Kaamera kadreerimise lüliti. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Kaamera kinnitati paremasse alanurka</translation>
@@ -1628,7 +1616,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Lingi avamine uues aknas</translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
-<translation id="8364673525741149932">Režiimi Shelf Party sisse- ja väljalülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> on kasutusel.</translation>
 <translation id="8369166482916924789">Salvestatud töölaud, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>

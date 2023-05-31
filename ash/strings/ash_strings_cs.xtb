@@ -144,7 +144,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1604857178818051494">Pozastavit médium</translation>
 <translation id="1610778689852195798">„Vrátit zpět“</translation>
 <translation id="1611993646327628135">Zap</translation>
-<translation id="1618835956950524778">Zvýraznit tlačítko spouštěče na polici</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="163517899691012366">Když je zapnutý režim Nerušit, jsou vypnuta oznámení</translation>
@@ -395,7 +394,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2785499565474703580">Připojené zařízení: 1</translation>
 <translation id="2791421900609674576">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit podržením.</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, vybráno</translation>
 <translation id="2805756323405976993">Aplikace</translation>
 <translation id="2814448776515246190">Částečný záznam</translation>
@@ -433,7 +431,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2970920913501714344">Instalovat aplikace, rozšíření a motivy</translation>
 <translation id="2977598380246111477">Další číslo</translation>
 <translation id="2985148236010982088">Zobrazit všechny aplikace</translation>
-<translation id="29859347674873492">Otevřít Nápovědu v aplikaci Explore</translation>
 <translation id="2992327365391326550">Mikrofon zařízení je vypnutý.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
@@ -529,7 +526,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3410336247007142655">Zobrazit nastavení tmavého motivu</translation>
 <translation id="3413817803639110246">Zatím tu není nic k vidění</translation>
 <translation id="3417835166382867856">Hledat karty</translation>
-<translation id="3423744722495840645">Otevřít/zavřít spouštěč</translation>
 <translation id="3428447136709161042">Odpojit od sítě <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Chcete-li se vrátit, přejeďte prstem zprava</translation>
 <translation id="3431517721463707585">Plocha 14</translation>
@@ -558,7 +554,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3533126039236445965">Aplikace na poličce</translation>
 <translation id="3539957339480430241">Hotspot zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit kliknutím pravým tlačítkem.</translation>
-<translation id="3546121235777416274">Vybrat okno obrazu v obraze</translation>
 <translation id="3552189655002856821">Wi-Fi je vypnuta</translation>
 <translation id="3554215588514239132">Zobrazit nebo skrýt panel Nástroje pro vývojáře</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> byla připnuta</translation>
@@ -1064,7 +1059,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="5760866832697883462">Připojení zařízení <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Přepnout popisovač. <ph name="STATE_TEXT" /> Ke kreslení na obrazovku použijte trackpad, dotykovou obrazovku nebo dotykové pero.</translation>
 <translation id="576341972084747908">Stažení nebezpečného souboru <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Režim Shelf Party je vypnutý.</translation>
 <translation id="576453121877257266">Noční režim je zapnutý.</translation>
 <translation id="5764569119212455782">Přepnout na naposledy vybraný jazyk</translation>
 <translation id="5769373120130404283">Obrazovka ochrany soukromí</translation>
@@ -1273,7 +1267,6 @@ Nová instalace</translation>
 <translation id="6707693040195709527">Termín pro převod zařízení na předchozí verzi vypršel</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6723839937902243910">Napájení</translation>
-<translation id="6727005317916125192">Předchozí podokno</translation>
 <translation id="6727969043791803658">Připojeno, <ph name="BATTERY_PERCENTAGE" /> % baterie</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1313,6 @@ Nová instalace</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
 <translation id="6920245099716267363">Přepnout hotspot. Hotspot je zapnutý, je připojeno 1 zařízení.</translation>
 <translation id="6931576957638141829">Uložit do</translation>
-<translation id="6941333068993625698">Odeslat zpětnou vazbu</translation>
 <translation id="6942518653766415536">Nabídka formátu záznamu</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6945922087561257829">Telefon používá mobilní síť. Zkontrolujte, zda jsou telefon a Chromebook připojeny ke stejné síti Wi-Fi, a zkuste to znovu. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1332,6 @@ Nová instalace</translation>
 <translation id="7014684956566476813">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vraťte se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Plocha 6</translation>
-<translation id="7025325401470358758">Další podokno</translation>
 <translation id="7025533177575372252">Propojte zařízení <ph name="DEVICE_NAME" /> s telefonem</translation>
 <translation id="7026338066939101231">Snížit</translation>
 <translation id="7029814467594812963">Ukončit relaci</translation>
@@ -1369,7 +1360,6 @@ Nová instalace</translation>
 <translation id="7126996685418858413">Otevřeno minulý týden</translation>
 <translation id="7130207228079676353">NEJPRAVDĚPODOBNĚJŠÍ</translation>
 <translation id="7131634465328662194">Budete automaticky odhlášeni.</translation>
-<translation id="7138316363520807689">Uložit aktuální kartu jako záložku</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144942256906679589">Stav baterie</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
@@ -1394,7 +1384,6 @@ Nová instalace</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>
 <translation id="7313193732017069507">Rozbalit fotoaparát</translation>
-<translation id="731589979057211264">Režim Shelf Party je zapnutý.</translation>
 <translation id="7340731148882810149">Nabídka automatických kliknutí</translation>
 <translation id="7346909386216857016">Dobře, rozumím</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
@@ -1463,7 +1452,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7609951632080598826">Zobrazení kalendáře, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera byla znovu připojena.</translation>
-<translation id="7611271430932669992">Přesunout zaměření na vyskakovací a dialogová okna</translation>
 <translation id="761736749114493194">Přepnout automatické zabírání. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Kamera byl připnuta do pravého dolního rohu</translation>
@@ -1627,7 +1615,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8345019317483336363">Vybrané okno: <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Otevřít odkaz v novém okně</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
-<translation id="8364673525741149932">Přepnout režim Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">Je používáno toto periferní zařízení: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Uložená plocha, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Dopředu o písmeno</translation>

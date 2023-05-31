@@ -144,7 +144,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1604857178818051494">Media pauzeren</translation>
 <translation id="1610778689852195798">'Ongedaan maken'</translation>
 <translation id="1611993646327628135">Aan</translation>
-<translation id="1618835956950524778">Launcher-knop op de plank markeren</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Je kunt Toegang via schakelaar uitzetten via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="163517899691012366">Het geluid van meldingen staat uit als Niet storen aanstaat</translation>
@@ -395,7 +394,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2785499565474703580">1 verbonden apparaat</translation>
 <translation id="2791421900609674576">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Tik en houd vast om aanbevelingen te verwijderen.</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, geselecteerd</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Gedeeltelijke opname</translation>
@@ -433,7 +431,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2970920913501714344">Apps, extensies en thema's installeren</translation>
 <translation id="2977598380246111477">Volgend cijfer</translation>
 <translation id="2985148236010982088">Alle apps bekijken</translation>
-<translation id="29859347674873492">Help openen in de app Ontdekken</translation>
 <translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
 <translation id="2996462380875591307">Vastgezet vergrootglas aanstaat. Druk nogmaals op Ctrl+Zoeken+D om dit uit te zetten.</translation>
 <translation id="3000461861112256445">Monogeluid</translation>
@@ -447,6 +444,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3036649622769666520">Bestanden openen</translation>
 <translation id="3038571455154067151">Voer je Family Link-toegangscode voor ouders in om in te loggen</translation>
 <translation id="3039939407102840004">Batterij van stylus op <ph name="PERCENTAGE" /> procent.</translation>
+<translation id="304097922505898963">App voor sneltoetsen openen</translation>
 <translation id="3045488863354895414">Goedemiddag,</translation>
 <translation id="3047761520276763270">Zeg eens:</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
@@ -529,7 +527,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3410336247007142655">Instellingen voor donker thema bekijken</translation>
 <translation id="3413817803639110246">Er is nog niets te zien</translation>
 <translation id="3417835166382867856">Tabbladen doorzoeken</translation>
-<translation id="3423744722495840645">Launcher openen/sluiten</translation>
 <translation id="3428447136709161042">Verbinding met <ph name="NETWORK_NAME" /> verbreken</translation>
 <translation id="3430396595145920809">Swipe vanaf de rechterkant om terug te gaan</translation>
 <translation id="3431517721463707585">Bureau 14</translation>
@@ -558,7 +555,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3533126039236445965">Apps op plank</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3542066395059568317">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Klik met de rechtermuisknop om aanbevelingen te verwijderen.</translation>
-<translation id="3546121235777416274">Focus op het scherm-in-scherm-venster zetten</translation>
 <translation id="3552189655002856821">Wifi staat uit</translation>
 <translation id="3554215588514239132">Developer Tools-deelvenster tonen of verbergen</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vastgezet</translation>
@@ -1064,7 +1060,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5760866832697883462">Je <ph name="NAME" /> verbinden</translation>
 <translation id="5762420912707163638">Stift aan-/uitzetten. <ph name="STATE_TEXT" /> Gebruik de trackpad, het touchscreen of de stylus om op het scherm te tekenen.</translation>
 <translation id="576341972084747908">Downloaden van <ph name="FILENAME" /> is gevaarlijk</translation>
-<translation id="5763928712329149804">Shelf Party staat uit.</translation>
 <translation id="576453121877257266">Nachtverlichting staat aan.</translation>
 <translation id="5764569119212455782">Overschakelen naar laatst geselecteerde taal</translation>
 <translation id="5769373120130404283">Privacyscherm</translation>
@@ -1119,6 +1114,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6018164090099858612">Mirrormodus wordt gesloten</translation>
+<translation id="6019566113895157499">Sneltoetsen</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
 <translation id="6022924867608035986">Tekst in zoekvak wissen</translation>
 <translation id="602472752137106327">Vensters van alle bureaus bekijken, keuzerondje geselecteerd</translation>
@@ -1273,7 +1269,6 @@ Nieuwe installatie</translation>
 <translation id="6707693040195709527">Het apparaat had al moeten zijn teruggezet naar een oudere versie</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Voeding</translation>
-<translation id="6727005317916125192">Vorig venster</translation>
 <translation id="6727969043791803658">Verbonden, batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@ Nieuwe installatie</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6920245099716267363">Zet de hotspot aan/uit. Hotspot staat aan: 1 apparaat verbonden.</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
-<translation id="6941333068993625698">Feedback sturen</translation>
 <translation id="6942518653766415536">Menu voor opname-indelingen</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6945922087561257829">Je telefoon gebruikt een mobiel netwerk. Zorg dat je telefoon en Chromebook met hetzelfde wifi-netwerk zijn verbonden en probeer het opnieuw. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@ Nieuwe installatie</translation>
 <translation id="7014684956566476813">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Bureau 6</translation>
-<translation id="7025325401470358758">Volgend deelvenster</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Lager</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
@@ -1369,7 +1362,6 @@ Nieuwe installatie</translation>
 <translation id="7126996685418858413">In de afgelopen week geopend</translation>
 <translation id="7130207228079676353">MEEST WAARSCHIJNLIJK</translation>
 <translation id="7131634465328662194">Je wordt automatisch uitgelogd.</translation>
-<translation id="7138316363520807689">Huidig tabblad opslaan als bookmark</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1391,7 +1383,6 @@ Nieuwe installatie</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
-<translation id="731589979057211264">Shelf Party staat aan.</translation>
 <translation id="7340731148882810149">Menu Automatische klikken</translation>
 <translation id="7346909386216857016">OK, begrepen</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
@@ -1460,7 +1451,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
-<translation id="7611271430932669992">De focus naar pop-ups en dialoogvensters verplaatsen</translation>
 <translation id="761736749114493194">Cameraframing aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Camera uitgelijnd op de rechterbenedenhoek</translation>
@@ -1624,7 +1614,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8349964124165471584">Link openen in een nieuw venster</translation>
 <translation id="8351131234907093545">Notitie maken</translation>
-<translation id="8364673525741149932">Shelf Party aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in gebruik.</translation>
 <translation id="8369166482916924789">Opgeslagen bureau, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>

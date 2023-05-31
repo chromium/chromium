@@ -1442,6 +1442,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 لائن نہیں دکھائی گئی&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> لائنز نہیں دکھائی گئیں&gt;}}</translation>
 <translation id="2218019600945559112">ماؤس اور ٹچ پیڈ</translation>
 <translation id="2218515861914035131">سادہ متن کے بطور پیسٹ کریں</translation>
+<translation id="221872881068107022">معکوس اسکرولنگ</translation>
 <translation id="2219007152108311874">ہر دورے پر پوچھیں</translation>
 <translation id="2220409419896228519">‏اپنی پسندیدہ Google ایپس میں بُک مارکس شامل کریں</translation>
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
@@ -4384,6 +4385,7 @@
 <translation id="4777458362738635055">اس آلہ کے دیگر صارفین یہ نیٹ ورک استعمال کر سکتے ہيں</translation>
 <translation id="4777825441726637019">‏Play اسٹور</translation>
 <translation id="4777943778632837590">نیٹ ورک کے نام کے سرورز کو کنفیگر کریں</translation>
+<translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
 <translation id="4779083564647765204">زوم</translation>
 <translation id="4779136857077979611">اونیگیری</translation>
 <translation id="4779766576531456629">‏eSIM سیلولر نیٹ ورک کا نام تبدیل کریں</translation>
@@ -4808,7 +4810,6 @@
 <translation id="5155327081870541046">‏ایڈریس بار میں، اس سائٹ کا شارٹ کٹ درج کریں جسے آپ تلاش کرنا چاہتے ہیں، جیسے "bookmarks@"۔ پھر، اپنا پسندیدہ کی بورڈ شارٹ کٹ دبائیں، اور اپنی تلاش کی اصطلاح درج کریں۔</translation>
 <translation id="5156638757840305347">کرسر کے ظاہر ہونے یا منتقل ہونے پر اسے نمایاں کیا جاتا ہے</translation>
 <translation id="5157250307065481244">سائٹ کی تفصیلات دیکھیں</translation>
-<translation id="5157635116769074044">اسکرین شروع کرنے کیلئے اس صفحہ کو پن کریں…</translation>
 <translation id="5157701529792771331">خودکار طور پر کیپشنز کا ترجمہ کرتا ہے</translation>
 <translation id="5158206172605340248">لہجے کے نشانات کا مینیو مسترد کر دیا گیا۔</translation>
 <translation id="5159094275429367735">‏Crostini سیٹ اپ کریں</translation>
@@ -5898,7 +5899,6 @@
 <translation id="6113942107547980621">‏Smart Lock کا استعمال کرنے کے لیے اپنے فون پربنیادی صارف پروفائل پر سوئچ کریں</translation>
 <translation id="6116921718742659598">زبان اور ان پٹ کی ترتیبات تبدیل کریں</translation>
 <translation id="6119927814891883061">آلہ کا نام <ph name="DEVICE_NAME" /> رکھیں</translation>
-<translation id="6120205520491252677">اسکرین شروع کرنے کیلئے اس صفحہ کو پن کریں…</translation>
 <translation id="6120707837086723438">‏آپ تراکیب کیلئے اپنی حالیہ تلاش کی سرگرمی کی بنیاد پر تجویز کردہ تراکیب کو دیکھ رہے ہیں۔
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8385,7 +8385,6 @@
     <ph name="BEGIN_PARAGRAPH3" />مالک ترتیبات &gt; جدید ترین &gt; خودکار طور پر Google کو ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں سے اس خصوصیت کو کنٹرول کر سکتا ہے۔<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />اگر آپ کی اضافی 'ویب اور ایپ سرگرمی' کی ترتیب آپ کے بچے کے لیے آن ہے، تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ families.google.com پر ان ترتیبات اور انہیں ایڈجسٹ کرنے کے طریقہ کے بارے میں مزید جانیں۔<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">کلائنٹ کا غلط سرٹیفکیٹ</translation>
-<translation id="8270162672241199380">‏Steam انسٹالر</translation>
 <translation id="827097179112817503">ہوم بٹن دکھائیں</translation>
 <translation id="8271268254812352141">دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کرنے اور دبائے رکھنے پر تعریفیں، ترجمے یا یونٹ کی تبدیلیاں حاصل کریں۔ <ph name="LINK_BEGIN" />ویب سائٹ کی زبانوں<ph name="LINK_END" /> میں ترجمے کی زبانوں کو حسب ضرورت بنائیں۔</translation>
 <translation id="8271379370373330993">والدین، اگلے کچھ اقدامات آپ کے لئے ہیں۔ اکاؤنٹ سیٹ اپ کے بعد آپ <ph name="DEVICE_TYPE" /> بچے کو واپس دے سکتے ہیں۔</translation>

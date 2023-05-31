@@ -1456,6 +1456,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 nerodoma eilutė&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> nerodoma eilutė&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> nerodomos eilutės&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> nerodomų eilučių&gt;}}</translation>
 <translation id="2218019600945559112">Pelė ir jutiklinė dalis</translation>
 <translation id="2218515861914035131">Įklijuoti kaip grynąjį tekstą</translation>
+<translation id="221872881068107022">Atvirkštinis slinkimas</translation>
 <translation id="2219007152108311874">Klausti per kiekvieną apsilankymą</translation>
 <translation id="2220409419896228519">Pridėkite žymių prie mėgstamiausių „Google“ programų</translation>
 <translation id="2220529011494928058">Pranešti apie problemą</translation>
@@ -4401,6 +4402,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4777458362738635055">Kiti šio įrenginio naudotojai gali naudoti šį tinklą</translation>
 <translation id="4777825441726637019">„Play“ parduotuvė</translation>
 <translation id="4777943778632837590">Konfigūruoti tinklo pavadinimo serverius</translation>
+<translation id="4778653490315793244">Dar nėra rodytino turinio</translation>
 <translation id="4779083564647765204">Keisti mastelį</translation>
 <translation id="4779136857077979611">Onigiris</translation>
 <translation id="4779766576531456629">Pervardyti „eSIM“ kortelės mobiliojo ryšio tinklą</translation>
@@ -4825,7 +4827,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5155327081870541046">Adreso juostoje įveskite svetainės, kurios norite ieškoti, šaukinį, pvz., „@bookmarks“. Tada paspauskite norimą spartųjį klavišą ir įveskite paieškos terminą.</translation>
 <translation id="5156638757840305347">Žymeklis paryškinamas, kai parodomas arba judinamas</translation>
 <translation id="5157250307065481244">Peržiūrėti išsamią svetainės informaciją</translation>
-<translation id="5157635116769074044">Prisegti šį puslapį pradžios ekrane...</translation>
 <translation id="5157701529792771331">Automatiškai verčiami subtitrai</translation>
 <translation id="5158206172605340248">Atsisakyta kirčio ženklų meniu.</translation>
 <translation id="5159094275429367735">Nustatyti „Crostini“</translation>
@@ -5917,7 +5918,6 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="6113942107547980621">Norėdami naudoti „Smart Lock“ telefone pereikite į pagrindinio naudotojo profilį</translation>
 <translation id="6116921718742659598">Keisti kalbos ir įvesties nustatymus</translation>
 <translation id="6119927814891883061">Įrenginį pavadinti „<ph name="DEVICE_NAME" />“</translation>
-<translation id="6120205520491252677">Prisegti šį puslapį prie pradžios ekrano...</translation>
 <translation id="6120707837086723438">Matote siūlomus receptus, rodomus pagal jūsų naujausią su receptais susijusios paieškos veiklą.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8411,7 +8411,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
     <ph name="BEGIN_PARAGRAPH3" />Savininkas gali valdyti šią funkciją skiltyje „Nustatymai“ &gt; „Išplėstiniai“ &gt; „Automatiškai siųsti diagnostikos ir naudojimo duomenis „Google“.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jei papildomas „Žiniatinklio ir programų veiklos“ nustatymas įjungtas vaiko paskyroje, šie duomenys gali būti išsaugoti jo „Google“ paskyroje. Sužinokite daugiau apie šiuos nustatymus ir kaip juos koreguoti apsilankę adresu families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Netinkamas kliento sertifikatas</translation>
-<translation id="8270162672241199380">„Steam“ diegimo programa</translation>
 <translation id="827097179112817503">Rodyti mygtuką „Pagrindinis“</translation>
 <translation id="8271268254812352141">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas. Tinkinkite vertimo kalbas skiltyje <ph name="LINK_BEGIN" />„Svetainės kalbos“<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Tėvai, kelis kitus veiksmus turite atlikti jūs. Įrenginį „<ph name="DEVICE_TYPE" />“ galėsite grąžinti vaikui, kai užbaigsite paskyros sąranką.</translation>

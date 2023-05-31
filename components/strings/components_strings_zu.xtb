@@ -1240,6 +1240,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
 <translation id="4040350669425716613">Amakolishi namanyuvesi</translation>
 <translation id="4047351652147966654">U-18 x 24 phakathi</translation>
+<translation id="404831776305217138">I-URL yokubuyekeza yesandiso esine-ID "<ph name="EXTENSION_ID" />" ayivumelekile noma isebenzisa uhlelo olungasekelwe. Izikimu ezisekelwe yilezi: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ne-<ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Uzokwazi ukuyisebenzisa kuyo yonke imikhiqizo ye-Google</translation>
 <translation id="405399507749852140">Thola izexwayiso uma intengo yehla kunoma yiliphi isayithi</translation>
 <translation id="4056223980640387499">I-Sepia</translation>
@@ -2290,6 +2291,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6569366777234823130">Ama-movie e-Drama</translation>
 <translation id="6573200754375280815">Ukushaya okubili kwesokudla</translation>
 <translation id="6576181918031900030">Qala ukusakaza</translation>
+<translation id="6578434528542148658">I-ID yesandiso engavumelekile.</translation>
 <translation id="657902945730878902">Ukudweba nemibala</translation>
 <translation id="6579630537141957243">Xhuma idivayisi ye-MIDI?</translation>
 <translation id="6579990219486187401">Okuphinki okukhanyayo</translation>
@@ -3029,7 +3031,6 @@ Imininingwane engeziwe:
 <translation id="8298115750975731693">I-Wi-Fi oyisebenzisayo (<ph name="WIFI_NAME" />) ingakudinga ukuthi uvakashele ku-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">Isigaba se-"<ph name="SECTION" />" esibonisiwe</translation>
 <translation id="830498451218851433">Goqa ngohafu</translation>
-<translation id="8307888238279532626">Izinhlelo zokusebenza ezifakiwe nokuthi zisetshenziswa kaningi kangakanani</translation>
 <translation id="831997045666694187">Kusihlwa</translation>
 <translation id="8321476692217554900">izaziso</translation>
 <translation id="8329068931308448247">Imvilophu ye-#14</translation>

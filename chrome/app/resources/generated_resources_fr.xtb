@@ -1441,6 +1441,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ligne non affichée&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ligne non affichée&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lignes non affichées&gt;}}</translation>
 <translation id="2218019600945559112">Souris et pavé tactile</translation>
 <translation id="2218515861914035131">Coller en texte brut</translation>
+<translation id="221872881068107022">Inverser le défilement</translation>
 <translation id="2220409419896228519">Ajouter des favoris à vos applications Google préférées</translation>
 <translation id="2220529011494928058">Signaler un problème</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
@@ -4372,6 +4373,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4777458362738635055">Les autres utilisateurs de cet appareil peuvent utiliser ce réseau</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurer des serveurs de noms réseau</translation>
+<translation id="4778653490315793244">Rien à afficher pour le moment</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Renommer le réseau mobile de l'eSIM</translation>
@@ -4793,7 +4795,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5155327081870541046">Dans la barre d'adresse, saisissez le raccourci associé au site sur lequel vous voulez effectuer une recherche, par exemple "@favoris". Ensuite, utilisez le raccourci clavier de votre choix, puis saisissez votre terme de recherche.</translation>
 <translation id="5156638757840305347">Le curseur est mis en surbrillance quand il apparaît ou se déplace</translation>
 <translation id="5157250307065481244">Voir les infos liées au site</translation>
-<translation id="5157635116769074044">Épingler cette page à l'écran de démarrage…</translation>
 <translation id="5158206172605340248">Menu d'accentuation fermé.</translation>
 <translation id="5159094275429367735">Configurer Crostini</translation>
 <translation id="5159419673777902220">Tes parents ont bloqué les autorisations liées aux extensions</translation>
@@ -5880,7 +5881,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
 <translation id="6119927814891883061">Nommer l'appareil <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Épingler cette page à l'écran de démarrage…</translation>
 <translation id="6120707837086723438">Des recettes vous sont suggérées en fonction de vos recherches récentes de recettes.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8365,7 +8365,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH3" />Le propriétaire de l'appareil peut contrôler cette fonctionnalité dans Paramètres &gt; Avancés &gt; Envoyer automatiquement des données de diagnostic et d'utilisation à Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si vous activez l'enregistrement de l'activité additionnelle de votre enfant sur le Web et les applications, ces données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les régler sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat client non valide</translation>
-<translation id="8270162672241199380">Programme d'installation de Steam</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
 <translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte. Personnalisez les langues de traduction dans <ph name="LINK_BEGIN" />Langues des sites Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>

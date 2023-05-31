@@ -1453,6 +1453,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 line not shown&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}}</translation>
 <translation id="2218019600945559112">Mouse and touchpad</translation>
 <translation id="2218515861914035131">Paste as plain text</translation>
+<translation id="221872881068107022">Reverse scrolling</translation>
 <translation id="2219007152108311874">Ask on every visit</translation>
 <translation id="2220409419896228519">Add bookmarks to your favourite Google apps</translation>
 <translation id="2220529011494928058">Report an issue</translation>
@@ -4398,6 +4399,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4777458362738635055">Other users of this device can use this network</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configure network name servers</translation>
+<translation id="4778653490315793244">Nothing to show yet</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Rename eSIM mobile network</translation>
@@ -4822,7 +4824,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5155327081870541046">In the address bar, enter the shortcut for the site that you want to search, such as '@bookmarks'. Then, press your preferred keyboard shortcut, and enter your search term.</translation>
 <translation id="5156638757840305347">Cursor is highlighted when it appears or moves</translation>
 <translation id="5157250307065481244">View site details</translation>
-<translation id="5157635116769074044">Pin this Page to Start Screen...</translation>
 <translation id="5157701529792771331">Automatically translates captions</translation>
 <translation id="5158206172605340248">Accent marks menu dismissed.</translation>
 <translation id="5159094275429367735">Set up Crostini</translation>
@@ -5913,7 +5914,6 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="6113942107547980621">To use Smart Lock, switch to the primary user profile on your phone</translation>
 <translation id="6116921718742659598">Change language and input settings</translation>
 <translation id="6119927814891883061">Name device to <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Pin this page to Start screen...</translation>
 <translation id="6120707837086723438">You’re seeing suggested recipes based on your recent search activity for recipes.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8401,7 +8401,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
     <ph name="BEGIN_PARAGRAPH3" />The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />If additional Web &amp; app activity setting is turned on for your child, this data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Invalid client certificate</translation>
-<translation id="8270162672241199380">Steam installer</translation>
 <translation id="827097179112817503">Show Home button</translation>
 <translation id="8271268254812352141">Get definitions, translations or unit conversions when you right-click or touch and hold text. Customise translation languages in <ph name="LINK_BEGIN" />website languages<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE" /> back to the child after account setup.</translation>

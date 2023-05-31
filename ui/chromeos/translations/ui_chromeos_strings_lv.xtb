@@ -1012,6 +1012,7 @@
 <translation id="8919081441417203123">Dāņu valoda</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8965697826696209160">Nepietiek vietas.</translation>
+<translation id="8971742885766657349">Notiek sinhronizēšana – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Ķīniešu (tradicionālā), piņjiņs</translation>
 <translation id="8998871447376656508">Jūsu Google diskā nepietiek vietas, lai pabeigtu augšupielādi.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, pārvalda jūsu administrators, informācija</translation>

@@ -3801,35 +3801,6 @@ Esto se quitó en M112.</translation>
 <translation id="441686537793821907">Bloquear la instalación de extensiones externas</translation>
 <translation id="4423597592074154136">Especificar manualmente la configuración del proxy</translation>
 <translation id="4424004842303301809">Inhabilitar la generación de informes para los eventos de prevención de filtración de datos</translation>
-<translation id="4426288704078471820">La <ph name="WEBVIEW_TAG_NAME" /> de las apps de Chrome permite
-un comportamiento que se está quitando de
-<ph name="PRODUCT_NAME" />.
-
-El comportamiento anterior mostraba una página intersticial cuando una
-<ph name="WEBVIEW_TAG_NAME" /> navegaba a una página
-con un certificado SSL no válido. Esta página intersticial le da al usuario la opción
-de continuar de forma no segura. El comportamiento nuevo muestra una página de error sin la opción
-de continuar de forma no segura.
-
-El comportamiento anterior también permite el
-evento <ph name="NEWWINDOW_EVENT_NAME" /> de
-<ph name="WEBVIEW_TAG_NAME" />
-(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
-para adjuntar la ventana nueva a un elemento de <ph name="WEBVIEW_TAG_NAME" />
-en una ventana independiente de la app de la <ph name="WEBVIEW_TAG_NAME" />
-de origen. Con el nuevo comportamiento, este
-elemento adjunto sigue permitido; sin embargo, la referencia de la ventana que se muestra de la
-llamada a <ph name="WINDOW_OPEN_NAME" /> en la <ph name="WEBVIEW_TAG_NAME" />
-de origen no es válida.
-
-Si la habilitas, se usa el comportamiento anterior.
-Si la inhabilitas o no la estableces, el cambio de comportamiento tendrá efecto a medida
-que se implementa a través del proceso de lanzamiento
-de <ph name="PRODUCT_NAME" />.
-
-Esta política es una solución temporal por si las empresas
-experimentan fallas debido a estos cambios. En la versión 117,
-se quitará esta política.</translation>
 <translation id="4426601693403743089">Inhabilitar la prueba interna de Screencast para los usuarios de Family Link</translation>
 <translation id="4427173305799125784">El visor de PDF no puede agregar anotaciones en archivos PDF</translation>
 <translation id="4432762137771104529">Habilitar el informe extendido de Navegación segura</translation>
@@ -8682,7 +8653,6 @@ Si no estableces la política, no se importará ninguna contraseña guardada en 
 
       Si estableces la política, los usuarios no podrán cambiar esta función. Si no la estableces, los usuarios podrán cambiar la configuración.</translation>
 <translation id="8707790573162457301">Ejecutar la limpieza automática del disco durante el acceso</translation>
-<translation id="8708628595824806312">Verificar el uso de la clave RSA para los certificados del servidor que emiten las anclas de confianza locales</translation>
 <translation id="8713535263782304771">Inhabilitar la Navegación segura</translation>
 <translation id="8715181294371649277">Permitir la protección de descargas en tiempo real de la Navegación segura</translation>
 <translation id="8715885991031124968">Permite los diálogos de JavaScript que se envían desde un submarco de otro origen</translation>

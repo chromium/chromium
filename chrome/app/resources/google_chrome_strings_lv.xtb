@@ -29,6 +29,7 @@
 <translation id="1516530951338665275">Pārlūkam Google Chrome ir nepieciešama Bluetooth piekļuve, lai turpinātu savienošanu pārī. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Atjaunināt Chrome</translation>
+<translation id="1555506416658437797">rediģēt maksājuma veidus</translation>
 <translation id="1583073672411044740">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Tādējādi tiks izveidots jauns Chrome profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Pārlūkā Google Chrome tiek izmantota kamera.</translation>
 <translation id="1587325591171447154">Fails <ph name="FILE_NAME" /> ir bīstams, tādēļ Chrome to bloķēja.</translation>
@@ -80,6 +81,7 @@
 <translation id="234869673307233423">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="235650106824528204">Darba profila administrators var noņemt šī profila lietošanas laikā ģenerētos Chrome datus (piemēram, grāmatzīmes, vēsturi, paroles un citus iestatījumus). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="2399868464369312507">Pārlūkā Google Chrome tiek mēģināts automātiski rediģēt maksājuma veidus.</translation>
 <translation id="2401189691232800402">Chrome OS sistēma</translation>
 <translation id="2467438592969358367">Pārlūkā Google Chrome tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>

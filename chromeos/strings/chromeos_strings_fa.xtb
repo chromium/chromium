@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">نمی‌توان ساناد را حل‌وفصل کرد</translation>
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1020274983236703756">اکنون دارایی‌های انحصاری <ph name="PRODUCT_NAME" /> دردسترس است</translation>
-<translation id="1022433422498218992">کنترل‌های عمومی</translation>
 <translation id="1022628058306505708">جریان خاک</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
 <translation id="1047773237499189053">ویژگی جدید دردسترس است، برای اطلاعات بیشتر از کلید «پیکان روبه بالا» استفاده کنید.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">نوع اصالت‌سنجی</translation>
 <translation id="1776228893584526149">رنگ‌مایه کاغذدیواری</translation>
 <translation id="1782199038061388045">ترجمه</translation>
-<translation id="1790209694022261219">پنجره‌ها و میزکارها</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
 <translation id="1801418420130173017">غیرفعال کردن زمینه تیره</translation>
 <translation id="1807246157184219062">روشن</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">بازآوری</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
-<translation id="3020183492814296499">میان‌برها</translation>
 <translation id="3027578600144895987">بستن دوربین</translation>
 <translation id="3031560714565892478">دستگاه دوربین ویدیویی است.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">به‌روزرسانی موتور</translation>
 <translation id="5984145644188835034">کاغذدیواری پیش‌فرض</translation>
 <translation id="6017514345406065928">سبز</translation>
+<translation id="6019566113895157499">میان‌برهای کلیدی</translation>
 <translation id="6034694447310538551">فعال کردن بازنشانی خودکار ماهانه</translation>
 <translation id="6037291330010597344">تغذیه‌کننده سند اسکنر خالی است. اسناد را اضافه کنید و دوباره امتحان کنید.</translation>
 <translation id="6040143037577758943">بستن</translation>

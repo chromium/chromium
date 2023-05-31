@@ -1453,6 +1453,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linje vise ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
 <translation id="2218019600945559112">Mus og touchplade</translation>
 <translation id="2218515861914035131">Indsæt som almindelig tekst</translation>
+<translation id="221872881068107022">Omvendt rulning</translation>
 <translation id="2220409419896228519">Føj bogmærker til dine foretrukne Google-apps</translation>
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
@@ -4388,6 +4389,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4777458362738635055">Andre brugere af denne enhed kan bruge dette netværk</translation>
 <translation id="4777825441726637019">Play Butik</translation>
 <translation id="4777943778632837590">Konfigurer navneservere for netværk</translation>
+<translation id="4778653490315793244">Der er intet at vise endnu</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Omdøb eSIM-mobilnetværk</translation>
@@ -4809,7 +4811,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5155327081870541046">I adresselinjen skal du angive genvejen til det website, du vil søge på, f.eks. "@bogmærker". Tryk derefter på din foretrukne tastaturgenvej, og angiv din søgeterm.</translation>
 <translation id="5156638757840305347">Markøren fremhæves, når den vises eller flyttes</translation>
 <translation id="5157250307065481244">Se websiteoplysninger</translation>
-<translation id="5157635116769074044">Fastgør denne side til startskærmen...</translation>
 <translation id="5158206172605340248">Menuen for accenttegn blev lukket.</translation>
 <translation id="5159094275429367735">Konfigurer Crostini</translation>
 <translation id="5159419673777902220">Din forælder har deaktiveret tilladelserne for udvidelser</translation>
@@ -5895,7 +5896,6 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
 <translation id="6113942107547980621">Skift til den primære brugerprofil på din telefon for at bruge Smart Lock</translation>
 <translation id="6116921718742659598">Rediger indstillingerne for sprog og indtastning</translation>
 <translation id="6119927814891883061">Navngiv enheden: <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Fastgør denne side til startskærmen...</translation>
 <translation id="6120707837086723438">Du får vist forslag til opskrifter baseret på dine seneste søgninger efter opskrifter.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8379,7 +8379,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
     <ph name="BEGIN_PARAGRAPH3" />TEjeren kan styre funktionen under Indstillinger &gt; Avanceret &gt; Send automatisk diagnostik og brugsdata til Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Hvis yderligere indstillinger for Web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto. Du kan få flere oplysninger om disse indstillinger og ændring af dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ugyldigt klientcertifikat</translation>
-<translation id="8270162672241199380">Steam-installationsprogram</translation>
 <translation id="827097179112817503">Vis knappen Startside</translation>
 <translation id="8271268254812352141">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder fingeren nede på tekst. Tilpas dine oversættelsessprog under <ph name="LINK_BEGIN" />Sprog på websites<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Til forælderen: Du skal udføre de næste par trin. Du kan give <ph name="DEVICE_TYPE" />-enheden tilbage til barnet, når konfigurationen af kontoen er gennemført.</translation>

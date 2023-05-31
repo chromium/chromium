@@ -1241,6 +1241,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4031179711345676612">Mikrofon engedélyezve</translation>
 <translation id="4040350669425716613">Egyetemek és főiskolák</translation>
 <translation id="4047351652147966654">18 × 24 hüvelyk</translation>
+<translation id="404831776305217138">A(z) „<ph name="EXTENSION_ID" />” azonosítójú bővítmény frissítési URL-je érvénytelen, vagy nem támogatott sémát használ. Támogatott sémák: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> és <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Használhatja majd a Google-termékekben</translation>
 <translation id="405399507749852140">Értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="4056223980640387499">Szépia</translation>
@@ -2291,6 +2292,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6569366777234823130">Filmdrámák</translation>
 <translation id="6573200754375280815">Kettő lyuk a jobb oldalon</translation>
 <translation id="6576181918031900030">Az átküldés indítása</translation>
+<translation id="6578434528542148658">Érvénytelen bővítményazonosító.</translation>
 <translation id="657902945730878902">Rajzolás és színezés</translation>
 <translation id="6579630537141957243">Csatlakoztatja a MIDI-eszközt?</translation>
 <translation id="6579990219486187401">Világos rózsaszín</translation>
@@ -3030,7 +3032,6 @@ További részletek:
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
 <translation id="8303854710873047864">A(z) „<ph name="SECTION" />” szakasz megjelenítve</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
-<translation id="8307888238279532626">Telepített alkalmazások és a használatuk gyakorisága</translation>
 <translation id="831997045666694187">Este</translation>
 <translation id="8321476692217554900">értesítések</translation>
 <translation id="8329068931308448247">14. boríték</translation>

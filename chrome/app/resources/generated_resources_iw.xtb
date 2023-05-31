@@ -1451,6 +1451,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;שורה אחת לא מוצגת&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}}</translation>
 <translation id="2218019600945559112">עכבר ולוח מגע</translation>
 <translation id="2218515861914035131">הדבקה כטקסט רגיל</translation>
+<translation id="221872881068107022">גלילה לאחור</translation>
 <translation id="2220409419896228519">‏הוספת סימניות לאפליקציות המועדפות שלך ב-Google Apps</translation>
 <translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="2220572644011485463">קוד אימות או סיסמה</translation>
@@ -4387,6 +4388,7 @@
 <translation id="4777458362738635055">משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
 <translation id="4777825441726637019">‏חנות Play</translation>
 <translation id="4777943778632837590">הגדרת שרתי שמות של הרשת</translation>
+<translation id="4778653490315793244">עדיין אין פריטים להצגה</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4779136857077979611">אוניגירי</translation>
 <translation id="4779766576531456629">‏שינוי שם של הרשת הסלולרית של eSIM</translation>
@@ -4808,7 +4810,6 @@
 <translation id="5155327081870541046">‏בסרגל הכתובות, מזינים את קיצור הדרך לאתר שרוצים לחפש בו, כמו למשל "‎@bookmarks". לאחר מכן, מקישים על מקש הקיצור המועדף במקלדת ומזינים את מונח החיפוש.</translation>
 <translation id="5156638757840305347">הסמן מודגש כשהוא מופיע או זז</translation>
 <translation id="5157250307065481244">הצגת פרטי האתר</translation>
-<translation id="5157635116769074044">הצמדה של הדף למסך הפתיחה…</translation>
 <translation id="5158206172605340248">תפריט הסימנים הדיאקריטיים נסגר.</translation>
 <translation id="5159094275429367735">‏הגדרת Crostini</translation>
 <translation id="5159419673777902220">ההרשאות של התוסף הושבתו על ידי ההורה שלך</translation>
@@ -5894,7 +5895,6 @@
 <translation id="6113942107547980621">‏כדי להשתמש ב-Smart Lock יש לעבור אל פרופיל המשתמש הראשי בטלפון</translation>
 <translation id="6116921718742659598">שינוי הגדרות הקלט והשפה</translation>
 <translation id="6119927814891883061">שמירת שם המכשיר <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">הצמדת דף זה למסך הפתיחה...</translation>
 <translation id="6120707837086723438">‏מוצגות לך הצעות למתכונים על סמך פעילות חיפוש המתכונים שלך מהזמן האחרון.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8382,7 +8382,6 @@
 <ph name="BEGIN_PARAGRAPH3" />הבעלים יכולים לשלוט בתכונה הזו דרך 'הגדרות' &gt; 'מתקדם' &gt; 'שליחה אוטומטית של נתוני אבחון ושימוש אל Google'.<ph name="END_PARAGRAPH3" />
 <ph name="BEGIN_PARAGRAPH4" />אם הופעלה הגדרה נוספת של 'פעילות באינטרנט ובאפליקציות' בחשבון של הילד/ה, ייתכן שהנתונים האלה יישמרו בחשבון Google שלו/ה. אפשר לקרוא מידע נוסף על ההגדרות האלה ואופן השינוי שלהם בכתובת families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">אישור לקוח לא חוקי</translation>
-<translation id="8270162672241199380">‏מנהל ההתקנה של שירות Steam</translation>
 <translation id="827097179112817503">הצגת לחצן 'דף הבית'</translation>
 <translation id="8271268254812352141">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות. ב<ph name="LINK_BEGIN" />שפות לאתרים<ph name="LINK_END" /> אפשר להתאים אישית את השפות לתרגום.</translation>
 <translation id="8271379370373330993">עכשיו יש כמה שלבים שהורים צריכים להשלים. אפשר יהיה להחזיר את ה-<ph name="DEVICE_TYPE" /> לילד/ה לאחר הגדרת החשבון.</translation>

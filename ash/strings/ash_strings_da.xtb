@@ -144,7 +144,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1604857178818051494">Sæt medie på pause</translation>
 <translation id="1610778689852195798">"Fortryd"</translation>
 <translation id="1611993646327628135">Til</translation>
-<translation id="1618835956950524778">Fremhæv knappen til applisten på hylden</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="163517899691012366">Notifikationer ignoreres, når Forstyr ikke er slået til</translation>
@@ -395,7 +394,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2785499565474703580">1 enhed er forbundet</translation>
 <translation id="2791421900609674576">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at trykke og holde fingeren nede.</translation>
 <translation id="2792498699870441125">Alt+Søg</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valgt</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Afgrænset screenshot</translation>
@@ -433,7 +431,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2970920913501714344">Installer apps, udvidelser og temaer</translation>
 <translation id="2977598380246111477">Næste tal</translation>
 <translation id="2985148236010982088">Se alle apps</translation>
-<translation id="29859347674873492">Åbn Hjælp i appen Udforsk</translation>
 <translation id="2992327365391326550">Enhedens mikrofonknap er slået fra.</translation>
 <translation id="2996462380875591307">Fastgjort lupvindue er aktiveret. Tryk på Ctrl+Søg+D igen for at deaktivere tilstanden.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
@@ -529,7 +526,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3410336247007142655">Vis indstillingerne for mørkt tema</translation>
 <translation id="3413817803639110246">Der er intet at se endnu</translation>
 <translation id="3417835166382867856">Søg i faner</translation>
-<translation id="3423744722495840645">Åbn/luk applisten</translation>
 <translation id="3428447136709161042">Afbryd forbindelsen til <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Stryg fra højre for at gå tilbage</translation>
 <translation id="3431517721463707585">Skrivebord 14</translation>
@@ -558,7 +554,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3533126039236445965">Apps på hylden</translation>
 <translation id="3539957339480430241">Hotspot på <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">Du får vist anbefalinger, så du kan fortsætte, hvor du slap. Du kan fjerne anbefalinger ved at højreklikke.</translation>
-<translation id="3546121235777416274">Fokuser på vinduet med integreret billede</translation>
 <translation id="3552189655002856821">Wi-Fi er deaktiveret</translation>
 <translation id="3554215588514239132">Vis eller skjul panelet i Udviklerværktøjer</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
@@ -1064,7 +1059,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5760866832697883462">Tilslut dine <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Slå tusch til/fra. <ph name="STATE_TEXT" /> Brug touchplade, touchskærm eller styluspen til at tegne på skærmen.</translation>
 <translation id="576341972084747908">Downloader skadelig <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Shelf Party er deaktiveret.</translation>
 <translation id="576453121877257266">Nattelys er slået til.</translation>
 <translation id="5764569119212455782">Skift til det senest valgte sprog</translation>
 <translation id="5769373120130404283">Privatlivsskærm</translation>
@@ -1273,7 +1267,6 @@ Installeret for nylig</translation>
 <translation id="6707693040195709527">Der skal skiftes til en tidligere version af enheden</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
-<translation id="6727005317916125192">Forrige rude</translation>
 <translation id="6727969043791803658">Tilsluttet, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1313,6 @@ Installeret for nylig</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="6920245099716267363">Slå hotspot til/fra. Hotspot er aktiveret, og 1 enhed er tilsluttet.</translation>
 <translation id="6931576957638141829">Gem i</translation>
-<translation id="6941333068993625698">Send feedback</translation>
 <translation id="6942518653766415536">Menu for optagelsesformat</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6945922087561257829">Din telefon anvender et mobilnetværk. Sørg for, at din telefon og din Chromebook har forbindelse til det samme Wi-Fi-netværk, og prøv derefter igen. <ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1332,6 @@ Installeret for nylig</translation>
 <translation id="7014684956566476813">Forbundet til en enhed ved navn <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vend tilbage kl. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivebord 6</translation>
-<translation id="7025325401470358758">Næste rude</translation>
 <translation id="7025533177575372252">Slut <ph name="DEVICE_NAME" /> til din telefon</translation>
 <translation id="7026338066939101231">Reducer</translation>
 <translation id="7029814467594812963">Afslut session</translation>
@@ -1369,7 +1360,6 @@ Installeret for nylig</translation>
 <translation id="7126996685418858413">Åbnet inden for den seneste uge</translation>
 <translation id="7130207228079676353">HØJST SANDSYNLIGT</translation>
 <translation id="7131634465328662194">Du logges automatisk ud.</translation>
-<translation id="7138316363520807689">Gem den aktuelle fane som bogmærke</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1394,7 +1384,6 @@ Installeret for nylig</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
 <translation id="7313193732017069507">Udvid kameraet</translation>
-<translation id="731589979057211264">Shelf Party er aktiveret.</translation>
 <translation id="7340731148882810149">Menu for automatiske klik</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Skærmtastatur</translation>
@@ -1463,7 +1452,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Der blev oprettet forbindelse til kameraet igen.</translation>
-<translation id="7611271430932669992">Flyt fokus til pop op-vinduer og dialogbokse</translation>
 <translation id="761736749114493194">Slå automatisk zoom til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kameraet er fastgjort til hjørnet nederst til højre</translation>
@@ -1627,7 +1615,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349964124165471584">Åbn link i et nyt vindue</translation>
 <translation id="8351131234907093545">Opret note</translation>
-<translation id="8364673525741149932">Slå Shelf Party til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> er i brug.</translation>
 <translation id="8369166482916924789">Gemt skrivebord, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Et bogstav frem</translation>

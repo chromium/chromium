@@ -1242,6 +1242,7 @@
 <translation id="4031179711345676612">已允許使用麥克風</translation>
 <translation id="4040350669425716613">大專和大學</translation>
 <translation id="4047351652147966654">18 x 24 吋</translation>
+<translation id="404831776305217138">ID 為「<ph name="EXTENSION_ID" />」的擴充程式更新網址無效，或已使用不支援的配置。支援的配置如下：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 和 <ph name="FILE_SCHEME" />。</translation>
 <translation id="4050392779074832022">您將可在不同的 Google 產品中使用該地址</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
@@ -2292,6 +2293,7 @@
 <translation id="6569366777234823130">劇情電影</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6576181918031900030">開始投放</translation>
+<translation id="6578434528542148658">無效的擴充程式 ID。</translation>
 <translation id="657902945730878902">繪畫和填色</translation>
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
@@ -3031,7 +3033,6 @@
 <translation id="8298115750975731693">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8303854710873047864">顯示咗「<ph name="SECTION" />」部分</translation>
 <translation id="830498451218851433">對摺</translation>
-<translation id="8307888238279532626">已安裝的應用程式及使用頻率</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8329068931308448247">#14 信封</translation>

@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">暂停媒体</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
-<translation id="1618835956950524778">突出显示任务栏上的启动器按钮</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="163517899691012366">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">已连接 1 部设备</translation>
 <translation id="2791421900609674576">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过轻触并按住建议项目将其移除。</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
-<translation id="2797741504905337289">Shelf Party 模式</translation>
 <translation id="2802938996245446490">已选择“<ph name="BUTTON_LABEL" />”</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
-<translation id="29859347674873492">在“探索”应用内打开“帮助”</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
 <translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">打开文件</translation>
 <translation id="3038571455154067151">如需登录，请输入您的 Family Link 家长访问码</translation>
 <translation id="3039939407102840004">触控笔电池电量为 <ph name="PERCENTAGE" />%。</translation>
+<translation id="304097922505898963">打开“键盘快捷键”应用</translation>
 <translation id="3045488863354895414">下午好！</translation>
 <translation id="3047761520276763270">试着说：</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
-<translation id="3423744722495840645">打开/关闭启动器</translation>
 <translation id="3428447136709161042">断开与<ph name="NETWORK_NAME" />的连接</translation>
 <translation id="3430396595145920809">从右向左滑动手指即可返回</translation>
 <translation id="3431517721463707585">桌面 14</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">任务栏中的应用</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
-<translation id="3546121235777416274">聚焦于画中画窗口</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554215588514239132">显示或隐藏开发者工具面板</translation>
 <translation id="3554637740840164787">“<ph name="ITEM_TITLE" />”已被固定</translation>
@@ -1064,7 +1060,6 @@
 <translation id="5760866832697883462">连接您的“<ph name="NAME" />”</translation>
 <translation id="5762420912707163638">开启/关闭标记工具。<ph name="STATE_TEXT" />您可以使用触控板、触摸屏或触控笔在屏幕上绘画。</translation>
 <translation id="576341972084747908">正在下载有风险的文件 <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Shelf Party 模式已关闭。</translation>
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
 <translation id="5764569119212455782">切换到所选的最后一种语言</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
@@ -1119,6 +1114,7 @@
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 页（共 <ph name="TOTAL_PAGE_NUM" /> 页）</translation>
 <translation id="601304062528754300">突出显示任务栏上的后一项</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
+<translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="602001110135236999">向左滚动</translation>
 <translation id="6022924867608035986">清除搜索框文字</translation>
 <translation id="602472752137106327">显示所有桌面中的窗口，已选中单选按钮</translation>
@@ -1273,7 +1269,6 @@
 <translation id="6707693040195709527">将设备回滚到上一个版本的截止日期已过</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6723839937902243910">电源</translation>
-<translation id="6727005317916125192">上一个窗格</translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1320,7 +1315,6 @@
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
 <translation id="6931576957638141829">保存到</translation>
-<translation id="6941333068993625698">提交反馈</translation>
 <translation id="6942518653766415536">录制格式菜单</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6945922087561257829">手机使用的是移动网络。请确保您的手机和 Chromebook 已连接到同一 Wi-Fi 网络，然后重试。<ph name="LEARN_MORE" /></translation>
@@ -1340,7 +1334,6 @@
 <translation id="7014684956566476813">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="70168403932084660">桌面 6</translation>
-<translation id="7025325401470358758">下一窗格</translation>
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
 <translation id="7026338066939101231">减少</translation>
 <translation id="7029814467594812963">退出会话</translation>
@@ -1369,7 +1362,6 @@
 <translation id="7126996685418858413">过去一周内打开过</translation>
 <translation id="7130207228079676353">很可能会点击的应用</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
-<translation id="7138316363520807689">将当前标签页保存为书签</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144942256906679589">电池状态</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1391,7 +1383,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313193732017069507">展开相机</translation>
-<translation id="731589979057211264">Shelf Party 模式已开启。</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
@@ -1460,7 +1451,6 @@
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7609951632080598826">日历视图，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新连接相机。</translation>
-<translation id="7611271430932669992">将焦点移至弹出式窗口和对话框</translation>
 <translation id="761736749114493194">开启/关闭相机取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
@@ -1624,7 +1614,6 @@
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8349964124165471584">在新窗口中打开链接</translation>
 <translation id="8351131234907093545">创建记事</translation>
-<translation id="8364673525741149932">开启/关闭 Shelf Party 模式。<ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />正被使用。</translation>
 <translation id="8369166482916924789">已保存的桌面“<ph name="SAVE_AND_RECALL_DESK_NAME" />”</translation>
 <translation id="8371779926711439835">前进一个字母</translation>

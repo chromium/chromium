@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Hindi ma-resolve ang DNS</translation>
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1020274983236703756">Available na ngayon ang mga eksklusibong asset sa <ph name="PRODUCT_NAME" /></translation>
-<translation id="1022433422498218992">Mga Pangkalahatang Kontrol</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Uri ng pag-authenticate</translation>
 <translation id="1776228893584526149">Wallpaper tone</translation>
 <translation id="1782199038061388045">pagsasalin</translation>
-<translation id="1790209694022261219">Mga Window at Mga Desk</translation>
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
 <translation id="1801418420130173017">I-disable ang madilim na tema</translation>
 <translation id="1807246157184219062">Maliwanag</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
-<translation id="3020183492814296499">Mga Shortcut</translation>
 <translation id="3027578600144895987">Isara ang camera</translation>
 <translation id="3031560714565892478">Video camera ang device.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Default na Wallpaper</translation>
 <translation id="6017514345406065928">Berde</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">I-enable ang awtomatikong buwanang pag-reset</translation>
 <translation id="6037291330010597344">Walang laman ang document feeder ng scanner. Magdagdag ng mga dokumento at subukan ulit.</translation>
 <translation id="6040143037577758943">Isara</translation>

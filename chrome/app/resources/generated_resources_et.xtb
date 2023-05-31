@@ -1443,6 +1443,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Ei näidata 1 rida&gt;}other{&lt;Ei näidata <ph name="NUMBER_OF_LINES" /> rida&gt;}}</translation>
 <translation id="2218019600945559112">Hiir ja puuteplaat</translation>
 <translation id="2218515861914035131">Kleebib lihttekstina</translation>
+<translation id="221872881068107022">Tagurpidi kerimine</translation>
 <translation id="2220409419896228519">Lisage oma Google'i lemmikrakenduste järjehoidjad</translation>
 <translation id="2220529011494928058">Probleemist teatamine</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
@@ -4377,6 +4378,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4777458362738635055">Teised selle seadme kasutajad saavad seda võrku kasutada</translation>
 <translation id="4777825441726637019">Play pood</translation>
 <translation id="4777943778632837590">Võrgu nimeserverite seadistamine</translation>
+<translation id="4778653490315793244">Siin ei ole veel midagi</translation>
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">eSIM-i mobiilsidevõrgu ümbernimetamine</translation>
@@ -4798,7 +4800,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5155327081870541046">Sisestage aadressiribale selle saidi otsetee, millel soovite otsida, näiteks „@järjehoidjad“. Seejärel vajutage valitud klaviatuuriotseteed ja sisestage otsingutermin.</translation>
 <translation id="5156638757840305347">Kursor tõstetakse esile, kui see kuvatakse või seda liigutatakse</translation>
 <translation id="5157250307065481244">Kuva saidi üksikasjad</translation>
-<translation id="5157635116769074044">Kinnita leht avakuvale ...</translation>
 <translation id="5158206172605340248">Rõhumärkide menüü suleti.</translation>
 <translation id="5159094275429367735">Crostini seadistamine</translation>
 <translation id="5159419673777902220">Sinu vanem on laienduste load keelanud</translation>
@@ -5884,7 +5885,6 @@ Võite selle saata Google’ile, et kontrollida, kas see on ohtlik. Tavaliselt v
 <translation id="6113942107547980621">Funktsiooni Smart Lock kasutamiseks lülitage telefonis peamisele kasutajaprofiilile</translation>
 <translation id="6116921718742659598">Keele ja sisestusseadete muutmine</translation>
 <translation id="6119927814891883061">Määra seadme nimeks <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Kinnita see leht avakuvale ...</translation>
 <translation id="6120707837086723438">Näete soovitatud retsepte, mis põhinevad teie hiljutistel retseptide otsingutel.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8367,7 +8367,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
     <ph name="BEGIN_PARAGRAPH3" />Omanik saab seda funktsiooni juhtida jaotises Seaded &gt; Täpsemad &gt; Saada Google'ile automaatselt diagnostika- ja kasutusandmeid.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Kui täiendavad veebi- ja rakendustegevused on teie lapse puhul sisse lülitatud, võidakse see teave salvestada tema Google'i kontole. Aadressilt families.google.com leiate seadete ja nende kohandamise kohta lisateavet.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Kliendi kehtetu sertifikaat</translation>
-<translation id="8270162672241199380">Steami installiprogramm</translation>
 <translation id="827097179112817503">Kuva nupp Avaleht</translation>
 <translation id="8271268254812352141">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi. Kohandage tõlgitavaid keeli jaotises <ph name="LINK_BEGIN" />Veebisaidi keeled<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Vanemad, järgmised toimingud on mõeldud teile. Pärast konto seadistamist saate seadme <ph name="DEVICE_TYPE" /> lapsele tagasi anda.</translation>

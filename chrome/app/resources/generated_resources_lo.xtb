@@ -1451,6 +1451,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ແຖວ ບໍ່ສະແດງ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ແຖວບໍ່ສະແດງ&gt;}}</translation>
 <translation id="2218019600945559112">ເມົ້າ ແລະ ແຜ່ນສຳຜັດ</translation>
 <translation id="2218515861914035131">ແປະໃສ່ເປັນຂໍ້ຄວາມທໍາມະດາ</translation>
+<translation id="221872881068107022">ການເລື່ອນຢ້ອນກັບ</translation>
 <translation id="2219007152108311874">ຖາມທຸກເທື່ອທີ່ເຂົ້າໄປເວັບໄຊ</translation>
 <translation id="2220409419896228519">ເພີ່ມບຸກມາກໃສ່ແອັບ Google Apps ທີ່ທ່ານມັກ</translation>
 <translation id="2220529011494928058">ລາຍ​ງານ​ບັນ​ຫາ</translation>
@@ -4397,6 +4398,7 @@
 <translation id="4777458362738635055">ຜູ້ໃຊ້ອື່ນຂອງອຸປະກອນນີ້ສາມາດໃຊ້ເຄືອຂ່າຍນີ້ໄດ້</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">ຕັ້ງຄ່າເຊີບເວີຊື່ເຄືອຂ່າຍ</translation>
+<translation id="4778653490315793244">ບໍ່ມີຫຍັງໃຫ້ສະແດງເທື່ອ</translation>
 <translation id="4779083564647765204">ຊູມ</translation>
 <translation id="4779136857077979611">ໂອະນິງິຣິ</translation>
 <translation id="4779766576531456629">ປ່ຽນຊື່ເຄືອຂ່າຍມືຖືຂອງ eSIM</translation>
@@ -4821,7 +4823,6 @@
 <translation id="5155327081870541046">ໃນແຖບທີ່ຢູ່, ໃຫ້ລະບຸທາງລັດສຳລັບເວັບໄຊທີ່ທ່ານຕ້ອງການຊອກຫາ, ເຊັ່ນ: "@bookmarks". ຈາກນັ້ນ, ກົດຄີລັດທີ່ທ່ານຕ້ອງການ, ແລ້ວພິມຄຳຊອກຫາຂອງທ່ານ.</translation>
 <translation id="5156638757840305347">ເຄີເຊີຈະຖືກໄຮໄລ້ເມື່ອມັນປາກົດຂຶ້ນ ຫຼື ຍ້າຍໄປມາ</translation>
 <translation id="5157250307065481244">ເບິ່ງລາຍລະອຽດເວັບໄຊ</translation>
-<translation id="5157635116769074044">ປັກໝຸດຫນ້າ​ນີ້​ເພື່ອ​ເລີ່ມ​ຕົ້ນ​ຫນ້າ​ຈໍ...</translation>
 <translation id="5157701529792771331">ແປຄຳບັນຍາຍໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5158206172605340248">ປິດເມນູເຄື່ອງໝາຍສຳນຽງ.</translation>
 <translation id="5159094275429367735">ຕັ້ງຄ່າ Crostini</translation>
@@ -5911,7 +5912,6 @@
 <translation id="6113942107547980621">ເພື່ອໃຊ້ Smart Lock, ກະລຸນາປ່ຽນເປັນໂປຣໄຟລ໌ຫຼັກໃນໂທລະສັບຂອງທ່ານ</translation>
 <translation id="6116921718742659598">ປ່ຽນພາສາ ແລະການຕັ້ງຄ່າປ້ອນຂໍ້ມູນເຂົ້າ</translation>
 <translation id="6119927814891883061">ຕັ້ງຊື່ອຸປະກອນ <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">ປັກໝຸດຫນ້າ​ນີ້​ເພື່ອ​ເລີ່ມ​ຕົ້ນ​ຫນ້າ​ຈໍ...</translation>
 <translation id="6120707837086723438">ທ່ານກຳລັງເບິ່ງສູດທີ່ແນະນຳໂດຍອ້າງອີງໃສ່ການເຄື່ອນໄຫວການຊອກຫາຫຼ້າສຸດຂອງທ່ານສຳລັບສູດ.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8396,7 +8396,6 @@
     <ph name="BEGIN_PARAGRAPH3" />ເຈົ້າຂອງສາມາດຄວບຄຸມຄຸນສົມບັດນີ້ຈາກການຕັ້ງຄ່າ &gt; ຂັ້ນສູງ &gt; ສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການໃຊ້ໃຫ້ Google ໂດຍອັດຕະໂນມັດ.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມສຳລັບບູກຂອງທ່ານ, ຂໍ້ມູນນີ້ອາດຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງເຂົາເຈົ້າ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕັ້ງຄ່າເຫຼົ່ານີ້ ແລະ ວິທີປັບພວກມັນໄດ້ທີ່ families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ໃບຮັບຮອງລູກຂ່າຍບໍ່ຖືກຕ້ອງ</translation>
-<translation id="8270162672241199380">ຕົວຕິດຕັ້ງ Steam</translation>
 <translation id="827097179112817503">ສະແດງປຸ່ມໜ້າ​ຫຼັກ</translation>
 <translation id="8271268254812352141">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້. ປັບແຕ່ງພາສາສຳລັບການແປໃນ <ph name="LINK_BEGIN" />ພາສາເວັບໄຊ<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">ຮຽນພໍ່ແມ່, ຂັ້ນຕອນສອງສາມຢ່າງຕໍ່ໄປແມ່ນສຳລັບທ່ານ. ທ່ານສາມາດສົ່ງ <ph name="DEVICE_TYPE" /> ຄືນໃຫ້ເດັກໄດ້ຫຼັງຈາກຕັ້ງຄ່າບັນຊີແລ້ວ.</translation>

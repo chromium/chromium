@@ -144,7 +144,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1604857178818051494">Wstrzymaj multimedia</translation>
 <translation id="1610778689852195798">„Cofnij”</translation>
 <translation id="1611993646327628135">Włączono</translation>
-<translation id="1618835956950524778">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="163517899691012366">Po włączeniu trybu Nie przeszkadzać powiadomienia są wyciszone</translation>
@@ -395,7 +394,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2785499565474703580">1 połączone urządzenie</translation>
 <translation id="2791421900609674576">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Aby je usunąć, naciśnij i przytrzymaj.</translation>
 <translation id="2792498699870441125">Alt+Szukaj</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490">Wybrano: <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2814448776515246190">Przechwytywanie części ekranu</translation>
@@ -433,7 +431,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2970920913501714344">instalować aplikacje, rozszerzenia i motywy;</translation>
 <translation id="2977598380246111477">Następny numer</translation>
 <translation id="2985148236010982088">Zobacz wszystkie aplikacje</translation>
-<translation id="29859347674873492">Otwórz Pomoc w aplikacji Odkrywaj</translation>
 <translation id="2992327365391326550">Przycisk mikrofonu urządzenia jest wyłączony.</translation>
 <translation id="2996462380875591307">Lupa zadokowana została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
@@ -530,7 +527,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
 <translation id="3413817803639110246">Na razie nie ma nic do pokazania</translation>
 <translation id="3417835166382867856">Wyszukaj karty</translation>
-<translation id="3423744722495840645">Otwórz/zamknij Menu z aplikacjami</translation>
 <translation id="3428447136709161042">Odłączyć od sieci <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Aby wrócić, przesuń palcem od prawej strony</translation>
 <translation id="3431517721463707585">Biurko 14</translation>
@@ -559,7 +555,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3533126039236445965">Aplikacje na półce</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> – hotspot</translation>
 <translation id="3542066395059568317">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Możesz je usunąć kliknięciem prawym przyciskiem.</translation>
-<translation id="3546121235777416274">Zaznacz okno z obrazem w obrazie</translation>
 <translation id="3552189655002856821">Wi-Fi jest wyłączone</translation>
 <translation id="3554215588514239132">Pokaż lub ukryj panel Narzędzi dla programistów</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
@@ -1065,7 +1060,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5760866832697883462">Podłącz urządzenie <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Włącz lub wyłącz pisak. <ph name="STATE_TEXT" /> Aby rysować na ekranie, użyj trackpada, ekranu dotykowego lub rysika.</translation>
 <translation id="576341972084747908">Pobieranie niebezpiecznego pliku <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Tryb Shelf Party jest wyłączony.</translation>
 <translation id="576453121877257266">Podświetlenie nocne jest włączone.</translation>
 <translation id="5764569119212455782">Przełącz na ostatni wybrany język</translation>
 <translation id="5769373120130404283">Ekran chroniący prywatność</translation>
@@ -1274,7 +1268,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6707693040195709527">Minął termin przywrócenia na tym urządzeniu wcześniejszej wersji systemu operacyjnego</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
-<translation id="6727005317916125192">Poprzedni panel</translation>
 <translation id="6727969043791803658">Połączono, bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1314,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="6920245099716267363">Przełącz hotspota. Hotspot jest włączony. Jedno urządzenie jest połączone.</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
-<translation id="6941333068993625698">Prześlij opinię</translation>
 <translation id="6942518653766415536">Menu formatu nagrywania</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6945922087561257829">Telefon korzysta z sieci komórkowej. Upewnij się, że telefon i Chromebook są połączone z tą samą siecią Wi-Fi, a potem spróbuj ponownie. <ph name="LEARN_MORE" /></translation>
@@ -1341,7 +1333,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7014684956566476813">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Możesz wrócić o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Biurko 6</translation>
-<translation id="7025325401470358758">Następny panel</translation>
 <translation id="7025533177575372252">Połącz urządzenie <ph name="DEVICE_NAME" /> z telefonem</translation>
 <translation id="7026338066939101231">Zmniejsz</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
@@ -1370,7 +1361,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7126996685418858413">Otwierane w zeszłym tygodniu</translation>
 <translation id="7130207228079676353">NAJBARDZIEJ PRAWDOPODOBNE</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
-<translation id="7138316363520807689">Zapisz bieżącą kartę jako zakładkę</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144942256906679589">Stan baterii</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
@@ -1395,7 +1385,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
-<translation id="731589979057211264">Tryb Shelf Party jest włączony.</translation>
 <translation id="7340731148882810149">Menu automatycznego klikania</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
@@ -1464,7 +1453,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7609951632080598826">Widok kalendarza, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera została ponownie połączona.</translation>
-<translation id="7611271430932669992">Przenieś sterowanie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="761736749114493194">Przełącz kadrowanie. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Podgląd z kamery został przyciągnięty do prawego dolnego rogu</translation>
@@ -1628,7 +1616,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Otwórz link w nowym oknie</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
-<translation id="8364673525741149932">Przełączanie trybu Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> jest w użyciu.</translation>
 <translation id="8369166482916924789">Zapisane biurko, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>

@@ -1443,6 +1443,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Ne prikazuje se jedan redak&gt;}one{&lt;Ne prikazuje se <ph name="NUMBER_OF_LINES" /> redak&gt;}few{&lt;Ne prikazuju se <ph name="NUMBER_OF_LINES" /> retka&gt;}other{&lt;Ne prikazuje se <ph name="NUMBER_OF_LINES" /> redaka&gt;}}</translation>
 <translation id="2218019600945559112">Miš i dodirna podloga</translation>
 <translation id="2218515861914035131">Zalijepi kao običan tekst</translation>
+<translation id="221872881068107022">Obrnuto pomicanje</translation>
 <translation id="2219007152108311874">Zatraži pri svakom posjetu</translation>
 <translation id="2220409419896228519">Dodajte oznake svojim omiljenim Googleovim aplikacijama</translation>
 <translation id="2220529011494928058">Prijavite poteškoću</translation>
@@ -4385,6 +4386,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu upotrebljavati tu mrežu</translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
 <translation id="4777943778632837590">Konfiguriranje naziva poslužitelja mreže</translation>
+<translation id="4778653490315793244">Još nema ničega</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Preimenovanje mobilne mreže eSIM-a</translation>
@@ -4809,7 +4811,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5155327081870541046">U adresnu traku unesite prečac za web-lokaciju koju želite pretražiti, na primjer @bookmarks. Zatim pritisnite svoj preferirani tipkovni prečac i unesite pojam za pretraživanje.</translation>
 <translation id="5156638757840305347">Pokazivač je istaknut kada se prikaže ili pomakne</translation>
 <translation id="5157250307065481244">Prikaz pojedinosti o web-lokaciji</translation>
-<translation id="5157635116769074044">Prikvači ovu stranicu na početni zaslon...</translation>
 <translation id="5157701529792771331">Automatski prijevod titlova</translation>
 <translation id="5158206172605340248">Odbačen je izbornik naglasnih oznaka.</translation>
 <translation id="5159094275429367735">Postavljanje Crostinija</translation>
@@ -5897,7 +5898,6 @@ Možete je poslati Googleu da biste provjerili je li nesigurna. Pregled obično 
 <translation id="6113942107547980621">Da biste upotrebljavali Smart Lock, prebacite se na primarni korisnički profil na telefonu.</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
 <translation id="6119927814891883061">Imenujte uređaj <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Prikvači ovu stranicu na zaslon Start...</translation>
 <translation id="6120707837086723438">Prikazuju vam se predloženi recepti na temelju vaše nedavne aktivnosti pretraživanja u vezi s receptima.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8389,7 +8389,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
     <ph name="BEGIN_PARAGRAPH3" />Vlasnik može upravljati tom značajkom putem Postavki &gt; Napredno &gt; Automatsko slanje dijagnostike i podataka o upotrebi Googleu.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ako je uključena dodatna postavka Aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. Svoje podatke možete pregledati, izbrisati ih i promijeniti na stranici families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nevažeći certifikat klijenta</translation>
-<translation id="8270162672241199380">Program za instalaciju Steam</translation>
 <translation id="827097179112817503">Prikaži gumb početne stranice</translation>
 <translation id="8271268254812352141">Da biste pronašli definicije, prijevode ili pretvorbe jedinica, kliknite tekst desnom tipkom ili ga dodirnete i držite. Jezike za prijevod prilagodite u odjeljku <ph name="LINK_BEGIN" />Jezici web-lokacija<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Roditelji, sljedećih je nekoliko koraka za vas. Možete vratiti uređaj <ph name="DEVICE_TYPE" /> djetetu nakon izrade računa.</translation>

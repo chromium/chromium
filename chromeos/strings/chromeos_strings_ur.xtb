@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">‏DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1020274983236703756">اب خاص <ph name="PRODUCT_NAME" /> اثاثے دستیاب ہیں</translation>
-<translation id="1022433422498218992">عام کنٹرولز</translation>
 <translation id="1022628058306505708">ارتھ فلو</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">تصدیق کی قسم</translation>
 <translation id="1776228893584526149">وال پیپر ٹون</translation>
 <translation id="1782199038061388045">ترجمہ</translation>
-<translation id="1790209694022261219">ونڈوز اور ڈیسکس</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
 <translation id="1807246157184219062">روشنی</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3017079585324758401">پس منظر</translation>
-<translation id="3020183492814296499">شارٹ کٹس</translation>
 <translation id="3027578600144895987">کیمرا بند کریں</translation>
 <translation id="3031560714565892478">آلہ ایک ویڈیو کیمرا ہے۔</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
 <translation id="5984145644188835034">ڈیفالٹ وال پیپر</translation>
 <translation id="6017514345406065928">سبز</translation>
+<translation id="6019566113895157499">اہم شارٹ کٹس</translation>
 <translation id="6034694447310538551">خودکار ماہانہ ری سیٹ فعال کریں</translation>
 <translation id="6037291330010597344">اسکینر کا دستاویز فیڈر خالی ہے۔ دستاویزات شامل کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>

@@ -412,7 +412,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1347512539447549782">Linux-Speicher</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1348966090521113558">Einstellungen für Bedienungshilfen (Maus)</translation>
-<translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Gerätenutzungsdauer verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
+<translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Bildschirmzeit verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
 <translation id="135389172849514421">Funktioniert im Offlinemodus</translation>
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissere dich, dass dein Chromebook online ist und versuche es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
@@ -1434,6 +1434,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 Zeile wird nicht angezeigt&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> Zeilen werden nicht angezeigt&gt;}}</translation>
 <translation id="2218019600945559112">Maus und Touchpad</translation>
 <translation id="2218515861914035131">Als unformatierten Text einfügen</translation>
+<translation id="221872881068107022">Scrollrichtung umkehren</translation>
 <translation id="2220409419896228519">Lesezeichen für deine Lieblings-Apps von Google hinzufügen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
@@ -2710,7 +2711,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3319306431415395200">Text im Bild mit <ph name="VISUAL_SEARCH_PROVIDER" /> übersetzen</translation>
 <translation id="3320630259304269485">Safe Browsing (Schutz vor schädlichen Websites) und andere Sicherheitseinstellungen</translation>
 <translation id="3321460131042519426">Zeilenumbruch aktivieren</translation>
-<translation id="3323521181261657960">Bonus! Gerätenutzungsdauer verlängert</translation>
+<translation id="3323521181261657960">Bonus! Bildschirmzeit verlängert</translation>
 <translation id="3323577066981719144">Änderungen, die du hier vornimmst, werden nur auf den Chrome-Browser angewendet. Wenn du die Einstellungen des Lacros Chrome-Browsers ändern möchtest, öffne den Lacros Chrome-Browser und rufe die Einstellungen auf.</translation>
 <translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
 <translation id="3325910708063135066">Kamera und Mikrofon wurden in den Mac-Systemeinstellungen ausgeschaltet</translation>
@@ -2964,7 +2965,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3554493885489666172">Dein Gerät wird von <ph name="PROFILE_NAME" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
 <translation id="3556000484321257665">Deine Suchmaschine wurde in <ph name="URL" /> geändert.</translation>
-<translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Gerätenutzungsdauer begrenzen</translation>
+<translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Bildschirmzeit begrenzen</translation>
 <translation id="3557267430539505890"><ph name="BEGIN_PARAGRAPH1" />Wenn du zulässt, dass ChromeOS-Geräte automatisch erstellte Berichte an Google senden, hilfst du uns dabei, Probleme in ChromeOS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über ChromeOS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen des ChromeOS-Geräts deines Kindes aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3559262020195162408">Fehler beim Installieren der Richtlinie auf dem Gerät.</translation>
@@ -4352,6 +4353,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4777458362738635055">Andere Nutzer dieses Geräts können dieses Netzwerk verwenden</translation>
 <translation id="4777825441726637019">Google Play Store</translation>
 <translation id="4777943778632837590">Netzwerk-Nameserver konfigurieren</translation>
+<translation id="4778653490315793244">Noch keine Inhalte vorhanden</translation>
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">eSIM-Mobilfunknetz umbenennen</translation>
@@ -4772,7 +4774,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5155327081870541046">Gib in die Adressleiste das Kürzel für die Website ein, auf der du suchen möchtest, z. B. „@bookmarks“. Drücke dann das von dir bevorzugte Tastenkürzel und gib den gewünschten Suchbegriff ein.</translation>
 <translation id="5156638757840305347">Der Cursor wird hervorgehoben, wenn er erscheint oder bewegt wird</translation>
 <translation id="5157250307065481244">Websitedetails ansehen</translation>
-<translation id="5157635116769074044">Diese Seite am Startbildschirm anpinnen...</translation>
 <translation id="5158206172605340248">Akzent-Menü geschlossen.</translation>
 <translation id="5159094275429367735">Crostini einrichten</translation>
 <translation id="5159419673777902220">Deine Eltern haben die Berechtigungen für Erweiterungen deaktiviert</translation>
@@ -5841,7 +5842,6 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6113942107547980621">Wenn du Smart Lock verwenden möchtest, wechsle zum Profil des Hauptnutzers deines Smartphones</translation>
 <translation id="6116921718742659598">Sprach- und Eingabeeinstellungen ändern</translation>
 <translation id="6119927814891883061">Gerät als „<ph name="DEVICE_NAME" />“ benennen</translation>
-<translation id="6120205520491252677">Diese Seite an Startbildschirm anpinnen...</translation>
 <translation id="6120707837086723438">Du siehst Rezeptvorschläge auf Grundlage deiner letzten Suchaktivitäten zu Rezepten.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8314,7 +8314,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
     <ph name="BEGIN_PARAGRAPH3" />Der Eigentümer kann diese Funktion unter „Einstellungen“ &gt; „Erweitert“ &gt; „Diagnose- und Nutzungsdaten automatisch an Google senden“ steuern.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Wenn für dein Kind zusätzlich die Einstellung „Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. Weitere Informationen zu diesen Einstellungen und den möglichen Anpassungen findest du unter families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ungültiges Clientzertifikat</translation>
-<translation id="8270162672241199380">Steam-Installationsprogramm</translation>
 <translation id="827097179112817503">Schaltfläche "Startseite" anzeigen</translation>
 <translation id="8271268254812352141">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst. Unter <ph name="LINK_BEGIN" />Websitesprachen<ph name="LINK_END" /> kannst du die Sprachen für die Übersetzung anpassen.</translation>
 <translation id="8271379370373330993">Liebe Eltern, die nächsten Schritte müsst ihr ausführen. Ihr könnt das Gerät (<ph name="DEVICE_TYPE" />) nach der Kontoeinrichtung wieder eurem Kind geben.</translation>

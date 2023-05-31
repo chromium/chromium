@@ -1238,6 +1238,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4040350669425716613">Colleges en universiteiten</translation>
 <translation id="4047351652147966654">18 x 24 inch</translation>
+<translation id="404831776305217138">Update-URL voor extensie met ID <ph name="EXTENSION_ID" /> is ongeldig of gebruikt een niet-ondersteund schema. Ondersteunde schema's zijn: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> en <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Je kunt het gebruiken in meerdere Google-producten</translation>
 <translation id="405399507749852140">Krijg meldingen bij een prijsdaling op een site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2287,6 +2288,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6569366777234823130">Dramafilms</translation>
 <translation id="6573200754375280815">Twee perforaties rechts</translation>
 <translation id="6576181918031900030">Casten starten</translation>
+<translation id="6578434528542148658">Ongeldige extensie-ID.</translation>
 <translation id="657902945730878902">Tekenen en kleuren</translation>
 <translation id="6579630537141957243">MIDI-apparaat verbinden?</translation>
 <translation id="6579990219486187401">Lichtroze</translation>
@@ -3026,7 +3028,6 @@ Aanvullende informatie:
 <translation id="8298115750975731693">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
 <translation id="8303854710873047864">Het gedeelte <ph name="SECTION" /> is zichtbaar</translation>
 <translation id="830498451218851433">Enkele vouw</translation>
-<translation id="8307888238279532626">Geïnstalleerde apps en hoe vaak ze zijn gebruikt</translation>
 <translation id="831997045666694187">Avond</translation>
 <translation id="8321476692217554900">meldingen</translation>
 <translation id="8329068931308448247">Envelop #14</translation>

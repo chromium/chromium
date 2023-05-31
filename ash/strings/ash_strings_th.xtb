@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">หยุดสื่อชั่วคราว</translation>
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
-<translation id="1618835956950524778">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="163517899691012366">ปิดเสียงการแจ้งเตือนเมื่อฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
 <translation id="2791421900609674576">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถแตะค้างไว้หากต้องการนำคำแนะนำออก</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" /> เลือกอยู่</translation>
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
-<translation id="29859347674873492">เปิดความช่วยเหลือในแอปสำรวจ</translation>
 <translation id="2992327365391326550">ปุ่มไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
 <translation id="2996462380875591307">เปิดใช้แว่นขยายหน้าจอบางส่วนแล้ว กด Ctrl+Search+D อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="3000461861112256445">เสียงแบบโมโน</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">เปิดไฟล์</translation>
 <translation id="3038571455154067151">โปรดป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3039939407102840004">สไตลัสเหลือแบตเตอรี่ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
+<translation id="304097922505898963">เปิดแอปแป้นพิมพ์ลัด</translation>
 <translation id="3045488863354895414">สวัสดียามบ่าย</translation>
 <translation id="3047761520276763270">ลองพูดว่า</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">แสดงการตั้งค่าธีมมืด</translation>
 <translation id="3413817803639110246">ไม่มีการแจ้งเตือนใหม่</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
-<translation id="3423744722495840645">เปิด/ปิด Launcher</translation>
 <translation id="3428447136709161042">ยกเลิกการเชื่อมต่อกับ <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">เลื่อนจากด้านขวาเพื่อย้อนกลับ</translation>
 <translation id="3431517721463707585">เดสก์ที่ 14</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">แอปในแถบ</translation>
 <translation id="3539957339480430241">ฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
-<translation id="3546121235777416274">โฟกัสหน้าต่างการแสดงภาพซ้อนภาพ</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
 <translation id="3554215588514239132">แสดงหรือซ่อนแผงเครื่องมือสำหรับนักพัฒนาแอป</translation>
 <translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -1060,7 +1056,6 @@
 <translation id="5760866832697883462">เชื่อมต่อ <ph name="NAME" /> ของคุณ</translation>
 <translation id="5762420912707163638">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /> ใช้แทร็กแพด หน้าจอสัมผัส หรือสไตลัสเพื่อวาดบนหน้าจอ</translation>
 <translation id="576341972084747908">ดาวน์โหลด <ph name="FILENAME" /> ที่เป็นอันตราย</translation>
-<translation id="5763928712329149804">Shelf Party ปิดอยู่</translation>
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
 <translation id="5764569119212455782">เปลี่ยนไปใช้ภาษาล่าสุดที่เลือก</translation>
 <translation id="5769373120130404283">หน้าจอส่วนตัว</translation>
@@ -1115,6 +1110,7 @@
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ไฮไลต์รายการถัดไปบนแถบ</translation>
 <translation id="6018164090099858612">กำลังออกจากโหมดมิเรอร์</translation>
+<translation id="6019566113895157499">แป้นพิมพ์ลัด</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
 <translation id="6022924867608035986">ล้างข้อความในช่องค้นหา</translation>
 <translation id="602472752137106327">แสดงหน้าต่างจากเดสก์ทุกตัว เลือกปุ่มตัวเลือกแล้ว</translation>
@@ -1269,7 +1265,6 @@
 <translation id="6707693040195709527">เกินกำหนดการเปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าแล้ว</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6723839937902243910">พลังงาน</translation>
-<translation id="6727005317916125192">แผงก่อนหน้า</translation>
 <translation id="6727969043791803658">เชื่อมต่อแล้ว แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1316,7 +1311,6 @@
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="6920245099716267363">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ 1 เครื่อง</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
-<translation id="6941333068993625698">ส่งความคิดเห็น</translation>
 <translation id="6942518653766415536">เมนูรูปแบบการบันทึก</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6945922087561257829">โทรศัพท์ของคุณกำลังใช้เครือข่ายมือถือ ตรวจสอบให้แน่ใจว่าโทรศัพท์และ Chromebook อยู่ในเครือข่าย Wi-Fi เดียวกันแล้วลองอีกครั้ง <ph name="LEARN_MORE" /></translation>
@@ -1336,7 +1330,6 @@
 <translation id="7014684956566476813">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">กลับมาเมื่อถึงเวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="70168403932084660">เดสก์ 6</translation>
-<translation id="7025325401470358758">แผงถัดไป</translation>
 <translation id="7025533177575372252">เชื่อมต่อ <ph name="DEVICE_NAME" /> กับโทรศัพท์</translation>
 <translation id="7026338066939101231">การลด</translation>
 <translation id="7029814467594812963">ออกจากเซสชัน</translation>
@@ -1365,7 +1358,6 @@
 <translation id="7126996685418858413">เปิดในสัปดาห์ที่ผ่านมา</translation>
 <translation id="7130207228079676353">น่าจะใช้มากที่สุด</translation>
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>
-<translation id="7138316363520807689">บันทึกแท็บปัจจุบันเป็นบุ๊กมาร์ก</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144942256906679589">สถานะแบตเตอรี่</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1390,7 +1382,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
-<translation id="731589979057211264">Shelf Party เปิดอยู่</translation>
 <translation id="7340731148882810149">เมนูการคลิกอัตโนมัติ</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
@@ -1459,7 +1450,6 @@
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7609951632080598826">มุมมองปฏิทิน <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">เชื่อมต่อกล้องอีกครั้งแล้ว</translation>
-<translation id="7611271430932669992">ย้ายโฟกัสไปที่ป๊อปอัปและกล่องโต้ตอบ</translation>
 <translation id="761736749114493194">เปิด/ปิดการจัดเฟรมกล้อง <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>
@@ -1623,7 +1613,6 @@
 <translation id="8345019317483336363">เลือกหน้าต่าง <ph name="WINDOW_TITLE" /> ไว้</translation>
 <translation id="8349964124165471584">เปิดลิงก์ในหน้าต่างใหม่</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
-<translation id="8364673525741149932">เปิดหรือปิด Shelf Party <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">ใช้งาน<ph name="CAPTURE_MEDIUM" />อยู่</translation>
 <translation id="8369166482916924789">เดสก์ที่บันทึกไว้ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>

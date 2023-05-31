@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">No se puede resolver el DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Ya están disponibles los recursos exclusivos de <ph name="PRODUCT_NAME" /></translation>
-<translation id="1022433422498218992">Controles generales</translation>
 <translation id="1022628058306505708">Flujo de la Tierra</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Para obtener más información, usa la flecha hacia arriba.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1776228893584526149">Tono del fondo de pantalla</translation>
 <translation id="1782199038061388045">traducción</translation>
-<translation id="1790209694022261219">Ventanas y escritorios</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1801418420130173017">Inhabilitar el tema oscuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3017079585324758401">Imagen de fondo</translation>
-<translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3027578600144895987">Cerrar la cámara</translation>
 <translation id="3031560714565892478">El dispositivo es una videocámara.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>

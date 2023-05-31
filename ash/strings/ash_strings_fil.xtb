@@ -144,7 +144,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1604857178818051494">Mag-pause ng media</translation>
 <translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
-<translation id="1618835956950524778">I-highlight ang button ng launcher sa shelf</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="163517899691012366">Naka-mute ang mga notification kapag naka-on ang Huwag istorbohin</translation>
@@ -395,7 +394,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2785499565474703580">1 device ang nakakonekta</translation>
 <translation id="2791421900609674576">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang pumindot nang matagal para alisin ang mga rekomendasyon.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490">Pinili ang <ph name="BUTTON_LABEL" /></translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2814448776515246190">Pag-capture ng isang bahagi ng screen</translation>
@@ -433,7 +431,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
 <translation id="2985148236010982088">Tingnan ang lahat ng app</translation>
-<translation id="29859347674873492">Buksan ang Tulong sa Explore app</translation>
 <translation id="2992327365391326550">Naka-off ang button ng mikropono ng device.</translation>
 <translation id="2996462380875591307">Na-enable ang Naka-dock na Magnifier. Pinduting muli ang Ctrl+Search+D para i-off ito.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
@@ -530,7 +527,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3410336247007142655">Ipakita ang mga setting ng madilim na tema</translation>
 <translation id="3413817803639110246">Wala pang makikita</translation>
 <translation id="3417835166382867856">Maghanap sa mga tab</translation>
-<translation id="3423744722495840645">Buksan/isara ang launcher</translation>
 <translation id="3428447136709161042">Idiskonekta sa <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Mag-swipe mula sa kanan para bumalik</translation>
 <translation id="3431517721463707585">Desk 14</translation>
@@ -559,7 +555,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3533126039236445965">Mga app sa shelf</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3542066395059568317">Makakakita ka ng mga rekomendasyon para makapagpatuloy ka kung saan ka huminto. Puwede kang mag-right-click para alisin ang mga rekomendasyon.</translation>
-<translation id="3546121235777416274">Mag-focus sa Picture-in-Picture na window</translation>
 <translation id="3552189655002856821">Naka-off ang Wi-Fi</translation>
 <translation id="3554215588514239132">Ipakita o i-hide ang panel ng Mga Tool ng Developer</translation>
 <translation id="3554637740840164787">Na-pin ang <ph name="ITEM_TITLE" /></translation>
@@ -1065,7 +1060,6 @@ Isaksak ang iyong device.</translation>
 <translation id="5760866832697883462">Ikonekta ang iyong <ph name="NAME" /></translation>
 <translation id="5762420912707163638">I-toggle ang marker. <ph name="STATE_TEXT" /> Gamitin ang trackpad, touchscreen, o stylus para gumuhit sa screen.</translation>
 <translation id="576341972084747908">I-download ang mapanganib na <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Naka-off ang Shelf Party.</translation>
 <translation id="576453121877257266">Naka-on ang Night Light.</translation>
 <translation id="5764569119212455782">Lumipat sa huling wikang pinili</translation>
 <translation id="5769373120130404283">Screen sa privacy</translation>
@@ -1275,7 +1269,6 @@ Kaka-install lang</translation>
 <translation id="6707693040195709527">Overdue na ang pagbabalik ng device sa nakaraang bersyon</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6723839937902243910">Power</translation>
-<translation id="6727005317916125192">Nakaraang pane</translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1322,7 +1315,6 @@ Kaka-install lang</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
 <translation id="6920245099716267363">I-toggle ang Hotspot. Naka-on ang Hotspot, 1 device ang nakakonekta.</translation>
 <translation id="6931576957638141829">I-save sa</translation>
-<translation id="6941333068993625698">Magsumite ng feedback</translation>
 <translation id="6942518653766415536">Menu ng format ng recording</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6945922087561257829">Gumagamit ang iyong telepono ng mobile network. Tiyaking nasa iisang Wi-Fi network ang iyong telepono at Chromebook at pagkatapos ay subukan ulit. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1334,6 @@ Kaka-install lang</translation>
 <translation id="7014684956566476813">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desk 6</translation>
-<translation id="7025325401470358758">Susunod na pane</translation>
 <translation id="7025533177575372252">Ikonekta ang iyong <ph name="DEVICE_NAME" /> sa telepono mo</translation>
 <translation id="7026338066939101231">Babaan</translation>
 <translation id="7029814467594812963">Lumabas sa session</translation>
@@ -1371,7 +1362,6 @@ Kaka-install lang</translation>
 <translation id="7126996685418858413">Binuksan sa nakalipas na linggo</translation>
 <translation id="7130207228079676353">PINAKAMALAMANG</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
-<translation id="7138316363520807689">I-save ang kasalukuyang tab bilang bookmark</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144942256906679589">Status ng baterya</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1396,7 +1386,6 @@ Kaka-install lang</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Nire-reset ng iyong administrator ang eSIM mo. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="7313193732017069507">Palawakin ang camera</translation>
-<translation id="731589979057211264">Naka-on ang Shelf Party.</translation>
 <translation id="7340731148882810149">Menu ng mga awtomatikong pag-click</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7348093485538360975">Nasa screen na keyboard</translation>
@@ -1465,7 +1454,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7609951632080598826">View ng kalendaryo, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
-<translation id="7611271430932669992">Inililipat ang focus sa mga popup at dialog</translation>
 <translation id="761736749114493194">I-toggle ang camera framing. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Nag-snap ang camera sa kanang sulok sa ibaba</translation>
@@ -1629,7 +1617,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8349964124165471584">Buksan ang link sa bagong window</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
-<translation id="8364673525741149932">I-toggle ang Shelf Party. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152">Ginagamit ang <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Na-save na desk, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>

@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1018656279737460067">ਰੱਦ ਕੀਤਾ</translation>
 <translation id="1020274983236703756">ਵਿਸ਼ੇਸ਼ <ph name="PRODUCT_NAME" /> ਸੰਪਤੀਆਂ ਹੁਣ ਉਪਲਬਧ ਹਨ</translation>
-<translation id="1022433422498218992">ਆਮ ਕੰਟਰੋਲ</translation>
 <translation id="1022628058306505708">ਧਰਤੀ ਪ੍ਰਵਾਹ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ਥ੍ਰੈੱਡ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ਨਵੀਂ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਹੈ, ਹੋਰ ਜਾਣਨ ਲਈ 'ਉੱਪਰ ਤੀਰ' ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਕਿਸਮ</translation>
 <translation id="1776228893584526149">ਵਾਲਪੇਪਰ ਟੋਨ</translation>
 <translation id="1782199038061388045">ਅਨੁਵਾਦ</translation>
-<translation id="1790209694022261219">ਵਿੰਡੋਆਂ ਅਤੇ ਡੈਸਕ</translation>
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1801418420130173017">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="3009958530611748826">ਇੱਥੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3017079585324758401">ਬੈਕਗ੍ਰਾਊਂਡ</translation>
-<translation id="3020183492814296499">ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="3027578600144895987">ਕੈਮਰਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="3031560714565892478">ਡੀਵਾਈਸ ਇੱਕ ਵੀਡੀਓ ਕੈਮਰਾ ਹੈ।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵਾਲਪੇਪਰ</translation>
 <translation id="6017514345406065928">ਹਰਾ</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ਹਰ ਮਹੀਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6037291330010597344">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਖਾਲੀ ਹੈ। ਦਸਤਾਵੇਜ਼ ਸ਼ਾਮਲ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>

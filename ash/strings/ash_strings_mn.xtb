@@ -144,7 +144,6 @@
 <translation id="1604857178818051494">Медиаг түр зогсоох</translation>
 <translation id="1610778689852195798">"Болих"</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
-<translation id="1618835956950524778">Тавиур дээрх эхлүүлэгчийн товчлуурыг тодруулах</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="163517899691012366">Бүү саад бол горим асаалттай үед мэдэгдлийн дууг хаадаг</translation>
@@ -395,7 +394,6 @@
 <translation id="2785499565474703580">1 төхөөрөмж холбогдсон</translation>
 <translation id="2791421900609674576">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой.  Та зөвлөмжүүдийг хасахын тулд удаан дарж болно.</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, сонгосон</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
@@ -433,7 +431,6 @@
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2985148236010982088">Бүх аппыг харах</translation>
-<translation id="29859347674873492">Судлах аппад Тусламжийг нээх</translation>
 <translation id="2992327365391326550">Төхөөрөмжийн микрофоны товчлуур унтраалттай байна.</translation>
 <translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
@@ -447,6 +444,7 @@
 <translation id="3036649622769666520">Файл нээх</translation>
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
 <translation id="3039939407102840004">Мэдрэгч үзгийн батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
+<translation id="304097922505898963">Key Shortcuts аппыг нээх</translation>
 <translation id="3045488863354895414">Өдрийн мэнд,</translation>
 <translation id="3047761520276763270">Дараахыг хэлж үзнэ үү:</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
@@ -529,7 +527,6 @@
 <translation id="3410336247007142655">Бараан загварын тохиргоог харуулах</translation>
 <translation id="3413817803639110246">Одоогоор мэдэгдэл алга</translation>
 <translation id="3417835166382867856">Табуудыг хайх</translation>
-<translation id="3423744722495840645">Эхлүүлэгчийг нээх/хаах</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" />-с салгах</translation>
 <translation id="3430396595145920809">Буцахын тулд баруун талаас шударна уу</translation>
 <translation id="3431517721463707585">14-р дэлгэц</translation>
@@ -558,7 +555,6 @@
 <translation id="3533126039236445965">Тавиур дээрх аппууд</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-н сүлжээний цэг</translation>
 <translation id="3542066395059568317">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой. Та зөвлөмжүүдийг хасахын тулд баруун талыг товшиж болно.</translation>
-<translation id="3546121235777416274">Дэлгэц доторх дэлгэцийн цонхыг сонгох</translation>
 <translation id="3552189655002856821">Wi-Fi унтраалттай байна</translation>
 <translation id="3554215588514239132">Хөгжүүлэгчийн хэрэгслийн түр зуурын самбарыг харуулах эсвэл нуух</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />-г бэхэллээ</translation>
@@ -1065,7 +1061,6 @@
 <translation id="5760866832697883462">Өөрийн <ph name="NAME" />-г холбоно уу</translation>
 <translation id="5762420912707163638">Тэмдэглэгчийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /> Дэлгэц дээр зурахын тулд мэдрэгч самбар, мэдрэмтгий дэлгэц эсвэл мэдрэгч үзгийг ашиглана уу.</translation>
 <translation id="576341972084747908">Аюултай <ph name="FILENAME" />-г татах</translation>
-<translation id="5763928712329149804">Shelf Party унтраалттай байна.</translation>
 <translation id="576453121877257266">Шөнийн гэрэл асаалттай байна.</translation>
 <translation id="5764569119212455782">Сүүлд сонгосон хэл рүү шилжих</translation>
 <translation id="5769373120130404283">Нууцлалын дэлгэц</translation>
@@ -1120,6 +1115,7 @@
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">Тавиурын дараагийн зүйлийг тодруулах</translation>
 <translation id="6018164090099858612">Толь горимоос гарч байна</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Зүүн тийш гүйлгэх</translation>
 <translation id="6022924867608035986">Хайлтын талбарын текстийг утсгах</translation>
 <translation id="602472752137106327">Бүх дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
@@ -1274,7 +1270,6 @@
 <translation id="6707693040195709527">Төхөөрөмжийг өмнөх хувилбар луу нь өөрчлөх хугацаа хэтэрсэн</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6723839937902243910">Эрчим хүч</translation>
-<translation id="6727005317916125192">Өмнөх самбар</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">камер</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1321,7 +1316,6 @@
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="6920245099716267363">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. 1 төхөөрөмж холбогдсон.</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
-<translation id="6941333068993625698">Санал хүсэлт илгээх</translation>
 <translation id="6942518653766415536">Бичлэгийн форматын цэс</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6945922087561257829">Таны утас мобайл сүлжээ ашиглаж байна. Таны утас болон Chromebook ижил Wi-Fi сүлжээнд байгаа эсэхийг шалгаж, дахин оролдоно уу. <ph name="LEARN_MORE" /></translation>
@@ -1341,7 +1335,6 @@
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
 <translation id="70168403932084660">Дэлгэц 6</translation>
-<translation id="7025325401470358758">Дараагийн самбар</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" />-г утастайгаа холбоно уу</translation>
 <translation id="7026338066939101231">Decrement</translation>
 <translation id="7029814467594812963">Идэвхтэй үеэс гарах</translation>
@@ -1370,7 +1363,6 @@
 <translation id="7126996685418858413">Өнгөрсөн долоо хоногт нээсэн</translation>
 <translation id="7130207228079676353">ДАРАГДАХ МАГАДЛАЛТАЙ</translation>
 <translation id="7131634465328662194">Таныг автоматаар гаргана.</translation>
-<translation id="7138316363520807689">Одоогийн табыг хавчуургаар хадгалах</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144942256906679589">Батарейн төлөв</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -1395,7 +1387,6 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Таны администратор eSIM-г тань шинэчилж байна. Үүнд хэдэн минут шаардлагатай.</translation>
 <translation id="7313193732017069507">Камерыг дэлгэх</translation>
-<translation id="731589979057211264">Shelf Party асаалттай байна.</translation>
 <translation id="7340731148882810149">Автомат товшилтын цэс</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
@@ -1464,7 +1455,6 @@
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7609951632080598826">Календарийн харагдах байдал, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
-<translation id="7611271430932669992">Попапс болон харилцах цонх руу сонголтыг зөөх</translation>
 <translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>
@@ -1628,7 +1618,6 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> цонх сонгосон</translation>
 <translation id="8349964124165471584">Холбоосыг шинэ цонхонд нээх</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
-<translation id="8364673525741149932">Shelf Party-г асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />-г ашиглаж байна.</translation>
 <translation id="8369166482916924789">Хадгалсан дэлгэц, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>

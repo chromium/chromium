@@ -142,6 +142,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1750259112639922169">Ciļņu grupa — ciļņu skaits: <ph name="TAB_COUNT" /></translation>
 <translation id="17513872634828108">Atvērt cilnes</translation>
 <translation id="1754404134430936718">Teksts ir nokopēts</translation>
+<translation id="1757620656501361327">Google paroļu pārvaldnieka brīdinājums</translation>
 <translation id="1778457539567749232">Atzīmēt kā nelasītu</translation>
 <translation id="1779766957982586368">Aizvērt logu</translation>
 <translation id="1791662854739702043">Instalēts</translation>
@@ -754,6 +755,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="504456571576643789">Svarīgi apsvērumi</translation>
 <translation id="5054455334322721892">Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK1" />arī cita veida darbības<ph name="END_LINK1" />. Jebkurā laikā varat tās izdzēst.</translation>
 <translation id="506254248375231072">Nav ciļņu</translation>
+<translation id="5062960805900435602">Brīdinājums par paroļu sapludināšanu ir aizvērts</translation>
 <translation id="5091199029769593641">Drīzumā, atverot jaunu cilni, būs redzami raksti no vietnes <ph name="SITE_NAME" />. Vietnes, kurām sekojat, tiek saglabātas jūsu Google kontā. Varat tās pārvaldīt Discover iestatījumu sadaļā.</translation>
 <translation id="5091249083535528968">Detalizēti lietojuma dati</translation>
 <translation id="509429900233858213">Radās kļūda.</translation>
@@ -803,6 +805,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5361107212971249203">ziņojumu</translation>
 <translation id="5368227114232678694">Lai pārlūkotu tīmekli privāti šajā ierīcē, izmēģiniet inkognito režīmu.</translation>
 <translation id="5375577065097716013">Meklēt attēlu ar Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
+<translation id="539881862970320163">Ieteicams izmantot drošu paroli. Tastatūra ir paslēpta.</translation>
 <translation id="5401851137404501592">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi un profila attēlu ar šo vietni.</translation>
 <translation id="5409881200985013443">Vai iesniegt kodu “<ph name="ONE_TIME_CODE" />” ierīcē “<ph name="CLIENT_NAME" />”?</translation>
 <translation id="5414836363063783498">Notiek verifikācija...</translation>
@@ -943,7 +946,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="6138832295072039549">Šeit varat mainīt vietnes iestatījumus.</translation>
 <translation id="6140709049082532940">Uzlabota aizsardzība:</translation>
 <translation id="6140912465461743537">Valsts/reģions</translation>
-<translation id="6148266338772765473">Bez saites</translation>
 <translation id="6150320133806434356">Grāmatzīme ir saglabāta</translation>
 <translation id="6154478581116148741">Lai eksportētu paroles no šīs ierīces, sadaļā “Iestatījumi” ieslēdziet ekrāna bloķēšanu.</translation>
 <translation id="6159729262978459665">Vēsture tiks notīrīta no visām sinhronizētajām ierīcēm.</translation>
@@ -1161,6 +1163,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7217781228893594884">Aizverot pārlūku Chrome, inkognito režīma cilnes tiks bloķētas.</translation>
 <translation id="7222235798733126207">Ierobežota datu kopīgošana starp vietnēm</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
+<translation id="72415438529550637">Paroles ieteikums ir aizvērts.</translation>
 <translation id="7242755609445462077">Stilizēts izcēlums: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Ierīcē <ph name="TARGET_DEVICE_NAME" /> ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="7252076891734325316">Novietojiet tālruni blakus datoram</translation>

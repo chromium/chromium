@@ -144,7 +144,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1604857178818051494">Sett medieinnhold på pause</translation>
 <translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
-<translation id="1618835956950524778">Fremhev knappen for appoversikten på hyllen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="163517899691012366">Varsler ignoreres når Ikke forstyrr er på</translation>
@@ -395,7 +394,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2785499565474703580">1 enhet er tilkoblet</translation>
 <translation id="2791421900609674576">Du ser anbefalinger, slik at du kan fortsette der du slapp. Trykk og hold for å fjerne anbefalinger.</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
-<translation id="2797741504905337289">Hyllegruppe</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, valgt</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
@@ -433,7 +431,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
 <translation id="2985148236010982088">Se alle appene</translation>
-<translation id="29859347674873492">Åpne Hjelp i Utforsk-appen</translation>
 <translation id="2992327365391326550">Enhetens mikrofonknapp er slått av.</translation>
 <translation id="2996462380875591307">Dokket lupe er slått på. Trykk på Ctrl + Søk + D igjen for å slå det av.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
@@ -530,7 +527,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3410336247007142655">Vis innstillinger for mørkt tema</translation>
 <translation id="3413817803639110246">Ingenting å se ennå</translation>
 <translation id="3417835166382867856">Søk i faner</translation>
-<translation id="3423744722495840645">Åpne/lukk appoversikten</translation>
 <translation id="3428447136709161042">Koble fra <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Sveip fra høyre for å gå tilbake</translation>
 <translation id="3431517721463707585">Skrivebord 14</translation>
@@ -559,7 +555,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3533126039236445965">Apper på hyllen</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-wifi-sone</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
-<translation id="3546121235777416274">Fokuser på bilde-i-bilde-vinduet</translation>
 <translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554215588514239132">Vis eller skjul utviklerverktøy-panelet</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
@@ -1065,7 +1060,6 @@ Koble enheten til strøm.</translation>
 <translation id="5760866832697883462">Koble til <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Slå av/på markøren. <ph name="STATE_TEXT" /> Bruk styreflaten, berøringsskjermen eller pekepennen til å tegne på skjermen.</translation>
 <translation id="576341972084747908">Last ned den farlige filen <ph name="FILENAME" /></translation>
-<translation id="5763928712329149804">Hyllegruppen er av.</translation>
 <translation id="576453121877257266">Nattlys er på.</translation>
 <translation id="5764569119212455782">Bytt til det sist valgte språket</translation>
 <translation id="5769373120130404283">Personvernskjerm</translation>
@@ -1275,7 +1269,6 @@ Nylig installert</translation>
 <translation id="6707693040195709527">Nedgraderingen til en tidligere versjon på enheten har forfalt</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>
-<translation id="6727005317916125192">Forrige rute</translation>
 <translation id="6727969043791803658">Koblet til – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1322,7 +1315,6 @@ Nylig installert</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6920245099716267363">Slå av/på wifi-sonen. Wifi-sonen er på. 1 enhet er tilkoblet.</translation>
 <translation id="6931576957638141829">Lagre i</translation>
-<translation id="6941333068993625698">Send tilbakemelding</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6945922087561257829">Telefonen bruker et mobilnettverk. Sørg for at telefonen og Chromebooken er koblet til det samme wifi-nettverket, og prøv på nytt. <ph name="LEARN_MORE" /></translation>
@@ -1342,7 +1334,6 @@ Nylig installert</translation>
 <translation id="7014684956566476813">Koblet til enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom tilbake <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivebord 6</translation>
-<translation id="7025325401470358758">Neste rute</translation>
 <translation id="7025533177575372252">Koble <ph name="DEVICE_NAME" /> til telefonen</translation>
 <translation id="7026338066939101231">Reduser</translation>
 <translation id="7029814467594812963">Avslutt økten</translation>
@@ -1371,7 +1362,6 @@ Nylig installert</translation>
 <translation id="7126996685418858413">Åpnet den siste uken</translation>
 <translation id="7130207228079676353">MEST SANNSYNLIG</translation>
 <translation id="7131634465328662194">Du logges av automatisk.</translation>
-<translation id="7138316363520807689">Lagre gjeldende fane som bokmerke</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
@@ -1396,7 +1386,6 @@ Nylig installert</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
-<translation id="731589979057211264">Hyllegruppen er på.</translation>
 <translation id="7340731148882810149">Automatisk klikk-meny</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
@@ -1465,7 +1454,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7609951632080598826">Kalendervisning, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameraet er koblet til igjen.</translation>
-<translation id="7611271430932669992">Flytt fokus til forgrunnsvinduer og dialogbokser</translation>
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
@@ -1629,7 +1617,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8345019317483336363">Vinduet <ph name="WINDOW_TITLE" /> er valgt</translation>
 <translation id="8349964124165471584">Åpne link i et nytt vindu</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
-<translation id="8364673525741149932">Slå av/på hyllegruppen. <ph name="STATE_TEXT" /></translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> er i bruk.</translation>
 <translation id="8369166482916924789">Lagret skrivebord, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Én bokstav frem</translation>

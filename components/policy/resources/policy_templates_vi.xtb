@@ -3794,29 +3794,6 @@ Chính sách này đã bị loại bỏ ở M112.</translation>
 <translation id="441686537793821907">Chặn việc cài đặt các tiện ích bên ngoài</translation>
 <translation id="4423597592074154136">Chỉ định cài đặt proxy theo cách thủ công</translation>
 <translation id="4424004842303301809">Tắt tùy chọn báo cáo về các sự kiện ngăn rò rỉ dữ liệu</translation>
-<translation id="4426288704078471820"><ph name="WEBVIEW_TAG_NAME" /> trong Ứng dụng Chrome cho phép
-hành vi đang trong quá trình bị xoá khỏi
-<ph name="PRODUCT_NAME" />.
-
-Hành vi trước đó sẽ hiển thị trang xen kẽ nếu
-<ph name="WEBVIEW_TAG_NAME" /> chuyển đến một trang
-có chứng chỉ SSL không hợp lệ. Trang xen kẽ này cho phép người dùng
-tiếp tục một cách không an toàn. Hành vi mới này sẽ hiển thị một trang lỗi không có lựa chọn
-tiếp tục một cách không an toàn.
-
-Hành vi trước đó cũng cho phép sự kiện
-<ph name="WEBVIEW_TAG_NAME" />
-<ph name="NEWWINDOW_EVENT_NAME" />
-(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
-đính kèm cửa sổ mới vào phần tử <ph name="WEBVIEW_TAG_NAME" />
-trong cửa sổ Ứng dụng riêng biệt từ
-<ph name="WEBVIEW_TAG_NAME" /> ban đầu. Hành vi mới vẫn cho phép đính kèm cửa sổ này. Tuy nhiên, tham chiếu cửa sổ trả về từ lệnh gọi <ph name="WINDOW_OPEN_NAME" /> trong <ph name="WEBVIEW_TAG_NAME" /> ban đầu sẽ bị vô hiệu hoá.
-
-Nếu bạn bật chính sách này, hành vi trước đó sẽ được sử dụng.
-Nếu bạn tắt hoặc không đặt chính sách này thì thay đổi về hành vi sẽ có hiệu lực khi được ra mắt thông qua quy trình phát hành <ph name="PRODUCT_NAME" />.
-
-Chính sách này là giải pháp tạm thời trong trường hợp doanh nghiệp gặp sự cố do những thay đổi này. Chính sách này sẽ bị loại bỏ
-trong phiên bản 117.</translation>
 <translation id="4426601693403743089">Tắt thử nghiệm nội bộ Screencast đối với người dùng Family Link</translation>
 <translation id="4427173305799125784">Trình xem PDF không thể chú thích trong tệp PDF</translation>
 <translation id="4432762137771104529">Bật Báo cáo mở rộng trong Duyệt web an toàn</translation>
@@ -8605,7 +8582,6 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ không nhậ
 
       Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đổi chức năng này. Nếu bạn không đặt chính sách này, thì người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
 <translation id="8707790573162457301">Chạy chế độ tự động dọn dẹp ổ đĩa trong quá trình đăng nhập</translation>
-<translation id="8708628595824806312">Kiểm tra việc sử dụng khoá RSA cho các chứng chỉ máy chủ do các neo tin cậy cục bộ phát hành</translation>
 <translation id="8713535263782304771">Tắt tính năng Duyệt web an toàn</translation>
 <translation id="8715181294371649277">Cho phép dịch vụ bảo vệ tệp tải xuống trong thời gian thực của tính năng duyệt web an toàn</translation>
 <translation id="8715885991031124968">Cho phép các hộp thoại JavaScript được kích hoạt từ một khung phụ có nguồn gốc khác.</translation>

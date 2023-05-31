@@ -639,7 +639,7 @@
 <translation id="2505268675989099013">ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಿ</translation>
 <translation id="2509167091171468975">ಆಹಾರ ಮತ್ತು ದಿನಸಿ ರಿಟೇಲರ್‌ಗಳು</translation>
 <translation id="2512101340618156538">ಅನುಮತಿ ಇಲ್ಲ (ಡೀಫಾಲ್ಟ್)</translation>
-<translation id="2512413427717747692">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಬಟನ್ ಆಗಿ ಹೊಂದಿಸಿ ಮತ್ತು iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಹೊಂದಿಸಲು Enter ಒತ್ತಿರಿ</translation>
+<translation id="2512413427717747692">Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಬಟನ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ ಮತ್ತು iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="2515629240566999685">ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿನ ಸಿಗ್ನಲ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2515761554693942801">ನೀವು <ph name="PROVIDER_ORIGIN" /> ಬಳಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಸ್ಪರ್ಶ ID ಯ ಮೂಲಕ ದೃಢೀಕರಿಸುವ ಆಯ್ಕೆಯನ್ನು ಮಾಡಿದ್ದೀರಿ. ಈ ಪೂರೈಕೆದಾರರು ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನದ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಟ್ಟಿರಬಹುದು, ನೀವು ಅದನ್ನು <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">ಕೆಳಗಿನ ಬಲಭಾಗದಲ್ಲಿ ಸ್ಟೇಪಲ್ ಹಾಕಿ</translation>
@@ -969,7 +969,7 @@
 <translation id="3366477098757335611">ಕಾರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3369192424181595722">ಗಡಿಯಾರ ದೋಷ</translation>
 <translation id="3369459162151165748">ವಾಹನದ ಬಿಡಿಭಾಗಗಳು ಮತ್ತು ಆ್ಯಕ್ಸೆಸರಿಗಳು</translation>
-<translation id="3371064404604898522">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್‌ನ ರೀತಿಯಲ್ಲಿ Chrome ಅನ್ನು ಹೊಂದಿಸಿ</translation>
+<translation id="3371064404604898522">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್‌ ಆಗಿ Chrome ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="337363190475750230">ಅನುಮತಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3375754925484257129">Chrome ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆಯನ್ನು ರನ್ ಮಾಡಿ</translation>
 <translation id="3377144306166885718">ಸರ್ವರ್ ಬಳಸುವ TLS ಆವೃತ್ತಿಯು ಹಳೆಯದಾಗಿದೆ.</translation>
@@ -1240,6 +1240,7 @@
 <translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4040350669425716613">ಕಾಲೇಜುಗಳು ಮತ್ತು ವಿಶ್ವವಿದ್ಯಾನಿಲಯಗಳು</translation>
 <translation id="4047351652147966654">18 x 24 ಇಂಚು</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" ID ಹೊಂದಿರುವ ವಿಸ್ತರಣೆಯ ಅಪ್‌ಡೇಟ್ URL ಅಮಾನ್ಯವಾಗಿದೆ ಅಥವಾ ಬೆಂಬಲವಿಲ್ಲದ ಸ್ಕೀಮ್ ಅನ್ನು ಬಳಸುತ್ತದೆ. ಬೆಂಬಲವಿರುವ ಸ್ಕೀಮ್‌ಗಳು: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ಹಾಗೂ <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4056223980640387499">ಸೆಪಿಯಾ</translation>
@@ -2185,7 +2186,7 @@
 <translation id="6319249456820053699">ಕ್ಯಾಮರಾಗಳು ಮತ್ತು ಕ್ಯಾಮ್‌ಕಾರ್ಡರ್‌ಗಳು</translation>
 <translation id="6321917430147971392">ನಿಮ್ಮ DNS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6322182122604171028">Windows Hello ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
-<translation id="6326947323444967009">iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
+<translation id="6326947323444967009">iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸಿಸ್ಟಂನ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="6328639280570009161">ನೆಟ್‌ವರ್ಕ್ ಮುನ್ಸೂಚನೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6328784461820205019">"ನಿಮ್ಮ ಸಂಪರ್ಕ ಖಾಸಗಿಯಾಗಿಲ್ಲ" ಅಥವಾ "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ಅಥವಾ "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ಅಥವಾ "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ಅಥವಾ "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ಅಥವಾ "SSL ಪ್ರಮಾಣಪತ್ರ ದೋಷ"</translation>
 <translation id="6328786501058569169">ಈ ಸೈಟ್ ಮೋಸಗೊಳಿಸುವುದಾಗಿದೆ</translation>
@@ -2289,6 +2290,7 @@
 <translation id="6569366777234823130">ನಾಟಕೀಯ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="6573200754375280815">ಬಲಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6576181918031900030">ಕ್ಯಾಸ್ಟ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="6578434528542148658">ಅಮಾನ್ಯವಾದ ವಿಸ್ತರಣೆ ID.</translation>
 <translation id="657902945730878902">ರೇಖಾಚಿತ್ರ ಮತ್ತು ಬಣ್ಣ ಹಚ್ಚುವಿಕೆ</translation>
 <translation id="6579630537141957243">MIDI ಸಾಧನವನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6579990219486187401">ತಿಳಿ ಗುಲಾಬಿ</translation>
@@ -3028,7 +3030,6 @@
 <translation id="8298115750975731693">ನೀವು ಬಳಸುತ್ತಿರುವ ವೈ-ಫೈ (<ph name="WIFI_NAME" />) ಗೆ ನೀವು <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ಅನ್ನು ಭೇಟಿ ನೀಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ತೋರಿಸಲಾಗಿದೆ</translation>
 <translation id="830498451218851433">ಅರ್ಧ ಮಡಿಸಿ</translation>
-<translation id="8307888238279532626">ಇನ್‍‍ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅವುಗಳನ್ನು ಎಷ್ಟು ಬಾರಿ ಬಳಸಿರುವುದು</translation>
 <translation id="831997045666694187">ಸಂಜೆ</translation>
 <translation id="8321476692217554900">ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="8329068931308448247">ಎನ್ವಲಪ್ #14</translation>

@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">Tidak dapat me-resolve DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
-<translation id="1022433422498218992">Kontrol Umum</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1776228893584526149">Warna wallpaper</translation>
 <translation id="1782199038061388045">terjemahan</translation>
-<translation id="1790209694022261219">Jendela dan Desktop</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
 <translation id="1807246157184219062">Terang</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
-<translation id="3020183492814296499">Pintasan</translation>
 <translation id="3027578600144895987">Tutup kamera</translation>
 <translation id="3031560714565892478">Perangkat adalah kamera video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Wallpaper Default</translation>
 <translation id="6017514345406065928">Hijau</translation>
+<translation id="6019566113895157499">Pintasan Keyboard</translation>
 <translation id="6034694447310538551">Aktifkan reset bulanan otomatis</translation>
 <translation id="6037291330010597344">Pengumpan dokumen pemindai kosong. Tambahkan dokumen, lalu coba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>

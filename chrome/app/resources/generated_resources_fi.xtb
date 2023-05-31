@@ -1451,6 +1451,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 riviä ei näytetä&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> riviä ei näytetä&gt;}}</translation>
 <translation id="2218019600945559112">Hiiri ja kosketuslevy</translation>
 <translation id="2218515861914035131">Liitä pelkkänä tekstinä</translation>
+<translation id="221872881068107022">Käänteinen vieritys</translation>
 <translation id="2220409419896228519">Lisää kirjanmerkkejä tuttuihin Google-sovelluksiin</translation>
 <translation id="2220529011494928058">Ilmoita ongelmasta</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
@@ -4383,6 +4384,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4777458362738635055">Muut laitteen käyttäjät voivat käyttää tätä verkkoa</translation>
 <translation id="4777825441726637019">Play Kauppa</translation>
 <translation id="4777943778632837590">Määritä verkon nimipalvelimet</translation>
+<translation id="4778653490315793244">Ei vielä näytettävää</translation>
 <translation id="4779083564647765204">Lähennä</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Nimeä eSIM-mobiiliverkko uudelleen</translation>
@@ -4804,7 +4806,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5155327081870541046">Lisää osoitekenttään hakemasi sivuston pikakomento, esim. "@bookmarks". Paina sitten valitsemaasi pikanäppäintä ja lisää hakutermisi.</translation>
 <translation id="5156638757840305347">Kohdistin korostetaan, kun se on näkyvissä tai liikkuu</translation>
 <translation id="5157250307065481244">Näytä sivuston tiedot</translation>
-<translation id="5157635116769074044">Kiinnitä tämä sivu aloitusruutuun…</translation>
 <translation id="5158206172605340248">Aksenttimerkkien valikko hylätty.</translation>
 <translation id="5159094275429367735">Ota Crostini käyttöön</translation>
 <translation id="5159419673777902220">Vanhempasi on estänyt laajennukset</translation>
@@ -5890,7 +5891,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6113942107547980621">Jos haluat käyttää Smart Lockia, vaihda ensisijaiseen käyttäjäprofiiliin puhelimellasi</translation>
 <translation id="6116921718742659598">Vaihda kielen ja syöttötavan asetuksia</translation>
 <translation id="6119927814891883061">Valitse laitteen nimeksi <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Kiinnitä tämä sivu aloitusruutuun...</translation>
 <translation id="6120707837086723438">Näet suositeltuja reseptejä, jotka perustuvat viime aikoina hakemiisi resepteihin.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8372,7 +8372,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
     <ph name="BEGIN_PARAGRAPH3" />Omistaja voi muokata tätä ominaisuutta kohdassa Asetukset &gt; Lisäasetukset &gt; Lähetä automaattisesti diagnostiikka- ja käyttötietoja Googlelle.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Jos lapsesi on ottanut käyttöön ylimääräisen Verkko- ja sovellustoiminta ‑asetuksen, tätä dataa voidaan tallentaa lapsesi Google-tilille. Lue lisätietoja näistä asetuksista ja niiden muokkaamisesta osoitteessa families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Virheellinen käyttöoikeusvarmenne</translation>
-<translation id="8270162672241199380">Steamin asennusohjelma</translation>
 <translation id="827097179112817503">Näytä Etusivu-painike</translation>
 <translation id="8271268254812352141">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään. Muokkaa käännöskieliä kohdassa <ph name="LINK_BEGIN" />Verkkosivustojen kielet<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Seuraavat vaiheet on tarkoitettu vanhemmille. <ph name="DEVICE_TYPE" /> voidaan antaa lapselle tilin määrityksen jälkeen.</translation>

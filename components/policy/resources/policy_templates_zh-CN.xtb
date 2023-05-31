@@ -3461,6 +3461,14 @@
       如果您未设置此政策或将其留空，系统会使用默认的“新标签页”页面。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="4164511138197196839">如果此政策已启用，系统会在 <ph name="PRODUCT_NAME" /> 中停用 Chrome 应用商店中处于未发布状态的扩展程序。
+此政策仅适用于那些通过 Chrome 应用商店安装和更新的扩展程序。
+
+系统会忽略并非通过 Chrome 应用商店安装的扩展程序，例如：使用开发者模式安装的未封装扩展程序，以及使用命令行开关安装的扩展程序。
+系统还会忽略自主托管的强制安装扩展程序。所有已被固定了版本的扩展程序也会被忽略。
+
+如果此政策设为 <ph name="ALLOW_UNPUBLISHED" /> (0) 或未设置，系统将允许使用 Chrome 应用商店中处于未发布状态的扩展程序。
+如果此政策设为 <ph name="DISABLE_UNPUBLISHED" /> (1)，系统将停用 Chrome 应用商店中处于未发布状态的扩展程序。</translation>
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4166174702671320480">如果此政策已启用，那么对于同一政策原子组，系统会忽略组内与具有最高优先级的政策不属于同一来源的政策。
 
@@ -3719,16 +3727,6 @@
 <translation id="441686537793821907">阻止安装外部扩展程序</translation>
 <translation id="4423597592074154136">手动指定代理设置</translation>
 <translation id="4424004842303301809">停用关于数据泄露预防事件的报告</translation>
-<translation id="4426288704078471820">Chrome 应用 <ph name="WEBVIEW_TAG_NAME" /> 允许正被从 <ph name="PRODUCT_NAME" /> 中移除的行为。
-
-之前的行为会在 <ph name="WEBVIEW_TAG_NAME" /> 要前往包含无效 SSL 证书的页面时显示一个插页。在该插页中，用户可选择以不安全的方式继续。新行为会显示一个错误页面，让用户无法以不安全的方式继续。
-
-之前的行为还允许 <ph name="WEBVIEW_TAG_NAME" /> <ph name="NEWWINDOW_EVENT_NAME" /> 事件 (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) 将新窗口附加到位于源 <ph name="WEBVIEW_TAG_NAME" /> 所含单独应用窗口中的 <ph name="WEBVIEW_TAG_NAME" /> 元素。新行为依然允许这种附加操作，但对源 <ph name="WEBVIEW_TAG_NAME" /> 中 <ph name="WINDOW_OPEN_NAME" /> 的调用所返回的窗口引用已失效。
-
-如果此政策已启用，系统会遵循之前的行为。
-如果此政策已停用或未设置，这项行为变更将在通过 <ph name="PRODUCT_NAME" /> 发布流程发布时生效。
-
-此政策是一种临时的变通方案，可在企业因这些变更而发生网站崩溃时使用。在版本 117 中，此政策将被移除。</translation>
 <translation id="4426601693403743089">为 Family Link 用户停用“屏幕录制”功能 dogfood</translation>
 <translation id="4427173305799125784">PDF 查看器无法在 PDF 文件中添加注释</translation>
 <translation id="4432762137771104529">启用安全浏览扩展报告功能</translation>
@@ -5197,6 +5195,21 @@
 <translation id="583627479140113555">允许在首次运行时导入已保存的密码</translation>
 <translation id="5838452040629810808">允许使用光标突出显示</translation>
 <translation id="5842283830553218200">系统将默认使用针对已停用的表单控件分派事件的新行为。</translation>
+<translation id="5844880038533636588">通过设置此政策，您能以列表形式指定哪些应用和扩展程序无需用户互动即可静默安装且无法由用户卸载或停用。权限由系统默认授予，其中包括对 enterprise.deviceAttributes 和 enterprise.platformKeys 扩展程序 API 的权限（这 2 个 API 不适用于非强制安装的应用和扩展程序）。
+
+      如果您不设置此政策，系统将不会自动安装任何应用或扩展程序，而且用户可在 <ph name="PRODUCT_NAME" /> 中卸载任何应用或扩展程序。
+
+      此政策会取代 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 政策。如果从此列表中移除了以前强制安装的某个应用或扩展程序，<ph name="PRODUCT_NAME" /> 便会自动卸载该应用或扩展程序。
+
+      只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、<ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+      只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+      用户可通过开发者工具更改任意扩展程序的源代码，这可能会导致扩展程序无法正常运行。要想避免这种情况，请设置 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。
+
+      此政策的每个列表项都是一个字符串，其中包含一个扩展程序 ID 和一个可选的更新网址（这两者之间以英文分号 [;] 分隔）。扩展程序 ID 是一个由 32 个字母构成的字符串；若想查找该字符串，一种方法是在开发者模式下访问 chrome://extensions。更新网址（若指定）应指向一个更新清单 XML 文档 (https://developer.chrome.com/extensions/autoupdate)。更新网址应使用以下架构之一：<ph name="HTTP_SCHEME" />、<ph name="HTTPS_SCHEME" /> 或 <ph name="FILE_SCHEME" />。默认情况下，系统会使用 Chrome 应用商店的更新网址。此政策中设置的更新网址仅用于初次安装；扩展程序的后续更新将会使用该扩展程序的清单中的更新网址。
+
+       请注意：此政策不适用于无痕模式。了解如何托管扩展程序 (https://developer.chrome.com/extensions/hosting)。</translation>
 <translation id="5847509620317822100">该功能已从 Chrome 100 中移除。
 
       如果此政策已启用，系统便会推荐用户曾在其他设备上安装的应用。如果用户未输入任何搜索文字，系统将在启动器中显示推荐应用（位于推荐的本地应用后面）。
@@ -8375,7 +8388,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您设置了此政策，用户将无法更改这项功能。如果此政策未设置，用户便可以更改此设置。</translation>
 <translation id="8707790573162457301">在登录期间运行“自动清理磁盘”功能</translation>
-<translation id="8708628595824806312">检查由本地信任锚颁发的服务器证书的 RSA 密钥用法</translation>
 <translation id="8713535263782304771">停用安全浏览功能</translation>
 <translation id="8715181294371649277">启用“安全浏览”功能的实时下载保护服务</translation>
 <translation id="8715885991031124968">允许显示从其他来源的子框架触发的 JavaScript 对话框。</translation>

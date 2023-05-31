@@ -1242,6 +1242,7 @@
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4040350669425716613">วิทยาลัยและมหาวิทยาลัย</translation>
 <translation id="4047351652147966654">18 x 24 นิ้ว</translation>
+<translation id="404831776305217138">อัปเดต URL สําหรับส่วนขยายที่มีรหัส "<ph name="EXTENSION_ID" />" ไม่ถูกต้องหรือใช้รูปแบบที่ไม่รองรับ รูปแบบที่รองรับ ได้แก่ <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> และ <ph name="FILE_SCHEME" /></translation>
 <translation id="4050392779074832022">คุณจะใช้ที่อยู่นี้ในผลิตภัณฑ์ต่างๆ ของ Google ได้</translation>
 <translation id="405399507749852140">รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="4056223980640387499">ซีเปีย</translation>
@@ -2292,6 +2293,7 @@
 <translation id="6569366777234823130">ภาพยนตร์ดราม่า</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
 <translation id="6576181918031900030">เริ่มแคสต์</translation>
+<translation id="6578434528542148658">รหัสส่วนขยายไม่ถูกต้อง</translation>
 <translation id="657902945730878902">การวาดภาพและระบายสี</translation>
 <translation id="6579630537141957243">เชื่อมต่ออุปกรณ์ MIDI ไหม</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
@@ -3031,7 +3033,6 @@
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
-<translation id="8307888238279532626">แอปที่ติดตั้งและความถี่ในการใช้</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
 <translation id="8329068931308448247">Envelope #14</translation>

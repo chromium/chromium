@@ -427,6 +427,7 @@
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
+<translation id="3305130791745726624">デバイスに送信</translation>
 <translation id="3305795716056605962">[その他のオプション] からページを翻訳できます</translation>
 <translation id="3319664549618064419">このサイトを見やすくするには、PC 版サイトに切り替えてください</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
@@ -945,7 +946,6 @@
 <translation id="6138832295072039549">サイトの設定をここで変更</translation>
 <translation id="6140709049082532940">保護強化機能:</translation>
 <translation id="6140912465461743537">国 / 地域</translation>
-<translation id="6148266338772765473">リンクを除外</translation>
 <translation id="6150320133806434356">ブックマークを保存しました</translation>
 <translation id="6154478581116148741">このデバイスからパスワードをエクスポートするには、[設定] で画面ロックをオンにしてください。</translation>
 <translation id="6159729262978459665">同期しているすべてのデバイスから履歴を削除します。</translation>
@@ -1178,6 +1178,7 @@
 <translation id="7304072650267745798">お使いの Android デバイスにも、同様の設定が含まれていることがあります。Chrome と Android デバイスでこの設定が有効になっている場合、企業はユーザーが利用するウェブサイトやアプリで広告の効果を測定できる可能性があります。</translation>
 <translation id="7304873321153398381">オフラインです。Chrome でパスワードを確認できません。</translation>
 <translation id="7313188324932846546">タップして同期を設定する</translation>
+<translation id="7324354302972299151">「トラッキング拒否」リクエストを送信する</translation>
 <translation id="7332075081379534664">ログインが完了しました</translation>
 <translation id="7333232495927792353">同期すると、最も関連性の高いコンテンツを表示できます</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>

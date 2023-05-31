@@ -5,7 +5,6 @@
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
-<translation id="1022433422498218992">साधारण नियंत्रणे</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
@@ -114,7 +113,6 @@
 <translation id="1768959921651994223">ऑथेंटिकेशन प्रकार</translation>
 <translation id="1776228893584526149">वॉलपेपरचा टोन</translation>
 <translation id="1782199038061388045">भाषांतर</translation>
-<translation id="1790209694022261219">विंडो आणि डेस्क</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1801418420130173017">गडद थीम बंद करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
@@ -245,7 +243,6 @@
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="3017079585324758401">बॅकग्राउंड</translation>
-<translation id="3020183492814296499">शॉर्टकट</translation>
 <translation id="3027578600144895987">कॅमेरा बंद करा</translation>
 <translation id="3031560714565892478">डिव्हाइस हे व्हिडिओ कॅमेरा आहे.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -615,6 +612,7 @@
 <translation id="5972388717451707488">इंजीन अपडेट करा</translation>
 <translation id="5984145644188835034">डीफॉल्ट वॉलपेपर</translation>
 <translation id="6017514345406065928">हिरवा</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ऑटोमॅटिक मासिक रीसेट सुरू करा</translation>
 <translation id="6037291330010597344">स्कॅनरचा दस्तऐवज फीडर रिकामा आहे. दस्तऐवज जोडा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6040143037577758943">बंद करा</translation>

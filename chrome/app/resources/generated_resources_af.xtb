@@ -1453,6 +1453,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 reël word nie gewys nie&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> reëls word nie gewys nie&gt;}}</translation>
 <translation id="2218019600945559112">Muis en raakpaneel</translation>
 <translation id="2218515861914035131">Plak as gewone teks</translation>
+<translation id="221872881068107022">Omgekeerde rollees</translation>
 <translation id="2219007152108311874">Vra met elke besoek</translation>
 <translation id="2220409419896228519">Voeg boekmerke by jou gunsteling-Google-programme</translation>
 <translation id="2220529011494928058">Gee 'n kwessie aan</translation>
@@ -4398,6 +4399,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4777458362738635055">Ander gebruikers van hierdie toestel kan hierdie netwerk gebruik</translation>
 <translation id="4777825441726637019">Play Winkel</translation>
 <translation id="4777943778632837590">Stel netwerknaambedieners op</translation>
+<translation id="4778653490315793244">Nog niks om te wys nie</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Hernoem e-SIM-selnetwerk</translation>
@@ -4822,7 +4824,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5155327081870541046">Voer die kortpad vir die werf wat jy wil deursoek, soos "@boekmerke", by die adresbalk in. Druk dan jou voorkeurkortpadsleutel en voer jou soekterm in.</translation>
 <translation id="5156638757840305347">Skermpyltjie word gemerk wanneer dit verskyn of beweeg</translation>
 <translation id="5157250307065481244">Bekyk werfbesonderhede</translation>
-<translation id="5157635116769074044">Speld hierdie bladsy aan die beginskerm vas …</translation>
 <translation id="5157701529792771331">Vertaal onderskrifte outomaties</translation>
 <translation id="5158206172605340248">Aksentmerkkieslys is toegemaak.</translation>
 <translation id="5159094275429367735">Stel Crostini op</translation>
@@ -5914,7 +5915,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6113942107547980621">Skakel na die primêre gebruikerprofiel op jou foon toe oor om Smart Lock te gebruik</translation>
 <translation id="6116921718742659598">Verander taal- en invoerinstellings</translation>
 <translation id="6119927814891883061">Gee toestel die naam <ph name="DEVICE_NAME" /></translation>
-<translation id="6120205520491252677">Speld hierdie bladsy aan beginskerm vas …</translation>
 <translation id="6120707837086723438">Jy sien tans voorgestelde resepte op grond van jou onlangse soekaktiwiteit na resepte.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -8401,7 +8401,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
     <ph name="BEGIN_PARAGRAPH3" />Die eienaar kan hierdie kenmerk beheer in Instellings &gt; Gevorderd &gt; Stuur diagnostiese en gebruiksdata outomaties na Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />As die instelling vir bykomende Web- en App-aktiwiteit vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle te verstel.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ongeldige kliëntesertifikaat</translation>
-<translation id="8270162672241199380">Steam-installeerder</translation>
 <translation id="827097179112817503">Wys tuisknoppie</translation>
 <translation id="8271268254812352141">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou. Pasmaak vertaaltale in <ph name="LINK_BEGIN" />Webwerftale<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Ouers, die volgende paar stappe is vir jou. Jy kan die <ph name="DEVICE_TYPE" /> aan die kind teruggee nadat die rekening opgestel is.</translation>
