@@ -47,8 +47,7 @@ TEST(WakeTask, NotModified) {
         ],
         @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
         @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"System",
-        @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
+        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"System"
       };
       break;
     case UpdaterScope::kUser:
@@ -67,8 +66,7 @@ TEST(WakeTask, NotModified) {
         ],
         @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
         @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua",
-        @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
+        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua"
       };
       break;
   }
