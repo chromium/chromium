@@ -13,10 +13,13 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -27,6 +30,45 @@
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "components/viz/common/gpu/dawn_context_provider.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_METAL)
+#include "components/viz/common/gpu/metal_context_provider.h"
+#endif
+
+namespace {
+
+struct ReadPixelsContext {
+  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
+  bool finished = false;
+};
+
+void OnReadPixelsDone(
+    void* raw_ctx,
+    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
+  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
+  context->async_result = std::move(async_result);
+  context->finished = true;
+}
+
+void InsertRecordingAndSubmit(gpu::SharedContextState* context,
+                              bool sync_cpu = false) {
+  CHECK(context->graphite_context());
+  auto recording = context->gpu_main_graphite_recorder()->snap();
+  if (recording) {
+    skgpu::graphite::InsertRecordingInfo info = {};
+    info.fRecording = recording.get();
+    context->graphite_context()->insertRecording(info);
+  }
+  context->graphite_context()->submit(sync_cpu
+                                          ? skgpu::graphite::SyncToCpu::kYes
+                                          : skgpu::graphite::SyncToCpu::kNo);
+}
+
+}  // namespace
 
 namespace gpu {
 
@@ -94,7 +136,23 @@ GrDirectContext* SharedImageTestBase::gr_context() {
 }
 
 void SharedImageTestBase::InitializeContext(GrContextType context_type) {
-  if (context_type == GrContextType::kVulkan) {
+  gpu_preferences_.gr_context_type = context_type;
+
+  if (context_type == GrContextType::kGraphiteDawn) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    dawn_context_provider_ = viz::DawnContextProvider::Create();
+    ASSERT_TRUE(dawn_context_provider_);
+#else
+    FAIL() << "Graphite-Dawn not available";
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+  } else if (context_type == GrContextType::kGraphiteMetal) {
+#if BUILDFLAG(SKIA_USE_METAL)
+    metal_context_provider_ = viz::MetalContextProvider::Create();
+    ASSERT_TRUE(metal_context_provider_);
+#else
+    FAIL() << "Graphite-Metal not available";
+#endif  // BUILDFLAG(SKIA_USE_METAL)
+  } else if (context_type == GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
     vulkan_implementation_ = gpu::CreateVulkanImplementation();
     ASSERT_TRUE(vulkan_implementation_);
@@ -104,7 +162,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
     ASSERT_TRUE(vulkan_context_provider_);
 #else
     FAIL() << "Vulkan not available";
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   }
 
   // Set up a GL context. Even if the GrContext is Vulkan it's still needed.
@@ -123,7 +181,17 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 #if BUILDFLAG(ENABLE_VULKAN)
       ,
       vulkan_context_provider_.get()
-#endif
+#else
+      ,
+      /*vulkan_context_provider=*/nullptr
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(SKIA_USE_METAL)
+          ,
+      metal_context_provider_.get()
+#elif BUILDFLAG(SKIA_USE_DAWN)
+      ,
+      /*metal_context_provider=*/nullptr, dawn_context_provider_.get()
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
   );
 
   bool initialize_gl = context_state_->InitializeGL(
@@ -136,7 +204,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
   ASSERT_TRUE(initialize_skia);
 }
 
-void SharedImageTestBase::VerifyPixelsWithReadback(
+void SharedImageTestBase::VerifyPixelsWithReadbackGanesh(
     const Mailbox& mailbox,
     const std::vector<SkBitmap>& expected_bitmaps) {
   // Create Skia representation to readback from.
@@ -188,6 +256,63 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
         << "plane_index=" << plane;
   }
   scoped_read_access->ApplyBackendSurfaceEndState();
+}
+
+void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
+    const Mailbox& mailbox,
+    const std::vector<SkBitmap>& expected_bitmaps) {
+  // Create Skia representation to readback from.
+  auto skia_representation =
+      shared_image_representation_factory_.ProduceSkia(mailbox, context_state_);
+  ASSERT_TRUE(skia_representation);
+
+  auto scoped_read_access = skia_representation->BeginScopedReadAccess(
+      /*begin_semaphores=*/{}, /*end_semaphores=*/{});
+  ASSERT_TRUE(scoped_read_access);
+
+  viz::SharedImageFormat format = skia_representation->format();
+  gfx::Size size = skia_representation->size();
+
+  int num_planes = format.NumberOfPlanes();
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType plane_color_type =
+        viz::ToClosestSkColorType(true, format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    SkImageInfo dst_info =
+        SkImageInfo::Make(plane_size.width(), plane_size.height(),
+                          plane_color_type, kOpaque_SkAlphaType);
+    SkBitmap dst_bitmap;
+    dst_bitmap.allocPixels(dst_info);
+
+    auto graphite_texture = scoped_read_access->graphite_texture(plane);
+    ASSERT_TRUE(graphite_texture.isValid()) << "plane_index=" << plane;
+
+    ASSERT_TRUE(context_state_->gpu_main_graphite_recorder());
+    auto sk_image = SkImages::AdoptTextureFrom(
+        context_state_->gpu_main_graphite_recorder(), graphite_texture,
+        plane_color_type, skia_representation->alpha_type(), nullptr);
+    ASSERT_TRUE(sk_image) << "plane_index=" << plane;
+
+    ASSERT_TRUE(context_state_->graphite_context());
+    ReadPixelsContext context;
+    context_state_->graphite_context()->asyncReadPixels(
+        sk_image.get(), dst_info.colorInfo(),
+        SkIRect::MakeXYWH(/*src_x=*/0, /*src_y=*/0, dst_info.width(),
+                          dst_info.height()),
+        &OnReadPixelsDone, &context);
+    InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
+    ASSERT_TRUE(context.finished) << "plane_index=" << plane;
+    if (context.async_result) {
+      libyuv::CopyPlane(
+          static_cast<const uint8_t*>(context.async_result->data(0)),
+          context.async_result->rowBytes(0),
+          static_cast<uint8_t*>(dst_bitmap.getPixels()), dst_bitmap.rowBytes(),
+          dst_info.width() * dst_info.bytesPerPixel(), dst_info.height());
+      EXPECT_TRUE(cc::MatchesBitmap(dst_bitmap, expected_bitmaps[plane],
+                                    cc::ExactPixelComparator()))
+          << "plane_index=" << plane;
+    }
+  }
 }
 
 }  // namespace gpu
