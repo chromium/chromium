@@ -27,8 +27,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """A helper class for reading in and dealing with tests expectations for web tests."""
 
+import bisect
 import copy
-import itertools
 import logging
 import re
 from collections import defaultdict
@@ -229,7 +229,8 @@ class TestExpectations:
                 if not next_line or next_line.startswith('#'):
                     self._maybe_remove_comments_and_whitespace(lines)
             else:
-                lines.extend(lineno_to_exps[lineno])
+                exps = lineno_to_exps[lineno]
+                lines.extend(sorted(exps, key=lambda exp: exp.to_string()))
                 lineno_to_exps.pop(lineno)
 
         # Handle Expectation instances with line numbers outside of the
@@ -499,15 +500,7 @@ class TestExpectations:
                 typ_expectations.glob_exps.setdefault(exp.test, []).append(exp)
 
 
-class SystemConfigurationRemover:
-    """This class can remove system version configurations (i.e., `Mac10.10` or
-    `Trusty`) from a test expectation.
-
-    It will also split an expectation with no OS or OS version specifiers into
-    expectations for OS versions that were not removed. These residual
-    expectations are written with OS-family specifiers (e.g., `Mac`) when
-    possible.
-    """
+class SystemConfigurationEditor:
     def __init__(self, test_expectations: TestExpectations):
         self._test_expectations = test_expectations
         macros = self._test_expectations.port.configuration_specifier_macros()
@@ -515,15 +508,25 @@ class SystemConfigurationRemover:
             os.lower(): frozenset(version.lower() for version in os_versions)
             for os, os_versions in macros.items()
         }
-        self._os_specifiers = frozenset(self._versions_by_os)
-        self._version_specifiers = frozenset(
-            itertools.chain.from_iterable(self._versions_by_os.values()))
+        self._os_by_version = {
+            version: os
+            for os, versions in self._versions_by_os.items()
+            for version in versions
+        }
         self._generic_exp_file_path = \
             self._test_expectations.port.path_to_generic_test_expectations_file()
         fs = self._test_expectations.port.host.filesystem
         self._tags_in_expectation = self._tags_in_expectation_file(
             self._generic_exp_file_path,
             fs.read_text_file(self._generic_exp_file_path))
+
+    @property
+    def _os_specifiers(self) -> FrozenSet[str]:
+        return frozenset(self._versions_by_os)
+
+    @property
+    def _version_specifiers(self) -> FrozenSet[str]:
+        return frozenset(self._os_by_version)
 
     def _tags_in_expectation_file(self, path, content):
         test_expectations = typ_types.TestExpectations()
@@ -534,15 +537,22 @@ class SystemConfigurationRemover:
         return set()
 
     def _resolve_versions(self, tags: FrozenSet[str]) -> FrozenSet[str]:
+        tag = self._system_tag(tags)
+        if tag:
+            return self._versions_by_os.get(tag, {tag})
+        # A line without any OS/version specifiers applies to all versions.
+        return self._version_specifiers
+
+    def _system_tag(self, tags: FrozenSet[str]) -> str:
         maybe_version = tags & self._version_specifiers
         maybe_os = tags & self._os_specifiers
         if maybe_version:
-            return maybe_version
+            (version, ) = maybe_version
+            return version
         elif maybe_os:
             (os, ) = maybe_os
-            return self._versions_by_os[os]
-        # A line without any OS/version specifiers applies to all versions.
-        return self._version_specifiers
+            return os
+        return ''
 
     def _simplify_versions(self, versions: FrozenSet[str]) -> FrozenSet[str]:
         system_specifiers = set(versions)
@@ -554,8 +564,75 @@ class SystemConfigurationRemover:
                 system_specifiers.add(os)
         return frozenset(system_specifiers)
 
+    def update_versions(self,
+                        test_name: str,
+                        versions: Collection[str],
+                        results: Collection[ResultType],
+                        marker: Optional[str] = None,
+                        autotriage: bool = True):
+        """Update TestExpectations safely.
+
+        Arguments:
+            test_name: Test name to update.
+            versions: Version specifiers that should receive the new results.
+            results: Expected results.
+            marker: The contents of a comment under which new expectations
+                should be written if autotriaging is disabled or fails to find
+                a related line. If the marker is not found or not provided,
+                write new lines at the end of the file.
+            autotriage: Attempt to write the new expectation near an existing
+                related line, if possible.
+        """
+        self.remove_os_versions(test_name, versions)
+        expectations = self._test_expectations.get_expectations_from_file(
+            self._generic_exp_file_path, test_name)
+        expectations = []
+        if autotriage:
+            # Get expectations for this test with all specifiers matching except
+            # for the system tag.
+            expectations = [
+                exp for exp in expectations
+                if not (exp.tags - {self._system_tag(exp.tags)})
+                and exp.results == results
+            ]
+        tags = sorted(self._system_tag(exp.tags) for exp in expectations)
+        marker_line = self._find_marker(marker)
+        for version in versions:
+            anchor_exp = marker_line
+            if expectations:
+                index = bisect.bisect(tags, version.lower())
+                anchor_exp = expectations[max(0, index - 1)]
+            new_exp = typ_types.Expectation(
+                tags={version},
+                results=results,
+                is_slow_test=anchor_exp.is_slow_test,
+                reason=anchor_exp.reason,
+                test=test_name,
+                lineno=anchor_exp.lineno,
+                trailing_comments=anchor_exp.trailing_comments)
+            self._test_expectations.add_expectations(
+                self._generic_exp_file_path, [new_exp], anchor_exp.lineno)
+
+    def _find_marker(self,
+                     marker: Optional[str] = None) -> typ_types.Expectation:
+        lines = self._test_expectations.get_updated_lines(
+            self._generic_exp_file_path)
+        if marker:
+            for line in lines:
+                contents = line.to_string().lstrip()
+                if marker in contents and contents.startswith('#'):
+                    return line
+        return lines[-1]
+
     def remove_os_versions(self, test_name: str,
                            versions_to_remove: Collection[str]):
+        """Remove system specifiers (e.g., `Mac10.10`) from expectations.
+
+        This method will also split an expectation with no OS or OS version
+        specifiers into expectations for OS versions that were not removed.
+        These residual expectations are written with OS-family specifiers (e.g.,
+        `Mac`) when possible.
+        """
         versions_to_remove = frozenset(
             specifier.lower() for specifier in versions_to_remove)
         if not versions_to_remove:

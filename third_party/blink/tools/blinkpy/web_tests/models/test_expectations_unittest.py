@@ -28,11 +28,12 @@
 
 from collections import OrderedDict
 import optparse
+import textwrap
 import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.models.test_expectations import (
-    TestExpectations, SystemConfigurationRemover, ParseError)
+    TestExpectations, SystemConfigurationEditor, ParseError)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation
 from six.moves import range
 from functools import reduce
@@ -326,9 +327,9 @@ class FlagExpectationsTests(Base):
             ResultType.Pass, ResultType.Timeout)
 
 
-class SystemConfigurationRemoverTests(Base):
+class SystemConfigurationEditorTests(Base):
     def __init__(self, testFunc):
-        super(SystemConfigurationRemoverTests, self).__init__(testFunc)
+        super(SystemConfigurationEditorTests, self).__init__(testFunc)
         self._port.configuration_specifier_macros_dict = {
             'mac': ['mac10.10', 'mac10.11', 'mac10.12', 'mac10.13'],
             'win': ['win7', 'win10'],
@@ -342,8 +343,118 @@ class SystemConfigurationRemoverTests(Base):
                                                    content)
         expectations_dict = {self._general_exp_filename: content}
         test_expectations = TestExpectations(self._port, expectations_dict)
-        self._system_config_remover = SystemConfigurationRemover(
+        self._system_config_remover = SystemConfigurationEditor(
             test_expectations)
+
+    def test_update_versions_with_autotriage(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+            # results: [ Failure Crash ]
+            # Below Expectation should be split
+            crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Failure ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.update_versions(
+            'failures/expected/text.html?*', {'Mac10.11'}, {ResultType.Crash})
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+                # results: [ Failure Crash ]
+                # Below Expectation should be split
+                crbug.com/123 [ Mac10.10 ] failures/expected/text.html?\* [ Failure ]
+                crbug.com/123 [ Mac10.11 ] failures/expected/text.html?\* [ Crash ]
+                crbug.com/123 [ Mac10.12 ] failures/expected/text.html?\* [ Failure ]
+                """))
+
+    def test_update_versions_marker(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+            # results: [ Failure Crash ]
+
+            # === wpt-importer ===
+            [ Mac10.12 ] failures/expected/image.html [ Failure ]
+
+            # Should not change:
+            [ Mac ] failures/expected/text.html?\* [ Failure ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.update_versions(
+            'failures/expected/image.html', {'Mac10.11'}, {ResultType.Crash},
+            marker='=== wpt-importer ===')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+                # results: [ Failure Crash ]
+
+                # === wpt-importer ===
+                [ Mac10.11 ] failures/expected/image.html [ Crash ]
+                [ Mac10.12 ] failures/expected/image.html [ Failure ]
+
+                # Should not change:
+                [ Mac ] failures/expected/text.html?\* [ Failure ]
+                """))
+
+    def test_update_versions_marker_not_found(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+            # tags: [ Debug Release ]
+            # results: [ Failure Crash ]
+            [ Mac Debug ] failures/expected/text.html?\* [ Failure ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.update_versions(
+            'failures/expected/text.html?*', {'Mac10.11'},
+            {ResultType.Failure},
+            marker='does-not-exist')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+                # tags: [ Debug Release ]
+                # results: [ Failure Crash ]
+                [ Debug Mac10.10 ] failures/expected/text.html?\* [ Failure ]
+                [ Debug Mac10.12 ] failures/expected/text.html?\* [ Failure ]
+                [ Mac10.11 ] failures/expected/text.html?\* [ Failure ]
+                """))
+
+    def test_update_versions_end_of_file(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+            # results: [ Failure Crash ]
+            # Below Expectation should be split
+            crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Failure ]  # comment
+
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.update_versions(
+            'failures/expected/text.html?*', {'Mac10.11'},
+            {ResultType.Failure, ResultType.Crash},
+            autotriage=False)
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac ]
+                # results: [ Failure Crash ]
+                # Below Expectation should be split
+                crbug.com/123 [ Mac10.10 ] failures/expected/text.html?\* [ Failure ]  # comment
+                crbug.com/123 [ Mac10.12 ] failures/expected/text.html?\* [ Failure ]  # comment
+
+                [ Mac10.11 ] failures/expected/text.html?\* [ Crash Failure ]
+                """))
 
     def test_remove_mac_version_from_mac_expectation(self):
         raw_expectations = (
@@ -709,8 +820,8 @@ class RemoveExpectationsTest(Base):
                                    '# results: [ Failure ]\n'
                                    '\n'
                                    '# This comment will be deleted\n'
-                                   '[ mac ] test1 [ Failure ]\n'
-                                   '[ Win ] test3 [ Crash ]\n'))
+                                   '[ Win ] test3 [ Crash ]\n'
+                                   '[ mac ] test1 [ Failure ]\n'))
 
     def test_remove_after_add(self):
         port = MockHost().port_factory.get('test-win-win7')
@@ -739,8 +850,8 @@ class RemoveExpectationsTest(Base):
                                    '# results: [ Failure Crash ]\n'
                                    '\n'
                                    '# This comment will not be deleted\n'
-                                   'test2 [ Failure ]\n'
-                                   '[ Mac ] test3 [ Crash ]\n'))
+                                   '[ Mac ] test3 [ Crash ]\n'
+                                   'test2 [ Failure ]\n'))
 
 
 class AddExpectationsTest(Base):
