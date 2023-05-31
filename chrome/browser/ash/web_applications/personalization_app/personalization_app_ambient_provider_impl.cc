@@ -164,9 +164,11 @@ void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
 
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
-  AmbientUiSettings(to_theme,
-                    orig_settings.video().value_or(kDefaultAmbientVideo))
-      .WriteToPrefService(*pref_service);
+  AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
+  if (to_theme == AmbientTheme::kVideo) {
+    LogAmbientModeVideo(video);
+  }
+  AmbientUiSettings(to_theme, video).WriteToPrefService(*pref_service);
 
   // `kVideo` theme is special and automatically means a switch to the `kVideo`
   // topic source. None of the other topic sources are possible with this theme.
@@ -297,6 +299,7 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
       DCHECK(pref_service);
       AmbientUiSettings(GetCurrentUiSettings().theme(), *video)
           .WriteToPrefService(*pref_service);
+      LogAmbientModeVideo(*video);
       break;
   }
 

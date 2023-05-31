@@ -4846,6 +4846,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.AmbientMode.Video" enum="AmbientModeVideo"
+    expires_after="2023-10-22">
+  <owner>jasontt@chromium.org</owner>
+  <owner>esum@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted when a user selects the video theme or a new video in the
+    screensaver subpage.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.App.Duration" units="ms"
     expires_after="2024-04-05">
   <owner>pzliu@google.com</owner>

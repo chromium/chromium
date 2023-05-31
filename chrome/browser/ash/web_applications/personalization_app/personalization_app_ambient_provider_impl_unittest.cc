@@ -493,6 +493,8 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_EQ(ash::AmbientTheme::kVideo, ObservedAnimationTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
                                        ash::AmbientTheme::kVideo, 1);
+  histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
+                                       ash::kDefaultAmbientVideo, 1);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, FetchPreviewImages) {
@@ -940,6 +942,11 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedVideo) {
                    false);
   expect_videos_selected(/*clouds_selected=*/false,
                          /*new_mexico_selected=*/true);
+
+  histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
+                                       ash::AmbientVideo::kNewMexico, 2);
+  histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
+                                       ash::AmbientVideo::kClouds, 1);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, TestAlbumNumbersAreRecorded) {
