@@ -447,12 +447,10 @@ scoped_refptr<BasicShape> BasicShapeForValue(
                      basic_shape_value)) {
     scoped_refptr<BasicShapeXYWH> rect = BasicShapeXYWH::Create();
 
-    rect->SetX(ConvertToLength(state, To<CSSPrimitiveValue>(xywh_value->X())));
-    rect->SetY(ConvertToLength(state, To<CSSPrimitiveValue>(xywh_value->Y())));
-    rect->SetWidth(
-        ConvertToLength(state, To<CSSPrimitiveValue>(xywh_value->Width())));
-    rect->SetHeight(
-        ConvertToLength(state, To<CSSPrimitiveValue>(xywh_value->Height())));
+    rect->SetX(ConvertToLength(state, xywh_value->X()));
+    rect->SetY(ConvertToLength(state, xywh_value->Y()));
+    rect->SetWidth(ConvertToLength(state, xywh_value->Width()));
+    rect->SetHeight(ConvertToLength(state, xywh_value->Height()));
 
     InitializeBorderRadius(rect.get(), state, *xywh_value);
     basic_shape = std::move(rect);

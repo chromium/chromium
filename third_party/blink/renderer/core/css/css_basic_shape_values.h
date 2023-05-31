@@ -260,10 +260,10 @@ class CSSBasicShapeXYWHValue final : public CSSValue {
     Validate();
   }
 
-  CSSValue* X() const { return x_.Get(); }
-  CSSValue* Y() const { return y_.Get(); }
-  CSSValue* Width() const { return width_.Get(); }
-  CSSValue* Height() const { return height_.Get(); }
+  CSSPrimitiveValue* X() const { return x_.Get(); }
+  CSSPrimitiveValue* Y() const { return y_.Get(); }
+  CSSPrimitiveValue* Width() const { return width_.Get(); }
+  CSSPrimitiveValue* Height() const { return height_.Get(); }
 
   CSSValuePair* TopLeftRadius() const { return top_left_radius_.Get(); }
   CSSValuePair* TopRightRadius() const { return top_right_radius_.Get(); }
