@@ -2631,7 +2631,25 @@ const {
   recordingDirectoryFileExists,
   readFromRecordingDirectory,
   getRecordingFilePath,
+  RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE,
 } = __RECORD_REPLAY_ARGUMENTS__;
+
+const cache = {};
+
+// Provide a cache for urls, salted with the supplied hash.  Practically, this
+// means if the script content changes at the url, we will re-download the resource. 
+async function getCachedResource(url, hash) {
+  const key = `${url}:${hash}`;
+  if (cache[key] && !RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE) {
+    return cache[key];
+  }
+
+  log(`fetching sourcemap resource ${key}`);
+
+  const res = await fetchText(key);
+  cache[key] = res;
+  return res;
+}
 
 addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
   if (!relativeSourceMapURL || relativeSourceMapURL.startsWith("data:"))
@@ -2647,21 +2665,20 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
   if (!urls)
     return;
 
+  const scriptSource = getScriptSource(scriptId);
+  const hash = sha256DigestHex(scriptSource);
+
   const { sourceMapURL, sourceMapBaseURL } = urls;
 
   let sourceMap;
   try {
-    sourceMap = await fetchText(sourceMapURL);
+    sourceMap = await getCachedResource(sourceMapURL, hash);
   } catch (err) {
     log(`Failed to read sourcemap ${sourceMapURL}: ${err.message}`);
   }
   if (!sourceMap) {
     return;
   }
-
-  const scriptSource = getScriptSource(scriptId);
-
-  const hash = sha256DigestHex(scriptSource);
 
   const id = hash;
   const name = `sourcemap-${id}.map`;
@@ -2692,7 +2709,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
   for (const { offset, url } of sources) {
     let sourceContent;
     try {
-      sourceContent = await fetchText(url);
+      sourceContent = await getCachedResource(url, hash);
     } catch (err) {
       log(`Failed to read original source ${url}: ${err.message}`);
       continue;
@@ -4765,6 +4782,9 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
 
   DefineProperty(isolate, args, "REPLAY_CDT_PAUSE_OBJECT_GROUP",
                  ToV8String(isolate, REPLAY_CDT_PAUSE_OBJECT_GROUP));
+
+  DefineProperty(isolate, args, "RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE",
+                 v8::Boolean::New(isolate, TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE")));
 
   SetFunctionProperty(isolate, args, "log", LogCallback);
 
