@@ -26,6 +26,11 @@ struct PhysicalScrollRange {
     return (!x_min || x >= *x_min) && (!x_max || x <= *x_max) &&
            (!y_min || y >= *y_min) && (!y_max || y <= *y_max);
   }
+
+  bool operator==(const PhysicalScrollRange& other) const {
+    return x_min == other.x_min && x_max == other.x_max &&
+           y_min == other.y_min && y_max == other.y_max;
+  }
 };
 
 // Similar to PhysicalScrollRange, but using the logical axes of the box.

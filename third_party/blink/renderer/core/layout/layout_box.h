@@ -59,6 +59,7 @@ struct BoxLayoutExtraInput;
 struct NGFragmentGeometry;
 struct NGPhysicalBoxStrut;
 struct PaintInfo;
+struct PhysicalScrollRange;
 
 enum SizeType { kMainOrPreferredSize, kMinSize, kMaxSize };
 enum AvailableLogicalHeightType {
@@ -1743,6 +1744,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // acceptable anchor element.
   // https://drafts.csswg.org/css-anchor-position-1/#ref-for-valdef-anchor-implicit
   const LayoutObject* AcceptableImplicitAnchor() const;
+
+  // Returns position fallback results for anchor positioned element.
+  absl::optional<wtf_size_t> PositionFallbackIndex() const;
+  const Vector<PhysicalScrollRange>* PositionFallbackNonOverflowingRanges()
+      const;
 
  protected:
   ~LayoutBox() override;

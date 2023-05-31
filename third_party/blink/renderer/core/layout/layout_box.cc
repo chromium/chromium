@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/values_equivalent.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
@@ -6408,6 +6409,40 @@ const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
   };
   ForEachAnchorQueryOnContainer(*this, validate_anchor);
   return is_acceptable_anchor ? anchor_layout_object : nullptr;
+}
+
+absl::optional<wtf_size_t> LayoutBox::PositionFallbackIndex() const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return absl::nullopt;
+  }
+  // We only need to check the first fragment, because when the box is
+  // fragmented, position fallback results are duplicated on all fragments.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
+    DCHECK(layout_results[i]->PositionFallbackIndex() ==
+           layout_results[i - 1]->PositionFallbackIndex());
+  }
+#endif
+  return layout_results.front()->PositionFallbackIndex();
+}
+
+const Vector<PhysicalScrollRange>*
+LayoutBox::PositionFallbackNonOverflowingRanges() const {
+  const auto& layout_results = GetLayoutResults();
+  if (layout_results.empty()) {
+    return nullptr;
+  }
+  // We only need to check the first fragment, because when the box is
+  // fragmented, position fallback results are duplicated on all fragments.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
+    DCHECK(base::ValuesEquivalent(
+        layout_results[i]->PositionFallbackNonOverflowingRanges(),
+        layout_results[i - 1]->PositionFallbackNonOverflowingRanges()));
+  }
+#endif
+  return layout_results.front()->PositionFallbackNonOverflowingRanges();
 }
 
 }  // namespace blink
