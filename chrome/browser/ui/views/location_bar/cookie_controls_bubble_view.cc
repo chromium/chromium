@@ -14,6 +14,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
@@ -62,6 +65,10 @@ void CookieControlsBubbleView::ShowBubble(
   }
 
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.Opened"));
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  profile->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened, true);
+
   g_instance =
       new CookieControlsBubbleView(anchor_view, web_contents, controller);
   g_instance->SetHighlightedButton(highlighted_button);

@@ -173,6 +173,27 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, NotWorkingClicked) {
   EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
 }
 
+// Test that opening cookie controls bubble sets
+// `prefs::kInContextCookieControlsOpened`.
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+                       InContextCookieControlsOpenedRecorded) {
+  // Block 3p cookies.
+  SetThirdPartyCookieBlocking(true);
+  GURL origin = embedded_test_server()->GetURL("a.com", "/");
+  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
+
+  // The pref is false before opening the bubble.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kInContextCookieControlsOpened));
+
+  // Open bubble.
+  ShowUi("CookiesBlocked");
+
+  // The pref is true after opening the bubble.
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kInContextCookieControlsOpened));
+}
+
 // Test opening cookie controls bubble while 3p cookies are allowed for this
 // page. Check that accepting the bubble blocks cookies again.
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
