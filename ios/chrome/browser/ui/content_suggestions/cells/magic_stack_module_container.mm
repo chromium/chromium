@@ -20,16 +20,17 @@
 namespace {
 
 // The horizontal inset for the content within this container.
-const CGFloat kContentHorizontalInset = 16.0f;
+const CGFloat kContentHorizontalInset = 20.0f;
 
 // The top inset for the content within this container.
-const CGFloat kContentTopInset = 14.0f;
+const CGFloat kContentTopInset = 16.0f;
 
 // The bottom inset for the content within this container.
-const CGFloat kContentBottomInset = 10.0f;
+const CGFloat kContentBottomInset = 24.0f;
+const CGFloat kReducedContentBottomInset = 10.0f;
 
 // Vertical spacing between the content views.
-const float kContentVerticalSpacing = 12.0f;
+const float kContentVerticalSpacing = 20.0f;
 
 // The corner radius of this container.
 const float kCornerRadius = 24;
@@ -84,7 +85,9 @@ const int kModuleWidthRegular = 382;
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.spacing = kContentVerticalSpacing;
     stackView.distribution = UIStackViewDistributionFill;
-    [stackView addArrangedSubview:title];
+    if ([title.text length] > 0) {
+      [stackView addArrangedSubview:title];
+    }
     [stackView addArrangedSubview:contentView];
 
     self.accessibilityElements = @[ title, contentView ];
@@ -133,8 +136,16 @@ const int kModuleWidthRegular = 382;
   NSDirectionalEdgeInsets contentMargins =
       NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
                                   kContentBottomInset, kContentHorizontalInset);
-  if (_type == ContentSuggestionsModuleType::kCompactedSetUpList) {
-    contentMargins.trailing = 0;
+  switch (_type) {
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      contentMargins.trailing = 0;
+      break;
+    case ContentSuggestionsModuleType::kMostVisited:
+    case ContentSuggestionsModuleType::kShortcuts:
+      contentMargins.bottom = kReducedContentBottomInset;
+      break;
+    default:
+      break;
   }
   return contentMargins;
 }
