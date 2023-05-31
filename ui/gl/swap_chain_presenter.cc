@@ -321,108 +321,6 @@ bool IsWithinMargin(int i, int j) {
   return (std::abs(i - j) < kFullScreenMargin);
 }
 
-void DumpWithoutCrashingForVpSuperResolution(
-    const char hr_key_name[],
-    HRESULT hr,
-    UINT gpu_vendor_id,
-    bool is_yuv_swapchain,
-    bool content_is_hdr,
-    const gfx::ColorSpace& src_color_space,
-    const gfx::ColorSpace& output_color_space,
-    bool is_d3d11_video_context1,
-    bool sets_stream_hdr_metadata,
-    bool sets_output_hdr_metadata,
-    bool enables_vp_super_resolution) {
-  // ToggleVpSuperResolution() is called for all GPUs unless a flag disables it.
-  // For nVidia only
-  if (gpu_vendor_id != 0x10de) {
-    return;
-  }
-
-  // Error code of ToggleVpSuperResolution or VideoProcessorBlt.
-  static auto* hr_key = base::debug::AllocateCrashKeyString(
-      hr_key_name, base::debug::CrashKeySize::Size32);
-  base::debug::ScopedCrashKeyString scoped_crash_key(hr_key,
-                                                     base::NumberToString(hr));
-
-  // Video configuration
-  SCOPED_CRASH_KEY_BOOL("", "is_yuv_swapchain", is_yuv_swapchain);
-  SCOPED_CRASH_KEY_BOOL("", "content_is_hdr", content_is_hdr);
-  SCOPED_CRASH_KEY_BOOL("", "is_d3d11_video_context1", is_d3d11_video_context1);
-  SCOPED_CRASH_KEY_BOOL("", "sets_stream_hdr_metadata",
-                        sets_stream_hdr_metadata);
-  SCOPED_CRASH_KEY_BOOL("", "sets_output_hdr_metadata",
-                        sets_output_hdr_metadata);
-  SCOPED_CRASH_KEY_BOOL("", "enables_vp_super_resolution",
-                        enables_vp_super_resolution);
-
-  // Src color space
-  SCOPED_CRASH_KEY_STRING32("", "src_color_space_primary_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                src_color_space.GetPrimaryID())));
-  SCOPED_CRASH_KEY_STRING32("", "src_color_space_transfer_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                src_color_space.GetTransferID())));
-  SCOPED_CRASH_KEY_STRING32("", "src_color_space_matrix_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                src_color_space.GetMatrixID())));
-  SCOPED_CRASH_KEY_STRING32(
-      "", "src_color_space_range_id",
-      base::NumberToString(static_cast<uint8_t>(src_color_space.GetRangeID())));
-
-  // Output color space
-  SCOPED_CRASH_KEY_STRING32("", "output_color_space_primary_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                output_color_space.GetPrimaryID())));
-  SCOPED_CRASH_KEY_STRING32("", "output_color_space_transfer_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                output_color_space.GetTransferID())));
-  SCOPED_CRASH_KEY_STRING32("", "output_color_space_matrix_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                output_color_space.GetMatrixID())));
-  SCOPED_CRASH_KEY_STRING32("", "output_color_space_range_id",
-                            base::NumberToString(static_cast<uint8_t>(
-                                output_color_space.GetRangeID())));
-
-  base::debug::DumpWithoutCrashing();
-}
-
-void DumpWithoutCrashingForToggleVpSuperResolutionError(
-    HRESULT hr,
-    UINT gpu_vendor_id,
-    bool is_yuv_swapchain,
-    bool content_is_hdr,
-    const gfx::ColorSpace& src_color_space,
-    const gfx::ColorSpace& output_color_space,
-    bool is_d3d11_video_context1,
-    bool sets_stream_hdr_metadata,
-    bool sets_output_hdr_metadata,
-    bool enables_vp_super_resolution) {
-  DumpWithoutCrashingForVpSuperResolution(
-      "vp_super_resolution_ext_error", hr, gpu_vendor_id, is_yuv_swapchain,
-      content_is_hdr, src_color_space, output_color_space,
-      is_d3d11_video_context1, sets_stream_hdr_metadata,
-      sets_output_hdr_metadata, enables_vp_super_resolution);
-}
-
-void DumpWithoutCrashingForSuperResolutionVideoProcessorBlt(
-    HRESULT hr,
-    UINT gpu_vendor_id,
-    bool is_yuv_swapchain,
-    bool content_is_hdr,
-    const gfx::ColorSpace& src_color_space,
-    const gfx::ColorSpace& output_color_space,
-    bool is_d3d11_video_context1,
-    bool sets_stream_hdr_metadata,
-    bool sets_output_hdr_metadata,
-    bool use_vp_super_resolution) {
-  DumpWithoutCrashingForVpSuperResolution(
-      "video_processor_blt_error", hr, gpu_vendor_id, is_yuv_swapchain,
-      content_is_hdr, src_color_space, output_color_space,
-      is_d3d11_video_context1, sets_stream_hdr_metadata,
-      sets_output_hdr_metadata, use_vp_super_resolution);
-}
-
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -1736,18 +1634,12 @@ bool SwapChainPresenter::VideoProcessorBlt(
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor =
       video_processor_wrapper->video_processor;
 
-  // Used for crash keys.
-  bool is_d3d11_video_context1 = false;
-  bool sets_stream_hdr_metadata = false;
-  bool sets_output_hdr_metadata = false;
-
   Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
   Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
   if (SUCCEEDED(swap_chain_.As(&swap_chain3)) &&
       SUCCEEDED(video_context.As(&context1))) {
     DCHECK(swap_chain3);
     DCHECK(context1);
-    is_d3d11_video_context1 = true;
     // Set input color space.
     context1->VideoProcessorSetStreamColorSpace1(
         video_processor.Get(), 0,
@@ -1779,13 +1671,11 @@ bool SwapChainPresenter::VideoProcessorBlt(
       layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
   if (display_metadata.has_value() && SUCCEEDED(video_context.As(&context2))) {
     if (stream_hdr_metadata.has_value()) {
-      sets_stream_hdr_metadata = true;
       context2->VideoProcessorSetStreamHDRMetaData(
           video_processor.Get(), 0, DXGI_HDR_METADATA_TYPE_HDR10,
           sizeof(DXGI_HDR_METADATA_HDR10), &(*stream_hdr_metadata));
     }
 
-    sets_output_hdr_metadata = true;
     context2->VideoProcessorSetOutputHDRMetaData(
         video_processor.Get(), DXGI_HDR_METADATA_TYPE_HDR10,
         sizeof(DXGI_HDR_METADATA_HDR10), &(*display_metadata));
@@ -1871,13 +1761,6 @@ bool SwapChainPresenter::VideoProcessorBlt(
                                   video_processor.Get(), !is_on_battery_power_);
       if (FAILED(hr)) {
         force_vp_super_resolution_off_ = true;
-        // TODO(crbug.com/1318380): Temporary only. Remove the crash dump once
-        // GPU data is collected.
-        DumpWithoutCrashingForToggleVpSuperResolutionError(
-            hr, gpu_vendor_id_, is_yuv_swapchain, content_is_hdr,
-            src_color_space, output_color_space, is_d3d11_video_context1,
-            sets_stream_hdr_metadata, sets_output_hdr_metadata,
-            !is_on_battery_power_);
       }
       use_vp_super_resolution = !is_on_battery_power_ && SUCCEEDED(hr);
     }
@@ -1893,13 +1776,6 @@ bool SwapChainPresenter::VideoProcessorBlt(
     if (FAILED(hr)) {
       // Retry VideoProcessorBlt with vp super resolution off if it was on.
       if (use_vp_super_resolution) {
-        // TODO(crbug.com/1318380): Temporary only. Remove the crash dump once
-        // GPU data is collected.
-        DumpWithoutCrashingForSuperResolutionVideoProcessorBlt(
-            hr, gpu_vendor_id_, is_yuv_swapchain, content_is_hdr,
-            src_color_space, output_color_space, is_d3d11_video_context1,
-            sets_stream_hdr_metadata, sets_output_hdr_metadata,
-            use_vp_super_resolution);
         DLOG(ERROR) << "Retry VideoProcessorBlt with VpSuperResolution off "
                        "after it failed with error 0x"
                     << std::hex << hr;
