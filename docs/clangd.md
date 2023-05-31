@@ -13,8 +13,14 @@ your editor.
 * Optional: build chrome normally to get generated headers
 * Generate compilation database (note: it's not regenerated automatically):
 ```
-tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
+tools/clang/scripts/generate_compdb.py -p out/Default > compile_commands.json
 ```
+
+*** note
+Note: If you're using a different build directory, you'll need to replace `out/Default`
+in this and other commands with your build directory.
+***
+
 * Indexing is enabled by default (since clangd 9), note that this might consume
   lots of CPU and RAM. There's also a
   [remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
