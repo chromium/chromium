@@ -405,23 +405,10 @@ class DesksTest : public AshTestBase,
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kUseFirstDisplayAsInternal);
 
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(features::kDeskButton);
-
-    if (GetParam().use_16_desks) {
-      enabled_features.push_back(features::kFeatureManagement16Desks);
-    } else {
-      disabled_features.push_back(features::kFeatureManagement16Desks);
-    }
-
-    if (GetParam().enable_jellyroll) {
-      enabled_features.push_back(chromeos::features::kJellyroll);
-    } else {
-      disabled_features.push_back(chromeos::features::kJellyroll);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kDeskButton, true},
+         {features::kFeatureManagement16Desks, GetParam().use_16_desks},
+         {chromeos::features::kJellyroll, GetParam().enable_jellyroll}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);

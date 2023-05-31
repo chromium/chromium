@@ -65,20 +65,8 @@ class ScopedArcFeature {
 class ScopedRtVcpuFeature {
  public:
   ScopedRtVcpuFeature(bool dual_core_enabled, bool quad_core_enabled) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (dual_core_enabled)
-      enabled_features.push_back(kRtVcpuDualCore);
-    else
-      disabled_features.push_back(kRtVcpuDualCore);
-
-    if (quad_core_enabled)
-      enabled_features.push_back(kRtVcpuQuadCore);
-    else
-      disabled_features.push_back(kRtVcpuQuadCore);
-
-    feature_list.InitWithFeatures(enabled_features, disabled_features);
+    feature_list.InitWithFeatureStates({{kRtVcpuDualCore, dual_core_enabled},
+                                        {kRtVcpuQuadCore, quad_core_enabled}});
   }
   ~ScopedRtVcpuFeature() = default;
   ScopedRtVcpuFeature(const ScopedRtVcpuFeature&) = delete;

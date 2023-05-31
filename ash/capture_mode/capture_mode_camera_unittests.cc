@@ -4632,13 +4632,9 @@ class CaptureModePrivacyIndicatorsTest
       public testing::WithParamInterface<bool> {
  public:
   CaptureModePrivacyIndicatorsTest() {
-    if (IsQsRevampEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kPrivacyIndicators, features::kQsRevamp}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators},
-                                            {features::kQsRevamp});
-    }
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPrivacyIndicators, true},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
   }
   CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
       delete;

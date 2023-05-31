@@ -29,11 +29,8 @@ class NightLightFeaturePodControllerTest
       public testing::WithParamInterface<bool> {
  public:
   NightLightFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures({features::kQsRevamp}, {});
-    } else {
-      feature_list_.InitWithFeatures({}, {features::kQsRevamp});
-    }
+    feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                       IsQsRevampEnabled());
   }
 
   bool IsQsRevampEnabled() const { return GetParam(); }

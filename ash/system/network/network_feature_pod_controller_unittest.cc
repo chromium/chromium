@@ -95,15 +95,9 @@ class NetworkFeaturePodControllerTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> features = {
-        features::kQsRevamp, chromeos::features::kJellyroll};
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures(/*enabled_features=*/features,
-                                     /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                     /*disabled_features=*/features);
-    }
+    feature_list_.InitWithFeatureStates(
+        {{features::kQsRevamp, IsQsRevampEnabled()},
+         {chromeos::features::kJellyroll, IsQsRevampEnabled()}});
 
     AshTestBase::SetUp();
 

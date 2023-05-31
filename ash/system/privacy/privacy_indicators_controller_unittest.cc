@@ -737,17 +737,10 @@ class PrivacyIndicatorsControllerVideoConferenceTest
       public testing::WithParamInterface<bool> {
  public:
   PrivacyIndicatorsControllerVideoConferenceTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kPrivacyIndicators, features::kVideoConference};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (IsQsRevampEnabled()) {
-      enabled_features.push_back(features::kQsRevamp);
-    } else {
-      disabled_features.push_back(features::kQsRevamp);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPrivacyIndicators, true},
+         {features::kVideoConference, true},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
   }
   PrivacyIndicatorsControllerVideoConferenceTest(
       const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;

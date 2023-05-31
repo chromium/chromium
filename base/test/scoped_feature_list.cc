@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/strings/string_number_conversions.h"
@@ -433,6 +434,19 @@ void ScopedFeatureList::InitWithFeatureState(const Feature& feature,
   } else {
     InitAndDisableFeature(feature);
   }
+}
+
+void ScopedFeatureList::InitWithFeatureStates(
+    const flat_map<FeatureRef, bool>& feature_states) {
+  std::vector<FeatureRef> enabled_features, disabled_features;
+  for (const auto& [feature, enabled] : feature_states) {
+    if (enabled) {
+      enabled_features.push_back(feature);
+    } else {
+      disabled_features.push_back(feature);
+    }
+  }
+  InitWithFeaturesImpl(enabled_features, {}, disabled_features);
 }
 
 void ScopedFeatureList::InitWithFeaturesImpl(

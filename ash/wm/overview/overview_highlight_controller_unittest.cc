@@ -78,13 +78,8 @@ class OverviewHighlightControllerTest
 
   // OverviewTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
-    if (AreDeskTemplatesEnabled()) {
-      enabled_features.push_back(features::kDesksTemplates);
-    } else {
-      disabled_features.push_back(features::kDesksTemplates);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureState(features::kDesksTemplates,
+                                              AreDeskTemplatesEnabled());
 
     OverviewTestBase::SetUp();
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);

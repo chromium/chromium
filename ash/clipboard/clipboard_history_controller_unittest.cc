@@ -856,14 +856,14 @@ class ClipboardHistoryRefreshDisplayFormatTest
                          ClipboardHistoryDisplayFormat>> {
  public:
   ClipboardHistoryRefreshDisplayFormatTest() {
-    std::vector<base::test::FeatureRef> refresh_features = {
-        chromeos::features::kClipboardHistoryRefresh,
-        chromeos::features::kJelly};
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
-        .swap(refresh_features);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() const {
+    return std::get<0>(GetParam());
   }
 
   void ShowTextfieldContextMenu(views::View* textfield) {

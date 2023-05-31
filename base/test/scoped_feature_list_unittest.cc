@@ -684,5 +684,21 @@ TEST(ScopedFeatureListTestWithMemberList, ScopedFeatureListLocalOverride) {
   }
 }
 
+TEST_F(ScopedFeatureListTest, InitWithFeatureStates) {
+  test::ScopedFeatureList feature_list1;
+  feature_list1.InitWithFeatureStates(
+      {{kTestFeature1, true}, {kTestFeature2, false}});
+  ExpectFeatures(/*enabled_features=*/"TestFeature1",
+                 /*disabled_features=*/"TestFeature2");
+
+  {
+    test::ScopedFeatureList feature_list2;
+    feature_list2.InitWithFeatureStates(
+        {{kTestFeature1, false}, {kTestFeature2, true}});
+    ExpectFeatures(/*enabled_features=*/"TestFeature2",
+                   /*disabled_features=*/"TestFeature1");
+  }
+}
+
 }  // namespace test
 }  // namespace base

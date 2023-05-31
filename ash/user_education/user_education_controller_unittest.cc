@@ -50,15 +50,10 @@ class UserEducationControllerTest
                      /*welcome_tour_enabled=*/bool>> {
  public:
   UserEducationControllerTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (IsCaptureModeTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kCaptureModeTour);
-    (IsHoldingSpaceTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kHoldingSpaceTour);
-    (IsWelcomeTourEnabled() ? enabled_features : disabled_features)
-        .emplace_back(features::kWelcomeTour);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kCaptureModeTour, IsCaptureModeTourEnabled()},
+         {features::kHoldingSpaceTour, IsHoldingSpaceTourEnabled()},
+         {features::kWelcomeTour, IsWelcomeTourEnabled()}});
   }
 
   // Returns whether the Capture Mode Tour is enabled given test

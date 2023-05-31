@@ -1314,15 +1314,9 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
  public:
   // AshNotificationViewTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features{
-        features::kNotificationImageDrag};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (DoesUseQsRevamp()) {
-      enabled_features.push_back(features::kQsRevamp);
-    } else {
-      disabled_features.push_back(features::kQsRevamp);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kNotificationImageDrag, true},
+         {features::kQsRevamp, DoesUseQsRevamp()}});
 
     AshNotificationViewTestBase::SetUp();
     notification_test_api_ =

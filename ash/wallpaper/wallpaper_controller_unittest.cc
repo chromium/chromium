@@ -3557,28 +3557,13 @@ class WallpaperControllerOobeWallpaperTest
           std::tuple</*OobeSimon*/ bool, /*OobeJelly*/ bool>> {
  public:
   WallpaperControllerOobeWallpaperTest() {
-    std::vector<base::test::FeatureRef> EnabledFeatures;
-    std::vector<base::test::FeatureRef> DisabledFeatures;
-
-    bool OobeSimon = std::get<0>(GetParam());
-    if (OobeSimon) {
-      EnabledFeatures.push_back(ash::features::kFeatureManagementOobeSimon);
-      EnabledFeatures.push_back(ash::features::kOobeSimon);
-    } else {
-      DisabledFeatures.push_back(ash::features::kFeatureManagementOobeSimon);
-      DisabledFeatures.push_back(ash::features::kOobeSimon);
-    }
-
-    bool OobeJelly = std::get<1>(GetParam());
-    if (OobeJelly) {
-      EnabledFeatures.push_back(ash::features::kOobeJelly);
-      EnabledFeatures.push_back(chromeos::features::kJelly);
-    } else {
-      DisabledFeatures.push_back(ash::features::kOobeJelly);
-      DisabledFeatures.push_back(chromeos::features::kJelly);
-    }
-
-    scoped_feature_list_.InitWithFeatures(EnabledFeatures, DisabledFeatures);
+    const bool oobe_simon = std::get<0>(GetParam());
+    const bool oobe_jelly = std::get<1>(GetParam());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{ash::features::kFeatureManagementOobeSimon, oobe_simon},
+         {ash::features::kOobeSimon, oobe_simon},
+         {ash::features::kOobeJelly, oobe_jelly},
+         {chromeos::features::kJelly, oobe_jelly}});
   }
   ~WallpaperControllerOobeWallpaperTest() override = default;
 

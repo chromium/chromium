@@ -3562,17 +3562,11 @@ class HoldingSpaceTraySuggestionsFeatureTest
           /*suggestions_enabled=*/bool>> {
  public:
   HoldingSpaceTraySuggestionsFeatureTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    (IsHoldingSpacePredictabilityEnabled() ? enabled_features
-                                           : disabled_features)
-        .push_back(features::kHoldingSpacePredictability);
-
-    (IsHoldingSpaceSuggestionsEnabled() ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpaceSuggestions);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHoldingSpacePredictability,
+          IsHoldingSpacePredictabilityEnabled()},
+         {features::kHoldingSpaceSuggestions,
+          IsHoldingSpaceSuggestionsEnabled()}});
   }
 
   void SetDisableDrive(bool disable) {
@@ -4115,17 +4109,11 @@ class HoldingSpaceTrayVisibilityTest
                      /*suggestions_enabled=*/bool>> {
  public:
   HoldingSpaceTrayVisibilityTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    (IsHoldingSpacePredictabilityEnabled() ? enabled_features
-                                           : disabled_features)
-        .push_back(features::kHoldingSpacePredictability);
-
-    (IsHoldingSpaceSuggestionsEnabled() ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpaceSuggestions);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kHoldingSpacePredictability,
+          IsHoldingSpacePredictabilityEnabled()},
+         {features::kHoldingSpaceSuggestions,
+          IsHoldingSpaceSuggestionsEnabled()}});
   }
 
   void SetUp() override {

@@ -28,14 +28,8 @@ class DarkModeFeaturePodControllerTest
 
   // AshTestBase:
   void SetUp() override {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitWithFeatures({/*enabled_features=*/features::kQsRevamp},
-                                     /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kQsRevamp});
-    }
+    feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                       IsQsRevampEnabled());
     AshTestBase::SetUp();
 
     system_tray_ = GetPrimaryUnifiedSystemTray();

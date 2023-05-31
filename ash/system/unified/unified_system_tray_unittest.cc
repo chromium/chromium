@@ -964,17 +964,10 @@ class UnifiedSystemTrayPrivacyIndicatorsTest
   ~UnifiedSystemTrayPrivacyIndicatorsTest() override = default;
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kPrivacyIndicators};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        features::kVideoConference};
-    if (IsQsRevampEnabled()) {
-      enabled_features.push_back(features::kQsRevamp);
-    } else {
-      disabled_features.push_back(features::kQsRevamp);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kPrivacyIndicators, true},
+         {features::kVideoConference, false},
+         {features::kQsRevamp, IsQsRevampEnabled()}});
 
     AshTestBase::SetUp();
   }

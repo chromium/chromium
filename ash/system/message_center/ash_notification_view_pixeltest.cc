@@ -217,13 +217,9 @@ class ScreenCaptureNotificationPixelTest
  public:
   // AshNotificationViewPixelTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> features = {features::kQsRevamp,
-                                                    chromeos::features::kJelly};
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
-        .swap(features);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kQsRevamp, IsQsRevampEnabled()},
+         {chromeos::features::kJelly, IsQsRevampEnabled()}});
 
     AshNotificationViewPixelTestBase::SetUp();
 
