@@ -48,7 +48,7 @@ source_set("browser_tests") {
 
   if (!is_chromeos_lacros) {
     sources += [
-      # Test not valid on Lacros as WebApps is only enabled in the main
+      # Test not valid on Lacros as web apps are only enabled in the main
       # profile which can never be deleted.
       "web_app_profile_deletion_browsertest.cc",
     ]
