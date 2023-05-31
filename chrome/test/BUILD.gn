@@ -1337,7 +1337,6 @@ if (!is_android) {
         "//base/test:test_support",
         "//chrome/app:command_ids",
         "//chrome/app_shim",
-        "//chrome/app_shim:app_shim_arc",
         "//chrome/browser",
         "//chrome/browser:browser_process",
         "//chrome/browser/apps/app_shim",
@@ -2629,12 +2628,6 @@ if (!is_android) {
       sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc" ]
     }
 
-    if (is_mac) {
-      sources += [
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
-      ]
-    }
-
     if (is_chromeos_ash) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
@@ -2832,6 +2825,7 @@ if (!is_android) {
         "../browser/ui/test/test_browser_dialog_mac.mm",
         "../browser/ui/views/frame/browser_non_client_frame_view_mac_browsertest.mm",
         "../browser/ui/views/intent_picker_bubble_view_browsertest_mac.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
         "../browser/webshare/mac/sharing_service_operation_browsertest.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
         "../common/profiler/thread_profiler_browsertest.cc",
@@ -5590,7 +5584,7 @@ if (is_mac) {
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/app_shim:app_shim_arc",
+      "//chrome/app_shim:app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/mac:keystone_glue",

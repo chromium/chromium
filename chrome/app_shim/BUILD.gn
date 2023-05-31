@@ -6,49 +6,22 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
 import("//build/util/branding.gni")
 
-source_set("app_shim_arc") {
-  # TODO(https://crbug.com/1280317): Merge back into the `app_shim` target once
-  # all .mm files are ARCed.
-  sources = [
-    "app_shim_controller.h",
-    "app_shim_controller.mm",
-    "app_shim_delegate.h",
-    "app_shim_delegate.mm",
-    "chrome_main_app_mode_mac.mm",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    "//base/allocator:early_zone_registration_mac",
-    "//build:chromeos_buildflags",
-    "//chrome:strings",
-    "//chrome/app:command_ids",
-    "//chrome/browser/renderer_host:history_swiper",
-    "//chrome/browser/ui",
-    "//chrome/common",
-    "//chrome/common:mojo_bindings",
-    "//components/crash/core/app",
-    "//components/remote_cocoa/app_shim",
-    "//content/public/browser",
-    "//ipc",
-    "//mojo/core/embedder",
-    "//mojo/core/embedder:features",
-    "//ui/accelerated_widget_mac",
-    "//ui/base",
-  ]
-}
-
 # This is the part of the shim process compiled into Chrome. It runs only
 # in the shim process, after the shim finds and loads the Chrome
 # Framework bundle.
 source_set("app_shim") {
   sources = [
     "../app/chrome_crash_reporter_client.h",
+    "app_shim_controller.h",
+    "app_shim_controller.mm",
+    "app_shim_delegate.h",
+    "app_shim_delegate.mm",
     "app_shim_render_widget_host_view_mac_delegate.h",
     "app_shim_render_widget_host_view_mac_delegate.mm",
+    "chrome_main_app_mode_mac.mm",
   ]
 
   deps = [
-    ":app_shim_arc",
     "//base/allocator:early_zone_registration_mac",
     "//build:chromeos_buildflags",
     "//chrome:strings",
@@ -66,7 +39,8 @@ source_set("app_shim") {
     "//ui/accelerated_widget_mac",
     "//ui/base",
   ]
-  allow_circular_includes_from = [ ":app_shim_arc" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 tweak_info_plist("tweak_app_mode_loader_plist") {
@@ -122,6 +96,8 @@ executable("app_mode_loader") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "AppKit.framework",
