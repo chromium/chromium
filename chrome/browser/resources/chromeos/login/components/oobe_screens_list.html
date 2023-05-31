@@ -123,7 +123,8 @@
 </style>
 <div id="screensList">
   <template is="dom-repeat" items="{{screensList_}}" as="screen">
-    <cr-button visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
+    <cr-button id="[[getScreenID(screen.screenID)]]"
+        visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
         disabled="[[isScreenDisabled(screen.is_revisitable , screen.is_completed)]]"
         class="screen-item"
         on-click="onClick_">

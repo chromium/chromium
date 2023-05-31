@@ -123,6 +123,10 @@ export class OobeScreensList extends OobeScreensListBase {
   isScreenVisited(is_selected, is_completed) {
     return is_completed && !is_selected;
   }
+
+  getScreenID(screen_id) {
+    return 'cr-button-' + screen_id;
+  }
 }
 
 customElements.define(OobeScreensList.is, OobeScreensList);
