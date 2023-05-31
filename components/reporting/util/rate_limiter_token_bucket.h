@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPORTING_UTIL_RATE_LIMITER_LEAKY_BUCKET_H_
-#define COMPONENTS_REPORTING_UTIL_RATE_LIMITER_LEAKY_BUCKET_H_
+#ifndef COMPONENTS_REPORTING_UTIL_RATE_LIMITER_TOKEN_BUCKET_H_
+#define COMPONENTS_REPORTING_UTIL_RATE_LIMITER_TOKEN_BUCKET_H_
 
 #include <cstddef>
 
@@ -16,37 +16,36 @@
 
 namespace reporting {
 
-// Rate limiter implementation of the leaky bucket algorithm.
+// Rate limiter implementation of the token bucket algorithm.
 
-// A leaky bucket works as if filling up with water. The water represents the
-// incoming events, and the bucket represents the system's capacity to accept
-// them. The bucket has a hole in the bottom, which represents the rate at which
-// the system can accept events. Water is not allowed to overflow the bucket.
+// A token bucket works by an imaginary bucket that is filled with tokens. The
+// tokens represent the incoming events, and the bucket represents the system's
+// capacity to accept them. The bucket has a fixed number of tokens, and new
+// tokens are added to the bucket at a fixed rate, until the bucket is full.
 //
 // `max_level` is the maximum total size of events that can be in the bucket at
-// any given time. `filling_time` represents the leakage rate at which events
-// are allowed to go through the bucket. `filling_period` indicates how often do
+// any given time. `filling_time` represents the rate at which events are
+// allowed to go through the bucket. `filling_period` indicates how often do
 // we want to update the level (the more frequently we do it, the fewer tokens
 // we add each time).
 //
-// When a new event arrives, its size is released from the bucket, but only if
-// the bucket is full, otherwise the event is rejected. After that the bucket
-// resumes filling in at the prescribed rate - the time it takes is proportional
-// to the event size.
+// When a new event arrives, its size is released from the bucket. If the bucket
+// does not have enough tokens in it, the event is rejected. After that the
+// bucket resumes filling in at the prescribed rate.
 //
-// The outcome is that the events are accepted at no more than the leakage rate.
-// It works well for averaging events rate over time.
+// The outcome is that the events are accepted at no more than the filling rate.
+// It is simple and effective, but can be inefficient for bursty events.
 //
-class RateLimiterLeakyBucket : public RateLimiterInterface {
+class RateLimiterTokenBucket : public RateLimiterInterface {
  public:
-  RateLimiterLeakyBucket(size_t max_level,
+  RateLimiterTokenBucket(size_t max_level,
                          base::TimeDelta filling_time,
                          base::TimeDelta filling_period = base::Seconds(1));
 
-  RateLimiterLeakyBucket(const RateLimiterLeakyBucket&) = delete;
-  RateLimiterLeakyBucket& operator=(const RateLimiterLeakyBucket&) = delete;
+  RateLimiterTokenBucket(const RateLimiterTokenBucket&) = delete;
+  RateLimiterTokenBucket& operator=(const RateLimiterTokenBucket&) = delete;
 
-  ~RateLimiterLeakyBucket() override;
+  ~RateLimiterTokenBucket() override;
 
   // If the event is allowed, the method returns `true` and updates state to
   // prepare for the next call. Otherwise returns false.
@@ -72,12 +71,13 @@ class RateLimiterLeakyBucket : public RateLimiterInterface {
 
   // Current level of the bucket. Starts with 0 and goes up at with such a rate
   // that fills it up to the `max_level_` in `filling_time_`.
-  // New event is only accepted if the bucket is full.
+  // New event is only accepted if the bucket has enough tokens to account for
+  // the event's size.
   size_t current_level_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
 
   // Weak ptr factory.
-  base::WeakPtrFactory<RateLimiterLeakyBucket> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RateLimiterTokenBucket> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_UTIL_RATE_LIMITER_LEAKY_BUCKET_H_
+#endif  // COMPONENTS_REPORTING_UTIL_RATE_LIMITER_TOKEN_BUCKET_H_
