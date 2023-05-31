@@ -91,6 +91,9 @@ BOOL WaitForKeyboardToAppear() {
   // Prefs aren't reset between tests, crbug.com/1069086. Most tests don't care
   // about the account storage notice, so suppress it by marking it as shown.
   [PasswordManagerAppInterface setAccountStorageNoticeShown:YES];
+  // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
+  // enabled by default.
+  [PasswordSuggestionBottomSheetAppInterface setDismissCount:0];
   // Manually clear sync passwords pref before testShowAccountStorageNotice*.
   [ChromeEarlGreyAppInterface
       clearUserPrefWithName:base::SysUTF8ToNSString(
@@ -269,6 +272,16 @@ BOOL WaitForKeyboardToAppear() {
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
+  // Open and dismiss the bottom sheet
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"Eguser")];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS))]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Simulate user interacting with fields.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];
