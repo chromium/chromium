@@ -1198,6 +1198,7 @@
       'linux-code-coverage': 'clang_code_coverage_reclient',
       'linux-cr23-rel': 'release_trybot_reclient',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off_reclient',
+      'linux-exp-tsan-fyi-rel': 'tsan_disable_nacl_failsan_release_bot_reclient',
       'linux-extended-tracing-rel': 'release_trybot_extended_tracing_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
