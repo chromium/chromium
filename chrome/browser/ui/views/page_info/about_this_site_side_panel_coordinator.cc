@@ -193,7 +193,7 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
   }
 
   auto side_panel_view_ =
-      std::make_unique<AboutThisSiteSidePanelView>(GetBrowserView());
+      std::make_unique<AboutThisSiteSidePanelView>(web_contents());
   side_panel_view_->OpenUrl(last_url_info_->url_params);
   about_this_site_side_panel_view_ = side_panel_view_->AsWeakPtr();
   return side_panel_view_;
