@@ -1316,14 +1316,6 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "lacros_cq_tast_tests_jacuzzi",
-    label = "//chromeos/lacros:lacros_cq_tast_tests_jacuzzi",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.generated_script(
     name = "lacros_fyi_tast_tests",
     label = "//chromeos/lacros:lacros_fyi_tast_tests",
     args = [

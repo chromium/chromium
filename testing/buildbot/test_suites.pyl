@@ -4004,18 +4004,6 @@
       },
     },
 
-    'lacros_cq_tast_tests_jacuzzi': {
-      'lacros_cq_tast_tests_jacuzzi': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'experiment_percentage': 5,
-      },
-    },
-
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
       'cc_unittests': {},
@@ -7382,19 +7370,6 @@
           'CROS_JACUZZI_PUBLIC_LKGM',
           'CROS_KEVIN64_PUBLIC_LKGM',
         ]
-      },
-    },
-
-    'lacros_device_arm_tests_rel': {
-      'lacros_all_tast_tests': {
-        'variants': [
-          'LACROS_JACUZZI',
-        ],
-      },
-      'lacros_cq_tast_tests_jacuzzi': {
-        'variants': [
-          'LACROS_JACUZZI',
-        ],
       },
     },
 

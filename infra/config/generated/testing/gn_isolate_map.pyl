@@ -1066,13 +1066,6 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "lacros_cq_tast_tests_jacuzzi": {
-    "label": "//chromeos/lacros:lacros_cq_tast_tests_jacuzzi",
-    "type": "generated_script",
-    "args": [
-      "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-  },
   "lacros_fyi_tast_tests": {
     "label": "//chromeos/lacros:lacros_fyi_tast_tests",
     "type": "generated_script",

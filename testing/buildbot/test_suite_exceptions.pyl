@@ -2927,20 +2927,6 @@
       },
     },
   },
-  'lacros_all_tast_tests jacuzzi': {
-    'modifications': {
-      'lacros-arm-generic-rel': {
-        'ci_only': True,
-      },
-    },
-  },
-  'lacros_cq_tast_tests_jacuzzi jacuzzi': {
-    'modifications': {
-      'lacros-arm-generic-rel': {
-        'ci_only': True,
-      },
-    },
-  },
   'leveldb_unittests': {
     'remove_from': [
       # TODO(https://crbug.com/1432753): Runs too slowly in this configuration.
