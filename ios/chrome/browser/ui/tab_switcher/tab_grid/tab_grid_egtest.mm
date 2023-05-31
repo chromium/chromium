@@ -2582,6 +2582,28 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that closing a tab works successfully in incognito search results.
+- (void)testLastIncognitoTabCloses {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Close Tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab is no longer present.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTitle1)]
+      assertWithMatcher:grey_nil()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
