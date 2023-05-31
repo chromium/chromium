@@ -4,6 +4,7 @@
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
+import("//build/config/android/config.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -267,6 +268,11 @@ component("partition_alloc") {
       "partition_alloc_base/native_library.h",
       "partition_alloc_base/native_library_posix.cc",
     ]
+
+    # The Android NDK supports PR_MTE_* macros as of NDK r23.
+    if (android_ndk_major_version >= 23) {
+      defines += [ "HAS_PR_MTE_MACROS" ]
+    }
   }
   if (is_apple) {
     # Apple-specific utilities
