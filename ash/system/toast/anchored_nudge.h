@@ -44,6 +44,12 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   // Gets the text set by the label in `toast_contents_view_`.
   const std::u16string& GetText();
 
+  // Gets the dismiss button shown in `toast_contents_view_`.
+  views::LabelButton* GetDismissButton();
+
+  // Gets the second button shown in `toast_contents_view_`.
+  views::LabelButton* GetSecondButton();
+
   // views::WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;

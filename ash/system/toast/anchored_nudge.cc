@@ -85,6 +85,12 @@ AnchoredNudge::AnchoredNudge(Delegate* delegate,
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   toast_contents_view_ = AddChildView(std::make_unique<SystemToastStyle>(
       nudge_data.dismiss_callback, nudge_data.text, nudge_data.dismiss_text));
+  // TODO(b/283159669): Will use `SystemToastStyle` with a second button
+  // temporarily for M116, migrate to `DialogStyle` once implemented.
+  if (nudge_data.second_button_text != std::u16string()) {
+    toast_contents_view_->AddSecondButton(nudge_data.second_button_callback,
+                                          nudge_data.second_button_text);
+  }
 }
 
 AnchoredNudge::~AnchoredNudge() {
@@ -95,6 +101,16 @@ const std::u16string& AnchoredNudge::GetText() {
   CHECK(toast_contents_view_);
   CHECK(toast_contents_view_->label());
   return toast_contents_view_->label()->GetText();
+}
+
+views::LabelButton* AnchoredNudge::GetDismissButton() {
+  CHECK(toast_contents_view_);
+  return toast_contents_view_->dismiss_button();
+}
+
+views::LabelButton* AnchoredNudge::GetSecondButton() {
+  CHECK(toast_contents_view_);
+  return toast_contents_view_->second_button();
 }
 
 std::unique_ptr<views::NonClientFrameView>

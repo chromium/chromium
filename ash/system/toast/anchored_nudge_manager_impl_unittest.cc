@@ -12,6 +12,7 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -109,6 +110,88 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_TwoNudges) {
   CancelNudge(id);
   EXPECT_FALSE(GetShownNudges()[id]);
   EXPECT_FALSE(GetShownNudges()[id_2]);
+}
+
+// Tests that a nudge with buttons can be shown, execute callbacks and dismiss
+// the nudge when the button is pressed.
+TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  const std::u16string text = u"text";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  const std::u16string dismiss_text = u"dismiss";
+  const std::u16string second_button_text = u"second";
+
+  AnchoredNudgeData nudge_data(id, AnchoredNudgeCatalogName::kTest, text,
+                               anchor_view);
+
+  // Add a dismiss button with no callbacks.
+  nudge_data.dismiss_text = dismiss_text;
+
+  // Show a nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+
+  // Ensure the nudge is visible and has set the provided contents.
+  auto nudge = GetShownNudges()[id];
+  EXPECT_TRUE(nudge);
+  EXPECT_EQ(dismiss_text, nudge->GetDismissButton()->GetText());
+
+  // Ensure the nudge does not have a second button.
+  EXPECT_FALSE(nudge->GetSecondButton());
+
+  // Press the dismiss button, the nudge should have dismissed.
+  LeftClickOn(nudge->GetDismissButton());
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Show the nudge again.
+  anchored_nudge_manager()->Show(nudge_data);
+  nudge = GetShownNudges()[id];
+
+  // Add callbacks for the dismiss button.
+  bool dismiss_button_callback_ran = false;
+  nudge_data.dismiss_callback = base::BindLambdaForTesting(
+      [&dismiss_button_callback_ran] { dismiss_button_callback_ran = true; });
+
+  // Show the nudge again.
+  anchored_nudge_manager()->Show(nudge_data);
+  nudge = GetShownNudges()[id];
+
+  // Press the dismiss button, `dismiss_button_callback` should have executed,
+  // and the nudge should have dismissed.
+  LeftClickOn(nudge->GetDismissButton());
+  EXPECT_TRUE(dismiss_button_callback_ran);
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Add a second button with no callbacks.
+  nudge_data.second_button_text = second_button_text;
+
+  // Show the nudge again, now with a second button.
+  anchored_nudge_manager()->Show(nudge_data);
+  nudge = GetShownNudges()[id];
+
+  // Ensure the nudge has a second button.
+  EXPECT_TRUE(nudge->GetSecondButton());
+
+  // Press the second button, the nudge should have dismissed.
+  LeftClickOn(nudge->GetSecondButton());
+  EXPECT_FALSE(GetShownNudges()[id]);
+
+  // Add a callback for the second button.
+  bool second_button_callback_ran = false;
+  nudge_data.second_button_callback = base::BindLambdaForTesting(
+      [&second_button_callback_ran] { second_button_callback_ran = true; });
+
+  // Show the nudge again.
+  anchored_nudge_manager()->Show(nudge_data);
+  nudge = GetShownNudges()[id];
+
+  // Press the second button, `second_button_callback` should have executed, and
+  // the nudge should have dismissed.
+  LeftClickOn(nudge->GetSecondButton());
+  EXPECT_TRUE(second_button_callback_ran);
+  EXPECT_FALSE(GetShownNudges()[id]);
 }
 
 // Tests that attempting to show a nudge with an `id` that's in use cancels

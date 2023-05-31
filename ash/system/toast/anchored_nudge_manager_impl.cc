@@ -114,7 +114,7 @@ AnchoredNudgeManagerImpl::~AnchoredNudgeManagerImpl() {
   CloseAllNudges();
 }
 
-void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
+void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   std::string id = nudge_data.id;
   CHECK(!id.empty());
 
@@ -130,6 +130,14 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
   }
 
   const bool has_infinite_duration = nudge_data.has_infinite_duration;
+
+  // Chain callbacks with `Cancel()` so nudge is dismissed on button pressed.
+  // TODO(b/285023559): Add `ChainedCancelCallback` class so we don't have to
+  // manually modify the provided callbacks.
+  nudge_data.dismiss_callback =
+      ChainCancelCallback(nudge_data.dismiss_callback, id);
+  nudge_data.second_button_callback =
+      ChainCancelCallback(nudge_data.second_button_callback, id);
 
   auto anchored_nudge =
       std::make_unique<AnchoredNudge>(/*delegate=*/this, nudge_data);
@@ -215,6 +223,16 @@ views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorView(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id]->GetAnchorView();
+}
+
+base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(
+    base::RepeatingClosure callback,
+    const std::string& id) {
+  return callback ? std::move(callback).Then(
+                        base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
+                                            base::Unretained(this), id))
+                  : base::BindRepeating(&AnchoredNudgeManagerImpl::Cancel,
+                                        base::Unretained(this), id);
 }
 
 void AnchoredNudgeManagerImpl::StartDismissTimer(const std::string& id) {

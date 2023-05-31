@@ -28,7 +28,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   ~AnchoredNudgeManagerImpl() override;
 
   // AnchoredNudgeManager:
-  void Show(const AnchoredNudgeData& nudge_data) override;
+  void Show(AnchoredNudgeData& nudge_data) override;
   void Cancel(const std::string& id) override;
 
   // Closes all `shown_nudges_`.
@@ -53,6 +53,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
   class NudgeWidgetObserver;
+
+  // Chains the provided `callback` to a `Cancel()` call to dismiss a nudge with
+  // `id`, and returns this chained callback. If the provided `callback` is
+  // empty, only a `Cancel()` callback will be returned.
+  base::RepeatingClosure ChainCancelCallback(base::RepeatingClosure callback,
+                                             const std::string& id);
 
   // Manage the dismiss timer for the nudge with given `id`.
   void StartDismissTimer(const std::string& id);
