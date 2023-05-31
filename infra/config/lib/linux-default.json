@@ -9,6 +9,7 @@
     "Linux Builder": "Ubuntu-22.04",
     "Linux Builder (Wayland)": "Ubuntu-22.04",
     "Linux Builder (dbg)": "Ubuntu-22.04",
+    "Linux Builder (j-500) (reclient)": "Ubuntu-22.04",
     "Linux ChromiumOS Full": "Ubuntu-22.04",
     "Linux Tests": "Ubuntu-22.04",
     "Linux Tests (Wayland)": "Ubuntu-22.04",
