@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
@@ -893,6 +894,17 @@ void MaybeRegisterChromeTutorials(
             // Event step - Click on "Add shortcut"
             TutorialDescription::EventStep(
                 PasswordManagerUI::kAddShortcutCustomEventId)
+                .InSameContext(),
+
+            // Bubble step - "Install" row
+            TutorialDescription::BubbleStep(
+                PWAConfirmationBubbleView::kInstallButton)
+                .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_INSTALL)
+                .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+
+            // Event step - Click on "Add shortcut"
+            TutorialDescription::EventStep(
+                PWAConfirmationBubbleView::kInstalledPWAEventId)
                 .InSameContext(),
 
             // Completion of the tutorial.

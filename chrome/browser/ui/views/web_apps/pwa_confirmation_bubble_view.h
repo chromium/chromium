@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -44,6 +45,12 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
       delete;
 
   ~PWAConfirmationBubbleView() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kInstalledPWAEventId);
+
+  // WidgetDelegate
+  void OnWidgetInitialized() override;
 
   // LocationBarBubbleDelegateView:
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;

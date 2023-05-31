@@ -40,7 +40,9 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -77,6 +79,11 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 #endif
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PWAConfirmationBubbleView,
+                                      kInstallButton);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PWAConfirmationBubbleView,
+                                       kInstalledPWAEventId);
 
 // static
 bool PWAConfirmationBubbleView::IsShowing() {
@@ -171,6 +178,14 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
 
 PWAConfirmationBubbleView::~PWAConfirmationBubbleView() = default;
 
+void PWAConfirmationBubbleView::OnWidgetInitialized() {
+  auto* ok_button = GetOkButton();
+  if (ok_button) {
+    ok_button->SetProperty(views::kElementIdentifierKey,
+                           PWAConfirmationBubbleView::kInstallButton);
+  }
+}
+
 bool PWAConfirmationBubbleView::OnCloseRequested(
     views::Widget::ClosedReason close_reason) {
   base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
@@ -243,6 +258,15 @@ bool PWAConfirmationBubbleView::Accept() {
     web_app::RecordInstallIphInstalled(prefs_, app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
+  auto* ok_button = GetOkButton();
+  auto* tracker_framework = ui::ElementTracker::GetFrameworkDelegate();
+  auto* tracker_views = views::ElementTrackerViews::GetInstance();
+  if (ok_button && tracker_framework && tracker_views) {
+    tracker_framework->NotifyCustomEvent(
+        tracker_views->GetElementForView(ok_button),
+        PWAConfirmationBubbleView::kInstalledPWAEventId);
+  }
+
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
 }
