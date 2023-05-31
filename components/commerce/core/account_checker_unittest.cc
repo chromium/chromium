@@ -137,7 +137,8 @@ TEST_F(AccountCheckerTest, TestFetchWaaStatusOnAccountChanged) {
   SetFetchResponse("{ \"history_recording_enabled\": false }");
   identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
                                                  signin::ConsentLevel::kSync);
-  base::RunLoop().RunUntilIdle();
+  pref_service_.user_prefs_store()->WaitForValue(
+      kWebAndAppActivityEnabledForShopping, base::Value(false));
   ASSERT_EQ(true, account_checker_->IsSignedIn());
   ASSERT_EQ(false, account_checker_->IsWebAndAppActivityEnabled());
 }
@@ -160,7 +161,8 @@ TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
                                                  signin::ConsentLevel::kSync);
   SetFetchResponse("{ \"preferences\": { \"price_track_email\" : true } }");
   FetchPriceEmailPref();
-  base::RunLoop().RunUntilIdle();
+  pref_service_.user_prefs_store()->WaitForValue(
+      kPriceEmailNotificationsEnabled, base::Value(true));
   ASSERT_EQ(true, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
 }
 
@@ -182,7 +184,8 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
                                                  signin::ConsentLevel::kSync);
   SetFetchResponse("{ \"preferences\": { \"price_track_email\" : true } }");
   pref_service_.SetBoolean(kPriceEmailNotificationsEnabled, true);
-  base::RunLoop().RunUntilIdle();
+  pref_service_.user_prefs_store()->WaitForValue(
+      kPriceEmailNotificationsEnabled, base::Value(true));
   ASSERT_EQ(true, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
 }
 

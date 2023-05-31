@@ -467,7 +467,7 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
   bool is_custom_links_enabled_ = false;
   TopSitesCallbackList top_sites_callbacks_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   PopularSitesFactoryForTest popular_sites_factory_{&pref_service_};

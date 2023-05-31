@@ -4,6 +4,7 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 
+#include "base/rust_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -64,7 +65,11 @@ TEST_F(WebAppOriginAssociationParserTest, EmptyStringNull) {
   ASSERT_TRUE(failed());
   EXPECT_TRUE(IsAssociationNull(association));
   EXPECT_EQ(1u, GetErrorCount());
-  EXPECT_NE(std::string::npos, errors()[0].find("Line: 1, column: 1,"));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_EQ(errors()[0], "EOF while parsing a value at line 1 column 0");
+#else
+  EXPECT_EQ(errors()[0], "Line: 1, column: 1, Unexpected token.");
+#endif
 }
 
 TEST_F(WebAppOriginAssociationParserTest, NoContentParses) {

@@ -9,9 +9,61 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+class ChangedValueWaiter : public PrefStore::Observer {
+ public:
+  ChangedValueWaiter(scoped_refptr<PrefStore> store, std::string key)
+      : store_(std::move(store)), key_(std::move(key)) {
+    store_->AddObserver(this);
+
+    const base::Value* old_value = nullptr;
+    if (store_->GetValue(key_, &old_value)) {
+      old_value_ = old_value->Clone();
+    }
+  }
+
+  ~ChangedValueWaiter() override { store_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void QuitRunLoopIfNewValueIsPresent() {
+    absl::optional<base::Value> new_value;
+    {
+      const base::Value* value = nullptr;
+      if (store_->GetValue(key_, &value)) {
+        new_value = value->Clone();
+      }
+    }
+
+    if (new_value != old_value_) {
+      run_loop_.Quit();
+    }
+  }
+
+  void OnInitializationCompleted(bool succeeded) override {
+    QuitRunLoopIfNewValueIsPresent();
+  }
+
+  void OnPrefValueChanged(const std::string& key) override {
+    if (key == key_) {
+      QuitRunLoopIfNewValueIsPresent();
+    }
+  }
+
+  scoped_refptr<PrefStore> store_;
+  std::string key_;
+  absl::optional<base::Value> old_value_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 TestingPrefStore::TestingPrefStore()
     : read_only_(true),
@@ -195,6 +247,23 @@ void TestingPrefStore::SetBlockAsyncRead(bool block_async_read) {
   block_async_read_ = block_async_read;
   if (pending_async_read_ && !block_async_read_)
     NotifyInitializationCompleted();
+}
+
+void TestingPrefStore::WaitUntilValueChanges(std::string key) {
+  ChangedValueWaiter waiter(this, std::move(key));
+  waiter.Wait();
+}
+
+void TestingPrefStore::WaitForValue(std::string key,
+                                    base::Value expected_value) {
+  while (true) {
+    const base::Value* curr_value = nullptr;
+    if (GetValue(key, &curr_value) && *curr_value == expected_value) {
+      break;
+    }
+
+    WaitUntilValueChanges(key);
+  }
 }
 
 void TestingPrefStore::OnStoreDeletionFromDisk() {}

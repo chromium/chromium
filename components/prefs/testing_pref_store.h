@@ -76,6 +76,16 @@ class TestingPrefStore : public PersistentPrefStore {
   // the call to ReadPrefsAsync.
   void SetBlockAsyncRead(bool block_async_read);
 
+  // Waits until the pref at `key` changes its value.
+  void WaitUntilValueChanges(std::string key);
+
+  // Waits until the pref at `key` equals to the `expected_value`.
+  //
+  // Will exit immediately if the current value is already equal to the
+  // `expected_value`.  Otherwise, spins up a RunLoop until the value changes to
+  // the `expected_value`.
+  void WaitForValue(std::string key, base::Value expected_value);
+
   void OnStoreDeletionFromDisk() override;
 
   // Getter and Setter methods for setting and getting the state of the

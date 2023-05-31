@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/rust_buildflags.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -106,7 +107,11 @@ TEST_F(WebAppOriginAssociationParserImplTest,
   ASSERT_TRUE(!association);
   ASSERT_FALSE(errors.empty());
   ASSERT_EQ(1u, errors.size());
-  EXPECT_NE(std::string::npos, errors[0]->message.find("Line: 1, column: 6,"));
+#if BUILDFLAG(BUILD_RUST_JSON_READER)
+  EXPECT_EQ(errors[0]->message, "EOF while parsing a list at line 1 column 5");
+#else
+  EXPECT_EQ(errors[0]->message, "Line: 1, column: 6, Syntax error.");
+#endif
 
   histogram_tester_.ExpectBucketCount(
       kParseResultHistogram,
