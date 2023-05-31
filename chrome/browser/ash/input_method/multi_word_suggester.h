@@ -88,7 +88,8 @@ class MultiWordSuggester : public Suggester {
     void UpdateSurroundingText(const SurroundingText& surrounding_text);
 
     // Captures new suggestion context.
-    void UpdateSuggestion(const Suggestion& suggestion);
+    void UpdateSuggestion(const Suggestion& suggestion,
+                          bool new_tracking_behavior);
 
     // Validates the given suggestion text context with the current surrounding
     // text, and returns the state of the given suggestion context.

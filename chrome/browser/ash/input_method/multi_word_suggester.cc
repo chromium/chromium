@@ -252,7 +252,8 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
     }
   }
 
-  state_.UpdateSuggestion(suggestion);
+  state_.UpdateSuggestion(/*suggestion=*/suggestion,
+                          /*new_tracking_behavior=*/context.has_value());
   DisplaySuggestionIfAvailable();
 }
 
@@ -466,7 +467,8 @@ void MultiWordSuggester::SuggestionState::UpdateSurroundingText(
 }
 
 void MultiWordSuggester::SuggestionState::UpdateSuggestion(
-    const MultiWordSuggester::SuggestionState::Suggestion& suggestion) {
+    const MultiWordSuggester::SuggestionState::Suggestion& suggestion,
+    bool new_tracking_behavior) {
   suggestion_ = suggestion;
   suggestion_->original_surrounding_text_length =
       surrounding_text_ ? surrounding_text_->text.length() : 0;
@@ -475,6 +477,14 @@ void MultiWordSuggester::SuggestionState::UpdateSuggestion(
                   : State::kPredictionSuggestionShown);
   if (suggestion.mode == AssistiveSuggestionMode::kCompletion)
     ReconcileSuggestionWithText();
+  if (new_tracking_behavior &&
+      suggestion.mode == AssistiveSuggestionMode::kPrediction) {
+    // With the new tracking behavior we are guaranteed that any new suggestion
+    // is not stale, and thus can be simply appended to the current surrrounding
+    // text. Therefore there is no need to reconcile with the current text and
+    // we can transition straight to tracking mode.
+    UpdateState(State::kTrackingLastSuggestionShown);
+  }
 }
 
 MultiWordSuggestionState
