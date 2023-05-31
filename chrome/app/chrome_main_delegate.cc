@@ -156,8 +156,8 @@
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
-#include "chromeos/ash/components/memory/kstaled.h"
 #include "chromeos/ash/components/memory/memory.h"
+#include "chromeos/ash/components/memory/mglru.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/hugepage_text/hugepage_text.h"
 #include "ui/lottie/resource.h"  // nogncheck
@@ -937,7 +937,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   if (is_browser_process) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ConfigureSwap(arc::IsArcAvailable());
-    ash::InitializeKstaled();
+    ash::InitializeMGLRU();
 #endif
   }
 

@@ -38,4 +38,10 @@ void FakeSwapManagementClient::InitiateSwapZramWriteback(
   std::move(callback).Run(true);
 }
 
+void FakeSwapManagementClient::MGLRUSetEnable(
+    uint8_t value,
+    chromeos::VoidDBusMethodCallback callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace ash

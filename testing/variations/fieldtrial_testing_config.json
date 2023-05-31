@@ -3770,10 +3770,10 @@
                 {
                     "name": "MglruBehavior_20230419",
                     "params": {
-                        "KstaledRatio": "7"
+                        "MGLRUEnableValue": "7"
                     },
                     "enable_features": [
-                        "KstaledSwap"
+                        "MGLRUEnable"
                     ]
                 }
             ]

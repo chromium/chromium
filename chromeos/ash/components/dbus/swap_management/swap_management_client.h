@@ -49,6 +49,9 @@ class COMPONENT_EXPORT(SWAP_MANAGEMENT) SwapManagementClient
       swap_management::ZramWritebackMode mode,
       chromeos::VoidDBusMethodCallback callback) = 0;
 
+  virtual void MGLRUSetEnable(uint8_t value,
+                              chromeos::VoidDBusMethodCallback callback) = 0;
+
  protected:
   // Initialize() should be used instead.
   SwapManagementClient();
