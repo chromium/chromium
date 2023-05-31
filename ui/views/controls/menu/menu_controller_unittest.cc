@@ -789,10 +789,11 @@ class MenuControllerTest : public ViewsTestBase,
   // Causes the |menu_controller_| to begin dragging. Use TestDragDropClient to
   // avoid nesting message loops.
   void StartDrag() {
-    const gfx::Point location;
-    menu_controller_->state_.item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
-    menu_controller_->StartDrag(
-        menu_item()->GetSubmenu()->GetMenuItemAt(0)->CreateSubmenu(), location);
+    MenuItemView* const dragged_item =
+        menu_item()->GetSubmenu()->GetMenuItemAt(0);
+    menu_controller_->state_.item = dragged_item;
+    menu_controller_->StartDrag(menu_item()->GetSubmenu(),
+                                dragged_item->bounds().CenterPoint());
   }
 
   void SetUpMenuControllerForCalculateBounds(const MenuBoundsOptions& options) {

@@ -459,7 +459,7 @@ bool SubmenuView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
   return views::FocusManager::IsTabTraversalKeyEvent(e);
 }
 
-MenuItemView* SubmenuView::GetMenuItem() {
+const MenuItemView* SubmenuView::GetMenuItem() const {
   return parent_menu_item_;
 }
 

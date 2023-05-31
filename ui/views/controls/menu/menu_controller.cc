@@ -84,6 +84,8 @@ namespace views {
 
 namespace {
 
+enum class MenuPartType { kNone, kMenuItem, kScrollUp, kScrollDown };
+
 // The menu controller manages the AX index attributes inside menu items. This
 // property maintains a vector of menu children that were last assigned such
 // attributes by MenuController::SetSelectionIndices() so that the controller
@@ -192,6 +194,54 @@ Button* GetFirstHotTrackedView(View* view) {
       return hot_view;
   }
   return nullptr;
+}
+
+MenuPartType GetScrollButtonAt(SubmenuView* source,
+                               const gfx::Point& location) {
+  MenuScrollViewContainer* scroll_view = source->GetScrollViewContainer();
+  if (const View* child_under_mouse =
+          scroll_view->GetEventHandlerForPoint(location);
+      child_under_mouse && child_under_mouse->GetEnabled()) {
+    if (child_under_mouse == scroll_view->scroll_up_button()) {
+      return MenuPartType::kScrollUp;
+    }
+    if (child_under_mouse == scroll_view->scroll_down_button()) {
+      return MenuPartType::kScrollDown;
+    }
+  }
+  return MenuPartType::kNone;
+}
+
+// Convenience wrappers for converting between screen coordinates and the
+// coordinates of the submenu's root view. CAUTION: The latter is not the same
+// as the coordinates of the submenu itself! Be careful which View you are
+// treating coordinates as relative to!
+gfx::Point ConvertFromScreen(const SubmenuView& submenu,
+                             const gfx::Point& location) {
+  return View::ConvertPointFromScreen(submenu.GetWidget()->GetRootView(),
+                                      location);
+}
+gfx::Point ConvertToScreen(const SubmenuView& submenu,
+                           const gfx::Point& location) {
+  return View::ConvertPointToScreen(submenu.GetWidget()->GetRootView(),
+                                    location);
+}
+
+template <typename T>
+T ConvertLocatedEventForRootView(const SubmenuView& submenu,
+                                 const MenuHostRootView& root_view,
+                                 const T& event) {
+  T converted_event = event;
+  if (submenu.GetWidget()->GetRootView() != &root_view) {
+    converted_event.set_location(View::ConvertPointFromScreen(
+        &root_view, View::ConvertPointToScreen(&submenu, event.location())));
+  }
+  return converted_event;
+}
+
+bool Contains(const SubmenuView& submenu, const gfx::Point& location) {
+  return submenu.GetWidget()->GetRootView()->GetLocalBounds().Contains(
+      location);
 }
 
 // Recurses through the child views of |view| returning the first view starting
@@ -345,6 +395,36 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
 
 }  // namespace
 
+// MenuController:MenuPart ---------------------------------------------------
+
+struct MenuController::MenuPart {
+  // Convenience for testing type == kScrollDown or type == kScrollUp.
+  bool is_scroll() const {
+    return type == MenuPartType::kScrollDown || type == MenuPartType::kScrollUp;
+  }
+
+  // Type of part.
+  MenuPartType type = MenuPartType::kNone;
+
+  // If type is kMenuItem, this is the menu item the mouse is over, otherwise
+  // this is null.
+  // NOTE: if type is kMenuItem and the mouse is not over a valid menu item
+  //       but is over a menu (for example, the mouse is over a separator or
+  //       empty menu), this is null and parent is the menu the mouse was
+  //       clicked on.
+  raw_ptr<MenuItemView, DanglingUntriaged> menu = nullptr;
+
+  // If type is kMenuItem but the mouse is not over a menu item this is the
+  // parent of the menu item the user clicked on. Otherwise this is null.
+  raw_ptr<MenuItemView, DanglingUntriaged> parent = nullptr;
+
+  // This is the submenu the mouse is over.
+  raw_ptr<SubmenuView, DanglingUntriaged> submenu = nullptr;
+
+  // Whether the controller should apply SELECTION_OPEN_SUBMENU to this item.
+  bool should_submenu_show = false;
+};
+
 // MenuScrollTask --------------------------------------------------------------
 
 // MenuScrollTask is used when the SubmenuView does not all fit on screen and
@@ -368,7 +448,7 @@ class MenuController::MenuScrollTask {
     }
     DCHECK(part.submenu);
     SubmenuView* new_menu = part.submenu;
-    bool new_is_up = (part.type == MenuController::MenuPart::Type::kScrollUp);
+    bool new_is_up = part.type == MenuPartType::kScrollUp;
     if (new_menu == submenu_ && is_scrolling_up_ == new_is_up)
       return;
 
@@ -486,11 +566,9 @@ void MenuController::Run(Widget* parent,
     if (root_view) {
       event = static_cast<internal::RootView*>(root_view)->current_event();
       if (event && event->type() == ui::ET_MOUSE_PRESSED) {
-        gfx::Point screen_loc(
+        menu_start_mouse_press_loc_ = View::ConvertPointToScreen(
+            static_cast<View*>(event->target()),
             static_cast<const ui::MouseEvent*>(event)->location());
-        View::ConvertPointToScreen(static_cast<View*>(event->target()),
-                                   &screen_loc);
-        menu_start_mouse_press_loc_ = screen_loc;
       }
     }
   }
@@ -659,9 +737,9 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   current_mouse_pressed_state_ |= event.changed_button_flags();
 
   if (forward_to_root) {
-    ui::MouseEvent event_for_root(event);
     // Reset hot-tracking if a different view is getting a mouse press.
-    ConvertLocatedEventForRootView(source, forward_to_root, &event_for_root);
+    const ui::MouseEvent event_for_root =
+        ConvertLocatedEventForRootView(*source, *forward_to_root, event);
     View* view =
         forward_to_root->GetEventHandlerForPoint(event_for_root.location());
     Button* button = Button::AsButton(view);
@@ -697,10 +775,9 @@ bool MenuController::OnMousePressed(SubmenuView* source,
 bool MenuController::OnMouseDragged(SubmenuView* source,
                                     const ui::MouseEvent& event) {
   if (current_mouse_event_target_) {
-    ui::MouseEvent event_for_root(event);
-    ConvertLocatedEventForRootView(source, current_mouse_event_target_,
-                                   &event_for_root);
-    return current_mouse_event_target_->ProcessMouseDragged(event_for_root);
+    return current_mouse_event_target_->ProcessMouseDragged(
+        ConvertLocatedEventForRootView(*source, *current_mouse_event_target_,
+                                       event));
   }
 
   MenuPart part = GetMenuPart(source, event.location());
@@ -715,7 +792,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
     return true;
   }
   MenuItemView* mouse_menu = nullptr;
-  if (part.type == MenuPart::Type::kMenuItem) {
+  if (part.type == MenuPartType::kMenuItem) {
     // If there is no menu target, but a submenu target, then we are interacting
     // with an empty menu item within a submenu. These cannot become selection
     // targets for mouse interaction, so do not attempt to update selection.
@@ -727,7 +804,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
       SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                    SELECTION_OPEN_SUBMENU);
     }
-  } else if (part.type == MenuPart::Type::kNone) {
+  } else if (part.type == MenuPartType::kNone) {
     // If there is a sibling menu, show it. Otherwise, if the user has selected
     // a menu item with no accompanying sibling menu or submenu, move selection
     // back to the parent menu item.
@@ -757,10 +834,8 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     MenuHostRootView* cached_event_target = current_mouse_event_target_;
     if (!current_mouse_pressed_state_)
       current_mouse_event_target_ = nullptr;
-    ui::MouseEvent event_for_root(event);
-    ConvertLocatedEventForRootView(source, cached_event_target,
-                                   &event_for_root);
-    cached_event_target->ProcessMouseReleased(event_for_root);
+    cached_event_target->ProcessMouseReleased(
+        ConvertLocatedEventForRootView(*source, *cached_event_target, event));
     return;
   }
 
@@ -770,7 +845,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
   DCHECK(state_.item);
   possible_drag_ = false;
   MenuPart part = GetMenuPart(source, event.location());
-  if (event.IsRightMouseButton() && part.type == MenuPart::Type::kMenuItem) {
+  if (event.IsRightMouseButton() && part.type == MenuPartType::kMenuItem) {
     MenuItemView* menu = part.menu;
     // |menu| is null means this event is from an empty menu or a separator.
     // If it is from an empty menu, use parent context menu instead of that.
@@ -780,11 +855,10 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     }
 
     if (menu) {
-      gfx::Point screen_location(event.location());
-      View::ConvertPointToScreen(source->GetScrollViewContainer(),
-                                 &screen_location);
-      if (ShowContextMenu(menu, screen_location, ui::MENU_SOURCE_MOUSE))
+      if (ShowContextMenu(menu, ConvertToScreen(*source, event.location()),
+                          ui::MENU_SOURCE_MOUSE)) {
         return;
+      }
     }
   }
 
@@ -805,9 +879,8 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     base::TimeDelta time_shown = base::TimeTicks::Now() - menu_start_time_;
     if (time_shown < menu_selection_hold_time) {
       // And it wasn't far from the mouse press location.
-      gfx::Point screen_loc(event.location());
-      View::ConvertPointToScreen(source->GetScrollViewContainer(), &screen_loc);
-      gfx::Vector2d moved = screen_loc - menu_start_mouse_press_loc_;
+      const gfx::Vector2d moved = ConvertToScreen(*source, event.location()) -
+                                  menu_start_mouse_press_loc_;
       if (moved.Length() < kMaximumLengthMovedToActivate) {
         // Ignore the mouse release as it was likely this menu was shown under
         // the mouse and the action was just a normal click.
@@ -825,7 +898,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
       Accept(part.menu, event.flags());
       return;
     }
-  } else if (part.type == MenuPart::Type::kMenuItem) {
+  } else if (part.type == MenuPartType::kMenuItem) {
     // User either clicked on empty space, or a menu that has children.
     SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                  SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -836,10 +909,9 @@ void MenuController::OnMouseReleased(SubmenuView* source,
 void MenuController::OnMouseMoved(SubmenuView* source,
                                   const ui::MouseEvent& event) {
   if (current_mouse_event_target_) {
-    ui::MouseEvent event_for_root(event);
-    ConvertLocatedEventForRootView(source, current_mouse_event_target_,
-                                   &event_for_root);
-    current_mouse_event_target_->ProcessMouseMoved(event_for_root);
+    current_mouse_event_target_->ProcessMouseMoved(
+        ConvertLocatedEventForRootView(*source, *current_mouse_event_target_,
+                                       event));
     return;
   }
 
@@ -859,9 +931,8 @@ void MenuController::OnMouseMoved(SubmenuView* source,
     // Update hot-tracked button when a button state is changed with a mouse
     // event. It is necessary to track it for accurate hot-tracking when both
     // mouse and keyboard are used to navigate the menu.
-    ui::MouseEvent event_for_root(event);
-    ConvertLocatedEventForRootView(source, root_view, &event_for_root);
-    View* view = root_view->GetEventHandlerForPoint(event_for_root.location());
+    View* view = root_view->GetEventHandlerForPoint(
+        ConvertLocatedEventForRootView(*source, *root_view, event).location());
     new_hot_tracked_button = Button::AsButton(view);
   }
 
@@ -911,9 +982,8 @@ void MenuController::OnGestureEvent(SubmenuView* source,
   MenuHostRootView* root_view = GetRootView(source, event->location());
   if (root_view) {
     // Reset hot-tracking if a different view is getting a touch event.
-    ui::GestureEvent event_for_root(*event);
-    ConvertLocatedEventForRootView(source, root_view, &event_for_root);
-    View* view = root_view->GetEventHandlerForPoint(event_for_root.location());
+    View* view = root_view->GetEventHandlerForPoint(
+        ConvertLocatedEventForRootView(*source, *root_view, *event).location());
     Button* button = Button::AsButton(view);
     if (hot_button_ && hot_button_ != button)
       SetHotTrackedButton(nullptr);
@@ -924,12 +994,12 @@ void MenuController::OnGestureEvent(SubmenuView* source,
     SetSelectionOnPointerDown(source, event);
     event->StopPropagation();
   } else if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
-    if (part.type == MenuPart::Type::kMenuItem && part.menu) {
-      gfx::Point screen_location(event->location());
-      View::ConvertPointToScreen(source->GetScrollViewContainer(),
-                                 &screen_location);
-      if (ShowContextMenu(part.menu, screen_location, ui::MENU_SOURCE_TOUCH))
+    if (part.type == MenuPartType::kMenuItem && part.menu) {
+      if (ShowContextMenu(part.menu,
+                          ConvertToScreen(*source, event->location()),
+                          ui::MENU_SOURCE_TOUCH)) {
         event->StopPropagation();
+      }
     }
   } else if (event->type() == ui::ET_GESTURE_TAP) {
     if (!part.is_scroll() && part.menu &&
@@ -945,14 +1015,14 @@ void MenuController::OnGestureEvent(SubmenuView* source,
         Accept(part.menu, event->flags());
       }
       event->StopPropagation();
-    } else if (part.type == MenuPart::Type::kMenuItem) {
+    } else if (part.type == MenuPartType::kMenuItem) {
       // User either tapped on empty space, or a menu that has children.
       SetSelection(part.menu ? part.menu.get() : state_.item.get(),
                    SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
       event->StopPropagation();
     }
   } else if (event->type() == ui::ET_GESTURE_TAP_CANCEL && part.menu &&
-             part.type == MenuPart::Type::kMenuItem) {
+             part.type == MenuPartType::kMenuItem) {
     // Move the selection to the parent menu so that the selection in the
     // current menu is unset. Make sure the submenu remains open by sending the
     // appropriate SetSelectionTypes flags.
@@ -976,7 +1046,7 @@ void MenuController::OnTouchEvent(SubmenuView* source, ui::TouchEvent* event) {
 
   if (event->type() == ui::ET_TOUCH_PRESSED) {
     MenuPart part = GetMenuPart(source, event->location());
-    if (part.type == MenuPart::Type::kNone) {
+    if (part.type == MenuPartType::kNone) {
       RepostEventAndCancel(source, event);
       event->SetHandled();
     }
@@ -1039,18 +1109,19 @@ int MenuController::OnDragUpdated(SubmenuView* source,
                                   const ui::DropTargetEvent& event) {
   StopCancelAllTimer();
 
-  gfx::Point screen_loc(event.location());
-  View::ConvertPointToScreen(source, &screen_loc);
+  const gfx::Point screen_loc =
+      View::ConvertPointToScreen(source, event.location());
   if (valid_drop_coordinates_ && screen_loc == drop_pt_)
     return last_drop_operation_;
   drop_pt_ = screen_loc;
   valid_drop_coordinates_ = true;
 
-  MenuItemView* menu_item = GetMenuItemAt(source, event.x(), event.y());
+  MenuItemView* menu_item = GetMenuItemAt(source, event.location());
   bool over_empty_menu = false;
   if (!menu_item) {
     // See if we're over an empty menu.
-    menu_item = GetEmptyMenuItemAt(source, event.x(), event.y());
+    menu_item = AsViewClass<EmptyMenuMenuItem>(
+        source->GetEventHandlerForPoint(event.location()));
     if (menu_item)
       over_empty_menu = true;
   }
@@ -1145,7 +1216,7 @@ views::View::DropCallback MenuController::GetDropCallback(
 void MenuController::OnDragEnteredScrollButton(SubmenuView* source,
                                                bool is_up) {
   MenuPart part;
-  part.type = is_up ? MenuPart::Type::kScrollUp : MenuPart::Type::kScrollDown;
+  part.type = is_up ? MenuPartType::kScrollUp : MenuPartType::kScrollDown;
   part.submenu = source;
   UpdateScrolling(part);
 
@@ -1297,12 +1368,10 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 
 void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
   if (submenu->IsShowing()) {
-    gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
-    const SubmenuView* root_submenu =
-        submenu->GetMenuItem()->GetRootMenuItem()->GetSubmenu();
-    View::ConvertPointFromScreen(root_submenu->GetWidget()->GetRootView(),
-                                 &point);
-    HandleMouseLocation(submenu, point);
+    HandleMouseLocation(
+        submenu, ConvertFromScreen(
+                     *submenu->GetMenuItem()->GetRootMenuItem()->GetSubmenu(),
+                     display::Screen::GetScreen()->GetCursorScreenPoint()));
   }
 }
 
@@ -1452,8 +1521,8 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
       (event->flags() & ui::EF_FROM_TOUCH))
     return;
 
-  if (part.type == MenuPart::Type::kNone ||
-      (part.type == MenuPart::Type::kMenuItem && part.menu &&
+  if (part.type == MenuPartType::kNone ||
+      (part.type == MenuPartType::kMenuItem && part.menu &&
        part.menu->GetRootMenuItem() != state_.item->GetRootMenuItem())) {
     // Remember the time stamp of the current (press down) event. The owner can
     // then use this to figure out if this menu was finished with the same click
@@ -1490,10 +1559,9 @@ void MenuController::StartDrag(SubmenuView* source,
   // Points are in the coordinates of the submenu, need to map to that of
   // the selected item. Additionally source may not be the parent of
   // the selected item, so need to map to screen first then to item.
-  gfx::Point press_loc(location);
-  View::ConvertPointToScreen(source->GetScrollViewContainer(), &press_loc);
-  View::ConvertPointFromScreen(item, &press_loc);
-  gfx::Point widget_loc(press_loc);
+  const gfx::Point press_loc =
+      View::ConvertPointFromScreen(item, ConvertToScreen(*source, location));
+  gfx::Point widget_loc = press_loc;
   View::ConvertPointToWidget(item, &widget_loc);
 
   float raster_scale = ScaleFactorForDragFromWidget(source->GetWidget());
@@ -1818,9 +1886,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
   if (!menu_stack_.empty() || !pressed_lock_.get())
     return false;
 
-  View* source_view = source->GetScrollViewContainer();
-  if (mouse_location.x() >= 0 && mouse_location.x() < source_view->width() &&
-      mouse_location.y() >= 0 && mouse_location.y() < source_view->height()) {
+  if (Contains(*source, mouse_location)) {
     // The mouse is over the menu, no need to continue.
     return false;
   }
@@ -1833,8 +1899,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
 
   // The user moved the mouse outside the menu and over the owning window. See
   // if there is a sibling menu we should show.
-  gfx::Point screen_point(mouse_location);
-  View::ConvertPointToScreen(source_view, &screen_point);
+  const gfx::Point screen_point = ConvertToScreen(*source, mouse_location);
   MenuAnchorPosition anchor;
   bool has_mnemonics;
   MenuButton* button = nullptr;
@@ -1903,9 +1968,10 @@ void MenuController::CloseAllNestedMenus() {
   }
 }
 
-MenuItemView* MenuController::GetMenuItemAt(View* source, int x, int y) {
+MenuItemView* MenuController::GetMenuItemAt(View* source,
+                                            const gfx::Point& location) {
   // Walk the view hierarchy until we find a menu item (or the root).
-  View* child_under_mouse = source->GetEventHandlerForPoint(gfx::Point(x, y));
+  View* child_under_mouse = source->GetEventHandlerForPoint(location);
   while (child_under_mouse && !IsViewClass<MenuItemView>(child_under_mouse)) {
     child_under_mouse = child_under_mouse->parent();
   }
@@ -1914,37 +1980,11 @@ MenuItemView* MenuController::GetMenuItemAt(View* source, int x, int y) {
              : nullptr;
 }
 
-MenuItemView* MenuController::GetEmptyMenuItemAt(View* source, int x, int y) {
-  return AsViewClass<EmptyMenuMenuItem>(
-      source->GetEventHandlerForPoint(gfx::Point(x, y)));
-}
-
-bool MenuController::IsScrollButtonAt(SubmenuView* source,
-                                      int x,
-                                      int y,
-                                      MenuPart::Type* part) {
-  MenuScrollViewContainer* scroll_view = source->GetScrollViewContainer();
-  View* child_under_mouse =
-      scroll_view->GetEventHandlerForPoint(gfx::Point(x, y));
-  if (child_under_mouse && child_under_mouse->GetEnabled()) {
-    if (child_under_mouse == scroll_view->scroll_up_button()) {
-      *part = MenuPart::Type::kScrollUp;
-      return true;
-    }
-    if (child_under_mouse == scroll_view->scroll_down_button()) {
-      *part = MenuPart::Type::kScrollDown;
-      return true;
-    }
-  }
-  return false;
-}
-
 MenuController::MenuPart MenuController::GetMenuPart(
     SubmenuView* source,
     const gfx::Point& source_loc) {
-  gfx::Point screen_loc(source_loc);
-  View::ConvertPointToScreen(source->GetScrollViewContainer(), &screen_loc);
-  return GetMenuPartByScreenCoordinateUsingMenu(state_.item, screen_loc);
+  return GetMenuPartByScreenCoordinateUsingMenu(
+      state_.item, ConvertToScreen(*source, source_loc));
 }
 
 MenuController::MenuPart MenuController::GetMenuPartByScreenCoordinateUsingMenu(
@@ -1965,29 +2005,24 @@ bool MenuController::GetMenuPartByScreenCoordinateImpl(
     SubmenuView* menu,
     const gfx::Point& screen_loc,
     MenuPart* part) {
-  // Is the mouse over the scroll buttons?
-  gfx::Point scroll_view_loc = screen_loc;
-  View* scroll_view_container = menu->GetScrollViewContainer();
-  View::ConvertPointFromScreen(scroll_view_container, &scroll_view_loc);
-  if (scroll_view_loc.x() < 0 ||
-      scroll_view_loc.x() >= scroll_view_container->width() ||
-      scroll_view_loc.y() < 0 ||
-      scroll_view_loc.y() >= scroll_view_container->height()) {
-    // Point isn't contained in menu.
+  gfx::Point menu_loc = ConvertFromScreen(*menu, screen_loc);
+  if (!Contains(*menu, menu_loc)) {
     return false;
   }
-  if (IsScrollButtonAt(menu, scroll_view_loc.x(), scroll_view_loc.y(),
-                       &(part->type))) {
+
+  // Is the mouse over the scroll buttons?
+  const MenuPartType scroll_type = GetScrollButtonAt(menu, menu_loc);
+  if (scroll_type != MenuPartType::kNone) {
+    part->type = scroll_type;
     part->submenu = menu;
     return true;
   }
 
   // Not over the scroll button. Check the actual menu.
-  if (DoesSubmenuContainLocation(menu, screen_loc)) {
-    gfx::Point menu_loc = screen_loc;
-    View::ConvertPointFromScreen(menu, &menu_loc);
-    part->menu = GetMenuItemAt(menu, menu_loc.x(), menu_loc.y());
-    part->type = MenuPart::Type::kMenuItem;
+  menu_loc = View::ConvertPointFromScreen(menu, screen_loc);
+  if (menu->GetVisibleBounds().Contains(menu_loc)) {
+    part->menu = GetMenuItemAt(menu, menu_loc);
+    part->type = MenuPartType::kMenuItem;
     part->submenu = menu;
     part->should_submenu_show =
         part->submenu && part->menu &&
@@ -2018,33 +2053,13 @@ MenuHostRootView* MenuController::GetRootView(SubmenuView* submenu,
              : nullptr;
 }
 
-void MenuController::ConvertLocatedEventForRootView(View* source,
-                                                    View* dst,
-                                                    ui::LocatedEvent* event) {
-  if (source->GetWidget()->GetRootView() == dst)
-    return;
-  gfx::Point new_location(event->location());
-  View::ConvertPointToScreen(source, &new_location);
-  View::ConvertPointFromScreen(dst, &new_location);
-  event->set_location(new_location);
-}
-
-bool MenuController::DoesSubmenuContainLocation(SubmenuView* submenu,
-                                                const gfx::Point& screen_loc) {
-  gfx::Point view_loc = screen_loc;
-  View::ConvertPointFromScreen(submenu, &view_loc);
-  gfx::Rect vis_rect = submenu->GetVisibleBounds();
-  return vis_rect.Contains(view_loc);
-}
-
 bool MenuController::IsLocationOverSubmenuAreaOfActionableSubmenu(
     MenuItemView* item,
     const gfx::Point& screen_loc) const {
   if (!item || item->GetType() != MenuItemView::Type::kActionableSubMenu)
     return false;
 
-  gfx::Point view_loc = screen_loc;
-  View::ConvertPointFromScreen(item, &view_loc);
+  gfx::Point view_loc = View::ConvertPointFromScreen(item, screen_loc);
   if (base::i18n::IsRTL())
     view_loc.set_x(item->GetMirroredXInView(view_loc.x()));
   return item->GetSubmenuAreaOfActionableSubmenu().Contains(view_loc);
@@ -2214,16 +2229,16 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
 
     // Figure out if the mouse is under the menu; if so, remember the mouse
     // location so we can ignore the first mouse move event(s) with that
-    // location. We do this after ShowAt because ConvertPointFromScreen
-    // doesn't work correctly if the widget isn't shown.
-    if (item->GetSubmenu()->GetWidget() != nullptr) {
-      gfx::Point mouse_pos =
-          display::Screen::GetScreen()->GetCursorScreenPoint();
-      View::ConvertPointFromScreen(item->submenu_->GetWidget()->GetRootView(),
-                                   &mouse_pos);
+    // location. We do this after `ShowAt` because `ConvertFromScreen` doesn't
+    // work correctly if the widget isn't shown.
+    if (item->GetSubmenu()->GetWidget()) {
+      const gfx::Point mouse_pos = ConvertFromScreen(
+          *item->submenu_,
+          display::Screen::GetScreen()->GetCursorScreenPoint());
       MenuPart part_under_mouse = GetMenuPart(item->submenu_, mouse_pos);
-      if (part_under_mouse.type != MenuPart::Type::kNone)
+      if (part_under_mouse.type != MenuPartType::kNone) {
         menu_open_mouse_loc_ = mouse_pos;
+      }
     }
 
     item->GetSubmenu()->GetWidget()->SetNativeWindowProperty(
@@ -3016,8 +3031,7 @@ void MenuController::SelectByChar(char16_t character) {
 
 void MenuController::RepostEventAndCancel(SubmenuView* source,
                                           const ui::LocatedEvent* event) {
-  gfx::Point screen_loc(event->location());
-  View::ConvertPointToScreen(source->GetScrollViewContainer(), &screen_loc);
+  const gfx::Point screen_loc = ConvertToScreen(*source, event->location());
 
 #if BUILDFLAG(IS_WIN)
   if (event->IsMouseEvent() || event->IsTouchEvent()) {
@@ -3058,8 +3072,9 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     // of the menus from the last run.
     MenuPart last_part = GetMenuPartByScreenCoordinateUsingMenu(
         menu_stack_.back().first.item, screen_loc);
-    if (last_part.type != MenuPart::Type::kNone)
+    if (last_part.type != MenuPartType::kNone) {
       exit_type = ExitType::kOutermost;
+    }
   }
 #if BUILDFLAG(IS_MAC)
   // When doing a menu closure animation, target the deepest submenu - that way
@@ -3116,8 +3131,7 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
     // don't have to walk up the tree to find a view interested in events. This
     // is currently true for the cases we are embedding views, but if we embed
     // more complex hierarchies it'll need to change.
-    View::ConvertPointToScreen(event_source->GetScrollViewContainer(),
-                               &target_menu_loc);
+    target_menu_loc = ConvertToScreen(*event_source, target_menu_loc);
     View::ConvertPointFromScreen(target_menu, &target_menu_loc);
     target = target_menu->GetEventHandlerForPoint(target_menu_loc);
     if (target == target_menu || !target->GetEnabled())
@@ -3159,10 +3173,8 @@ void MenuController::SendMouseReleaseToActiveView(SubmenuView* event_source,
   if (!active_mouse_view)
     return;
 
-  gfx::Point target_loc(event.location());
-  View::ConvertPointToScreen(event_source->GetScrollViewContainer(),
-                             &target_loc);
-  View::ConvertPointFromScreen(active_mouse_view, &target_loc);
+  const gfx::Point target_loc = View::ConvertPointFromScreen(
+      active_mouse_view, ConvertToScreen(*event_source, event.location()));
   ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, target_loc, target_loc,
                                ui::EventTimeForNow(), event.flags(),
                                event.changed_button_flags());
@@ -3300,11 +3312,12 @@ void MenuController::HandleMouseLocation(SubmenuView* source,
   if (for_drop_)
     return;
 
-  if (part.type == MenuPart::Type::kNone &&
-      ShowSiblingMenu(source, mouse_location))
+  if (part.type == MenuPartType::kNone &&
+      ShowSiblingMenu(source, mouse_location)) {
     return;
+  }
 
-  if (part.type == MenuPart::Type::kMenuItem && part.menu) {
+  if (part.type == MenuPartType::kMenuItem && part.menu) {
     SetSelection(part.menu, part.should_submenu_show ? SELECTION_OPEN_SUBMENU
                                                      : SELECTION_DEFAULT);
   } else if (!part.is_scroll() && pending_state_.item &&
