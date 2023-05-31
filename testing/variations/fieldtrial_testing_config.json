@@ -8803,9 +8803,9 @@
                 {
                     "name": "QuestsAllowlist_20230425",
                     "params": {
-                        "NtpHistoryClustersModuleCategoriesAllowlistParam": "/m/testparsinglogicallow,/m/testparsinglogicallow-2",
                         "NtpHistoryClustersModuleCategoriesBlocklistParam": "/m/testparsinglogicblock,/m/testparsinglogicblock-2",
                         "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpHistoryClustersModuleCategoriesParam": "/m/testparsinglogicallow,/m/testparsinglogicallow-2",
                         "collections_blocklist": "/collection/it_glossary,/collection/periodicals,/collection/software,/collection/tv_networks,/collection/websites",
                         "search_visits_only": "false"
                     },
