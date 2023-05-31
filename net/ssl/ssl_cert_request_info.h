@@ -5,13 +5,13 @@
 #ifndef NET_SSL_SSL_CERT_REQUEST_INFO_H_
 #define NET_SSL_SSL_CERT_REQUEST_INFO_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "net/ssl/ssl_client_cert_type.h"
 
 namespace net {
 
@@ -50,7 +50,9 @@ class NET_EXPORT SSLCertRequestInfo
   // allowed by the server.
   std::vector<std::string> cert_authorities;
 
-  std::vector<SSLClientCertType> cert_key_types;
+  // List of signature algorithms (using TLS 1.3 SignatureScheme constants)
+  // advertised as supported by the server.
+  std::vector<uint16_t> signature_algorithms;
 
  private:
   friend class base::RefCountedThreadSafe<SSLCertRequestInfo>;

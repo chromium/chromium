@@ -24,7 +24,6 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_buffer.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"

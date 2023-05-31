@@ -25,7 +25,6 @@
 #include "net/cert/x509_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "net/ssl/ssl_platform_key_android.h"
 #include "net/ssl/ssl_private_key.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -175,18 +174,8 @@ void AwContentsClientBridge::SelectClientCertificate(
     return;
 
   // Build the |key_types| JNI parameter, as a String[]
-  std::vector<std::string> key_types;
-  for (size_t i = 0; i < cert_request_info->cert_key_types.size(); ++i) {
-    switch (cert_request_info->cert_key_types[i]) {
-      case net::SSLClientCertType::kRsaSign:
-        key_types.push_back("RSA");
-        break;
-      case net::SSLClientCertType::kEcdsaSign:
-        key_types.push_back("ECDSA");
-        break;
-    }
-  }
-
+  std::vector<std::string> key_types = net::SignatureAlgorithmsToJavaKeyTypes(
+      cert_request_info->signature_algorithms);
   ScopedJavaLocalRef<jobjectArray> key_types_ref =
       base::android::ToJavaArrayOfStrings(env, key_types);
   if (!key_types_ref) {

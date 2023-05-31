@@ -52,7 +52,6 @@
 #include "net/cookies/cookie_store.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/public/cpp/features.h"

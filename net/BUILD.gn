@@ -995,7 +995,6 @@ component("net") {
     "ssl/ssl_cipher_suite_names.h",
     "ssl/ssl_client_auth_cache.cc",
     "ssl/ssl_client_auth_cache.h",
-    "ssl/ssl_client_cert_type.h",
     "ssl/ssl_client_session_cache.cc",
     "ssl/ssl_client_session_cache.h",
     "ssl/ssl_config.cc",

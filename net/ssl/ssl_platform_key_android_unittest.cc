@@ -105,4 +105,31 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(kTestKeys),
                          TestKeyToString);
 
+TEST(SSLPlatformKeyAndroidSigAlgTest, SignatureAlgorithmsToJavaKeyTypes) {
+  const struct {
+    std::vector<uint16_t> algorithms;
+    std::vector<std::string> expected_key_types;
+  } kTests[] = {
+      {{SSL_SIGN_RSA_PKCS1_SHA256, SSL_SIGN_RSA_PSS_RSAE_SHA384,
+        SSL_SIGN_ECDSA_SECP256R1_SHA256, SSL_SIGN_RSA_PKCS1_SHA512,
+        SSL_SIGN_ED25519},
+       {"RSA", "EC"}},
+      {{SSL_SIGN_RSA_PSS_RSAE_SHA256}, {"RSA"}},
+      {{SSL_SIGN_RSA_PKCS1_SHA256}, {"RSA"}},
+      {{SSL_SIGN_ECDSA_SECP256R1_SHA256}, {"EC"}},
+      {{SSL_SIGN_ECDSA_SECP384R1_SHA384}, {"EC"}},
+      // Android doesn't document a Java key type corresponding to Ed25519, so
+      // for now we ignore it.
+      {{SSL_SIGN_ED25519}, {}},
+      // Unknown algorithm.
+      {{0xffff}, {}},
+      // Test the empty list.
+      {{}, {}},
+  };
+  for (const auto& t : kTests) {
+    EXPECT_EQ(SignatureAlgorithmsToJavaKeyTypes(t.algorithms),
+              t.expected_key_types);
+  }
+}
+
 }  // namespace net

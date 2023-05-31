@@ -14,7 +14,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
-#include "net/ssl/ssl_client_cert_type.h"
 
 // Misc functions to access the Android platform KeyStore.
 
