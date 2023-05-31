@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 
-#include <Metal/Metal.h>
+#include <Metal/MTLPixelFormat.h>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -69,31 +69,5 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   }
   return static_cast<unsigned int>(mtl_pixel_format);
 }
-
-#if BUILDFLAG(SKIA_USE_METAL)
-skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
-    viz::SharedImageFormat format,
-    int plane_index,
-    bool mipmapped) {
-  MTLPixelFormat mtl_pixel_format =
-      static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
-  CHECK_NE(mtl_pixel_format, MTLPixelFormatInvalid);
-  // Must match CreateMetalTexture in iosurface_image_backing.mm.
-  // TODO(sunnyps): Move constants to a common utility header.
-  skgpu::graphite::MtlTextureInfo mtl_texture_info;
-  mtl_texture_info.fSampleCount = 1;
-  mtl_texture_info.fFormat = mtl_pixel_format;
-  mtl_texture_info.fUsage =
-      MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-#if BUILDFLAG(IS_IOS)
-  mtl_texture_info.fStorageMode = MTLStorageModeShared;
-#else
-  mtl_texture_info.fStorageMode = MTLStorageModePrivate;
-#endif
-  mtl_texture_info.fMipmapped =
-      mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-  return mtl_texture_info;
-}
-#endif
 
 }  // namespace gpu

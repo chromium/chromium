@@ -11,11 +11,9 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
-#include "skia/buildflags.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 #include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -123,13 +121,6 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool mipmapped = false);
-
-#if BUILDFLAG(SKIA_USE_METAL)
-GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
-    viz::SharedImageFormat format,
-    int plane_index = 0,
-    bool mipmapped = false);
-#endif
 
 }  // namespace gpu
 

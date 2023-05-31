@@ -263,7 +263,6 @@ static const char* const kSwitchNames[] = {
     switches::kProfilingFlush,
     switches::kRunAllCompositorStagesBeforeDraw,
     switches::kSkiaFontCacheLimitMb,
-    switches::kSkiaGraphiteBackend,
     switches::kSkiaResourceCacheLimitMb,
     switches::kTestGLLib,
     switches::kTraceToConsole,
