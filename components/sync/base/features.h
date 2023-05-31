@@ -204,6 +204,10 @@ inline constexpr base::FeatureParam<base::TimeDelta>
     kTabGroupsSaveCustomNudgeDelay(&kTabGroupsSaveSyncIntegration,
                                    "TabGroupsSaveCustomNudgeDelay",
                                    base::Seconds(11));
+
+// Feature flag to replace all sync-related UI with sign-in ones.
+BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

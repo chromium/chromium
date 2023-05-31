@@ -166,4 +166,9 @@ BASE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences,
 BASE_FEATURE(kTabGroupsSaveSyncIntegration,
              "TabGroupsSaveSyncIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
+             "ReplaceSyncPromosWithSignInPromos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
