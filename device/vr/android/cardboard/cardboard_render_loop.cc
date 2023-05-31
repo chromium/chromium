@@ -32,6 +32,10 @@ namespace {
 // kLandscapeLeft has the expected effect.
 constexpr CardboardViewportOrientation kViewportOrientation = kLandscapeLeft;
 
+// Default downscale factor for computing the recommended WebXR
+// render_width/render_height from the 1:1 pixel mapped size.
+static constexpr float kRecommendedResolutionScale = 0.7;
+
 constexpr uint64_t kNanosInMs = 1000000;
 constexpr uint64_t kNanosInSeconds = 1000 * kNanosInMs;
 
@@ -89,8 +93,9 @@ void CardboardRenderLoop::CreateSession(
   CHECK(!frame_size.IsEmpty());
   DVLOG(1) << __func__;
 
-  cardboard_image_transport_ =
-      cardboard_image_transport_factory_->Create(std::move(mailbox_bridge_));
+  // The initial frame size given here should correspond with the display size.
+  cardboard_image_transport_ = cardboard_image_transport_factory_->Create(
+      std::move(mailbox_bridge_), frame_size);
   cardboard_sdk_ = cardboard_sdk;
   session_request_callback_ = std::move(session_request_callback);
   session_shutdown_callback_ = std::move(session_shutdown_callback);
@@ -116,11 +121,11 @@ void CardboardRenderLoop::CreateSession(
 
   left_eye_->mojo_from_view = gfx::Transform();
   left_eye_->field_of_view =
-      cardboard_image_transport_->GetFOV(CardboardEye::kLeft, texture_size_);
+      cardboard_image_transport_->GetFOV(CardboardEye::kLeft);
 
   right_eye_->mojo_from_view = gfx::Transform();
   right_eye_->field_of_view =
-      cardboard_image_transport_->GetFOV(CardboardEye::kRight, texture_size_);
+      cardboard_image_transport_->GetFOV(CardboardEye::kRight);
 
   if (!InitializeGl(drawing_widget)) {
     std::move(session_request_callback_).Run(nullptr);
@@ -282,6 +287,8 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
 
   // TODO(https://crbug.com/1429098): Determine if we should support this.
   config->supports_viewport_scaling = false;
+
+  config->default_framebuffer_scale = kRecommendedResolutionScale;
 
   config->views.push_back(left_eye_.Clone());
   config->views.push_back(right_eye_.Clone());
@@ -551,8 +558,7 @@ void CardboardRenderLoop::RenderFrame(const gfx::Transform& uv_transform) {
 
   TransitionProcessingFrameToRendering();
 
-  cardboard_image_transport_->Render(webxr_.get(), /*framebuffer=*/0,
-                                     texture_size_);
+  cardboard_image_transport_->Render(webxr_.get(), /*framebuffer=*/0);
 
   FinishFrame(frame_index);
 
