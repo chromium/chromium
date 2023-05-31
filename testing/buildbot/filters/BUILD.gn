@@ -140,6 +140,13 @@ source_set("content_browsertests_filters") {
   ]
 }
 
+bundle_data("content_browsertests_filter_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.content_browsertests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("content_junit_tests_filters") {
   testonly = true
 

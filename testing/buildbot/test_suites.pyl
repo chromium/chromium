@@ -3820,6 +3820,18 @@
       'color_unittests': {},
       'components_browsertests': {},
       'components_unittests': {},
+      'content_browsertests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter',
+        ],
+        'timeout_sec': 14400,
+        'swarming': {
+          'expiration': 10800,
+          'hard_timeout': 14400,
+          'shards': 8,
+        },
+      },
       'content_unittests': {},
       'crashpad_tests': {},
       'crypto_unittests': {},

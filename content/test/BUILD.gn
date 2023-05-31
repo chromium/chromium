@@ -1744,23 +1744,24 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
+  data_deps = [
+    "//content/shell:pak",
+    "//third_party/mesa_headers",
+  ]
+
   if (is_ios) {
     bundle_deps = [
       ":content_test_bundle_data",
       "//media/test:media_bundle_data",
+      "//testing/buildbot/filters:content_browsertests_filter_bundle_data",
     ]
   } else {
     data = [
       "data/",
       "//media/test/data/",
     ]
+    data_deps += [ "//testing/buildbot/filters:content_browsertests_filters" ]
   }
-
-  data_deps = [
-    "//content/shell:pak",
-    "//testing/buildbot/filters:content_browsertests_filters",
-    "//third_party/mesa_headers",
-  ]
 
   if (enable_plugins) {
     sources += [ "../browser/plugin_service_impl_browsertest.cc" ]
