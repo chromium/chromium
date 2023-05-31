@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ManifestSectionSelected"
-    enum="DevToolsManifestSection" expires_after="2022-12-01">
+    enum="DevToolsManifestSection" expires_after="2023-12-31">
   <owner>yangguo@chromium.org</owner>
   <owner>edgedevtools@microsoft.com</owner>
   <summary>
