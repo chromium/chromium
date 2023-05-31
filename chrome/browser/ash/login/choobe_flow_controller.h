@@ -65,6 +65,9 @@ class ChoobeFlowController {
   // screen's tile in CHOOBE screen.
   void OnScreenCompleted(PrefService& prefs, OobeScreenId screen_id);
 
+  // Returns true if the screen is completed.
+  bool IsScreenCompleted(OobeScreenId screen_id);
+
   // The return button in optional screens is only shown if the current screen
   // is the last selected screen, and there are still unselected screens.
   bool ShouldShowReturnButton(OobeScreenId screen_id);

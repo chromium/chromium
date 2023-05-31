@@ -201,6 +201,10 @@ void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
   }
 }
 
+bool ChoobeFlowController::IsScreenCompleted(OobeScreenId id) {
+  return completed_screens_ids_.find(id) != completed_screens_ids_.end();
+}
+
 void ChoobeFlowController::OnChoobeFlowExit() {
   ClearPreferences(*ProfileManager::GetActiveUserProfile()->GetPrefs());
   is_choobe_active_ = false;
@@ -218,12 +222,11 @@ bool ChoobeFlowController::ShouldShowReturnButton(OobeScreenId screen_id) {
 
   // To hide the return button, all eligible screens must be completed
   // except for the current one which is still being completed.
-  if (completed_screens_ids_.size() + 1 == eligible_screens_ids_.size()) {
+  if (completed_screens_ids_.size() + !IsScreenCompleted(screen_id) ==
+      eligible_screens_ids_.size()) {
     return false;
   }
 
-  DCHECK(completed_screens_ids_.find(screen_id) ==
-         completed_screens_ids_.end());
   DCHECK(eligible_screens_ids_.find(screen_id) != eligible_screens_ids_.end());
 
   return true;
