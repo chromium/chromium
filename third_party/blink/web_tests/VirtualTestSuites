@@ -1198,7 +1198,7 @@
     "args": [
       "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender,Prerender2ContentSecurityPolicyExtensions"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "no-different-origin-dialogs",
@@ -1744,7 +1744,7 @@
       "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor:block_until_head_eager_prefetch/true",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "prefetch-no-vary-search",
@@ -1757,7 +1757,7 @@
       "--enable-blink-features=NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint",
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "preload-devtools",
@@ -1771,7 +1771,7 @@
     "args": [
       "--enable-blink-features=SpeculationRulesDocumentRules,SpeculationRulesDocumentRulesSelectorMatches"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "cookie-reject-domain-non-ascii",
