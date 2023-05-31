@@ -38,6 +38,7 @@ extra_gn_deps = [
 ]
 
 [crate.compiler_builtins]
+features = ['weak-intrinsics']
 # Dependencies of profiler_builtins must have instrumentation disabled
 remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']

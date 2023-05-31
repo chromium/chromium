@@ -171,6 +171,7 @@ cargo_crate("compiler_builtins") {
     "compiler-builtins",
     "core",
     "rustc-dep-of-std",
+    "weak-intrinsics",
   ]
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.92/build.rs"
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/vendor/compiler_builtins-0.1.92/build.rs" ]

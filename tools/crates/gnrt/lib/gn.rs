@@ -262,6 +262,9 @@ pub fn build_rule_from_std_dep(
         .get(&deps::DependencyKind::Normal)
         .map(|pki| pki.features.clone())
         .unwrap_or(vec![]);
+    rule.features.append(&mut config_field!(features).cloned().collect());
+    rule.features.sort_unstable();
+    rule.features.dedup();
 
     // Add only normal dependencies: we don't run unit tests, and we don't run
     // build scripts (instead manually configuring build flags and env vars).

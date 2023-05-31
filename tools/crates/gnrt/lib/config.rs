@@ -36,6 +36,8 @@ pub struct ResolveConfig {
 pub struct CrateConfig {
     /// `cfg(...)` options for building this crate.
     pub cfg: Vec<String>,
+    /// Features to enable when building this crate.
+    pub features: Vec<String>,
     /// Compile-time environment variables for this crate.
     pub env: Vec<String>,
     /// Apply rustc metadata to this target.
