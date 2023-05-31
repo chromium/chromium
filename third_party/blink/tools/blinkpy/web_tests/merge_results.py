@@ -45,6 +45,7 @@ if BLINK_TOOLS_PATH not in sys.path:
 
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR
 
 _log = logging.getLogger(__name__)
 
@@ -468,6 +469,31 @@ class DirMerger(Merger):
         self.add_helper(lambda _, to_merge: len(to_merge) == 1,
                         MergeFilesOne(self.filesystem))
 
+    def get_files_to_merge(self, merge_dirs):
+        files = {}
+        for base_dir in merge_dirs:
+            for dir_path, dirnames, filenames in self.filesystem.walk(
+                    base_dir):
+                # Remove directories in place from dirnames to skip walking
+                # through these directories.
+                # See https://docs.python.org/3/library/os.html#os.walk
+                self.maybe_skip_directories(dirnames)
+                for f in filenames:
+                    # rel_file is the path of f relative to the base directory
+                    rel_file = self.filesystem.relpath(
+                        self.filesystem.join(dir_path, f), base_dir)
+                    files.setdefault(rel_file, []).append(base_dir)
+
+        files.update(self.additional_files_to_merge(merge_dirs))
+
+        return files
+
+    def maybe_skip_directories(self, dirnames):
+        pass
+
+    def additional_files_to_merge(self, merge_dirs):
+        return {}
+
     def merge(self, output_dir, to_merge_dirs):
         output_dir = self.filesystem.realpath(
             self.filesystem.abspath(output_dir))
@@ -492,15 +518,7 @@ class DirMerger(Merger):
         #        ...],
         #    ...}
         # ----
-        files = {}
-        for base_dir in merge_dirs:
-            for dir_path, _, filenames in self.filesystem.walk(base_dir):
-                assert dir_path.startswith(base_dir)
-                for f in filenames:
-                    # rel_file is the path of f relative to the base directory
-                    rel_file = self.filesystem.join(dir_path,
-                                                    f)[len(base_dir) + 1:]
-                    files.setdefault(rel_file, []).append(base_dir)
+        files = self.get_files_to_merge(merge_dirs)
 
         # Go through each file and try to merge it.
         # partial_file_path is the file relative to the directories.
@@ -677,6 +695,27 @@ class WebTestDirMerger(DirMerger):
             FilenameRegexMatch(r'full_results_jsonp\.js$'),
             results_json_file_merger)
 
+    def maybe_skip_directories(self, dirnames):
+        # Don't walk through layout-test-results dir. Use the predefined list instead
+        if ARTIFACTS_SUB_DIR in dirnames:
+            dirnames.remove(ARTIFACTS_SUB_DIR)
+
+    def additional_files_to_merge(self, merge_dirs):
+        files = {}
+
+        layout_test_results_files = [
+            'full_results_jsonp.js',
+            'results.html',
+            'results.html.version',
+        ]
+        for base_dir in merge_dirs:
+            for file in layout_test_results_files:
+                rel_file = self.filesystem.join(ARTIFACTS_SUB_DIR, file)
+                if self.filesystem.exists(
+                        self.filesystem.join(base_dir, rel_file)):
+                    files.setdefault(rel_file, []).append(base_dir)
+        return files
+
 
 # ------------------------------------------------------------------------
 def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
@@ -700,7 +739,7 @@ def ensure_empty_dir(fs, directory, allow_existing, remove_existing):
     if not remove_existing:
         return
 
-    layout_test_results = fs.join(directory, 'layout-test-results')
+    layout_test_results = fs.join(directory, ARTIFACTS_SUB_DIR)
     if (fs.exists(layout_test_results)
             and not fs.remove_contents(layout_test_results)):
         raise IOError(('Unable to remove output directory %s contents!\n'
@@ -1009,6 +1048,3 @@ directory. The script will be given the arguments plus
 
         logging.info('Running post merge script %r', post_script)
         os.execlp(post_script)
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
