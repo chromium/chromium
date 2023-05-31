@@ -131,11 +131,6 @@ void OnSharePathForLaunchApplication(
     OnApplicationLaunched(app_id, std::move(callback),
                           crostini::CrostiniResult::SUCCESS, true,
                           std::string());
-    // The spinner for the app may start, but since terminal will launch rather
-    // that the GUI app with `app_id`, we must close the spinner.
-    if (auto* chrome_controller = ChromeShelfController::instance()) {
-      chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
-    }
     return;
   }
 
@@ -278,6 +273,8 @@ void LaunchCrostiniAppImpl(
   registry_service->AppLaunched(app_id);
   crostini_manager->UpdateLaunchMetricsForEnterpriseReporting();
 
+  auto spinner_app_id =
+      registration.Terminal() ? guest_os::kTerminalSystemAppId : app_id;
   auto restart_id = crostini_manager->RestartCrostini(
       container_id,
       base::BindOnce(
@@ -304,7 +301,8 @@ void LaunchCrostiniAppImpl(
           args, std::move(callback)));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&AddSpinner, restart_id, app_id, profile),
+      FROM_HERE,
+      base::BindOnce(&AddSpinner, restart_id, spinner_app_id, profile),
       base::Milliseconds(kDelayBeforeSpinnerMs));
 }
 
