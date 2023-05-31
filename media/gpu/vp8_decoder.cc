@@ -193,6 +193,12 @@ VideoChromaSampling VP8Decoder::GetChromaSampling() const {
   return VideoChromaSampling::kUnknown;
 }
 
+VideoColorSpace VP8Decoder::GetVideoColorSpace() const {
+  // VP8 decoder currently does not store color space information and trigger
+  // changes for color space.
+  return VideoColorSpace();
+}
+
 absl::optional<gfx::HDRMetadata> VP8Decoder::GetHDRMetadata() const {
   // VP8 doesn't support HDR metadata.
   return absl::nullopt;

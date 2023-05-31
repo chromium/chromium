@@ -91,6 +91,11 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   virtual VideoCodecProfile GetProfile() const = 0;
   virtual uint8_t GetBitDepth() const = 0;
   virtual VideoChromaSampling GetChromaSampling() const = 0;
+  // Returns the video color space for the in-band metadata / stream
+  // configuration. The returned color space may vary between in-band metadata
+  // and stream config based on video decoder's internal
+  // preferences.
+  virtual VideoColorSpace GetVideoColorSpace() const = 0;
   // Returns in-band HDR metadata if it exists. Clients must prefer in-band
   // metadata over container metadata to support dynamic HDR metadata.
   virtual absl::optional<gfx::HDRMetadata> GetHDRMetadata() const = 0;

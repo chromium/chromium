@@ -179,6 +179,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
+  VideoColorSpace GetVideoColorSpace() const override;
   absl::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
@@ -204,7 +205,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   };
 
   // Process H265 stream structures.
-  bool ProcessPPS(int pps_id, bool* need_new_buffers);
+  bool ProcessPPS(int pps_id,
+                  bool* need_new_buffers,
+                  bool* color_space_changed);
 
   // Process current slice header to discover if we need to start a new picture,
   // finishing up the current one.
@@ -341,6 +344,8 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   uint8_t bit_depth_ = 0;
   // Chroma sampling format of input bitstream
   VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
+  // Video color space of input bitstream.
+  VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
   absl::optional<gfx::HDRMetadata> hdr_metadata_;
 

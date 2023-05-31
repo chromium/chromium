@@ -68,6 +68,7 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MOCK_CONST_METHOD0(GetProfile, VideoCodecProfile());
   MOCK_CONST_METHOD0(GetBitDepth, uint8_t());
   MOCK_CONST_METHOD0(GetChromaSampling, VideoChromaSampling());
+  MOCK_CONST_METHOD0(GetVideoColorSpace, VideoColorSpace());
   MOCK_CONST_METHOD0(GetHDRMetadata, absl::optional<gfx::HDRMetadata>());
   MOCK_CONST_METHOD0(GetVisibleRect, gfx::Rect());
   MOCK_CONST_METHOD0(GetRequiredNumOfPictures, size_t());

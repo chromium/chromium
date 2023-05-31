@@ -309,6 +309,22 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           new_visible_rect = gfx::Rect(new_frame_size);
         }
 
+        const auto& cc = current_sequence_header_->color_config;
+        const VideoColorSpace header_color_space =
+            VideoColorSpace(cc.color_primary, cc.transfer_characteristics,
+                            cc.matrix_coefficients,
+                            cc.color_range == libgav1::kColorRangeStudio
+                                ? gfx::ColorSpace::RangeID::LIMITED
+                                : gfx::ColorSpace::RangeID::FULL);
+
+        VideoColorSpace new_color_space;
+        // For AV1, prefer the frame color space over the config.
+        if (header_color_space.IsSpecified()) {
+          new_color_space = header_color_space;
+        } else if (container_color_space_.IsSpecified()) {
+          new_color_space = container_color_space_;
+        }
+
         ClearReferenceFrames();
         // Issues kConfigChange only if either the dimensions, profile or bit
         // depth is changed.
@@ -319,8 +335,17 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           visible_rect_ = new_visible_rect;
           profile_ = new_profile;
           bit_depth_ = new_bit_depth;
+          picture_color_space_ = new_color_space;
           clear_current_frame.ReplaceClosure(base::DoNothing());
           return kConfigChange;
+        }
+
+        // Trigger color space change if the previous picture color space is
+        // different from new color space.
+        if (new_color_space.IsSpecified() &&
+            picture_color_space_ != new_color_space) {
+          picture_color_space_ = new_color_space;
+          return kColorSpaceChange;
         }
       }
     }
@@ -429,17 +454,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     pic->set_visible_rect(current_visible_rect);
     pic->set_bitstream_id(stream_id_);
 
-    // For AV1, prefer the frame color space over the config.
-    const auto& cc = current_sequence_header_->color_config;
-    const auto cs = VideoColorSpace(
-        cc.color_primary, cc.transfer_characteristics, cc.matrix_coefficients,
-        cc.color_range == libgav1::kColorRangeStudio
-            ? gfx::ColorSpace::RangeID::LIMITED
-            : gfx::ColorSpace::RangeID::FULL);
-    if (cs.IsSpecified())
-      pic->set_colorspace(cs);
-    else if (container_color_space_.IsSpecified())
-      pic->set_colorspace(container_color_space_);
+    // Set the color space for the picture.
+    pic->set_colorspace(picture_color_space_);
 
     if (hdr_metadata_)
       pic->set_hdr_metadata(hdr_metadata_);
@@ -585,6 +601,11 @@ uint8_t AV1Decoder::GetBitDepth() const {
 VideoChromaSampling AV1Decoder::GetChromaSampling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return chroma_sampling_;
+}
+
+VideoColorSpace AV1Decoder::GetVideoColorSpace() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return picture_color_space_;
 }
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {
