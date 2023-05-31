@@ -43,9 +43,9 @@ void RecordTabCountAtStartup(long cross_device_tab_count) {
       cross_device_tab_count);
 }
 
-void RecordTabCountFromStartupToSyncUpdate(long cross_device_tab_count) {
+void RecordTabCountFromStartupToFirstSyncUpdate(long cross_device_tab_count) {
   base::UmaHistogramCounts1000(
-      "SegmentationPlatform.SyncSessions.TabsCountAtFirstSyncUpdate",
+      "SegmentationPlatform.SyncSessions.TotalTabsCountAtFirstSyncUpdate",
       cross_device_tab_count);
 }
 
@@ -177,7 +177,7 @@ void TabRankDispatcher::OnForeignSessionUpdated() {
     RecordDelayFromStartupToFirstSyncUpdate(foreign_session_updated_time -
                                             chrome_startup_timestamp_);
     // Tab Count Metrics.
-    RecordTabCountFromStartupToSyncUpdate(
+    RecordTabCountFromStartupToFirstSyncUpdate(
         tab_fetcher_->GetRemoteTabsCountAfterTime(base::Time()));
     RecordRecent1HourTabCountAtFirstSyncUpdate(
         tab_fetcher_->GetRemoteTabsCountAfterTime(foreign_session_updated_time -
