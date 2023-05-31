@@ -356,6 +356,10 @@ extern const char kEnableRefineDataSourceReloadReportingDescription[];
 extern const char kEnableSuggestionsScrollingOnIPadName[];
 extern const char kEnableSuggestionsScrollingOnIPadDescription[];
 
+// Title and description for the flag to enable signed out user view demotion.
+extern const char kEnableSignedOutViewDemotionName[];
+extern const char kEnableSignedOutViewDemotionDescription[];
+
 // Title and description for the flag to enable user policies.
 extern const char kEnableUserPolicyName[];
 extern const char kEnableUserPolicyDescription[];

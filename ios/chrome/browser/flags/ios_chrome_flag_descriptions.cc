@@ -401,6 +401,12 @@ const char kEnableRefineDataSourceReloadReportingDescription[] =
     "Enable refining data source reload reporting when having a very short "
     "attention log";
 
+const char kEnableSignedOutViewDemotionName[] =
+    "Enable signed out user view demotion";
+const char kEnableSignedOutViewDemotionDescription[] =
+    "Enable signed out user view demotion to avoid repeated content for signed "
+    "out users.";
+
 const char kEnableSuggestionsScrollingOnIPadName[] =
     "Enable omnibox suggestions scrolling on iPad";
 const char kEnableSuggestionsScrollingOnIPadDescription[] =

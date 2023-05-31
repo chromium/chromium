@@ -71,6 +71,10 @@ BASE_FEATURE(kEnableFollowManagementInstantReload,
              "EnableFollowManagementInstantReload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableSignedOutViewDemotion,
+             "EnableSignedOutViewDemotion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -199,4 +203,8 @@ bool IsWebFeedFeedbackRerouteEnabled() {
 
 bool IsFollowManagementInstantReloadEnabled() {
   return base::FeatureList::IsEnabled(kEnableFollowManagementInstantReload);
+}
+
+bool IsSignedOutViewDemotionEnabled() {
+  return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
 }

@@ -61,6 +61,9 @@ BASE_DECLARE_FEATURE(kWebFeedFeedbackReroute);
 // opened.
 BASE_DECLARE_FEATURE(kEnableFollowManagementInstantReload);
 
+// Feature flag to enable signed out user view demotion.
+BASE_DECLARE_FEATURE(kEnableSignedOutViewDemotion);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -164,5 +167,8 @@ bool IsWebFeedFeedbackRerouteEnabled();
 
 // Yes when enabling follow management page instant reload when being opened.
 bool IsFollowManagementInstantReloadEnabled();
+
+// Yes if the signed out user view demotion is enabled.
+bool IsSignedOutViewDemotionEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

@@ -1558,6 +1558,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kHideContentSuggestionsTiles,
          kHideContentSuggestionTilesVariations,
          flag_descriptions::kHideContentSuggestionTilesName)},
+    {"enable-signed-out-view-demotion",
+     flag_descriptions::kEnableSignedOutViewDemotionName,
+     flag_descriptions::kEnableSignedOutViewDemotionDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableSignedOutViewDemotion)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
