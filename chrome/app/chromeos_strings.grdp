@@ -6188,7 +6188,7 @@ Permissions you've already given to websites and apps may apply to this account.
     starting up...
   </message>
   <message name="IDS_BOREALIS_HATS_TITLE" desc="Title for HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
-    Help us improve Steam on Chromebooks
+    Help us improve Steam for Chromebook
   </message>
   <message name="IDS_BOREALIS_HATS_BODY" desc="Message on HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
     Tell us about your recent gameplay
