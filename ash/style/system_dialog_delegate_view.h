@@ -89,17 +89,17 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   // Sets the additional content view.
   template <typename T>
   T* SetAdditionalContentView(std::unique_ptr<T> view) {
-    T* raw_ptr = view.get();
+    T* ptr = view.get();
     SetAdditionalContentInternal(std::move(view));
-    return raw_ptr;
+    return ptr;
   }
 
   // Sets the additional view in the button container.
   template <typename T>
   T* SetAdditionalViewInButtonRow(std::unique_ptr<T> view) {
-    T* raw_ptr = view.get();
+    T* ptr = view.get();
     SetAdditionalViewInButtonRowInternal(std::move(view));
-    return raw_ptr;
+    return ptr;
   }
 
   // Sets the cross axis alignment of current additional content which is center
