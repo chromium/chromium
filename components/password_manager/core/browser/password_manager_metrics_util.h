@@ -18,9 +18,7 @@
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace password_manager {
-
-namespace metrics_util {
+namespace password_manager::metrics_util {
 
 using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
 using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
@@ -582,7 +580,7 @@ enum class PasswordViewPageInteractions {
   // The user opens the password view page to view an non-existing credential.
   // This will close the settings password view page.
   kCredentialNotFound = 2,
-  // The copy username button in settings password view page is clicked.
+  // The copy username button in settings password/passkey view page is clicked.
   kUsernameCopyButtonClicked = 3,
   // The copy password button in settings password view page is clicked.
   kPasswordCopyButtonClicked = 4,
@@ -604,7 +602,9 @@ enum class PasswordViewPageInteractions {
   kTimedOutInViewPage = 10,
   // The credential is requested by typing the URL.
   kCredentialRequestedByUrl = 11,
-  kMaxValue = kCredentialRequestedByUrl,
+  // The copy display name button in settings passkey view page is clicked.
+  kPasskeyDisplayNameCopyButtonClicked = 12,
+  kMaxValue = kPasskeyDisplayNameCopyButtonClicked,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -864,8 +864,6 @@ base::OnceCallback<R(Args...)> TimeCallback(
       histogram, base::ElapsedTimer(), std::move(callback));
 }
 
-}  // namespace metrics_util
-
-}  // namespace password_manager
+}  // namespace password_manager::metrics_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_METRICS_UTIL_H_

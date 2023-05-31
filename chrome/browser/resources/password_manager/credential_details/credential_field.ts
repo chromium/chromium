@@ -8,8 +8,9 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+
 import {getTemplate} from './credential_field.html.js';
-import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 
 export interface CredentialFieldElement {
   $: {

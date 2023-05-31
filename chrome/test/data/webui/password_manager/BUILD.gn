@@ -17,6 +17,7 @@ build_webui_tests("build") {
     "move_passwords_dialog_test.ts",
     "credential_field_test.ts",
     "credential_note_test.ts",
+    "passkey_details_card_test.ts",
     "password_details_card_test.ts",
     "password_details_section_test.ts",
     "password_manager_app_test.ts",

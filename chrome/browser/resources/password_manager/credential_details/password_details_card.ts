@@ -8,9 +8,10 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import './shared_style.css.js';
-import './dialogs/edit_password_dialog.js';
-import './dialogs/multi_store_delete_password_dialog.js';
+import '../shared_style.css.js';
+import './credential_details_card.css.js';
+import '../dialogs/edit_password_dialog.js';
+import '../dialogs/multi_store_delete_password_dialog.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -20,12 +21,13 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
+
 import {CredentialFieldElement} from './credential_field.js';
 import {CredentialNoteElement} from './credential_note.js';
 import {getTemplate} from './password_details_card.html.js';
-import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
-import {ShowPasswordMixin} from './show_password_mixin.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
 
 export type PasswordRemovedEvent =
     CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;

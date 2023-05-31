@@ -64,8 +64,9 @@ export enum PasswordViewPageInteractions {
   TIMED_OUT_IN_EDIT_DIALOG = 9,
   TIMED_OUT_IN_VIEW_PAGE = 10,
   CREDENTIAL_REQUESTED_BY_URL = 11,
+  PASSKEY_DISPLAY_NAME_COPY_BUTTON_CLICKED = 12,
   // Must be last.
-  COUNT = 12,
+  COUNT = 13,
 }
 
 /**
