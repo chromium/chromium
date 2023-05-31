@@ -223,7 +223,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
       ::sharesheet::kSharesheetShareActionResultHistogram,
       ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
 
-  // Drive intent should show only drive action.
+  // Drive intent should show drive and copy actions.
   ShowAndVerifyBubble(::sharesheet::CreateDriveIntent(),
                       ::sharesheet::LaunchSource::kUnknown);
   CloseBubble();
@@ -232,7 +232,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
       ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
 
   // Invalid intent should not show any actions.
   ShowAndVerifyBubble(::sharesheet::CreateInvalidIntent(),
@@ -243,7 +243,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
       ::sharesheet::SharesheetMetrics::UserAction::kDriveAction, 1);
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetShareActionResultHistogram,
-      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 1);
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
 }
 
 TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {

@@ -157,7 +157,7 @@ TEST_F(CopyToClipboardShareActionTest,
           IDS_SHARESHEET_COPY_TO_CLIPBOARD_SHARE_ACTION_LABEL));
   storage::FileSystemURL url1 = ::sharesheet::FileInNonNativeFileSystemType(
       profile(), base::FilePath(::sharesheet::kTestPdfFile));
-  EXPECT_FALSE(copy_action->ShouldShowAction(
+  EXPECT_TRUE(copy_action->ShouldShowAction(
       apps_util::MakeShareIntent({url1.ToGURL()}, {::sharesheet::kMimeTypePdf}),
       /* contains_hosted_document= */ false));
 }
