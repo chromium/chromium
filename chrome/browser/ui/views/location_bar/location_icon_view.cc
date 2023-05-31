@@ -64,7 +64,7 @@ LocationIconView::LocationIconView(
   SetAccessibleProperties(/*is_initialization*/ true);
 
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    // TODO(crbug/1399991): Use the ConfigureInkdropForRefresh2023 method once
+    // TODO(crbug/1399991): Use the ConfigureInkDropForRefresh2023 method once
     // you do not need to hardcode color values.
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);

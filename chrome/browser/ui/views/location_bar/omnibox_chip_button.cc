@@ -9,10 +9,12 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -189,6 +191,10 @@ void OmniboxChipButton::UpdateIconAndColors() {
     return;
   SetEnabledTextColors(GetTextAndIconColor());
   SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
+  if (features::IsChromeRefresh2023()) {
+    ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
+                                   kColorOmniboxChipInkDropRipple);
+  }
 }
 
 SkColor OmniboxChipButton::GetTextAndIconColor() const {
