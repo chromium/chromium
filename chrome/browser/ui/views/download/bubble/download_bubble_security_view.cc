@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -173,8 +174,9 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
     checkbox_->SetText(ui_info.checkbox_label);
   }
 
-  if (model_->GetDangerType() ==
-      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+  if (model_->GetDangerType() == download::DownloadDangerType::
+                                     DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
+      base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
     size_t link_offset;
     std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
