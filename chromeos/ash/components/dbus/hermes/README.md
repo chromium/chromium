@@ -31,7 +31,18 @@ which are shared between the D-Bus clients to implement a consistent timeout
 for D-Bus calls.
 
 ### Hermes Manager Client
-TODO
+
+The [`HermesManagerClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/hermes/hermes_manager_client.h;drc=789bec586d89e87ccb30ba132a12da2dd99b42e3) class provides an interface for interacting
+with available EUICCs on a device. This client can be used to:
+* Fetch information about the available EUICC(s) on a device.
+* Listen for additions or removals of EUICC(s).
+
+For detailed documentation on the Hermes Manager DBus API, please refer to
+[org.chromium.Hermes.Manager.xml](https://source.corp.google.com/h/chromium/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Manager.xml;drc=938e77682349e4678ecc532c57fc1178a4c47978).
+
+The [`HermesManagerClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/dba55cb554820d613eb366d5051d4d9f84989cb2:chromeos/ash/components/dbus/hermes/hermes_manager_client.h;l=26)
+allows you to add fake EUICC entries for ChromeOS unit testing purposes.
+This interface is implemented in the [`FakeHermesManagerClient`](https://source.chromium.org/chromium/chromium/src/+/8d017dacfea36c8e7db2735a629226bab4f688bd:chromeos/ash/components/dbus/hermes/fake_hermes_manager_client.h).
 
 ### Hermes EUICC Client
 The EUICC is an embedded UICC which seeks to rectify the physical SIM
