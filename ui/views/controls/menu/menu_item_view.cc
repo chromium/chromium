@@ -849,7 +849,7 @@ void MenuItemView::UpdateMenuPartSizes() {
           DISTANCE_RELATED_LABEL_HORIZONTAL);
     }
   }
-  if (config.icons_in_label) {
+  if (has_icons_ && config.icons_in_label) {
     icon_area_width_ = GetMaxIconViewWidth();
   }
 
@@ -1458,7 +1458,8 @@ int MenuItemView::GetMaxIconViewWidth() const {
 
   std::vector<int> widths(menu_items.size());
   base::ranges::transform(menu_items, widths.begin(), [](MenuItemView* item) {
-    if (item->type_ == Type::kCheckbox || item->type_ == Type::kRadio) {
+    if (!MenuConfig::instance().icons_in_label &&
+        (item->type_ == Type::kCheckbox || item->type_ == Type::kRadio)) {
       // If this item has a radio or checkbox, the icon will not affect
       // alignment of other items.
       return 0;
