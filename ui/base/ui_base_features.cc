@@ -438,12 +438,12 @@ bool IsVariableRefreshRateEnabled() {
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandKeepSelectionFix,
              "WaylandKeepSelectionFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandCancelComposition,
              "WaylandCancelComposition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables chrome color management wayland protocol for lacros.
 BASE_FEATURE(kLacrosColorManagement,
