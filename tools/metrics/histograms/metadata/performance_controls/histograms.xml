@@ -15,7 +15,7 @@ each histogram. Maybe add here or add a new performance controls one
 <histograms>
 
 <histogram name="PerformanceControls.BatterySaver.BubbleAction"
-    enum="BatterySaverBubbleActionType" expires_after="2023-07-09">
+    enum="BatterySaverBubbleActionType" expires_after="2023-11-12">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -65,7 +65,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.ChipState"
-    enum="HighEfficiencyChipState" expires_after="2023-11-01">
+    enum="HighEfficiencyChipState" expires_after="2023-11-12">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -73,18 +73,6 @@ each histogram. Maybe add here or add a new performance controls one
     of the high efficiency page action chip. This will be used to tune the
     parameters for how often we show the informational and promotional page
     action chips.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceControls.HighEfficiency.InfoIPHOpenSettings"
-    units="BooleanSettingsOpened" expires_after="2023-09-17">
-  <owner>agale@chromium.org</owner>
-  <owner>chrome-performance-ui-sea@google.com</owner>
-  <summary>
-    Logged each time the user opens the settings page through the link on the
-    high efficiency mode IPH. This will be combined with an existing histogram
-    measuring the number of times the IPH is open to measure how the user
-    responds to it.
   </summary>
 </histogram>
 
@@ -114,7 +102,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode2"
-    enum="HighEfficiencyModeState" expires_after="2023-09-03">
+    enum="HighEfficiencyModeState" expires_after="2023-11-12">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
