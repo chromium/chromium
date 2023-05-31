@@ -24,8 +24,6 @@ static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
 
-class FakeSupervisedUserManager;
-
 // Fake chrome user manager with a barebones implementation. Users can be added
 // and set as logged in, and those users can be returned.
 class FakeChromeUserManager : public ChromeUserManager {
@@ -157,7 +155,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   // UserManagerInterface override.
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
-  SupervisedUserManager* GetSupervisedUserManager() override;
 
   // ChromeUserManager override.
   void SetUserAffiliation(
@@ -207,7 +204,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   // Returns the active user.
   user_manager::User* GetActiveUserInternal() const;
 
-  std::unique_ptr<FakeSupervisedUserManager> supervised_user_manager_;
   EphemeralModeConfig fake_ephemeral_mode_config_;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;

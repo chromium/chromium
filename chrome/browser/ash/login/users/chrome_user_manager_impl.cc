@@ -49,7 +49,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
-#include "chrome/browser/ash/login/users/supervised_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
@@ -266,7 +265,6 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
 
-  SupervisedUserManager::RegisterLocalStatePrefs(registry);
   SessionLengthLimiter::RegisterPrefs(registry);
   enterprise_user_session_metrics::RegisterPrefs(registry);
 }
@@ -284,7 +282,6 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
       user_image_manager_registry_(this),
-      supervised_user_manager_(new SupervisedUserManagerImpl(this)),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
 
@@ -436,10 +433,6 @@ ChromeUserManagerImpl::GetMultiProfileUserController() {
 UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
     const AccountId& account_id) {
   return user_image_manager_registry_.GetManager(account_id);
-}
-
-SupervisedUserManager* ChromeUserManagerImpl::GetSupervisedUserManager() {
-  return supervised_user_manager_.get();
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
@@ -925,8 +918,6 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
     update->Remove(account_id.HasAccountIdKey() ? account_id.GetAccountIdKey()
                                                 : account_id.GetUserEmail());
   }
-
-  supervised_user_manager_->RemoveNonCryptohomeData(account_id.GetUserEmail());
 
   multi_profile_user_controller_->RemoveCachedValues(account_id.GetUserEmail());
 

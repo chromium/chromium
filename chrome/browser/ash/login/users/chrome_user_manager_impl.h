@@ -47,7 +47,6 @@ namespace ash {
 
 class MultiProfileUserController;
 class SessionLengthLimiter;
-class SupervisedUserManagerImpl;
 
 // Chrome specific implementation of the UserManager.
 class ChromeUserManagerImpl
@@ -73,7 +72,6 @@ class ChromeUserManagerImpl
   // UserManagerInterface implementation:
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;
-  SupervisedUserManager* GetSupervisedUserManager() override;
 
   // UserManager implementation:
   void Shutdown() override;
@@ -154,7 +152,6 @@ class ChromeUserManagerImpl
       const user_manager::UserType user_type) override;
 
  private:
-  friend class SupervisedUserManagerImpl;
   friend class UserManagerTest;
   friend class WallpaperManager;
   friend class WallpaperManagerTest;
@@ -229,9 +226,6 @@ class ChromeUserManagerImpl
 
   // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
   UserImageManagerRegistry user_image_manager_registry_;
-
-  // Supervised user manager.
-  std::unique_ptr<SupervisedUserManagerImpl> supervised_user_manager_;
 
   // Session length limiter.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;

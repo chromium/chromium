@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/login/users/fake_supervised_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -69,11 +68,8 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
 namespace ash {
 
-class FakeSupervisedUserManager;
-
 FakeChromeUserManager::FakeChromeUserManager()
-    : ChromeUserManager(new FakeTaskRunner()),
-      supervised_user_manager_(new FakeSupervisedUserManager) {
+    : ChromeUserManager(new FakeTaskRunner()) {
   ProfileHelper::SetProfileToUserForTestingEnabled(true);
 }
 
@@ -218,10 +214,6 @@ void FakeChromeUserManager::LoginUser(const AccountId& account_id,
 MultiProfileUserController*
 FakeChromeUserManager::GetMultiProfileUserController() {
   return multi_profile_user_controller_;
-}
-
-SupervisedUserManager* FakeChromeUserManager::GetSupervisedUserManager() {
-  return supervised_user_manager_.get();
 }
 
 UserImageManager* FakeChromeUserManager::GetUserImageManager(
