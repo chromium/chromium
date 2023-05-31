@@ -94,9 +94,14 @@ class TargetDeviceConnectionBroker {
     virtual void WaitForUserVerification(
         AwaitUserVerificationCallback callback) = 0;
 
+    // Retrieve CryptAuth ID from BootstrapConfigurations response.
+    std::string get_phone_instance_id() { return phone_instance_id_; }
+
    protected:
     AuthenticatedConnection() = default;
     virtual ~AuthenticatedConnection() = default;
+
+    std::string phone_instance_id_;
   };
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,

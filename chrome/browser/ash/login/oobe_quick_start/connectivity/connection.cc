@@ -242,12 +242,20 @@ void Connection::OnBootstrapConfigurationsResponse(
     return;
   }
 
-  // TODO(b/280306851): Finish parsing response and save cryptauth_device_id.
+  auto on_decoding_completed =
+      base::BindOnce(&Connection::ParseBootstrapConfigurationsResponse,
+                     weak_ptr_factory_.GetWeakPtr());
+
   DecodeData<mojom::BootstrapConfigurations>(
       &mojom::QuickStartDecoder::DecodeBootstrapConfigurations,
-      base::DoNothing(), std::move(response_bytes));
+      std::move(on_decoding_completed), std::move(response_bytes));
 
   std::move(callback).Run(absl::nullopt);
+}
+
+void Connection::ParseBootstrapConfigurationsResponse(
+    absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations) {
+  phone_instance_id_ = bootstrap_configurations->cryptauth_device_id;
 }
 
 void Connection::SendMessageAndReadResponse(

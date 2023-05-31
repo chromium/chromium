@@ -239,9 +239,23 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
-  // TODO(b/234655072): Build out this unittest once phone instance ID is
-  // retrieved from Gaia credentials exchange.
-  ASSERT_TRUE(bootstrap_controller_->GetPhoneInstanceId().empty());
+  // Authenticate connection.
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  // Set phone instance ID.
+  std::vector<uint8_t> phone_instance_id = {0x01, 0x02, 0x03};
+  std::string expected_phone_instance_id(phone_instance_id.begin(),
+                                         phone_instance_id.end());
+  fake_target_device_connection_broker_->GetFakeConnection()
+      ->set_phone_instance_id(expected_phone_instance_id);
+
+  EXPECT_EQ(bootstrap_controller_->GetPhoneInstanceId(),
+            expected_phone_instance_id);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,

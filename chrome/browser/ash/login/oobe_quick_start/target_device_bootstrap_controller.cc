@@ -80,8 +80,7 @@ void TargetDeviceBootstrapController::GetFeatureSupportStatusAsync(
 }
 
 std::string TargetDeviceBootstrapController::GetPhoneInstanceId() {
-  // TODO(b/234655072): Get the ID from the Gaia credentials exchange.
-  return "";
+  return authenticated_connection_->get_phone_instance_id();
 }
 
 base::WeakPtr<TargetDeviceBootstrapController>

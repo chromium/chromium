@@ -145,6 +145,9 @@ class Connection
       BootstrapConfigurationsCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
+  void ParseBootstrapConfigurationsResponse(
+      absl::optional<mojom::BootstrapConfigurations> bootstrap_configurations);
+
   void SendMessageAndReadResponse(std::unique_ptr<QuickStartMessage> message,
                                   ConnectionResponseCallback callback);
   void SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,

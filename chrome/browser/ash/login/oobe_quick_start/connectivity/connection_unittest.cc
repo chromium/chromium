@@ -130,6 +130,14 @@ class ConnectionTest : public testing::Test {
     return connection_->response_timeout_timer_.IsRunning();
   }
 
+  void CallParseBootstrapConfigurationsResponse(
+      base::OnceClosure callback,
+      std::string cryptauth_device_id) {
+    connection_->ParseBootstrapConfigurationsResponse(
+        *mojom::BootstrapConfigurations::New(cryptauth_device_id));
+    std::move(callback).Run();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
@@ -546,6 +554,26 @@ TEST_F(ConnectionTest,
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ConnectionTest, GetPhoneInstanceId) {
+  MarkConnectionAuthenticated();
+  base::RunLoop run_loop;
+
+  // Phone instance ID is initially empty.
+  EXPECT_TRUE(authenticated_connection_->get_phone_instance_id().empty());
+
+  // Arbitrary CryptAuth ID.
+  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
+  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
+                                           cryptauth_device_id.end());
+
+  CallParseBootstrapConfigurationsResponse(run_loop.QuitClosure(),
+                                           expected_cryptauth_device_id);
+
+  run_loop.Run();
+  EXPECT_EQ(authenticated_connection_->get_phone_instance_id(),
+            expected_cryptauth_device_id);
 }
 
 }  // namespace ash::quick_start
