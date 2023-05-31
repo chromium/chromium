@@ -1566,6 +1566,7 @@ config("compiler_builtins") {
   _supported = true
   _dir = ""
   _libname = "builtins"
+  _prefix = "lib"
   _suffix = ""
   _ext = "a"
   if (!toolchain_has_rust) {
@@ -1574,6 +1575,7 @@ config("compiler_builtins") {
     _supported = false
   } else if (is_win) {
     _dir = "windows"
+    _prefix = ""
     _ext = "lib"
     if (current_cpu == "x64") {
       _suffix = "-x86_64"
@@ -1633,11 +1635,13 @@ config("compiler_builtins") {
 
   if (_supported) {
     _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
-    libs = [ "$_clang_lib_dir/$_dir/libclang_rt.$_libname$_suffix.$_ext" ]
+    _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
+    libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
   } else {
     not_needed([
                  "_dir",
                  "_libname",
+                 "_prefix",
                  "_suffix",
                  "_ext",
                ])
