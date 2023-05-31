@@ -247,6 +247,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool IsAllowedByTopLevelStorageAccessGrant(const GURL& url,
                                              const GURL& first_party_url) const;
 
+  // Content settings for ContentSettingsType::COOKIES.
   ContentSettingsForOneType content_settings_;
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
