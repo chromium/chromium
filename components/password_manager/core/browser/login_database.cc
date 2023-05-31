@@ -1541,12 +1541,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   if (!form_data_blob.empty()) {
     base::Pickle form_data_pickle = PickleFromSpan(form_data_blob);
     base::PickleIterator form_data_iter(form_data_pickle);
-    bool success =
-        autofill::DeserializeFormData(&form_data_iter, &form->form_data);
-    metrics_util::FormDeserializationStatus status =
-        success ? metrics_util::LOGIN_DATABASE_SUCCESS
-                : metrics_util::LOGIN_DATABASE_FAILURE;
-    metrics_util::LogFormDataDeserializationStatus(status);
+    autofill::DeserializeFormData(&form_data_iter, &form->form_data);
   }
   form->display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
   form->icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));

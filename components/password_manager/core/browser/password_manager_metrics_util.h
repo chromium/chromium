@@ -110,18 +110,6 @@ enum class LeakDialogDismissalReason {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum FormDeserializationStatus {
-  LOGIN_DATABASE_SUCCESS = 0,
-  LOGIN_DATABASE_FAILURE = 1,
-  LIBSECRET_SUCCESS = 2,
-  LIBSECRET_FAILURE = 3,
-  GNOME_SUCCESS = 4,
-  GNOME_FAILURE = 5,
-  NUM_DESERIALIZATION_STATUSES
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // Metrics: "PasswordManager.PasswordSyncState3"
 enum class PasswordSyncState {
   kSyncingOk = 0,
@@ -741,9 +729,6 @@ void LogMoveUIDismissalReason(UIDismissalReason reason,
 
 // Log the appropriate display disposition.
 void LogUIDisplayDisposition(UIDisplayDisposition disposition);
-
-// Log if a saved FormData was deserialized correctly.
-void LogFormDataDeserializationStatus(FormDeserializationStatus status);
 
 // When a credential was filled, log whether it came from an Android app.
 void LogFilledCredentialIsFromAndroidApp(bool from_android);
