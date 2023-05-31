@@ -143,7 +143,7 @@ HistoryClustersModuleService::HistoryClustersModuleService(
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
 
 void HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
-  if (!history_clusters_service_->IsJourneysEnabled()) {
+  if (!history_clusters_service_->IsJourneysEnabledAndVisible()) {
     std::move(callback).Run({}, {});
     return;
   }
