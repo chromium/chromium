@@ -363,18 +363,7 @@ CGFloat ToolbarHeight() {
 - (CGFloat)searchFieldProgressForOffset:(CGFloat)offset
                          safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
   // The scroll offset at which point searchField's frame should stop growing.
-  CGFloat maxScaleOffset = self.frame.size.height - ToolbarHeight() -
-                           ntp_header::kFakeOmniboxScrolledToTopMargin -
-                           safeAreaInsets.top;
-  // If the Shrunk logo for the Start Surface is being shown, the searchField
-  // expansion should start later so that its background does not cut off the
-  // logo. This mainly impacts notched devices that have a large top Safe Area
-  // inset. Instead of ensuring the expansion finishes by the time the omnibox
-  // reaches the bottom of the toolbar, wait until the logo is in the safe area
-  // before expanding so it is out of view.
-  if (ShouldShrinkLogoForStartSurface()) {
-    maxScaleOffset += safeAreaInsets.top;
-  }
+  CGFloat maxScaleOffset = [self offsetToBeginFakeOmniboxExpansionForSplitMode];
   // If it is not in SplitMode the search field should scroll under the toolbar.
   if (!IsSplitToolbarMode(self)) {
     maxScaleOffset += ToolbarHeight();
@@ -390,6 +379,11 @@ CGFloat ToolbarHeight() {
         animatingOffset / ntp_header::kAnimationDistance, 0, 1);
   }
   return percent;
+}
+
+- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode {
+  return self.frame.size.height - ToolbarHeight() -
+         ntp_header::kFakeOmniboxScrolledToTopMargin;
 }
 
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint

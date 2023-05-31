@@ -303,6 +303,10 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   }
 }
 
+- (CGFloat)offsetToBeginFakeOmniboxExpansionForSplitMode {
+  return [self.headerView offsetToBeginFakeOmniboxExpansionForSplitMode];
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.
