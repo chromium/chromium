@@ -165,6 +165,10 @@ OmniboxFieldTrial::MLConfig& GetMLConfigInternal() {
   return s_config;
 }
 
+bool IsKoreanLocale(const std::string& locale) {
+  return locale == "ko" || locale == "ko-KR";
+}
+
 }  // namespace
 
 HUPScoringParams::ScoreBuckets::ScoreBuckets()
@@ -631,6 +635,15 @@ bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
   return base::GetFieldTrialParamByFeatureAsBool(omnibox::kOnDeviceTailModel,
                                                  "ShouldEncodeLeadingSpace",
                                                  /*default_value=*/false);
+}
+
+bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(
+    const std::string& locale) {
+  if (IsKoreanLocale(locale) &&
+      !base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderKorean)) {
+    return false;
+  }
+  return IsOnDeviceHeadSuggestEnabledForAnyMode();
 }
 
 std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(

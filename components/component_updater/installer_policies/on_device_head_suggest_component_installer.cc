@@ -137,7 +137,7 @@ void RegisterOnDeviceHeadSuggestComponent(ComponentUpdateService* cus,
   // Ideally we should only check if the feature is enabled for non-incognito or
   // incognito, but whether the browser is currently on incognito or not is not
   // available yet during component registration on iOS platform.
-  if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()) {
+  if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForLocale(locale)) {
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<OnDeviceHeadSuggestInstallerPolicy>(locale));
     installer->Register(cus, base::OnceClosure());
