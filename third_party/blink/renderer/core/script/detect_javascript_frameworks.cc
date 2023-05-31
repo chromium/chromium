@@ -65,11 +65,11 @@ inline void CheckIdMatches(Document& document,
                            JavaScriptFrameworkDetectionResult& result,
                            bool& has_nextjs_id) {
   DEFINE_STATIC_LOCAL(AtomicString, kReactId, ("react-root"));
-  if (IsFrameworkIDUsed(document, kGatsbyId)) {
+  if (IsFrameworkIDUsed(document, AtomicString(kGatsbyId))) {
     result.detected_versions[JavaScriptFramework::kGatsby] =
         kNoFrameworkVersionDetected;
   }
-  if (IsFrameworkIDUsed(document, kNextjsId)) {
+  if (IsFrameworkIDUsed(document, AtomicString(kNextjsId))) {
     has_nextjs_id = true;
   }
   if (IsFrameworkIDUsed(document, kReactId)) {
@@ -82,9 +82,10 @@ inline void CheckAttributeMatches(const Element& element,
                                   JavaScriptFrameworkDetectionResult& result,
                                   AtomicString& detected_ng_version) {
   DEFINE_STATIC_LOCAL(QualifiedName, ng_version,
-                      (g_null_atom, "ng-version", g_null_atom));
-  DEFINE_STATIC_LOCAL(QualifiedName, data_reactroot,
-                      (g_null_atom, "data-reactroot", g_null_atom));
+                      (g_null_atom, AtomicString("ng-version"), g_null_atom));
+  DEFINE_STATIC_LOCAL(
+      QualifiedName, data_reactroot,
+      (g_null_atom, AtomicString("data-reactroot"), g_null_atom));
   static constexpr char kSvelte[] = "svelte-";
   if (element.FastHasAttribute(data_reactroot)) {
     result.detected_versions[JavaScriptFramework::kReact] =

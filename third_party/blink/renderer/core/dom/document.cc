@@ -7681,8 +7681,9 @@ void Document::SupportsReducedMotionMetaChanged() {
                                "supports-reduced-motion")) {
       SpaceSplitString split_content(
           AtomicString(meta_element.Content().GetString().LowerASCII()));
-      if (split_content.Contains("reduce"))
+      if (split_content.Contains(AtomicString("reduce"))) {
         supports_reduced_motion = true;
+      }
       break;
     }
   }

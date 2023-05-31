@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -560,10 +561,10 @@ std::pair<Node*, Element*> MarkupAccumulator::GetAuxiliaryDOMTree(
       // Don't serialize user agent shadow roots, only explicit shadow roots.
       return std::pair<Node*, Element*>();
     case ShadowRootType::kOpen:
-      shadowroot_type = "open";
+      shadowroot_type = keywords::kOpen;
       break;
     case ShadowRootType::kClosed:
-      shadowroot_type = "closed";
+      shadowroot_type = keywords::kClosed;
       break;
   }
   if (shadow_root->GetType() == ShadowRootType::kClosed &&

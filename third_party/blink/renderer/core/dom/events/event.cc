@@ -43,7 +43,7 @@
 
 namespace blink {
 
-Event::Event() : Event("", Bubbles::kNo, Cancelable::kNo) {
+Event::Event() : Event(g_empty_atom, Bubbles::kNo, Cancelable::kNo) {
   was_initialized_ = false;
 }
 

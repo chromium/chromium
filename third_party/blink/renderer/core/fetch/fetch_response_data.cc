@@ -315,7 +315,7 @@ void FetchResponseData::InitFromResourceResponse(
   if (response.CurrentRequestUrl().ProtocolIsAbout() ||
       response.CurrentRequestUrl().ProtocolIsData() ||
       response.CurrentRequestUrl().ProtocolIs("blob")) {
-    SetStatusMessage("OK");
+    SetStatusMessage(AtomicString("OK"));
   } else {
     SetStatusMessage(response.HttpStatusText());
   }

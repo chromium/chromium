@@ -611,7 +611,8 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
     fragment->AppendChild(document.createTextNode(string));
     if (string.EndsWith('\n')) {
       auto* element = MakeGarbageCollected<HTMLBRElement>(document);
-      element->setAttribute(html_names::kClassAttr, AppleInterchangeNewline);
+      element->setAttribute(html_names::kClassAttr,
+                            AtomicString(AppleInterchangeNewline));
       fragment->AppendChild(element);
     }
     return fragment;
@@ -641,7 +642,8 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
     if (s.empty() && i + 1 == num_lines) {
       // For last line, use the "magic BR" rather than a P.
       element = MakeGarbageCollected<HTMLBRElement>(document);
-      element->setAttribute(html_names::kClassAttr, AppleInterchangeNewline);
+      element->setAttribute(html_names::kClassAttr,
+                            AtomicString(AppleInterchangeNewline));
     } else {
       if (use_clones_of_enclosing_block)
         element = &block->CloneWithoutChildren();

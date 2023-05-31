@@ -515,9 +515,9 @@ void InspectorEmulationAgent::PrepareRequest(DocumentLoader* loader,
                                              ResourceLoaderOptions& options,
                                              ResourceType resource_type) {
   if (!accept_language_override_.Get().empty() &&
-      request.HttpHeaderField("Accept-Language").empty()) {
+      request.HttpHeaderField(http_names::kAcceptLanguage).empty()) {
     request.SetHttpHeaderField(
-        "Accept-Language",
+        http_names::kAcceptLanguage,
         AtomicString(network_utils::GenerateAcceptLanguageHeader(
             accept_language_override_.Get())));
   }

@@ -94,20 +94,22 @@ void LayoutWorkletGlobalScope::registerLayout(
 
   if (!V8ObjectParser::ParseCSSPropertyList(
           current_context, GetFrame()->DomWindow(),
-          layout_ctor->CallbackObject(), "inputProperties",
+          layout_ctor->CallbackObject(), AtomicString("inputProperties"),
           &native_invalidation_properties, &custom_invalidation_properties,
-          &exception_state))
+          &exception_state)) {
     return;
+  }
 
   Vector<CSSPropertyID> child_native_invalidation_properties;
   Vector<AtomicString> child_custom_invalidation_properties;
 
   if (!V8ObjectParser::ParseCSSPropertyList(
           current_context, GetFrame()->DomWindow(),
-          layout_ctor->CallbackObject(), "childInputProperties",
+          layout_ctor->CallbackObject(), AtomicString("childInputProperties"),
           &child_native_invalidation_properties,
-          &child_custom_invalidation_properties, &exception_state))
+          &child_custom_invalidation_properties, &exception_state)) {
     return;
+  }
 
   CallbackMethodRetriever retriever(layout_ctor);
   retriever.GetPrototypeObject(exception_state);

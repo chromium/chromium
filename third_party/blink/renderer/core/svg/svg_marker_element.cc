@@ -142,7 +142,7 @@ void SVGMarkerElement::ChildrenChanged(const ChildrenChange& change) {
 }
 
 void SVGMarkerElement::setOrientToAuto() {
-  setAttribute(svg_names::kOrientAttr, "auto");
+  setAttribute(svg_names::kOrientAttr, keywords::kAuto);
 }
 
 void SVGMarkerElement::setOrientToAngle(SVGAngleTearOff* angle) {
