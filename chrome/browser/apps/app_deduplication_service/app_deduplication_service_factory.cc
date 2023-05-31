@@ -46,17 +46,6 @@ AppDeduplicationServiceFactory* AppDeduplicationServiceFactory::GetInstance() {
 // app deduplication.
 bool AppDeduplicationServiceFactory::
     IsAppDeduplicationServiceAvailableForProfile(Profile* profile) {
-  // These two feature flags should not be on at the same time otherwise the
-  // deduplication data may be overwritten.
-  if (base::FeatureList::IsEnabled(features::kAppDeduplicationService) &&
-      base::FeatureList::IsEnabled(features::kAppDeduplicationServiceFondue)) {
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
-    return AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
-  }
-
   if (base::FeatureList::IsEnabled(features::kAppDeduplicationServiceFondue)) {
     // Ensure that the build uses the Google-internal file containing the
     // official API keys, which are required to make queries to the Almanac.
