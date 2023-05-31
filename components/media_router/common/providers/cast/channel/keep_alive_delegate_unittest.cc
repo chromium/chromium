@@ -235,6 +235,12 @@ TEST_F(KeepAliveDelegateTest, TestPassthroughMessagesAfterError) {
 TEST_F(KeepAliveDelegateTest, TestLivenessTimerResetAfterSendingMessage) {
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner(
       new base::TestMockTimeTaskRunner());
+
+  // Drop unowned references before replacing owned references in
+  // the KeepAliveDelegate.
+  ping_timer_ = nullptr;
+  liveness_timer_ = nullptr;
+
   auto liveness_timer = std::make_unique<base::RetainingOneShotTimer>(
       mock_time_task_runner->GetMockTickClock());
   auto ping_timer = std::make_unique<base::RetainingOneShotTimer>(
