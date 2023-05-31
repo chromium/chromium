@@ -830,16 +830,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.CSSPaintValue.PaintOffThread"
-    enum="BooleanCompositorCSSPaint" expires_after="2022-03-08">
-  <owner>xidachen@chromium.org</owner>
-  <owner>kevers@chromium.org</owner>
-  <summary>
-    Records if a CSS Paint is painted on the compositor thread or has fallen
-    back to the main thread.
-  </summary>
-</histogram>
-
 <histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
     expires_after="2023-11-12">
   <owner>gjc@chromium.org</owner>

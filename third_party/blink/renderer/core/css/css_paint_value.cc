@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
@@ -150,10 +149,6 @@ scoped_refptr<Image> CSSPaintValue::GetImage(
     auto style_data = PaintWorkletStylePropertyMap::BuildCrossThreadData(
         document, layout_object.UniqueId(), style, native_properties,
         custom_properties, input_property_keys);
-    if (off_thread_paint_state_ == OffThreadPaintState::kUnknown) {
-      UMA_HISTOGRAM_BOOLEAN("Blink.CSSPaintValue.PaintOffThread",
-                            style_data.has_value());
-    }
     off_thread_paint_state_ = style_data.has_value()
                                   ? OffThreadPaintState::kOffThread
                                   : OffThreadPaintState::kMainThread;
