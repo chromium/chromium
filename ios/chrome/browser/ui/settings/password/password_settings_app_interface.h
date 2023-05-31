@@ -40,41 +40,31 @@
 
 // Creates password form for given fields.
 + (BOOL)saveExamplePassword:(NSString*)password
-                   userName:(NSString*)userName
+                   username:(NSString*)username
                      origin:(NSString*)origin;
 
 // Creates password form for given fields.
 + (BOOL)saveExampleNote:(NSString*)note
                password:(NSString*)password
-               userName:(NSString*)userName
+               username:(NSString*)username
                  origin:(NSString*)origin;
 
 // Creates a compromised password form.
 + (BOOL)saveCompromisedPassword:(NSString*)password
-                       userName:(NSString*)userName
+                       username:(NSString*)username
                          origin:(NSString*)origin;
 
 // Creates a muted compromised password form.
 + (BOOL)saveMutedCompromisedPassword:(NSString*)password
-                            userName:(NSString*)userName
+                            username:(NSString*)userName
                               origin:(NSString*)origin;
-
-// Creates a reused password form.
-+ (BOOL)saveReusedPassword:(NSString*)password
-                  userName:(NSString*)userName
-                    origin:(NSString*)origin;
-
-// Creates a weak password form.
-+ (BOOL)saveWeakPassword:(NSString*)password
-                userName:(NSString*)userName
-                  origin:(NSString*)origin;
 
 // Creates a blocked password form for given origin.
 + (BOOL)saveExampleBlockedOrigin:(NSString*)origin;
 
 // Creates a federated password form for given origins and user.
 + (BOOL)saveExampleFederatedOrigin:(NSString*)federatedOrigin
-                          userName:(NSString*)userName
+                          username:(NSString*)username
                             origin:(NSString*)origin;
 
 // Gets number of password form stored.
@@ -89,6 +79,9 @@
 // Sets the FakeBulkLeakCheck's buffered state.
 + (void)setFakeBulkLeakCheckBufferedState:
     (password_manager::BulkLeakCheckServiceInterface::State)state;
+
+// Returns true if the Password Checkup feature flag is enabled.
++ (BOOL)isPasswordCheckupEnabled;
 
 @end
 

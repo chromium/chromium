@@ -17,6 +17,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
@@ -213,10 +214,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (BOOL)saveExamplePassword:(NSString*)password
-                   userName:(NSString*)userName
+                   username:(NSString*)username
                      origin:(NSString*)origin {
   PasswordForm example;
-  example.username_value = base::SysNSStringToUTF16(userName);
+  example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
@@ -225,10 +226,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 
 + (BOOL)saveExampleNote:(NSString*)note
                password:(NSString*)password
-               userName:(NSString*)userName
+               username:(NSString*)username
                  origin:(NSString*)origin {
   PasswordForm example;
-  example.username_value = base::SysNSStringToUTF16(userName);
+  example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
@@ -238,10 +239,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (BOOL)saveCompromisedPassword:(NSString*)password
-                       userName:(NSString*)userName
+                       username:(NSString*)username
                          origin:(NSString*)origin {
   PasswordForm example;
-  example.username_value = base::SysNSStringToUTF16(userName);
+  example.username_value = base::SysNSStringToUTF16(username);
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
@@ -251,7 +252,7 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (BOOL)saveMutedCompromisedPassword:(NSString*)password
-                            userName:(NSString*)userName
+                            username:(NSString*)userName
                               origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(userName);
@@ -266,32 +267,6 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   return SaveToPasswordStore(example);
 }
 
-+ (BOOL)saveReusedPassword:(NSString*)password
-                  userName:(NSString*)userName
-                    origin:(NSString*)origin {
-  PasswordForm example;
-  example.username_value = base::SysNSStringToUTF16(userName);
-  example.password_value = base::SysNSStringToUTF16(password);
-  example.url = GURL(base::SysNSStringToUTF16(origin));
-  example.signon_realm = example.url.spec();
-  example.password_issues.insert({password_manager::InsecureType::kReused,
-                                  password_manager::InsecurityMetadata()});
-  return SaveToPasswordStore(example);
-}
-
-+ (BOOL)saveWeakPassword:(NSString*)password
-                userName:(NSString*)userName
-                  origin:(NSString*)origin {
-  PasswordForm example;
-  example.username_value = base::SysNSStringToUTF16(userName);
-  example.password_value = base::SysNSStringToUTF16(password);
-  example.url = GURL(base::SysNSStringToUTF16(origin));
-  example.signon_realm = example.url.spec();
-  example.password_issues.insert({password_manager::InsecureType::kWeak,
-                                  password_manager::InsecurityMetadata()});
-  return SaveToPasswordStore(example);
-}
-
 + (BOOL)saveExampleBlockedOrigin:(NSString*)origin {
   PasswordForm example;
   example.url = GURL(base::SysNSStringToUTF16(origin));
@@ -301,10 +276,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 }
 
 + (BOOL)saveExampleFederatedOrigin:(NSString*)federatedOrigin
-                          userName:(NSString*)userName
+                          username:(NSString*)username
                             origin:(NSString*)origin {
   PasswordForm federated;
-  federated.username_value = base::SysNSStringToUTF16(userName);
+  federated.username_value = base::SysNSStringToUTF16(username);
   federated.url = GURL(base::SysNSStringToUTF16(origin));
   federated.signon_realm = federated.url.spec();
   federated.federation_origin =
@@ -347,6 +322,10 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
           IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
               chrome_test_util::GetOriginalBrowserState()));
   fakeBulkLeakCheckService->SetBufferedState(state);
+}
+
++ (BOOL)isPasswordCheckupEnabled {
+  return password_manager::features::IsPasswordCheckupEnabled();
 }
 
 @end
