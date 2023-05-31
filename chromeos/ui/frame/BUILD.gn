@@ -79,6 +79,7 @@ source_set("frame") {
     "//skia",
     "//ui/aura",
     "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/color",
     "//ui/platform_window",
     "//ui/strings:ui_strings_grit",

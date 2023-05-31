@@ -33,8 +33,6 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
       paint_as_active_(paint_as_active) {
   SetPreferredSize(is_portrait_mode_ ? kMultitaskButtonPortraitSize
                                      : kMultitaskButtonLandscapeSize);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(kMultitaskButtonDefaultColor);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
   SetAccessibleName(name);
@@ -53,19 +51,29 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   pattern_flags.setAntiAlias(true);
   pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
 
+  const auto* color_provider = GetColorProvider();
   if (paint_as_active_ || GetState() == Button::STATE_HOVERED ||
       GetState() == Button::STATE_PRESSED) {
-    fill_flags.setColor(kMultitaskButtonViewHoverColor);
-    border_flags.setColor(kMultitaskButtonPrimaryHoverColor);
-    pattern_flags.setColor(gfx::kGoogleBlue600);
+    fill_flags.setColor(
+        SkColorSetA(color_provider->GetColor(ui::kColorSysPrimary),
+                    kMultitaskHoverBackgroundOpacity));
+    const auto hovered_color = color_provider->GetColor(ui::kColorSysPrimary);
+    border_flags.setColor(hovered_color);
+    pattern_flags.setColor(hovered_color);
   } else if (GetState() == Button::STATE_DISABLED) {
-    fill_flags.setColor(kMultitaskButtonViewHoverColor);
-    border_flags.setColor(kMultitaskButtonDisabledColor);
-    pattern_flags.setColor(kMultitaskButtonDisabledColor);
+    fill_flags.setColor(SK_ColorTRANSPARENT);
+    const auto disabled_color =
+        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                    kMultitaskDisabledButtonOpacity);
+    border_flags.setColor(disabled_color);
+    pattern_flags.setColor(disabled_color);
   } else {
     fill_flags.setColor(SK_ColorTRANSPARENT);
-    border_flags.setColor(kMultitaskButtonDefaultColor);
-    pattern_flags.setColor(kMultitaskButtonDefaultColor);
+    const auto default_color =
+        SkColorSetA(color_provider->GetColor(ui::kColorSysOnSurface),
+                    kMultitaskDefaultButtonOpacity);
+    border_flags.setColor(default_color);
+    pattern_flags.setColor(default_color);
   }
 
   canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()),
