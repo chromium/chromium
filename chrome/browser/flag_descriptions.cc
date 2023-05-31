@@ -6758,8 +6758,8 @@ const char kKioskEnableAppServiceDescription[] =
 
 const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
 const char kLacrosColorManagementDescription[] =
-    "When enabled, this should allow for HDR content to be displayed on "
-    "compatible devices.";
+    "Uses chrome-color-management wayland protocol to manage color spaces "
+    "for lacros.";
 
 const char kLinkCapturingInfoBarName[] = "Enable link capturing info bar";
 const char kLinkCapturingInfoBarDescription[] =

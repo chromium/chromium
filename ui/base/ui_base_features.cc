@@ -448,7 +448,7 @@ BASE_FEATURE(kWaylandCancelComposition,
 // Enables chrome color management wayland protocol for lacros.
 BASE_FEATURE(kLacrosColorManagement,
              "LacrosColorManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsLacrosColorManagementEnabled() {
   return base::FeatureList::IsEnabled(kLacrosColorManagement);

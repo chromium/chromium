@@ -4729,7 +4729,7 @@
   },
   {
     "name": "lacros-color-management",
-    "owners": [ "mrfemi", "jshargo", "chromeos-gfx-compositor@google.com" ],
+    "owners": [ "mrfemi", "jshargo" ],
     // This flag is used for chrome color management
     "expiry_milestone": 120
   },
