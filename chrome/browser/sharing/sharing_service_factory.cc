@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -60,7 +60,8 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 
 // static
 SharingServiceFactory* SharingServiceFactory::GetInstance() {
-  return base::Singleton<SharingServiceFactory>::get();
+  static base::NoDestructor<SharingServiceFactory> instance;
+  return instance.get();
 }
 
 // static

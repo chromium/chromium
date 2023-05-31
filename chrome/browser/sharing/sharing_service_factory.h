@@ -9,7 +9,7 @@
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace content {
@@ -31,7 +31,7 @@ class SharingServiceFactory : public ProfileKeyedServiceFactory {
   SharingServiceFactory& operator=(const SharingServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<SharingServiceFactory>;
+  friend base::NoDestructor<SharingServiceFactory>;
 
   SharingServiceFactory();
   ~SharingServiceFactory() override;
