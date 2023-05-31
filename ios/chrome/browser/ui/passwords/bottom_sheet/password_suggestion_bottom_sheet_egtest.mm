@@ -83,6 +83,7 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
       password_manager::features::kIOSPasswordBottomSheet);
   config.features_enabled.push_back(
       password_manager::features::kPasswordsGrouping);
+  config.relaunch_policy = ForceRelaunchByKilling;
   return config;
 }
 
@@ -319,8 +320,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
       assertWithMatcher:grey_textFieldValue(@"user2")];
 }
 
-// TODO(crbug.com/1448911): Re-enable when issue is fixed.
-- (void)DISABLED_testOpenPasswordBottomSheetDeletePassword {
+- (void)testOpenPasswordBottomSheetDeletePassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -335,6 +335,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user2"
                                                   password:@"password2"
                                                        URL:URL];
+  [ChromeEarlGreyUI waitForAppToIdle];
   int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(2, credentialsCount, @"Wrong number of stored credentials.");
 
