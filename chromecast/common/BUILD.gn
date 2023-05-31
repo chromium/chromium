@@ -58,13 +58,16 @@ test("cast_common_unittests") {
   sources = [
     "activity_url_filter_unittest.cc",
     "cors_exempt_headers_unittest.cc",
+    "user_agent_unittest.cc",
   ]
 
   deps = [
     ":activity_url_filter",
+    ":common",
     ":cors_exempt_headers",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/version_info",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
@@ -104,7 +107,7 @@ cast_source_set("common") {
     "//chromecast/common/media",
     "//components/cast/common:constants",
     "//components/cdm/common:common",
-    "//components/version_info",
+    "//components/embedder_support:browser_util",
     "//content/public/common",
     "//media:media_buildflags",
     "//third_party/widevine/cdm:buildflags",
