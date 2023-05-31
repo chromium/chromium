@@ -95,23 +95,18 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
   }
 
   auto* screen_ai_install = ScreenAIInstallState::GetInstance();
-  if (!screen_ai_install->IsComponentAvailable()) {
-    // TODO(crbug.com/1278249): Consider creating the pipe now and binding the
-    // other end when component is downloaded. The main challenge is that at
-    // this point we don't know the component folder for opening the binary and
-    // model files during library initialization.
-    VLOG(0) << "ScreenAI service launch triggered when component is not "
-               "available.";
-    return;
-  }
+  // Callers of the service should ensure that the component is downloaded
+  // before promising it to the users and triggering its launch.
+  // TODO(crbug.com/1443345): Add tests to cover this case.
+  CHECK(screen_ai_install->IsComponentAvailable())
+      << "ScreenAI service launch triggered when component is not "
+         "available.";
+
 #if BUILDFLAG(IS_WIN)
   base::FilePath library_path = screen_ai_install->get_component_binary_path();
   std::vector<base::FilePath> preload_libraries = {library_path};
 #endif  // BUILDFLAG(IS_WIN)
 
-  // TODO(https://crbug.com/1443341): Make sure the library is sandboxed and
-  // loaded from the same folder and component updater doesn't download a new
-  // version during sandbox creation.
   content::ServiceProcessHost::Launch(
       screen_ai_service_factory_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
