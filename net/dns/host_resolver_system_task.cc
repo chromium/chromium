@@ -411,14 +411,23 @@ int SystemHostResolverCall(const std::string& host,
   // OpenBSD does not support it, either.
   hints.ai_flags = 0;
 #else
+  // On other operating systems, AI_ADDRCONFIG may reduce the amount of
+  // unnecessary DNS lookups, e.g. getaddrinfo() will not send a request for
+  // AAAA records if the current machine has no IPv6 addresses configured and
+  // therefore could not use the resulting AAAA record anyway. On some ancient
+  // routers, AAAA DNS queries won't be handled correctly and will cause
+  // multiple retransmitions and large latency spikes.
   hints.ai_flags = AI_ADDRCONFIG;
 #endif
 
   // On Linux AI_ADDRCONFIG doesn't consider loopback addresses, even if only
   // loopback addresses are configured. So don't use it when there are only
-  // loopback addresses.
-  if (host_resolver_flags & HOST_RESOLVER_LOOPBACK_ONLY)
+  // loopback addresses. See loopback_only.h and
+  // https://fedoraproject.org/wiki/QA/Networking/NameResolution/ADDRCONFIG for
+  // a description of some of the issues AI_ADDRCONFIG can cause.
+  if (host_resolver_flags & HOST_RESOLVER_LOOPBACK_ONLY) {
     hints.ai_flags &= ~AI_ADDRCONFIG;
+  }
 
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;

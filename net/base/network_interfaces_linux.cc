@@ -254,7 +254,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   }
 #endif  // BUILDFLAG(IS_LINUX)
   if (!map_owner) {
-    // If there is no existing map_owner, create an AdressTrackerLinux and
+    // If there is no existing map_owner, create an AddressTrackerLinux and
     // initialize it.
     temp_tracker.emplace();
     temp_tracker->Init();

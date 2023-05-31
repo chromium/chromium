@@ -79,6 +79,8 @@ source_set("dns") {
     "https_record_rdata.cc",
     "httpssvc_metrics.cc",
     "httpssvc_metrics.h",
+    "loopback_only.cc",
+    "loopback_only.h",
     "mapped_host_resolver.cc",
     "nsswitch_reader.cc",
     "nsswitch_reader.h",
