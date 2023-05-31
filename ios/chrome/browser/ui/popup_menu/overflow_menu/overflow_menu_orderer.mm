@@ -76,13 +76,9 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 // converts each string to an overflow_menu::Destination, then appends each
 // destination to a vector (`to` vector). Skips over invalid or malformed list
 // items.
-void AppendDestinationsToVector(const base::Value::List* from,
+void AppendDestinationsToVector(const base::Value::List& from,
                                 std::vector<overflow_menu::Destination>& to) {
-  if (!from) {
-    return;
-  }
-  const base::Value::List& fromRef = *from;
-  for (const auto& value : fromRef) {
+  for (const auto& value : from) {
     if (!value.is_string()) {
       continue;
     }
@@ -161,11 +157,28 @@ void AppendDestinationsToVector(const base::Value::List* from,
 #pragma mark - Private
 
 - (void)loadDataFromPrefs {
-  const base::Value::Dict& storedUsageHistory =
-      _localStatePrefs->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
+  // First try to load new pref.
+  const base::Value::List& storedRanking =
+      _localStatePrefs->GetList(prefs::kOverflowMenuDestinationsOrder);
+  if (storedRanking.size() > 0) {
+    AppendDestinationsToVector(storedRanking, _ranking);
+    return;
+  }
 
-  AppendDestinationsToVector(storedUsageHistory.FindList(kRankingKey),
-                             _ranking);
+  // Fall back to old key.
+  ScopedDictPrefUpdate storedUsageHistoryUpdate(
+      _localStatePrefs, prefs::kOverflowMenuDestinationUsageHistory);
+  base::Value::List* oldRanking =
+      storedUsageHistoryUpdate->FindList(kRankingKey);
+  if (!oldRanking) {
+    return;
+  }
+  base::Value::List& oldRankingRef = *oldRanking;
+  _localStatePrefs->SetList(prefs::kOverflowMenuDestinationsOrder,
+                            oldRankingRef.Clone());
+
+  AppendDestinationsToVector(oldRankingRef, _ranking);
+  storedUsageHistoryUpdate->Remove(kRankingKey);
 }
 
 - (void)flushToPrefs {
@@ -173,8 +186,6 @@ void AppendDestinationsToVector(const base::Value::List* from,
     return;
   }
 
-  ScopedDictPrefUpdate historyUpdate(
-      _localStatePrefs, prefs::kOverflowMenuDestinationUsageHistory);
   // Flush the new ranking to Prefs.
   base::Value::List ranking;
 
@@ -182,7 +193,8 @@ void AppendDestinationsToVector(const base::Value::List* from,
     ranking.Append(overflow_menu::StringNameForDestination(destination));
   }
 
-  historyUpdate->Set(kRankingKey, std::move(ranking));
+  _localStatePrefs->SetList(prefs::kOverflowMenuDestinationsOrder,
+                            std::move(ranking));
 }
 
 - (NSArray<OverflowMenuDestination*>*)
