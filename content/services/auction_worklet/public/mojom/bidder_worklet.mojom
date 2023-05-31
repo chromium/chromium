@@ -25,8 +25,14 @@ struct PreviousWin {
   // "in the future" due to clock changes.
   mojo_base.mojom.Time time;
 
-  // The ad object returned by that group's bidding function with the winning
-  // bid.
+  // A JSON serialized object corresponding to the ad that won the auction.
+  // This field is kept serialized to avoid deserializing unless we actually
+  // need the data inside. The internal message has the following structure:
+  // struct AdJSON {
+  //   string renderURL;
+  //   string adRenderId;
+  //   string metadata;  // JSON encoded metadata object
+  // };
   string ad_json;
 };
 
