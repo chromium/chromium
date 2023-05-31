@@ -388,7 +388,7 @@ GetCurrentThreadPriorityForPlatformForTest() {
 void PlatformThread::SetName(const std::string& name) {
   ThreadIdNameManager::GetInstance()->SetName(name);
 
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("PlatformThread::SetName"))
     return;
 
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)

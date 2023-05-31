@@ -16,7 +16,8 @@ namespace recordreplay {
 
 #define ForEachV8API(Macro)                                             \
   Macro(V8IsRecordingOrReplaying,                                       \
-        (const char* feature), (feature), bool, false)                  \
+        (const char* feature, const char* subfeature),                  \
+        (feature, subfeature), bool, false)                             \
   Macro(V8IsRecording, (), (), bool, false)                             \
   Macro(V8IsReplaying, (), (), bool, false)                             \
   Macro(V8GetRecordingId, (), (), char*, nullptr)                       \
@@ -25,14 +26,17 @@ namespace recordreplay {
   Macro(V8RecordReplayCreateOrderedLock,                                \
         (const char* name), (name), size_t, 0)                          \
   Macro(V8RecordReplayNewBookmark, (), (), uint64_t, 0)                 \
-  Macro(V8RecordReplayAreEventsDisallowed, (), (), bool, false)         \
-  Macro(V8RecordReplayAreEventsPassedThrough, (), (), bool, false)      \
+  Macro(V8RecordReplayAreEventsDisallowed,                              \
+        (const char* why), (why), bool, false)                          \
+  Macro(V8RecordReplayAreEventsPassedThrough,                           \
+        (const char* why), (why), bool, false)                          \
   Macro(V8RecordReplayHasDivergedFromRecording, (), (), bool, false)    \
   Macro(V8RecordReplayAllowSideEffects, (), (), bool, true)             \
   Macro(V8RecordReplayPointerId, (const void* ptr), (ptr), int, 0)      \
   Macro(V8RecordReplayIdPointer, (int id), (id), void*, nullptr)        \
   Macro(V8RecordReplayFeatureEnabled,                                   \
-        (const char* feature), (feature), bool, false)                  \
+        (const char* feature, const char* subfeature),                  \
+        (feature, subfeature), bool, false)                             \
   Macro(V8IsMainThread, (), (), bool, false)                            \
   Macro(V8RecordReplayHadMismatch, (), (), bool, false)
 
@@ -186,8 +190,8 @@ ForEachV8APIVoid(DefineFunctionVoid)
 
 #endif // !BUILD_FLAG(IS_WIN)
 
-bool IsRecordingOrReplaying(const char* feature) {
-  return V8IsRecordingOrReplaying(feature);
+bool IsRecordingOrReplaying(const char* feature, const char* subfeature) {
+  return V8IsRecordingOrReplaying(feature, subfeature);
 }
 
 bool IsRecording() {
@@ -298,8 +302,8 @@ void OnNetworkStreamEnd(const char* id, size_t length) {
   V8RecordReplayOnNetworkStreamEnd(id, length);
 }
 
-bool AreEventsDisallowed() {
-  return V8RecordReplayAreEventsDisallowed();
+bool AreEventsDisallowed(const char* why) {
+  return V8RecordReplayAreEventsDisallowed(why);
 }
 
 void BeginDisallowEvents() {
@@ -314,8 +318,8 @@ void EndDisallowEvents() {
   V8RecordReplayEndDisallowEvents();
 }
 
-bool AreEventsPassedThrough() {
-  return V8RecordReplayAreEventsPassedThrough();
+bool AreEventsPassedThrough(const char* why) {
+  return V8RecordReplayAreEventsPassedThrough(why);
 }
 
 void BeginPassThroughEvents() {
@@ -326,8 +330,8 @@ void EndPassThroughEvents() {
   V8RecordReplayEndPassThroughEvents();
 }
 
-bool FeatureEnabled(const char* feature) {
-  return V8RecordReplayFeatureEnabled(feature);
+bool FeatureEnabled(const char* feature, const char* subfeature) {
+  return V8RecordReplayFeatureEnabled(feature, subfeature);
 }
 
 void GetCurrentJSStack(std::string* stackTrace) {

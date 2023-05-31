@@ -115,8 +115,7 @@ void WebRtcMediaStreamTrackAdapter::Dispose() {
   // https://linear.app/replay/issue/RUN-1829
   // Only reset the WaitableEvent if we're not recording/replaying,
   // or if we're recording/replaying and events are allowed.
-  if (!recordreplay::IsRecordingOrReplaying("disallow-events") ||
-      !recordreplay::AreEventsDisallowed()) {
+  if (!recordreplay::AreEventsDisallowed("WebRtcMediaStreamTrackAdapter::Dispose")) {
     remote_track_can_complete_initialization_.Reset();
   }
   is_disposed_ = true;

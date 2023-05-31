@@ -277,7 +277,7 @@ int Node::ClosePort(const PortRef& port_ref) {
   // The set of pors on a node should be the same when recording vs. replaying,
   // so we refuse to close ports when events are disallowed and the calling
   // code runs at non-deterministic points. This will cause ports to leak.
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("Node::ClosePort")) {
     return OK;
   }
   recordreplay::Assert("[RUN-1307-1539] Node::ClosePort A");

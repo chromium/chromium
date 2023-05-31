@@ -59,7 +59,7 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
         SchedulingAffectingFeatureHandle&&);
 
     inline ~SchedulingAffectingFeatureHandle() {
-      if (!recordreplay::IsRecordingOrReplaying("leak-references") || !recordreplay::AreEventsDisallowed()) {
+      if (!recordreplay::AreEventsDisallowed("~SchedulingAffectingFeatureHandle")) {
         // This might touch the recording stream during GC when using devtools.
         reset();
       }

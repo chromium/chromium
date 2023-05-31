@@ -115,7 +115,7 @@ ResourceLoadObserverForFrame::ResourceLoadObserverForFrame(
 ResourceLoadObserverForFrame::~ResourceLoadObserverForFrame() {
   // Avoid destroying power mode voters at non-deterministic points, as their
   // vote will affect the arbiter's behavior.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("~ResourceLoadObserverForFrame"))
     power_mode_voter_.release();
 }
 

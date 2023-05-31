@@ -841,7 +841,7 @@ void XMLHttpRequest::send(const String& body, ExceptionState& exception_state) {
   // mmap-related asserts down the line.  To avoid this, massage the
   // string value here (to a limit) to match the recorded value.
   std::optional<String> adj_body;
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values", "XMLHttpRequest::send")) {
     size_t length = body.length();
     size_t recorded_length =
       recordreplay::RecordReplayValue("XMLHttpRequest::send", body.length());

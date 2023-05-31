@@ -84,7 +84,7 @@ ExecutionContext::~ExecutionContext() {
   // Leak the policy container if we are being destroyed at a non-deterministic
   // point while recording/replaying, as this releases mojo resources which must
   // happen at specific points.
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("~ExecutionContext")) {
     policy_container_.release();
   }
 }

@@ -294,7 +294,7 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
     return;
 
   // Avoid updating idle state non-deterministically.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("IdleHelper::OnIdleTaskPostedOnMainThread"))
     return;
 
   // RecordReplay issue RUN-1021

@@ -361,7 +361,7 @@ void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
 
 void FontMatchingMetrics::PublishAllMetrics() {
   // Avoid sending mojo messages at non-deterministic points.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("FontMatchingMetrics::PublishAllMetrics"))
     return;
 
   PublishIdentifiabilityMetrics();

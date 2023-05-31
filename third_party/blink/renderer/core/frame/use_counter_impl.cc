@@ -176,7 +176,7 @@ void UseCounterImpl::Count(const UseCounterFeature& feature,
                            const LocalFrame* source_frame) {
   // Features can be accessed only while replaying, e.g. window.devicePixelRatio
   // is accessed for reporting to the recorder.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("UseCounterImpl::Count"))
     return;
 
   if (!source_frame)

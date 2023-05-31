@@ -396,7 +396,7 @@ blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
   // behavior handling messages from the record/replay driver using the
   // devtools protocol. We don't want this to influence Mojo, so force
   // the message contents to match up.
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values", "DevToolsSession::FinalizeMessage")) {
     size_t nbytes = recordreplay::RecordReplayValue("DevToolsSession::FinalizeMessage",
                                                     message_to_send.size());
     message_to_send.resize(nbytes);

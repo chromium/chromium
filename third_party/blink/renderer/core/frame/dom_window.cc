@@ -52,7 +52,7 @@ DOMWindow::DOMWindow(Frame& frame)
   // The window location can be accessed by replaying specific scripts when
   // events are disallowed. To ensure this doesn't interact with the recording,
   // eagerly instantiate the window location.
-  if (recordreplay::IsRecordingOrReplaying("disallow-events"))
+  if (recordreplay::IsRecordingOrReplaying("disallow-events", "DOMWindow"))
     location_ = MakeGarbageCollected<Location>(const_cast<DOMWindow*>(this));
 }
 

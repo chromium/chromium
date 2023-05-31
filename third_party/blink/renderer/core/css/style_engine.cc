@@ -820,7 +820,7 @@ CSSStyleSheet* StyleEngine::CreateSheet(
       result.stored_value->value = style_sheet->Contents();
       sheet_to_text_cache_.insert(style_sheet->Contents(), text_content);
 
-      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+      if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "StyleEngine")) {
         style_sheet_contents_strong_.insert(style_sheet->Contents());
       }
     }

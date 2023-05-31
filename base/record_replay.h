@@ -21,7 +21,8 @@ namespace base {
 
 namespace recordreplay {
 
-bool IsRecordingOrReplaying(const char* feature = nullptr);
+bool IsRecordingOrReplaying(const char* feature = nullptr,
+                            const char* subfeature = nullptr);
 bool IsRecording();
 bool IsReplaying();
 char* GetRecordingId();
@@ -60,15 +61,15 @@ void OnNetworkStreamEnd(const char* id, size_t length);
 
 void BeginPassThroughEvents();
 void EndPassThroughEvents();
-bool AreEventsPassedThrough();
+bool AreEventsPassedThrough(const char* why = nullptr);
 
 void BeginDisallowEvents();
 void BeginDisallowEventsWithLabel(const char* label);
 
 void EndDisallowEvents();
-bool AreEventsDisallowed();
+bool AreEventsDisallowed(const char* why = nullptr);
 
-bool FeatureEnabled(const char* feature);
+bool FeatureEnabled(const char* feature, const char* subfeature = nullptr);
 
 /**
  * Get the current JS stack, if there is any.
@@ -312,7 +313,7 @@ public:
 
   // dtor
   ~unique_leaky_ptr() {
-    if (AreEventsDisallowed()) {
+    if (AreEventsDisallowed("unique_leaky_ptr")) {
       // Leak the allocated memory before destructing `unique_ptr`
       // when inside a non-deterministic execution path.
       p.release();

@@ -300,7 +300,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
   DCHECK(service_);
 
   // Avoid sending IPC messages at non-deterministic points.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed"))
     return;
 
   // See DispatchOnV8ContextCreated for why this is both needed and safe.

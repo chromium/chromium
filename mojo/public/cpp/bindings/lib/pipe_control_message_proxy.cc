@@ -46,7 +46,7 @@ void PipeControlMessageProxy::NotifyPeerEndpointClosed(
     const absl::optional<DisconnectReason>& reason) {
   // IPC messages can't be sent at non-deterministic points, so just drop the
   // close notification in that situation.
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("PipeControlMessageProxy::NotifyPeerEndpointClosed")) {
     return;
   }
 

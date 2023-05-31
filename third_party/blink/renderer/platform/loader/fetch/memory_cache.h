@@ -52,7 +52,7 @@ class KURL;
 class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
  public:
   explicit MemoryCacheEntry(Resource* resource) {
-    if (recordreplay::IsRecordingOrReplaying("leak-references")) {
+    if (recordreplay::IsRecordingOrReplaying("leak-references", "MemoryCacheEntry")) {
       strong_resource_ = resource;
     } else {
       resource_ = resource;
@@ -61,7 +61,7 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
 
   void Trace(Visitor*) const;
   Resource* GetResource() const { 
-    if (recordreplay::IsRecordingOrReplaying("leak-references")) {
+    if (recordreplay::IsRecordingOrReplaying("leak-references", "MemoryCacheEntry")) {
       return strong_resource_; 
     } else {
       return resource_; 

@@ -561,7 +561,7 @@ const ThreadGroup* ThreadPoolImpl::GetThreadGroupForTraits(
 }
 
 ThreadGroup* ThreadPoolImpl::GetThreadGroupForTraits(const TaskTraits& traits) {
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("unordered-tasks")) {
     return record_replay_unordered_thread_group_.get();
   }
 

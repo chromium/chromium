@@ -125,14 +125,14 @@ void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
   DCHECK(agents_->find(agent) == agents_->end());
   agents_->insert(agent);
   
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AgentGroupSchedulerImpl"))
     replay_agents_strong_->insert(agent);
 }
 
 void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
   DCHECK(agents_->find(agent) != agents_->end());
   agents_->erase(agent);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AgentGroupSchedulerImpl"))
     replay_agents_strong_->erase(agent);
 }
 

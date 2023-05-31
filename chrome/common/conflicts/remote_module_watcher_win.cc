@@ -76,7 +76,7 @@ void RemoteModuleWatcher::HandleModuleEvent(
   // as timers must be reset deterministically. Because of the five second delay
   // it doesn't seem like the browser process needs these events other than for
   // observability.
-  if (!recordreplay::AreEventsDisallowed())
+  if (!recordreplay::AreEventsDisallowed("RemoteModuleWatcher::HandleModuleEvent"))
     delay_timer_.Reset();
 }
 

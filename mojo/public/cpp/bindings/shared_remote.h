@@ -186,7 +186,7 @@ class SharedRemoteBase
       if (!task_runner_->RunsTasksInCurrentSequence()) {
         // Sequenced task runners don't support posting tasks at non-deterministic
         // points when recording/replaying, so leak the remote instead.
-        if (recordreplay::AreEventsDisallowed()) {
+        if (recordreplay::AreEventsDisallowed("RemoteWrapper::DeleteOnCorrectThread")) {
           return;
         }
 

@@ -2881,7 +2881,7 @@ void Document::Shutdown() {
 
   // Font metrics are not published at non-deterministic points, and we also don't
   // want to get the metrics themselves as that can interact with the recording.
-  if (!recordreplay::AreEventsDisallowed())
+  if (!recordreplay::AreEventsDisallowed("Document::Shutdown"))
     GetFontMatchingMetrics()->PublishAllMetrics();
 
   GetViewportData().Shutdown();
@@ -2912,7 +2912,7 @@ void Document::Shutdown() {
 
   probe::DocumentDetached(this);
 
-  if (recordreplay::IsRecordingOrReplaying("task-lifetime") &&
+  if (recordreplay::IsRecordingOrReplaying("task-lifetime", "Document::Shutdown") &&
       scripted_idle_task_controller_) {
     // [RUN-1335] We might have queued idle tasks, but the page got shutdown. Get rid of them!
     scripted_idle_task_controller_->ClearCallbacks();

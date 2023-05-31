@@ -990,7 +990,7 @@ void ThreadGroupImpl::MaintainAtLeastOneIdleWorkerLockRequired(
     return;
 
   // Workers can't be created / started non-deterministically.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("ThreadGroupImpl::MaintainAtLeastOneIdleWorkerLockRequired"))
     return;
 
   scoped_refptr<WorkerThread> new_worker =

@@ -383,7 +383,7 @@ void DoEncryptReply(std::unique_ptr<EncryptState> state) {
                "DoEncryptReply");
 
   // As for DoExportKeyReply, contents can vary when replaying for an unknown reason.
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values", "DoEncryptReply")) {
     size_t numBytes = recordreplay::RecordReplayValue("DoEncryptReply size", state->buffer.size());
     state->buffer.resize(numBytes);
     recordreplay::RecordReplayBytes("DoEncryptReply buffer", &state->buffer[0], state->buffer.size());
@@ -501,7 +501,7 @@ void DoExportKeyReply(std::unique_ptr<ExportKeyState> state) {
   // different behavior in the crypto library. The underlying cause isn't known,
   // and for now we're patching over this by forcing the exported buffer to
   // be identical.
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values", "DoExportKeyReply")) {
     size_t numBytes = recordreplay::RecordReplayValue("DoExportKeyReply size", state->buffer.size());
     state->buffer.resize(numBytes);
     recordreplay::RecordReplayBytes("DoExportKeyReply buffer", &state->buffer[0], state->buffer.size());

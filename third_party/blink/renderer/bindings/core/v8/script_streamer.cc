@@ -968,7 +968,7 @@ void ResourceScriptStreamer::Prefinalize() {
 
   // Cancel any on-going streaming. This isn't supported at non-deterministic
   // points while replaying as it will affect the streaming thread's behavior.
-  if (!recordreplay::AreEventsDisallowed()) {
+  if (!recordreplay::AreEventsDisallowed("ResourceScriptStreamer::Prefinalize")) {
     Cancel();
   }
 }

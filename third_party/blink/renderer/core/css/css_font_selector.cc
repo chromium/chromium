@@ -70,7 +70,7 @@ void CSSFontSelector::RegisterForInvalidationCallbacks(
     FontSelectorClient* client) {
   CHECK(client);
   clients_.insert(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "CSSFontSelector")) {
     record_replay_strong_clients_.insert(client);
   }
 }
@@ -78,7 +78,7 @@ void CSSFontSelector::RegisterForInvalidationCallbacks(
 void CSSFontSelector::UnregisterForInvalidationCallbacks(
     FontSelectorClient* client) {
   clients_.erase(client);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "CSSFontSelector")) {
     record_replay_strong_clients_.erase(client);
   }
 }

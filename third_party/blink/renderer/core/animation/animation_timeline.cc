@@ -25,13 +25,13 @@ void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
   animations_.insert(animation);
 
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AnimationTimeline"))
     record_replay_animations_strong_.insert(animation);
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_.erase(animation);
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers"))
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "AnimationTimeline"))
     record_replay_animations_strong_.erase(animation);
 
   animations_needing_update_.erase(animation);

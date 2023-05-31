@@ -72,7 +72,7 @@ MessagePort::~MessagePort() {
 
   // Mojo resources can't be destroyed or otherwise operating on at non-deterministic
   // points, so leak them if necessary.
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("~MessagePort")) {
     if (connector_) {
       connector_->set_incoming_receiver(nullptr);
       connector_->set_connection_error_handler(base::OnceClosure());
@@ -186,7 +186,7 @@ void MessagePort::close() {
     // creating mojo resources. close() calls are always treated as non-deterministic
     // because the port's lifetime is managed by the GC and on destruction the
     // port is detached from the connector.
-    if (!recordreplay::IsRecordingOrReplaying("disallow-events")) {
+    if (!recordreplay::IsRecordingOrReplaying("disallow-events", "MessagePort::close")) {
       Disentangle().ReleaseHandle();
       MessagePortDescriptorPair pipe;
       Entangle(pipe.TakePort0());

@@ -27,7 +27,7 @@ void AssociatedReceiverBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
 void AssociatedReceiverBase::reset() {
   // Endpoint clients must be destroyed at deterministic points, so leak the endpoint
   // if we are reset e.g. during a GC.
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("AssociatedReceiverBase::reset")) {
     if (endpoint_client_)
       endpoint_client_->record_replay_leak();
     endpoint_client_.release();
@@ -70,7 +70,7 @@ void AssociatedReceiverBase::FlushForTesting() {
 
 AssociatedReceiverBase::~AssociatedReceiverBase() {
   // Leak the endpoint client if necessary, as in reset().
-  if (recordreplay::AreEventsDisallowed()) {
+  if (recordreplay::AreEventsDisallowed("~AssociatedReceiverBase")) {
     if (endpoint_client_)
       endpoint_client_->record_replay_leak();
     endpoint_client_.release();

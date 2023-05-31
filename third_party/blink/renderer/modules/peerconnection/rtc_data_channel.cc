@@ -232,7 +232,7 @@ RTCDataChannel::Observer::Observer(
   // Because we avoid unregistering this observer non-deterministically,
   // we also leak a reference to the observer to ensure it isn't destroyed
   // without having been unregistered first.
-  if (recordreplay::IsRecordingOrReplaying("leak-references"))
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "RTCDataChannel::Observer::Observer"))
     AddRef();
 }
 
@@ -251,7 +251,7 @@ void RTCDataChannel::Observer::Unregister() {
   blink_channel_ = nullptr;
 
   // Avoid changing channel observers non-deterministically.
-  if (recordreplay::AreEventsDisallowed())
+  if (recordreplay::AreEventsDisallowed("RTCDataChannel::Observer::Unregister"))
     (void)webrtc_channel_.release();
 
   if (webrtc_channel_.get()) {

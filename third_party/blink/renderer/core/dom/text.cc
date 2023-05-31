@@ -51,7 +51,7 @@ Text* Text::Create(Document& document, const String& data) {
   // diverges afterwards. See also Node::setTextContent.
   String dataStr;
   const String* dataPtr;
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values", "Text::Create")) {
     std::string contents = data.Utf8();
     size_t recordedLength = recordreplay::RecordReplayValue("Text::Create length", contents.length());
     contents.resize(recordedLength, ' ');

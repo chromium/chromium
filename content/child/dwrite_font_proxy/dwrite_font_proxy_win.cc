@@ -843,7 +843,7 @@ FontFileStream::FontFileStream() {
 FontFileStream::~FontFileStream() {
   // The destructor is not called at a consistent point when replaying,
   // so we avoid releasing resources that must happen deterministically.
-  if (recordreplay::IsRecordingOrReplaying("leak-references")) {
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "~FontFileStream")) {
     (void)data_.release();
   }
 }

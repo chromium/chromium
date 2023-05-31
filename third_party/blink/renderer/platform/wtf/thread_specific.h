@@ -95,7 +95,7 @@ inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // made by the destructors cannot be recorded, and when replaying the destructor
   // does not run at all. To avoid these problems we skip running the destructors
   // for now and let associated resources leak.
-  if (recordreplay::IsRecordingOrReplaying("leak-references"))
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "ThreadSpecific::Destroy"))
     return;
 
   // The memory was allocated via Partitions::FastZeroedMalloc, and then the

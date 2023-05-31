@@ -40,7 +40,7 @@ class IdleRequestCallbackWrapper
     // [RUN-1335] This might execute even after the controller has been marked
     // for collection. We avoid possible divergence by checking for whether 
     // it is still registered first.
-    bool check = !recordreplay::IsRecordingOrReplaying("task-lifetime") ||
+    bool check = !recordreplay::IsRecordingOrReplaying("task-lifetime", "IdleTaskFired") ||
                  (callback_wrapper->Controller() &&
                   callback_wrapper->Controller()->ContainsCallback(
                       callback_wrapper->Id()));

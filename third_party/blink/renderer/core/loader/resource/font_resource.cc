@@ -113,7 +113,7 @@ void FontResource::StartLoadLimitTimersIfNecessary(
                     self), \
       kFontLoadWaitLong);
 
-  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "FontResource")) {
     POST_TIMER_TASKS(WrapPersistent(this))
   } else {
     POST_TIMER_TASKS(WrapWeakPersistent(this))

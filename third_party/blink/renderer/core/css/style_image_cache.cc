@@ -23,7 +23,7 @@ StyleFetchedImage* StyleImageCache::CacheStyleImage(Document& document,
             FetchParameters::ImageRequestBehavior::kDeferImageLoad,
         origin_clean == OriginClean::kTrue, is_ad_related, params.Url());
 
-    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers")) {
+    if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "StyleImageCache")) {
       fetched_image_map_strong_.insert(result.stored_value->value);
     }
   }

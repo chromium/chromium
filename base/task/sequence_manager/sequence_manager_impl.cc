@@ -1041,7 +1041,8 @@ EnqueueOrder SequenceManagerImpl::GetNextSequenceNumber() {
   EnqueueOrder rv = enqueue_order_generator_.GenerateNext();
 
   // Use a zero enqueue order for all unordered tasks when recording/replaying.
-  if (recordreplay::AreEventsDisallowed() || recordreplay::AreEventsPassedThrough()) {
+  if (recordreplay::AreEventsDisallowed("unordered-tasks") ||
+      recordreplay::AreEventsPassedThrough("unordered-tasks")) {
     memset(&rv, 0, sizeof(rv));
     return rv;
   }
