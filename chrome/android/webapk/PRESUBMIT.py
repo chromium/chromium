@@ -21,7 +21,6 @@ This requirement is needed to upload the resources to the Google storage
 build bucket.
 """
 
-USE_PYTHON3 = True
 
 CURRENT_VERSION_VARIABLE = 'current_shell_apk_version'
 CURRENT_VERSION_LOCAL_PATH = 'shell_apk/current_version/current_version.gni'

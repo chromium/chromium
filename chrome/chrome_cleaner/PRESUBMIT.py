@@ -8,7 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
 
 def _CheckBuildFilesHaveExplicitVisibility(input_api, output_api):
   """Checks that all BUILD.gn files have a file-level 'visibility' directive.

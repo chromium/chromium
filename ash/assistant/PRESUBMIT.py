@@ -9,8 +9,6 @@ for more details about the presubmit API built into depot_tools.
 """
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
-
 _BANNED_CPP_FUNCTIONS = ()
 
 

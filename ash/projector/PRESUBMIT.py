@@ -5,9 +5,6 @@
 # Optional but recommended
 PRESUBMIT_VERSION = '2.0.0'
 
-# Mandatory: run under Python 3
-USE_PYTHON3 = True
-
 
 def CheckMetricsChangeHasTrackerUpdatedMessage(input_api, output_api):
     """Reminder to update metrics tracker and verify in CL description."""

@@ -8,7 +8,6 @@ See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
 
 def CheckAggregationBudgetStorageSchemaModification(input_api, output_api):
   """ Checks that kCurrentSchemaVersion is modified when necessary.

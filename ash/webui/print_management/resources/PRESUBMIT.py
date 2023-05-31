@@ -7,8 +7,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 import sys
 
 # Use existing SemanticCssChecker to advise use of cros approved colors
