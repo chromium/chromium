@@ -4064,12 +4064,6 @@ void LayoutObject::ScheduleRelayout() {
   }
 }
 
-void LayoutObject::ForceLayout() {
-  NOT_DESTROYED();
-  SetSelfNeedsLayoutForAvailableSpace(true);
-  UpdateLayout();
-}
-
 const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
   NOT_DESTROYED();
   DCHECK(GetDocument().GetStyleEngine().UsesFirstLineRules());
