@@ -35,6 +35,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
@@ -245,6 +246,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
             ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
     @Config(shadows = {ShadowContextMenuDialog.class}, qualifiers = "mdpi")
@@ -307,6 +309,7 @@ public class ContextMenuCoordinatorTest {
 
     // clang-format off
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
                     ShadowProfile.class},
@@ -336,6 +339,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1444964")
     @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
             ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
     @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
