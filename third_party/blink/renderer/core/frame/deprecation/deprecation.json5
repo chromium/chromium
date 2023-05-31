@@ -125,7 +125,7 @@
       web_features: [
         "kCrossOriginAccessBasedOnDocumentDomain",
       ],
-      milestone: 109,
+      milestone: 115,
     },
     {
       name: "CrossOriginWindowAlert",
@@ -159,7 +159,7 @@
       web_features: [
         "kDocumentDomainSettingWithoutOriginAgentClusterHeader",
       ],
-      milestone: 109,
+      milestone: 115,
     },
     {
       name: "DOMMutationEvents",
