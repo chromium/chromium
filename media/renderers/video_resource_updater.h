@@ -199,7 +199,8 @@ class MEDIA_EXPORT VideoResourceUpdater
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
   void ReturnTexture(scoped_refptr<VideoFrame> video_frame,
-                     const gpu::SyncToken& sync_token,
+                     const gpu::SyncToken& original_release_token,
+                     const gpu::SyncToken& new_release_token,
                      bool lost_resource);
 
   // base::trace_event::MemoryDumpProvider implementation.

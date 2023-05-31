@@ -43,7 +43,9 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/format_utils.h"
+#include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
+#include "media/renderers/resource_sync_token_client.h"
 #include "media/video/half_float_maker.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
@@ -241,57 +243,6 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
   return VideoFrameResourceType::NONE;
 }
 
-class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
- public:
-  SyncTokenClientImpl(gpu::gles2::GLES2Interface* gl,
-                      gpu::SharedImageInterface* sii,
-                      gpu::SyncToken sync_token)
-      : gl_(gl), sii_(sii), sync_token_(sync_token) {
-    // Only one interface should be used.
-    DCHECK((gl_ && !sii_) || (!gl_ && sii_));
-  }
-
-  SyncTokenClientImpl(const SyncTokenClientImpl&) = delete;
-  SyncTokenClientImpl& operator=(const SyncTokenClientImpl&) = delete;
-
-  ~SyncTokenClientImpl() override = default;
-
-  void GenerateSyncToken(gpu::SyncToken* sync_token) override {
-    if (sync_token_.HasData()) {
-      *sync_token = sync_token_;
-    } else {
-      if (gl_) {
-        gl_->GenSyncTokenCHROMIUM(sync_token->GetData());
-      } else {
-        *sync_token = sii_->GenVerifiedSyncToken();
-      }
-    }
-  }
-
-  void WaitSyncToken(const gpu::SyncToken& sync_token) override {
-    if (sync_token.HasData()) {
-      if (gl_) {
-        gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-      } else {
-        sii_->WaitSyncToken(sync_token);
-      }
-      if (sync_token_.HasData() && sync_token_ != sync_token) {
-        if (gl_) {
-          gl_->WaitSyncTokenCHROMIUM(sync_token_.GetConstData());
-        } else {
-          sii_->WaitSyncToken(sync_token);
-        }
-        sync_token_.Clear();
-      }
-    }
-  }
-
- private:
-  raw_ptr<gpu::gles2::GLES2Interface> gl_;
-  raw_ptr<gpu::SharedImageInterface> sii_;
-  gpu::SyncToken sync_token_;
-};
-
 // Sync tokens passed downstream to the compositor can be unverified.
 void GenerateCompositorSyncToken(gpu::gles2::GLES2Interface* gl,
                                  gpu::SyncToken* sync_token) {
@@ -348,6 +299,26 @@ bool HasCompatibleFormat(VideoPixelFormat input_format,
     return output_format == viz::SinglePlaneFormat::kBGRA_8888;
   return false;
 }
+
+class CopyingSyncTokenClient : public VideoFrame::SyncTokenClient {
+ public:
+  CopyingSyncTokenClient() = default;
+  CopyingSyncTokenClient(const CopyingSyncTokenClient&) = delete;
+  CopyingSyncTokenClient& operator=(const CopyingSyncTokenClient&) = delete;
+
+  ~CopyingSyncTokenClient() override = default;
+
+  void GenerateSyncToken(gpu::SyncToken* sync_token) override {
+    *sync_token = sync_token_;
+  }
+
+  void WaitSyncToken(const gpu::SyncToken& sync_token) override {
+    sync_token_ = sync_token;
+  }
+
+ private:
+  gpu::SyncToken sync_token_;
+};
 
 }  // namespace
 
@@ -939,9 +910,13 @@ void VideoResourceUpdater::CopyHardwarePlane(
   gl->EndSharedImageAccessDirectCHROMIUM(src_texture_id);
   gl->DeleteTextures(1, &src_texture_id);
 
-  // Pass an empty sync token to force generation of a new sync token.
-  SyncTokenClientImpl client(gl, nullptr /* gpu::SharedImageInterface* */,
-                             gpu::SyncToken());
+  // Wait (if the existing token isn't null) and replace it with a new one.
+  //
+  // This path is currently only used with single mailbox frames. Assert this
+  // here since this code isn't tuned for multiple planes; it should only update
+  // the release token once.
+  DCHECK_EQ(video_frame->NumTextures(), 1u);
+  WaitAndReplaceSyncTokenClient client(gl);
   gpu::SyncToken sync_token = video_frame->UpdateReleaseSyncToken(&client);
 
   auto transferable_resource = viz::TransferableResource::MakeGpu(
@@ -996,6 +971,11 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       SharedImageFormatType::kLegacy) {
     DCHECK_EQ(num_textures, 1u);
   }
+
+  // Make a copy of the current release SyncToken so we know if it changes.
+  CopyingSyncTokenClient client;
+  auto original_release_token = video_frame->UpdateReleaseSyncToken(&client);
+
   for (size_t i = 0; i < num_textures; ++i) {
     const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(i);
     if (mailbox_holder.mailbox.IsZero())
@@ -1055,9 +1035,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
 #endif
 
       external_resources.resources.push_back(std::move(transfer_resource));
-      external_resources.release_callbacks.push_back(
-          base::BindOnce(&VideoResourceUpdater::ReturnTexture,
-                         weak_ptr_factory_.GetWeakPtr(), video_frame));
+      external_resources.release_callbacks.push_back(base::BindOnce(
+          &VideoResourceUpdater::ReturnTexture, weak_ptr_factory_.GetWeakPtr(),
+          video_frame, original_release_token));
     }
   }
   return external_resources;
@@ -1482,19 +1462,24 @@ gpu::gles2::GLES2Interface* VideoResourceUpdater::ContextGL() {
   return gl;
 }
 
-void VideoResourceUpdater::ReturnTexture(scoped_refptr<VideoFrame> video_frame,
-                                         const gpu::SyncToken& sync_token,
-                                         bool lost_resource) {
-  // TODO(dshwang): Forward to the decoder as a lost resource.
-  if (lost_resource)
-    return;
+void VideoResourceUpdater::ReturnTexture(
+    scoped_refptr<VideoFrame> video_frame,
+    const gpu::SyncToken& original_release_token,
+    const gpu::SyncToken& new_release_token,
+    bool lost_resource) {
+  // Note: This method is called for each plane texture in the frame! Which
+  // means it may end up receiving the same `new_release_token` multiple times.
 
-  if (!sync_token.HasData())
+  if (lost_resource) {
     return;
+  }
 
-  // The video frame will insert a wait on the previous release sync token.
-  SyncTokenClientImpl client(
-      ContextGL(), nullptr /* gpu::SharedImageInterface* */, sync_token);
+  if (!new_release_token.HasData()) {
+    return;
+  }
+
+  ResourceSyncTokenClient client(ContextGL(), original_release_token,
+                                 new_release_token);
   video_frame->UpdateReleaseSyncToken(&client);
 }
 

@@ -972,7 +972,7 @@ TEST_F(VideoResourceUpdaterTest, GenerateReleaseSyncToken) {
 
   EXPECT_TRUE(release_sync_token_.HasData());
   EXPECT_NE(release_sync_token_, sync_token1);
-  EXPECT_NE(release_sync_token_, sync_token2);
+  EXPECT_EQ(release_sync_token_, sync_token2);
 }
 
 // Pass mailbox sync token as is if no GL operations are performed before frame
