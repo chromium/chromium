@@ -46,7 +46,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Buttons',
               path: 'buttons',
-              src: 'buttons_demo.html',
+              src: 'buttons/index.html',
             },
             {
               name: 'Cards and rows',
@@ -56,7 +56,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Checkboxes',
               path: 'checkboxes',
-              src: 'cr_checkbox_demo.html',
+              src: 'cr_checkbox/index.html',
             },
             {
               name: 'Dialogs',
@@ -81,12 +81,12 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Progress indicators, Polymer',
               path: 'progress-polymer',
-              src: 'progress_indicator_polymer_demo.html',
+              src: 'progress_indicators/index_polymer.html',
             },
             {
               name: 'Progress indicators, non-Polymer',
               path: 'progress-nonpolymer',
-              src: 'progress_indicator_nonpolymer_demo.html',
+              src: 'progress_indicators/index_native.html',
             },
             {
               name: 'Radio buttons and groups',
@@ -131,7 +131,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Toggles',
               path: 'toggles',
-              src: 'cr_toggle_demo.html',
+              src: 'cr_toggle/index.html',
             },
             {
               name: 'Toolbar',
