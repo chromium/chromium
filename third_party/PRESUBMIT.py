@@ -4,8 +4,6 @@
 
 import os
 
-USE_PYTHON3 = True
-
 PRESUBMIT_VERSION = '2.0.0'
 
 ANDROID_ALLOWED_LICENSES = [

@@ -8,7 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into gcl.
 """
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 def CheckEnsureSpecifier(input_api, output_api):

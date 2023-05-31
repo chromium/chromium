@@ -12,7 +12,6 @@ import inspect
 import os
 import re
 
-USE_PYTHON3 = True
 
 try:
     # pylint: disable=C0103

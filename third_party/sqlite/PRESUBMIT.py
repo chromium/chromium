@@ -7,7 +7,6 @@ Runs Python unit tests in /third_party/sqlite/scripts on upload.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 def CheckPythonUnittestsPass(input_api, output_api):
     results = []

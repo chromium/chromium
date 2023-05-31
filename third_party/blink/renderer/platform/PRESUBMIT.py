@@ -12,7 +12,6 @@ import os
 import re
 import sys
 
-USE_PYTHON3 = True
 RUNTIMEENABLED_NAME = re.compile(r'\s*name\s*:\s*"([^"]*)"')
 ASH_STATUS = "ChromeOS_Ash"
 LACROS_STATUS = "ChromeOS_Lacros"

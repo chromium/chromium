@@ -7,8 +7,6 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 
 def _LintWPT(input_api, output_api):
     tools_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
