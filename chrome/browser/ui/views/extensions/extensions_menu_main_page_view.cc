@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
@@ -26,6 +27,7 @@
 #include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
@@ -172,12 +174,22 @@ MessageSection::MessageSection(
     : reload_callback_(std::move(reload_callback)),
       allow_callback_(std::move(allow_callback)),
       dismiss_callback_(std::move(dismiss_callback)) {
+  auto* layout_provider = ChromeLayoutProvider::Get();
+  const int section_vertical_margin = layout_provider->GetDistanceMetric(
+      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
+  const int section_horizontal_margin = layout_provider->GetDistanceMetric(
+      DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE);
+  const int control_vertical_margin = layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
       // variable or create a const variable.
       .SetBackground(views::CreateThemedRoundedRectBackground(
           kColorExtensionsMenuHighlightedBackground, 4))
+      .SetInsideBorderInsets(
+          gfx::Insets::VH(section_vertical_margin, section_horizontal_margin))
       .AddChildren(
           // Text container.
           views::Builder<views::Label>()
@@ -190,26 +202,28 @@ MessageSection::MessageSection(
               .CopyAddressTo(&reload_container_)
               .SetVisible(false)
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kCenter)
               .AddChildren(
                   // Main text.
                   views::Builder<views::Label>()
                       // Text will be set based on the `state_`.
                       .SetTextContext(
                           ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetTextStyle(views::style::STYLE_EMPHASIZED)
-                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+                      .SetTextStyle(views::style::STYLE_EMPHASIZED),
                   // Description text.
                   views::Builder<views::Label>()
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_DESCRIPTION_TEXT))
                       .SetTextContext(
                           ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                      .SetMultiLine(true)
-                      .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+                      .SetMultiLine(true),
                   // Reload button.
                   views::Builder<views::MdTextButton>()
                       .SetCallback(base::BindRepeating(reload_callback_))
-                      .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                      .SetProperty(
+                          views::kMarginsKey,
+                          gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
                       .SetText(l10n_util::GetStringUTF16(
                           IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RELOAD_CONTAINER_BUTTON_TEXT))),
           // Requests access container.
@@ -227,8 +241,11 @@ MessageSection::MessageSection(
                       .SetTextStyle(views::style::STYLE_EMPHASIZED)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   // Empty container for the extensions requesting access.
-                  views::Builder<views::BoxLayoutView>().SetOrientation(
-                      views::BoxLayout::Orientation::kVertical)))
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                      .SetProperty(
+                          views::kMarginsKey,
+                          gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))))
       .BuildChildren();
 }
 
@@ -291,9 +308,15 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
 
   if (extension_iter == extension_entries_.end()) {
     // Add new extension entry.
+    auto* layout_provider = ChromeLayoutProvider::Get();
+    const int control_vertical_margin = layout_provider->GetDistanceMetric(
+        DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+
     auto item =
         views::Builder<views::FlexLayoutView>()
             .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))
             .AddChildren(
                 views::Builder<views::ImageView>().SetImage(icon),
                 views::Builder<views::Label>()
