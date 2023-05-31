@@ -2873,6 +2873,10 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
                desc="Prompt for Deep Scanning of a download">
+        Scan before opening
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT_UPDATED"
+               desc="Prompt for Deep Scanning of a download">
         Scan for malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
