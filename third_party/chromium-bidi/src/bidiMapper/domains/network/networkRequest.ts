@@ -216,8 +216,6 @@ export class NetworkRequest {
         // TODO: implement.
         tlsStart: 0,
         // TODO: implement.
-        tlsEnd: 0,
-        // TODO: implement.
         requestStart: 0,
         // TODO: implement.
         responseStart: 0,

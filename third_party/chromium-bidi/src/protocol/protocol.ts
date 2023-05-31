@@ -1089,7 +1089,6 @@ export namespace Network {
     connectStart: number;
     connectEnd: number;
     tlsStart: number;
-    tlsEnd: number;
     requestStart: number;
     responseStart: number;
     responseEnd: number;
