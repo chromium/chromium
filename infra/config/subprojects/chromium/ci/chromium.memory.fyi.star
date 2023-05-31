@@ -30,6 +30,7 @@ consoles.console_view(
 ci.builder(
     name = "linux-exp-tsan-fyi-rel",
     schedule = "with 24h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -55,6 +56,7 @@ ci.builder(
 ci.builder(
     name = "linux-ubsan-fyi-rel",
     schedule = "with 12h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -80,6 +82,7 @@ ci.builder(
 ci.builder(
     name = "mac-lsan-fyi-rel",
     schedule = "with 24h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
