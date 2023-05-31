@@ -1470,6 +1470,12 @@ BASE_FEATURE(kFuchsiaMediacodecVideoEncoder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+// Controls whether to pre-dispatch more decode tasks when pending decodes is
+// smaller than maximum supported decodes as advertiszed by decoder.
+BASE_FEATURE(kVideoDecodeBatching,
+             "VideoDecodeBatching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
