@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+import {SourcesTestRunner} from 'sources_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests DOM breakpoints.`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/dom-breakpoints.html');
