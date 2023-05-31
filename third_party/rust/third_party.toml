@@ -50,6 +50,7 @@ cxxbridge-cmd = "1"
 lazy_static = "1"
 memoffset = { version = "0.6", features = [ "unstable_const" ] }
 proc-macro2 = "1"
+qr_code = "2"
 quote = "1"
 serde = "1"
 static_assertions = "1"

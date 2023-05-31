@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "qr_code"
+  epoch = "2"
+  crate_type = "rlib"
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  cargo_pkg_version = "2.0.0"
+  cargo_pkg_authors = "kennytm <kennytm@gmail.com>, Riccardo Casatta <riccardo.casatta@gmail.com>"
+  cargo_pkg_name = "qr_code"
+  cargo_pkg_description = "QR code encoder in Rust, support structured append (data in multiple qrcodes)"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+}

@@ -23,6 +23,7 @@ lazy_static = "1"
 log = "0.4"
 once_cell = "1"
 proc-macro2 = "1"
+qr_code = "2"
 quote = "1"
 rand = "0.8"
 rand_pcg = "0.3"
@@ -205,6 +206,10 @@ package = "ppv-lite86"
 [patch.crates-io.proc-macro2_v1]
 path = "proc_macro2/v1/crate"
 package = "proc-macro2"
+
+[patch.crates-io.qr_code_v2]
+path = "qr_code/v2/crate"
+package = "qr_code"
 
 [patch.crates-io.quote_v1]
 path = "quote/v1/crate"

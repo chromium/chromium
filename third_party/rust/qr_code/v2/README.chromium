@@ -1,0 +1,7 @@
+Name: qr_code
+URL: https://crates.io/crates/qr_code
+Description: QR code encoder in Rust, support structured append (data in multiple qrcodes)
+Version: 2.0.0
+Security Critical: yes
+License: Apache 2.0
+Revision: 341f62be3a91ecb05e6e0870e61f763308eaf2ff
