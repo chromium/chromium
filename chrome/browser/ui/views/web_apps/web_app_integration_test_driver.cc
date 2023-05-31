@@ -169,8 +169,6 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/mac/app_mode_common.h"
-#include "chrome/test/base/launchservices_utils_mac.h"
 #include "net/base/filename_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
@@ -2389,8 +2387,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
 }
 
 #if BUILDFLAG(IS_MAC)
-void WebAppIntegrationTestDriver::CorruptAppShim(Site site,
-                                                 AppShimCorruption corruption) {
+void WebAppIntegrationTestDriver::CorruptAppShim(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -2403,33 +2400,7 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site,
   base::FilePath bin_path = app_path.AppendASCII("Contents")
                                 .AppendASCII("MacOS")
                                 .AppendASCII("app_mode_loader");
-
-  switch (corruption) {
-    case AppShimCorruption::kNoExecutable:
-      EXPECT_TRUE(base::DeleteFile(bin_path));
-      break;
-    case AppShimCorruption::kIncompatibleVersion: {
-      // Find and replace the entry point symbol in the app shim executable with
-      // something that definitely doesn't exist in the Chrome framework.
-      std::string bin_contents;
-      EXPECT_TRUE(base::ReadFileToString(bin_path, &bin_contents));
-      auto pos = bin_contents.find(APP_SHIM_ENTRY_POINT_NAME_STRING);
-      ASSERT_NE(pos, std::string::npos);
-      bin_contents[pos] = 'D';
-      EXPECT_TRUE(base::WriteFile(bin_path, bin_contents));
-
-      // Since we modified the binary, we need to re-sign it.
-      std::string codesign_output;
-      std::vector<std::string> codesign_argv = {"codesign", "--force", "--sign",
-                                                "-", bin_path.value()};
-      EXPECT_TRUE(base::GetAppOutputAndError(base::CommandLine(codesign_argv),
-                                             &codesign_output))
-          << "Failed to sign executable at " << bin_path << ": "
-          << codesign_output;
-      break;
-    }
-  }
-
+  EXPECT_TRUE(base::DeleteFile(bin_path));
   AfterStateChangeAction();
 }
 
@@ -4213,20 +4184,14 @@ bool WebAppIntegrationTestDriver::LaunchFromAppShim(
       override_registration_->test_override->chrome_apps_folder(), app_name,
       app_id);
 
-  base::FilePath chrome_path = ::test::GuessAppBundlePath();
-  chrome_path =
-      chrome_path.Append("Contents")
-          .Append("MacOS")
-          .Append(chrome_path.BaseName().RemoveFinalExtension().value());
-
   AppShimLaunchWaiter launch_waiter(wait_for_complete_launch);
   apps::AppShimManager::Get()->SetAppShimObserverForTesting(&launch_waiter);
+
   LaunchShimForTesting(app_path, urls,
                        base::BindOnce(&AppShimLaunchWaiter::OnLaunchStarted,
                                       launch_waiter.AsWeakPtr()),
                        base::BindOnce(&AppShimLaunchWaiter::OnShimTerminated,
-                                      launch_waiter.AsWeakPtr()),
-                       chrome_path);
+                                      launch_waiter.AsWeakPtr()));
   launch_waiter.Wait();
 
   apps::AppShimManager::Get()->SetAppShimObserverForTesting(nullptr);

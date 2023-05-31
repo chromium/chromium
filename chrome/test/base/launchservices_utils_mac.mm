@@ -20,17 +20,6 @@
 namespace test {
 
 bool RegisterAppWithLaunchServices() {
-  NSURL* bundleURL = base::mac::FilePathToNSURL(GuessAppBundlePath());
-
-  if (![bundleURL checkResourceIsReachableAndReturnError:nil]) {
-    return false;
-  }
-
-  return LSRegisterURL(base::apple::NSToCFPtrCast(bundleURL),
-                       /*inUpdate=*/false) == noErr;
-}
-
-base::FilePath GuessAppBundlePath() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const char kAppSuffix[] = "Google Chrome.app";
 #else
@@ -41,15 +30,21 @@ base::FilePath GuessAppBundlePath() {
   // org.google.Chrome bundle if the current main bundle's path isn't already a
   // .app directory:
   NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
-  if ([bundleURL.lastPathComponent hasSuffix:@".app"]) {
-    return base::mac::NSURLToFilePath(bundleURL);
+  if (![bundleURL.lastPathComponent hasSuffix:@".app"]) {
+    base::FilePath bundle_path;
+    if (!base::PathService::Get(base::DIR_EXE, &bundle_path)) {
+      return false;
+    }
+    bundle_path = bundle_path.Append(kAppSuffix);
+    bundleURL = base::mac::FilePathToNSURL(bundle_path);
   }
 
-  base::FilePath exe_path;
-  if (!base::PathService::Get(base::DIR_EXE, &exe_path)) {
-    return base::FilePath();
+  if (![bundleURL checkResourceIsReachableAndReturnError:nil]) {
+    return false;
   }
-  return exe_path.Append(kAppSuffix);
+
+  return LSRegisterURL(base::apple::NSToCFPtrCast(bundleURL),
+                       /*inUpdate=*/false) == noErr;
 }
 
 }  // namespace test

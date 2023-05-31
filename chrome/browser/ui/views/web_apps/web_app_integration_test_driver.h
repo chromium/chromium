@@ -139,8 +139,6 @@ enum class SubAppInstallDialogOptions {
   kPolicyOverride
 };
 
-enum class AppShimCorruption { kNoExecutable, kIncompatibleVersion };
-
 // These structs are used to store the current state of the world before & after
 // each state-change action.
 
@@ -327,7 +325,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void UninstallPolicyApp(Site site);
   void UninstallFromOs(Site site);
 #if BUILDFLAG(IS_MAC)
-  void CorruptAppShim(Site site, AppShimCorruption corruption);
+  void CorruptAppShim(Site site);
   void QuitAppShim(Site site);
 #endif
 
