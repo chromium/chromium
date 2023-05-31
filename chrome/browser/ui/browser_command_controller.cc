@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commander/commander.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -950,7 +951,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       CloseOtherTabs(browser_);
       break;
     case IDC_SHOW_MANAGEMENT_PAGE: {
-      ShowSingletonTab(browser_, GURL(kChromeUIManagementURL));
+      ShowSingletonTab(browser_, GetManagedUiMenuLinkUrl(profile()));
       break;
     }
     case IDC_MUTE_TARGET_SITE:

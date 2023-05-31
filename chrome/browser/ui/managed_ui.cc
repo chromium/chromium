@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/webui/policy_data_utils.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -30,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -164,6 +166,21 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
 
   CHECK(ShouldDisplayManagedByParentUi(profile));
   return l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
+}
+
+GURL GetManagedUiMenuLinkUrl(Profile* profile) {
+  CHECK(ShouldDisplayManagedUi(profile));
+
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    return GURL(kChromeUIManagementURL);
+  }
+
+  CHECK(ShouldDisplayManagedByParentUi(profile));
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  return GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
+#else
+  NOTREACHED_NORETURN();
+#endif
 }
 
 std::string GetManagedUiWebUIIcon(Profile* profile) {

@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
 class Profile;
 
 namespace gfx {
@@ -42,6 +43,11 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile);
 //
 // Must only be called if ShouldDisplayManagedUi(profile) is true.
 std::u16string GetManagedUiMenuItemLabel(Profile* profile);
+
+// The URL which the Managed UI in the app menu links to.
+//
+// Must only be called if ShouldDisplayManagedUi(profile) is true.
+GURL GetManagedUiMenuLinkUrl(Profile* profile);
 
 // An icon name/label recognized by <iron-icon> for the WebUI footnote for
 // Managed UI indicating that the browser is managed.

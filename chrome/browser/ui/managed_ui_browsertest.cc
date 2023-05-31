@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -168,6 +169,45 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiIconSupervised) {
 
   EXPECT_EQ(vector_icons::kFamilyLinkIcon.name,
             chrome::GetManagedUiIcon(profile.get()).name);
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiMenuLinkUrlEnterprise) {
+  // Simulate a managed device.
+  AddEnterpriseManagedPolicies();
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // An un-supervised profile.
+  TestingProfile::Builder builder;
+  auto profile = builder.Build();
+
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder_supervised;
+  builder_supervised.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile_supervised =
+      builder_supervised.Build();
+
+  EXPECT_EQ(GURL(chrome::kChromeUIManagementURL),
+            chrome::GetManagedUiMenuLinkUrl(profile.get()));
+  // Enterprise management takes precedence over supervision in the management
+  // UI.
+  EXPECT_EQ(GURL(chrome::kChromeUIManagementURL),
+            chrome::GetManagedUiMenuLinkUrl(profile_supervised.get()));
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiMenuLinkUrlSupervised) {
+  if (!IsManagedUiEnabledForSupervisedUsers()) {
+    return;
+  }
+
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder;
+  builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  EXPECT_EQ(GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get()),
+            chrome::GetManagedUiMenuLinkUrl(profile.get()));
 }
 
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
