@@ -14159,8 +14159,18 @@
             ],
             "experiments": [
                 {
+                    "name": "Control_20230227",
+                    "enable_features": [
+                        "V8Turbofan"
+                    ],
+                    "disable_features": [
+                        "V8SlowHistogramsNoTurbofan"
+                    ]
+                },
+                {
                     "name": "Turbofan_20230227",
                     "enable_features": [
+                        "V8SlowHistogramsNoTurbofan",
                         "V8Turbofan"
                     ]
                 },
