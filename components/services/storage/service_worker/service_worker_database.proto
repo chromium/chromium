@@ -22,7 +22,7 @@ message ServiceWorkerNavigationPreloadState {
   optional string header = 2;
 }
 
-// NEXT ID TO USE: 24
+// NEXT ID TO USE: 25
 message ServiceWorkerRegistrationData {
   enum ServiceWorkerScriptType {
     CLASSIC = 0;
@@ -72,6 +72,66 @@ message ServiceWorkerRegistrationData {
     optional int32 sandbox_flags = 2 [default = 0];
     optional IPAddressSpace ip_address_space = 3 [default = UNKNOWN];
     // TODO(https://crbug.com/1177199): add content security policies
+  }
+
+  message RouterRules {
+    message RuleV1 {
+      message Condition {
+        // Structure representing a URLPattern as described in:
+        // https://wicg.github.io/urlpattern/.
+        // This currently only represents the pathname part of the pattern but
+        // other parts can be added as needed.
+        message URLPattern {
+          message Part {
+            enum Modifier {
+              kNone = 0;
+              kOptional = 1;
+              kZeroOrMore = 2;
+              kOneOrMore = 3;
+            };
+            // Represents a fixed string part of a URLPattern as described in:
+            // https://wicg.github.io/urlpattern/#part-type-fixed-text
+            message FixedPattern {
+              optional string value = 1;
+            }
+            // Represents either a segment wildcard part or a full wildcard
+            // part of a URLPattern as described in:
+            // https://wicg.github.io/urlpattern/#parts
+            message WildcardPattern {
+              optional string name = 1;
+              optional string prefix = 2;
+              optional string value = 3;
+              optional string suffix = 4;
+            }
+            optional Modifier modifier = 1;
+            oneof pattern {
+              FixedPattern fixed = 2;
+              // Note that kRegex PartType is not implemented because we do not
+              // execute regexp in the browser process for security concerns.
+              // (but reserve 3 for regexp just in case).
+              WildcardPattern segment_wildcard = 4;
+              WildcardPattern full_wildcard = 5;
+            }
+          }
+          repeated Part pathname = 1;
+        }
+        oneof condition {
+          // Used for representing URLPattern.
+          URLPattern url_pattern = 1;
+        }
+      }
+      message Source {
+        message NetworkSource {}
+        oneof source {
+          NetworkSource network_source = 1;
+        }
+      }
+      repeated Condition condition = 1;
+      repeated Source source = 2;
+    }
+
+    required int32 version = 1;
+    repeated RuleV1 v1 = 2;
   }
 
   required int64 registration_id = 1;
@@ -126,6 +186,8 @@ message ServiceWorkerRegistrationData {
   optional AncestorFrameType ancestor_frame_type = 21 [default = NORMAL_FRAME];
 
   optional PolicyContainerPolicies policy_container_policies = 23;
+
+  optional RouterRules router_rules = 24;
 }
 
 message ServiceWorkerResourceRecord {

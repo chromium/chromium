@@ -76,7 +76,7 @@ struct ServiceWorkerRegistrationData {
   // (crbug.com/1276419).
   blink.mojom.AncestorFrameType ancestor_frame_type;
 
-  blink.mojom.ServiceWorkerRouterRules? router_rule;
+  blink.mojom.ServiceWorkerRouterRules? router_rules;
 };
 
 // Represents a service worker script data which is stored in database.

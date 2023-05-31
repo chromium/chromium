@@ -269,6 +269,7 @@ source_set("common") {
     "scheme_registry.cc",
     "security/address_space_feature.cc",
     "service_worker/service_worker_loader_helpers.cc",
+    "service_worker/service_worker_router_rule.cc",
     "service_worker/service_worker_router_rule_mojom_traits.cc",
     "service_worker/service_worker_scope_match.cc",
     "service_worker/service_worker_status_code.cc",

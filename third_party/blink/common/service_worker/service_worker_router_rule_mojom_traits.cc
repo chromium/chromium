@@ -14,7 +14,6 @@ UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
     case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
       return blink::mojom::ServiceWorkerRouterCondition::Tag::kUrlPattern;
   }
-  NOTREACHED_NORETURN();
 }
 
 bool UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
@@ -40,7 +39,6 @@ UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
     case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource;
   }
-  NOTREACHED_NORETURN();
 }
 
 bool UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,

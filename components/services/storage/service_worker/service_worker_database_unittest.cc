@@ -94,6 +94,7 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.ancestor_frame_type, actual.ancestor_frame_type);
   EXPECT_EQ(expected.policy_container_policies,
             actual.policy_container_policies);
+  EXPECT_EQ(expected.router_rules, actual.router_rules);
 }
 
 void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
@@ -3547,6 +3548,172 @@ TEST(ServiceWorkerDatabaseTest, FetchHandlerTypeStoreRestore) {
   store_and_restore(blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable);
   store_and_restore(
       blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler);
+}
+
+TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
+  auto store_and_restore = [](blink::ServiceWorkerRouterRules rules) {
+    GURL origin("https://example.com");
+    RegistrationData data;
+    data.registration_id = 123;
+    data.scope = URL(origin, "/foo");
+    data.key =
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(data.scope));
+    data.script = URL(origin, "/script.js");
+    data.version_id = 456;
+    data.fetch_handler_type =
+        blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+    data.resources_total_size_bytes = 100;
+    data.policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
+    data.router_rules = rules;
+    std::vector<ResourceRecordPtr> resources;
+    resources.push_back(CreateResource(1, data.script, 100));
+
+    // Store.
+    std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
+    ServiceWorkerDatabase::DeletedVersion deleted_version;
+    ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
+              database->WriteRegistration(data, resources, &deleted_version));
+
+    // Restore.
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    std::vector<std::vector<ResourceRecordPtr>> resources_list;
+    EXPECT_EQ(
+        ServiceWorkerDatabase::Status::kOk,
+        database->GetRegistrationsForStorageKey(
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
+            &registrations, &resources_list));
+
+    // The data must not have been altered.
+    VerifyRegistrationData(data, *registrations[0]);
+  };
+
+  // simple
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::UrlPattern url_pattern;
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "/test_data",
+                                      liburlpattern::Modifier::kNone);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.emplace_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // multiple conditions
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::UrlPattern url_pattern;
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "/test_data",
+                                      liburlpattern::Modifier::kNone);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.push_back(condition);
+    rule.conditions.push_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // multiple pathnames.
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::UrlPattern url_pattern;
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "/test_data",
+                                      liburlpattern::Modifier::kNone);
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFullWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kZeroOrMore);
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kOptional);
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
+                                      "name", "prefix", "", "suffix",
+                                      liburlpattern::Modifier::kOneOrMore);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.emplace_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // multiple sources
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::UrlPattern url_pattern;
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "/test_data",
+                                      liburlpattern::Modifier::kNone);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.emplace_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.push_back(source);
+    rule.sources.push_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // multiple routes
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterCondition condition;
+    condition.type =
+        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+    blink::UrlPattern url_pattern;
+    url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                      "/test_data",
+                                      liburlpattern::Modifier::kNone);
+    condition.url_pattern = std::move(url_pattern);
+    rule.conditions.emplace_back(condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.push_back(rule);
+    router_rules.rules.push_back(rule);
+
+    store_and_restore(router_rules);
+  }
 }
 
 }  // namespace storage
