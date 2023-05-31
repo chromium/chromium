@@ -24,15 +24,16 @@ interface WebBundleParserFactory {
 // Parser interface to obtain metadata and multiple responses from the bound
 // application/webbundle data provided on the construction at the factory above.
 interface WebBundleParser {
-  // Parses bundle's integrity block, if it exists.
+  // Parses the integrity block of a Signed Web Bundle.
   ParseIntegrityBlock() => (BundleIntegrityBlock? Result,
                             BundleIntegrityBlockParseError? error);
 
-  // Parses bundle's metadata. If `offset` is >= 0, parsing will begin at the
-  // indicated offset, and the `length` field of the web bundle will be ignored.
-  // If `offset` is -1, and the bundle is read in a random-access context, then
-  // the `length` field of the bundle will be used to determine the offset.
-  ParseMetadata(int64 offset)
+  // Parses the (Signed) Web Bundle's metadata. If the optional `offset` is
+  // specified, parsing will begin at the indicated offset, and the `length`
+  // field of the Web Bundle will be ignored. If `offset` is not set, and the
+  // bundle is read in a random-access context, then the `length` field of the
+  // bundle will be used to determine the offset.
+  ParseMetadata(uint64? offset)
       => (BundleMetadata? Result, BundleMetadataParseError? error);
 
   // Parses a response from the range

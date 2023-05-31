@@ -136,7 +136,7 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
     base::test::TestFuture<mojom::BundleMetadataPtr,
                            mojom::BundleMetadataParseErrorPtr>
         future;
-    parser->ParseMetadata(/*offset=*/-1, future.GetCallback());
+    parser->ParseMetadata(/*offset=*/absl::nullopt, future.GetCallback());
     metadata = std::get<0>(future.Take());
   }
   ASSERT_TRUE(metadata);
@@ -179,7 +179,7 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFileWithRelativeUrls) {
     base::test::TestFuture<mojom::BundleMetadataPtr,
                            mojom::BundleMetadataParseErrorPtr>
         future;
-    parser->ParseMetadata(/*offset=*/-1, future.GetCallback());
+    parser->ParseMetadata(/*offset=*/absl::nullopt, future.GetCallback());
     metadata = std::get<0>(future.Take());
   }
   ASSERT_TRUE(metadata);

@@ -67,7 +67,7 @@ void MockWebBundleParser::WaitUntilParseIntegrityBlockCalled(
 }
 
 void MockWebBundleParser::WaitUntilParseMetadataCalled(
-    base::OnceCallback<void(int64_t offset)> callback) {
+    base::OnceCallback<void(absl::optional<uint64_t> offset)> callback) {
   if (metadata_callback_.is_null())
     wait_parse_metadata_callback_ = std::move(callback);
   else
@@ -121,7 +121,7 @@ void MockWebBundleParser::ParseIntegrityBlock(
     std::move(wait_parse_integrity_block_callback_).Run();
 }
 
-void MockWebBundleParser::ParseMetadata(int64_t offset,
+void MockWebBundleParser::ParseMetadata(absl::optional<uint64_t> offset,
                                         ParseMetadataCallback callback) {
   if (simulate_parse_metadata_crash_) {
     SimulateDisconnect();

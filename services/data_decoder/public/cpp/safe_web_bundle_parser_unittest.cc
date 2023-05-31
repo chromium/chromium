@@ -64,7 +64,7 @@ class MockFactory final : public web_package::mojom::WebBundleParserFactory {
     void ParseIntegrityBlock(ParseIntegrityBlockCallback callback) override {
       integrity_block_callback_ = std::move(callback);
     }
-    void ParseMetadata(int64_t offset,
+    void ParseMetadata(absl::optional<uint64_t> offset,
                        ParseMetadataCallback callback) override {
       metadata_callback_ = std::move(callback);
     }
@@ -166,7 +166,7 @@ TEST_F(SafeWebBundleParserTest, ParseGoldenFile) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser.ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  parser.ParseMetadata(/*offset=*/absl::nullopt, metadata_future.GetCallback());
   auto [metadata, metadata_error] = metadata_future.Take();
   ASSERT_TRUE(metadata);
   ASSERT_FALSE(metadata_error);
@@ -205,7 +205,7 @@ TEST_F(SafeWebBundleParserTest, CallWithoutOpen) {
   SafeWebBundleParser parser(/*base_url=*/absl::nullopt);
   bool metadata_parsed = false;
   parser.ParseMetadata(
-      /*offset=*/-1,
+      /*offset=*/absl::nullopt,
       base::BindOnce(
           [](bool* metadata_parsed,
              web_package::mojom::BundleMetadataPtr metadata,
@@ -255,7 +255,7 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
   EXPECT_FALSE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 
-  parser.ParseMetadata(/*offset=*/-1, base::DoNothing());
+  parser.ParseMetadata(/*offset=*/absl::nullopt, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseIntegrityBlockCalled());
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseMetadataCalled());
@@ -302,7 +302,8 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser->ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  parser->ParseMetadata(/*offset=*/absl::nullopt,
+                        metadata_future.GetCallback());
   base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<web_package::mojom::BundleResponsePtr,
@@ -396,7 +397,7 @@ TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
       metadata_future;
-  parser.ParseMetadata(/*offset=*/-1, metadata_future.GetCallback());
+  parser.ParseMetadata(/*offset=*/absl::nullopt, metadata_future.GetCallback());
   auto [metadata, metadata_error] = metadata_future.Take();
   ASSERT_TRUE(metadata);
   ASSERT_FALSE(metadata_error);

@@ -120,9 +120,10 @@ ParseSignedBundleIntegrityBlockResult ParseSignedBundleIntegrityBlock(
 using ParseUnsignedBundleResult =
     std::pair<mojom::BundleMetadataPtr, mojom::BundleMetadataParseErrorPtr>;
 
-ParseUnsignedBundleResult ParseUnsignedBundle(TestDataSource* data_source,
-                                              const GURL& base_url = GURL(),
-                                              int64_t offset = -1) {
+ParseUnsignedBundleResult ParseUnsignedBundle(
+    TestDataSource* data_source,
+    const GURL& base_url = GURL(),
+    absl::optional<uint64_t> offset = absl::nullopt) {
   mojo::PendingRemote<mojom::BundleDataSource> source_remote;
   data_source->AddReceiver(source_remote.InitWithNewPipeAndPassReceiver());
 
@@ -949,7 +950,7 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingMetadata) {
                                 std::move(source_remote), GURL());
     mojom::WebBundleParser& parser = parser_impl;
 
-    parser.ParseMetadata(-1 /* offset */, future.GetCallback());
+    parser.ParseMetadata(/*offset=*/absl::nullopt, future.GetCallback());
     // |data_source| and |parser_impl| are deleted here.
   }
 

@@ -598,7 +598,7 @@ void WebBundleURLLoaderFactory::SetBundleStream(
                                    std::move(data_source), bundle_url_);
 
   parser_->ParseMetadata(
-      /*offset=*/-1,
+      /*offset=*/absl::nullopt,
       base::BindOnce(&WebBundleURLLoaderFactory::OnMetadataParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -65,7 +65,7 @@ void SafeWebBundleParser::ParseIntegrityBlock(
 }
 
 void SafeWebBundleParser::ParseMetadata(
-    int64_t offset,
+    absl::optional<uint64_t> offset,
     web_package::mojom::WebBundleParser::ParseMetadataCallback callback) {
   // This method is designed to be called once. So, allowing only once
   // simultaneous request is fine enough.
@@ -78,7 +78,7 @@ void SafeWebBundleParser::ParseMetadata(
     return;
   }
   metadata_callback_ = std::move(callback);
-  parser_->ParseMetadata(offset,
+  parser_->ParseMetadata(std::move(offset),
                          base::BindOnce(&SafeWebBundleParser::OnMetadataParsed,
                                         base::Unretained(this)));
 }
