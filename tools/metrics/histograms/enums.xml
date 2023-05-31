@@ -10485,6 +10485,7 @@ others/histograms.xml -->
   <int value="57" label="Disallow activation navigations for Bug1234857"/>
   <int value="58" label="Error Document"/>
   <int value="59" label="Page contains FencedFrames"/>
+  <int value="60" label="Cookie is disabled"/>
 </enum>
 
 <enum name="BackForwardCachePageWithFormStorable">

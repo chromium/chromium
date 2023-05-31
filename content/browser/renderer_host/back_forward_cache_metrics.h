@@ -121,7 +121,8 @@ class BackForwardCacheMetrics
     // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
     kErrorDocument = 58,
     kFencedFramesEmbedder = 59,
-    kMaxValue = kFencedFramesEmbedder,
+    kCookieDisabled = 60,
+    kMaxValue = kCookieDisabled,
   };
 
   using NotRestoredReasons =

@@ -650,6 +650,7 @@ message BackForwardCacheCanStoreDocumentResult {
     ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857 = 53;
     ERROR_DOCUMENT = 54;
     FENCED_FRAMES_EMBEDDER = 55;
+    COOKIE_DISABLED = 56;
   }
 
   optional BackForwardCacheNotRestoredReason
