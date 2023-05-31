@@ -8867,21 +8867,6 @@
             ]
         }
     ],
-    "OmniboxAdaptNarrowTabletWindows": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxAdaptNarrowTabletWindows"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [
