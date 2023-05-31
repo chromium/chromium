@@ -56,19 +56,31 @@ public class GEN_JNI {
         throw new RuntimeException("Stub - not implemented!");
     }
 
-    public static String[][] org_chromium_example_jni_1generator_SampleProxyEdgeCases_crazyTypes(int[] a, Object[][] b) {
+    public static String[][] org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes1(int[] a, Object[][] b) {
         throw new RuntimeException("Stub - not implemented!");
     }
 
-    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
+    public static int[] org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes2(int[] a, Throwable[][] b) {
         throw new RuntimeException("Stub - not implemented!");
     }
 
-    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
+    public static Object[] org_chromium_example_jni_1generator_SampleProxyEdgeCases_genericsWithNestedClassArray(Object[] arg) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static int org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static boolean org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
         throw new RuntimeException("Stub - not implemented!");
     }
 
     public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool(Object b, Object i) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static int org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(int sb) {
         throw new RuntimeException("Stub - not implemented!");
     }
 

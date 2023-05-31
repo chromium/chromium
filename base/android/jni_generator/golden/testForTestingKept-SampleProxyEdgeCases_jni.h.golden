@@ -48,17 +48,31 @@ JNI_GENERATOR_EXPORT void
   return JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_CrazyTypes(JNIEnv*
+static base::android::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_ArrayTypes1(JNIEnv*
     env, const base::android::JavaParamRef<jintArray>& a,
     const base::android::JavaParamRef<jobjectArray>& b);
 
 JNI_GENERATOR_EXPORT jobjectArray
-    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1crazyTypes(
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1arrayTypes1(
     JNIEnv* env,
     jclass jcaller,
     jintArray a,
     jobjectArray b) {
-  return JNI_SampleProxyEdgeCases_CrazyTypes(env, base::android::JavaParamRef<jintArray>(env, a),
+  return JNI_SampleProxyEdgeCases_ArrayTypes1(env, base::android::JavaParamRef<jintArray>(env, a),
+      base::android::JavaParamRef<jobjectArray>(env, b)).Release();
+}
+
+static base::android::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTypes2(JNIEnv*
+    env, const base::android::JavaParamRef<jintArray>& a,
+    const base::android::JavaParamRef<jobjectArray>& b);
+
+JNI_GENERATOR_EXPORT jintArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1arrayTypes2(
+    JNIEnv* env,
+    jclass jcaller,
+    jintArray a,
+    jobjectArray b) {
+  return JNI_SampleProxyEdgeCases_ArrayTypes2(env, base::android::JavaParamRef<jintArray>(env, a),
       base::android::JavaParamRef<jobjectArray>(env, b)).Release();
 }
 
@@ -80,11 +94,24 @@ JNI_GENERATOR_EXPORT void
   return JNI_SampleProxyEdgeCases_FooForTesting(env);
 }
 
-static void JNI_SampleProxyEdgeCases_AddStructB(JNIEnv* env, const
+static base::android::ScopedJavaLocalRef<jobjectArray>
+    JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(JNIEnv* env, const
+    base::android::JavaParamRef<jobjectArray>& arg);
+
+JNI_GENERATOR_EXPORT jobjectArray
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
+    JNIEnv* env,
+    jclass jcaller,
+    jobjectArray arg) {
+  return JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(env,
+      base::android::JavaParamRef<jobjectArray>(env, arg)).Release();
+}
+
+static jint JNI_SampleProxyEdgeCases_AddStructB(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaParamRef<jobject>& b);
 
-JNI_GENERATOR_EXPORT void
+JNI_GENERATOR_EXPORT jint
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1addStructB(
     JNIEnv* env,
     jclass jcaller,
@@ -94,10 +121,10 @@ JNI_GENERATOR_EXPORT void
       base::android::JavaParamRef<jobject>(env, b));
 }
 
-static void JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, const
+static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& sb);
 
-JNI_GENERATOR_EXPORT void
+JNI_GENERATOR_EXPORT jboolean
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
@@ -118,6 +145,16 @@ JNI_GENERATOR_EXPORT void
     jobject i) {
   return JNI_SampleProxyEdgeCases_SetBool(env, base::android::JavaParamRef<jobject>(env, b),
       base::android::JavaParamRef<jobject>(env, i));
+}
+
+static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
+
+JNI_GENERATOR_EXPORT jint
+    Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1jni_11generator_1SampleProxyEdgeCases_1setStringBuilder(
+    JNIEnv* env,
+    jclass jcaller,
+    jint sb) {
+  return JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);
 }
 
 JNI_GENERATOR_EXPORT void

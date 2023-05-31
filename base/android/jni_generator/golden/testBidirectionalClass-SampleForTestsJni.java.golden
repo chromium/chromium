@@ -77,7 +77,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   }
 
   @Override
-  public void addStructB(long nativeCPPClass, SampleForTests caller, InnerStructB b) {
+  public void addStructB(long nativeCPPClass, SampleForTests caller, SampleForTests.InnerStructB b) {
     GEN_JNI.org_chromium_example_jni_1generator_SampleForTests_addStructB(nativeCPPClass, caller, b);
   }
 

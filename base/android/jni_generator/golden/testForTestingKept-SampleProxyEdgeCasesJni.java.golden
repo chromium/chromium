@@ -8,6 +8,7 @@ import org.chromium.base.JniStaticTestMocker;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.natives.GEN_JNI;
 import org.chromium.example.jni_generator.Boolean;
+import java.util.Map;
 
 @CheckDiscard("crbug.com/993421")
 class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
@@ -31,8 +32,13 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
   }
 
   @Override
-  public String[][] crazyTypes(int[] a, Object[][] b) {
-    return (String[][]) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_crazyTypes(a, b);
+  public String[][] arrayTypes1(int[] a, Object[][] b) {
+    return (String[][]) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes1(a, b);
+  }
+
+  @Override
+  public int[] arrayTypes2(int[] a, Throwable[][] b) {
+    return (int[]) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes2(a, b);
   }
 
   @Override
@@ -46,18 +52,28 @@ class SampleProxyEdgeCasesJni implements SampleProxyEdgeCases.Natives {
   }
 
   @Override
-  public void addStructB(SampleForTests caller, SampleForTests.InnerStructB b) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(caller, b);
+  public Map[] genericsWithNestedClassArray(Map[] arg) {
+    return (Map[]) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_genericsWithNestedClassArray(arg);
   }
 
   @Override
-  public void setStringBuilder(StringBuilder sb) {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(sb);
+  public int addStructB(SampleForTests caller, SampleForTests.InnerStructB b) {
+    return (int) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(caller, b);
   }
 
   @Override
-  public void setBool(Boolean b, Integer i) {
+  public boolean setStringBuilder(StringBuilder sb) {
+    return (boolean) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(sb);
+  }
+
+  @Override
+  public void setBool(Boolean b, SampleProxyEdgeCases.Integer i) {
     GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool(b, i);
+  }
+
+  @Override
+  public int setStringBuilder(int sb) {
+    return (int) GEN_JNI.org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(sb);
   }
 
   public static SampleProxyEdgeCases.Natives get() {

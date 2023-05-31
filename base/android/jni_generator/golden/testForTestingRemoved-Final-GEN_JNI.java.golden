@@ -17,8 +17,12 @@ public class GEN_JNI {
         J.N.MV9YSTxh();
     }
 
-    public static String[][] org_chromium_example_jni_1generator_SampleProxyEdgeCases_crazyTypes(int[] a, Object[][] b) {
-        return J.N.My6x4jXt(a, b);
+    public static String[][] org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes1(int[] a, Object[][] b) {
+        return J.N.MrisBOFT(a, b);
+    }
+
+    public static int[] org_chromium_example_jni_1generator_SampleProxyEdgeCases_arrayTypes2(int[] a, Throwable[][] b) {
+        return J.N.ML5jr$Tu(a, b);
     }
 
     public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTest() {
@@ -29,15 +33,23 @@ public class GEN_JNI {
         J.N.MCNruAwI_ForTesting();
     }
 
-    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
-        J.N.MyOkSBQ0(caller, b);
+    public static Object[] org_chromium_example_jni_1generator_SampleProxyEdgeCases_genericsWithNestedClassArray(Object[] arg) {
+        return J.N.MfODWEgT(arg);
     }
 
-    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
-        J.N.MD8PmkAP(sb);
+    public static int org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
+        return J.N.MyOkSBQ0(caller, b);
+    }
+
+    public static boolean org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
+        return J.N.MD8PmkAP(sb);
     }
 
     public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool(Object b, Object i) {
         J.N.MPgXV$mN(b, i);
+    }
+
+    public static int org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(int sb) {
+        return J.N.MD8PmkAP(sb);
     }
 }

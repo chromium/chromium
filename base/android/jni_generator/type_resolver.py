@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import java_lang_classes
+import models
 
 _PRIMITIVE_MAP = {
     'int': 'I',
@@ -46,6 +47,20 @@ class TypeResolver:
 
     type_name = self._resolve_helper(param)
     return f'{prefix}L{type_name};'
+
+  def resolve_type(self, type_str):
+    """Returns the given type with an "OuterClass." prefix when applicable."""
+    array_idx = type_str.find('[')
+    if array_idx != -1:
+      suffix = type_str[array_idx:]
+      type_str = type_str[:array_idx]
+    else:
+      suffix = ''
+
+    if type_str in _PRIMITIVE_MAP:
+      return type_str + suffix
+    ret = self._resolve_helper(type_str)
+    return models.JavaClass(ret).name_with_dots + suffix
 
   def _resolve_helper(self, param):
     if '/' in param:

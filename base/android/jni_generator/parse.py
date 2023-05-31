@@ -127,24 +127,34 @@ def strip_generics(value):
   return ''.join(out)
 
 
+# Supports only @Foo and @Foo("value").
+_ANNOTATION_REGEX = re.compile(r'@([\w.]+)(?:\(\s*"(.*?)\"\s*\))?\s*')
+
+
+def _parse_type_with_annotations(value):
+  annotations = {}
+  last_idx = 0
+  for m in _ANNOTATION_REGEX.finditer(value):
+    annotations[m.group(1)] = m.group(2)
+    last_idx = m.end()
+
+  return annotations, value[last_idx:]
+
+
+_FINAL_REGEX = re.compile(r'\bfinal\s')
+
+
 def parse_param_list(line, from_javap=False):
   """Parses the params into a list of Param objects."""
   if not line:
     return []
   ret = []
   line = strip_generics(line)
+  line = _FINAL_REGEX.sub('', line)
   for p in line.split(','):
+    annotations, p = _parse_type_with_annotations(p)
+
     items = p.split()
-
-    if 'final' in items:
-      items.remove('final')
-
-    # Remove @Annotations from parameters.
-    annotations = []
-    while items[0].startswith('@'):
-      annotations.append(items[0])
-      del items[0]
-
     datatype = items[0]
     # Handle varargs.
     if datatype.endswith('...'):
@@ -156,7 +166,9 @@ def parse_param_list(line, from_javap=False):
     name = items[1] if len(items) > 1 else 'p%s' % len(ret)
 
     ret.append(
-        models.Param(annotations=annotations, datatype=datatype, name=name))
+        models.Param(annotations=list(annotations),
+                     datatype=datatype,
+                     name=name))
 
   return ret
 
@@ -164,21 +176,18 @@ def parse_param_list(line, from_javap=False):
 _NATIVE_PROXY_EXTRACTION_REGEX = re.compile(
     r'@NativeMethods(?:\(\s*"(?P<module_name>\w+)"\s*\))?[\S\s]+?'
     r'(?P<visibility>public)?\s*\binterface\s*'
-    r'(?P<interface_name>\w*)\s*(?P<interface_body>{(\s*.*)+?\s*})')
+    r'(?P<interface_name>\w*)\s*{(?P<interface_body>(\s*.*)+?\s*)}')
 
 # Matches on method declarations unlike _EXTRACT_NATIVES_REGEX
 # doesn't require name to be prefixed with native, and does not
 # require a native qualifier.
-_EXTRACT_METHODS_REGEX = re.compile(
-    r'(@NativeClassQualifiedName\(\"(?P<native_class_name>\S*?)\"\)\s*)?'
-    r'(?P<qualifiers>'
-    r'((public|private|static|final|abstract|protected|native)\s*)*)\s+'
-    r'(?P<return_type>\S*)\s+'
-    r'(?P<name>\w+)\((?P<params>.*?)\);',
-    flags=re.DOTALL)
+_EXTRACT_METHODS_REGEX = re.compile(r'\s*(.*?)\s+(\w+)\((.*?)\);',
+                                    flags=re.DOTALL)
+
+_PUBLIC_REGEX = re.compile(r'\bpublic\s')
 
 
-def _parse_proxy_natives(contents):
+def _parse_proxy_natives(contents, resolver):
   matches = list(_NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents))
   if not matches:
     return None
@@ -193,13 +202,24 @@ def _parse_proxy_natives(contents):
                             methods=[])
   interface_body = match.group('interface_body')
 
-  for match in _EXTRACT_METHODS_REGEX.finditer(interface_body):
-    params = parse_param_list(match.group('params'))
+  for m in _EXTRACT_METHODS_REGEX.finditer(interface_body):
+    preamble, name, params_part = m.groups()
+    preamble = _PUBLIC_REGEX.sub('', preamble)
+    annotations, return_type_part = _parse_type_with_annotations(preamble)
+    params = parse_param_list(params_part)
+    # Ensure all nested class types have "OuterClass." prefixed on them.
+    params = [
+        models.Param(annotations=p.annotations,
+                     datatype=resolver.resolve_type(p.datatype),
+                     name=p.name) for p in params
+    ]
+    return_type = resolver.resolve_type(strip_generics(return_type_part))
     ret.methods.append(
-        ParsedMethod(name=match.group('name'),
-                     return_type=match.group('return_type'),
-                     params=params,
-                     native_class_name=match.group('native_class_name')))
+        ParsedMethod(
+            name=name,
+            return_type=return_type,
+            params=params,
+            native_class_name=annotations.get('NativeClassQualifiedName')))
   if not ret.methods:
     raise SyntaxError('Found no methods within @NativeMethod interface.')
   return ret
@@ -256,7 +276,7 @@ def _do_parse(filename, *, package_prefix):
   for java_class in nested_classes:
     resolver.add_nested_class(java_class)
 
-  parsed_proxy_natives = _parse_proxy_natives(contents)
+  parsed_proxy_natives = _parse_proxy_natives(contents, resolver)
   jni_namespace = _parse_jni_namespace(contents)
 
   # TODO(crbug.com/1406605): Remove circular dep.
