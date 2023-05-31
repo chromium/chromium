@@ -227,11 +227,11 @@ class ComponentInstallerTest : public testing::Test {
 
   scoped_refptr<TestConfigurator> config_ =
       base::MakeRefCounted<TestConfigurator>(pref_.get());
-  raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  std::unique_ptr<ComponentUpdateService> component_updater_;
   ComponentUnpacker::Result result_;
+  std::unique_ptr<ComponentUpdateService> component_updater_;
+  raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
 };
 
 ComponentInstallerTest::ComponentInstallerTest() {
@@ -248,7 +248,6 @@ ComponentInstallerTest::ComponentInstallerTest() {
 
 ComponentInstallerTest::~ComponentInstallerTest() {
   EXPECT_CALL(update_client(), RemoveObserver(_)).Times(1);
-  component_updater_.reset();
 }
 
 void ComponentInstallerTest::RunThreads() {
