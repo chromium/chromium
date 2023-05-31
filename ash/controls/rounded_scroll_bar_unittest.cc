@@ -6,6 +6,8 @@
 
 #include "ash/controls/rounded_scroll_bar.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,6 +25,10 @@ namespace {
 constexpr int kScrollBarWidth = 10;
 constexpr int kViewportHeight = 200;
 constexpr int kContentHeight = 1000;
+
+// Scroll bar thumb thickness.
+constexpr int kThumbThickness = 8;
+constexpr int kThumbHoverInset = 2;
 
 // Thumb opacity values.
 constexpr float kDefaultOpacity = 0.38f;
@@ -42,7 +48,8 @@ class TestScrollBarController : public views::ScrollBarController {
 
 // Uses ViewsTestBase because we may want to move this control into //ui/views
 // in the future.
-class RoundedScrollBarTest : public views::ViewsTestBase {
+class RoundedScrollBarTest : public views::ViewsTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
   RoundedScrollBarTest()
       : ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -50,6 +57,13 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
 
   // testing::Test:
   void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJellyroll);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kJellyroll);
+    }
+
     ViewsTestBase::SetUp();
 
     // Create a small widget.
@@ -84,13 +98,16 @@ class RoundedScrollBarTest : public views::ViewsTestBase {
   raw_ptr<RoundedScrollBar, ExperimentalAsh> scroll_bar_ = nullptr;
   raw_ptr<views::BaseScrollBarThumb, ExperimentalAsh> thumb_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(RoundedScrollBarTest, InvisibleByDefault) {
+INSTANTIATE_TEST_SUITE_P(All, RoundedScrollBarTest, testing::Bool());
+
+TEST_P(RoundedScrollBarTest, InvisibleByDefault) {
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
 }
 
-TEST_F(RoundedScrollBarTest, ShowOnThumbBoundsChanged) {
+TEST_P(RoundedScrollBarTest, ShowOnThumbBoundsChanged) {
   // Programmatically scroll the view, which changes the thumb bounds.
   // By default this does not show the thumb.
   scroll_bar_->Update(kViewportHeight, kContentHeight,
@@ -101,46 +118,62 @@ TEST_F(RoundedScrollBarTest, ShowOnThumbBoundsChanged) {
   scroll_bar_->SetShowOnThumbBoundsChanged(true);
   scroll_bar_->Update(kViewportHeight, kContentHeight,
                       /*contents_scroll_offset=*/200);
-  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(),
+            GetParam() ? kActiveOpacity : kDefaultOpacity);
 }
 
-TEST_F(RoundedScrollBarTest, ScrollingShowsDefaultOpacity) {
+TEST_P(RoundedScrollBarTest, ShowOnScrolling) {
   scroll_bar_->ScrollByAmount(views::ScrollBar::ScrollAmount::kNextLine);
-  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(),
+            GetParam() ? kActiveOpacity : kDefaultOpacity);
 }
 
-TEST_F(RoundedScrollBarTest, FadesAfterScroll) {
+TEST_P(RoundedScrollBarTest, FadesAfterScroll) {
   scroll_bar_->ScrollByAmount(views::ScrollBar::ScrollAmount::kNextLine);
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 0.f);
 }
 
-TEST_F(RoundedScrollBarTest, MoveToThumbShowsActiveOpacity) {
+TEST_P(RoundedScrollBarTest, MoveToThumbShowsActiveOpacity) {
   generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
 }
 
-TEST_F(RoundedScrollBarTest, MoveToTrackOutsideThumbShowsDefaultOpacity) {
+TEST_P(RoundedScrollBarTest, MoveToTrackOutsideThumbShowsInactiveThumb) {
   gfx::Point thumb_bottom = thumb_->GetBoundsInScreen().bottom_center();
   generator_->MoveMouseTo(thumb_bottom.x(), thumb_bottom.y() + 1);
-  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+
+  if (GetParam()) {
+    EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 1.0f);
+    EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness - kThumbHoverInset);
+  } else {
+    EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+    EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness);
+  }
 }
 
-TEST_F(RoundedScrollBarTest, MoveFromThumbToTrackShowsDefaultOpacity) {
+TEST_P(RoundedScrollBarTest, MoveFromThumbToTrackShowsInactiveThumb) {
   generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
   gfx::Point thumb_bottom = thumb_->GetBoundsInScreen().bottom_center();
   generator_->MoveMouseTo(thumb_bottom.x(), thumb_bottom.y() + 1);
-  EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+  if (GetParam()) {
+    EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), 1.0f);
+    EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness - kThumbHoverInset);
+  } else {
+    EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kDefaultOpacity);
+    EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness);
+  }
 }
 
-TEST_F(RoundedScrollBarTest, MoveFromTrackToThumbShowsActiveOpacity) {
+TEST_P(RoundedScrollBarTest, MoveFromTrackToThumbShowsActiveThumb) {
   gfx::Point thumb_bottom = thumb_->GetBoundsInScreen().bottom_center();
   generator_->MoveMouseTo(thumb_bottom.x(), thumb_bottom.y() + 1);
   generator_->MoveMouseTo(thumb_->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
+  EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness);
 }
 
-TEST_F(RoundedScrollBarTest, DragOutsideTrackShowsActiveOpacity) {
+TEST_P(RoundedScrollBarTest, DragOutsideTrackShowsActiveThumb) {
   gfx::Point thumb_center = thumb_->GetBoundsInScreen().CenterPoint();
   generator_->MoveMouseTo(thumb_center);
   generator_->PressLeftButton();
@@ -148,6 +181,7 @@ TEST_F(RoundedScrollBarTest, DragOutsideTrackShowsActiveOpacity) {
                                 thumb_center.y());
   generator_->MoveMouseTo(outside_scroll_bar);
   EXPECT_EQ(thumb_->layer()->GetTargetOpacity(), kActiveOpacity);
+  EXPECT_EQ(scroll_bar_->GetThickness(), kThumbThickness);
 }
 
 }  // namespace
