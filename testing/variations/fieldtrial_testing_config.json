@@ -10378,6 +10378,57 @@
             ]
         }
     ],
+    "Prerender2BookmarkBarTrigger": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "BothMouseDownAndMouseHover_20230524",
+                    "params": {
+                        "prerender_bookmarkbar_on_mouse_hover_trigger": "true",
+                        "prerender_bookmarkbar_on_mouse_pressed_trigger": "true",
+                        "prerender_start_delay_on_mouse_hover_ms": "300"
+                    },
+                    "enable_features": [
+                        "BookmarkTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "OnlyMouseHover_20230524",
+                    "params": {
+                        "prerender_bookmarkbar_on_mouse_hover_trigger": "true",
+                        "prerender_bookmarkbar_on_mouse_pressed_trigger": "false",
+                        "prerender_start_delay_on_mouse_hover_ms": "300"
+                    },
+                    "enable_features": [
+                        "BookmarkTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "OnlyMouseDown_20230524",
+                    "params": {
+                        "prerender_bookmarkbar_on_mouse_hover_trigger": "false",
+                        "prerender_bookmarkbar_on_mouse_pressed_trigger": "true"
+                    },
+                    "enable_features": [
+                        "BookmarkTriggerForPrerender2"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "BookmarkTriggerForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2DUIConfidenceCutoff": [
         {
             "platforms": [
