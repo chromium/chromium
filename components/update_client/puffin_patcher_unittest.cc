@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/update_client/features.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -38,9 +39,13 @@ class PuffinPatcherTest : public testing::Test {
 };
 
 TEST_F(PuffinPatcherTest, CheckPuffPatch) {
+// TODO(crbug/1446751): once this bug is confirmed fixed, we can remove this
+// android-specific if.
+#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
     GTEST_SKIP() << "only works when PuffinPatches are enabled.";
   }
+#endif
   // The operation needs a Patcher to access the PatchService.
   scoped_refptr<Patcher> patcher =
       base::MakeRefCounted<PatchChromiumFactory>(
