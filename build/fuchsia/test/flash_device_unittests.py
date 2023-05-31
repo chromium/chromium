@@ -34,16 +34,13 @@ class FlashDeviceTest(unittest.TestCase):
                                                     _TEST_VERSION))
         swarming_patcher = mock.patch('flash_device.running_unattended',
                                       return_value=False)
-        check_patcher = mock.patch('flash_device.check_ssh_config_file')
         time_sleep = mock.patch('time.sleep')
         self._ffx_mock = ffx_patcher.start()
         self._sdk_hash_mock = sdk_hash_patcher.start()
-        self._check_patcher_mock = check_patcher.start()
         self._swarming_mock = swarming_patcher.start()
         self._time_sleep = time_sleep.start()
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
-        self.addCleanup(self._check_patcher_mock.stop)
         self.addCleanup(self._swarming_mock.stop)
         self.addCleanup(self._time_sleep.stop)
 
