@@ -6805,6 +6805,7 @@ crbug.com/1448011 http/tests/devtools/indexeddb/database-structure.js [ Failure 
 crbug.com/1448011 http/tests/devtools/indexeddb/database-version-number.js [ Failure Pass Timeout ]
 crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass Timeout ]
 crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass Timeout ]
+crbug.com/1448011 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass Timeout ]
 crbug.com/1448011 http/tests/devtools/indexeddb/upgrade-events.js [ Failure Pass Timeout ]
 
 # Sheriff 2023-05-30
