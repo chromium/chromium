@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
@@ -874,6 +875,32 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
+}
+
+TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistAfterStopping) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kMmapSafeBrowsingDatabase, {{"MmapSafeBrowsingDatabaseAsync", "true"}});
+
+  SetupFakeManager();
+  std::string url_safe_no_scheme("example.com/safe/");
+  FullHashStr safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
+
+  // Setup to match full hash in the local database.
+  StoreAndHashPrefixes store_and_hash_prefixes;
+  store_and_hash_prefixes.emplace_back(GetUrlHighConfidenceAllowlistId(),
+                                       safe_full_hash);
+  ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
+
+  const GURL url_check("https://" + url_safe_no_scheme);
+  base::test::TestFuture<bool> future;
+  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+      url_check, "HPRT", future.GetCallback());
+  EXPECT_EQ(1ul, GetPendingChecks().size());
+  StopLocalDatabaseManager();
+  EXPECT_TRUE(GetPendingChecks().empty());
+
+  EXPECT_TRUE(future.Get());
 }
 
 // When allowlist is available but the size is too small, all URLs should be
