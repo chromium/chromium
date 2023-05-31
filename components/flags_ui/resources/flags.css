@@ -315,16 +315,15 @@ button:not(.primary):hover {
 
 .experiment-switched .experiment-name::before {
   --end-margin: 4px;
-  --width: 12px;
-  color: var(--interactive-color);
-  content: '•';
+  --diameter: 10px;
+  background-color: var(--interactive-color);
+  border-radius: 50%;
+  content: '';
   display: inline-block;
-  font-size: 40px;
-  line-height: 0;
+  height: var(--diameter);
   margin-inline-end: var(--end-margin);
-  margin-inline-start: calc(-1 * var(--end-margin) - var(--width));
-  vertical-align: middle;
-  width: var(--width);
+  margin-inline-start: calc(-1 * var(--end-margin) - var(--diameter));
+  width: var(--diameter);
 }
 
 
