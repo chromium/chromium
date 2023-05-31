@@ -71,7 +71,7 @@ def fyi_reclient_staging_builder(
 
     reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
     reclient_rewrapper_env.update({
-        "RBE_exec_timeout": "15m",
+        "RBE_exec_timeout": "2m",
     })
     return [
         ci.builder(

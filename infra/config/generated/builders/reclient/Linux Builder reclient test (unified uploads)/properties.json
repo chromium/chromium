@@ -50,7 +50,7 @@
     "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {
-      "RBE_exec_timeout": "15m"
+      "RBE_exec_timeout": "2m"
     },
     "scandeps_server": true
   },
