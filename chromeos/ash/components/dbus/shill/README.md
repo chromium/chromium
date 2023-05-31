@@ -57,7 +57,15 @@ For detailed documentation on the Shill Manager D-Bus API, please refer to
 
 ## Shill device client {#shill-device-client}
 
-TODO: Discuss the Shill device client.
+The [`ShillDeviceClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_device_client.h;drc=28eec300d12693725de66c979962d9b8a4209a7d) class provides an interface for performing operations on different device types. Devices are how Shill represents network interface that is used for different technologies (Cellular, WiFi, Ethernet, etc) within the platform layer. It maintains a map of [`ShillClientHelpers`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_client_helper.h;drc=af33e6b506bcb54e29efd850e2eb546f476ee63a) for each device type and through those helpers, makes calls to the corresponding dbus proxy objects. It enables Chrome to:
+* Get, set and clear device properties
+* Listen to or ignore changes in device properties
+* Perform require/change/enter/unblock PIN operations on installed SIM
+* Register a cellular network
+* Restart the device at a specific path
+* Set MAC address source for USB Ethernet adapter (Ethernet only)
+
+For detailed documentation on the Shill Device DBus API, please refer to [`device-api.txt`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/shill/doc/device-api.txt;drc=f0a716aa5a39deb9c18faa9b589b25ccd68009cc)
 
 ## Shill IPConfig client {#shill-ipconfig-client}
 
@@ -133,7 +141,13 @@ The `ShillManagerClient::TestInterface` interface is implemented by
 
 ## Shill device client {#shill-device-client-testing}
 
-TODO: Discuss the Shill device client testing interface.
+The [`ShillDeviceClient::TestInterface`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/shill_device_client.h;l=40;drc=28eec300d12693725de66c979962d9b8a4209a7d) provides various functions that help during testing:
+* Add, Remove and Clear fake devices
+* Set device properties
+* Set SIM lock status
+* Adding cellular networks etc
+
+The `ShillDeviceClient::TestInterface` interface is implemented by [`FakeShillDeviceClient`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/dbus/shill/fake_shill_device_client.h;drc=28eec300d12693725de66c979962d9b8a4209a7d)
 
 ## Shill IPConfig client {#shill-ipconfig-client-testing}
 
