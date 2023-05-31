@@ -1224,6 +1224,11 @@ void TracingHandler::FrameDeleted(int frame_tree_node_id) {
     return;
   FrameTreeNode* node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
+  if (!node->current_frame_host()) {
+    // This might happen on prerendering activation when the prerender tree is
+    // shutting how and the RFH is migrated to a different frame tree.
+    return;
+  }
   auto data = std::make_unique<base::trace_event::TracedValue>();
   data->SetString(
       "frame", node->current_frame_host()->devtools_frame_token().ToString());

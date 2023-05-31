@@ -27,6 +27,8 @@
   page.navigate('../prerender/resources/simple-prerender.html');
   await dp.Preload.oncePrerenderStatusUpdated(e => e.params.status == 'Ready');
 
+  session.evaluate(`document.getElementById('link').click()`);
+  await dp.Preload.oncePrerenderAttemptCompleted();
   const devtoolsEvents = await tracingHelper.stopTracing();
   const prerenderFrameCommitted =
       tracingHelper
