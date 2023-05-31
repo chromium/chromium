@@ -104,8 +104,6 @@ component("evdev") {
     "touch_filter/neural_stylus_palm_detection_filter_model.h",
     "touch_filter/neural_stylus_palm_detection_filter_util.cc",
     "touch_filter/neural_stylus_palm_detection_filter_util.h",
-    "touch_filter/neural_stylus_palm_report_filter.cc",
-    "touch_filter/neural_stylus_palm_report_filter.h",
     "touch_filter/open_palm_detection_filter.cc",
     "touch_filter/open_palm_detection_filter.h",
     "touch_filter/palm_detection_filter.cc",
@@ -268,7 +266,6 @@ source_set("unittests") {
     "touch_filter/heuristic_stylus_palm_detection_filter_unittest.cc",
     "touch_filter/neural_stylus_palm_detection_filter_unittest.cc",
     "touch_filter/neural_stylus_palm_detection_filter_util_unittest.cc",
-    "touch_filter/neural_stylus_palm_report_filter_unittest.cc",
     "touch_filter/open_palm_detection_filter_unittest.cc",
     "touch_filter/palm_detection_filter_factory_unittest.cc",
   ]

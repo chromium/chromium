@@ -19,7 +19,6 @@
 #include "ui/events/ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
-#include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_report_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/open_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_model/onedevice_train_palm_detection_filter_model.h"
@@ -141,13 +140,7 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
         shared_palm_state, stroke_count, hold_time, cancel_time);
   }
 
-  if (base::FeatureList::IsEnabled(kEnableNeuralStylusReportFilter) &&
-      NeuralStylusReportFilter::CompatibleWithNeuralStylusReportFilter(
-          devinfo)) {
-    return std::make_unique<NeuralStylusReportFilter>(shared_palm_state);
-  } else {
-    return std::make_unique<OpenPalmDetectionFilter>(shared_palm_state);
-  }
+  return std::make_unique<OpenPalmDetectionFilter>(shared_palm_state);
 }
 
 }  // namespace ui
