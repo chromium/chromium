@@ -2390,7 +2390,7 @@
     {
       name: "NonComposedEnterLeaveEvents",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       // Kill switch for crbug.com/1427047 fix.
