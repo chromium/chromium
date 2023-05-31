@@ -1238,6 +1238,7 @@ extern const char kDesktopSharingHubEnabled[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kLastWhatsNewVersion[];
+extern const char kHasShownRefreshWhatsNew[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

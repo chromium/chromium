@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace whats_new {
@@ -42,6 +43,9 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
 const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
+// TODO(crbug/1448572): Replace placeholder with production URL.
+const char kChromeWhatsNewRefreshURL[] =
+    "https://www.google.com/chrome/whats-new/";
 
 bool g_is_remote_content_disabled = false;
 
@@ -55,6 +59,22 @@ void LogStartupType(StartupType type) {
 
 bool IsRemoteContentDisabled() {
   return g_is_remote_content_disabled;
+}
+
+bool ShouldShowRefresh(PrefService* local_state) {
+  bool has_shown_refresh_whats_new =
+      local_state->GetBoolean(prefs::kHasShownRefreshWhatsNew);
+
+  // Check pref to see if user has seen refresh page.
+  if (has_shown_refresh_whats_new) {
+    // Do not LogStartupType() here because already seeing the refresh
+    // page does not preclude the browser from attempting to see a
+    // regular What's New Page.
+    return false;
+  }
+
+  // Show refresh page if user has refresh flag enabled.
+  return features::IsChromeRefresh2023();
 }
 
 bool ShouldShowForState(PrefService* local_state,
@@ -82,6 +102,13 @@ bool ShouldShowForState(PrefService* local_state,
       !base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
     LogStartupType(StartupType::kFeatureDisabled);
     return false;
+  }
+
+  // The refresh page needs to perform a check every time the
+  // browser starts. The refresh page is not tied to a milestone, so this
+  // needs to happen before the milestone check.
+  if (ShouldShowRefresh(local_state)) {
+    return true;
   }
 
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
@@ -127,7 +154,10 @@ void AddWhatsNewTab(Browser* browser) {
 
 class WhatsNewFetcher : public BrowserListObserver {
  public:
-  explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
+  explicit WhatsNewFetcher(
+      Browser* browser,
+      absl::optional<const GURL> override_url = absl::nullopt)
+      : browser_(browser) {
     BrowserList::AddObserver(this);
     if (IsRemoteContentDisabled()) {
       // Don't fetch network content if this is the case, just pretend the tab
@@ -169,7 +199,8 @@ class WhatsNewFetcher : public BrowserListObserver {
     auto request = std::make_unique<network::ResourceRequest>();
     // Don't allow redirects when checking if the page is valid for the current
     // milestone.
-    request->url = GetServerURL(false);
+    request->url =
+        override_url.has_value() ? override_url.value() : GetServerURL(false);
     simple_loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                       traffic_annotation);
     // base::Unretained is safe here because only OnResponseLoaded deletes
@@ -254,6 +285,17 @@ class WhatsNewFetcher : public BrowserListObserver {
 }  // namespace
 
 void StartWhatsNewFetch(Browser* browser) {
+  PrefService* local_state = g_browser_process->local_state();
+  // Check whether to override the default Whats's New URL
+  if (ShouldShowRefresh(local_state)) {
+    // ShouldShowRefresh should not be called after this boolean is set
+    // to true. This function relies on initial state of this pref.
+    local_state->SetBoolean(prefs::kHasShownRefreshWhatsNew, true);
+    new WhatsNewFetcher(
+        browser, net::AppendQueryParameter(GURL(kChromeWhatsNewRefreshURL),
+                                           "internal", "true"));
+    return;
+  }
   new WhatsNewFetcher(browser);
 }
 
