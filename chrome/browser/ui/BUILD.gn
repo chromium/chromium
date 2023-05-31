@@ -4579,6 +4579,8 @@ static_library("ui") {
       "views/autofill/payments/local_card_migration_icon_view.h",
       "views/autofill/payments/manage_saved_iban_bubble_view.cc",
       "views/autofill/payments/manage_saved_iban_bubble_view.h",
+      "views/autofill/payments/mandatory_reauth_confirmation_bubble_view.cc",
+      "views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h",
       "views/autofill/payments/mandatory_reauth_icon_view.cc",
       "views/autofill/payments/mandatory_reauth_icon_view.h",
       "views/autofill/payments/mandatory_reauth_opt_in_bubble_view.cc",

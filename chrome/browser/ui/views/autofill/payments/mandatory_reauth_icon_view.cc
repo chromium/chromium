@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_opt_in_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -43,8 +44,13 @@ views::BubbleDialogDelegate* MandatoryReauthIconView::GetBubble() const {
     return nullptr;
   }
 
-  return static_cast<autofill::MandatoryReauthOptInBubbleView*>(
-      controller->GetBubbleView());
+  if (controller->GetBubbleType() == MandatoryReauthBubbleType::kConfirmation) {
+    return static_cast<autofill::MandatoryReauthConfirmationBubbleView*>(
+        controller->GetBubbleView());
+  } else {
+    return static_cast<autofill::MandatoryReauthOptInBubbleView*>(
+        controller->GetBubbleView());
+  }
 }
 
 void MandatoryReauthIconView::UpdateImpl() {

@@ -15,6 +15,9 @@ enum class MandatoryReauthBubbleType {
 
   // Bubble prompting the user to enable mandatory reauth.
   kOptIn = 1,
+
+  // Bubble confirming that the user has opted into mandatory reauth.
+  kConfirmation = 2,
 };
 
 }  // namespace autofill
