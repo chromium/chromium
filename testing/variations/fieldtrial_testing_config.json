@@ -10617,6 +10617,21 @@
             ]
         }
     ],
+    "PrivacyGuideClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230530",
+                    "enable_features": [
+                        "PrivacyGuideAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyGuideHats": [
         {
             "platforms": [
