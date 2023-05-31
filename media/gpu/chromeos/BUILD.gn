@@ -59,6 +59,8 @@ source_set("chromeos") {
 source_set("common") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.cc",
+    "chromeos_compressed_gpu_memory_buffer_video_frame_utils.h",
     "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
