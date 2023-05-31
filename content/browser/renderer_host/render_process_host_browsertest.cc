@@ -18,8 +18,10 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -84,6 +86,12 @@
 #include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 #include "sandbox/policy/switches.h"
 #endif
+
+using testing::_;
+using testing::InSequence;
+using testing::Mock;
+using testing::StrictMock;
+using testing::Test;
 
 namespace content {
 
@@ -2343,5 +2351,279 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ClearResourceCache) {
   EXPECT_TRUE(FetchScript(shell(), kScriptUrl));
   ASSERT_EQ(num_script_requests_from_renderer, 2u);
 }
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+class FakeStableVideoDecoderFactoryService
+    : public media::stable::mojom::StableVideoDecoderFactory {
+ public:
+  FakeStableVideoDecoderFactoryService() = default;
+  FakeStableVideoDecoderFactoryService(
+      const FakeStableVideoDecoderFactoryService&) = delete;
+  FakeStableVideoDecoderFactoryService& operator=(
+      const FakeStableVideoDecoderFactoryService&) = delete;
+  ~FakeStableVideoDecoderFactoryService() override = default;
+
+  // media::stable::mojom::StableVideoDecoderFactory implementation.
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
+          tracker) final {
+    video_decoders_.Add(
+        std::make_unique<FakeStableVideoDecoderService>(std::move(tracker)),
+        std::move(receiver));
+  }
+
+ private:
+  class FakeStableVideoDecoderService
+      : public media::stable::mojom::StableVideoDecoder {
+   public:
+    explicit FakeStableVideoDecoderService(
+        mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
+            tracker)
+        : tracker_(std::move(tracker)) {}
+    FakeStableVideoDecoderService(const FakeStableVideoDecoderService&) =
+        delete;
+    FakeStableVideoDecoderService& operator=(
+        const FakeStableVideoDecoderService&) = delete;
+    ~FakeStableVideoDecoderService() override = default;
+
+    // media::stable::mojom::StableVideoDecoder implementation.
+    void GetSupportedConfigs(GetSupportedConfigsCallback callback) final {
+      std::move(callback).Run({}, media::VideoDecoderType::kTesting);
+    }
+    void Construct(
+        mojo::PendingAssociatedRemote<media::stable::mojom::VideoDecoderClient>
+            stable_video_decoder_client_remote,
+        mojo::PendingRemote<media::stable::mojom::MediaLog>
+            stable_media_log_remote,
+        mojo::PendingReceiver<media::stable::mojom::VideoFrameHandleReleaser>
+            stable_video_frame_handle_releaser_receiver,
+        mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+        const gfx::ColorSpace& target_color_space) final {}
+    void Initialize(
+        const media::VideoDecoderConfig& config,
+        bool low_delay,
+        mojo::PendingRemote<media::stable::mojom::StableCdmContext> cdm_context,
+        InitializeCallback callback) final {}
+    void Decode(const scoped_refptr<media::DecoderBuffer>& buffer,
+                DecodeCallback callback) final {}
+    void Reset(ResetCallback callback) final {}
+
+   private:
+    mojo::Remote<media::stable::mojom::StableVideoDecoderTracker> tracker_;
+  };
+
+  mojo::UniqueReceiverSet<media::stable::mojom::StableVideoDecoder>
+      video_decoders_;
+};
+
+class RenderProcessHostTestStableVideoDecoderTest
+    : public RenderProcessHostTestBase {
+ public:
+  RenderProcessHostTestStableVideoDecoderTest()
+      : stable_video_decoder_factory_receiver_(
+            &stable_video_decoder_factory_service_) {}
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(media::kUseOutOfProcessVideoDecoding);
+    RenderProcessHostTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    RenderProcessHostImpl::SetStableVideoDecoderFactoryCreationCBForTesting(
+        stable_video_decoder_factory_creation_cb_.Get());
+    RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
+        stable_video_decoder_event_cb_.Get());
+
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+    // When Chrome is compiled with
+    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT), renderer processes need a
+    // media::mojom::VideoDecoder during startup in order to query for supported
+    // configurations (see content::RenderMediaClient::Initialize()). With
+    // OOP-VD, this should cause the creation of a
+    // media::stable::mojom::StableVideoDecoderFactory in order to create the
+    // corresponding media::stable::mojom::StableVideoDecoder. When the
+    // supported configurations are obtained, the media::mojom::VideoDecoder and
+    // media::stable::mojom::StableVideoDecoder connections should be torn down
+    // thus causing the termination of the
+    // media::stable::mojom::StableVideoDecoderFactory connection. Here, we set
+    // up expectations for that.
+    base::RunLoop run_loop;
+    {
+      InSequence seq;
+      EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
+          .WillOnce(
+              [&](mojo::PendingReceiver<
+                  media::stable::mojom::StableVideoDecoderFactory> receiver) {
+                stable_video_decoder_factory_receiver_.Bind(
+                    std::move(receiver));
+                stable_video_decoder_factory_receiver_.set_disconnect_handler(
+                    stable_video_decoder_factory_disconnect_cb_.Get());
+              });
+      EXPECT_CALL(stable_video_decoder_event_cb_,
+                  Run(RenderProcessHostImpl::StableVideoDecoderEvent::
+                          kAllDecodersDisconnected));
+      EXPECT_CALL(stable_video_decoder_factory_disconnect_cb_, Run())
+          .WillOnce([&]() {
+            stable_video_decoder_factory_receiver_.reset();
+            run_loop.Quit();
+          });
+    }
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+
+    rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
+        ShellContentBrowserClient::Get()->browser_context(), nullptr);
+    ASSERT_TRUE(rph_->Init());
+    rph_initialized_ = true;
+
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+    run_loop.Run();
+    ASSERT_TRUE(VerifyAndClearExpectations());
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+  }
+
+  void TearDownOnMainThread() override {
+    // Reset the |stable_video_decoder_factory_receiver_| so that the
+    // disconnection callback is not called on tear down.
+    stable_video_decoder_factory_receiver_.reset();
+    if (rph_initialized_) {
+      rph_->Cleanup();
+    }
+    rph_ = nullptr;
+  }
+
+ protected:
+  bool VerifyAndClearExpectations() {
+    // Note: we verify and clear the expectations for all the mocks. We
+    // intentionally don't early out if verifying one mock fails.
+    bool result = Mock::VerifyAndClearExpectations(
+        &stable_video_decoder_factory_creation_cb_);
+    result = Mock::VerifyAndClearExpectations(
+                 &stable_video_decoder_factory_disconnect_cb_) &&
+             result;
+    result =
+        Mock::VerifyAndClearExpectations(&stable_video_decoder_event_cb_) &&
+        result;
+    return result;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+
+  StrictMock<base::MockRepeatingCallback<
+      RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB::RunType>>
+      stable_video_decoder_factory_creation_cb_;
+  StrictMock<base::MockOnceCallback<void()>>
+      stable_video_decoder_factory_disconnect_cb_;
+  StrictMock<base::MockRepeatingCallback<
+      RenderProcessHostImpl::StableVideoDecoderEventCB::RunType>>
+      stable_video_decoder_event_cb_;
+
+  FakeStableVideoDecoderFactoryService stable_video_decoder_factory_service_;
+  mojo::Receiver<media::stable::mojom::StableVideoDecoderFactory>
+      stable_video_decoder_factory_receiver_;
+
+  raw_ptr<RenderProcessHost> rph_ = nullptr;
+  bool rph_initialized_ = false;
+};
+
+// Ensures that the StableVideoDecoderFactory connection is terminated after a
+// delay once all the StableVideoDecoders created with it have disconnected.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
+                       FactoryIsResetAfterDelay) {
+  ASSERT_FALSE(Test::HasFailure());
+
+  // First, let's ask the RPH to establish a StableVideoDecoder connection. This
+  // should cause the RPH's StableVideoDecoderFactory to be bound.
+  EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
+      .WillOnce([&](mojo::PendingReceiver<
+                    media::stable::mojom::StableVideoDecoderFactory> receiver) {
+        stable_video_decoder_factory_receiver_.Bind(std::move(receiver));
+        stable_video_decoder_factory_receiver_.set_disconnect_handler(
+            stable_video_decoder_factory_disconnect_cb_.Get());
+      });
+  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+      stable_video_decoder_remote;
+  rph_->CreateStableVideoDecoder(
+      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  ASSERT_TRUE(VerifyAndClearExpectations());
+
+  // Now, let's destroy the StableVideoDecoder connection. Since this was the
+  // only StableVideoDecoder connection, destroying it should cause the RPH's
+  // StableVideoDecoderFactory connection to die after a delay.
+  base::RunLoop run_loop;
+  base::ElapsedTimer reset_stable_video_decoder_factory_timer;
+  {
+    InSequence seq;
+    EXPECT_CALL(stable_video_decoder_event_cb_,
+                Run(RenderProcessHostImpl::StableVideoDecoderEvent::
+                        kAllDecodersDisconnected));
+    EXPECT_CALL(stable_video_decoder_factory_disconnect_cb_, Run())
+        .WillOnce([&]() { run_loop.Quit(); });
+  }
+  stable_video_decoder_remote.reset();
+  run_loop.Run();
+  EXPECT_GE(reset_stable_video_decoder_factory_timer.Elapsed(),
+            base::Seconds(3));
+}
+
+// Ensures that the timer that destroys the StableVideoDecoderFactory connection
+// when all StableVideoDecoder connections die is stopped if a request to
+// connect another StableVideoDecoder is received soon enough.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTestStableVideoDecoderTest,
+                       FactoryResetTimerIsStoppedOnRequestBeforeResetDelay) {
+  ASSERT_FALSE(Test::HasFailure());
+
+  // First, let's ask the RPH to establish a StableVideoDecoder connection. This
+  // should cause the RPH's StableVideoDecoderFactory to be bound.
+  EXPECT_CALL(stable_video_decoder_factory_creation_cb_, Run(_))
+      .WillOnce([&](mojo::PendingReceiver<
+                    media::stable::mojom::StableVideoDecoderFactory> receiver) {
+        stable_video_decoder_factory_receiver_.Bind(std::move(receiver));
+        stable_video_decoder_factory_receiver_.set_disconnect_handler(
+            stable_video_decoder_factory_disconnect_cb_.Get());
+      });
+  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+      stable_video_decoder_remote;
+  rph_->CreateStableVideoDecoder(
+      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  ASSERT_TRUE(VerifyAndClearExpectations());
+
+  // Now, let's destroy the StableVideoDecoder connection. Since this was the
+  // only StableVideoDecoder connection, destroying it should trigger a
+  // kAllDecodersDisconnected event.
+  base::RunLoop run_loop_1;
+  EXPECT_CALL(stable_video_decoder_event_cb_,
+              Run(RenderProcessHostImpl::StableVideoDecoderEvent::
+                      kAllDecodersDisconnected))
+      .WillOnce([&]() { run_loop_1.Quit(); });
+  stable_video_decoder_remote.reset();
+  run_loop_1.Run();
+  ASSERT_TRUE(VerifyAndClearExpectations());
+
+  // Now, let's request another StableVideoDecoder connection immediately. This
+  // should stop the timer that resets the factory.
+  EXPECT_CALL(stable_video_decoder_event_cb_,
+              Run(RenderProcessHostImpl::StableVideoDecoderEvent::
+                      kFactoryResetTimerStopped));
+  rph_->CreateStableVideoDecoder(
+      stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+  ASSERT_TRUE(VerifyAndClearExpectations());
+
+  // Finally, let's wait a few seconds (longer than the delay configured for the
+  // timer that kills the StableVideoDecoderFactory connection). Because the
+  // |stable_video_decoder_factory_disconnect_cb_| is a StrictMock, this should
+  // detect that the StableVideoDecoderFactory connection doesn't die.
+  base::RunLoop run_loop_2;
+  GetUIThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
+          run_loop_2.QuitClosure()),
+      base::Seconds(5));
+  run_loop_2.Run();
+  ASSERT_TRUE(VerifyAndClearExpectations());
+}
+
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 }  // namespace content
