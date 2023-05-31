@@ -23,7 +23,6 @@ const char kTranslateTimeToBeReady[] = "Translate.Translation.TimeToBeReady";
 const char kTranslateTimeToLoad[] = "Translate.Translation.TimeToLoad";
 const char kTranslateTimeToTranslate[] =
     "Translate.Translation.TimeToTranslate";
-const char kTranslateUserActionDuration[] = "Translate.UserActionDuration";
 const char kTranslateLanguageDeterminedDuration[] =
     "Translate.LanguageDeterminedDuration";
 const char kTranslatedLanguageDetectionContentLength[] =
@@ -53,11 +52,6 @@ void ReportTimeToTranslate(double time_in_msec) {
   UMA_HISTOGRAM_MEDIUM_TIMES(
       metrics_internal::kTranslateTimeToTranslate,
       base::Microseconds(static_cast<int64_t>(time_in_msec * 1000.0)));
-}
-
-void ReportUserActionDuration(base::TimeTicks begin, base::TimeTicks end) {
-  UMA_HISTOGRAM_LONG_TIMES(metrics_internal::kTranslateUserActionDuration,
-                           end - begin);
 }
 
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,

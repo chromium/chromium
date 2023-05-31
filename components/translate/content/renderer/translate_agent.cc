@@ -264,8 +264,6 @@ void TranslateAgent::PageCaptured(const std::u16string& contents) {
   if (language.empty())
     return;
 
-  language_determined_time_ = base::TimeTicks::Now();
-
   details.time = base::Time::Now();
   details.url = web_detection_details.url;
   details.content_language = content_language;
@@ -471,8 +469,6 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
   source_lang_ = (source_lang != kUnknownLanguageCode) ? source_lang
                                                        : kAutoDetectionLanguage;
   target_lang_ = target_lang;
-
-  ReportUserActionDuration(language_determined_time_, base::TimeTicks::Now());
 
   // Set up v8 isolated world.
   EnsureIsolatedWorldInitialized(world_id_);

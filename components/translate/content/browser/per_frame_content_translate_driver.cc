@@ -146,7 +146,6 @@ void PerFrameContentTranslateDriver::TranslatePage(
   if (!IsForCurrentPage(page_seq_no))
     return;
 
-  ReportUserActionDuration(language_determined_time_, base::TimeTicks::Now());
   stats_.Clear();
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 

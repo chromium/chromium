@@ -54,9 +54,6 @@ void ReportTimeToLoad(double time_in_msec);
 // Called when a page translation is finished.
 void ReportTimeToTranslate(double time_in_msec);
 
-// Called when a translation is triggered.
-void ReportUserActionDuration(base::TimeTicks begin, base::TimeTicks end);
-
 // Called when the page language is determined.
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,
                                       base::TimeTicks end);

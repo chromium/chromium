@@ -165,16 +165,6 @@ TEST(TranslateMetricsTest, ReportTimeToTranslate) {
   recorder.CheckTotalCount(1);
 }
 
-TEST(TranslateMetricsTest, ReportUserActionDuration) {
-  MetricsRecorder recorder(metrics_internal::kTranslateUserActionDuration);
-  recorder.CheckTotalCount(0);
-  TimeTicks begin = TimeTicks::Now();
-  TimeTicks end = begin + base::Seconds(3776);
-  ReportUserActionDuration(begin, end);
-  recorder.CheckValueInLogs(3776000.0);
-  recorder.CheckTotalCount(1);
-}
-
 TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {
   MetricsRecorder recorder(
       metrics_internal::kTranslatedLanguageDetectionContentLength);
