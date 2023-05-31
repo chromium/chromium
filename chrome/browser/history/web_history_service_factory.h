@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_WEB_HISTORY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_HISTORY_WEB_HISTORY_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -32,7 +32,7 @@ class WebHistoryServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
  private:
-  friend struct base::DefaultSingletonTraits<WebHistoryServiceFactory>;
+  friend base::NoDestructor<WebHistoryServiceFactory>;
 
   WebHistoryServiceFactory();
   ~WebHistoryServiceFactory() override;

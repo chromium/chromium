@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 
@@ -40,7 +40,7 @@ class HistoryServiceFactory : public ProfileKeyedServiceFactory {
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend struct base::DefaultSingletonTraits<HistoryServiceFactory>;
+  friend base::NoDestructor<HistoryServiceFactory>;
 
   HistoryServiceFactory();
   ~HistoryServiceFactory() override;

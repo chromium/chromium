@@ -14,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/android/chrome_jni_headers/HistoryReportJniBridge_jni.h"
 #include "chrome/browser/android/history_report/data_observer.h"
 #include "chrome/browser/android/history_report/data_provider.h"
