@@ -9,9 +9,9 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -191,9 +191,11 @@ TEST(PartitionAllocAsMalloc, Alignment) {
 TEST(PartitionAllocAsMalloc, DisableCrashOnOom) {
   PartitionAllocSetCallNewHandlerOnMallocFailure(false);
   // Smaller than the max size to avoid overflow checks with padding.
-  void* ptr = PartitionMalloc(
-      nullptr, std::numeric_limits<size_t>::max() - 10 * base::GetPageSize(),
-      nullptr);
+  void* ptr =
+      PartitionMalloc(nullptr,
+                      std::numeric_limits<size_t>::max() -
+                          10 * partition_alloc::internal::base::GetPageSize(),
+                      nullptr);
   // Should not crash.
   EXPECT_FALSE(ptr);
   PartitionAllocSetCallNewHandlerOnMallocFailure(true);

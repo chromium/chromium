@@ -10,10 +10,10 @@
 #include <new>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/memory/page_size.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
-#include "base/memory/page_size.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_WIN)
@@ -48,7 +48,7 @@ bool g_call_new_handler_on_malloc_failure = false;
 ALWAYS_INLINE size_t GetCachedPageSize() {
   static size_t pagesize = 0;
   if (!pagesize) {
-    pagesize = base::GetPageSize();
+    pagesize = partition_alloc::internal::base::GetPageSize();
   }
   return pagesize;
 }
