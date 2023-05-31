@@ -1,5 +1,6 @@
 anys==0.2.1
 mypy==1.2.0
+pillow==9.4.0
 pytest==7.3.1
 pytest-asyncio==0.21.0
 pytest-icdiff==0.6
