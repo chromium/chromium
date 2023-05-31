@@ -25,6 +25,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 
 /**
  * A class with utility functions that get the appropriate string and icon resources for the
@@ -263,7 +264,7 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_motion_sensors_blocked;
                 try {
                     if (FeatureList.isNativeInitialized()
-                            && DeviceFeatureList.isEnabled(
+                            && DeviceFeatureMap.getInstance().isEnabled(
                                     DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
                         sensorsPermissionTitle = R.string.sensors_permission_title;
                         sensorsAllowedDescription =

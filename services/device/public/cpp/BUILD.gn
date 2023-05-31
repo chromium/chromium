@@ -18,7 +18,7 @@ component("device_features") {
 
 if (is_android) {
   source_set("device_feature_list") {
-    sources = [ "device_feature_list.cc" ]
+    sources = [ "device_feature_map.cc" ]
     deps = [
       ":device_features",
       "//base",

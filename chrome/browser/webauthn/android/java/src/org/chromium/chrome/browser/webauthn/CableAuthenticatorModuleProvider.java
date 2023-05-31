@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFacto
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
 import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 
 /**
  * Provides a UI that attempts to install the caBLEv2 Authenticator module. If already installed, or
@@ -238,7 +239,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
             return false;
         }
 
-        if (DeviceFeatureList.isEnabled(
+        if (DeviceFeatureMap.getInstance().isEnabled(
                     DeviceFeatureList.WEBAUTHN_HYBRID_LINK_WITHOUT_NOTIFICATIONS)) {
             return true;
         }

@@ -54,6 +54,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.Origin;
 
@@ -147,8 +148,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private boolean isCredManEnabled() {
         if (sIsCredManEnabled == null) {
-            sIsCredManEnabled =
-                    DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
+            sIsCredManEnabled = DeviceFeatureMap.getInstance().isEnabled(
+                                        DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
                     && (BuildCompat.isAtLeastU() || mOverrideVersionCheckForTesting);
         }
         return sIsCredManEnabled;
@@ -1288,7 +1289,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean isHybridClientApiAvailable() {
         return PackageUtils.getPackageVersion("com.google.android.gms")
                 >= GMSCORE_MIN_VERSION_HYBRID_API
-                && DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+                && DeviceFeatureMap.getInstance().isEnabled(
+                        DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
     }
 
     private static final String getChannel() {
