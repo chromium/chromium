@@ -8,10 +8,11 @@ import {createPageAvailabilityForTesting, CrSettingsPrefs, Router, routes, setCo
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {FakeContactManager} from 'chrome://webui-test/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/nearby_share/shared/fake_nearby_share_settings.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('<main-page-container>', function() {
   /** @type {?MainPageContainerElement} */
@@ -180,10 +181,93 @@ suite('<main-page-container>', function() {
         Router.getInstance().resetRouteForTesting();
       });
 
+      setup(() => {
+        Router.getInstance().navigateTo(routes.BASIC);
+      });
+
       test('advanced toggle should not render', () => {
         const advancedToggle =
             mainPageContainer.shadowRoot.querySelector('#advancedToggle');
         assertNull(advancedToggle);
+      });
+
+      suite('Route navigations', () => {
+        function queryActivePages() {
+          return mainPageContainer.shadowRoot.querySelectorAll(
+              'os-settings-section[active]');
+        }
+
+        suite('From Top-level', () => {
+          test('to Page should result in only one active page', async () => {
+            // Simulate navigating from root to Network page
+            const navigationCompletePromise =
+                eventToPromise('show-container', window);
+            Router.getInstance().navigateTo(routes.INTERNET);
+            await navigationCompletePromise;
+
+            const activePages = queryActivePages();
+            assertEquals(1, activePages.length);
+            assertEquals('internet', activePages[0].section);
+          });
+
+          test('to Subpage should result in only one active page', async () => {
+            // Simulate navigating from root to Bluetooth subpage
+            const navigationCompletePromise =
+                eventToPromise('show-container', window);
+            Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
+            await navigationCompletePromise;
+
+            const activePages = queryActivePages();
+            assertEquals(1, activePages.length);
+            assertEquals('bluetooth', activePages[0].section);
+          });
+        });
+
+        suite('From Page', () => {
+          test(
+              'to another Page should result in only one active page',
+              async () => {
+                // Simulate navigating from Network page to Bluetooth page
+                Router.getInstance().navigateTo(routes.INTERNET);
+                const navigationCompletePromise =
+                    eventToPromise('show-container', window);
+                Router.getInstance().navigateTo(routes.BLUETOOTH);
+                await navigationCompletePromise;
+
+                const activePages = queryActivePages();
+                assertEquals(1, activePages.length);
+                assertEquals('bluetooth', activePages[0].section);
+              });
+
+          test('to Subpage should result in only one active page', async () => {
+            // Simulate navigating from A11y page to A11y display subpage
+            Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
+            const navigationCompletePromise =
+                eventToPromise('show-container', window);
+            Router.getInstance().navigateTo(
+                routes.A11Y_DISPLAY_AND_MAGNIFICATION);
+            await navigationCompletePromise;
+
+            const activePages = queryActivePages();
+            assertEquals(1, activePages.length);
+            assertEquals('osAccessibility', activePages[0].section);
+          });
+
+          test(
+              'to Top-level should result in only one active page',
+              async () => {
+                // Simulate navigating from Network page to root
+                Router.getInstance().navigateTo(routes.INTERNET);
+                const navigationCompletePromise =
+                    eventToPromise('show-container', window);
+                Router.getInstance().navigateTo(routes.BASIC);
+                await navigationCompletePromise;
+
+                const activePages = queryActivePages();
+                assertEquals(1, activePages.length);
+                assertEquals('internet', activePages[0].section);
+              });
+        });
       });
     });
 
