@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+  This page loads the given number of fetch keepalive requests, and then waits for their responses.
+-->
+<title>Fetching</title>
+<script>
+const PARAMS = new URL(location.href).searchParams;
+const NUM_REQUESTS= PARAMS.has('requests') ? Number(PARAMS.get('requests')) : 1;
+const METHOD = PARAMS.get('method') || 'GET';
+const MODE = PARAMS.get('mode') || 'no-cors';
+
+const promises = [];
+for (let i = 0; i < NUM_REQUESTS; i += 1) {
+  promises.push(fetch('/beacon', {
+    keepalive: true,
+    cache: 'no-store',
+    method: METHOD,
+    mode: MODE
+  }));
+}
+document.title = 'Waiting';
+Promise.all(promises).then(() => {
+  document.title = 'Resolved';
+}, () => {
+  document.title = 'Rejected';
+});
+</script>
