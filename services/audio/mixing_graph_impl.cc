@@ -224,6 +224,7 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
                      "MixingGraphImpl::OnMoreData", "delay", delay,
                      "delay_timestamp", delay_timestamp);
+  CheckGlitchInfoAndDelay(glitch_info, delay);
 
   uint32_t frames_delayed = media::AudioTimestampHelper::TimeToFrames(
       delay, output_params_.sample_rate());

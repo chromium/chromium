@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/sample_rates.h"
@@ -59,6 +60,7 @@ void WebRtcAudioDeviceImpl::RenderData(
     const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT2("audio", "WebRtcAudioDeviceImpl::RenderData", "sample_rate",
                sample_rate, "audio_delay_ms", audio_delay.InMilliseconds());
+  media::CheckGlitchInfoAndDelay(glitch_info, audio_delay);
   {
     base::AutoLock auto_lock(lock_);
     cumulative_glitch_info_ += glitch_info;

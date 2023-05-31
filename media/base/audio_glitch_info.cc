@@ -40,4 +40,15 @@ AudioGlitchInfo AudioGlitchInfo::Accumulator::GetAndReset() {
   return temp;
 }
 
+void CheckGlitchInfoAndDelay(const AudioGlitchInfo& glitch_info,
+                             const base::TimeDelta delay) {
+  CHECK(glitch_info.duration < base::Seconds(1000));
+  CHECK(glitch_info.duration < base::Seconds(100));
+  CHECK(glitch_info.duration < base::Seconds(10));
+
+  CHECK(glitch_info.duration >= base::Seconds(-100));
+  CHECK(glitch_info.duration >= base::Seconds(-10));
+  CHECK(glitch_info.duration >= base::Seconds(0));
+}
+
 }  // namespace media

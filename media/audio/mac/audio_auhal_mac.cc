@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/core_audio_util_mac.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_pull_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/mac/channel_layout_util_mac.h"
@@ -366,7 +367,9 @@ void AUHALStream::ProvideInput(int frame_delay, AudioBus* dest) {
   const base::TimeDelta delay = playout_time - now;
 
   // Supply the input data and render the output data.
-  source_->OnMoreData(delay, now, glitch_info_accumulator_.GetAndReset(), dest);
+  auto glitch_info = glitch_info_accumulator_.GetAndReset();
+  CheckGlitchInfoAndDelay(glitch_info, delay);
+  source_->OnMoreData(delay, now, glitch_info, dest);
   dest->Scale(volume_);
 }
 

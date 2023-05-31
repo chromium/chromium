@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/audio/audio_device_thread.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 #include "services/audio/output_glitch_counter.h"
@@ -162,6 +163,9 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     // returned after the browser stops the output device in response to a
     // renderer side request.
     control_signal = std::numeric_limits<uint32_t>::max();
+  } else {
+    media::CheckGlitchInfoAndDelay(glitch_info, delay);
+    media::CheckGlitchInfoAndDelay(pending_glitch_info_, delay);
   }
 
   size_t sent_bytes = socket_.Send(&control_signal, sizeof(control_signal));

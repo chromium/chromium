@@ -601,6 +601,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                 media::AudioBus* audio_bus) {
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   DCHECK_LE(sink_params_.channels(), 8);
+  media::CheckGlitchInfoAndDelay(glitch_info, delay);
   base::AutoLock auto_lock(lock_);
   if (!source_)
     return 0;
