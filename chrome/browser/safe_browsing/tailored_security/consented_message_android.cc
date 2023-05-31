@@ -60,12 +60,17 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
             safe_browsing::kTailoredSecurityUpdatedMessages)) {
       description = l10n_util::GetStringUTF16(
           IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION_UPDATED);
+      icon_resource_id =
+          ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD_BLUE);
+      // Need to disable tint here because it removes a shade of blue from the
+      // shield which distorts the image.
+      message_->DisableIconTint();
     } else {
       description = l10n_util::GetStringUTF16(
           IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION);
+      icon_resource_id =
+          ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SAFETY_CHECK);
     }
-    icon_resource_id =
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SAFETY_CHECK);
   } else {
     title = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE);
@@ -73,12 +78,14 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
             safe_browsing::kTailoredSecurityUpdatedMessages)) {
       description = l10n_util::GetStringUTF16(
           IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED);
+      icon_resource_id =
+          ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD_GRAY);
     } else {
       description = l10n_util::GetStringUTF16(
           IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION);
+      icon_resource_id =
+          ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD);
     }
-    icon_resource_id =
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD);
     message_->DisableIconTint();
   }
   message_->SetTitle(title);
