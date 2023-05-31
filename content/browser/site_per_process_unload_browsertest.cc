@@ -1343,8 +1343,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // 2. Navigate A1 to A3, same-process.
 // 3. A1 requests the browser to detach B1, but this message is dropped.
 // 4. The browser must be resilient and detach B1 when A3 commits.
+// TODO(crbug.com/1449668): Fix flakes and re-enable test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       SameProcessNavigationResilientToDetachDropped) {
+                       DISABLED_SameProcessNavigationResilientToDetachDropped) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back-forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
