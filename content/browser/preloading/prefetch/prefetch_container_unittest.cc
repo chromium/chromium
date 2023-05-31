@@ -713,49 +713,6 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
             PrefetchStatus::kPrefetchFailedIneligibleRedirect);
 }
 
-TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
-  const GURL kTestUrl = GURL("https://test.com?a=2&b=3");
-
-  PrefetchContainer prefetch_container(
-      GlobalRenderFrameHostId(1234, 5678), kTestUrl,
-      PrefetchType(/*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager),
-      blink::mojom::Referrer(),
-      /*no_vary_search_expected=*/absl::nullopt,
-      blink::mojom::SpeculationInjectionWorld::kNone,
-      /*prefetch_document_manager=*/nullptr);
-
-  // Set up NoVarySearchHelper.
-  scoped_refptr<NoVarySearchHelper> no_vary_search_helper =
-      base::MakeRefCounted<NoVarySearchHelper>();
-
-  network::mojom::URLResponseHeadPtr head =
-      network::mojom::URLResponseHead::New();
-  head->parsed_headers = network::mojom::ParsedHeaders::New();
-  head->parsed_headers->no_vary_search_with_parse_error =
-      network::mojom::NoVarySearchWithParseError::NewNoVarySearch(
-          network::mojom::NoVarySearch::New());
-  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
-      ->vary_on_key_order = true;
-  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
-      ->search_variance =
-      network::mojom::SearchParamsVariance::NewVaryParams({"a"});
-
-  no_vary_search_helper->AddUrl(kTestUrl, *head);
-  prefetch_container.SetNoVarySearchHelper(no_vary_search_helper);
-
-  // Register Cookie listener for the prefetch URL.
-  prefetch_container.RegisterCookieListener(cookie_manager());
-
-  EXPECT_FALSE(
-      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
-
-  ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
-
-  EXPECT_TRUE(
-      prefetch_container.GetReader().HaveDefaultContextCookiesChanged());
-}
-
 TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
   struct TestCase {
     blink::mojom::SpeculationEagerness eagerness;

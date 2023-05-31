@@ -243,9 +243,6 @@ void PrefetchDocumentManager::PrefetchUrl(
       std::move(no_vary_search_expected), world,
       weak_method_factory_.GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
-  if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    container->SetNoVarySearchHelper(no_vary_search_helper_);
-  }
   DVLOG(1) << *container << ": created";
   base::WeakPtr<PrefetchContainer> weak_container = container->GetWeakPtr();
   owned_prefetches_[url] = std::move(container);

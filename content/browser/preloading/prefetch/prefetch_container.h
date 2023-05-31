@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
@@ -246,11 +245,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void SimulateAttemptAtInterceptorForTest();
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
-  void SetNoVarySearchHelper(
-      scoped_refptr<NoVarySearchHelper> no_vary_search_helper) {
-    no_vary_search_helper_ = no_vary_search_helper;
-  }
-
   class SinglePrefetch;
 
   // A `Reader` represents the current state of serving.
@@ -347,10 +341,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
-  // Helper function to match URLs either directly or using
-  // |no_vary_search_helper_|.
-  bool IsMatchingURL(const GURL& internal_url, const GURL& external_url) const;
-
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
@@ -444,9 +434,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // holdback status, triggering outcome and failure reason are set in
   // `SetPrefetchStatus`.
   base::WeakPtr<PreloadingAttempt> attempt_;
-
-  // Used to match URLs based on no vary search params.
-  scoped_refptr<NoVarySearchHelper> no_vary_search_helper_;
 
   // A DevTools token used to identify initiator document if the prefetch is
   // triggered by SpeculationRules.

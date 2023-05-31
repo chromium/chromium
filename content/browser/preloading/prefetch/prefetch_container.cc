@@ -793,8 +793,7 @@ bool PrefetchContainer::IsPrefetchServable(
 bool PrefetchContainer::Reader::DoesCurrentURLToServeMatch(
     const GURL& url) const {
   DCHECK(index_redirect_chain_to_serve_ >= 1);
-  return prefetch_container_.IsMatchingURL(
-      GetCurrentSinglePrefetchToServe().url_, url);
+  return GetCurrentSinglePrefetchToServe().url_ == url;
 }
 
 PrefetchContainer::SinglePrefetch&
@@ -853,27 +852,6 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
   }
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-}
-
-bool PrefetchContainer::IsMatchingURL(const GURL& internal_url,
-                                      const GURL& external_url) const {
-  // Check if the URLs match directly.
-  if (internal_url == external_url) {
-    return true;
-  }
-
-  // Otherwise, try to use no_vary_search_helper_.
-  if (!no_vary_search_helper_) {
-    return false;
-  }
-
-  absl::optional<GURL> no_vary_search_match_url =
-      no_vary_search_helper_->MatchUrl(external_url);
-  if (!no_vary_search_match_url) {
-    return false;
-  }
-
-  return internal_url == no_vary_search_match_url.value();
 }
 
 void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
