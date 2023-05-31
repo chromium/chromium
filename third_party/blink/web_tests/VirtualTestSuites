@@ -1101,7 +1101,7 @@
       "http/tests/storage/partitioned-storage"
     ],
     "args": [ "--disable-features=ThirdPartyStoragePartitioning" ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
