@@ -377,6 +377,10 @@ void MaybeReportDangerousDownloadBlocked(
     return;
   }
 
+  if (!download) {
+    return;
+  }
+
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
