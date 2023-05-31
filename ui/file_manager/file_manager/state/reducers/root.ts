@@ -29,6 +29,12 @@ export function rootReducer(currentState: State, action: Action): State {
   // use any entry from `allEntries`.
   const state = cacheEntries(currentState, action);
 
+  if (window.DEBUG_STORE) {
+    console.groupCollapsed(`Action: ${action.type}`);
+    console.dir(action.payload);
+    console.groupEnd();
+  }
+
   switch (action.type) {
     case ActionType.CHANGE_DIRECTORY:
       return changeDirectory(state, action);

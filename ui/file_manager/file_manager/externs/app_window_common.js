@@ -35,3 +35,9 @@ Window.prototype.IN_TEST;
  * @param {*=} desc
  */
 const __decorate = function(decorators, target, key, desc) {};
+
+/**
+ * Set this to true to log action data in the console for debugging purpose.
+ * @type {boolean}
+ */
+Window.prototype.DEBUG_STORE;
