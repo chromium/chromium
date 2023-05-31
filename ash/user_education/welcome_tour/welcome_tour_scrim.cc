@@ -9,8 +9,13 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider_source.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
 
@@ -28,10 +33,9 @@ WelcomeTourScrim* g_instance = nullptr;
 // root window while in existence. On destruction, the scrim for the associated
 // root window is automatically removed.
 // TODO(http://b/277091650): Add background blur.
-// TODO(http://b/277091650): Add background color.
-// TODO(http://b/277091650): Add dynamic resizing.
 // TODO(http://b/277091650): Add mask cut out for help bubble anchor view.
-class WelcomeTourScrim::Scrim {
+class WelcomeTourScrim::Scrim : public aura::WindowObserver,
+                                public ui::ColorProviderSourceObserver {
  public:
   explicit Scrim(aura::Window* root_window)
       : root_window_(root_window),
@@ -41,12 +45,32 @@ class WelcomeTourScrim::Scrim {
 
   Scrim(const Scrim&) = delete;
   Scrim& operator=(const Scrim&) = delete;
-  ~Scrim() = default;
+  ~Scrim() override = default;
 
  private:
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override {
+    UpdateBounds();
+  }
+
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override { UpdateColor(); }
+
   // Returns the help bubble container associated with `this` scrim.
   aura::Window* GetHelpBubbleContainer() {
     return root_window_->GetChildById(kShellWindowId_HelpBubbleContainer);
+  }
+
+  // Returns the root window controller associated with `this` scrim.
+  RootWindowController* GetRootWindowController() {
+    return RootWindowController::ForWindow(root_window_);
   }
 
   // Invoked once to initialize `this` scrim.
@@ -55,10 +79,34 @@ class WelcomeTourScrim::Scrim {
     layer_owner_.layer()->SetFillsBoundsOpaquely(false);
     layer_owner_.layer()->SetName(WelcomeTourScrim::kLayerName);
 
+    // Configure dynamic scrim layer properties.
+    UpdateBounds();
+    UpdateColor();
+
     // Add the scrim layer to the bottom of the `help_bubble_container`.
     aura::Window* const help_bubble_container = GetHelpBubbleContainer();
     help_bubble_container->layer()->Add(layer_owner_.layer());
     help_bubble_container->layer()->StackAtBottom(layer_owner_.layer());
+
+    // Observe the `help_bubble_container` and associated color provider source
+    // so that dynamic scrim layer properties can be updated appropriately.
+    window_observation_.Observe(help_bubble_container);
+    Observe(GetRootWindowController()->color_provider_source());
+  }
+
+  // Invoked to updates bounds of the scrim layer.
+  void UpdateBounds() {
+    layer_owner_.layer()->SetBounds(
+        gfx::Rect(/*origin=*/gfx::Point(),
+                  /*size=*/GetHelpBubbleContainer()->bounds().size()));
+  }
+
+  // Invoked to update color of the scrim layer.
+  void UpdateColor() {
+    layer_owner_.layer()->SetColor(GetRootWindowController()
+                                       ->color_provider_source()
+                                       ->GetColorProvider()
+                                       ->GetColor(cros_tokens::kCrosSysScrim));
   }
 
   // Pointer to the root window associated with `this` scrim.
@@ -66,6 +114,11 @@ class WelcomeTourScrim::Scrim {
 
   // Owner for the scrim layer applied to the associated help bubble container.
   ui::LayerOwner layer_owner_;
+
+  // Used to observe the associated help bubble container in order to keep the
+  // bounds of the scrim layer in sync.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 // WelcomeTourScrim ------------------------------------------------------------
