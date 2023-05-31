@@ -283,10 +283,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void setAttribute(const QualifiedName&, const String&, ExceptionState&);
 
-  static bool ParseAttributeName(QualifiedName&,
-                                 const AtomicString& namespace_uri,
-                                 const AtomicString& qualified_name,
-                                 ExceptionState&);
+  static absl::optional<QualifiedName> ParseAttributeName(
+      const AtomicString& namespace_uri,
+      const AtomicString& qualified_name,
+      ExceptionState&);
   void setAttributeNS(const AtomicString& namespace_uri,
                       const AtomicString& qualified_name,
                       String value,

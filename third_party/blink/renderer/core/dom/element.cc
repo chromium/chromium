@@ -4780,14 +4780,15 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
   }
 }
 
-bool Element::ParseAttributeName(QualifiedName& out,
-                                 const AtomicString& namespace_uri,
-                                 const AtomicString& qualified_name,
-                                 ExceptionState& exception_state) {
+// static
+absl::optional<QualifiedName> Element::ParseAttributeName(
+    const AtomicString& namespace_uri,
+    const AtomicString& qualified_name,
+    ExceptionState& exception_state) {
   AtomicString prefix, local_name;
   if (!Document::ParseQualifiedName(qualified_name, prefix, local_name,
                                     exception_state)) {
-    return false;
+    return absl::nullopt;
   }
   DCHECK(!exception_state.HadException());
 
@@ -4797,51 +4798,49 @@ bool Element::ParseAttributeName(QualifiedName& out,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNamespaceError,
         "'" + namespace_uri + "' is an invalid namespace for attributes.");
-    return false;
+    return absl::nullopt;
   }
-
-  out = q_name;
-  return true;
+  return q_name;
 }
 
 void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
                              String value,
                              ExceptionState& exception_state) {
-  QualifiedName parsed_name = g_any_name;
-  if (!ParseAttributeName(parsed_name, namespace_uri, qualified_name,
-                          exception_state)) {
+  absl::optional<QualifiedName> parsed_name =
+      ParseAttributeName(namespace_uri, qualified_name, exception_state);
+  if (!parsed_name) {
     return;
   }
 
   AtomicString trusted_value(TrustedTypesCheckFor(
-      ExpectedTrustedTypeForAttribute(parsed_name), std::move(value),
+      ExpectedTrustedTypeForAttribute(*parsed_name), std::move(value),
       GetExecutionContext(), exception_state));
   if (exception_state.HadException()) {
     return;
   }
 
-  setAttribute(parsed_name, trusted_value);
+  setAttribute(*parsed_name, trusted_value);
 }
 
 void Element::setAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& qualified_name,
                              const V8TrustedType* trusted_string,
                              ExceptionState& exception_state) {
-  QualifiedName parsed_name = g_any_name;
-  if (!ParseAttributeName(parsed_name, namespace_uri, qualified_name,
-                          exception_state)) {
+  absl::optional<QualifiedName> parsed_name =
+      ParseAttributeName(namespace_uri, qualified_name, exception_state);
+  if (!parsed_name) {
     return;
   }
 
   AtomicString value(TrustedTypesCheckFor(
-      ExpectedTrustedTypeForAttribute(parsed_name), trusted_string,
+      ExpectedTrustedTypeForAttribute(*parsed_name), trusted_string,
       GetExecutionContext(), exception_state));
   if (exception_state.HadException()) {
     return;
   }
 
-  setAttribute(parsed_name, value);
+  setAttribute(*parsed_name, value);
 }
 
 void Element::RemoveAttributeInternal(wtf_size_t index,
