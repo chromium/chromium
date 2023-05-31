@@ -2476,6 +2476,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   bool had_server_type = false;
   bool had_rationalization_event = false;
 
+  DenseSet<AutofillMetrics::AutofillStatus> autofill_status_vector;
+  auto SetStatusVector = [&autofill_status_vector](
+                             AutofillMetrics::AutofillStatus status,
+                             bool value) {
+    DCHECK(!autofill_status_vector.contains(status));
+    if (value) {
+      autofill_status_vector.insert(status);
+    }
+  };
+
   for (const auto& log_event : field_log_events) {
     static_assert(absl::variant_size<AutofillField::FieldLogEventType>() == 9,
                   "When adding new variants check that this function does not "
@@ -2602,7 +2612,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFormControlType(base::to_underlying(field.FormControlType()))
       .SetAutocompleteState(base::to_underlying(autocomplete_state));
 
+  SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
+  SetStatusVector(AutofillStatus::kUserTypedIntoField,
+                  OptionalBooleanToBool(user_typed_into_field));
+  SetStatusVector(AutofillStatus::kWasFocused,
+                  OptionalBooleanToBool(was_focused));
   if (was_focused == OptionalBoolean::kTrue) {
+    SetStatusVector(AutofillStatus::kSuggestionWasAvailable,
+                    OptionalBooleanToBool(suggestion_was_available));
+    SetStatusVector(AutofillStatus::kSuggestionWasShown,
+                    OptionalBooleanToBool(suggestion_was_shown));
     builder
         .SetSuggestionWasAvailable(
             OptionalBooleanToBool(suggestion_was_available))
@@ -2610,11 +2629,20 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (suggestion_was_shown == OptionalBoolean::kTrue) {
+    SetStatusVector(AutofillStatus::kSuggestionWasAccepted,
+                    OptionalBooleanToBool(suggestion_was_accepted));
     builder.SetSuggestionWasAccepted(
         OptionalBooleanToBool(suggestion_was_accepted));
   }
 
+  SetStatusVector(AutofillStatus::kWasAutofillTriggered, autofill_count > 0);
   if (autofill_count > 0) {
+    SetStatusVector(AutofillStatus::kWasAutofilled,
+                    OptionalBooleanToBool(was_autofilled));
+    SetStatusVector(AutofillStatus::kHadValueBeforeFilling,
+                    OptionalBooleanToBool(had_value_before_filling));
+    SetStatusVector(AutofillStatus::kWasRefill, autofill_count > 1);
+
     static_assert(autofill_skipped_status.data().size() == 1);
     builder.SetWasAutofilled(OptionalBooleanToBool(was_autofilled))
         .SetHadValueBeforeFilling(
@@ -2624,11 +2652,16 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (filled_value_was_modified != OptionalBoolean::kUndefined) {
+    SetStatusVector(AutofillStatus::kFilledValueWasModified,
+                    OptionalBooleanToBool(filled_value_was_modified));
     builder.SetFilledValueWasModified(
         OptionalBooleanToBool(filled_value_was_modified));
   }
 
   if (had_typed_or_filled_value_at_submission != OptionalBoolean::kUndefined) {
+    SetStatusVector(
+        AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+        OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
     builder.SetHadTypedOrFilledValueAtSubmission(
         OptionalBooleanToBool(had_typed_or_filled_value_at_submission));
   }
@@ -2663,6 +2696,14 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   if (rank_in_field_signature_group) {
     builder.SetRankInFieldSignatureGroup(rank_in_field_signature_group);
   }
+
+  // Serialize the DenseSet of the autofill status into int64_t.
+  // TODO(crbug.com/1325851): Mark the individual boolean metrics of autofill
+  // status that autofill_status_vector contains obsolete once we verify the
+  // data in AutofillStatusVector metric.
+  static_assert(autofill_status_vector.data().size() == 1U,
+                "There are 12 enum values in AutofillStatusVector.");
+  builder.SetAutofillStatusVector(autofill_status_vector.data()[0]);
 
   builder.Record(ukm_recorder_);
 }

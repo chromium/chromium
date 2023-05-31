@@ -632,6 +632,26 @@ class AutofillMetrics {
     kMaxValue = kOff
   };
 
+  // The autofill statuses of a field that are recorded into UKM to help us
+  // understand the autofill performance and user behaviors.
+  enum class AutofillStatus {
+    kIsFocusable = 0,
+    kWasFocused = 1,
+    kWasAutofillTriggered = 2,
+    // kWasAutofilled is only set when kWasAutofillTriggered is set.
+    kWasAutofilled = 3,
+    kWasRefill = 4,
+    // The below suggestion statuses are set only when kWasFocused is set.
+    kSuggestionWasAvailable = 5,
+    kSuggestionWasShown = 6,
+    kSuggestionWasAccepted = 7,
+    kUserTypedIntoField = 8,
+    kFilledValueWasModified = 9,
+    kHadValueBeforeFilling = 10,
+    kHadTypedOrFilledValueAtSubmission = 11,
+    kMaxValue = kHadTypedOrFilledValueAtSubmission
+  };
+
   using FormEventSet =
       DenseSet<autofill_metrics::FormEvent, autofill_metrics::NUM_FORM_EVENTS>;
 

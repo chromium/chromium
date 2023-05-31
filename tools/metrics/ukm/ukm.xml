@@ -3202,6 +3202,16 @@ be describing additional metrics about the same event.
       |SkipStatus|.
     </summary>
   </metric>
+  <metric name="AutofillStatusVector">
+    <summary>
+      A bit vector of autofill statuses for a field, listed in
+      |AutofillMetrics::AutofillStatus|. The first bit represents whether the
+      field is focusable, the second means whether the field was focused....
+      These autofill statuses will not be stored in UKM individually. We create
+      functions to read the individual autofill status from a bit vector in
+      queries.
+    </summary>
+  </metric>
   <metric name="FieldSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a form control (e.g.

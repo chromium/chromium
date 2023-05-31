@@ -27,6 +27,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
@@ -111,6 +112,7 @@ namespace autofill::autofill_metrics {
 
 using mojom::SubmissionSource;
 using SyncSigninState = AutofillSyncSigninState;
+using AutofillStatus = AutofillMetrics::AutofillStatus;
 
 namespace {
 
@@ -8420,6 +8422,83 @@ class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
   base::test::ScopedFeatureList scoped_features_;
 };
 
+// Test if we record FieldInfo UKM event correctly after we click the field and
+// show autofill suggestions.
+TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
+  // Create a profile.
+  RecreateProfile(/*is_server=*/false);
+  FormData form = CreateForm({CreateField("State", "state", "", "text"),
+                              CreateField("Street", "", "", "text"),
+                              CreateField("Number", "", "", "text")});
+
+  std::vector<ServerFieldType> field_types = {ADDRESS_HOME_STATE,
+                                              NO_SERVER_DATA, NO_SERVER_DATA};
+
+  autofill_manager().AddSeenForm(form, field_types);
+
+  {
+    // Show autofill suggestions.
+    autofill_manager().OnAskForValuesToFillTest(
+        form, form.fields[0], gfx::RectF(), AutoselectFirstSuggestion(false),
+        FormElementWasClicked(true));
+
+    base::TimeTicks parse_time = autofill_manager()
+                                     .form_structures()
+                                     .begin()
+                                     ->second->form_parsed_timestamp();
+    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+    base::HistogramTester histogram_tester;
+    SubmitForm(form);
+
+    // Record Autofill2.FieldInfo UKM event at autofill manager reset.
+    autofill_manager().Reset();
+
+    // Verify FieldInfo UKM event for every field.
+    auto field_entries =
+        test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+    ASSERT_EQ(1u, field_entries.size());
+    for (size_t i = 0; i < field_entries.size(); ++i) {
+      SCOPED_TRACE(testing::Message() << i);
+      using UFIT = UkmFieldInfoType;
+      const auto* const entry = field_entries[i];
+
+      DenseSet<AutofillStatus> autofill_status_vector = {
+          AutofillStatus::kIsFocusable, AutofillStatus::kWasFocused,
+          AutofillStatus::kSuggestionWasAvailable,
+          AutofillStatus::kSuggestionWasShown};
+      std::map<std::string, int64_t> expected = {
+          {UFIT::kFormSessionIdentifierName,
+           AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+          {UFIT::kFieldSessionIdentifierName,
+           AutofillMetrics::FieldGlobalIdToHash64Bit(
+               form.fields[i].global_id())},
+          {UFIT::kFieldSignatureName,
+           Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+          {UFIT::kWasFocusedName, i == 0},
+          {UFIT::kIsFocusableName, true},
+          {UFIT::kSuggestionWasAvailableName, true},
+          {UFIT::kSuggestionWasShownName, true},
+          {UFIT::kSuggestionWasAcceptedName, false},
+          {UFIT::kUserTypedIntoFieldName, false},
+          {UFIT::kFormControlTypeName,
+           base::to_underlying(FormControlType::kText)},
+          {UFIT::kAutocompleteStateName,
+           base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+          {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+      };
+
+      EXPECT_EQ(expected.size(), entry->metrics.size());
+      for (const auto& [metric, value] : expected) {
+        test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
+      }
+    }
+  }
+}
+
 // Test if we record FieldInfo UKM metrics correctly after we fill and submit an
 // address form.
 TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
@@ -8471,6 +8550,28 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 
       SkipStatus status =
           i == 2 ? SkipStatus::kNoFillableGroup : SkipStatus::kNotSkipped;
+      DenseSet<AutofillStatus> autofill_status_vector;
+      if (i == 0) {
+        autofill_status_vector = {
+            AutofillStatus::kIsFocusable,
+            AutofillStatus::kWasFocused,
+            AutofillStatus::kWasAutofillTriggered,
+            AutofillStatus::kWasAutofilled,
+            AutofillStatus::kSuggestionWasAvailable,
+            AutofillStatus::kSuggestionWasShown,
+            AutofillStatus::kSuggestionWasAccepted,
+            AutofillStatus::kUserTypedIntoField,
+            AutofillStatus::kFilledValueWasModified,
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+      } else if (i == 1) {
+        autofill_status_vector = {
+            AutofillStatus::kIsFocusable, AutofillStatus::kWasAutofillTriggered,
+            AutofillStatus::kWasAutofilled,
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+      } else if (i == 2) {
+        autofill_status_vector = {AutofillStatus::kIsFocusable,
+                                  AutofillStatus::kWasAutofillTriggered};
+      }
       std::map<std::string, int64_t> expected = {
           {UFIT::kFormSessionIdentifierName,
            AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -8489,9 +8590,10 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kUserTypedIntoFieldName, i == 0},
           {UFIT::kHadTypedOrFilledValueAtSubmissionName, i != 2},
           {UFIT::kFormControlTypeName,
-           static_cast<int>(FormControlType::kText)},
+           base::to_underlying(FormControlType::kText)},
           {UFIT::kAutocompleteStateName,
-           static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
+           base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+          {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
       };
       if (i == 0) {
         expected[UFIT::kSuggestionWasAvailableName] = true;
@@ -8644,6 +8746,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         server_types[i] != NO_SERVER_DATA
             ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
             : FieldPrediction::SOURCE_UNSPECIFIED;
+    DenseSet<AutofillStatus> autofill_status_vector = {
+        AutofillStatus::kIsFocusable};
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -8664,9 +8768,11 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kWasFocusedName, false},
         {UFIT::kUserTypedIntoFieldName, false},
-        {UFIT::kFormControlTypeName, static_cast<int>(FormControlType::kText)},
+        {UFIT::kFormControlTypeName,
+         base::to_underlying(FormControlType::kText)},
         {UFIT::kAutocompleteStateName,
-         static_cast<int>(autocomplete_states[i])},
+         base::to_underlying(autocomplete_states[i])},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
     };
     if (heuristic_types[i] != UNKNOWN_TYPE) {
       expected.merge(std::map<std::string, int64_t>({
@@ -8685,8 +8791,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
     }
     if (autocomplete_states[i] != AutofillMetrics::AutocompleteState::kOff) {
       expected.merge(std::map<std::string, int64_t>({
-          {UFIT::kHtmlFieldTypeName, static_cast<int>(html_field_types[i])},
-          {UFIT::kHtmlFieldModeName, static_cast<int>(HtmlFieldMode::kNone)},
+          {UFIT::kHtmlFieldTypeName, base::to_underlying(html_field_types[i])},
+          {UFIT::kHtmlFieldModeName, base::to_underlying(HtmlFieldMode::kNone)},
       }));
     }
     EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -8788,6 +8894,9 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   ASSERT_EQ(2u, entries.size());
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
+    DenseSet<AutofillStatus> autofill_status_vector = {
+        AutofillStatus::kIsFocusable, AutofillStatus::kUserTypedIntoField,
+        AutofillStatus::kHadTypedOrFilledValueAtSubmission};
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
     std::map<std::string, int64_t> expected = {
@@ -8801,9 +8910,11 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kIsFocusableName, true},
         {UFIT::kUserTypedIntoFieldName, true},
         {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
-        {UFIT::kFormControlTypeName, static_cast<int>(FormControlType::kText)},
+        {UFIT::kFormControlTypeName,
+         base::to_underlying(FormControlType::kText)},
         {UFIT::kAutocompleteStateName,
-         static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
+         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -9053,6 +9164,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       FormControlType::kRadio};
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
+    DenseSet<AutofillStatus> autofill_status_vector = {
+        AutofillStatus::kIsFocusable};
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
     std::map<std::string, int64_t> expected = {
@@ -9068,9 +9181,11 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
-        {UFIT::kFormControlTypeName, static_cast<int>(form_control_types[i])},
+        {UFIT::kFormControlTypeName,
+         base::to_underlying(form_control_types[i])},
         {UFIT::kAutocompleteStateName,
-         static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
+         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
