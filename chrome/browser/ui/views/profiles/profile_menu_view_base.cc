@@ -218,23 +218,30 @@ class CircularImageButton : public views::ImageButton {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
     InstallCircleHighlightPathGenerator(this);
+
+    const int kBorderThickness = show_border_ ? 1 : 0;
+    const SkScalar kButtonRadius = (button_size_ + 2 * kBorderThickness) / 2.0f;
+    if (features::IsChromeRefresh2023() && has_background_color_) {
+      // TODO(crbug.com/1422119): Set colors for hover and pressed states.
+      SetBackground(views::CreateThemedRoundedRectBackground(
+          kColorProfileMenuIconButtonBackground, kButtonRadius));
+    }
+
+    // TODO(crbug.com/1422119): Remove border for Chrome Refresh 2023.
+    if (show_border_) {
+      SetBorder(views::CreateThemedRoundedRectBorder(
+          kBorderThickness, kButtonRadius, ui::kColorMenuSeparator));
+    }
   }
 
   // views::ImageButton:
   void OnThemeChanged() override {
     views::ImageButton::OnThemeChanged();
-    const int kBorderThickness = show_border_ ? 1 : 0;
-    const SkScalar kButtonRadius = (button_size_ + 2 * kBorderThickness) / 2.0f;
 
     const auto* color_provider = GetColorProvider();
     SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-    if (features::IsChromeRefresh2023() && has_background_color_) {
-      // TODO(crbug.com/1422119): Set colors for hover and pressed states.
-      SkColor background_color =
-          color_provider->GetColor(kColorProfileMenuIconButtonBackground);
+    if (features::IsChromeRefresh2023()) {
       icon_color = color_provider->GetColor(kColorProfileMenuIconButton);
-      SetBackground(
-          views::CreateRoundedRectBackground(background_color, kButtonRadius));
     } else if (themed_icon_color_ != SK_ColorTRANSPARENT) {
       icon_color = themed_icon_color_;
     }
@@ -245,14 +252,6 @@ class CircularImageButton : public views::ImageButton {
                                         icon_color);
     SetImage(views::Button::STATE_NORMAL, SizeImage(image, button_size_));
     views::InkDrop::Get(this)->SetBaseColor(icon_color);
-
-    // TODO(crbug.com/1422119): Remove border for Chrome Refresh 2023.
-    if (show_border_) {
-      const SkColor separator_color =
-          color_provider->GetColor(ui::kColorMenuSeparator);
-      SetBorder(views::CreateRoundedRectBorder(kBorderThickness, kButtonRadius,
-                                               separator_color));
-    }
   }
 
  private:
@@ -642,16 +641,25 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   std::unique_ptr<views::View> edit_button;
   if (edit_button_params.has_value()) {
-    edit_button = std::make_unique<CircularImageButton>(
-        base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                            base::Unretained(this),
-                            std::move(edit_button_params->edit_action)),
-        *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
-        kCircularImageButtonSize, /*has_background_color=*/false,
-        /*show_border=*/false,
-        avatar_header_art.empty()
-            ? GetProfileForegroundIconColor(profile_background_color)
-            : SK_ColorTRANSPARENT);
+    if (features::IsChromeRefresh2023()) {
+      edit_button = std::make_unique<CircularImageButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this),
+                              std::move(edit_button_params->edit_action)),
+          *edit_button_params->edit_icon,
+          edit_button_params->edit_tooltip_text);
+    } else {
+      edit_button = std::make_unique<CircularImageButton>(
+          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                              base::Unretained(this),
+                              std::move(edit_button_params->edit_action)),
+          *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
+          kCircularImageButtonSize, /*has_background_color=*/false,
+          /*show_border=*/false,
+          avatar_header_art.empty()
+              ? GetProfileForegroundIconColor(profile_background_color)
+              : SK_ColorTRANSPARENT);
+    }
   }
 
   BuildProfileBackgroundContainer(
