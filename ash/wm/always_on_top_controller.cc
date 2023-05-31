@@ -77,10 +77,8 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
     const int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
     if (window_workspace != aura::client::kWindowWorkspaceUnassignedWorkspace) {
-      LOG(ERROR) << "AlwaysOnTopController::GetContainer 2";
       auto* desk_container =
           desks_controller->GetDeskContainer(root, window_workspace);
-      LOG(ERROR) << "AlwaysOnTopController::GetContainer 3";
       if (desk_container)
         return desk_container;
     }
