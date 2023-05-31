@@ -73,6 +73,8 @@ std::string GetStringNameForOptimizationType(
       return "AutofillSamplingRate";
     case proto::OptimizationType::VCN_MERCHANT_OPT_OUT_VISA:
       return "VcnMerchantOptOutVisa";
+    case proto::OptimizationType::PRICE_INSIGHTS:
+      return "PriceInsights";
   }
 
   // The returned string is used to record histograms for the optimization type.

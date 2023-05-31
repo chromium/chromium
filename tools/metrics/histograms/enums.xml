@@ -78062,6 +78062,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="SALIENT_IMAGE"/>
   <int value="27" label="AUTOFILL_SAMPLING_RATE"/>
   <int value="28" label="VCN_MERCHANT_OPT_OUT_VISA"/>
+  <int value="29" label="Deprecated1"/>
+  <int value="30" label="PRICE_INSIGHTS"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">
