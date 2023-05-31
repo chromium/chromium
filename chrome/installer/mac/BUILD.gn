@@ -166,4 +166,8 @@ script_test("mac_signing_tests") {
            "signing/test_config.py",
            "//third_party/catapult/third_party/typ/",
          ]
+
+  if (is_chrome_branded) {
+    data += [ "internal/internal_invoker_test.py" ]
+  }
 }

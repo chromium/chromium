@@ -11,8 +11,11 @@ from signing import driver, model, test_config
 def _config_factory():
     return test_config.TestConfig
 
+def _invoker_factory():
+    return test_config.TestInvoker
 
 @mock.patch('signing.config_factory.get_class', _config_factory)
+@mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
 @mock.patch('signing.pipeline.sign_all')
 @mock.patch('signing.commands.run_command')
 class TestDriverExecution(unittest.TestCase):
@@ -67,6 +70,7 @@ class TestDriverExecution(unittest.TestCase):
 
 @mock.patch('signing.commands.file_exists', lambda s: True)
 @mock.patch('signing.config_factory.get_class', _config_factory)
+@mock.patch('signing.config_factory.get_invoker_class', _invoker_factory)
 @mock.patch.multiple('signing.driver', _show_tool_versions=mock.DEFAULT)
 @mock.patch('signing.pipeline.sign_all')
 class TestCommandLine(unittest.TestCase):
