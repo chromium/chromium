@@ -39,6 +39,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -3698,6 +3699,8 @@ bool RenderProcessHostImpl::ShutdownRequested() {
 
 bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
                                                    bool skip_unload_handlers) {
+  base::UmaHistogramBoolean(
+      "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
   // than the ones we're shutting down.
   if (page_count && page_count != (GetActiveViewCount() + pending_views_))
@@ -3721,6 +3724,9 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   if (keep_alive_ref_count_ != 0) {
     CHECK(!base::FeatureList::IsEnabled(
         blink::features::kKeepAliveInBrowserMigration));
+    base::UmaHistogramBoolean(
+        "BrowserRenderProcessHost.FastShutdownIfPossible.FetchKeepAliveExist",
+        true);
     return false;
   }
 
@@ -3956,6 +3962,7 @@ void RenderProcessHostImpl::Cleanup() {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup",
               ChromeTrackEvent::kRenderProcessHost, *this);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::UmaHistogramBoolean("BrowserRenderProcessHost.Cleanup.Total", true);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process())
     return;
@@ -4010,6 +4017,8 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
+    base::UmaHistogramBoolean(
+        "BrowserRenderProcessHost.Cleanup.FetchKeepAliveExist", true);
     return;
   } else if (shutdown_delay_ref_count_ != 0) {
     TRACE_EVENT(
