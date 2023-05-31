@@ -262,7 +262,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   // IDL [LegacyNullToEmptyString] DOMString only after we've confirmed that
   // the property name is a valid CSS attribute name (see bug 1310062).
   auto&& string_value =
-      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
+      NativeValueTraits<IDLStringLegacyNullToEmptyString>::NativeValue(
           script_state->GetIsolate(), value, exception_state);
   if (UNLIKELY(exception_state.HadException())) {
     return NamedPropertySetterResult::kIntercepted;

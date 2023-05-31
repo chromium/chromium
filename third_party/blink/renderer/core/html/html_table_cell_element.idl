@@ -42,7 +42,7 @@
     [CEReactions, Reflect] attribute boolean noWrap;
     [CEReactions, Reflect] attribute DOMString vAlign;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString bgColor;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString bgColor;
 
     // TODO(foolip): The spec has HTMLTableHeaderCellElement and
     // HTMLTableDataCellElement interfaces for the th and td elements

@@ -54,7 +54,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   String text() { return TextFromChildren(); }
   void setText(const String&);
   void setInnerTextForBinding(
-      const V8UnionStringTreatNullAsEmptyStringOrTrustedScript*
+      const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
           string_or_trusted_script,
       ExceptionState& exception_state) override;
   void setTextContentForBinding(const V8UnionStringOrTrustedScript* value,

@@ -438,7 +438,7 @@ void PerformAttributeSetCEReactionsReflectTypeStringLegacyNullToEmptyString(
     const QualifiedName& content_attribute,
     const char* interface_name,
     const char* attribute_name) {
-  PerformAttributeSetCEReactionsReflect<IDLStringTreatNullAsEmptyString,
+  PerformAttributeSetCEReactionsReflect<IDLStringLegacyNullToEmptyString,
                                         const AtomicString&,
                                         &Element::setAttribute>(
       info, content_attribute, interface_name, attribute_name);

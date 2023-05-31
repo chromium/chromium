@@ -214,8 +214,8 @@ TEST(ToV8TraitsTest, String) {
   // DOMString
   TEST_TOV8_TRAITS(scope, IDLString, "string", string);
   TEST_TOV8_TRAITS(scope, IDLString, "charptrString", charptr_string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyString, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyString, "charptrString",
+  TEST_TOV8_TRAITS(scope, IDLStringLegacyNullToEmptyString, "string", string);
+  TEST_TOV8_TRAITS(scope, IDLStringLegacyNullToEmptyString, "charptrString",
                    charptr_string);
   // USVString
   TEST_TOV8_TRAITS(scope, IDLUSVString, "string", string);
@@ -225,10 +225,10 @@ TEST(ToV8TraitsTest, String) {
   TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTML, "charptrString",
                    charptr_string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyString,
+                   IDLStringLegacyNullToEmptyStringStringContextTrustedHTML,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyString,
+                   IDLStringLegacyNullToEmptyStringStringContextTrustedHTML,
                    "charptrString", charptr_string);
   // [StringContext=TrustedScript] DOMString
   TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScript, "string",
@@ -236,10 +236,10 @@ TEST(ToV8TraitsTest, String) {
   TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScript, "charptrString",
                    charptr_string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedScriptTreatNullAsEmptyString,
+                   IDLStringLegacyNullToEmptyStringStringContextTrustedScript,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedScriptTreatNullAsEmptyString,
+                   IDLStringLegacyNullToEmptyStringStringContextTrustedScript,
                    "charptrString", charptr_string);
   // [StringContext=TrustedScriptURL] USVString
   TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURL, "string",

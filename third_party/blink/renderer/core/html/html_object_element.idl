@@ -58,7 +58,7 @@
     [CEReactions, Reflect, URL, RaisesException=Setter] attribute ScriptURLString codeBase;
     [CEReactions, Reflect] attribute DOMString codeType;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString border;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString border;
 
     // TODO(foolip): These getters and setters are not in the spec.
     [Custom, NotEnumerable] getter Node (DOMString name);

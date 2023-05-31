@@ -40,7 +40,7 @@
     [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any fillStyle; // (default black)
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
-    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
+    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [LegacyNullToEmptyString] DOMString repetitionType);
     CanvasGradient createConicGradient(double startAngle, double cx, double cy);
 
     // shadows

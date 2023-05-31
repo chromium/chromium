@@ -1970,7 +1970,7 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
             func_name = "PerformAttributeSetCEReactionsReflectTypeBoolean"
         elif idl_type.type_name == "String":
             func_name = "PerformAttributeSetCEReactionsReflectTypeString"
-        elif idl_type.type_name == "StringTreatNullAs":
+        elif idl_type.type_name == "StringLegacyNullToEmptyString":
             func_name = ("PerformAttributeSetCEReactionsReflect"
                          "TypeStringLegacyNullToEmptyString")
         elif idl_type.type_name == "StringOrNull":

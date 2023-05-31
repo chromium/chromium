@@ -47,7 +47,7 @@
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     CanvasGradient createConicGradient(double startAngle, double centerX, double centerY);
-    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
+    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [LegacyNullToEmptyString] DOMString repetitionType);
 
     // shadows
     [HighEntropy] attribute unrestricted double shadowOffsetX;

@@ -139,11 +139,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [Measure] readonly attribute HTMLCollection anchors;
     [Measure] readonly attribute HTMLCollection applets;
 
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString fgColor;
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString linkColor;
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString vlinkColor;
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString alinkColor;
-    [CEReactions] attribute [TreatNullAs=EmptyString] DOMString bgColor;
+    [CEReactions] attribute [LegacyNullToEmptyString] DOMString fgColor;
+    [CEReactions] attribute [LegacyNullToEmptyString] DOMString linkColor;
+    [CEReactions] attribute [LegacyNullToEmptyString] DOMString vlinkColor;
+    [CEReactions] attribute [LegacyNullToEmptyString] DOMString alinkColor;
+    [CEReactions] attribute [LegacyNullToEmptyString] DOMString bgColor;
 
     [MeasureAs=DocumentClear] void clear();
     [MeasureAs=DocumentCaptureEvents] void captureEvents();

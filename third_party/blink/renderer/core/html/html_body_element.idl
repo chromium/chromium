@@ -25,11 +25,11 @@
 ] interface HTMLBodyElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLBodyElement-partial
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString text;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString link;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString vLink;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString aLink;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString bgColor;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString text;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString link;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString vLink;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString aLink;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString bgColor;
     [CEReactions, Reflect] attribute DOMString background;
 
     // TODO(foolip): These event handler attributes should be inherited from

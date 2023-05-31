@@ -315,6 +315,21 @@ Note that `[LegacyNoInterfaceObject]` **MUST** be specified on testing interface
 };
 ```
 
+### [LegacyNullToEmptyString]
+
+Standard: [LegacyNullToEmptyString](https://webidl.spec.whatwg.org/#LegacyNullToEmptyString)
+
+Summary: `[LegacyNullToEmptyString]` indicates that a JavaScript null is converted to `""` instead of `"null"`.
+
+Usage: `[LegacyNullToEmptyString]` must be specified on a DOMString type.
+
+```webidl
+attribute [LegacyNullToEmptyString] DOMString str;
+void func([LegacyNullToEmptyString] DOMString str);
+```
+
+Implementation: Given `[LegacyNullToEmptyString]`, a JavaScript null is converted to a Blink empty string, for which `String::IsEmpty()` returns true, but `String::IsNull()` return false.
+
 ### [LegacyOverrideBuiltIns]
 
 Standard: [LegacyOverrideBuiltIns](https://webidl.spec.whatwg.org/#LegacyOverrideBuiltIns)
@@ -510,21 +525,6 @@ Summary: Transferable objects support being transferred across Realms with `post
 ```
 
 This attribute has no effect on code generation and should simply be used in Blink IDL files if the specification uses it. Code to perform the transfer steps must be added to `V8ScriptValueSerializer` for types in `core/` or `V8ScriptValueDeserializerForModules` for types in `modules/`.
-
-### [TreatNullAs]
-
-Standard: [TreatNullAs](https://webidl.spec.whatwg.org/#TreatNullAs)
-
-Summary: `[TreatNullAs=EmptyString]` indicates that a JavaScript null is converted to `""` instead of `"null"`.
-
-Usage: `[TreatNullAs=EmptyString]` must be specified on a DOMString type.
-
-```webidl
-attribute [TreatNullAs=EmptyString] DOMString str;
-void func([TreatNullAs=Emptytring] DOMString str);
-```
-
-Implementation: Given `[TreatNullAs=EmptyString]`, a JavaScript null is converted to a Blink empty string, for which `String::IsEmpty()` returns true, but `String::IsNull()` return false.
 
 ### [Unscopable]
 

@@ -112,6 +112,7 @@ def _build_supported_extended_attributes():
         E("LegacyLenientSetter", applicable_to=[T.ATTRIBUTE]),
         E("LegacyLenientThis", applicable_to=[T.ATTRIBUTE]),
         E("LegacyNoInterfaceObject", applicable_to=[T.INTERFACE]),
+        E("LegacyNullToEmptyString", applicable_to=[T.TYPE]),
         E("LegacyOverrideBuiltIns", applicable_to=[T.INTERFACE]),
         E("LegacyTreatNonObjectAsNull", applicable_to=[T.CALLBACK_FUNCTION]),
         E("LegacyUnenumerableNamedProperties", applicable_to=[T.INTERFACE]),
@@ -188,10 +189,6 @@ def _build_supported_extended_attributes():
         E("SupportsTaskAttribution", applicable_to=[T.CALLBACK_FUNCTION]),
         E("TargetOfExposed", applicable_to=[T.INTERFACE], forms=F.IDENT),
         E("Transferable", applicable_to=[T.INTERFACE]),
-        E("TreatNullAs",
-          applicable_to=[T.TYPE],
-          forms=F.IDENT,
-          values=["EmptyString"]),
         E("URL", applicable_to=[T.ATTRIBUTE]),
         E("Unscopable", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
     ]

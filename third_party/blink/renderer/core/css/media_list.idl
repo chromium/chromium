@@ -28,7 +28,7 @@
 [
     Exposed=Window
 ] interface MediaList {
-    [CallWith=ExecutionContext] stringifier attribute [TreatNullAs=EmptyString] DOMString mediaText;
+    [CallWith=ExecutionContext] stringifier attribute [LegacyNullToEmptyString] DOMString mediaText;
     readonly attribute unsigned long length;
     [Measure] getter DOMString? item(unsigned long index);
     [CallWith=ExecutionContext] void appendMedium(DOMString medium);

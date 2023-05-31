@@ -49,7 +49,7 @@
     [CEReactions, Reflect] attribute DOMString summary;
     [CEReactions, Reflect] attribute DOMString width;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString bgColor;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString cellPadding;
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString cellSpacing;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString bgColor;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString cellPadding;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString cellSpacing;
 };

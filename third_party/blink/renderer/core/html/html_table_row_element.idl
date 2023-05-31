@@ -36,5 +36,5 @@
     [CEReactions, Reflect=charoff] attribute DOMString chOff;
     [CEReactions, Reflect] attribute DOMString vAlign;
 
-    [CEReactions, Reflect] attribute [TreatNullAs=EmptyString] DOMString bgColor;
+    [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString bgColor;
 };
