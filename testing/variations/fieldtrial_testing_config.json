@@ -7273,6 +7273,21 @@
             ]
         }
     ],
+    "IOSSetUpList": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSSetUpList"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSShareChrome": [
         {
             "platforms": [
