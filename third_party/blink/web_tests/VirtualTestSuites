@@ -761,7 +761,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/select"],
     "args": ["--enable-features=UseCommonSelectPopup"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 31, 2024"
   },
   {
     "prefix": "forced-high-contrast-colors",
