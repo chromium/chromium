@@ -8926,6 +8926,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ozone.TouchEventConverterEvdev.PalmTouchCount"
+    enum="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of detected palm touches. Reported when a new palm
+    touch is detected by either the firmware or the software palm detection.
+    Consecutive palm touch events will be considered as the same palm touch.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.StylusSessionCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of stylus sessions. A stylus session is a series of
+    stylus events with no more than 5 seconds between them. Reported when a
+    stylus session is concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.StylusSessionLength"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The length of stylus sessions. A touch session is a series of stylus events
+    with no more than 5 seconds between them. Reported when a stylus session is
+    concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchSessionCount"
+    units="BooleanDetected" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The count of the number of touch sessions. A touch session is a series of
+    touch events with no more than 5 seconds between them. Reported when a touch
+    session is concluded.
+  </summary>
+</histogram>
+
+<histogram name="Ozone.TouchEventConverterEvdev.TouchSessionLength"
+    units="duration" expires_after="2024-06-01">
+  <owner>jiwan@chromium.org</owner>
+  <owner>robsc@chromium.org</owner>
+  <summary>
+    The length of touch sessions. A touch session is a series of touch events
+    with no more than 5 seconds between them. Reported when a touch session is
+    concluded.
+  </summary>
+</histogram>
+
 <histogram name="P2P.Client.Canceled.WaitingTimeSeconds" units="seconds"
     expires_after="2021-12-29">
   <owner>ahassani@chromium.org</owner>

@@ -27,6 +27,7 @@
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_debug_buffer.h"
@@ -97,6 +98,11 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   static const char kHoldCountAtReleaseEventName[];
   static const char kHoldCountAtCancelEventName[];
   static const char kPalmFilterTimerEventName[];
+  static const char kPalmTouchCountEventName[];
+  static const char kTouchSessionCountEventName[];
+  static const char kTouchSessionLengthEventName[];
+  static const char kStylusSessionCountEventName[];
+  static const char kStylusSessionLengthEventName[];
 
  private:
   friend class MockTouchEventConverterEvdev;
@@ -138,6 +144,10 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
   void UpdateRadiusFromTouchWithOrientation(InProgressTouchEvdev* event) const;
 
   int NextTrackingId();
+
+  void RecordMetrics(base::TimeTicks timestamp);
+
+  void RecordSession(base::TimeDelta session_length);
 
   // Input device file descriptor.
   const base::ScopedFD input_device_fd_;
@@ -243,6 +253,19 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Do we mark a touch as palm when the tool type is marked as TOOL_TYPE_PALM ?
   bool palm_on_tool_type_palm_;
+
+  // The start time of a touch session.
+  absl::optional<base::TimeTicks> session_start_time_ = absl::nullopt;
+
+  // Whether the last touch was detected as palm.
+  bool last_touch_is_palm_ = false;
+
+  // A delay timer starts whenever a touch is reported and stops after 5s. If a
+  // new touch is reported during the 5s, the timer will be reset and restarted.
+  // When the timer finishes, it will record session metrics.
+  base::OneShotTimer record_session_timer_;
+
+  base::WeakPtrFactory<TouchEventConverterEvdev> weak_factory_{this};
 };
 
 }  // namespace ui

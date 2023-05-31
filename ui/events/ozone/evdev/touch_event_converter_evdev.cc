@@ -46,6 +46,7 @@
 namespace {
 
 const int kMaxTrackingId = 0xffff;  // TRKID_MAX in kernel.
+const int kMaxTouchGapInSeconds = 5;
 
 // Convert tilt from [min, min + num_values] to [-90deg, +90deg]
 float ScaleTilt(int value, int min_value, int num_values) {
@@ -659,6 +660,58 @@ void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
     event->was_held = event->held;
     event->altered = false;
   }
+
+  RecordMetrics(timestamp);
+}
+
+void TouchEventConverterEvdev::RecordMetrics(base::TimeTicks timestamp) {
+  // Only record metrics when the converter is enabled. While it is disabled,
+  // stylus touch could generate fake event to cancel all finger touches, we
+  // should ignore them for recording metrics.
+  if (!(type() == InputDeviceType::INPUT_DEVICE_INTERNAL && IsEnabled())) {
+    return;
+  }
+
+  if (!session_start_time_) {
+    session_start_time_ = timestamp;
+    last_touch_is_palm_ = false;
+  }
+  record_session_timer_.Start(
+      FROM_HERE, base::Seconds(kMaxTouchGapInSeconds),
+      base::BindOnce(&TouchEventConverterEvdev::RecordSession,
+                     weak_factory_.GetWeakPtr(),
+                     timestamp - session_start_time_.value()));
+
+  if (has_pen_) {
+    return;
+  }
+
+  bool is_palm = false;
+  for (const auto& event : events_) {
+    if (event.was_cancelled) {
+      is_palm = true;
+      break;
+    }
+  }
+
+  if (is_palm && !last_touch_is_palm_) {
+    UMA_HISTOGRAM_BOOLEAN(kPalmTouchCountEventName, true);
+  }
+  last_touch_is_palm_ = is_palm;
+}
+
+void TouchEventConverterEvdev::RecordSession(base::TimeDelta session_length) {
+  session_start_time_ = absl::nullopt;
+  if (session_length.InMilliseconds() <= 0) {
+    return;
+  }
+  if (has_pen_) {
+    UMA_HISTOGRAM_TIMES(kStylusSessionLengthEventName, session_length);
+    UMA_HISTOGRAM_BOOLEAN(kStylusSessionCountEventName, true);
+  } else {
+    UMA_HISTOGRAM_TIMES(kTouchSessionLengthEventName, session_length);
+    UMA_HISTOGRAM_BOOLEAN(kTouchSessionCountEventName, true);
+  }
 }
 
 void TouchEventConverterEvdev::ProcessTouchEvent(InProgressTouchEvdev* event,
@@ -777,5 +830,15 @@ const char TouchEventConverterEvdev::kHoldCountAtCancelEventName[] =
     "Ozone.TouchEventConverterEvdev.HoldCountAtCancel";
 const char TouchEventConverterEvdev::kPalmFilterTimerEventName[] =
     "Ozone.TouchEventConverterEvdev.PalmDetectionFilterTime";
+const char TouchEventConverterEvdev::kPalmTouchCountEventName[] =
+    "Ozone.TouchEventConverterEvdev.PalmTouchCount";
+const char TouchEventConverterEvdev::kTouchSessionCountEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchSessionCount";
+const char TouchEventConverterEvdev::kTouchSessionLengthEventName[] =
+    "Ozone.TouchEventConverterEvdev.TouchSessionLength";
+const char TouchEventConverterEvdev::kStylusSessionCountEventName[] =
+    "Ozone.TouchEventConverterEvdev.StylusSessionCount";
+const char TouchEventConverterEvdev::kStylusSessionLengthEventName[] =
+    "Ozone.TouchEventConverterEvdev.StylusSessionLength";
 
 }  // namespace ui
