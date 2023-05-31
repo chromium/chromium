@@ -4110,7 +4110,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
   EXPECT_EQ(*ptr1, kCookie);
 
-  ref_count->Acquire();
+  ref_count->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(ref_count->IsAliveWithNoKnownRefs());
 
   allocator.root()->Free(ptr1);
@@ -4130,7 +4130,7 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   // When the last reference is released, the slot should become reusable.
   // Retag ref_count because PartitionAlloc retags ptr to enforce quarantine.
   ref_count = TagPtr(ref_count);
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
   PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr1));
   uint64_t* ptr3 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
@@ -4147,7 +4147,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
       PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr1));
   EXPECT_TRUE(ref_count1->IsAliveWithNoKnownRefs());
 
-  ref_count1->Acquire();
+  ref_count1->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
 
   void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
@@ -4166,7 +4166,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
     EXPECT_EQ(ref_count1, ref_count2);
     EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
 
-    EXPECT_FALSE(ref_count2->Release());
+    EXPECT_FALSE(ref_count2->ReleaseFromUnprotectedPtr());
   } else {
     // If the allocation was moved to another slot, the old ref-count stayed
     // in the same location in memory, is no longer alive, but still has a
@@ -4176,7 +4176,7 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
     EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
     EXPECT_TRUE(ref_count2->IsAliveWithNoKnownRefs());
 
-    EXPECT_TRUE(ref_count1->Release());
+    EXPECT_TRUE(ref_count1->ReleaseFromUnprotectedPtr());
     PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr1));
   }
 
@@ -4261,7 +4261,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
   EXPECT_TRUE(ptr);
   auto* ref_count =
       PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
-  ref_count->Acquire();
+  ref_count->AcquireFromUnprotectedPtr();
   EXPECT_TRUE(ref_count->IsAlive());
   allocator.root()->Free(ptr);
   // At this point, memory shouldn't be alive...
@@ -4269,7 +4269,7 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
   // ...and we should report the ptr as dangling.
   ref_count->ReportIfDangling();
   EXPECT_EQ(g_unretained_dangling_raw_ptr_detected_count, 1);
-  EXPECT_TRUE(ref_count->Release());
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
 
   PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
