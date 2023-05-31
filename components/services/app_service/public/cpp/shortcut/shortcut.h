@@ -35,6 +35,8 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   Shortcut(Shortcut&&) = delete;
   Shortcut& operator=(Shortcut&&) = delete;
 
+  bool operator==(const Shortcut&) const;
+
   ~Shortcut();
 
   std::unique_ptr<Shortcut> Clone() const;
@@ -50,7 +52,7 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // Name of the shortcut.
   absl::optional<std::string> name;
   // Shortcut creation source.
-  ShortcutSource shortcut_source;
+  ShortcutSource shortcut_source = ShortcutSource::kUnknown;
 
   // 'host_app_id' and 'local_id' should not be changeable after creation.
   // The host app of the shortcut.

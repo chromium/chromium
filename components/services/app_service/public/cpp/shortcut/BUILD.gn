@@ -36,6 +36,7 @@ source_set("unit_tests") {
 
   deps = [
     ":shortcut",
+    "//base",
     "//testing/gtest",
   ]
 }
