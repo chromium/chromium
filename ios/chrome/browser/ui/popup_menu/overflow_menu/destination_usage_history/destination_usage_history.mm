@@ -87,22 +87,6 @@ DestinationRanking SortByUsage(
   return ordered_ranking;
 }
 
-// Inserts `destination` in `output` at kNewDestinationsInsertionIndex and
-// clear `destination` from the `destinationsToAdd` set.
-void InsertDestination(overflow_menu::Destination destination,
-                       std::map<overflow_menu::Destination,
-                                OverflowMenuDestination*>* destinationsToAdd,
-                       NSMutableArray<OverflowMenuDestination*>* output) {
-  const NSUInteger insertionIndex =
-      std::min([output count] - 1,
-               static_cast<NSUInteger>(kNewDestinationsInsertionIndex));
-
-  [output insertObject:destinationsToAdd->at(destination)
-               atIndex:insertionIndex];
-
-  destinationsToAdd->erase(destination);
-}
-
 }  // namespace
 
 @implementation DestinationUsageHistory {
@@ -215,134 +199,18 @@ void InsertDestination(overflow_menu::Destination destination,
       currentRanking.push_back(
           static_cast<overflow_menu::Destination>(destination.destination));
     }
+
+    return currentRanking;
   }
 
   DestinationRanking sortedRanking =
       [self calculateNewRankingFromCurrentRanking:currentRanking];
-
-  // Maintain a map from overflow_menu::Destination : OverflowMenuDestination*
-  // for fast retrieval of a given overflow_menu::Destination's corresponding
-  // Objective-C class.
-  std::map<overflow_menu::Destination, OverflowMenuDestination*> destinations;
-
-  // Detect new destinations added to the carousel by feature teams. New
-  // destinations (`newDestinations`) are those now found in the carousel
-  // (`currentDestinations`), but not found in the ranking
-  // (`existingDestinations`).
-  std::set<overflow_menu::Destination> currentDestinations;
-
-  for (OverflowMenuDestination* carouselDestination in carouselDestinations) {
-    overflow_menu::Destination destination =
-        static_cast<overflow_menu::Destination>(
-            carouselDestination.destination);
-    currentDestinations.insert(destination);
-
-    destinations[destination] = carouselDestination;
-  }
-
-  std::set<overflow_menu::Destination> existingDestinations(
-      sortedRanking.begin(), sortedRanking.end());
-
-  std::vector<overflow_menu::Destination> newDestinations;
-
-  std::set_difference(currentDestinations.begin(), currentDestinations.end(),
-                      existingDestinations.begin(), existingDestinations.end(),
-                      std::inserter(newDestinations, newDestinations.end()));
-
-  for (overflow_menu::Destination newDestination : newDestinations) {
-    _untappedDestinations.insert(newDestination);
-  }
-
-  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
-      [[NSMutableArray alloc] init];
-
-  // Reconstruct carousel based on current ranking.
-  //
-  // Add all ranked destinations that don't need be re-sorted back-to-back
-  // following their ranking.
-  //
-  // Destinations that need to be re-sorted for highlight are not added here
-  // where they are re-inserted later. These destinations have a badge and a
-  // position of kNewDestinationsInsertionIndex or worst.
-  for (overflow_menu::Destination rankedDestination : sortedRanking) {
-    if (destinations.contains(rankedDestination) &&
-        !_untappedDestinations.contains(rankedDestination)) {
-      const bool dontSort =
-          destinations[rankedDestination].badge == BadgeTypeNone ||
-          [sortedDestinations count] < kNewDestinationsInsertionIndex;
-
-      if (dontSort) {
-        [sortedDestinations addObject:destinations[rankedDestination]];
-
-        destinations.erase(rankedDestination);
-      }
-    }
-  }
-
-  // `-calculateNewRanking` excludes any
-  // destinations in `_untappedDestinations` from its result, so new, untapped
-  // destinations must be added to `sortedDestinations` as a separate step. New,
-  // untapped destinations are inserted into the carousel starting at position
-  // `kNewDestinationsInsertionIndex`. Destinations that already have a badge
-  // are inserted in another step where they are inserted before the untapped
-  // destinations that don't have badges.
-  if (!_untappedDestinations.empty()) {
-    for (overflow_menu::Destination untappedDestination :
-         _untappedDestinations) {
-      if (destinations.contains(untappedDestination) &&
-          destinations[untappedDestination].badge == BadgeTypeNone) {
-        destinations[untappedDestination].badge = BadgeTypeNew;
-
-        InsertDestination(untappedDestination, &destinations,
-                          sortedDestinations);
-      }
-    }
-  }
-
-  std::vector<overflow_menu::Destination> allDestinations;
-
-  // Merge all destinations by prioritizing untapped destinations over ranked
-  // destinations in their order of insertion.
-  std::merge(sortedRanking.begin(), sortedRanking.end(),
-             _untappedDestinations.begin(), _untappedDestinations.end(),
-             std::back_inserter(allDestinations));
-
-  // Insert the destinations with a badge that is not for an error at
-  // kNewDestinationsInsertionIndex before the untapped destinations.
-  for (overflow_menu::Destination destination : allDestinations) {
-    if (destinations.contains(destination) &&
-        destinations[destination].badge != BadgeTypeError) {
-      InsertDestination(destination, &destinations, sortedDestinations);
-    }
-  }
-
-  // Insert the destinations with an error badge before the destinations with
-  // other types of badges.
-  for (overflow_menu::Destination destination : allDestinations) {
-    if (destinations.contains(destination)) {
-      InsertDestination(destination, &destinations, sortedDestinations);
-    }
-  }
-
-  // Check that all the destinations to show in the carousel were added to the
-  // sorted destinations output at this point.
-  DCHECK(destinations.empty());
-
-  // Set the new ranking.
-  sortedRanking = {};
-  for (OverflowMenuDestination* sortedDestination in sortedDestinations) {
-    sortedRanking.push_back(
-        static_cast<overflow_menu::Destination>(sortedDestination.destination));
-  }
-
   return sortedRanking;
 }
 
 // Track click for `destination` and associate it with TodaysDay().
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
   _usageHistory[TodaysDay()][destination] += 1;
-
-  _untappedDestinations.erase(destination);
 
   [self flushToPrefs];
 }
@@ -351,12 +219,6 @@ void InsertDestination(overflow_menu::Destination destination,
 
 // Applies the frecency algorithm described in the class header comment to
 // calculate the new ranking.
-//
-// NOTE: Destinations in `_untappedDestinations` will be completely ignored
-// during the ranking calculation because they're artificially inserted into the
-// carousel/ranking starting at position `kNewDestinationsInsertionIndex`.
-// This is custom business logic that doesn't respect the Smart Sorting
-// algorithm defined below, so it will happen outside of this method.
 - (DestinationRanking)calculateNewRankingFromCurrentRanking:
     (DestinationRanking)currentRanking {
   if (!self.visibleDestinationsCount ||
@@ -412,18 +274,12 @@ void InsertDestination(overflow_menu::Destination destination,
 
 // Constructs aggregated usage history dictionary of the following shape:
 // destination (overflow_menu::Destination) :  clickCount (int)
-//
-// Excludes destinations in `_untappedDestinations`.
 - (std::map<overflow_menu::Destination, int>)flattenedUsageHistoryWithinWindow:
     (base::TimeDelta)window {
   std::map<overflow_menu::Destination, int> flattenedUsageHistory;
 
   for (const auto& [day, dayHistory] : _usageHistory) {
     for (const auto& [destination, clickCount] : dayHistory) {
-      if (_untappedDestinations.contains(destination)) {
-        continue;
-      }
-
       base::TimeDelta entryAge = TodaysDay() - day;
 
       if (entryAge <= window) {
@@ -522,11 +378,6 @@ void InsertDestination(overflow_menu::Destination destination,
       _prefService, prefs::kOverflowMenuNewDestinations);
 
   untappedDestinationsUpdate->clear();
-
-  for (overflow_menu::Destination untappedDestination : _untappedDestinations) {
-    untappedDestinationsUpdate->Append(
-        overflow_menu::StringNameForDestination(untappedDestination));
-  }
 }
 
 @end
