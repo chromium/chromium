@@ -546,7 +546,7 @@ component("skia") {
   if (skia_support_gpu) {
     public += skia_gpu_public
     public += skia_gpu_chromium_public
-    sources += skia_gpu_private
+    sources += skia_ganesh_private
     sources += skia_null_gpu_sources
     sources += skia_sksl_gpu_sources
     sources += skia_shared_gpu_sources
@@ -654,6 +654,8 @@ template("skia_source_set") {
 skia_source_set("skia_core_and_effects") {
   defines = []
   sources = skia_core_sources
+  sources += skia_colorfilters_sources
+  sources += skia_colorfilters_sksl_sources
   sources += skia_effects_sources
   sources += skia_effects_imagefilter_sources
   if (skia_support_gpu) {
