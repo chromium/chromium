@@ -302,21 +302,22 @@ export class SearchV2ContentScanner extends ContentScanner {
    * volume would be the Linux volume. However, in the UI Linux is nested inside
    * My files, so we need to get My files as the top-most volume of a Linux
    * directory.
+   * @param {!DirectoryEntry|!FilesAppEntry} entry
    * @return {!DirectoryEntry|!FilesAppEntry}
    * @private
    */
-  getTopMostVolume_() {
-    const volumeInfo = this.volumeManager_.getVolumeInfo(this.entry_);
+  getTopMostVolume_(entry) {
+    const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {
       // It's a placeholder or a fake entry.
-      return this.entry_;
+      return entry;
     }
-    const entry = volumeInfo.prefixEntry ? volumeInfo.prefixEntry :
-                                           volumeInfo.displayRoot;
+    const topEntry = volumeInfo.prefixEntry ? volumeInfo.prefixEntry :
+                                              volumeInfo.displayRoot;
     // Here entry should never be null, but due to Closure annotations, Closure
     // thinks it may be (both prefixEntry and displayRoot above are not
     // guaranteed to be non-null).
-    return entry ? this.getWrappedVolumeEntry_(entry) : this.entry_;
+    return topEntry ? this.getWrappedVolumeEntry_(topEntry) : entry;
   }
 
   /**
@@ -333,6 +334,27 @@ export class SearchV2ContentScanner extends ContentScanner {
       return entry;
     }
     return fileData.entry;
+  }
+
+  /**
+   * For the given colume type returns root directories for all volumes with the
+   * given `volumeType`.
+   * @param {string} volumeType
+   * @return {!Array<!DirectoryEntry>}
+   */
+  getRootFoldersByVolumeType_(volumeType) {
+    const rootDirs = [];
+    const volumeInfoList = this.volumeManager_.volumeInfoList;
+    for (let index = 0; index < volumeInfoList.length; ++index) {
+      const volumeInfo = volumeInfoList.item(index);
+      if (volumeInfo.volumeType === volumeType) {
+        const displayRoot = volumeInfo.displayRoot;
+        if (displayRoot) {
+          rootDirs.push(...this.getSearchRoots_(displayRoot));
+        }
+      }
+    }
+    return rootDirs;
   }
 
   /**
@@ -361,6 +383,56 @@ export class SearchV2ContentScanner extends ContentScanner {
               metrics.recordInterval('Search.Local.Latency');
               resolve(entries);
             }
+          });
+    });
+  }
+
+  /**
+   * Creates a promise that, when fulfilled, returns a non-null array of
+   * file entries. This promise uses a client side recursive entry reader.
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Promise<!Array<!Entry>>}
+   * @private
+   */
+  makeReadEntriesRecursivelyPromise_(
+      folder, modifiedTimestamp, category, maxResults) {
+    return new Promise((resolve, reject) => {
+      const collectedEntries = [];
+      util.readEntriesRecursively(
+          folder,
+          (entries) => {
+            const filtered = entries.filter(entry => {
+              const name = entry.name.toLowerCase();
+              if (name.indexOf(this.query_) < 0) {
+                return false;
+              }
+              if (category !== chrome.fileManagerPrivate.FileCategory.ALL) {
+                if (!FileType.isType([category], entry)) {
+                  return false;
+                }
+              }
+              return true;
+            });
+            if (modifiedTimestamp === 0) {
+              collectedEntries.push(...filtered);
+            } else {
+              filtered.map(entry => {
+                entry.getMetadata(metadata => {
+                  if (metadata.modificationTime.getTime() > modifiedTimestamp) {
+                    collectedEntries.push(entry);
+                  }
+                });
+              });
+            }
+          },
+          () => {
+            resolve(collectedEntries);
+          },
+          reject,
+          () => {
+            return collectedEntries.length >= maxResults || this.cancelled_;
           });
     });
   }
@@ -426,19 +498,30 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createRemovablesSearch_(modifiedTimestamp, category, maxResults) {
-    const removableRootDirs = [];
-    const volumeInfoList = this.volumeManager_.volumeInfoList;
-    for (let index = 0; index < volumeInfoList.length; ++index) {
-      const volumeInfo = volumeInfoList.item(index);
-      if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.REMOVABLE) {
-        const displayRoot = volumeInfo.displayRoot;
-        if (displayRoot) {
-          removableRootDirs.push(...this.getSearchRoots_(displayRoot));
-        }
-      }
-    }
+    const rootFolderList = this.getRootFoldersByVolumeType_(
+        VolumeManagerCommon.VolumeType.REMOVABLE);
     return this.makeFileSearchPromiseList_(
-        modifiedTimestamp, category, maxResults, removableRootDirs);
+        modifiedTimestamp, category, maxResults,
+        this.getRootFoldersByVolumeType_(
+            VolumeManagerCommon.VolumeType.REMOVABLE));
+  }
+
+  /**
+   * Returns an array of promises that, when fulfilled, return an array of
+   * entries matching the current query, modified timestamp, and category for
+   * all known document providers.
+   * @param {number} modifiedTimestamp
+   * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
+   * @return {!Array<!Promise<!Array<Entry>>>}
+   * @private
+   */
+  createDocumentsProviderSearch_(modifiedTimestamp, category, maxResults) {
+    const rootFolderList = this.getRootFoldersByVolumeType_(
+        VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER);
+    return rootFolderList.map(
+        rootFolder => this.makeReadEntriesRecursivelyPromise_(
+            rootFolder, modifiedTimestamp, category, maxResults));
   }
 
   /**
@@ -492,14 +575,17 @@ export class SearchV2ContentScanner extends ContentScanner {
     if (isEntryInsideDrive({rootType: this.rootType_})) {
       return [this.createDriveSearch_(modifiedTimestamp, category, maxResults)];
     }
-    if (this.options_.location == SearchLocation.THIS_FOLDER) {
-      return this.makeFileSearchPromiseList_(
-          modifiedTimestamp, category, maxResults,
-          this.getSearchRoots_(this.entry_));
+    const searchFolder = this.options_.location === SearchLocation.THIS_FOLDER ?
+        this.entry_ :
+        this.getTopMostVolume_(this.entry_);
+    if (this.rootType_ === VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER) {
+      return [this.makeReadEntriesRecursivelyPromise_(
+          searchFolder, modifiedTimestamp, category, maxResults)];
     }
+    // My Files or a folder nested in it.
     return this.makeFileSearchPromiseList_(
         modifiedTimestamp, category, maxResults,
-        this.getSearchRoots_(this.getTopMostVolume_()));
+        this.getSearchRoots_(searchFolder));
   }
 
   /**
@@ -514,6 +600,8 @@ export class SearchV2ContentScanner extends ContentScanner {
       ...this.createMyFilesSearch_(modifiedTimestamp, category, maxResults),
       ...this.createRemovablesSearch_(modifiedTimestamp, category, maxResults),
       this.createDriveSearch_(modifiedTimestamp, category, maxResults),
+      ...this.createDocumentsProviderSearch_(
+          modifiedTimestamp, category, maxResults),
     ];
   }
 

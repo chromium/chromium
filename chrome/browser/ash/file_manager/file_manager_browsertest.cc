@@ -2189,7 +2189,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("hideSearchInTrash").EnableSearchV2(),
         TestCase("searchTrashedFiles").EnableSearchV2(),
         TestCase("matchDriveFilesByName").EnableSearchV2(),
-        TestCase("searchSharedWithMe").EnableSearchV2()
+        TestCase("searchSharedWithMe").EnableSearchV2(),
+        TestCase("searchDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
+        TestCase("searchDocumentsProviderWithTypeOptions")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2(),
+        TestCase("searchDocumentsProviderWithRecencyOptions")
+            .EnableGenericDocumentsProvider()
+            .EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

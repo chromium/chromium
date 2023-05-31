@@ -7,7 +7,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, getDateWithDayDiff, pending, 
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * @param {string} appId The ID that identifies the files app.
@@ -966,4 +966,98 @@ testcase.searchSharedWithMe = async () => {
   await remoteCall.typeSearchText(appId, 'nested.txt');
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([nestedTestSharedFile]));
+};
+
+/**
+ * Checks that the simple search from the root of a documents provider directory
+ * works. No file category or modified time filters are used.
+ */
+testcase.searchDocumentsProvider = async () => {
+  await addEntries(
+      ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Wait for DocumentsProvider to mount and Verify that the files are visible.
+  await remoteCall.waitForElement(
+      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
+
+  // Search for all files with "nam" in their name.
+  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+  await remoteCall.typeSearchText(appId, 'nam');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.renamableFile]),
+      {ignoreLastModifiedTime: true});
+};
+
+/**
+ * Checks that changing file types options correctly filters
+ * files exposed via Documents Provider.
+ */
+testcase.searchDocumentsProviderWithTypeOptions = async () => {
+  await addEntries(
+      ['documents_provider'], COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET);
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Wait for DocumentsProvider to mount and Verify that the files are visible.
+  await remoteCall.waitForElement(
+      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
+  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+
+  // Search the DocumentsProvider folder for files with "File" in their name.
+  await remoteCall.typeSearchText(appId, 'File');
+
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.readOnlyFile,
+    ENTRIES.deletableFile,
+    ENTRIES.renamableFile,
+  ]));
+
+  // Click the second button, which is "Images" option.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'type', 4),
+      'Failed to click "Images" type selector');
+
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.readOnlyFile,
+  ]));
+};
+
+/**
+ * Checks that changing file types options correctly filters
+ * files exposed via Documents Provider.
+ */
+testcase.searchDocumentsProviderWithRecencyOptions = async () => {
+  const recentHello = ENTRIES.hello.cloneWith({
+    nameText: 'hello-recent.txt',
+    lastModifiedTime: getDateWithDayDiff(3),
+    targetPath: 'hello-recent.txt',
+  });
+  await addEntries(
+      ['documents_provider'],
+      COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET.concat([recentHello]));
+
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Wait for DocumentsProvider to mount and Verify that the files are visible.
+  await remoteCall.waitForElement(
+      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
+  await navigateWithDirectoryTree(appId, '/DocumentsProvider');
+
+  // Search the DocumentsProvider for files with "hello" in their name.
+  await remoteCall.typeSearchText(appId, 'hello');
+
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.hello,
+    recentHello,
+  ]));
+
+  // Click the fourth button, which is "Last week" option.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'recency', 4),
+      'Failed to click "Last week" recency selector');
+
+  // Expect only the recent hello file to be found.
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    recentHello,
+  ]));
 };
