@@ -68,6 +68,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
 @property(nonatomic, strong) UIView* imageContainerView;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @property(nonatomic, strong) UIScrollView* scrollView;
+@property(nonatomic, strong) GradientView* gradientView;
+@property(nonatomic, assign) CGFloat customGradientViewHeight;
+@property(nonatomic, assign) CGFloat scrollViewHeightPadding;
+@property(nonatomic, strong) NSLayoutConstraint* gradientViewHeightConstraint;
 @end
 
 @implementation ConfirmationAlertViewController
@@ -89,6 +93,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
+    _customGradientViewHeight = kGradientHeight;
     _customSpacing = kStackViewSpacing;
     _showsVerticalScrollIndicator = YES;
     _scrollEnabled = YES;
@@ -168,6 +173,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [stackView.bottomAnchor constraintEqualToAnchor:self.scrollView.bottomAnchor
                                            constant:-kScrollViewBottomInsets]
   ]];
+  self.scrollViewHeightPadding += kScrollViewBottomInsets;
 
   // Scroll View constraints to the height of its content. This allows to center
   // the scroll view.
@@ -246,18 +252,20 @@ const CGFloat kFaviconBadgeSideLength = 24;
     ]];
     scrollViewBottomAnchor = actionStackView.topAnchor;
 
-    GradientView* gradientView = [self createGradientView];
-    [self.view addSubview:gradientView];
+    self.gradientView = [self createGradientView];
+    [self.view addSubview:self.gradientView];
 
     [NSLayoutConstraint activateConstraints:@[
-      [gradientView.bottomAnchor
+      [self.gradientView.bottomAnchor
           constraintEqualToAnchor:actionStackView.topAnchor],
-      [gradientView.leadingAnchor
+      [self.gradientView.leadingAnchor
           constraintEqualToAnchor:self.scrollView.leadingAnchor],
-      [gradientView.trailingAnchor
+      [self.gradientView.trailingAnchor
           constraintEqualToAnchor:self.scrollView.trailingAnchor],
-      [gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
     ]];
+    self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
+        constraintEqualToConstant:self.customGradientViewHeight];
+    self.gradientViewHeightConstraint.active = YES;
   }
 
   [NSLayoutConstraint activateConstraints:@[
@@ -297,6 +305,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     centerYConstraint.priority = heightConstraint.priority - 1;
     centerYConstraint.active = YES;
   }
+  self.scrollViewHeightPadding += scrollViewTopConstant;
 
   if (!self.imageHasFixedSize) {
     // Constrain the image to the scroll view size and its aspect ratio.
@@ -383,6 +392,18 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
   // Do nothing by default. Subclasses can override this.
+}
+
+- (void)updateCustomGradientViewHeight:(CGFloat)height {
+  self.customGradientViewHeight = height;
+  self.gradientViewHeightConstraint.active = NO;
+  self.gradientViewHeightConstraint = [self.gradientView.heightAnchor
+      constraintEqualToConstant:self.customGradientViewHeight];
+  self.gradientViewHeightConstraint.active = YES;
+}
+
+- (CGFloat)getScrollViewHeightPadding {
+  return self.scrollViewHeightPadding;
 }
 
 #pragma mark - Private

@@ -125,6 +125,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   self.actionHandler = self;
   self.scrollEnabled = NO;
 
+  [self updateCustomGradientViewHeight:0];
+
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
   self.secondaryActionString =
@@ -466,7 +468,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   for (UIView* subview in self.view.subviews) {
     subviewsHeight += CGRectGetHeight(subview.frame);
   }
-  return subviewsHeight;
+  return subviewsHeight + [self getScrollViewHeightPadding];
 }
 
 // Returns the initial height of the bottom sheet while showing a single row.
@@ -503,6 +505,11 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 - (void)setTableViewScrollEnabled:(BOOL)enabled {
   _tableView.scrollEnabled = enabled;
   self.scrollEnabled = enabled;
+
+  // Add gradient view to show that the user can scroll.
+  if (enabled) {
+    [self updateCustomGradientViewHeight:16];
+  }
 }
 
 // Performs the expand bottom sheet animation.
