@@ -166,6 +166,22 @@ std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   return l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
 }
 
+std::string GetManagedUiWebUIIcon(Profile* profile) {
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    return "cr:domain";
+  }
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (ShouldDisplayManagedByParentUi(profile)) {
+    // The Family Link "kite" icon.
+    return "cr20:kite";
+  }
+#endif
+
+  // This method can be called even if we shouldn't display the managed UI.
+  return std::string();
+}
+
 std::u16string GetManagedUiWebUILabel(Profile* profile) {
   absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&

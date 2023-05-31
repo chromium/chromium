@@ -226,6 +226,47 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiMenuItemLabelSupervised) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUIIconEnterprise) {
+  // Simulate a managed profile.
+  AddEnterpriseManagedPolicies();
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  TestingProfile::Builder builder;
+  auto profile = builder.Build();
+
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder_supervised;
+  builder_supervised.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile_supervised =
+      builder_supervised.Build();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile.get()).empty());
+  EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile_supervised.get()).empty());
+#else
+  EXPECT_EQ("cr:domain", chrome::GetManagedUiWebUIIcon(profile.get()));
+  // Enterprise management takes precedence over supervision in the management
+  // UI.
+  EXPECT_EQ("cr:domain",
+            chrome::GetManagedUiWebUIIcon(profile_supervised.get()));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUIIconSupervised) {
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder;
+  builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  if (ExpectManagedUiForSupervisedUsers()) {
+    EXPECT_EQ("cr20:kite", chrome::GetManagedUiWebUIIcon(profile.get()));
+  } else {
+    EXPECT_TRUE(chrome::GetManagedUiWebUIIcon(profile.get()).empty());
+  }
+}
+
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiWebUILabelEnterprise) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();

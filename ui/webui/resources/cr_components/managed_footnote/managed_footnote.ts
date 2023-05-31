@@ -57,11 +57,25 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * The name of the icon to display in the footer.
+       * Should only be read if isManaged_ is true.
+       */
+      managedByIcon_: {
+        reflectToAttribute: true,
+        type: String,
+        value() {
+          return loadTimeData.getString('managedByIcon');
+        },
+      },
+
     };
   }
 
   private isManaged_: boolean;
   showDeviceInfo: boolean;
+  private managedByIcon_: string;
 
   override ready() {
     super.ready();
