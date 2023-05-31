@@ -239,6 +239,18 @@ T ConvertLocatedEventForRootView(const SubmenuView& submenu,
   return converted_event;
 }
 
+const SubmenuView& GetRootMenu(const SubmenuView& submenu) {
+  return *submenu.GetMenuItem()->GetRootMenuItem()->GetSubmenu();
+}
+
+gfx::Point GetLocationInRootMenu(const SubmenuView& submenu,
+                                 const gfx::Point& location) {
+  // Because the root menu and `submenu` may not be in the same widget, we need
+  // to round-trip through screen coordinates.
+  return ConvertFromScreen(GetRootMenu(submenu),
+                           ConvertToScreen(submenu, location));
+}
+
 bool Contains(const SubmenuView& submenu, const gfx::Point& location) {
   return submenu.GetWidget()->GetRootView()->GetLocalBounds().Contains(
       location);
@@ -915,12 +927,15 @@ void MenuController::OnMouseMoved(SubmenuView* source,
     return;
   }
 
-  // Ignore mouse move events whose location is the same as where the mouse
-  // was when a menu was opened. This fixes the issue of opening a menu
-  // with the keyboard and having the menu item under the current mouse
-  // position incorrectly selected.
-  if (menu_open_mouse_loc_ && *menu_open_mouse_loc_ == event.location())
+  // Opening a submenu can trigger mouse move events at the current mouse
+  // position (e.g. due to Aura synthesizing them on window visibility changes).
+  // Ignore these. This ensures submenus opened with the keyboard don't
+  // incorrectly show a mouse selection before the mouse moves.
+  if (menu_open_mouse_loc_ &&
+      *menu_open_mouse_loc_ ==
+          GetLocationInRootMenu(*source, event.location())) {
     return;
+  }
 
   menu_open_mouse_loc_.reset();
   MenuHostRootView* root_view = GetRootView(source, event.location());
@@ -1370,7 +1385,7 @@ void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
   if (submenu->IsShowing()) {
     HandleMouseLocation(
         submenu, ConvertFromScreen(
-                     *submenu->GetMenuItem()->GetRootMenuItem()->GetSubmenu(),
+                     GetRootMenu(*submenu),
                      display::Screen::GetScreen()->GetCursorScreenPoint()));
   }
 }
@@ -2237,7 +2252,8 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
           display::Screen::GetScreen()->GetCursorScreenPoint());
       MenuPart part_under_mouse = GetMenuPart(item->submenu_, mouse_pos);
       if (part_under_mouse.type != MenuPartType::kNone) {
-        menu_open_mouse_loc_ = mouse_pos;
+        menu_open_mouse_loc_ =
+            GetLocationInRootMenu(*item->submenu_, mouse_pos);
       }
     }
 

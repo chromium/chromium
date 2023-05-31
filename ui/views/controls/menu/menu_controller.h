@@ -721,10 +721,10 @@ class VIEWS_EXPORT MenuController
   // screen coordinates). Otherwise this will be (0, 0).
   gfx::Point menu_start_mouse_press_loc_;
 
-  // If the mouse was under the menu when the menu was run, this will have its
-  // location. Otherwise it will be null. This is used to ignore mouse move
-  // events triggered by the menu opening, to avoid selecting the menu item
-  // over the mouse.
+  // Set to the location, relative to the root menu item's widget, of the mouse
+  // cursor if any submenu is opened while the cursor is over that menu. This is
+  // used to ignore mouse move events triggered by the menu opening, to avoid
+  // auto-selecting the menu item under the mouse.
   absl::optional<gfx::Point> menu_open_mouse_loc_;
 
   // Controls behavior differences between a combobox and other types of menu
