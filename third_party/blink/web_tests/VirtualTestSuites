@@ -1026,7 +1026,7 @@
       "external/wpt/shadow-dom/declarative"
     ],
     "args": ["--disable-features=StreamingDeclarativeShadowDOM"],
-    "expires": "Jul 1, 2023"
+    "expires": "Feb 1, 2024"
   },
   {
     "prefix": "backface-visibility-interop",
