@@ -1978,14 +1978,6 @@ BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the overview and desk reverse scrolling behaviors are changed
-// and if the user performs the old gestures, a notification or toast will show
-// up.
-// TODO(https://crbug.com/1107183): Remove this after the feature is launched.
-BASE_FEATURE(kReverseScrollGestures,
-             "EnableReverseScrollGestures",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the jelly colors will be used in the scanning app. Requires
@@ -3446,10 +3438,6 @@ bool IsPerDeskZOrderEnabled() {
 
 bool IsRenderArcNotificationsByChromeEnabled() {
   return base::FeatureList::IsEnabled(kRenderArcNotificationsByChrome);
-}
-
-bool IsReverseScrollGesturesEnabled() {
-  return base::FeatureList::IsEnabled(kReverseScrollGestures);
 }
 
 bool IsRgbKeyboardEnabled() {

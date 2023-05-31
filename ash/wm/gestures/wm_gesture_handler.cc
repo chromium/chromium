@@ -43,13 +43,8 @@ bool g_did_wrong_exit_overview_gesture = false;
 bool g_did_wrong_next_desk_gesture = false;
 bool g_did_wrong_last_desk_gesture = false;
 
-// Reverse an offset when the reverse scrolling is on.
+// Reverse an offset when natural scrolling is on.
 float GetOffset(float offset) {
-  // The handler code uses the new directions which is the reverse of the old
-  // handler code. Reverse the offset if the ReverseScrollGestures feature is
-  // disabled so that the users get old behavior.
-  if (!features::IsReverseScrollGesturesEnabled())
-    return -offset;
   return window_util::IsNaturalScrollOn() ? -offset : offset;
 }
 
@@ -60,15 +55,14 @@ void ShowReverseGestureToast(const char* toast_id,
       ToastData(toast_id, catalog_name, l10n_util::GetStringUTF16(message_id)));
 }
 
-// When reverse scrolling for touchpad is Off, if the user performs wrong
-// vertical gestures (i.e., swiping down/up with three fingers to enter/exit
-// overview), a toast will show up to tell user the correct gesture. The toast
-// will be removed after M89.
+// When the user performs wrong vertical gestures (i.e., swiping down/up with
+// three fingers to enter/exit overview), a toast will show up to tell user the
+// correct gesture.
+// TODO(b/285014048): The toast will be removed after M89.
 bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
   const bool correct_gesture = in_overview ? (offset_y < 0) : (offset_y > 0);
 
-  if (!features::IsReverseScrollGesturesEnabled() ||
-      window_util::IsNaturalScrollOn()) {
+  if (window_util::IsNaturalScrollOn()) {
     return correct_gesture;
   }
 
@@ -129,15 +123,14 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   return true;
 }
 
-// When reverse scrolling for touchpad is Off, if the user performs wrong
-// horizontal gestures (i.e., swiping left/right with four fingers to switch to
-// the next/previous desk), a toast will show up to tell user the correct
-// gesture. The toast will be removed after M89.
+// When the user performs wrong horizontal gestures (i.e., swiping
+// left/right with four fingers to switch to the next/previous desk), a toast
+// will show up to tell user the correct gesture.
+// TODO(b/285014048): The toast will be removed after M89.
 void MaybeHandleWrongHorizontalGesture(bool move_left,
                                        const Desk* previous_desk,
                                        const Desk* next_desk) {
-  if (!features::IsReverseScrollGesturesEnabled() ||
-      window_util::IsNaturalScrollOn()) {
+  if (window_util::IsNaturalScrollOn()) {
     return;
   }
 
