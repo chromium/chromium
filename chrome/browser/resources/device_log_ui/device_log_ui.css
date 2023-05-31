@@ -27,12 +27,9 @@ button {
   margin-inline-end: 8px;
 }
 
-#log-checkbox-container label {
-  vertical-align: middle;
-}
-
-#log-checkbox-container input {
-  margin-bottom: 1px;
+label {
+  align-items: center;
+  display: inline-flex;
   vertical-align: middle;
 }
 
