@@ -299,6 +299,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
                kServiceWorkerBypassFetchHandlerForMainResourceByOriginTrial,
            WebFeature::kCascadedCSSZoomNotEqualToOne,
            WebFeature::kV8Window_QueryLocalFonts_Method,
-           WebFeature::kHiddenUntilFoundAttribute}));
+           WebFeature::kHiddenUntilFoundAttribute,
+           WebFeature::kDanglingMarkupInWindowName}));
   return *opt_in_features;
 }
