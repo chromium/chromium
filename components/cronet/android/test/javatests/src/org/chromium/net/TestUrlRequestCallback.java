@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import static org.junit.Assert.fail;
@@ -210,7 +209,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertFalse(request.isDone());
         assertTrue(mResponseStep == ResponseStep.NOTHING
                 || mResponseStep == ResponseStep.ON_RECEIVED_REDIRECT);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_RECEIVED_REDIRECT;
         mRedirectUrlList.add(newLocationUrl);
@@ -228,7 +227,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertFalse(request.isDone());
         assertTrue(mResponseStep == ResponseStep.NOTHING
                 || mResponseStep == ResponseStep.ON_RECEIVED_REDIRECT);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_RESPONSE_STARTED;
         mResponseInfo = info;
@@ -244,7 +243,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertFalse(request.isDone());
         assertTrue(mResponseStep == ResponseStep.ON_RESPONSE_STARTED
                 || mResponseStep == ResponseStep.ON_READ_COMPLETED);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_READ_COMPLETED;
 
@@ -273,7 +272,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED);
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_SUCCEEDED;
         mResponseInfo = info;
@@ -296,7 +295,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // Should happen at most once for a single request.
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
         if (mCallbackExceptionThrown) {
             assertThat(error).isInstanceOf(CallbackException.class);
             assertThat(error).hasMessageThat().contains(
@@ -320,7 +319,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // Should happen at most once for a single request.
         assertFalse(mOnCanceledCalled);
         assertFalse(mOnErrorCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_CANCELED;
         mOnCanceledCalled = true;

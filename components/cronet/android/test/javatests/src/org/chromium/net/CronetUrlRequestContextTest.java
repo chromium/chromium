@@ -7,8 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -390,7 +388,7 @@ public class CronetUrlRequestContextTest {
         callback.setAutoAdvance(true);
         callback.startNextRead(urlRequest);
         callback.blockForDone();
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
 
         // The default network should still be active, hence the underlying network-bound context
         // should still be there.
@@ -465,7 +463,7 @@ public class CronetUrlRequestContextTest {
         // we previously set auto advance to false).
         callback.blockForDone();
         // mError should be null due to urlRequest.cancel().
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
         // urlRequest.cancel(); should destroy the underlying network bound context.
         assertFalse(
                 ApiHelper.doesContextExistForNetwork(testFramework.mCronetEngine, defaultNetwork));
@@ -1481,7 +1479,7 @@ public class CronetUrlRequestContextTest {
         urlRequestBuilder.disableCache();
         urlRequestBuilder.build().start();
         callback.blockForDone();
-        assertNotNull(callback.mError);
+        assertThat(callback.mError).isNotNull();
         assertThat(callback.mError)
                 .hasMessageThat()
                 .contains("Exception in CronetUrlRequest: net::ERR_CONNECTION_REFUSED");
@@ -1697,7 +1695,7 @@ public class CronetUrlRequestContextTest {
         TestBadLibraryLoader loader = new TestBadLibraryLoader();
         builder.setLibraryLoader(loader);
         CronetEngine engine = builder.build();
-        assertNotNull(engine);
+        assertThat(engine).isNotNull();
         assertFalse(loader.wasCalled());
     }
 

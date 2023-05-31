@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -380,7 +379,7 @@ public class PkpTest {
      * Asserts that the response from the server contains an PKP error.
      */
     private void assertErrorResponse() {
-        assertNotNull("Expected an error", mListener.mError);
+        assertWithMessage("Expected an error").that(mListener.mError).isNotNull();
         int errorCode = ((NetworkException) mListener.mError).getCronetInternalErrorCode();
         Set<Integer> expectedErrors = new HashSet<>();
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
@@ -399,7 +398,9 @@ public class PkpTest {
             fail("Did not expect an error but got error code "
                     + ((NetworkException) mListener.mError).getCronetInternalErrorCode());
         }
-        assertNotNull("Expected non-null response from the server", mListener.mResponseInfo);
+        assertWithMessage("Expected non-null response from the server")
+                .that(mListener.mResponseInfo)
+                .isNotNull();
         assertThat(mListener.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
     }
 

@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 import android.os.ConditionVariable;
@@ -202,7 +201,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         checkOnValidThread();
         assertFalse(stream.isDone());
         assertThat(mResponseStep).isEqualTo(ResponseStep.NOTHING);
-        assertNull(mError);
+        assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_STREAM_READY;
         if (maybeThrowCancelOrPause(stream, mWriteStepBlock)) {
             return;
@@ -217,7 +216,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.NOTHING, ResponseStep.ON_STREAM_READY,
                         ResponseStep.ON_WRITE_COMPLETED);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_RESPONSE_STARTED;
         mResponseInfo = info;
@@ -235,7 +234,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED,
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
-        assertNull(mError);
+        assertThat(mError).isNull();
 
         mResponseStep = ResponseStep.ON_READ_COMPLETED;
         mResponseInfo = info;
@@ -265,7 +264,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
             ByteBuffer buffer, boolean endOfStream) {
         checkOnValidThread();
         assertFalse(stream.isDone());
-        assertNull(mError);
+        assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_WRITE_COMPLETED;
         mResponseInfo = info;
         if (!mWriteBuffersToBeAcked.isEmpty()) {
@@ -283,7 +282,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
             UrlResponseInfo.HeaderBlock trailers) {
         checkOnValidThread();
         assertFalse(stream.isDone());
-        assertNull(mError);
+        assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_TRAILERS;
         mResponseInfo = info;
         mTrailers = trailers;
@@ -301,7 +300,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
                         ResponseStep.ON_WRITE_COMPLETED, ResponseStep.ON_TRAILERS);
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
         assertThat(mWriteBuffers).isEmpty();
         assertThat(mWriteBuffersToBeAcked).isEmpty();
 
@@ -321,7 +320,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         // Should happen at most once for a single stream.
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_FAILED;
         mResponseInfo = info;
 
@@ -339,7 +338,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         // Should happen at most once for a single stream.
         assertFalse(mOnCanceledCalled);
         assertFalse(mOnErrorCalled);
-        assertNull(mError);
+        assertThat(mError).isNull();
         mResponseStep = ResponseStep.ON_CANCELED;
         mResponseInfo = info;
 

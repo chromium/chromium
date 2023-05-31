@@ -9,7 +9,6 @@ import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Build;
@@ -51,7 +50,6 @@ public class NetworkChangeNotifierTest {
     // Os and OsConstants aren't exposed until Lollipop
     public void testNetworkChangeNotifier() throws Exception {
         CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
-        assertNotNull(testFramework);
 
         // Bind a listening socket to a local port. The socket won't be used to accept any
         // connections, but rather to get connection stuck waiting to connect.

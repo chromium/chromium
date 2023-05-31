@@ -4,8 +4,8 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.os.ConditionVariable;
 
@@ -50,8 +50,8 @@ public class TestRequestFinishedListener extends RequestFinishedInfo.Listener {
 
     @Override
     public void onRequestFinished(RequestFinishedInfo requestInfo) {
-        assertNull("onRequestFinished called repeatedly", mRequestInfo);
-        assertNotNull(requestInfo);
+        assertWithMessage("onRequestFinished called repeatedly").that(mRequestInfo).isNull();
+        assertThat(requestInfo).isNotNull();
         mRequestInfo = requestInfo;
         mBlock.open();
         mBlockListener.block();

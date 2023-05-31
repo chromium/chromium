@@ -7,7 +7,6 @@ package org.chromium.net.test;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -914,7 +913,7 @@ public class FakeUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertNotNull(callback.mResponseInfo);
+        assertThat(callback.mResponseInfo).isNotNull();
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
         assertEquals("", callback.mResponseAsString);
         dataProvider.assertClosed();

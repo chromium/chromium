@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.getContext;
@@ -340,7 +339,7 @@ public class BidirectionalStreamQuicTest {
         stream.start();
         callback.blockForDone();
         assertTrue(stream.isDone());
-        assertNotNull(callback.mError);
+        assertThat(callback.mError).isNotNull();
         if (callback.mError instanceof QuicException) {
             QuicException quicException = (QuicException) callback.mError;
             // Checks that detailed quic error code is not QUIC_NO_ERROR == 0.

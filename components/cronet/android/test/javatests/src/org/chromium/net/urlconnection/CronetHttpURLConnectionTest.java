@@ -6,8 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -965,7 +963,7 @@ public class CronetHttpURLConnectionTest {
         } catch (IOException e) {
             // Expected.
         }
-        assertNull(mUrlConnection.getErrorStream());
+        assertThat(mUrlConnection.getErrorStream()).isNull();
     }
 
     @Test
@@ -1216,18 +1214,18 @@ public class CronetHttpURLConnectionTest {
         // returns an empty map on L.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Map<String, List<String>> headers = urlConnection.getHeaderFields();
-            assertNotNull(headers);
+            assertThat(headers).isNotNull();
             assertThat(headers).isEmpty();
         }
         // Skip getHeaderFields(), since it can return null or an empty map.
-        assertNull(urlConnection.getHeaderField("foo"));
-        assertNull(urlConnection.getHeaderFieldKey(0));
-        assertNull(urlConnection.getHeaderField(0));
+        assertThat(urlConnection.getHeaderField("foo")).isNull();
+        assertThat(urlConnection.getHeaderFieldKey(0)).isNull();
+        assertThat(urlConnection.getHeaderField(0)).isNull();
 
         // getErrorStream() does not have a throw clause, it returns null if
         // there's an exception.
         InputStream errorStream = urlConnection.getErrorStream();
-        assertNull(errorStream);
+        assertThat(errorStream).isNull();
     }
 
     /**
@@ -1381,7 +1379,7 @@ public class CronetHttpURLConnectionTest {
         // InterruptedIOException.
         t.interrupt();
         // Make sure an IOException is thrown.
-        assertNotNull(task.get());
+        assertThat(task.get()).isNotNull();
         s.close();
     }
 

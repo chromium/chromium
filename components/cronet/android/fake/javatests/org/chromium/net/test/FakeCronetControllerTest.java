@@ -8,7 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -97,7 +96,7 @@ public class FakeCronetControllerTest {
                 FakeCronetController.getControllerForFakeEngine(providerEngine));
         assertNotEquals(
                 newController, FakeCronetController.getControllerForFakeEngine(providerEngine));
-        assertNotNull(FakeCronetController.getControllerForFakeEngine(providerEngine));
+        assertThat(FakeCronetController.getControllerForFakeEngine(providerEngine)).isNotNull();
     }
 
     @Test

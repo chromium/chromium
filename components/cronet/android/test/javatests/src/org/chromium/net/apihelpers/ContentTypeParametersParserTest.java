@@ -5,9 +5,9 @@
 package org.chromium.net.apihelpers;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -158,7 +158,7 @@ public class ContentTypeParametersParserTest {
         } catch (Throwable e) {
             actualException = e;
         }
-        assertNotNull("Exception not thrown", actualException);
+        assertWithMessage("Exception not thrown").that(actualException).isNotNull();
         assertThat(actualException.getClass()).isEqualTo(exceptionType);
         return (E) actualException;
     }

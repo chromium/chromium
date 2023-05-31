@@ -7,7 +7,6 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -245,7 +244,7 @@ public class ExperimentalOptionsTest {
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
 
         // Shut down the context, persisting contents to disk, and build a new one.
@@ -259,7 +258,7 @@ public class ExperimentalOptionsTest {
         urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertNull(callback.mError);
+        assertThat(callback.mError).isNull();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         context.shutdown();
     }
@@ -346,7 +345,7 @@ public class ExperimentalOptionsTest {
                 ConnectionMigrationOptions.builder().enableDefaultNetworkMigration(true));
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -363,7 +362,7 @@ public class ExperimentalOptionsTest {
         mBuilder.build();
 
         assertTrue(mockBuilderImpl.mConnectionMigrationOptions.getEnableDefaultNetworkMigration());
-        assertNull(mockBuilderImpl.mEffectiveExperimentalOptions);
+        assertThat(mockBuilderImpl.mEffectiveExperimentalOptions).isNull();
     }
 
     @Test
@@ -380,7 +379,7 @@ public class ExperimentalOptionsTest {
                 "{\"QUIC\": {\"migrate_sessions_on_network_change_v2\": false}}");
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(EXPECTED_CONNECTION_MIGRATION_ENABLED_STRING,
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -396,7 +395,7 @@ public class ExperimentalOptionsTest {
                 ConnectionMigrationOptions.builder().allowNonDefaultNetworkUsage(true));
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{}}", mockBuilderImpl.mEffectiveExperimentalOptions);
     }
 
@@ -411,7 +410,7 @@ public class ExperimentalOptionsTest {
                 ConnectionMigrationOptions.builder().enablePathDegradationMigration(true));
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -428,7 +427,7 @@ public class ExperimentalOptionsTest {
                                                        .allowNonDefaultNetworkUsage(true));
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals("{\"QUIC\":{\"migrate_sessions_early_v2\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);
     }
@@ -445,7 +444,7 @@ public class ExperimentalOptionsTest {
                                                        .allowNonDefaultNetworkUsage(false));
         mBuilder.build();
 
-        assertNull(mockBuilderImpl.mConnectionMigrationOptions);
+        assertThat(mockBuilderImpl.mConnectionMigrationOptions).isNull();
         assertJsonEquals(
                 "{\"QUIC\":{\"migrate_sessions_early_v2\":false,\"allow_port_migration\":true}}",
                 mockBuilderImpl.mEffectiveExperimentalOptions);

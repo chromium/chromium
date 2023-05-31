@@ -68,7 +68,9 @@ public class MissingNativeLibraryTest {
         }
 
         Assert.assertTrue("Unable to find the native cronet provider", foundNativeProvider);
-        Assert.assertNotNull("Unable to find the platform cronet provider", platformProvider);
+        assertWithMessage("Unable to find the platform cronet provider")
+                .that(platformProvider)
+                .isNotNull();
 
         CronetEngine.Builder builder = platformProvider.createBuilder();
         CronetEngine engine = builder.build();

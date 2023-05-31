@@ -850,10 +850,12 @@ instrumentation_test_apk("cronet_sample_test_apk") {
   deps = [
     ":cronet_sample_apk_java",
     ":package_impl_common_java",
+    "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
   ]
 
