@@ -408,7 +408,11 @@
       "vendor_id": "0x1414",
       "exceptions": [
         {
-          "device_id": ["0x02c1"]
+          "comment": "XBox (0xd000) and RemoteFX Drivers (0x02c1) can be hardware accelerated.",
+          "device_id": [
+            "0x02c1",
+            "0xd000"
+          ]
         }
       ],
       "features": [
@@ -896,7 +900,7 @@
     },
     {
       "id": 122,
-      "description": "GPU rasterization should only be enabled on NVIDIA and Intel and AMD RX-R2 GPUs with DX11+ or any GPU using ANGLE's GL backend.",
+      "description": "GPU rasterization should only be enabled on NVIDIA, Intel, and AMD RX-R2 GPUs with DX11+ or any GPU using ANGLE's GL backend.",
       "cr_bugs": [1047002],
       "os": {
         "type": "win"
@@ -933,6 +937,11 @@
             "value": "8.17.10.1366"
           },
           "gl_renderer": ".*Direct3D11.*"
+        },
+        {
+          "comment": "XBox (0xd000) handles GPU rasterization",
+          "vendor_id": "0x1414",
+          "device_id": [ "0xd000" ]
         },
         {
           "gl_renderer": ".*OpenGL.*"
