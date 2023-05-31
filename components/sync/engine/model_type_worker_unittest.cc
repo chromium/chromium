@@ -466,7 +466,10 @@ class ModelTypeWorkerTest : public ::testing::Test {
     return MockInvalidation::BuildUnknownVersion();
   }
 
-  void ResetWorker() { worker_.reset(); }
+  void ResetWorker() {
+    mock_type_processor_ = nullptr;
+    worker_.reset();
+  }
 
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
