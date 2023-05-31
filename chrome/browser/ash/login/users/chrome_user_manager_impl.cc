@@ -34,7 +34,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -1214,11 +1213,6 @@ const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {
   return user_manager::GuestAccountId();
 }
 
-bool ChromeUserManagerImpl::IsFirstExecAfterBoot() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kFirstExecAfterBoot);
-}
-
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   cryptohome::AccountIdentifier identifier =
@@ -1241,12 +1235,6 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-bool ChromeUserManagerImpl::HasBrowserRestarted() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(switches::kLoginUser);
 }
 
 const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImagekiaNamed(

@@ -439,7 +439,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
 // For a brand new user, if sync off, set 'Ask Every Time' as the default value,
 // and don't show notifications, don't restore.
 TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
   CreateFullRestoreServiceForTesting();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -454,7 +454,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncOff) {
 // you left off', after sync, set 'Always' as the default value, and don't show
 // notifications, don't restore.
 TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
   CreateFullRestoreServiceForTesting();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -486,7 +486,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeRestoreSetting) {
 // sync, set 'Ask every time' as the default value, and don't show
 // notifications, don't restore.
 TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
   CreateFullRestoreServiceForTesting();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -517,7 +517,7 @@ TEST_F(FullRestoreServiceTest, NewUserSyncChromeNotRestoreSetting) {
 // For a new Chrome OS user, keep the ChromeOS restore setting from sync, and
 // don't show notifications, don't restore.
 TEST_F(FullRestoreServiceTest, ReImage) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
   CreateFullRestoreServiceForTesting();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());

@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -23,6 +24,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/crash/core/common/crash_key.h"
@@ -683,6 +685,11 @@ bool UserManagerBase::IsCurrentUserOwner() const {
 
 bool UserManagerBase::IsCurrentUserNew() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceFirstRunUI)) {
+    return true;
+  }
+
   return is_current_user_new_;
 }
 
@@ -1237,6 +1244,17 @@ void UserManagerBase::NotifyUserAddedToSession(const User* added_user,
 
 PrefService* UserManagerBase::GetLocalState() const {
   return local_state_.get();
+}
+
+bool UserManagerBase::IsFirstExecAfterBoot() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kFirstExecAfterBoot);
+}
+
+bool UserManagerBase::HasBrowserRestarted() const {
+  return base::SysInfo::IsRunningOnChromeOS() &&
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             ash::switches::kLoginUser);
 }
 
 void UserManagerBase::Initialize() {

@@ -1973,7 +1973,7 @@ class ArcSessionRetryTest
   void SetUp() override {
     ArcSessionManagerTest::SetUp();
 
-    GetFakeUserManager()->set_current_user_new(true);
+    GetFakeUserManager()->SetIsCurrentUserNew(true);
 
     // Make negotiation not needed by switching to managed flow with other
     // preferences under the policy, similar to google.com provisioning case.

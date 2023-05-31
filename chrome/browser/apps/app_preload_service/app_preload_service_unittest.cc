@@ -57,7 +57,7 @@ class AppPreloadServiceTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    GetFakeUserManager()->set_current_user_new(true);
+    GetFakeUserManager()->SetIsCurrentUserNew(true);
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
@@ -175,7 +175,7 @@ TEST_F(AppPreloadServiceTest, FirstLoginCompletedPrefSetAfterSuccess) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginExistingUserNotStarted) {
-  GetFakeUserManager()->set_current_user_new(false);
+  GetFakeUserManager()->SetIsCurrentUserNew(false);
   TestingProfile existing_user_profile;
 
   // Ensure that the AppPreloadService is created.

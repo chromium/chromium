@@ -47,7 +47,7 @@ class FullRestorePrefsTest : public testing::Test {
 
 // For a brand new user, set 'ask every time' as the default value.
 TEST_F(FullRestorePrefsTest, NewUser) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
   RegisterProfilePrefs(registry());
 
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
@@ -86,7 +86,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
 // For a new Chrome OS user, set 'always restore' as the default value if the
 // browser setting is 'continue where you left off'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
 
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
@@ -106,7 +106,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
 // For a new Chrome OS user, set 'ask every time' as the default value if the
 // browser setting is 'new tab'.
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
-  GetFakeUserManager()->set_current_user_new(true);
+  GetFakeUserManager()->SetIsCurrentUserNew(true);
 
   RegisterProfilePrefs(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());

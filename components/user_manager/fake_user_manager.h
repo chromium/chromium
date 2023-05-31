@@ -56,9 +56,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SetUserNonCryptohomeDataEphemeral(const AccountId& account_id,
                                          bool is_ephemeral);
 
-  void set_is_current_user_new(bool is_current_user_new) {
-    is_current_user_new_ = is_current_user_new;
-  }
   void set_is_current_user_owner(bool is_current_user_owner) {
     is_current_user_owner_ = is_current_user_owner;
   }
@@ -81,10 +78,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
   const AccountId& GetGuestAccountId() const override;
-  bool IsFirstExecAfterBoot() const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
   bool IsStubAccountId(const AccountId& account_id) const override;
-  bool HasBrowserRestarted() const override;
 
   // Not implemented.
   void Shutdown() override {}
@@ -109,7 +104,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                             const std::string& display_email) override {}
   absl::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserOwner() const override;
-  bool IsCurrentUserNew() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
   bool IsUserLoggedIn() const override;
@@ -177,7 +171,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   gfx::ImageSkia empty_image_;
 
   bool is_current_user_owner_ = false;
-  bool is_current_user_new_ = false;
 
   // Contains AccountIds for which IsCurrentUserNonCryptohomeDataEphemeral will
   // return true.

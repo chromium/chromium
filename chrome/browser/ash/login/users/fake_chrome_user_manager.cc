@@ -316,11 +316,6 @@ const AccountId& FakeChromeUserManager::GetGuestAccountId() const {
   return user_manager::GuestAccountId();
 }
 
-bool FakeChromeUserManager::IsFirstExecAfterBoot() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kFirstExecAfterBoot);
-}
-
 void FakeChromeUserManager::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   NOTIMPLEMENTED();
@@ -339,12 +334,6 @@ bool FakeChromeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-bool FakeChromeUserManager::HasBrowserRestarted() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(switches::kLoginUser);
 }
 
 const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(
@@ -522,10 +511,6 @@ bool FakeChromeUserManager::IsCurrentUserOwner() const {
   return active_user_ && GetOwnerAccountId() == active_user_->GetAccountId();
 }
 
-bool FakeChromeUserManager::IsCurrentUserNew() const {
-  return current_user_new_;
-}
-
 bool FakeChromeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
   return current_user_ephemeral_;
 }
@@ -633,10 +618,6 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
       break;
     }
   }
-}
-
-void FakeChromeUserManager::SetIsCurrentUserNew(bool is_new) {
-  NOTREACHED();
 }
 
 const std::string& FakeChromeUserManager::GetApplicationLocale() const {

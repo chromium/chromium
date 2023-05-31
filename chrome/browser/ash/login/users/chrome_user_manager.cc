@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -24,14 +23,6 @@ ChromeUserManager::ChromeUserManager(
           g_browser_process ? g_browser_process->local_state() : nullptr) {}
 
 ChromeUserManager::~ChromeUserManager() = default;
-
-bool ChromeUserManager::IsCurrentUserNew() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kForceFirstRunUI))
-    return true;
-
-  return UserManagerBase::IsCurrentUserNew();
-}
 
 void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
                                          const user_manager::User* primary_user,

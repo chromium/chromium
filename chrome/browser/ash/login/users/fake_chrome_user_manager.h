@@ -109,7 +109,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   void SaveUserType(const user_manager::User* user) override;
   absl::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserOwner() const override;
-  bool IsCurrentUserNew() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
@@ -130,20 +129,17 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsUserAllowed(const user_manager::User& user) const override;
   bool IsEphemeralAccountId(const AccountId& account_id) const override;
   const AccountId& GetGuestAccountId() const override;
-  bool IsFirstExecAfterBoot() const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
   bool IsStubAccountId(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  bool HasBrowserRestarted() const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
   std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
-  void SetIsCurrentUserNew(bool is_new) override;
   void Initialize() override;
 
   // user_manager::UserManagerBase override.
@@ -180,7 +176,6 @@ class FakeChromeUserManager : public ChromeUserManager {
     multi_profile_user_controller_ = controller;
   }
 
-  void set_current_user_new(bool new_user) { current_user_new_ = new_user; }
   void set_current_user_ephemeral(bool user_ephemeral) {
     current_user_ephemeral_ = user_ephemeral;
   }
@@ -214,7 +209,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   std::unique_ptr<FakeSupervisedUserManager> supervised_user_manager_;
   EphemeralModeConfig fake_ephemeral_mode_config_;
-  bool current_user_new_ = false;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
   bool mock_user_image_manager_enabled_ = false;

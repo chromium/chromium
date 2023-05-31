@@ -64,7 +64,7 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     } else {
       user = fake_user_manager_->AddUser(account_id);
     }
-    fake_user_manager_->set_is_current_user_new(is_new_profile);
+    fake_user_manager_->SetIsCurrentUserNew(is_new_profile);
 
     // Create a session in SessionManager. This will also login the user in
     // UserManager.

@@ -51,6 +51,7 @@ component("user_manager") {
     ]
 
     deps += [
+      "//ash/constants",
       "//components/prefs",
       "//skia",
       "//url",
@@ -71,8 +72,6 @@ if (is_chromeos_ash) {
       "//base",
       "//components/account_id",
     ]
-
-    deps = [ "//ash/constants" ]
   }
 
   source_set("unit_tests") {

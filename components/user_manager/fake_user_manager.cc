@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -272,10 +270,6 @@ bool FakeUserManager::IsCurrentUserOwner() const {
   return is_current_user_owner_;
 }
 
-bool FakeUserManager::IsCurrentUserNew() const {
-  return is_current_user_new_;
-}
-
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
   return false;
 }
@@ -391,11 +385,6 @@ const AccountId& FakeUserManager::GetGuestAccountId() const {
   return GuestAccountId();
 }
 
-bool FakeUserManager::IsFirstExecAfterBoot() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kFirstExecAfterBoot);
-}
-
 void FakeUserManager::AsyncRemoveCryptohome(const AccountId& account_id) const {
   NOTIMPLEMENTED();
 }
@@ -411,12 +400,6 @@ bool FakeUserManager::IsStubAccountId(const AccountId& account_id) const {
 bool FakeUserManager::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return false;
-}
-
-bool FakeUserManager::HasBrowserRestarted() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return base::SysInfo::IsRunningOnChromeOS() &&
-         command_line->HasSwitch(ash::switches::kLoginUser);
 }
 
 const gfx::ImageSkia& FakeUserManager::GetResourceImagekiaNamed(int id) const {
