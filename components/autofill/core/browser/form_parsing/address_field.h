@@ -91,10 +91,14 @@ class AddressField : public FormField {
                            const LanguageCode& page_language,
                            PatternSource pattern_source);
 
+  bool ParseAdminLevel2(AutofillScanner* scanner,
+                        const LanguageCode& page_language,
+                        PatternSource pattern_source);
+
   // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to determine if the field's type corresponds to one of the following:
-  // dependent locality, city, state, country, zip, landmark, between streets or
-  // none of those.
+  // dependent locality, city, state, country, zip, landmark, between streets,
+  // admin level 2 or none of those.
   bool ParseAddressField(AutofillScanner* scanner,
                          const LanguageCode& page_language,
                          PatternSource pattern_source);
@@ -141,6 +145,11 @@ class AddressField : public FormField {
       PatternSource pattern_source);
 
   ParseNameLabelResult ParseNameAndLabelForBetweenStreets(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language,
+      PatternSource pattern_source);
+
+  ParseNameLabelResult ParseNameAndLabelForAdminLevel2(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
       PatternSource pattern_source);
@@ -200,6 +209,9 @@ class AddressField : public FormField {
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION AutofillField* between_streets_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION AutofillField* admin_level2_ = nullptr;
 };
 
 }  // namespace autofill

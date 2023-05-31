@@ -88,6 +88,9 @@ constexpr MatchParams kLandmarkMatchType =
 constexpr MatchParams kBetweenStreetsMatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
 
+constexpr MatchParams kAdminLevel2MatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+
 }  // namespace
 
 std::unique_ptr<FormField> AddressField::Parse(
@@ -184,7 +187,7 @@ std::unique_ptr<FormField> AddressField::Parse(
       address_field->street_name_ || address_field->house_number_ ||
       address_field->country_ || address_field->apartment_number_ ||
       address_field->dependent_locality_ || address_field->landmark_ ||
-      address_field->between_streets_) {
+      address_field->between_streets_ || address_field->admin_level2_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
@@ -236,6 +239,8 @@ void AddressField::AddClassifications(
   AddClassification(landmark_, ADDRESS_HOME_LANDMARK, kBaseAddressParserScore,
                     field_candidates);
   AddClassification(between_streets_, ADDRESS_HOME_BETWEEN_STREETS,
+                    kBaseAddressParserScore, field_candidates);
+  AddClassification(admin_level2_, ADDRESS_HOME_ADMIN_LEVEL2,
                     kBaseAddressParserScore, field_candidates);
 }
 
@@ -567,6 +572,23 @@ bool AddressField::ParseBetweenStreets(AutofillScanner* scanner,
                              {log_manager_, "kBetweenStreetsRe"});
 }
 
+bool AddressField::ParseAdminLevel2(AutofillScanner* scanner,
+                                    const LanguageCode& page_language,
+                                    PatternSource pattern_source) {
+  const bool is_enabled_admin_level2_parsing = base::FeatureList::IsEnabled(
+      features::kAutofillEnableSupportForAdminLevel2);
+  // TODO(crbug.com/1441904) Remove feature check when launched.
+  if (admin_level2_ || !is_enabled_admin_level2_parsing) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> admin_level2_patterns =
+      GetMatchPatterns("ADMIN_LEVEL_2", page_language, pattern_source);
+  return ParseFieldSpecifics(scanner, kAdminLevel2Re, kAdminLevel2MatchType,
+                             admin_level2_patterns, &admin_level2_,
+                             {log_manager_, "kAdminLevel2Re"});
+}
+
 // static
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
@@ -614,7 +636,7 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
 
   int num_of_missing_types = 0;
   for (const auto* field : {dependent_locality_, city_, state_, country_, zip_,
-                            landmark_, between_streets_}) {
+                            landmark_, between_streets_, admin_level2_}) {
     if (!field)
       ++num_of_missing_types;
   }
@@ -640,6 +662,9 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
     }
     if (!between_streets_) {
       return ParseBetweenStreets(scanner, page_language, pattern_source);
+    }
+    if (!admin_level2_) {
+      return ParseAdminLevel2(scanner, page_language, pattern_source);
     }
   }
 
@@ -672,6 +697,11 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
   if (between_streets_result == RESULT_MATCH_NAME_LABEL) {
     return true;
   }
+  ParseNameLabelResult admin_level2_result =
+      ParseNameAndLabelForAdminLevel2(scanner, page_language, pattern_source);
+  if (admin_level2_result == RESULT_MATCH_NAME_LABEL) {
+    return true;
+  }
   ParseNameLabelResult zip_result =
       ParseNameAndLabelForZipCode(scanner, page_language, pattern_source);
   if (zip_result == RESULT_MATCH_NAME_LABEL)
@@ -680,7 +710,8 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
   int num_of_matches = 0;
   for (const auto result :
        {dependent_locality_result, city_result, state_result, country_result,
-        zip_result, landmark_result, between_streets_result}) {
+        zip_result, landmark_result, between_streets_result,
+        admin_level2_result}) {
     if (result != RESULT_MATCH_NONE)
       ++num_of_matches;
   }
@@ -700,6 +731,9 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
     }
     if (between_streets_result != RESULT_MATCH_NONE) {
       return SetFieldAndAdvanceCursor(scanner, &between_streets_);
+    }
+    if (admin_level2_result != RESULT_MATCH_NONE) {
+      return SetFieldAndAdvanceCursor(scanner, &admin_level2_);
     }
     if (zip_result != RESULT_MATCH_NONE)
       return ParseZipCode(scanner, page_language, pattern_source);
@@ -736,6 +770,9 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
     }
     if (between_streets_result == result) {
       return SetFieldAndAdvanceCursor(scanner, &between_streets_);
+    }
+    if (admin_level2_result == result) {
+      return SetFieldAndAdvanceCursor(scanner, &admin_level2_);
     }
     if (zip_result == result)
       return ParseZipCode(scanner, page_language, pattern_source);
@@ -900,6 +937,23 @@ AddressField::ParseNameAndLabelForBetweenStreets(
       scanner, kBetweenStreetsRe, kBetweenStreetsMatchType,
       between_streets_patterns, &between_streets_,
       {log_manager_, "kBetweenStreetsRe"});
+}
+
+AddressField::ParseNameLabelResult
+AddressField::ParseNameAndLabelForAdminLevel2(AutofillScanner* scanner,
+                                              const LanguageCode& page_language,
+                                              PatternSource pattern_source) {
+  // TODO(crbug.com/1441904) Remove feature check when launched.
+  if (admin_level2_ || !base::FeatureList::IsEnabled(
+                           features::kAutofillEnableSupportForAdminLevel2)) {
+    return RESULT_MATCH_NONE;
+  }
+
+  base::span<const MatchPatternRef> admin_level2_patterns =
+      GetMatchPatterns("ADMIN_LEVEL_2", page_language, pattern_source);
+  return ParseNameAndLabelSeparately(
+      scanner, kAdminLevel2Re, kAdminLevel2MatchType, admin_level2_patterns,
+      &admin_level2_, {log_manager_, "kAdminLevel2Re"});
 }
 
 }  // namespace autofill

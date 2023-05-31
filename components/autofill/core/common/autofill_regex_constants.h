@@ -188,6 +188,10 @@ inline constexpr char16_t kBetweenStreetsRe[] =
     u"(cross|between).*street"
     u"|entre.*calle";  // es
 
+inline constexpr char16_t kAdminLevel2Re[] =
+    u"municipio"               // pt
+    u"|municipio|delegación";  // es
+
 /////////////////////////////////////////////////////////////////////////////
 // search_field.cc
 /////////////////////////////////////////////////////////////////////////////
