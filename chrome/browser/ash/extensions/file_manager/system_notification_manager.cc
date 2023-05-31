@@ -41,7 +41,10 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace file_manager {
 namespace {
+
+namespace fmp = extensions::api::file_manager_private;
 
 using base::BindRepeating;
 using base::MakeRefCounted;
@@ -52,6 +55,8 @@ using extensions::events::HistogramValue;
 using file_manager::io_task::OperationType;
 using file_manager::io_task::ProgressStatus;
 using file_manager::util::GetDisplayablePath;
+using fmp::MountCompletedEvent;
+using fmp::ToString;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using message_center::ButtonInfo;
@@ -66,6 +71,12 @@ using NotificationPtr = std::unique_ptr<Notification>;
 using DelegatePtr = scoped_refptr<NotificationDelegate>;
 using OperationID = storage::FileSystemOperationRunner::OperationID;
 using FileSystemContextPtr = scoped_refptr<storage::FileSystemContext>;
+
+using enum extensions::events::HistogramValue;
+using enum fmp::DeviceEventType;
+using enum fmp::DriveSyncErrorType;
+using enum fmp::MountCompletedEventType;
+using enum fmp::MountError;
 
 void CancelCopyOnIOThread(FileSystemContextPtr file_system_context,
                           OperationID operation_id) {
@@ -235,9 +246,8 @@ std::u16string GetPolicyNotificationProceedButton(
       return u"";
   }
 }
-}  // namespace
 
-namespace file_manager {
+}  // namespace
 
 NotificationPtr CreateSystemNotification(const std::string& notification_id,
                                          const std::u16string& title,
@@ -416,60 +426,55 @@ void SystemNotificationManager::Dismiss(const std::string& notification_id) {
                                          notification_id);
 }
 
-constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
+static const char kDeviceFailNotificationId[] = "swa-device-fail-id";
 
 void SystemNotificationManager::HandleDeviceEvent(
-    const file_manager_private::DeviceEvent& event) {
+    const fmp::DeviceEvent& event) {
   NotificationPtr notification;
-
-  std::u16string title;
   std::u16string message;
-  const char* id = file_manager_private::ToString(event.type);
+  const std::string id = ToString(event.type);
   switch (event.type) {
-    case file_manager_private::DEVICE_EVENT_TYPE_DISABLED:
+    case DEVICE_EVENT_TYPE_DISABLED:
       notification =
           CreateNotification(id, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
                              IDS_EXTERNAL_STORAGE_DISABLED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED);
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_REMOVED:
+    case DEVICE_EVENT_TYPE_REMOVED:
       // Hide device fail & storage disabled notifications.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
-          file_manager_private::ToString(
-              file_manager_private::DEVICE_EVENT_TYPE_DISABLED));
+          ToString(DEVICE_EVENT_TYPE_DISABLED));
       // Remove the device from the mount status map.
       mount_status_.erase(event.device_path);
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
+    case DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
                                         IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START:
-      title = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                              UTF8ToUTF16(event.device_label));
+    case DEVICE_EVENT_TYPE_FORMAT_START:
       message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
                                 UTF8ToUTF16(event.device_label));
-      notification = CreateNotification(id, title, message);
+      notification = CreateNotification(
+          id,
+          GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                          UTF8ToUTF16(event.device_label)),
+          message);
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_START);
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
-    case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL:
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_FAIL:
+    case DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
+    case DEVICE_EVENT_TYPE_FORMAT_FAIL:
+    case DEVICE_EVENT_TYPE_PARTITION_FAIL:
       // Hide the formatting notification.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
-          file_manager_private::ToString(
-              file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START));
-      title = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                              UTF8ToUTF16(event.device_label));
-      if (event.type ==
-          file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
+          ToString(DEVICE_EVENT_TYPE_FORMAT_START));
+      if (event.type == DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
@@ -478,22 +483,27 @@ void SystemNotificationManager::HandleDeviceEvent(
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
-            event.type == file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL
+            event.type == DEVICE_EVENT_TYPE_FORMAT_FAIL
                 ? DeviceNotificationUmaType::FORMAT_FAIL
                 : DeviceNotificationUmaType::PARTITION_FAIL);
       }
-      notification = CreateNotification(id, title, message);
+      notification = CreateNotification(
+          id,
+          GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                          UTF8ToUTF16(event.device_label)),
+          message);
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_START:
-    case file_manager_private::DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
+    case DEVICE_EVENT_TYPE_PARTITION_START:
+    case DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
       // No-op.
       break;
-    case file_manager_private::DEVICE_EVENT_TYPE_RENAME_FAIL:
+    case DEVICE_EVENT_TYPE_RENAME_FAIL:
       notification =
           CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
                              IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::RENAME_FAIL);
       break;
+
     default:
       DLOG(WARNING) << "Unable to generate notification for " << id;
       break;
@@ -527,19 +537,21 @@ void SystemNotificationManager::HandleBulkPinningNotificationClick(
 NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     const Event& event) {
   // Parse the event args as a bulk-pinning progress struct.
-  using Progress = file_manager_private::BulkPinProgress;
-  Progress progress;
-  if (!Progress::Populate(event.event_args[0], progress)) {
+  fmp::BulkPinProgress progress;
+  DCHECK(!event.event_args.empty());
+  if (!fmp::BulkPinProgress::Populate(event.event_args[0], progress)) {
     LOG(ERROR) << "Cannot parse BulkPinProgress from " << event.event_args[0];
     return nullptr;
   }
 
+  // Remember the bulk-pinning stage.
   const BulkPinStage old_stage = bulk_pin_stage_;
   bulk_pin_stage_ = progress.stage;
 
   // Check the bulk-pinning stage.
-  if (bulk_pin_stage_ != BulkPinStage::BULK_PIN_STAGE_NOT_ENOUGH_SPACE ||
-      old_stage != BulkPinStage::BULK_PIN_STAGE_SYNCING) {
+  using enum fmp::BulkPinStage;
+  if (bulk_pin_stage_ != BULK_PIN_STAGE_NOT_ENOUGH_SPACE ||
+      old_stage != BULK_PIN_STAGE_SYNCING) {
     VLOG(1) << "Ignored BulkPinProgress event with stage '"
             << ToString(bulk_pin_stage_) << "'";
     return nullptr;
@@ -547,8 +559,6 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
 
   // Not enough space for bulk-pinning.
   VLOG(1) << "Creating bulk-pinning error notification";
-
-  // Create notification.
   NotificationPtr notification = CreateSystemNotification(
       kBulkPinningNotificationId,
       GetStringUTF16(IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE),
@@ -567,67 +577,70 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
 
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
     const Event& event) {
-  NotificationPtr notification;
-  file_manager_private::DriveSyncErrorEvent sync_error;
-  const char* id;
-  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
-  std::u16string message;
-  if (file_manager_private::DriveSyncErrorEvent::Populate(event.event_args[0],
-                                                          sync_error)) {
-    id = file_manager_private::ToString(sync_error.type);
-    GURL file_url(sync_error.file_url);
-    switch (sync_error.type) {
-      case file_manager_private::
-          DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
-        message = GetStringFUTF16(
-            IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
-            util::GetDisplayableFileName16(file_url));
-        notification = CreateNotification(id, title, message);
-        break;
-      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
-        notification =
-            CreateNotification(id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
-                               IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
-        break;
-      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
-        message = GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
-        notification = CreateNotification(id, title, message);
-        break;
-      case file_manager_private::
-          DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION:
-        message =
-            GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION);
-        notification = CreateNotification(id, title, message);
-        break;
-      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
-        notification =
-            CreateNotification(id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
-                               IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
-        break;
-      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC:
-        message = GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
-                                  util::GetDisplayableFileName16(file_url));
-        notification = CreateNotification(id, title, message);
-        break;
-      case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE:
-        if (!sync_error.shared_drive.has_value()) {
-          DLOG(WARNING) << "No shared drive provided for error notification";
-          break;
-        }
-        message = GetStringFUTF16(
-            IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
-            UTF8ToUTF16(sync_error.shared_drive.value()));
-        notification = CreateNotification(id, title, message);
-        break;
-      default:
-        DLOG(WARNING) << "Unknown Drive Sync error: " << sync_error.type;
-        break;
-    }
+  fmp::DriveSyncErrorEvent sync_error;
+  DCHECK(!event.event_args.empty());
+  if (!fmp::DriveSyncErrorEvent::Populate(event.event_args[0], sync_error)) {
+    LOG(ERROR) << "Cannot parse DriveSyncErrorEvent from "
+               << event.event_args[0];
+    return nullptr;
   }
-  return notification;
+
+  const std::u16string title =
+      GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+  const std::string id = ToString(sync_error.type);
+  const GURL file_url(sync_error.file_url);
+
+  switch (sync_error.type) {
+    case DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
+      return CreateNotification(
+          id, title,
+          GetStringFUTF16(IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
+                          util::GetDisplayableFileName16(file_url)));
+
+    case DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
+      return CreateNotification(
+          id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
+          IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
+
+    case DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
+      return CreateNotification(
+          id, title, GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE));
+
+    case DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION:
+      return CreateNotification(
+          id, title,
+          GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION));
+
+    case DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
+      return CreateNotification(id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
+                                IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
+
+    case DRIVE_SYNC_ERROR_TYPE_MISC:
+      return CreateNotification(
+          id, title,
+          GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
+                          util::GetDisplayableFileName16(file_url)));
+
+    case DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE:
+      if (!sync_error.shared_drive.has_value()) {
+        DLOG(WARNING) << "No shared drive provided for error notification";
+        return nullptr;
+      }
+
+      return CreateNotification(
+          id, title,
+          GetStringFUTF16(IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
+                          UTF8ToUTF16(sync_error.shared_drive.value())));
+
+    case DRIVE_SYNC_ERROR_TYPE_NONE:
+      break;
+  }
+
+  LOG(ERROR) << "Unexpected Drive sync error: " << sync_error.type;
+  return nullptr;
 }
 
-const char* kDriveDialogId = "swa-drive-confirm-dialog";
+static const char kDriveDialogId[] = "swa-drive-confirm-dialog";
 
 void SystemNotificationManager::HandleDriveDialogClick(
     absl::optional<int> button_index) {
@@ -650,41 +663,42 @@ void SystemNotificationManager::HandleDriveDialogClick(
 
 NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
     const Event& event) {
-  NotificationPtr notification;
-  file_manager_private::DriveConfirmDialogEvent dialog_event;
-  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
-  std::u16string message;
-  if (file_manager_private::DriveConfirmDialogEvent::Populate(
-          event.event_args[0], dialog_event)) {
-    std::vector<ButtonInfo> notification_buttons;
-    notification = CreateSystemNotification(
-        kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
-        IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE,
-        MakeRefCounted<HandleNotificationClickDelegate>(
-            BindRepeating(&SystemNotificationManager::HandleDriveDialogClick,
-                          weak_ptr_factory_.GetWeakPtr())));
-
-    notification_buttons.emplace_back(
-        GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT));
-    notification_buttons.emplace_back(
-        GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT));
-    notification->set_buttons(notification_buttons);
+  fmp::DriveConfirmDialogEvent dialog_event;
+  DCHECK(!event.event_args.empty());
+  if (!fmp::DriveConfirmDialogEvent::Populate(event.event_args[0],
+                                              dialog_event)) {
+    LOG(ERROR) << "Cannot parse DriveConfirmDialogEvent from "
+               << event.event_args[0];
+    return nullptr;
   }
+
+  NotificationPtr notification = CreateSystemNotification(
+      kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
+      IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE,
+      MakeRefCounted<HandleNotificationClickDelegate>(
+          BindRepeating(&SystemNotificationManager::HandleDriveDialogClick,
+                        weak_ptr_factory_.GetWeakPtr())));
+
+  std::vector<ButtonInfo> buttons;
+  buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT));
+  buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT));
+  notification->set_buttons(buttons);
+
   return notification;
 }
 
 NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
     const Event& event) {
-  NotificationPtr notification;
-  file_manager_private::FileTransferStatus transfer_status;
-  if (!file_manager_private::FileTransferStatus::Populate(event.event_args[0],
-                                                          transfer_status)) {
-    LOG(ERROR) << "Invalid event argument or transfer status...";
-    return notification;
+  fmp::FileTransferStatus status;
+  DCHECK(!event.event_args.empty());
+  if (!fmp::FileTransferStatus::Populate(event.event_args[0], status)) {
+    LOG(ERROR) << "Cannot parse FileTransferStatus from "
+               << event.event_args[0];
+    return nullptr;
   }
 
   // Work out if this is a sync or pin update.
-  bool is_sync_operation =
+  const bool is_sync_operation =
       (event.histogram_value ==
        HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
 
@@ -692,49 +706,44 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
   constexpr char kDrivePinId[] = "swa-drive-pin";
 
   // Close if notifications are disabled for this transfer.
-  if (!transfer_status.show_notification) {
+  if (!status.show_notification) {
     GetNotificationDisplayService()->Close(
         NotificationHandler::Type::TRANSIENT,
         is_sync_operation ? kDriveSyncId : kDrivePinId);
-    return notification;
+    return nullptr;
   }
 
-  if (transfer_status.transfer_state ==
-          file_manager_private::TRANSFER_STATE_COMPLETED ||
-      transfer_status.transfer_state ==
-          file_manager_private::TRANSFER_STATE_FAILED) {
+  using enum fmp::TransferState;
+  if (status.transfer_state == TRANSFER_STATE_COMPLETED ||
+      status.transfer_state == TRANSFER_STATE_FAILED) {
     // We only close when there are no jobs left, we could have received
     // a TRANSFER_STATE_COMPLETED event when there are more jobs to run.
-    if (transfer_status.num_total_jobs == 0) {
+    if (status.num_total_jobs == 0) {
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
           is_sync_operation ? kDriveSyncId : kDrivePinId);
     }
-    return notification;
+
+    return nullptr;
   }
-  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
-  std::u16string message;
-  int message_template;
-  if (transfer_status.num_total_jobs == 1) {
-    message_template = is_sync_operation
-                           ? IDS_FILE_BROWSER_SYNC_FILE_NAME
-                           : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE;
-    message = GetStringFUTF16(
-        message_template,
-        util::GetDisplayableFileName16(GURL(transfer_status.file_url)));
-  } else {
-    message_template = is_sync_operation
-                           ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
-                           : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL;
-    message =
-        GetStringFUTF16(message_template,
-                        base::NumberToString16(transfer_status.num_total_jobs));
-  }
-  notification = CreateProgressNotification(
-      is_sync_operation ? kDriveSyncId : kDrivePinId, title, message,
-      static_cast<int>((transfer_status.processed / transfer_status.total) *
-                       100.0));
-  return notification;
+
+  std::u16string message =
+      status.num_total_jobs == 1
+          ? GetStringFUTF16(
+                is_sync_operation ? IDS_FILE_BROWSER_SYNC_FILE_NAME
+                                  : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE,
+                util::GetDisplayableFileName16(GURL(status.file_url)))
+          : GetStringFUTF16(
+                is_sync_operation
+                    ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
+                    : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL,
+                base::NumberToString16(status.num_total_jobs));
+
+  return CreateProgressNotification(
+      is_sync_operation ? kDriveSyncId : kDrivePinId,
+      GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE),
+      std::move(message),
+      static_cast<int>((status.processed / status.total) * 100.0));
 }
 
 void SystemNotificationManager::HandleEvent(const Event& event) {
@@ -910,7 +919,7 @@ void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
 }
 
 NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
-    file_manager_private::MountCompletedEvent& event,
+    MountCompletedEvent& event,
     const Volume& volume) {
   NotificationPtr notification;
   std::vector<ButtonInfo> notification_buttons;
@@ -924,8 +933,7 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
       // We have either an unsupported or unknown filesystem on the mount.
       case MOUNT_STATUS_ONLY_PARENT_ERROR:
       case MOUNT_STATUS_CHILD_ERROR:
-        if (event.status ==
-            file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
+        if (event.status == MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
           if (volume.drive_label().empty()) {
             message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
           } else {
@@ -987,9 +995,8 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
 }
 
 SystemNotificationManagerMountStatus
-SystemNotificationManager::UpdateDeviceMountStatus(
-    file_manager_private::MountCompletedEvent& event,
-    const Volume& volume) {
+SystemNotificationManager::UpdateDeviceMountStatus(MountCompletedEvent& event,
+                                                   const Volume& volume) {
   SystemNotificationManagerMountStatus status = MOUNT_STATUS_NO_RESULT;
   const std::string& device_path = volume.storage_device_path().value();
   auto device_mount_status = mount_status_.find(device_path);
@@ -1010,7 +1017,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
       }
       [[fallthrough]];
     case MOUNT_STATUS_NO_RESULT:
-      if (event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
+      if (event.status == MOUNT_ERROR_SUCCESS) {
         status = MOUNT_STATUS_SUCCESS;
       } else if (event.volume_metadata.is_parent_device) {
         status = MOUNT_STATUS_ONLY_PARENT_ERROR;
@@ -1021,7 +1028,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
     case MOUNT_STATUS_SUCCESS:
     case MOUNT_STATUS_CHILD_ERROR:
       if (status == MOUNT_STATUS_SUCCESS &&
-          event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
+          event.status == MOUNT_ERROR_SUCCESS) {
         status = MOUNT_STATUS_SUCCESS;
       } else {
         // Multi partition device with at least one partition in error.
@@ -1035,10 +1042,10 @@ SystemNotificationManager::UpdateDeviceMountStatus(
 }
 
 NotificationPtr SystemNotificationManager::MakeRemovableNotification(
-    file_manager_private::MountCompletedEvent& event,
+    MountCompletedEvent& event,
     const Volume& volume) {
   NotificationPtr notification;
-  if (event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
+  if (event.status == MOUNT_ERROR_SUCCESS) {
     bool show_settings_button = false;
     std::u16string title = GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
@@ -1230,17 +1237,17 @@ void SystemNotificationManager::ResumeTask(
 }
 
 void SystemNotificationManager::HandleMountCompletedEvent(
-    file_manager_private::MountCompletedEvent& event,
+    MountCompletedEvent& event,
     const Volume& volume) {
   NotificationPtr notification;
 
   switch (event.event_type) {
-    case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
+    case MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
       if (event.should_notify) {
         notification = MakeRemovableNotification(event, volume);
       }
       break;
-    case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
+    case MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kRemovableNotificationId);
 

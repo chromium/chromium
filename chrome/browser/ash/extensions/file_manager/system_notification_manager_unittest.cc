@@ -45,26 +45,26 @@
 namespace file_manager {
 namespace {
 
-namespace file_manager_private = extensions::api::file_manager_private;
+namespace fmp = extensions::api::file_manager_private;
 
 using ash::DeviceType;
 using ash::disks::Disk;
 using base::BindOnce;
 using base::FilePath;
 using extensions::Event;
-using file_manager_private::DriveSyncErrorEvent;
-using file_manager_private::FileTransferStatus;
-using file_manager_private::MountCompletedEvent;
-using file_manager_private::ToString;
+using fmp::DriveSyncErrorEvent;
+using fmp::FileTransferStatus;
+using fmp::MountCompletedEvent;
+using fmp::ToString;
 using message_center::NotificationDelegate;
 using testing::ElementsAre;
 
 using enum extensions::events::HistogramValue;
-using enum file_manager_private::BulkPinStage;
-using enum file_manager_private::DriveSyncErrorType;
-using enum file_manager_private::MountCompletedEventType;
-using enum file_manager_private::MountError;
-using enum file_manager_private::TransferState;
+using enum fmp::BulkPinStage;
+using enum fmp::DriveSyncErrorType;
+using enum fmp::MountCompletedEventType;
+using enum fmp::MountError;
+using enum fmp::TransferState;
 
 // Strings that would be seen on a notification.
 struct Strings {
@@ -161,10 +161,10 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
       : DeviceEventRouter(notification_manager) {}
 
   // DeviceEventRouter overrides.
-  void OnDeviceEvent(file_manager_private::DeviceEventType type,
+  void OnDeviceEvent(fmp::DeviceEventType type,
                      const std::string& device_path,
                      const std::string& device_label) override {
-    file_manager_private::DeviceEvent event;
+    fmp::DeviceEvent event;
     event.type = type;
     event.device_path = device_path;
     event.device_label = device_label;
