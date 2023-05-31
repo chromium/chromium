@@ -2037,6 +2037,11 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
                                   Profile* profile) {
   if (!profile)
     return;  // No suitable profile to open the URLs, do nothing.
+  // Prefer a regular (non-incognito) profile
+  if (profile->IsIncognitoProfile()) {
+    profile = ProfileManager::MaybeForceOffTheRecordMode(
+        profile->GetOriginalProfile());
+  }
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   int startupIndex = TabStripModel::kNoTab;
   content::WebContents* startupContent = nullptr;

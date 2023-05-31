@@ -795,26 +795,199 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
                 ->GetLastCommittedURL());
 }
 
-// Tests that when a GURL is opened, it is not opened in incognito mode.
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
-                       DISABLED_OpenInRegularBrowser) {
+// Tests that, even if an incognito browser is the last active browser, a GURL
+// is opened in a regular (non-incognito) browser.
+// Regression test for https://crbug.com/757253, https://crbug.com/1444747
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Create an incognito browser.
+  AppController* ac =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
+  // Create an incognito browser and make it the last active browser.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  // Assure that `windowDidBecomeMain` is called even if this browser process
+  // lost focus because of other browser processes in other shards taking
+  // focus. It prevents flakiness.
+  // See: https://crrev.com/c/4530255/comments/2aadb9cf_9a39d4bf
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:incognito_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
   // Open a url.
   GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
   SendOpenUrlToAppController(simple);
-  // It should be opened in the regular browser.
-  content::TestNavigationObserver event_navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
   event_navigation_observer.Wait();
+  // It should be opened in the regular browser.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
   EXPECT_EQ(simple, browser()
                         ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+}
+
+// Tests that, even if only an incognito browser is currently opened, a GURL
+// is opened in a regular (non-incognito) browser.
+// Regression test for https://crbug.com/757253, https://crbug.com/1444747
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       OpenInRegularBrowserWhenOnlyIncognitoBrowserIsOpened) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  AppController* ac =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Close the current browser.
+  Profile* profile = browser()->profile();
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  // Create an incognito browser and check that it is the last active browser.
+  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  // Assure that `windowDidBecomeMain` is called even if this browser process
+  // lost focus because of other browser processes in other shards taking
+  // focus. It prevents flakiness.
+  // See: https://crrev.com/c/4530255/comments/2aadb9cf_9a39d4bf
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:incognito_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  // Open a url.
+  GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
+  SendOpenUrlToAppController(simple);
+  event_navigation_observer.Wait();
+  // Check that a new regular browser is opened
+  // and the url is opened in the regular browser.
+  Browser* new_browser = chrome::GetLastActiveBrowser();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
+  EXPECT_EQ(profile, new_browser->profile());
+  EXPECT_EQ(simple, new_browser->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+}
+
+// Tests that, if a guest browser is the last active browser, a GURL is opened
+// in the guest browser.
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlInGuestBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  AppController* ac =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
+  // Create a guest browser and make it the last active browser.
+  Browser* guest_browser = CreateGuestBrowser();
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, guest_browser->tab_strip_model()->count());
+  EXPECT_TRUE(guest_browser->profile()->IsGuestSession());
+  guest_browser->window()->Show();
+  EXPECT_EQ(guest_browser, chrome::GetLastActiveBrowser());
+  // Assure that `windowDidBecomeMain` is called even if this browser process
+  // lost focus because of other browser processes in other shards taking
+  // focus. It prevents flakiness.
+  // See: https://crrev.com/c/4530255/comments/2aadb9cf_9a39d4bf
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:guest_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  // Open a url.
+  GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
+  SendOpenUrlToAppController(simple);
+  event_navigation_observer.Wait();
+  // It should be opened in the guest browser.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, guest_browser->tab_strip_model()->count());
+  EXPECT_EQ(simple, guest_browser->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+}
+
+// Tests that when a GURL is opened while incognito forced and there is no
+// browser opened, it is opened in a new incognito browser.
+// Test for https://crbug.com/1444747#c8
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Close the current non-incognito browser.
+  Profile* profile = browser()->profile();
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  // Force incognito mode.
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  // Open a url.
+  GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
+  SendOpenUrlToAppController(simple);
+  event_navigation_observer.Wait();
+  // Check that a new incognito browser is opened
+  // and the url is opened in the incognito browser.
+  Browser* new_browser = chrome::GetLastActiveBrowser();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_TRUE(new_browser->profile()->IsIncognitoProfile());
+  EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
+  EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
+  EXPECT_EQ(simple, new_browser->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+}
+
+// Tests that when a GURL is opened while incognito forced and an incognito
+// browser is opened, it is opened in the already opened incognito browser.
+// Test for https://crbug.com/1444747#c8
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       OpenUrlWhenForcedIncognitoAndIncognitoBrowserIsOpened) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Close the current non-incognito browser.
+  Profile* profile = browser()->profile();
+  chrome::CloseAllBrowsers();
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  // Force incognito mode.
+  IncognitoModePrefs::SetAvailability(
+      profile->GetPrefs(), policy::IncognitoModeAvailability::kForced);
+  // Create an incognito browser.
+  Browser* incognito_browser = CreateIncognitoBrowser(profile);
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  // Assure that `windowDidBecomeMain` is called even if this browser process
+  // lost focus because of other browser processes in other shards taking
+  // focus. It prevents flakiness.
+  // See: https://crrev.com/c/4530255/comments/2aadb9cf_9a39d4bf
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:incognito_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
+  // Open a url.
+  GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  content::TestNavigationObserver event_navigation_observer(simple);
+  event_navigation_observer.StartWatchingNewWebContents();
+  SendOpenUrlToAppController(simple);
+  event_navigation_observer.Wait();
+  // Check the url is opened in the already opened incognito browser.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(2, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(simple, incognito_browser->tab_strip_model()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
 }
