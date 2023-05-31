@@ -38,31 +38,44 @@ def __enabled(ctx):
     return False
 
 def __step_config(ctx, step_config):
-    # TODO(b/273407069): Read reproxy config from config files.
+    labels = dict()
+
+    # TODO(b/273407069): Choose the right cfg rather than hardcoding buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg.
+    # TODO(b/273407069): Read cfg values other than labels.
+    if not ctx.fs.exists("buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg"):
+        fail("rewrapper_to_reproxy enabled but buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg not found, is download_remoteexec_cfg set in gclient custom_vars?")
+    for line in str(ctx.fs.read("buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg")).splitlines():
+        if line.startswith("labels="):
+            for label in line.removeprefix("labels=").split(","):
+                label_parts = label.split("=")
+                if len(label_parts) != 2:
+                    fail("invalid label %s" % label)
+                labels[label_parts[0]] = label_parts[1]
+
     step_config["rules"].extend([
         {
             "name": "clang/cxx",
             "action": "(.*_)?cxx",
             "handler": "remove_rewrapper",
-            "reproxy_config": {"labels": {"type": "compile", "compiler": "clang", "lang": "cpp"}},
+            "reproxy_config": {"labels": labels},
         },
         {
             "name": "clang/cc",
             "action": "(.*_)?cc",
             "handler": "remove_rewrapper",
-            "reproxy_config": {"labels": {"type": "compile", "compiler": "clang", "lang": "cpp"}},
+            "reproxy_config": {"labels": labels},
         },
         {
             "name": "clang/objcxx",
             "action": "(.*_)?objcxx",
             "handler": "remove_rewrapper",
-            "reproxy_config": {"labels": {"type": "compile", "compiler": "clang", "lang": "cpp"}},
+            "reproxy_config": {"labels": labels},
         },
         {
             "name": "clang/objc",
             "action": "(.*_)?objc",
             "handler": "remove_rewrapper",
-            "reproxy_config": {"labels": {"type": "compile", "compiler": "clang", "lang": "cpp"}},
+            "reproxy_config": {"labels": labels},
         },
     ])
     return step_config
