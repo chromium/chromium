@@ -91,6 +91,8 @@ const MenuEntries kPermissionsPage =
 const MenuEntries kLearnMore =
     ExtensionContextMenuModel::PAGE_ACCESS_LEARN_MORE;
 const MenuEntries kUninstall = ExtensionContextMenuModel::UNINSTALL;
+const MenuEntries kPolicyInstalled =
+    ExtensionContextMenuModel::POLICY_INSTALLED;
 
 namespace {
 
@@ -401,7 +403,8 @@ ExtensionContextMenuModelTest::GetPageAccessCommandState(
     int command) const {
   // Check this method is called only for submenu page access commands.
   DCHECK(command == kOnClick || command == kOnSite || command == kOnAllSites ||
-         command == kLearnMore || command == kPermissionsPage);
+         command == kLearnMore || command == kPermissionsPage ||
+         command == kPolicyInstalled);
 
   // Every page access command is absent if there is no page access submenu.
   if (!HasPageAccessSubmenu(menu))
@@ -468,31 +471,35 @@ TEST_F(ExtensionContextMenuModelTest, RequiredInstallationsDisablesItems) {
       AddExtension("extension", manifest_keys::kPageAction,
                    ManifestLocation::kExternalPolicy);
 
-  ExtensionContextMenuModel menu(extension, GetBrowser(),
-                                 ExtensionContextMenuModel::PINNED, nullptr,
-                                 true, ContextMenuSource::kToolbarAction);
-
   ExtensionSystem* system = ExtensionSystem::Get(profile());
   system->management_policy()->UnregisterAllProviders();
 
-  // Uninstallation should be, by default, enabled.
-  EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::UNINSTALL),
-            CommandState::kEnabled);
+  {
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+
+    // Uninstallation should be enabled when all policy provider were
+    // unregistered.
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kEnabled);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kAbsent);
+  }
 
   TestManagementPolicyProvider policy_provider(
       TestManagementPolicyProvider::PROHIBIT_MODIFY_STATUS);
   system->management_policy()->RegisterProvider(&policy_provider);
 
-  // If there's a policy provider that requires the extension stay enabled, then
-  // uninstallation should be disabled.
-  EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::UNINSTALL),
-            CommandState::kDisabled);
-  size_t uninstall_index =
-      menu.GetIndexOfCommandId(ExtensionContextMenuModel::UNINSTALL).value();
-  // There should also be an icon to visually indicate why uninstallation is
-  // forbidden.
-  ui::ImageModel icon = menu.GetIconAt(uninstall_index);
-  EXPECT_FALSE(icon.IsEmpty());
+  {
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+
+    // If there's a policy provider that requires the extension stay enabled,
+    // the uninstall item should be hidden and instead should display the
+    // policy install disabled item.
+    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
+  }
 
   // Don't leave |policy_provider| dangling.
   system->management_policy()->UnregisterProvider(&policy_provider);
@@ -2096,8 +2103,9 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
     EXPECT_FALSE(menu.IsCommandIdChecked(kOnClick));
     EXPECT_FALSE(menu.IsCommandIdChecked(kOnSite));
     EXPECT_TRUE(menu.IsCommandIdChecked(kOnAllSites));
-    // Policy extension cannot be uninstalled.
-    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kAbsent);
+    // Policy item is in the page access submenu.
+    EXPECT_EQ(GetPageAccessCommandState(menu, kPolicyInstalled),
+              CommandState::kDisabled);
   } else {
     // Page access submenu is hidden since user cannot change the site access of
     // the policy installed extension.
@@ -2106,7 +2114,8 @@ TEST_P(ExtensionContextMenuModelWithUserHostControlsTest,
     EXPECT_EQ(GetPageAccessCommandState(menu, kOnSite), CommandState::kAbsent);
     EXPECT_EQ(GetPageAccessCommandState(menu, kOnAllSites),
               CommandState::kAbsent);
-    EXPECT_EQ(GetCommandState(menu, kUninstall), CommandState::kDisabled);
+    // Policy item is in the context menu.
+    EXPECT_EQ(GetCommandState(menu, kPolicyInstalled), CommandState::kDisabled);
   }
 }
 

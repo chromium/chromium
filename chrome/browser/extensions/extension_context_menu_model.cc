@@ -155,6 +155,8 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
       break;
     case ExtensionContextMenuModel::VIEW_WEB_PERMISSIONS:
       return ContextMenuAction::kViewWebPermissions;
+    case ExtensionContextMenuModel::POLICY_INSTALLED:
+      return ContextMenuAction::kPolicyInstalled;
     default:
       break;
   }
@@ -339,7 +341,13 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
                  sessions::SessionTabHelper::IdForTab(web_contents).id());
     }
     case UNINSTALL:
-      return !IsExtensionRequiredByPolicy(extension, profile_);
+      // Uninstall is always enabled since it will only be visible when the
+      // extension can be removed.
+      return true;
+    case POLICY_INSTALLED:
+      // This option is always disabled since user cannot remove a policy
+      // installed extension.
+      return false;
     case PAGE_ACCESS_CANT_ACCESS:
     case PAGE_ACCESS_ALL_EXTENSIONS_GRANTED:
     case PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED:
@@ -412,6 +420,9 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       delegate_->InspectPopup();
       break;
     }
+    case POLICY_INSTALLED:
+      // When visible, this option is always disabled.
+      break;
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
     case PAGE_ACCESS_RUN_ON_ALL_SITES:
@@ -466,7 +477,10 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   AppendExtensionItems();
 
   // Site permissions section.
-  // Show section only if the extension requests host permissions.
+  bool policy_entry_in_subpage = false;
+  bool is_required_by_policy = IsExtensionRequiredByPolicy(extension, profile_);
+
+  // Show section only when the extension requests host permissions.
   auto* permissions_manager = PermissionsManager::Get(profile_);
   if (permissions_manager->ExtensionRequestsHostPermissions(*extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
@@ -475,8 +489,6 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
     // commands.
     origin_ = url::Origin::Create(url);
     auto site_setting = permissions_manager->GetUserSiteSetting(origin_);
-    bool is_required_by_policy =
-        IsExtensionRequiredByPolicy(extension, profile_);
 
     if (site_setting ==
         PermissionsManager::UserSiteSetting::kGrantAllExtensions) {
@@ -525,6 +537,14 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
           IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2,
           kRadioGroup);
 
+      // When the page access submenu is visible, it holds the policy entry.
+      page_access_submenu_->AddSeparator(ui::NORMAL_SEPARATOR);
+      page_access_submenu_->AddItemWithStringIdAndIcon(
+          POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
+          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                         ui::kColorIcon, 16));
+      policy_entry_in_subpage = true;
+
       AddSubMenuWithStringId(PAGE_ACCESS_SUBMENU,
                              IDS_EXTENSIONS_CONTEXT_MENU_SITE_PERMISSIONS,
                              page_access_submenu_.get());
@@ -537,14 +557,19 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
         IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_PERMISSIONS_PAGE);
   }
 
-  // TODO(crbug.com/1306679): Add an entry when extension is installed by
-  // policy. The location in the menu will change dependent on whether the
-  // extension has site permissions.
+  // Policy section.
+  if (!is_component_ && is_required_by_policy && !policy_entry_in_subpage) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+    // TODO (kylixrd): Investigate the usage of the hard-coded color.
+    AddItemWithStringIdAndIcon(
+        POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
+        ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                       ui::kColorIcon, 16));
+  }
 
   // Controls section.
   bool has_options_page = OptionsPageInfo::HasOptionsPage(extension);
-  bool can_uninstall_extension =
-      !is_component_ && !IsExtensionRequiredByPolicy(extension, profile_);
+  bool can_uninstall_extension = !is_component_ && is_required_by_policy;
   if (can_show_icon_in_toolbar || has_options_page || can_uninstall_extension) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
@@ -624,17 +649,15 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     AddItemWithStringId(OPTIONS, IDS_EXTENSIONS_OPTIONS_MENU_ITEM);
 
   if (!is_component_) {
-    bool is_required_by_policy =
-        IsExtensionRequiredByPolicy(extension, profile_);
-    int message_id = is_required_by_policy ? IDS_EXTENSIONS_INSTALLED_BY_ADMIN
-                                           : IDS_EXTENSIONS_UNINSTALL;
-    AddItemWithStringId(UNINSTALL, message_id);
-    if (is_required_by_policy) {
-      size_t uninstall_index = GetIndexOfCommandId(UNINSTALL).value();
+    if (IsExtensionRequiredByPolicy(extension, profile_)) {
       // TODO (kylixrd): Investigate the usage of the hard-coded color.
-      SetIcon(uninstall_index,
-              ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                             ui::kColorIcon, 16));
+      AddItemWithStringIdAndIcon(
+          POLICY_INSTALLED, IDS_EXTENSIONS_INSTALLED_BY_ADMIN,
+          ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                         ui::kColorIcon, 16));
+
+    } else {
+      AddItemWithStringId(UNINSTALL, IDS_EXTENSIONS_UNINSTALL);
     }
   }
 
