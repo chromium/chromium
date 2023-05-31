@@ -10,11 +10,10 @@ desc: |2-
         Examples of device signals include (but are not limited to) OS information, registry, file presesnce.
 example_value: true
 features:
-  cloud_only: true
   dynamic_refresh: true
   per_profile: true
 future_on:
-- chrome_os
+- chrome.*
 items:
 - caption: Enable device signal consenting for managed users on unmanaged devices
   value: true
@@ -25,7 +24,5 @@ owners:
 - cbe-device-trust-eng@google.com
 schema:
   type: boolean
-supported_on:
-- chrome.*:116-
 tags: []
 type: main
