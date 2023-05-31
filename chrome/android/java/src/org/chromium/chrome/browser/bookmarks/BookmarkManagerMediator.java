@@ -233,14 +233,6 @@ class BookmarkManagerMediator
                 }
             }
         }
-
-        @Override
-        public void onSearchStateSet() {
-            clearHighlight();
-            mDragReorderableRecyclerViewAdapter.disableDrag();
-            // Promo and headers should not appear in search mode.
-            removePromoAndSectionHeaders();
-        }
     };
 
     private final SelectionObserver<BookmarkId> mSelectionObserver = new SelectionObserver<>() {
@@ -601,13 +593,16 @@ class BookmarkManagerMediator
         int state = getCurrentUiMode();
         observer.onUiModeChanged(state);
         switch (state) {
+            case BookmarkUiMode.LOADING:
+                break;
             case BookmarkUiMode.FOLDER:
                 observer.onFolderStateSet(getCurrentFolderId());
                 break;
-            case BookmarkUiMode.LOADING:
-                break;
             case BookmarkUiMode.SEARCHING:
-                observer.onSearchStateSet();
+                clearHighlight();
+                mDragReorderableRecyclerViewAdapter.disableDrag();
+                // Promo and headers should not appear in search mode.
+                removePromoAndSectionHeaders();
                 break;
             default:
                 assert false : "State not valid";
