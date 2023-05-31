@@ -828,8 +828,8 @@ String StylePropertySerializer::ContainerValue() const {
 
   list->Append(*name);
 
-  if (!(IsA<CSSIdentifierValue>(type) &&
-        To<CSSIdentifierValue>(*type).GetValueID() == CSSValueID::kNormal)) {
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(type);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kNormal) {
     list->Append(*type);
   }
 
@@ -857,13 +857,12 @@ CSSValue* TimelineValueItem(wtf_size_t index,
   // (It would set view-timeline-name to inline).
   list->Append(name);
 
-  if (!(IsA<CSSIdentifierValue>(axis) &&
-        To<CSSIdentifierValue>(axis).GetValueID() == CSSValueID::kBlock)) {
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(axis);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kBlock) {
     list->Append(axis);
   }
-  if (!(IsA<CSSIdentifierValue>(attachment) &&
-        To<CSSIdentifierValue>(attachment).GetValueID() ==
-            CSSValueID::kLocal)) {
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(attachment);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kLocal) {
     list->Append(attachment);
   }
 
@@ -1725,17 +1724,17 @@ String StylePropertySerializer::GetShorthandValueForColumnRule(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
 
   StringBuilder result;
-  if (!(IsA<CSSIdentifierValue>(column_rule_width) &&
-        To<CSSIdentifierValue>(column_rule_width)->GetValueID() ==
-            CSSValueID::kMedium) &&
+  if (const auto* ident_value =
+          DynamicTo<CSSIdentifierValue>(column_rule_width);
+      !(ident_value && ident_value->GetValueID() == CSSValueID::kMedium) &&
       !column_rule_width->IsInitialValue()) {
     String column_rule_width_text = column_rule_width->CssText();
     result.Append(column_rule_width_text);
   }
 
-  if (!(IsA<CSSIdentifierValue>(column_rule_style) &&
-        To<CSSIdentifierValue>(column_rule_style)->GetValueID() ==
-            CSSValueID::kNone) &&
+  if (const auto* ident_value =
+          DynamicTo<CSSIdentifierValue>(column_rule_style);
+      !(ident_value && ident_value->GetValueID() == CSSValueID::kNone) &&
       !column_rule_style->IsInitialValue()) {
     String column_rule_style_text = column_rule_style->CssText();
     if (!result.empty()) {
@@ -1744,9 +1743,10 @@ String StylePropertySerializer::GetShorthandValueForColumnRule(
 
     result.Append(column_rule_style_text);
   }
-  if (!(IsA<CSSIdentifierValue>(column_rule_color) &&
-        To<CSSIdentifierValue>(column_rule_color)->GetValueID() ==
-            CSSValueID::kCurrentcolor) &&
+  if (const auto* ident_value =
+          DynamicTo<CSSIdentifierValue>(column_rule_color);
+      !(ident_value &&
+        ident_value->GetValueID() == CSSValueID::kCurrentcolor) &&
       !column_rule_color->IsInitialValue()) {
     String column_rule_color_text = column_rule_color->CssText();
     if (!result.empty()) {
@@ -1772,8 +1772,8 @@ String StylePropertySerializer::GetShorthandValueForColumns(
     const CSSValue* value =
         property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
     String value_text = value->CssText();
-    if (IsA<CSSIdentifierValue>(value) &&
-        To<CSSIdentifierValue>(value)->GetValueID() == CSSValueID::kAuto) {
+    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
+        ident_value && ident_value->GetValueID() == CSSValueID::kAuto) {
       continue;
     }
     if (!result.empty()) {
@@ -1991,9 +1991,9 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
       result.Append(row_value_text);
     }
   }
-  if (!(IsA<CSSIdentifierValue>(template_column_values) &&
-        To<CSSIdentifierValue>(template_column_values)->GetValueID() ==
-            CSSValueID::kNone)) {
+  if (const auto* ident_value =
+          DynamicTo<CSSIdentifierValue>(template_column_values);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kNone) {
     result.Append(" / ");
     result.Append(template_column_values->CssText());
   }
@@ -2324,9 +2324,8 @@ String StylePropertySerializer::ScrollStartValue() const {
 
   list->Append(*block_value);
 
-  if (!(IsA<CSSIdentifierValue>(inline_value) &&
-        To<CSSIdentifierValue>(*inline_value).GetValueID() ==
-            CSSValueID::kStart)) {
+  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(inline_value);
+      !ident_value || ident_value->GetValueID() != CSSValueID::kStart) {
     list->Append(*inline_value);
   }
 

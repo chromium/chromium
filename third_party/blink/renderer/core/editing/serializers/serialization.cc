@@ -920,9 +920,8 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
 
 // Returns true if any svg <use> element is removed.
 static bool StripSVGUseDataURLs(Node& node) {
-  if (IsA<SVGUseElement>(node)) {
-    SVGUseElement& use = To<SVGUseElement>(node);
-    SVGURLReferenceResolver resolver(use.HrefString(), use.GetDocument());
+  if (auto* use = DynamicTo<SVGUseElement>(node)) {
+    SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
     if (resolver.AbsoluteUrl().ProtocolIsData())
       node.remove();
     return true;

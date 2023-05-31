@@ -103,18 +103,15 @@ bool ThemePainter::Paint(const LayoutObject& o,
   if (part == kButtonPart) {
     if (IsA<HTMLButtonElement>(element)) {
       UseCounter::Count(doc, WebFeature::kCSSValueAppearanceButtonForButton);
-    } else if (IsA<HTMLInputElement>(element) &&
-               To<HTMLInputElement>(element).IsTextButton()) {
+    } else if (auto* input_element = DynamicTo<HTMLInputElement>(element);
+               input_element && input_element->IsTextButton()) {
       // Text buttons (type=button, reset, submit) has
       // -webkit-appearance:push-button by default.
       UseCounter::Count(doc,
                         WebFeature::kCSSValueAppearanceButtonForOtherButtons);
-    } else if (IsA<HTMLInputElement>(element) &&
-               To<HTMLInputElement>(element).type() ==
-                   input_type_names::kColor) {
-      //  'button' for input[type=color], of which default appearance is
-      // 'square-button', is not deprecated.
     }
+    //  'button' for input[type=color], of which default appearance is
+    // 'square-button', is not deprecated.
   }
 
   // Call the appropriate paint method based off the appearance value.

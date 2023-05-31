@@ -153,8 +153,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartInserted(
     select_->SelectedValuePartInserted(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartInserted(element);
-  } else if (IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartInserted(DynamicTo<HTMLOptionElement>(element));
+  } else if (auto* options_element = DynamicTo<HTMLOptionElement>(element)) {
+    select_->OptionPartInserted(options_element);
   }
 }
 
@@ -168,8 +168,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartRemoved(
     select_->SelectedValuePartRemoved(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartRemoved(element);
-  } else if (IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartRemoved(DynamicTo<HTMLOptionElement>(element));
+  } else if (auto* options_element = DynamicTo<HTMLOptionElement>(element)) {
+    select_->OptionPartRemoved(options_element);
   }
 }
 
@@ -220,8 +220,8 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
     return PartType::kButton;
   } else if (node == listbox_part_) {
     return PartType::kListBox;
-  } else if (IsA<HTMLOptionElement>(node) &&
-             option_parts_.Contains(DynamicTo<HTMLOptionElement>(node))) {
+  } else if (auto* option_element = DynamicTo<HTMLOptionElement>(node);
+             option_element && option_parts_.Contains(option_element)) {
     return PartType::kOption;
   }
 

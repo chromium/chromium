@@ -1086,8 +1086,10 @@ protocol::Response InspectorDOMAgent::setOuterHTML(int node_id,
   if (!response.IsSuccess())
     return response;
 
-  Document* document =
-      IsA<Document>(node) ? To<Document>(node) : node->ownerDocument();
+  Document* document = DynamicTo<Document>(node);
+  if (!document) {
+    document = node->ownerDocument();
+  }
   if (!document ||
       (!IsA<HTMLDocument>(document) && !IsA<XMLDocument>(document)))
     return protocol::Response::ServerError("Not an HTML/XML document");

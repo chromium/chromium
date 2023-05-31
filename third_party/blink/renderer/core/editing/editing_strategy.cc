@@ -38,8 +38,8 @@ template <typename Traversal>
 int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
   // For rendered text nodes, return the last position that a caret could
   // occupy.
-  if (IsA<Text>(node) && node.GetLayoutObject()) {
-    LayoutText* layout_object = To<Text>(node).GetLayoutObject();
+  if (auto* text = DynamicTo<Text>(node); text && text->GetLayoutObject()) {
+    LayoutText* layout_object = text->GetLayoutObject();
 
     // ::first-letter
     if (auto* first_letter_remaining_part =

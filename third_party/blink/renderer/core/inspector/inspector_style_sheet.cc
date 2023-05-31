@@ -1209,8 +1209,8 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   CSSStyleDeclaration* style = nullptr;
   if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
     style = style_rule->style();
-  } else if (IsA<CSSTryRule>(rule)) {
-    style = To<CSSTryRule>(rule)->style();
+  } else if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
+    style = try_rule->style();
   } else {
     style = To<CSSKeyframeRule>(rule)->style();
   }

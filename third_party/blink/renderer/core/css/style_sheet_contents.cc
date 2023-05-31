@@ -269,9 +269,9 @@ static wtf_size_t ReplaceRuleIfExistsInternal(
       child_rules[i] = new_rule;
       return i;
     }
-    if (IsA<StyleRuleGroup>(rule)) {
+    if (auto* style_rule_group = DynamicTo<StyleRuleGroup>(rule)) {
       if (ReplaceRuleIfExistsInternal(old_rule, new_rule,
-                                      To<StyleRuleGroup>(rule)->ChildRules()) !=
+                                      style_rule_group->ChildRules()) !=
           std::numeric_limits<wtf_size_t>::max()) {
         return 0;  // Dummy non-failure value.
       }

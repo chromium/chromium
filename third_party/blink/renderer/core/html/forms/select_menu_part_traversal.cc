@@ -101,8 +101,9 @@ HTMLSelectMenuElement* SelectMenuPartTraversal::NearestSelectMenuAncestor(
     const Node& node) {
   for (Node* ancestor = FlatTreeTraversal::Parent(node); ancestor;
        ancestor = FlatTreeTraversal::Parent(*ancestor)) {
-    if (IsA<HTMLSelectMenuElement>(ancestor))
-      return DynamicTo<HTMLSelectMenuElement>(ancestor);
+    if (auto* select_menu = DynamicTo<HTMLSelectMenuElement>(ancestor)) {
+      return select_menu;
+    }
     if (IsA<HTMLSelectElement>(ancestor))
       return nullptr;
   }
