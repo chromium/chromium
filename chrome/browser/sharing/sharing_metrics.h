@@ -94,13 +94,6 @@ void LogSharingSelectedIndex(
     int index,
     SharingIndexType index_type = SharingIndexType::kDevice);
 
-// Logs to UMA the time from sending a FCM message from the Sharing service
-// until an ack message is received for it.
-void LogSharingMessageAckTime(chrome_browser_sharing::MessageType message_type,
-                              SharingDevicePlatform receiver_device_platform,
-                              SharingChannelType channel_type,
-                              base::TimeDelta time);
-
 // Logs to UMA the time from receiving a SharingMessage to sending
 // back an ack.
 void LogSharingMessageHandlerTime(
@@ -117,13 +110,6 @@ void LogSendSharingMessageResult(
     SharingDevicePlatform receiver_device_platform,
     SharingChannelType channel_type,
     base::TimeDelta receiver_pulse_interval,
-    SharingSendMessageResult result);
-
-// Logs to UMA result of sending an ack of a SharingMessage.
-void LogSendSharingAckMessageResult(
-    chrome_browser_sharing::MessageType message_type,
-    SharingDevicePlatform ack_receiver_device_type,
-    SharingChannelType channel_type,
     SharingSendMessageResult result);
 
 // Logs to UMA the size of the selected text for Shared Clipboard.
@@ -149,11 +135,5 @@ void LogRemoteCopyLoadImageTime(base::TimeDelta time);
 
 // Logs to UMA the time to decode an image for Remote Copy.
 void LogRemoteCopyDecodeImageTime(base::TimeDelta time);
-
-// Logs to UMA the duration of a clipboard write for Remote Copy.
-void LogRemoteCopyWriteTime(base::TimeDelta time, bool is_image);
-
-// Logs to UMA the time to detect a clipboard write for Remote Copy.
-void LogRemoteCopyWriteDetectionTime(base::TimeDelta time, bool is_image);
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_METRICS_H_

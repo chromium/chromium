@@ -5205,8 +5205,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="FcmVapid" label="FCM VAPID"/>
   <suffix name="Server" label="Server"/>
   <suffix name="Unknown" label="Unknown"/>
-  <affected-histogram name="Sharing.MessageAckTime"/>
-  <affected-histogram name="Sharing.SendAckMessageResult"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
 </histogram_suffixes>
 
@@ -5227,8 +5225,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Server" label="Server"/>
   <suffix name="Unknown" label="Device type unknown"/>
   <suffix name="Windows" label="Windows OS"/>
-  <affected-histogram name="Sharing.MessageAckTime"/>
-  <affected-histogram name="Sharing.SendAckMessageResult"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
 </histogram_suffixes>
 
@@ -5248,25 +5244,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
   <suffix name="WEB_RTC_SIGNALING_FRAME" label="Web RTC Signalling Message"/>
-  <affected-histogram name="Sharing.MessageAckTime"/>
-  <affected-histogram name="Sharing.MessageAckTime.Android"/>
-  <affected-histogram name="Sharing.MessageAckTime.ChromeOS"/>
-  <affected-histogram name="Sharing.MessageAckTime.iOS"/>
-  <affected-histogram name="Sharing.MessageAckTime.Linux"/>
-  <affected-histogram name="Sharing.MessageAckTime.Mac"/>
-  <affected-histogram name="Sharing.MessageAckTime.Server"/>
-  <affected-histogram name="Sharing.MessageAckTime.Unknown"/>
-  <affected-histogram name="Sharing.MessageAckTime.Windows"/>
   <affected-histogram name="Sharing.MessageHandlerTime"/>
-  <affected-histogram name="Sharing.SendAckMessageResult"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Android"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.ChromeOS"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.iOS"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Linux"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Mac"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Server"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Unknown"/>
-  <affected-histogram name="Sharing.SendAckMessageResult.Windows"/>
   <affected-histogram name="Sharing.SendMessageResult"/>
   <affected-histogram name="Sharing.SendMessageResult.Android"/>
   <affected-histogram name="Sharing.SendMessageResult.ChromeOS"/>

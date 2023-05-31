@@ -147,18 +147,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-06-26">
-<!-- Name completed by histogram_suffixes name="SharingChannelType",
-     name="SharingDevicePlatform" and name="SharingMessage" -->
-
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time from sending a FCM message from the Sharing service until an ack
-    message is received for it.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M97">
 <!-- Name completed by histogram_suffix name="SharingMessage" -->
 
@@ -321,46 +309,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.RemoteCopyWriteImageDetectionTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time to detect a clipboard image write for Remote Copy. Logged after
-    writing the image. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyWriteImageTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time to write an image to the clipboard for Remote Copy. Logged after
-    writing the image. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyWriteTextDetectionTime" units="ms"
-    expires_after="2022-05-01">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time to detect a clipboard text write for Remote Copy. Logged after
-    writing the text. Desktop only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.RemoteCopyWriteTextTime" units="ms"
-    expires_after="M97">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time to write text to the clipboard for Remote Copy. Logged after
-    writing the text. Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
     expires_after="2023-11-19">
   <owner>jeffreycohen@chromium.org</owner>
@@ -409,19 +357,6 @@ chromium-metrics-reviews@google.com.
     Records the total time spent capturing a long screenshot of a page using
     scroll capture. It is recorded when a scroll capture request successfully
     finishes. This metric is only emitted on Android S+.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-10-09">
-<!-- Name completed by histogram_suffixes name="SharingChannelType",
-     name="SharingDevicePlatform" and name="SharingMessage" -->
-
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Result of sending an ack for a SharingMessage by the Sharing service. Logged
-    in the callback for sending the message to FCM. All platforms.
   </summary>
 </histogram>
 
