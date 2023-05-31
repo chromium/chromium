@@ -3924,6 +3924,12 @@ bool LayerTreeHostImpl::InitializeFrameSink(
         worker_context_provider);
     max_texture_size_ =
         worker_context_provider->ContextCapabilities().max_texture_size;
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, DMSAA is only enabled for vulkan until GL regressions are
+    // fixed.
+    use_dmsaa_for_tiles_ &=
+        worker_context_provider->ContextCapabilities().using_vulkan_context;
+#endif
   } else if (context_provider) {
     max_texture_size_ =
         context_provider->ContextCapabilities().max_texture_size;

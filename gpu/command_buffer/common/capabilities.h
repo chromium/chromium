@@ -181,6 +181,8 @@ struct GPU_EXPORT Capabilities {
   // Used by OOP raster.
   bool context_supports_distance_field_text = true;
 
+  bool using_vulkan_context = false;
+
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
       gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
       gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
