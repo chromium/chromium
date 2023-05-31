@@ -415,10 +415,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetMultiLine(true)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)),
-// TODO(crbug.com/1390952): Move webstore, setting, and toggle
-// button under close button. This will be done as part of
-// adding margins to the menu.
-// Webstore button.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                   views::Builder<views::ImageButton>(
                       views::CreateVectorImageButtonWithNativeTheme(
@@ -462,13 +458,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           base::BindRepeating(
                               &ExtensionsMenuHandler::
                                   OnSiteSettingsToggleButtonPressed,
-                              base::Unretained(menu_handler)))),
-                  // Close button.
-                  views::Builder<views::Button>(
-                      views::BubbleFrameView::CreateCloseButton(
-                          base::BindRepeating(
-                              &ExtensionsMenuHandler::CloseBubble,
-                              base::Unretained(menu_handler_))))),
+                              base::Unretained(menu_handler))))),
           // Contents.
           views::Builder<views::Separator>(),
           views::Builder<views::ScrollView>()
