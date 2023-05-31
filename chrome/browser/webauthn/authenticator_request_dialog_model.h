@@ -186,7 +186,7 @@ class AuthenticatorRequestDialogModel {
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
     using ICloudKeychain =
-        base::StrongAlias<class iCloudKeychainTag, std::monostate>;
+        base::StrongAlias<class iCloudKeychainTag, absl::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
     using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
     using Type =
