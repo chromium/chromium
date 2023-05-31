@@ -19,6 +19,8 @@ source_set("attribution") {
     "attribution_verification_mediator_metrics_recorder.h",
     "boringssl_verification_cryptographer.cc",
     "boringssl_verification_cryptographer.h",
+    "request_headers_internal.cc",
+    "request_headers_internal.h",
   ]
   deps = [
     "//base",
@@ -42,6 +44,7 @@ source_set("tests") {
     "attribution_verification_mediator_metrics_recorder_unittest.cc",
     "attribution_verification_mediator_unittest.cc",
     "boringssl_verification_cryptographer_unittest.cc",
+    "request_headers_internal_unittest.cc",
   ]
 
   deps = [

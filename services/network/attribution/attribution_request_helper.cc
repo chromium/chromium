@@ -4,6 +4,8 @@
 
 #include "services/network/attribution/attribution_request_helper.h"
 
+#include <stdint.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -16,18 +18,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/uuid.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
-#include "net/http/structured_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_verification_mediator.h"
 #include "services/network/attribution/attribution_verification_mediator_metrics_recorder.h"
 #include "services/network/attribution/boringssl_verification_cryptographer.h"
+#include "services/network/attribution/request_headers_internal.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/features.h"
@@ -287,43 +290,17 @@ void AttributionRequestHelper::OnDoneProcessingVerificationResponse(
 // https://wicg.github.io/attribution-reporting-api/#mark-a-request-for-attribution-reporting-eligibility
 void SetAttributionReportingHeaders(net::URLRequest& url_request,
                                     const ResourceRequest& request) {
-  std::vector<net::structured_headers::DictionaryMember> eligibilities;
-  const auto add_eligibility = [&eligibilities](std::string key) {
-    // TODO(crbug.com/1446382): Consider "greasing" this header by adding
-    // meaningless keys and/or parameters.
-    eligibilities.emplace_back(std::move(key),
-                               net::structured_headers::ParameterizedMember(
-                                   net::structured_headers::Item(true),
-                                   net::structured_headers::Parameters()));
-  };
-
-  switch (request.attribution_reporting_eligibility) {
-    case AttributionReportingEligibility::kUnset:
-      return;
-    case AttributionReportingEligibility::kEmpty:
-      break;
-    case AttributionReportingEligibility::kEventSource:
-      add_eligibility("event-source");
-      break;
-    case AttributionReportingEligibility::kNavigationSource:
-      add_eligibility("navigation-source");
-      break;
-    case AttributionReportingEligibility::kTrigger:
-      add_eligibility("trigger");
-      break;
-    case AttributionReportingEligibility::kEventSourceOrTrigger:
-      add_eligibility("event-source");
-      add_eligibility("trigger");
-      break;
+  if (request.attribution_reporting_eligibility ==
+      AttributionReportingEligibility::kUnset) {
+    return;
   }
 
-  absl::optional<std::string> eligible_header =
-      net::structured_headers::SerializeDictionary(
-          net::structured_headers::Dictionary(std::move(eligibilities)));
-  DCHECK(eligible_header.has_value());
+  std::string eligible_header = SerializeAttributionReportingEligibleHeader(
+      request.attribution_reporting_eligibility,
+      AttributionReportingEligibleGreaseOptions::FromBits(base::RandUint64()));
 
   url_request.SetExtraRequestHeaderByName("Attribution-Reporting-Eligible",
-                                          std::move(*eligible_header),
+                                          std::move(eligible_header),
                                           /*overwrite=*/true);
 
   // Note that it's important that the network process check both the
