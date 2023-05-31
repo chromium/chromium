@@ -9,6 +9,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/hotspot/hotspot_icon.h"
+#include "ash/system/hotspot/hotspot_icon_animation.h"
 #include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -34,7 +36,9 @@ HotspotFeaturePodController::HotspotFeaturePodController(
       hotspot_config_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-HotspotFeaturePodController::~HotspotFeaturePodController() = default;
+HotspotFeaturePodController::~HotspotFeaturePodController() {
+  Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
+}
 
 FeaturePodButton* HotspotFeaturePodController::CreateButton() {
   NOTREACHED();
@@ -96,6 +100,11 @@ void HotspotFeaturePodController::OnHotspotInfoChanged() {
 
 void HotspotFeaturePodController::OnGetHotspotInfo(
     HotspotInfoPtr hotspot_info) {
+  if (hotspot_info->state == HotspotState::kEnabling) {
+    Shell::Get()->hotspot_icon_animation()->AddObserver(this);
+  } else if (hotspot_info_ && hotspot_info_->state == HotspotState::kEnabling) {
+    Shell::Get()->hotspot_icon_animation()->RemoveObserver(this);
+  }
   hotspot_info_ = std::move(hotspot_info);
 
   UpdateTileState();
@@ -118,10 +127,14 @@ void HotspotFeaturePodController::UpdateTileState() {
   tile_->SetVisible(true);
   tile_->SetEnabled(true);
   tile_->SetToggled(hotspot_info_->state != HotspotState::kDisabled);
-  tile_->SetVectorIcon(ComputeIcon());
   tile_->SetSubLabel(ComputeSublabel());
   tile_->SetIconButtonTooltipText(ComputeIconTooltip());
   tile_->SetTooltipText(ComputeTileTooltip());
+  tile_->SetVectorIcon(hotspot_icon::GetIconForHotspot(hotspot_info_->state));
+}
+
+void HotspotFeaturePodController::HotspotIconChanged() {
+  tile_->SetVectorIcon(hotspot_icon::GetIconForHotspot(hotspot_info_->state));
 }
 
 void HotspotFeaturePodController::EnableHotspotIfAllowedAndDiveIn() {

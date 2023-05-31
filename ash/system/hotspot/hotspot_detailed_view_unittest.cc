@@ -4,7 +4,9 @@
 
 #include "ash/system/hotspot/hotspot_detailed_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
@@ -12,6 +14,12 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
@@ -59,10 +67,18 @@ class FakeDetailedViewDelegate : public DetailedViewDelegate {
 
 class HotspotDetailedViewTest : public AshTestBase {
  public:
-  HotspotDetailedViewTest() = default;
+  HotspotDetailedViewTest()
+      : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   ~HotspotDetailedViewTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kHotspot, features::kQsRevamp}, {});
+    cros_hotspot_config_test_helper_ =
+        std::make_unique<hotspot_config::CrosHotspotConfigTestHelper>(
+            /*use_fake_implementation=*/true);
     AshTestBase::SetUp();
 
     auto hotspot_detailed_view = std::make_unique<HotspotDetailedView>(
@@ -78,6 +94,7 @@ class HotspotDetailedViewTest : public AshTestBase {
     widget_.reset();
 
     AshTestBase::TearDown();
+    cros_hotspot_config_test_helper_.reset();
   }
 
   void UpdateHotspotView(HotspotState state,
@@ -103,6 +120,11 @@ class HotspotDetailedViewTest : public AshTestBase {
   Switch* GetToggleButton() {
     return FindViewById<Switch*>(
         HotspotDetailedView::HotspotDetailedViewChildId::kToggle);
+  }
+
+  views::ImageView* GetHotspotIcon() {
+    return FindViewById<views::ImageView*>(
+        HotspotDetailedView::HotspotDetailedViewChildId::kHotspotIcon);
   }
 
   views::ImageView* GetExtraIcon() {
@@ -154,6 +176,9 @@ class HotspotDetailedViewTest : public AshTestBase {
         hotspot_detailed_view_->GetViewByID(static_cast<int>(id)));
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
+      cros_hotspot_config_test_helper_;
   std::unique_ptr<views::Widget> widget_;
   FakeHotspotDetailedViewDelegate hotspot_detailed_view_delegate_;
   FakeDetailedViewDelegate detailed_view_delegate_;
@@ -191,6 +216,11 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOnIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 
   UpdateHotspotView(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 1);
   AssertSubtextLabel(u"1 device connected");
@@ -209,6 +239,20 @@ TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotDotIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
+  // Verifies the hotspot icon is animating when enabling.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_STREQ(
+      kHotspotOneArcIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  EXPECT_STREQ(
+      kHotspotOnIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
@@ -221,6 +265,11 @@ TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOffIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndAllowedUI) {
@@ -233,6 +282,11 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndAllowedUI) {
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOffIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
@@ -246,6 +300,11 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
   EXPECT_FALSE(extra_icon->GetVisible());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOffIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest,
@@ -262,6 +321,11 @@ TEST_F(HotspotDetailedViewTest,
   EXPECT_TRUE(extra_icon->GetVisible());
   EXPECT_EQ(u"Your mobile network doesn't support hotspot",
             extra_icon->GetTooltipText());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOffIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
@@ -277,6 +341,11 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
   EXPECT_TRUE(extra_icon->GetVisible());
   EXPECT_EQ(u"This setting is managed by your administrator",
             extra_icon->GetTooltipText());
+  views::ImageView* hotspot_icon = GetHotspotIcon();
+  ASSERT_TRUE(hotspot_icon);
+  EXPECT_STREQ(
+      kHotspotOffIcon.name,
+      hotspot_icon->GetImageModel().GetVectorIcon().vector_icon()->name);
 }
 
 TEST_F(HotspotDetailedViewTest, PressingEntryRowNotifiesDelegate) {
