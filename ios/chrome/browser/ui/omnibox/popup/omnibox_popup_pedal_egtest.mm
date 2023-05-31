@@ -32,6 +32,12 @@ NSString* kDinoSearchString = @"dino game";
 @end
 @implementation OmniboxPedalsTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey clearBrowsingHistory];

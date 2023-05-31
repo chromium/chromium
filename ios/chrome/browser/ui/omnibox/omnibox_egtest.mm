@@ -193,6 +193,12 @@ void FocusFakebox() {
 
 @implementation OmniboxTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -470,6 +476,12 @@ void FocusFakebox() {
 @end
 
 @implementation LocationBarSteadyStateTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -787,6 +799,12 @@ void FocusFakebox() {
   GURL _URL;
 }
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -935,6 +953,12 @@ void FocusFakebox() {
 @end
 
 @implementation LocationBarEditStateTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
