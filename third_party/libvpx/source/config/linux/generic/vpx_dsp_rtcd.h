@@ -2430,14 +2430,13 @@ void vpx_highbd_quantize_b_c(const tran_low_t* coeff_ptr,
                              const int16_t* iscan);
 #define vpx_highbd_quantize_b vpx_highbd_quantize_b_c
 
-void vpx_highbd_quantize_b_32x32_c(
-    const tran_low_t* coeff_ptr,
-    const struct macroblock_plane* const mb_plane,
-    tran_low_t* qcoeff_ptr,
-    tran_low_t* dqcoeff_ptr,
-    const int16_t* dequant_ptr,
-    uint16_t* eob_ptr,
-    const struct ScanOrder* const scan_order);
+void vpx_highbd_quantize_b_32x32_c(const tran_low_t* coeff_ptr,
+                                   const struct macroblock_plane* mb_plane,
+                                   tran_low_t* qcoeff_ptr,
+                                   tran_low_t* dqcoeff_ptr,
+                                   const int16_t* dequant_ptr,
+                                   uint16_t* eob_ptr,
+                                   const struct ScanOrder* scan_order);
 #define vpx_highbd_quantize_b_32x32 vpx_highbd_quantize_b_32x32_c
 
 unsigned int vpx_highbd_sad16x16_c(const uint8_t* src_ptr,
@@ -3179,12 +3178,12 @@ void vpx_quantize_b_c(const tran_low_t* coeff_ptr,
 #define vpx_quantize_b vpx_quantize_b_c
 
 void vpx_quantize_b_32x32_c(const tran_low_t* coeff_ptr,
-                            const struct macroblock_plane* const mb_plane,
+                            const struct macroblock_plane* mb_plane,
                             tran_low_t* qcoeff_ptr,
                             tran_low_t* dqcoeff_ptr,
                             const int16_t* dequant_ptr,
                             uint16_t* eob_ptr,
-                            const struct ScanOrder* const scan_order);
+                            const struct ScanOrder* scan_order);
 #define vpx_quantize_b_32x32 vpx_quantize_b_32x32_c
 
 unsigned int vpx_sad16x16_c(const uint8_t* src_ptr,
