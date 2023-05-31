@@ -236,7 +236,7 @@ bool User::can_lock() const {
   return can_lock_;
 }
 
-std::string User::username_hash() const {
+const std::string& User::username_hash() const {
   return username_hash_;
 }
 

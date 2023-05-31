@@ -53,12 +53,6 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Sets the logged in state, user type, and primary user hash when the
-  // primary user initialy logs in. Also notifies observers.
-  void SetLoggedInStateAndPrimaryUser(LoggedInState state,
-                                      LoggedInUserType type,
-                                      const std::string& primary_user_hash);
-
   // Sets the logged in state and user type. Also notifies observers. Used
   // in tests or situations where there is no primary user (e.g. from the
   // login screen).
@@ -97,7 +91,10 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
     always_logged_in_ = always_logged_in;
   }
 
-  const std::string& primary_user_hash() const { return primary_user_hash_; }
+  // DEPRECATED: please use
+  // user_manager::UserManager::Get()->GetPrimaryUser()->username_hash().
+  // TODO(b/278643115): Remove this.
+  const std::string& primary_user_hash() const;
 
  private:
   LoginState();

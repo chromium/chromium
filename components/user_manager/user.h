@@ -182,7 +182,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool can_lock() const;
 
   // Returns empty string when home dir hasn't been mounted yet.
-  std::string username_hash() const;
+  const std::string& username_hash() const;
 
   // True if current user is logged in.
   bool is_logged_in() const;

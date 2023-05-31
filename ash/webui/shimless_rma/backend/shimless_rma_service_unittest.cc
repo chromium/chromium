@@ -39,6 +39,8 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -150,6 +152,9 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();
 
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<user_manager::FakeUserManager>());
+
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
     NoSessionAshTestBase::SetUp();
@@ -178,6 +183,8 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
     RmadClient::Shutdown();
     NetworkHandler::Shutdown();
     cros_network_config_test_helper_.reset();
+
+    scoped_user_manager_.reset();
     UpdateEngineClient::Shutdown();
 
     task_environment()->RunUntilIdle();
@@ -339,6 +346,8 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
 
  private:
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>

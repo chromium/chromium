@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -14,7 +15,12 @@ namespace network_diagnostics {
 
 NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
     : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  // TODO(b/278643115) Remove LoginState dependency.
   LoginState::Initialize();
+
+  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+      std::make_unique<user_manager::FakeUserManager>());
+
   helper_ = std::make_unique<NetworkHandlerTestHelper>();
   helper_->AddDefaultProfiles();
   helper_->ResetDevicesAndServices();
@@ -39,6 +45,7 @@ NetworkDiagnosticsTestHelper::NetworkDiagnosticsTestHelper()
 NetworkDiagnosticsTestHelper::~NetworkDiagnosticsTestHelper() {
   cros_network_config_.reset();
   helper_.reset();
+  scoped_user_manager_.reset();
   LoginState::Shutdown();
 }
 

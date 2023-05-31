@@ -20,6 +20,7 @@ include_rules = [
   '+components/proxy_config/pref_proxy_config_tracker_impl.h',
   '+components/proxy_config/proxy_config_pref_names.h',
   '+components/sync_preferences/testing_pref_service_syncable.h',
+  '+components/user_manager',
   '+third_party/cros_system_api/dbus/shill/dbus-constants.h',
 ]
 

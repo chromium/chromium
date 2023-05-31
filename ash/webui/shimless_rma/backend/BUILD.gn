@@ -66,6 +66,7 @@ source_set("unit_tests") {
     "//components/proxy_config:proxy_config",
     "//components/qr_code_generator",
     "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

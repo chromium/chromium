@@ -94,7 +94,8 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
 
   const NetworkState* CreateNetwork(bool from_sync) {
     std::string guid = network_test_helper()->ConfigureWiFiNetwork(
-        "ssid", /*is_secure=*/true, /*in_profile=*/true, /*has_connected=*/true,
+        "ssid", /*is_secure=*/true, network_test_helper()->primary_user(),
+        /*has_connected=*/true,
         /*owned_by_user=*/true, /*configured_by_sync=*/from_sync);
     return network_test_helper()
         ->network_state_helper()

@@ -41,12 +41,7 @@ void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
     logged_in_user_type = LoginState::LOGGED_IN_USER_NONE;
   }
 
-  if (primary_user) {
-    LoginState::Get()->SetLoggedInStateAndPrimaryUser(
-        logged_in_state, logged_in_user_type, primary_user->username_hash());
-  } else {
-    LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
-  }
+  LoginState::Get()->SetLoggedInState(logged_in_state, logged_in_user_type);
 }
 
 bool ChromeUserManager::GetPlatformKnownUserId(

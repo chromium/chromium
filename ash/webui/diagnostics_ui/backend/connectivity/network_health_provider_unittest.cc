@@ -39,6 +39,8 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -169,6 +171,9 @@ class NetworkHealthProviderTest : public AshTestBase {
     AshTestBase::SetUp();
     SystemTokenCertDbStorage::Initialize();
 
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<user_manager::FakeUserManager>());
+
     // NetworkHandler has pieces that depend on NetworkCertLoader so it's better
     // to initialize NetworkHandlerTestHelper after
     // NetworkCertLoader::Initialize(). Same with CrosNetworkConfig since it
@@ -216,6 +221,7 @@ class NetworkHealthProviderTest : public AshTestBase {
     cros_network_config_.reset();
     network_handler_test_helper_.reset();
     NetworkCertLoader::Shutdown();
+    scoped_user_manager_.reset();
     SystemTokenCertDbStorage::Shutdown();
     AshTestBase::TearDown();
   }
@@ -533,6 +539,7 @@ class NetworkHealthProviderTest : public AshTestBase {
 
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;

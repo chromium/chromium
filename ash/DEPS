@@ -134,7 +134,7 @@ specific_include_rules = {
   "policy_recommendation_restorer_unittest.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
-  "root_window_controller\.*": [
+  "root_window_controller\.(cc|h)": [
     "+ash/host"
   ],
   "shell.cc": [
@@ -144,4 +144,9 @@ specific_include_rules = {
   "window_manager.cc": [
     "+ash/host/ash_window_tree_host.h"
   ],
+  ".*test\.cc": [
+    # Allowed to access user_manager in test code to set up testing environment
+    # close to the production.
+    "+components/user_manager",
+  ]
 }

@@ -69,7 +69,7 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
 
   const NetworkState* CreateNetwork() {
     std::string guid = helper_.ConfigureWiFiNetwork(
-        "ssid", /*is_secured=*/true, /*in_profile=*/true,
+        "ssid", /*is_secured=*/true, helper_.primary_user(),
         /*has_connected=*/true,
         /*owned_by_user=*/true, /*configured_by_sync=*/true);
     return helper_.network_state_helper()

@@ -22,7 +22,12 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/account_id/account_id.h"
 #include "components/onc/onc_constants.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/networking_private/networking_private_api.h"
 #include "extensions/browser/api_unittest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -68,10 +73,21 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   void SetUp() override {
     ApiUnitTest::SetUp();
 
+    // TODO(b/278643115) Remove LoginState dependency.
     ash::LoginState::Initialize();
-    ash::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
+
+    const AccountId account_id = AccountId::FromUserEmail("test@test");
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->UserLoggedIn(account_id, kUserHash,
+                                    /*browser_restart=*/false,
+                                    /*is_child=*/false);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+
+    ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,
-        ash::LoginState::LOGGED_IN_USER_KIOSK, kUserHash);
+        ash::LoginState::LOGGED_IN_USER_KIOSK);
     base::RunLoop().RunUntilIdle();
 
     device_test()->ClearDevices();
@@ -84,6 +100,8 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   void TearDown() override {
+    scoped_user_manager_.reset();
+
     ash::LoginState::Shutdown();
 
     ApiUnitTest::TearDown();
@@ -352,6 +370,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
  private:
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
