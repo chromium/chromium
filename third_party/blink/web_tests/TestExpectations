@@ -6801,4 +6801,4 @@ crbug.com/1448011 http/tests/devtools/indexeddb/delete-entry.js [ Failure Pass ]
 crbug.com/1448011 http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Failure Pass ]
 
 # Sheriff 2023-05-30
-crbug.com/1450020 [ Mac12 ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
+crbug.com/1450020 [ Mac ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
