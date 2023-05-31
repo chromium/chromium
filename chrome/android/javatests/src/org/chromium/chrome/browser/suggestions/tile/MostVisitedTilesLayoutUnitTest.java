@@ -34,48 +34,63 @@ public final class MostVisitedTilesLayoutUnitTest extends BlankUiTestActivityTes
     @UiThreadTest
     @SmallTest
     public void testCalculateTabletIntervalPadding() {
+        int tileViewWidth = 160;
+        mMvTilesLayout.setTileViewWidthForTesting(tileViewWidth);
+        int tileViewMinIntervalPaddingTablet = 32;
+        mMvTilesLayout.setTileViewMinIntervalPaddingTabletForTesting(
+                tileViewMinIntervalPaddingTablet);
+        int tileViewMaxIntervalPaddingTablet = 96;
+        mMvTilesLayout.setTileViewMaxIntervalPaddingTabletForTesting(
+                tileViewMaxIntervalPaddingTablet);
+
         int tileNum = 8;
         mMvTilesLayout.setInitialTileNumForTesting(tileNum);
 
-        int tileViewWidth = 160;
-        mMvTilesLayout.setTileViewWidthForTesting(tileViewWidth);
-        int tileViewMinIntervalPaddingTablet = 8;
-        mMvTilesLayout.setTileViewMinIntervalPaddingTabletForTesting(
-                tileViewMinIntervalPaddingTablet);
-        int tileViewMaxIntervalPaddingTablet = 128;
-        mMvTilesLayout.setTileViewMaxIntervalPaddingTabletForTesting(
-                tileViewMaxIntervalPaddingTablet);
-
-        int totalWidth = 1392;
-        int expectedIntervalPadding = 72;
-        int intervalPadding = mMvTilesLayout.calculateTabletIntervalPadding(totalWidth);
+        int totalWidth = 1504;
+        int expectedIntervalPadding = 32;
+        int intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/false);
         Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
                 expectedIntervalPadding, intervalPadding);
 
-        totalWidth = 1416;
-        expectedIntervalPadding = 76;
-        intervalPadding = mMvTilesLayout.calculateTabletIntervalPadding(totalWidth);
+        totalWidth = 1528;
+        expectedIntervalPadding = 35;
+        intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/false);
         Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
                 expectedIntervalPadding, intervalPadding);
 
-        tileViewWidth = 100;
-        mMvTilesLayout.setTileViewWidthForTesting(tileViewWidth);
-        tileViewMinIntervalPaddingTablet = 5;
-        mMvTilesLayout.setTileViewMinIntervalPaddingTabletForTesting(
-                tileViewMinIntervalPaddingTablet);
-        tileViewMaxIntervalPaddingTablet = 80;
-        mMvTilesLayout.setTileViewMaxIntervalPaddingTabletForTesting(
-                tileViewMaxIntervalPaddingTablet);
+        tileNum = 12;
+        mMvTilesLayout.setInitialTileNumForTesting(tileNum);
 
-        totalWidth = 930;
-        expectedIntervalPadding = 55;
-        intervalPadding = mMvTilesLayout.calculateTabletIntervalPadding(totalWidth);
+        totalWidth = 1472;
+        expectedIntervalPadding = 38;
+        intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/true);
         Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
                 expectedIntervalPadding, intervalPadding);
 
-        totalWidth = 1270;
-        expectedIntervalPadding = 81;
-        intervalPadding = mMvTilesLayout.calculateTabletIntervalPadding(totalWidth);
+        totalWidth = 1496;
+        expectedIntervalPadding = 42;
+        intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/true);
+        Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
+                expectedIntervalPadding, intervalPadding);
+
+        tileNum = 3;
+        mMvTilesLayout.setInitialTileNumForTesting(tileNum);
+
+        totalWidth = 1504;
+        expectedIntervalPadding = 96;
+        intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/false);
+        Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
+                expectedIntervalPadding, intervalPadding);
+
+        totalWidth = 1528;
+        expectedIntervalPadding = 96;
+        intervalPadding =
+                mMvTilesLayout.calculateTabletIntervalPadding(totalWidth, /*isHalfMvt=*/false);
         Assert.assertEquals("The result of function CalculateTabletIntervalPadding is wrong",
                 expectedIntervalPadding, intervalPadding);
     }

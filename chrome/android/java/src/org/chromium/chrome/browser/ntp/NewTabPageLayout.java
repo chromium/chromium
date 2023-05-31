@@ -82,9 +82,8 @@ public class NewTabPageLayout extends LinearLayout {
     private final Context mContext;
     private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
 
-    private final int mMvtLandscapeLeftMarginTablet;
-    private final int mMvtLandscapeRightMarginTablet;
-    private final int mMvtPortraitRightMarginTablet;
+    private final int mMvtLandscapeLateralMarginTablet;
+    private final int mMvtExtraRightMarginTablet;
 
     private View mMiddleSpacer; // Spacer between toolbar and Most Likely.
 
@@ -142,6 +141,12 @@ public class NewTabPageLayout extends LinearLayout {
 
     private NewTabPageUma mNewTabPageUma;
 
+    private int mTileViewWidth;
+    private int mTileViewMinIntervalPaddingTablet;
+    private Integer mInitialTileNum;
+    private Boolean mIsHalfMvtLandscape;
+    private Boolean mIsHalfMvtPortrait;
+
     /**
      * Constructor for inflating from XML.
      */
@@ -150,12 +155,14 @@ public class NewTabPageLayout extends LinearLayout {
         mContext = context;
         Resources res = getResources();
         mTileGridLayoutBleed = res.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed);
-        mMvtLandscapeLeftMarginTablet =
+        mMvtLandscapeLateralMarginTablet =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_start_margin);
-        mMvtPortraitRightMarginTablet = res.getDimensionPixelSize(
+        mMvtExtraRightMarginTablet = res.getDimensionPixelSize(
                 R.dimen.mvt_container_to_ntp_right_extra_margin_two_feed_tablet);
-        mMvtLandscapeRightMarginTablet =
-                mMvtLandscapeLeftMarginTablet + mMvtPortraitRightMarginTablet;
+        mTileViewWidth =
+                getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
+        mTileViewMinIntervalPaddingTablet = getResources().getDimensionPixelOffset(
+                org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
     }
 
     @Override
@@ -451,8 +458,43 @@ public class NewTabPageLayout extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled && isScrollableMvtEnabled()) {
+            calculateTabletMvtMargin(MeasureSpec.getSize(widthMeasureSpec));
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         unifyElementWidths();
+    }
+
+    /**
+     * Update the right margin for the MV tiles container if needed to have half tile element
+     * in the end of the MV tiles when used in NTP on the tablet.
+     */
+    private void calculateTabletMvtMargin(int widthMeasureSpec) {
+        if (mMvTilesContainerLayout.getVisibility() == GONE) return;
+
+        if (mInitialTileNum == null) {
+            mInitialTileNum = ((ViewGroup) findViewById(R.id.mv_tiles_layout)).getChildCount();
+        }
+
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if ((currentOrientation == Configuration.ORIENTATION_LANDSCAPE
+                    && mIsHalfMvtLandscape == null)
+                || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
+                        && mIsHalfMvtPortrait == null)) {
+            MarginLayoutParams marginLayoutParams =
+                    (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+            int mvtContainerWidth = widthMeasureSpec - marginLayoutParams.leftMargin
+                    - marginLayoutParams.rightMargin;
+            boolean isHalfMvt = mInitialTileNum * mTileViewWidth
+                            + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet
+                    > mvtContainerWidth;
+            if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                mIsHalfMvtLandscape = isHalfMvt;
+            } else {
+                mIsHalfMvtPortrait = isHalfMvt;
+            }
+            updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
+        }
     }
 
     public void onSwitchToForeground() {
@@ -524,7 +566,6 @@ public class NewTabPageLayout extends LinearLayout {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
             setClipToPadding(false);
             if (mIsNtpAsHomeSurfaceEnabled && mIsMultiColumnFeedEnabled) {
-                ((LayoutParams) marginLayoutParams).gravity = Gravity.START;
                 updateTilesLayoutLeftAndRightMarginsOnTablet(marginLayoutParams);
             } else {
                 int lateralPaddingsForNTP = -getResources().getDimensionPixelSize(
@@ -955,13 +996,19 @@ public class NewTabPageLayout extends LinearLayout {
      */
     private void updateTilesLayoutLeftAndRightMarginsOnTablet(
             MarginLayoutParams marginLayoutParams) {
+        ((LayoutParams) marginLayoutParams).gravity = Gravity.CENTER_HORIZONTAL;
         int leftMarginForNtp = mTileGridLayoutBleed / 2;
         int rightMarginForNtp = leftMarginForNtp;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            leftMarginForNtp = leftMarginForNtp + mMvtLandscapeLeftMarginTablet;
-            rightMarginForNtp = rightMarginForNtp + mMvtLandscapeRightMarginTablet;
-        } else {
-            rightMarginForNtp = rightMarginForNtp + mMvtPortraitRightMarginTablet;
+            leftMarginForNtp = leftMarginForNtp + mMvtLandscapeLateralMarginTablet;
+            rightMarginForNtp = rightMarginForNtp + mMvtLandscapeLateralMarginTablet;
+            if (mIsHalfMvtLandscape != null && mIsHalfMvtLandscape) {
+                ((LayoutParams) marginLayoutParams).gravity = Gravity.START;
+                rightMarginForNtp = rightMarginForNtp + mMvtExtraRightMarginTablet;
+            }
+        } else if (mIsHalfMvtPortrait != null && mIsHalfMvtPortrait) {
+            ((LayoutParams) marginLayoutParams).gravity = Gravity.START;
+            rightMarginForNtp = rightMarginForNtp + mMvtExtraRightMarginTablet;
         }
         marginLayoutParams.leftMargin = leftMarginForNtp;
         marginLayoutParams.rightMargin = rightMarginForNtp;

@@ -40,7 +40,7 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
         mTileViewWidth =
                 getResources().getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
         mTileViewMinIntervalPaddingTablet = getResources().getDimensionPixelOffset(
-                org.chromium.chrome.R.dimen.tile_view_padding);
+                org.chromium.chrome.R.dimen.tile_carousel_layout_min_interval_margin_tablet);
         mTileViewMaxIntervalPaddingTablet = getResources().getDimensionPixelOffset(
                 org.chromium.chrome.R.dimen.tile_carousel_layout_max_interval_margin_tablet);
     }
@@ -113,27 +113,29 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
 
     /**
      * Computes the distance between each MV tiles element based on certain parameters.
-     * @param totalWidth The total width of the most recent tile,
-     *                   excluding the half MV tiles element at the end.
+     * @param totalWidth The total width of the MV tiles.
+     * @param isHalfMvt Whether there should be half MV tiles element at the end.
      * @return The median value of the appropriate distances calculated as the distance between
      *         each MV tiles element.
      */
     @VisibleForTesting
-    public int calculateTabletIntervalPadding(int totalWidth) {
-        int tileWidthWithMinInternalPadding = mTileViewWidth - mTileViewMinIntervalPaddingTablet;
-        int tileWidthWithMaxInternalPadding = mTileViewWidth + mTileViewMaxIntervalPaddingTablet;
-        int maxElements = totalWidth / tileWidthWithMinInternalPadding;
-        int minElements = (int) Math.ceil((double) totalWidth / tileWidthWithMaxInternalPadding);
-        int preferElements = (minElements + Math.min(maxElements, mInitialTileNum - 1)) / 2;
-        return (totalWidth - preferElements * mTileViewWidth) / preferElements;
+    public int calculateTabletIntervalPadding(int totalWidth, boolean isHalfMvt) {
+        if (isHalfMvt) {
+            int preferElements = (totalWidth - mTileViewWidth / 2)
+                    / (mTileViewWidth + mTileViewMinIntervalPaddingTablet);
+            return (totalWidth - mTileViewWidth / 2 - preferElements * mTileViewWidth)
+                    / Math.max(1, preferElements);
+        }
+        return Math.min((totalWidth - mInitialTileNum * mTileViewWidth)
+                        / Math.max(1, (mInitialTileNum - 1)),
+                mTileViewMaxIntervalPaddingTablet);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mIsMultiColumnFeedOnTabletEnabled) {
             if (mInitialTileNum == null) {
-                mInitialTileNum = Math.min(Math.max(getChildCount(), MIN_RESULTS),
-                        MostVisitedTilesMediator.MAX_RESULTS);
+                mInitialTileNum = getChildCount();
             }
 
             int currentOrientation = getResources().getConfiguration().orientation;
@@ -141,9 +143,10 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout implements Most
                         && mIntervalPaddingsLandscapeTablet == null)
                     || (currentOrientation == Configuration.ORIENTATION_PORTRAIT
                             && mIntervalPaddingsPortraitTablet == null)) {
-                int totalWidth = Math.min(MeasureSpec.getSize(widthMeasureSpec), Integer.MAX_VALUE)
-                        - mTileViewWidth / 2;
-                int tileViewIntervalPadding = calculateTabletIntervalPadding(totalWidth);
+                int totalWidth = Math.min(MeasureSpec.getSize(widthMeasureSpec), Integer.MAX_VALUE);
+                boolean isHalfMvt = totalWidth < mInitialTileNum * mTileViewWidth
+                                + (mInitialTileNum - 1) * mTileViewMinIntervalPaddingTablet;
+                int tileViewIntervalPadding = calculateTabletIntervalPadding(totalWidth, isHalfMvt);
                 if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                     mIntervalPaddingsLandscapeTablet = tileViewIntervalPadding;
                 } else {

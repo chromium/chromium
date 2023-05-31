@@ -165,7 +165,8 @@ found in the LICENSE file.
     <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
     <dimen name="tile_grid_layout_landscape_edge_margin_tablet">100dp</dimen>
     <dimen name="tile_grid_layout_portrait_edge_margin_tablet">84dp</dimen>
-    <dimen name="tile_carousel_layout_max_interval_margin_tablet">64dp</dimen>
+    <dimen name="tile_carousel_layout_max_interval_margin_tablet">48dp</dimen>
+    <dimen name="tile_carousel_layout_min_interval_margin_tablet">16dp</dimen>
     <dimen name="single_tab_card_top_margin_tablet">48dp</dimen>
     <dimen name="single_tab_card_bottom_margin_tablet">40dp</dimen>
     <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
