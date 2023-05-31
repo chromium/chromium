@@ -136,6 +136,21 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     return this.oneDriveProxy_.handler;
   }
 
+  /**
+   * Returns the browser proxy callback router (to receive async messages).
+   */
+  get oneDriveCallbackRouter() {
+    return this.oneDriveProxy_.observer;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.showOfficeSettings_) {
+      this.oneDriveCallbackRouter.onODFSMountOrUnmount.addListener(
+          this.updateOneDriveEmail_.bind(this));
+    }
+  }
+
   private onTapSmbShares_() {
     Router.getInstance().navigateTo(routes.SMB_SHARES);
   }

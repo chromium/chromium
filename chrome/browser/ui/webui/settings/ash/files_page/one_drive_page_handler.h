@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -18,7 +19,8 @@ class Profile;
 namespace ash::settings {
 
 // Page handler for settings related to OneDrive.
-class OneDrivePageHandler : public one_drive::mojom::PageHandler {
+class OneDrivePageHandler : public one_drive::mojom::PageHandler,
+                            public ash::file_system_provider::Observer {
  public:
   OneDrivePageHandler(
       mojo::PendingReceiver<one_drive::mojom::PageHandler> receiver,
@@ -33,6 +35,15 @@ class OneDrivePageHandler : public one_drive::mojom::PageHandler {
  private:
   // one_drive::mojom::PageHandler:
   void GetUserEmailAddress(GetUserEmailAddressCallback callback) override;
+
+  // ash::file_system_provider::Observer overrides.
+  void OnProvidedFileSystemMount(
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      ash::file_system_provider::MountContext context,
+      base::File::Error error) override;
+  void OnProvidedFileSystemUnmount(
+      const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+      base::File::Error error) override;
 
   raw_ptr<Profile> profile_;
   mojo::Remote<one_drive::mojom::Page> page_;

@@ -40,9 +40,21 @@ OneDrivePageHandler::OneDrivePageHandler(
     Profile* profile)
     : profile_(profile),
       page_(std::move(page)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  file_system_provider::Service* service =
+      file_system_provider::Service::Get(profile_);
+  if (service) {
+    service->AddObserver(this);
+  }
+}
 
-OneDrivePageHandler::~OneDrivePageHandler() = default;
+OneDrivePageHandler::~OneDrivePageHandler() {
+  file_system_provider::Service* service =
+      file_system_provider::Service::Get(profile_);
+  if (service) {
+    service->RemoveObserver(this);
+  }
+}
 
 void OneDrivePageHandler::GetUserEmailAddress(
     GetUserEmailAddressCallback callback) {
@@ -70,6 +82,35 @@ void OneDrivePageHandler::GetUserEmailAddress(
   file_system->GetActions(
       {base::FilePath("/")},
       base::BindOnce(&OnGetEmailAddress, std::move(callback)));
+}
+
+void OneDrivePageHandler::OnProvidedFileSystemMount(
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+    ash::file_system_provider::MountContext context,
+    base::File::Error error) {
+  file_system_provider::ProviderId odfs_provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile_));
+  // Only observe successful mount events for ODFS.
+  if (file_system_info.provider_id() != odfs_provider_id ||
+      error != base::File::FILE_OK) {
+    return;
+  }
+  page_->OnODFSMountOrUnmount();
+}
+
+void OneDrivePageHandler::OnProvidedFileSystemUnmount(
+    const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
+    base::File::Error error) {
+  file_system_provider::ProviderId odfs_provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile_));
+  // Only observe successful unmount events for ODFS.
+  if (file_system_info.provider_id() != odfs_provider_id ||
+      error != base::File::FILE_OK) {
+    return;
+  }
+  page_->OnODFSMountOrUnmount();
 }
 
 }  // namespace ash::settings

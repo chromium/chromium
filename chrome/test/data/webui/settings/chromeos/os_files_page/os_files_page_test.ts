@@ -14,6 +14,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
+import {assertAsync} from '../utils.js';
+
 import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
 
 suite('<os-settings-files-page>', () => {
@@ -109,7 +111,7 @@ suite('<os-settings-files-page>', () => {
     }
 
     test('OneDrive row shows Disconnected', async () => {
-      await setupFilesPage({});
+      await setupFilesPage({email: null});
       const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
           '#OneDriveLink');
       assert(oneDriveRow);
@@ -125,6 +127,42 @@ suite('<os-settings-files-page>', () => {
           '#OneDriveLink');
       assert(oneDriveRow);
       assertEquals('Signed in as ' + email, oneDriveRow.subLabel);
+    });
+
+    test('OneDrive row adds email address on OneDrive mount', async () => {
+      await setupFilesPage({email: null});
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Disconnected', oneDriveRow.subLabel);
+
+      // Simulate OneDrive mount: mount signal to observer and ability to return
+      // an email address.
+      const email = 'email@gmail.com';
+      testOneDriveProxy.handler.setResultFor(
+          'getUserEmailAddress', {email: email});
+      testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+      await assertAsync(() => oneDriveRow.subLabel === 'Signed in as ' + email);
+    });
+
+    test('OneDrive row removes email address on OneDrive unmount', async () => {
+      const email = 'email@gmail.com';
+      await setupFilesPage({
+        email: email,
+      });
+      const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#OneDriveLink');
+      assert(oneDriveRow);
+      assertEquals('Signed in as ' + email, oneDriveRow.subLabel);
+
+      // Simulate OneDrive unmount: unmount signal and returns an empty email
+      // address.
+      testOneDriveProxy.handler.setResultFor(
+          'getUserEmailAddress', {email: null});
+      testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+      await assertAsync(() => oneDriveRow.subLabel === 'Disconnected');
     });
 
     test('Navigates to OFFICE route on click', async () => {

@@ -23,4 +23,7 @@ interface PageHandler {
 // Interface for the OneDrive settings. Implemented in Javascript and
 // used by the page handler to send asynchronous updates.
 interface Page {
+  // Invoked on ODFS mount or unmount, indicating that the user has signed in
+  // or out of OneDrive.
+  OnODFSMountOrUnmount();
 };

@@ -53,6 +53,12 @@ export class SettingsOneDriveSubpageElement extends
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.oneDriveProxy_.observer.onODFSMountOrUnmount.addListener(
+        this.updateUserEmailAddress_.bind(this));
+  }
+
   private async updateUserEmailAddress_() {
     const {email} = await this.oneDriveProxy_.handler.getUserEmailAddress();
     this.userEmailAddress_ = email;

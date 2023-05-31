@@ -10,6 +10,8 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
+import {assertAsync} from '../utils.js';
+
 import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
 
 suite('<one-google-drive-subpage>', function() {
@@ -58,6 +60,53 @@ suite('<one-google-drive-subpage>', function() {
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
     assertEquals('Disconnected', signedInAsLabelElement.innerText);
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+  });
+
+  test('Update page to signed in state on OneDrive mount', async () => {
+    await setupOneDrivePage({email: null});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Disconnected', signedInAsLabelElement.innerText);
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+
+    // Simulate OneDrive mount: mount signal to observer and ability to return
+    // an email address.
+    const email = 'email@gmail.com';
+    testOneDriveProxy.handler.setResultFor('getUserEmailAddress', {email});
+    testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+    await assertAsync(
+        () => signedInAsLabelElement.innerText === 'Signed in as ' + email);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+  });
+
+  test('Update page to signed out state on OneDrive unmount', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+
+    // Simulate OneDrive unmount: unmount signal and returns an empty email
+    // address.
+    testOneDriveProxy.handler.setResultFor(
+        'getUserEmailAddress', {email: null});
+    testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
+
+    await assertAsync(
+        () => signedInAsLabelElement.innerText === 'Disconnected');
     assertEquals(
         'Connect account', connectDisconnectButton.textContent!.trim());
   });

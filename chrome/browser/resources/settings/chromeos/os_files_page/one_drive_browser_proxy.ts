@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../mojom-webui/one_drive_handler.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, PageRemote} from '../mojom-webui/one_drive_handler.mojom-webui.js';
 
 // Communicates with the OneDriveHandler in the browser process.
 class OneDriveBrowserProxy {
@@ -33,5 +33,6 @@ let instance: OneDriveBrowserProxy|null = null;
 export {
   OneDriveBrowserProxy,
   PageHandlerRemote as OneDrivePageHandlerRemote,
+  PageRemote as OneDrivePageRemote,
   PageCallbackRouter as OneDrivePageCallbackRouter,
 };
