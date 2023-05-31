@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, Touchpad} from './input_device_settings_types.js';
+import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Touchpad} from './input_device_settings_types.js';
+
+const defaultSixPackKeyRemappings: SixPackKeyInfo = {
+  pageDown: SixPackShortcutModifier.kSearch,
+  pageUp: SixPackShortcutModifier.kSearch,
+  del: SixPackShortcutModifier.kSearch,
+  insert: SixPackShortcutModifier.kSearch,
+  home: SixPackShortcutModifier.kSearch,
+  end: SixPackShortcutModifier.kSearch,
+};
 
 export const fakeKeyboards: Keyboard[] = [
   {
@@ -26,6 +35,7 @@ export const fakeKeyboards: Keyboard[] = [
       },
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
   {
@@ -46,6 +56,7 @@ export const fakeKeyboards: Keyboard[] = [
       modifierRemappings: {},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
   {
@@ -67,6 +78,7 @@ export const fakeKeyboards: Keyboard[] = [
       modifierRemappings: {[ModifierKey.kAlt]: ModifierKey.kAssistant},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
 ];
@@ -93,6 +105,7 @@ export const fakeKeyboards2: Keyboard[] = [
       },
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
   {
@@ -113,6 +126,7 @@ export const fakeKeyboards2: Keyboard[] = [
       modifierRemappings: {},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
     },
   },
 ];

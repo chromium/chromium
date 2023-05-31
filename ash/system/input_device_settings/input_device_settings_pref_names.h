@@ -51,6 +51,14 @@ constexpr char kKeyboardSettingModifierRemappings[] = "modifier_remappings";
 constexpr char kKeyboardSettingSuppressMetaFKeyRewrites[] =
     "suppress_meta_fkey_rewrites";
 constexpr char kKeyboardSettingTopRowAreFKeys[] = "top_row_are_fkeys";
+constexpr char kKeyboardSettingSixPackKeyRemappings[] =
+    "six_pack_key_remappings";
+constexpr char kSixPackKeyPageUp[] = "page_up";
+constexpr char kSixPackKeyPageDown[] = "page_down";
+constexpr char kSixPackKeyHome[] = "home";
+constexpr char kSixPackKeyEnd[] = "end";
+constexpr char kSixPackKeyDelete[] = "delete";
+constexpr char kSixPackKeyInsert[] = "insert";
 
 // Mouse settings dictionary keys.
 constexpr char kMouseSettingSwapRight[] = "swap_right";

@@ -24,6 +24,8 @@
 #include "components/user_manager/known_user.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
+#include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom.h"
 #include "ui/events/ash/pref_names.h"
 
 namespace ash {
@@ -89,7 +91,63 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
     settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
         ui::mojom::ModifierKey::kControl;
   }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  }
   return settings;
+}
+
+int GetSixPackKeyPrefCount(PrefService* prefs, const char* pref_name) {
+  const auto* pref = prefs->GetUserPrefValue(pref_name);
+  return pref ? pref->GetInt() : 0;
+}
+
+// Return the modifier used more frequently, in case of a tie, Search will
+// be preferred to avoid Alt-based issues.
+// Default setting:
+//  Pref contains a positive value: SixPackShortcutModifier::kAlt
+//  Pref contains a negative value: SixPackShortcutModifier::kSearch
+ui::mojom::SixPackShortcutModifier GetSixPackKeyModifierFromPrefCount(
+    int count) {
+  return count <= 0 ? ui::mojom::SixPackShortcutModifier::kSearch
+                    : ui::mojom::SixPackShortcutModifier::kAlt;
+}
+
+ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifierFromSettingsDict(
+    const base::Value::Dict& six_pack_key_remappings_dict,
+    const char* pref_name) {
+  return static_cast<ui::mojom::SixPackShortcutModifier>(
+      *six_pack_key_remappings_dict.FindInt(pref_name));
+}
+
+// Each pref contains an integer value which may be positive or negative
+// depending on whether the user uses the Alt or Search based rewrite more
+// frequently. When dealing with the grouped 6-pack keys
+// (PageUp/PageDown, Home/End), both prefs will be used when determining what
+// value to set to avoid setting inconsistent values for similar 6-pack keys.
+mojom::SixPackKeyInfoPtr GetSixPackKeyRemappings(PrefService* prefs) {
+  mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+  const auto page_up_down_modifier = GetSixPackKeyModifierFromPrefCount(
+      GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackPageDown) +
+      GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackPageUp));
+  six_pack_key_info->page_down = page_up_down_modifier;
+  six_pack_key_info->page_up = page_up_down_modifier;
+
+  const auto home_end_modifier = GetSixPackKeyModifierFromPrefCount(
+      GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackHome) +
+      GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackEnd));
+  six_pack_key_info->home = home_end_modifier;
+  six_pack_key_info->end = home_end_modifier;
+
+  six_pack_key_info->del = GetSixPackKeyModifierFromPrefCount(
+      GetSixPackKeyPrefCount(prefs, prefs::kKeyEventRemappedToSixPackDelete));
+
+  // The "Insert" key is always set to `kSearch` since the
+  // (Search+Shift+Backspace) rewrite is the only way to emit an "Insert" key
+  // event.
+  six_pack_key_info->insert = ui::mojom::SixPackShortcutModifier::kSearch;
+  return six_pack_key_info;
 }
 
 base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
@@ -168,7 +226,37 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
   force_persistence.suppress_meta_fkey_rewrites = false;
 
   settings->modifier_remappings = GetModifierRemappings(prefs, keyboard);
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    settings->six_pack_key_remappings = GetSixPackKeyRemappings(prefs);
+  }
   return settings;
+}
+
+mojom::SixPackKeyInfoPtr RetrieveSixPackRemappings(
+    PrefService* pref_service,
+    const base::Value::Dict& settings_dict) {
+  const auto* six_pack_key_remappings_dict =
+      settings_dict.FindDict(prefs::kKeyboardSettingSixPackKeyRemappings);
+  if (!six_pack_key_remappings_dict) {
+    return GetSixPackKeyRemappings(pref_service);
+  } else {
+    mojom::SixPackKeyInfoPtr six_pack_key_info = mojom::SixPackKeyInfo::New();
+    six_pack_key_info->page_up = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyPageUp);
+    six_pack_key_info->page_down = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyPageDown);
+    six_pack_key_info->home = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyHome);
+    six_pack_key_info->end = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyEnd);
+    six_pack_key_info->del = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyDelete);
+    six_pack_key_info->insert = GetSixPackShortcutModifierFromSettingsDict(
+        *six_pack_key_remappings_dict, prefs::kSixPackKeyInsert);
+
+    return six_pack_key_info;
+  }
 }
 
 mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
@@ -244,6 +332,31 @@ base::Value::Dict ConvertSettingsToDict(
                       keyboard.settings->top_row_are_fkeys);
   }
 
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    base::Value::Dict six_pack_key_remappings;
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyPageUp,
+        static_cast<int>(keyboard.settings->six_pack_key_remappings->page_up));
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyPageDown,
+        static_cast<int>(
+            keyboard.settings->six_pack_key_remappings->page_down));
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyHome,
+        static_cast<int>(keyboard.settings->six_pack_key_remappings->home));
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyEnd,
+        static_cast<int>(keyboard.settings->six_pack_key_remappings->end));
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyDelete,
+        static_cast<int>(keyboard.settings->six_pack_key_remappings->del));
+    six_pack_key_remappings.Set(
+        prefs::kSixPackKeyInsert,
+        static_cast<int>(keyboard.settings->six_pack_key_remappings->insert));
+    settings_dict.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
+                      std::move(six_pack_key_remappings));
+  }
+
   // Modifier remappings get stored in a dict by casting the
   // `ui::mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only
   // supports strings as keys, this is then converted into a string.
@@ -279,6 +392,16 @@ void UpdateKeyboardSettingsImpl(
     existing_settings_dict->Merge(std::move(settings_dict));
     existing_settings_dict->Set(prefs::kKeyboardSettingModifierRemappings,
                                 std::move(*modifier_remappings_dict));
+    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+      // 6-pack key remappings need to overwrite what was previously stored.
+      auto six_pack_key_remappings_dict =
+          settings_dict.Extract(prefs::kKeyboardSettingSixPackKeyRemappings);
+      if (six_pack_key_remappings_dict.has_value()) {
+        existing_settings_dict->Set(prefs::kKeyboardSettingSixPackKeyRemappings,
+                                    std::move(*six_pack_key_remappings_dict));
+      }
+    }
+
   } else {
     devices_dict.Set(keyboard.device_key, std::move(settings_dict));
   }
@@ -324,6 +447,11 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
   if (settings_dict) {
     keyboard->settings =
         RetrieveKeyboardSettings(keyboard_policies, *keyboard, *settings_dict);
+    if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+      keyboard->settings->six_pack_key_remappings =
+          RetrieveSixPackRemappings(pref_service, *settings_dict);
+    }
+
   } else if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
                  InputDeviceTracker::InputDeviceCategory::kKeyboard,
                  keyboard->device_key)) {
@@ -374,6 +502,10 @@ void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
   } else {
     keyboard->settings = GetKeyboardSettingsFromOldLocalStatePrefs(
         local_state, account_id, keyboard_policies, *keyboard);
+  }
+
+  if (features::IsAltClickAndSixPackCustomizationEnabled()) {
+    keyboard->settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   }
 }
 

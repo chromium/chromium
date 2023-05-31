@@ -6,6 +6,7 @@ import * as InputDeviceSettingsTypes from '../mojom-webui/input_device_settings.
 import * as InputDeviceSettingsProviderTypes from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as ModifierKeyTypes from '../mojom-webui/modifier_key.mojom-webui.js';
 import * as SimulateRightClickModifierTypes from '../mojom-webui/simulate_right_click_modifier.mojom-webui.js';
+import * as SixPackShortcutModifierTypes from '../mojom-webui/six_pack_shortcut_modifier.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -21,6 +22,13 @@ export type SimulateRightClickModifier =
     SimulateRightClickModifierTypes.SimulateRightClickModifier;
 export const SimulateRightClickModifier =
     SimulateRightClickModifierTypes.SimulateRightClickModifier;
+
+export type SixPackShortcutModifier =
+    SixPackShortcutModifierTypes.SixPackShortcutModifier;
+export const SixPackShortcutModifier =
+    SixPackShortcutModifierTypes.SixPackShortcutModifier;
+
+export type SixPackKeyInfo = InputDeviceSettingsTypes.SixPackKeyInfo;
 
 export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;

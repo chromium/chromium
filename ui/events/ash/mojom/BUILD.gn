@@ -13,5 +13,6 @@ mojom("mojom") {
   sources = [
     "modifier_key.mojom",
     "simulate_right_click_modifier.mojom",
+    "six_pack_shortcut_modifier.mojom",
   ]
 }
