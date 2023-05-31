@@ -56,13 +56,6 @@ using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
 using content::WebContents;
 
-// Killswitch for removing the "share this tab instead" button for self-capture,
-// in those special circumstances where it was recently allowed.
-// TODO(crbug.com/1395477): Remove this.
-BASE_FEATURE(kShareThisTabInsteadSelfCapture,
-             "ShareThisTabInsteadSelfCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for bypassing the new logic for fixing tab-sharing indicators
 // for guest mode, in case an unexpected bug is discovered.
 // TODO(crbug.com/1443411): Remove this.
@@ -647,8 +640,7 @@ bool TabSharingUIViews::IsShareInsteadButtonPossible(
   // Note that for many applications, choosing the current tab is undesirable.
   // For example, in the context of video-conferencing applications, it would
   // often produce a "hall of mirrors" effect.
-  return base::FeatureList::IsEnabled(kShareThisTabInsteadSelfCapture) &&
-         app_preferred_current_tab_;
+  return app_preferred_current_tab_;
 }
 
 bool TabSharingUIViews::IsCapturableByCapturer(const Profile* profile) const {
