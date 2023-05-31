@@ -156,8 +156,7 @@ std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
     return std::u16string();
   }
 
-  const MenuItemView* root_menu_item = GetRootMenuItem();
-  if (root_menu_item->canceled_) {
+  if (GetRootMenuItem()->canceled_) {
     // TODO(sky): if |canceled_| is true, controller->exit_type() should be
     // something other than ExitType::kNone, but crash reports seem to indicate
     // otherwise. Figure out why this is needed.
@@ -579,8 +578,9 @@ int MenuItemView::GetHeightForWidth(int width) const {
 
   const gfx::Insets margins = GetContainerMargins();
   int height = children().front()->GetHeightForWidth(width - margins.width());
-  if (!icon_view_ && GetRootMenuItem()->has_icons())
+  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
     height = std::max(height, MenuConfig::instance().check_height);
+  }
 
   height += margins.height();
 
@@ -1222,8 +1222,7 @@ void MenuItemView::DestroyAllMenuHosts() {
 int MenuItemView::GetTopMargin() const {
   int margin = top_margin_;
   if (margin < 0) {
-    const MenuItemView* root = GetRootMenuItem();
-    margin = root && root->has_icons_
+    margin = GetRootMenuItem()->has_icons_
                  ? MenuConfig::instance().item_top_margin
                  : MenuConfig::instance().item_no_icon_top_margin;
   }
@@ -1234,8 +1233,7 @@ int MenuItemView::GetTopMargin() const {
 int MenuItemView::GetBottomMargin() const {
   int margin = bottom_margin_;
   if (margin < 0) {
-    const MenuItemView* root = GetRootMenuItem();
-    margin = root && root->has_icons_
+    margin = GetRootMenuItem()->has_icons_
                  ? MenuConfig::instance().item_bottom_margin
                  : MenuConfig::instance().item_no_icon_bottom_margin;
   }
@@ -1308,7 +1306,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   dimensions.height = child_size.height();
   // Adjust item content height if menu has both items with and without icons.
   // This way all menu items will have the same height.
-  if (!icon_view_ && GetRootMenuItem()->has_icons()) {
+  if (!icon_view_ && GetRootMenuItem()->has_icons_) {
     dimensions.height =
         std::max(dimensions.height, MenuConfig::instance().check_height);
   }
@@ -1464,10 +1462,9 @@ int MenuItemView::GetMaxIconViewWidth() const {
       // alignment of other items.
       return 0;
     }
-    if (item->HasSubmenu()) {
-      return item->GetMaxIconViewWidth();
-    }
-    return item->icon_view_ ? item->icon_view_->GetPreferredSize().width() : 0;
+    return std::max(
+        item->icon_view_ ? item->icon_view_->GetPreferredSize().width() : 0,
+        item->HasSubmenu() ? item->GetMaxIconViewWidth() : 0);
   });
   return base::ranges::max(widths);
 }
