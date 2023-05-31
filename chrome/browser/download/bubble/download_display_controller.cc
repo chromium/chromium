@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
@@ -85,7 +86,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
   }
 
   UpdateButtonStateFromAllModelsInfo();
-  if (display_->IsFullscreenWithParentViewHidden()) {
+  if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
     ExclusiveAccessContext* exclusive_access_context =
         browser_->exclusive_access_manager()->context();
@@ -113,10 +114,14 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
   }
   if (will_show_details && display_->IsFullscreenWithParentViewHidden()) {
-    // Suppress the complete event for now because the parent view is
-    // hidden.
-    details_shown_while_fullscreen_ = true;
-    will_show_details = false;
+    // If we would show the details, but the user is in fullscreen (and is
+    // capable of exiting), we should instead show the details once the user
+    // exits fullscreen.
+    should_show_details_on_exit_fullscreen_ =
+        display_->ShouldShowExclusiveAccessBubble();
+    // Show the details if we are in immersive fullscreen.
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    will_show_details = browser_view && browser_view->IsImmersiveModeEnabled();
   }
   if (will_show_details) {
     display_->ShowDetails();
@@ -174,7 +179,8 @@ void DownloadDisplayController::ListenToFullScreenChanges() {
 }
 
 void DownloadDisplayController::OnFullscreenStateChanged() {
-  if ((!fullscreen_notification_shown_ && !details_shown_while_fullscreen_) ||
+  if ((!fullscreen_notification_shown_ &&
+       !should_show_details_on_exit_fullscreen_) ||
       display_->IsFullscreenWithParentViewHidden()) {
     return;
   }
@@ -182,9 +188,9 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
 
   UpdateButtonStateFromAllModelsInfo();
   if (download::ShouldShowDownloadBubble(browser_->profile()) &&
-      details_shown_while_fullscreen_) {
+      should_show_details_on_exit_fullscreen_) {
     display_->ShowDetails();
-    details_shown_while_fullscreen_ = false;
+    should_show_details_on_exit_fullscreen_ = false;
   }
 }
 
@@ -211,7 +217,7 @@ void DownloadDisplayController::UpdateToolbarButtonState(
         info.has_unactioned;
     bool exited_fullscreen_owed_details =
         !display_->IsFullscreenWithParentViewHidden() &&
-        details_shown_while_fullscreen_;
+        should_show_details_on_exit_fullscreen_;
     if (complete_unactioned || exited_fullscreen_owed_details) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);

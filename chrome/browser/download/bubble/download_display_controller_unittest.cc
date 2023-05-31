@@ -90,10 +90,17 @@ class FakeDownloadDisplay : public DownloadDisplay {
   void HideDetails() override { detail_shown_ = false; }
   bool IsShowingDetails() override { return detail_shown_; }
   bool IsFullscreenWithParentViewHidden() override { return is_fullscreen_; }
+  bool ShouldShowExclusiveAccessBubble() override {
+    return IsFullscreenWithParentViewHidden() &&
+           should_show_exclusive_access_bubble_;
+  }
 
   DownloadIconState GetDownloadIconState() { return icon_state_; }
   bool IsActive() { return is_active_; }
   void SetIsFullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
+  void SetShouldShowExclusiveAccessBubble(bool show) {
+    should_show_exclusive_access_bubble_ = show;
+  }
 
  private:
   bool shown_ = false;
@@ -102,6 +109,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   bool is_active_ = false;
   bool detail_shown_ = false;
   bool is_fullscreen_ = false;
+  bool should_show_exclusive_access_bubble_ = true;
   raw_ptr<DownloadDisplayController> controller_ = nullptr;
 };
 
@@ -978,6 +986,41 @@ TEST_F(DownloadDisplayControllerTest,
 
   task_environment_.FastForwardBy(base::Minutes(1));
   // The display is still showing but the state has changed to inactive.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+}
+
+// Test the path where the exclusive access bubble should not be shown (e.g. in
+// kiosk mode or in immersive fullscreen).
+TEST_F(DownloadDisplayControllerTest,
+       Fullscreen_ShouldNotShowExclusiveAccessBubble) {
+  display().SetIsFullscreen(true);
+  display().SetShouldShowExclusiveAccessBubble(false);
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE,
+                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  // While the bubble does not pop up, and the toolbar not shown, the icon
+  // state is still updated. So |is_active| should be true for one minute
+  // after completed download.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
+
+  task_environment_.FastForwardBy(base::Minutes(1));
+  // The display is still showing but the state has changed to inactive.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  display().SetIsFullscreen(false);
+  controller().OnFullscreenStateChanged();
+  // On exiting full screen, the details were not shown.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));

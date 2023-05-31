@@ -11,6 +11,7 @@
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -54,7 +55,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
       delete;
   ~DownloadToolbarButtonView() override;
 
-  // DownloadsDisplay implementation.
+  // DownloadDisplay implementation.
   void Show() override;
   void Hide() override;
   bool IsShowing() override;
@@ -65,6 +66,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void HideDetails() override;
   bool IsShowingDetails() override;
   bool IsFullscreenWithParentViewHidden() override;
+  bool ShouldShowExclusiveAccessBubble() override;
 
   // ToolbarButton:
   void UpdateIcon() override;
@@ -184,6 +186,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
   absl::optional<SkColor> icon_color_;
 
   gfx::SlideAnimation scanning_animation_{this};
+
+  // Used for holding the top views visible while the download bubble is showing
+  // in immersive mode on ChromeOS and Mac.
+  std::unique_ptr<ImmersiveRevealedLock> immersive_revealed_lock_;
 
   base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };
