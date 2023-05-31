@@ -175,6 +175,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kErrorSilentMediationFailure:
+    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -205,6 +206,7 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
+    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
@@ -615,6 +617,8 @@ void FederatedAuthRequestImpl::RequestToken(
       break;
     case FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED:
       error_token_status = TokenStatus::kThirdPartyCookiesBlocked;
+      request_result =
+          FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked;
       break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       error_token_status = TokenStatus::kDisabledInSettings;

@@ -254,6 +254,9 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
       return FederatedAuthRequestIssueReasonEnum::SilentMediationFailure;
     }
+    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked: {
+      return FederatedAuthRequestIssueReasonEnum::ThirdPartyCookiesBlocked;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       DCHECK(false);
       return "";

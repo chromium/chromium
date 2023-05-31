@@ -2494,7 +2494,7 @@ TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kError},
+      {FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked},
       /*standalone_console_messages=*/{},
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
