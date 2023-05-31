@@ -5049,6 +5049,21 @@
             ]
         }
     ],
+    "EnableADPFScrollBoost": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230530",
+                    "enable_features": [
+                        "EnableADPFScrollBoost"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCrossSiteFlagNetworkIsolationKey": [
         {
             "platforms": [
