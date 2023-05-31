@@ -38,6 +38,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -195,7 +198,10 @@ enum class PrerenderPredictionResult {
 };
 
 // These are used as control the behavior of kBookmarkTriggerForPrerender2.
-const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliSeconds{
+const base::FeatureParam<int> kPreconnectStartDelayOnMouseHoverByMiliseconds{
+    &features::kBookmarkTriggerForPrerender2,
+    "preconnect_start_delay_on_mouse_hover_ms", 100};
+const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliseconds{
     &features::kBookmarkTriggerForPrerender2,
     "prerender_start_delay_on_mouse_hover_ms", 300};
 const base::FeatureParam<bool> kPrerenderBookmarkBarOnMousePressedTrigger{
@@ -380,10 +386,9 @@ class BookmarkButton : public BookmarkButtonBase {
       preloading_timer_.Start(
           FROM_HERE,
           base::Milliseconds(
-              kPrerenderStartDelayOnMouseHoverByMiliSeconds.Get()),
-          base::BindRepeating(
-              &BookmarkButton::StartPrerendering, base::Unretained(this),
-              chrome_preloading_predictor::kMouseHoverOnBookmarkBar, *url_));
+              kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
+          base::BindRepeating(&BookmarkButton::StartPreconnecting,
+                              base::Unretained(this), *url_));
     }
   }
 
@@ -439,6 +444,39 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
  private:
+  void StartPreconnecting(GURL url) {
+    CHECK(
+        base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
+    if (prerender_handle_) {
+      return;
+    }
+
+    // Directly start prerendering to avoid timer overhead.
+    if (kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
+            kPreconnectStartDelayOnMouseHoverByMiliseconds.Get() <=
+        0) {
+      StartPrerendering(chrome_preloading_predictor::kMouseHoverOnBookmarkBar,
+                        url);
+    } else {
+      auto* loading_predictor =
+          predictors::LoadingPredictorFactory::GetForProfile(
+              browser_->profile());
+      if (loading_predictor) {
+        loading_predictor->PrepareForPageLoad(
+            url, predictors::HintOrigin::BOOKMARK_BAR, true);
+      }
+
+      preloading_timer_.Start(
+          FROM_HERE,
+          base::Milliseconds(
+              kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
+              kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
+          base::BindRepeating(
+              &BookmarkButton::StartPrerendering, base::Unretained(this),
+              chrome_preloading_predictor::kMouseHoverOnBookmarkBar, url));
+    }
+  }
+
   void StartPrerendering(content::PreloadingPredictor predictor, GURL url) {
     // TODO(https://crbug.com/1422819): Prerender only for https scheme, and add
     // an enum metric to report the protocol scheme.

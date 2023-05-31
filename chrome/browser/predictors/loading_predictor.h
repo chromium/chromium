@@ -151,6 +151,10 @@ class LoadingPredictor : public KeyedService,
   // indicates if preconnect is possible.
   void HandleOmniboxHint(const GURL& url, bool preconnectable);
 
+  // May start a preconnect or a preresolve for |url|. |preconnectable|
+  // indicates if preconnect is possible.
+  void HandleBookmarkBarHint(const GURL& url, bool preconnectable);
+
   // For testing.
   void set_mock_resource_prefetch_predictor(
       std::unique_ptr<ResourcePrefetchPredictor> predictor) {
@@ -185,6 +189,10 @@ class LoadingPredictor : public KeyedService,
   url::Origin last_omnibox_origin_;
   base::TimeTicks last_omnibox_preconnect_time_;
   base::TimeTicks last_omnibox_preresolve_time_;
+
+  url::Origin last_bookmark_bar_origin_;
+  base::TimeTicks last_bookmark_bar_preconnect_time_;
+  base::TimeTicks last_bookmark_bar_preresolve_time_;
 
   friend class LoadingPredictorTest;
   friend class LoadingPredictorPreconnectTest;

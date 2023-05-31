@@ -50,6 +50,9 @@ enum class HintOrigin {
 
   // Triggered by optimization guide.
   OPTIMIZATION_GUIDE,
+
+  // Triggered by bookmark bar.
+  BOOKMARK_BAR,
 };
 
 // Gets the string that can be used to record histograms for the hint origin.
