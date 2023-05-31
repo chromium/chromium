@@ -119,8 +119,6 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
             [&](SQLitePersistentSharedDictionaryStore::
                     RegisterDictionaryResultOrError result) {
               ASSERT_TRUE(result.has_value());
-              ASSERT_TRUE(result.value().primary_key_in_database);
-              ASSERT_TRUE(result.value().total_dictionary_size);
               result_out = result.value();
               run_loop.Quit();
             }));
@@ -314,11 +312,11 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, SingleDictionary) {
   auto register_dictionary_result =
       RegisterDictionary(isolation_key_, dictionary_info_);
   EXPECT_EQ(dictionary_info_.size(),
-            *register_dictionary_result.total_dictionary_size);
+            register_dictionary_result.total_dictionary_size);
 
   SharedDictionaryInfo expected_info = dictionary_info_;
   expected_info.set_primary_key_in_database(
-      *register_dictionary_result.primary_key_in_database);
+      register_dictionary_result.primary_key_in_database);
 
   EXPECT_EQ(dictionary_info_.size(), GetTotalDictionarySize());
   EXPECT_THAT(GetDictionaries(isolation_key_),
@@ -345,24 +343,24 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
   auto register_dictionary_result1 =
       RegisterDictionary(isolation_key1, dictionary_info1);
   EXPECT_EQ(dictionary_info1.size(),
-            *register_dictionary_result1.total_dictionary_size);
+            register_dictionary_result1.total_dictionary_size);
   auto register_dictionary_result2 =
       RegisterDictionary(isolation_key2, dictionary_info2);
 
-  EXPECT_NE(*register_dictionary_result1.primary_key_in_database,
-            *register_dictionary_result2.primary_key_in_database);
+  EXPECT_NE(register_dictionary_result1.primary_key_in_database,
+            register_dictionary_result2.primary_key_in_database);
 
   SharedDictionaryInfo expected_info1 = dictionary_info1;
   SharedDictionaryInfo expected_info2 = dictionary_info2;
   expected_info1.set_primary_key_in_database(
-      *register_dictionary_result1.primary_key_in_database);
+      register_dictionary_result1.primary_key_in_database);
   expected_info2.set_primary_key_in_database(
-      *register_dictionary_result2.primary_key_in_database);
+      register_dictionary_result2.primary_key_in_database);
 
   if (isolation_key1 == isolation_key2) {
     if (expect_merged) {
       EXPECT_EQ(dictionary_info2.size(),
-                *register_dictionary_result2.total_dictionary_size);
+                register_dictionary_result2.total_dictionary_size);
       EXPECT_THAT(GetDictionaries(isolation_key1),
                   ElementsAreArray({expected_info2}));
       EXPECT_THAT(GetAllDictionaries(),
@@ -375,7 +373,7 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
           *register_dictionary_result2.disk_cache_key_token_to_be_removed);
     } else {
       EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
-                *register_dictionary_result2.total_dictionary_size);
+                register_dictionary_result2.total_dictionary_size);
       EXPECT_THAT(GetDictionaries(isolation_key1),
                   UnorderedElementsAreArray({expected_info1, expected_info2}));
       EXPECT_THAT(GetAllDictionaries(),
@@ -385,7 +383,7 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
     }
   } else {
     EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
-              *register_dictionary_result2.total_dictionary_size);
+              register_dictionary_result2.total_dictionary_size);
     EXPECT_THAT(GetDictionaries(isolation_key1),
                 ElementsAreArray({expected_info1}));
     EXPECT_THAT(GetDictionaries(isolation_key2),
@@ -935,7 +933,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
       RegisterDictionary(isolation_key_, dictionary_info_);
   SharedDictionaryInfo expected_info = dictionary_info_;
   expected_info.set_primary_key_in_database(
-      *register_dictionary_result.primary_key_in_database);
+      register_dictionary_result.primary_key_in_database);
   EXPECT_THAT(GetDictionaries(isolation_key_),
               ElementsAreArray({expected_info}));
   DestroyStore();
@@ -953,7 +951,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidToken) {
       RegisterDictionary(isolation_key_, dictionary_info_);
   SharedDictionaryInfo expected_info = dictionary_info_;
   expected_info.set_primary_key_in_database(
-      *register_dictionary_result.primary_key_in_database);
+      register_dictionary_result.primary_key_in_database);
   EXPECT_THAT(GetDictionaries(isolation_key_),
               ElementsAreArray({expected_info}));
   DestroyStore();
@@ -1065,7 +1063,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*disk_cache_key_token=*/token1,
       /*primary_key_in_database=*/absl::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
-  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
@@ -1077,7 +1075,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*disk_cache_key_token=*/token2,
       /*primary_key_in_database=*/absl::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
-  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
 
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 = SharedDictionaryInfo(
@@ -1089,7 +1087,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*disk_cache_key_token=*/token3,
       /*primary_key_in_database=*/absl::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
-  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
 
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 = SharedDictionaryInfo(
@@ -1101,7 +1099,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
       /*disk_cache_key_token=*/token4,
       /*primary_key_in_database=*/absl::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
-  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
 
   // No matching dictionaries to be deleted.
   EXPECT_TRUE(ClearDictionaries(base::Time::Now() - base::Seconds(200),
@@ -1141,7 +1139,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*disk_cache_key_token=*/token1,
       /*primary_key_in_database=*/absl::nullopt);
   auto result1 = RegisterDictionary(isolation_key1, dict1);
-  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
 
   auto isolation_key2 =
       CreateIsolationKey("https://b1.example/", "https://b2.example/");
@@ -1155,7 +1153,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*disk_cache_key_token=*/token2,
       /*primary_key_in_database=*/absl::nullopt);
   auto result2 = RegisterDictionary(isolation_key2, dict2);
-  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
 
   auto isolation_key3 =
       CreateIsolationKey("https://c1.example/", "https://c2.example/");
@@ -1169,7 +1167,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*disk_cache_key_token=*/token3,
       /*primary_key_in_database=*/absl::nullopt);
   auto result3 = RegisterDictionary(isolation_key3, dict3);
-  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
 
   auto isolation_key4 =
       CreateIsolationKey("https://d1.example/", "https://d2.example/");
@@ -1183,7 +1181,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       /*disk_cache_key_token=*/token4,
       /*primary_key_in_database=*/absl::nullopt);
   auto result4 = RegisterDictionary(isolation_key4, dict4);
-  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
 
   // No matching dictionaries to be deleted.
   EXPECT_TRUE(ClearDictionaries(base::Time::Now() - base::Seconds(200),
@@ -1245,7 +1243,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*disk_cache_key_token=*/token1,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
-  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
@@ -1257,7 +1255,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*disk_cache_key_token=*/token2,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
-  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
 
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 =
@@ -1269,7 +1267,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*disk_cache_key_token=*/token3,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
-  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
 
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 =
@@ -1281,7 +1279,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
                            /*disk_cache_key_token=*/token4,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
-  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
 
   // No matching dictionaries to be deleted.
   EXPECT_TRUE(DeleteExpiredDictionaries(now + base::Seconds(99)).empty());
@@ -1313,7 +1311,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
                            /*disk_cache_key_token=*/token1,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
-  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
@@ -1325,7 +1323,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
                            /*disk_cache_key_token=*/token2,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
-  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
 
   auto token3 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict3 =
@@ -1337,7 +1335,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
                            /*disk_cache_key_token=*/token3,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result3 = RegisterDictionary(isolation_key_, dict3);
-  dict3.set_primary_key_in_database(*result3.primary_key_in_database);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
 
   auto token4 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict4 =
@@ -1349,7 +1347,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEviction) {
                            /*disk_cache_key_token=*/token4,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result4 = RegisterDictionary(isolation_key_, dict4);
-  dict4.set_primary_key_in_database(*result4.primary_key_in_database);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
 
   store_->UpdateDictionaryLastUsedTime(*dict2.primary_key_in_database(),
                                        now + base::Seconds(4));
@@ -1398,7 +1396,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
                            /*disk_cache_key_token=*/token1,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result1 = RegisterDictionary(isolation_key_, dict1);
-  dict1.set_primary_key_in_database(*result1.primary_key_in_database);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 =
@@ -1410,7 +1408,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
                            /*disk_cache_key_token=*/token2,
                            /*primary_key_in_database=*/absl::nullopt);
   auto result2 = RegisterDictionary(isolation_key_, dict2);
-  dict2.set_primary_key_in_database(*result2.primary_key_in_database);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
 
   // The current status:
   //   dict1: size=1000 last_used_time=now
@@ -1447,7 +1445,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   FastForwardBy(base::Seconds(1));
   base::Time updated_last_used_time = base::Time::Now();
   store_->UpdateDictionaryLastUsedTime(
-      *register_dictionary_result.primary_key_in_database,
+      register_dictionary_result.primary_key_in_database,
       updated_last_used_time);
 
   std::vector<SharedDictionaryInfo> dicts3 = GetDictionaries(isolation_key_);
@@ -1466,7 +1464,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
     FastForwardBy(base::Milliseconds(10));
     updated_last_used_time = base::Time::Now();
     store_->UpdateDictionaryLastUsedTime(
-        *register_dictionary_result.primary_key_in_database,
+        register_dictionary_result.primary_key_in_database,
         updated_last_used_time);
   }
 

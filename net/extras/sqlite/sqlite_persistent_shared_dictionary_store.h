@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     kFailedToSetTotalDictSize,
   };
   struct RegisterDictionaryResult {
-    absl::optional<int64_t> primary_key_in_database;
+    int64_t primary_key_in_database;
     absl::optional<base::UnguessableToken> disk_cache_key_token_to_be_removed;
-    absl::optional<uint64_t> total_dictionary_size;
+    uint64_t total_dictionary_size;
   };
 
   using RegisterDictionaryResultOrError =

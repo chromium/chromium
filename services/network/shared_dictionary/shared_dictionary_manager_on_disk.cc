@@ -190,8 +190,7 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
   base::UmaHistogramCustomCounts(
       "Net.SharedDictionaryManagerOnDisk.DictionarySize", info.size(), 1,
       100000000, 50);
-  CHECK(result.value().primary_key_in_database.has_value());
-  info.set_primary_key_in_database(*result.value().primary_key_in_database);
+  info.set_primary_key_in_database(result.value().primary_key_in_database);
   if (result.value().disk_cache_key_token_to_be_removed) {
     disk_cache_.DoomEntry(
         result.value().disk_cache_key_token_to_be_removed->ToString(),
