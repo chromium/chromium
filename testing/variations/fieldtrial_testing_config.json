@@ -738,39 +738,6 @@
             ]
         }
     ],
-    "ArcVmMemorySize": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "RAM",
-                    "params": {
-                        "critical_kib": "322560",
-                        "moderate_kib": "0",
-                        "reclaim_kib": "322560",
-                        "shift_mib": "0"
-                    },
-                    "enable_features": [
-                        "ArcVmMemorySize"
-                    ]
-                },
-                {
-                    "name": "RAM - 512",
-                    "params": {
-                        "critical_kib": "322560",
-                        "moderate_kib": "0",
-                        "reclaim_kib": "322560",
-                        "shift_mib": "-512"
-                    },
-                    "enable_features": [
-                        "ArcVmMemorySize"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmMemoryTrimOnGuest": [
         {
             "platforms": [
@@ -778,15 +745,17 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithGuestReclaim",
+                    "name": "EnabledWithGuestReclaim_20230511",
                     "params": {
                         "guest_reclaim_enabled": "true",
                         "guest_reclaim_only_anonymous": "false",
+                        "shift_mib": "-1536",
                         "size": "268435456"
                     },
                     "enable_features": [
                         "ArcGuestZram",
-                        "ArcLockGuestMemory"
+                        "ArcLockGuestMemory",
+                        "ArcVmMemorySize"
                     ]
                 }
             ]
