@@ -6780,8 +6780,6 @@ crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenc
 # Sheriff 2023-05-26
 crbug.com/1448255 [ Linux ] virtual/netinfo-constant-type/netinfo/multiple-frames.html [ Failure Pass ]
 
-crbug.com/1449347 http/tests/devtools/persistence/persistence-sync-content-nodejs.js [ Failure Pass ]
-
 # Sheriff 2023-05-29
 crbug.com/1449192 [ Mac12 ] virtual/text-antialias/font-features/caps-native-synthesis.html [ Failure Pass ]
 crbug.com/1449192 [ Mac12 ] virtual/text-antialias/font-initial.html [ Failure Pass ]
