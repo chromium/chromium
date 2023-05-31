@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -32,12 +31,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
-#include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
@@ -46,9 +45,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -56,7 +52,6 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
@@ -64,10 +59,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -82,10 +73,6 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 // DlpFilesEventStorage.
 // TODO(crbug.com/1366299): determine the value to use.
 constexpr size_t kEntriesLimit = 100;
-
-constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
-constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
-constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
 
 // FileSystemContext instance set for testing.
 storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
@@ -296,49 +283,6 @@ class RootsRecursionDelegate {
   base::WeakPtrFactory<RootsRecursionDelegate> weak_ptr_factory_{this};
 };
 
-// Returns an instance of NotificationDisplayService for the primary profile.
-NotificationDisplayService* GetNotificationDisplayService() {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
-  auto* display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile);
-  DCHECK(display_service);
-  return display_service;
-}
-
-// Opens DLP Learn more link and closes the notification having
-// `notification_id`.
-void OnLearnMoreButtonClicked(const std::string& notification_id,
-                              absl::optional<int> button_index) {
-  if (!button_index || button_index.value() != 0) {
-    return;
-  }
-
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(dlp::kDlpLearnMoreUrl),
-      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-
-  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-                                         notification_id);
-}
-
-// Shows a system notification having `notification_id`, `title`, and `message`.
-void ShowNotification(const std::string& notification_id,
-                      const std::u16string& title,
-                      const std::u16string& message) {
-  auto notification = file_manager::CreateSystemNotification(
-      notification_id, std::move(title), std::move(message),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&OnLearnMoreButtonClicked, notification_id)));
-  notification->set_buttons(
-      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
-
-  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
-                                           *notification,
-                                           /*metadata=*/nullptr);
-}
-
 // Converts files paths to file system URLs.
 std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
     const std::vector<base::FilePath>& files_paths) {
@@ -393,6 +337,23 @@ DlpFileDestination DTEndpointToFileDestination(
   }
 }
 
+// Shows DLP block desktop notification.
+void ShowDlpBlockNotification(dlp::FileAction action,
+                              std::vector<base::FilePath> blocked_files) {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  CHECK(profile);
+
+  auto* fpnm =
+      FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
+  if (!fpnm) {
+    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                  "can't show policy block UI";
+    return;
+  }
+
+  fpnm->ShowDlpBlockNotification(action, std::move(blocked_files));
+}
+
 }  // namespace
 
 DlpFilesControllerAsh::DlpFileMetadata::DlpFileMetadata(
@@ -424,7 +385,6 @@ DlpFilesControllerAsh::FileDaemonInfo::FileDaemonInfo(
 DlpFilesControllerAsh::DlpFilesControllerAsh(
     const DlpRulesManager& rules_manager)
     : DlpFilesController(rules_manager),
-      warn_notifier_(std::make_unique<DlpWarnNotifier>()),
       event_storage_(std::make_unique<DlpFilesEventStorage>(kCooldownTimeout,
                                                             kEntriesLimit)) {}
 
@@ -580,20 +540,17 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
              const std::vector<std::pair<
                  FileDaemonInfo, ::dlp::RestrictionLevel>>& files_levels) {
             bool is_allowed = true;
+            base::FilePath file_path;
             for (const auto& [file, level] : files_levels) {
               if (level == ::dlp::RestrictionLevel::LEVEL_BLOCK ||
                   level == ::dlp::RestrictionLevel::LEVEL_WARN_CANCEL) {
                 is_allowed = false;
+                file_path = file.path;
                 break;
               }
             }
             if (!is_allowed) {
-              ShowNotification(
-                  kDownloadBlockedNotificationId,
-                  l10n_util::GetStringUTF16(
-                      IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE),
-                  l10n_util::GetStringUTF16(
-                      IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE));
+              ShowDlpBlockNotification(dlp::FileAction::kDownload, {file_path});
             }
             std::move(result_callback).Run(is_allowed);
           },
@@ -777,12 +734,15 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     return;
   }
 
-  if (warn_dialog_widget_ && !warn_dialog_widget_->IsClosed()) {
-    warn_dialog_widget_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
+  auto* fpnm =
+      FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
+  if (!fpnm) {
+    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                  "can't show policy warning UI";
+    return;
   }
 
-  warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
+  fpnm->ShowDlpWarning(
       base::BindOnce(&DlpFilesControllerAsh::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(files_levels),
                      std::move(warned_files), std::move(warned_source_patterns),
@@ -924,12 +884,6 @@ void DlpFilesControllerAsh::CheckIfDropAllowed(
                      base::Unretained(roots_recursion_delegate)));
 }
 
-void DlpFilesControllerAsh::SetWarnNotifierForTesting(
-    std::unique_ptr<DlpWarnNotifier> warn_notifier) {
-  DCHECK(warn_notifier);
-  warn_notifier_ = std::move(warn_notifier);
-}
-
 DlpFilesEventStorage* DlpFilesControllerAsh::GetEventStorageForTesting() {
   return event_storage_.get();
 }
@@ -937,10 +891,6 @@ DlpFilesEventStorage* DlpFilesControllerAsh::GetEventStorageForTesting() {
 void DlpFilesControllerAsh::SetFileSystemContextForTesting(
     storage::FileSystemContext* file_system_context) {
   g_file_system_context_for_testing = file_system_context;
-}
-
-base::WeakPtr<views::Widget> DlpFilesControllerAsh::GetWarnDialogForTesting() {
-  return warn_dialog_widget_;
 }
 
 // Maps |file_path| to data_controls::Component if possible.
@@ -1020,8 +970,6 @@ void DlpFilesControllerAsh::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
-  MaybeCloseDialog(response);
-
   std::vector<storage::FileSystemURL> restricted_files;
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
@@ -1043,38 +991,31 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
     std::vector<ui::SelectedFileInfo> selected_files,
     FilterDisallowedUploadsCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
-  MaybeCloseDialog(response);
-
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
-  std::set<base::FilePath> restricted_files(response.files_paths().begin(),
-                                            response.files_paths().end());
-  if (!restricted_files.empty()) {
-    ShowNotification(
-        kUploadBlockedNotificationId,
-        l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE),
-        l10n_util::GetPluralStringFUTF16(
-            IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE,
-            // TODO(b/261575072): What's the correct number to show if multiple
-            // folders are uploaded?
-            restricted_files.size()));
-  }
 
-  // If any of the selected files/folders is restricted or contains a restricted
-  // file, it'll be removed.
-  base::EraseIf(
-      selected_files,
-      [&restricted_files](const ui::SelectedFileInfo& selected_file) -> bool {
-        return base::ranges::any_of(
-            restricted_files, [&](const base::FilePath& restricted_file) {
-              return selected_file.file_path == restricted_file ||
-                     selected_file.file_path.IsParent(restricted_file);
-            });
-      });
+  if (!response.files_paths().empty()) {
+    std::vector<base::FilePath> restricted_files(response.files_paths().begin(),
+                                                 response.files_paths().end());
+    // If any of the selected files/folders is restricted or contains a
+    // restricted file, it'll be removed.
+    base::EraseIf(
+        selected_files,
+        [&restricted_files](const ui::SelectedFileInfo& selected_file) -> bool {
+          return base::ranges::any_of(
+              restricted_files, [&](const base::FilePath& restricted_file) {
+                return selected_file.file_path == restricted_file ||
+                       selected_file.file_path.IsParent(restricted_file);
+              });
+        });
+
+    ShowDlpBlockNotification(dlp::FileAction::kUpload,
+                             std::move(restricted_files));
+  }
 
   std::move(result_callback).Run(std::move(selected_files));
 }
@@ -1163,24 +1104,10 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
     return;
   }
 
-  if (action == dlp::FileAction::kOpen) {
-    ShowNotification(
-        kOpenBlockedNotificationId,
-        l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE),
-        l10n_util::GetPluralStringFUTF16(
-            IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE,
-            response.files_paths().size()));
-    std::move(result_callback).Run(/*is_allowed=*/false);
-    return;
-  }
-
-  if (action == dlp::FileAction::kMove) {
-    // TODO(b/269609831): Show correct notification here.
-    std::move(result_callback).Run(/*is_allowed=*/false);
-    return;
-  }
-
-  NOTREACHED();
+  std::vector<base::FilePath> blocked_files(response.files_paths().begin(),
+                                            response.files_paths().end());
+  ShowDlpBlockNotification(action, std::move(blocked_files));
+  std::move(result_callback).Run(/*is_allowed=*/false);
 }
 
 void DlpFilesControllerAsh::MaybeReportEvent(
@@ -1231,15 +1158,6 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     event_builder->SetDestinationComponent(dst.component().value());
   }
   reporting_manager->ReportEvent(event_builder->Create());
-}
-
-void DlpFilesControllerAsh::MaybeCloseDialog(
-    ::dlp::CheckFilesTransferResponse response) {
-  if (response.has_error_message() && warn_dialog_widget_ &&
-      !warn_dialog_widget_->IsClosed()) {
-    warn_dialog_widget_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
-  }
 }
 
 void DlpFilesControllerAsh::ContinueGetDisallowedTransfers(

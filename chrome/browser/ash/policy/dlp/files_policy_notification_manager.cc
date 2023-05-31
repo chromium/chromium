@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -19,13 +21,25 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "storage/browser/file_system/file_system_url.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace policy {
+namespace {
+
+constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
+constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
+constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
+
+}  // namespace
 
 namespace {
 file_manager::io_task::IOTaskController* GetIOTaskController(
@@ -53,10 +67,78 @@ FilesPolicyNotificationManager::FilesPolicyNotificationManager(
                   "file_manager::io_task::IOTaskController";
     return;
   }
-  io_tasks_observation_.Observe(io_task_controller);
+  io_task_controller->AddObserver(this);
 }
 
 FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
+
+void FilesPolicyNotificationManager::ShowDlpWarning(
+    OnDlpRestrictionCheckedCallback callback,
+    const std::vector<DlpConfidentialFile>& confidential_files,
+    const DlpFileDestination& destination,
+    dlp::FileAction action) {
+  auto* widget = views::DialogDelegate::CreateDialogWidget(
+      std::make_unique<FilesPolicyWarnDialog>(std::move(callback),
+                                              std::move(confidential_files),
+                                              destination, action,
+                                              /*modal_parent=*/nullptr),
+      /*context=*/nullptr,
+      /*parent=*/nullptr);
+  widget->Show();
+  // TODO(ayaelattar): Timeout after total 5 minutes.
+}
+
+void FilesPolicyNotificationManager::ShowDlpBlockNotification(
+    dlp::FileAction action,
+    const std::vector<base::FilePath>& blocked_files) {
+  std::string notification_id;
+  std::u16string title;
+  std::u16string message;
+
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      notification_id = kDownloadBlockedNotificationId,
+      title =
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE);
+      // ignore `blocked_files.size()` for downloads.
+      message = l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE);
+      break;
+    case dlp::FileAction::kUpload:
+      notification_id = kUploadBlockedNotificationId,
+      title =
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE);
+      message = l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE, blocked_files.size());
+      break;
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      notification_id = kOpenBlockedNotificationId,
+      title = l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_OPEN_BLOCK_TITLE);
+      message = l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE, blocked_files.size());
+      break;
+    case dlp::FileAction::kCopy:
+    case dlp::FileAction::kMove:
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      // TODO(b/269609831): Show correct notification here.
+      return;
+  }
+  auto notification = file_manager::CreateSystemNotification(
+      notification_id, std::move(title), std::move(message),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &FilesPolicyNotificationManager::OnLearnMoreButtonClicked,
+              weak_factory_.GetWeakPtr(), notification_id)));
+  notification->set_buttons(
+      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
+
+  NotificationDisplayServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context_))
+      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
+                /*metadata=*/nullptr);
+}
 
 void FilesPolicyNotificationManager::ShowDialog(
     file_manager::io_task::IOTaskId task_id,
@@ -235,6 +317,34 @@ void FilesPolicyNotificationManager::OnWarningDialogClicked(
     io_task_controller->Resume(task_id, std::move(params));
   } else {
     io_task_controller->Cancel(task_id);
+  }
+}
+
+void FilesPolicyNotificationManager::OnLearnMoreButtonClicked(
+    const std::string& notification_id,
+    absl::optional<int> button_index) {
+  if (!button_index || button_index.value() != 0) {
+    return;
+  }
+
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(dlp::kDlpLearnMoreUrl),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+
+  NotificationDisplayServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(context_))
+      ->Close(NotificationHandler::Type::TRANSIENT, notification_id);
+}
+
+void FilesPolicyNotificationManager::Shutdown() {
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(Profile::FromBrowserContext(context_));
+  if (volume_manager) {
+    auto* io_task_controller = volume_manager->io_task_controller();
+    if (io_task_controller) {
+      io_task_controller->RemoveObserver(this);
+    }
   }
 }
 

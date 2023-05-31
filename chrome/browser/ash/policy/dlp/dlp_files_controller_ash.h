@@ -38,7 +38,6 @@ class Widget;
 
 namespace policy {
 
-class DlpWarnNotifier;
 class DlpFilesEventStorage;
 
 // DlpFilesControllerAsh is responsible for deciding whether file transfers are
@@ -191,15 +190,10 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const ui::DataTransferEndpoint* data_dst,
       CheckIfDlpAllowedCallback result_callback);
 
-  void SetWarnNotifierForTesting(
-      std::unique_ptr<DlpWarnNotifier> warn_notifier);
-
   DlpFilesEventStorage* GetEventStorageForTesting();
 
   void SetFileSystemContextForTesting(
       storage::FileSystemContext* file_system_context);
-
-  base::WeakPtr<views::Widget> GetWarnDialogForTesting();
 
  protected:
   absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
@@ -257,9 +251,6 @@ class DlpFilesControllerAsh : public DlpFilesController {
                         const DlpRulesManager::RuleMetadata& rule_metadata,
                         absl::optional<DlpRulesManager::Level> level);
 
-  // Closes warning dialog if `response` has error.
-  void MaybeCloseDialog(::dlp::CheckFilesTransferResponse response);
-
   // Called when `transferred_files` is ready. Constructs CheckFilesTransfer
   // request and forwards it to the dlp daemon.
   void ContinueGetDisallowedTransfers(
@@ -287,12 +278,6 @@ class DlpFilesControllerAsh : public DlpFilesController {
   absl::optional<data_controls::Component> MaybeGetComponent(
       Profile* profile,
       const DlpFileDestination& destination);
-
-  // Is used for creating and showing the warning dialog.
-  std::unique_ptr<DlpWarnNotifier> warn_notifier_;
-  // Pointer to the associated DlpWarnDialog widget.
-  // Not null only while the dialog is opened.
-  base::WeakPtr<views::Widget> warn_dialog_widget_ = nullptr;
 
   // Keeps track of events and detects duplicate ones using time based
   // approach.

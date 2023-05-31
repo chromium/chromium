@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_FILES_POLICY_NOTIFICATION_MANAGER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
@@ -38,6 +37,18 @@ class FilesPolicyNotificationManager
       const FilesPolicyNotificationManager&) = delete;
 
   ~FilesPolicyNotificationManager() override;
+
+  // Shows DLP Warning UI.
+  virtual void ShowDlpWarning(
+      OnDlpRestrictionCheckedCallback callback,
+      const std::vector<DlpConfidentialFile>& confidential_files,
+      const DlpFileDestination& destination,
+      dlp::FileAction action);
+
+  // Shows DLP block desktop notification.
+  virtual void ShowDlpBlockNotification(
+      dlp::FileAction action,
+      const std::vector<base::FilePath>& blocked_files);
 
   // Shows a policy dialog of type `type` for task identified by `task_id`.
   // Used for copy and move operations.
@@ -104,6 +115,13 @@ class FilesPolicyNotificationManager
   void OnWarningDialogClicked(file_manager::io_task::IOTaskId task_id,
                               Policy warning_reason,
                               bool should_proceed);
+  // Opens DLP Learn more link and closes the notification having
+  // `notification_id`.
+  void OnLearnMoreButtonClicked(const std::string& notification_id,
+                                absl::optional<int> button_index);
+
+  // KeyedService overrides:
+  void Shutdown() override;
 
   // Callback to show a policy dialog after waiting to open a Files App window.
   base::OnceCallback<void(gfx::NativeWindow)> pending_callback_;
@@ -113,11 +131,6 @@ class FilesPolicyNotificationManager
 
   // A map from tracked IO tasks ids to their info.
   std::map<file_manager::io_task::IOTaskId, IOTaskInfo> io_tasks_;
-
-  // Observes IOTaskController to get updates about IO tasks.
-  base::ScopedObservation<file_manager::io_task::IOTaskController,
-                          file_manager::io_task::IOTaskController::Observer>
-      io_tasks_observation_{this};
 
   base::WeakPtrFactory<FilesPolicyNotificationManager> weak_factory_{this};
 };

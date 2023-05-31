@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
@@ -39,7 +38,6 @@ namespace policy {
 namespace {
 
 constexpr char kExampleUrl[] = "https://example.com";
-constexpr char kExampleUrl1[] = "https://example1.com";
 
 // A listener that compares the list of files chosen with files expected.
 class TestFileSelectListener : public content::FileSelectListener {
@@ -254,69 +252,6 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   const GURL* caller = select_file_dialog_factory->GetLastDialog()->caller();
   ASSERT_TRUE(caller);
   EXPECT_EQ(*caller, GURL(kExampleUrl));
-}
-
-// (b/273269211): This is a test for the crash that happens upon showing a
-// warning dialog when a file is moved to Google Drive.
-IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
-                       WarningDialog_ComponentDestination) {
-  EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
-  EXPECT_CALL(*mock_rules_manager_,
-              IsRestrictedComponent(
-                  GURL(kExampleUrl), data_controls::Component::kDrive,
-                  DlpRulesManager::Restriction::kFiles, testing::_, testing::_))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-
-  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files;
-  transferred_files.emplace_back(1234, base::FilePath("file1.txt"),
-                                 kExampleUrl);
-  EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
-  files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(data_controls::Component::kDrive),
-      dlp::FileAction::kMove, base::DoNothing());
-  EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
-}
-
-// (b/277594200): This is a test for the crash that happens upon showing a
-// warning dialog when a file is dragged to a webpage.
-IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
-                       WarningDialog_UrlDestination) {
-  EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
-  EXPECT_CALL(*mock_rules_manager_,
-              IsRestrictedDestination(GURL(kExampleUrl), GURL(kExampleUrl1),
-                                      DlpRulesManager::Restriction::kFiles,
-                                      testing::_, testing::_, testing::_))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-
-  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files;
-  transferred_files.emplace_back(1234, base::FilePath("file1.txt"),
-                                 kExampleUrl);
-  EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
-  files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(kExampleUrl1),
-      dlp::FileAction::kMove, base::DoNothing());
-  EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
-}
-
-// (b/281495499): This is a test for the crash that happens upon showing a
-// warning dialog for downloads.
-IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
-                       WarningDialog_Download) {
-  EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
-  EXPECT_CALL(*mock_rules_manager_,
-              IsRestrictedComponent(
-                  GURL(kExampleUrl), data_controls::Component::kDrive,
-                  DlpRulesManager::Restriction::kFiles, testing::_, testing::_))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-
-  std::vector<DlpFilesControllerAsh::FileDaemonInfo> transferred_files;
-  transferred_files.emplace_back(1234, base::FilePath("file1.txt"),
-                                 kExampleUrl);
-  EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
-  files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(data_controls::Component::kDrive),
-      dlp::FileAction::kDownload, base::DoNothing());
-  EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }
 
 }  // namespace policy

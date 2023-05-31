@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,6 +29,10 @@ namespace {
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }
+
+constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
+constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
+constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
 
 }  // namespace
 
@@ -136,6 +141,32 @@ TEST_F(FilesPolicyNotificationManagerTest, AddTrashTask) {
 
   io_task_controller_->Cancel(task_id);
   EXPECT_FALSE(fpnm_->HasIOTask(task_id));
+}
+
+class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
+                          public ::testing::WithParamInterface<
+                              std::tuple<dlp::FileAction, std::string>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMShowBlockTest,
+    ::testing::Values(
+        std::make_tuple(dlp::FileAction::kDownload,
+                        kDownloadBlockedNotificationId),
+        std::make_tuple(dlp::FileAction::kUpload, kUploadBlockedNotificationId),
+        std::make_tuple(dlp::FileAction::kOpen, kOpenBlockedNotificationId),
+        std::make_tuple(dlp::FileAction::kShare, kOpenBlockedNotificationId)));
+
+TEST_P(FPNMShowBlockTest, ShowDlpBlockNotification) {
+  auto [action, notification_id] = GetParam();
+
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+  fpnm_->ShowDlpBlockNotification(
+      action, {base::FilePath("file1.txt"), base::FilePath("file2.txt"),
+               base::FilePath("file3.txt")});
+  EXPECT_TRUE(display_service_tester.GetNotification(notification_id));
 }
 
 }  // namespace policy

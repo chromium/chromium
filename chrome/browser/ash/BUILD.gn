@@ -5437,6 +5437,8 @@ source_set("unit_tests") {
     "policy/dlp/dlp_files_controller_ash_unittest.cc",
     "policy/dlp/dlp_files_event_storage_unittest.cc",
     "policy/dlp/files_policy_notification_manager_unittest.cc",
+    "policy/dlp/mock_files_policy_notification_manager.cc",
+    "policy/dlp/mock_files_policy_notification_manager.h",
     "policy/enrollment/account_status_check_fetcher_unittest.cc",
     "policy/enrollment/auto_enrollment_client_impl_unittest.cc",
     "policy/enrollment/auto_enrollment_controller_unittest.cc",
