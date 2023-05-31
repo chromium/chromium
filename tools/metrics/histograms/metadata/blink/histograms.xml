@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.AutoReauthn.ReturningAccounts"
-    enum="FedCmReturningAccounts" expires_after="2023-10-08">
+    enum="FedCmNumAccounts" expires_after="2023-10-08">
   <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
@@ -1150,6 +1150,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the user selected account is for sign-in or not. Records at
     most one sample per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.LoginHint" enum="FedCmNumAccounts"
+    expires_after="2023-11-30">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the number of accounts the match a login hint. Records at the time
+    the accounts received by the FedCM API are filtered.
   </summary>
 </histogram>
 

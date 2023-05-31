@@ -42834,6 +42834,12 @@ Called by update_permissions_policy_enum.py.-->
              accounts."/>
 </enum>
 
+<enum name="FedCmNumAccounts">
+  <int value="0" label="Zero accounts"/>
+  <int value="1" label="One account"/>
+  <int value="2" label="Multiple accounts"/>
+</enum>
+
 <enum name="FedCmPreventSilentAccessFrameType">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe which is same-site as main frame"/>
@@ -42880,12 +42886,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="36" label="ConfigInvalidContentType"/>
   <int value="37" label="AccountsInvalidContentType"/>
   <int value="38" label="IdTokenInvalidContentType"/>
-</enum>
-
-<enum name="FedCmReturningAccounts">
-  <int value="0" label="Zero returning accounts"/>
-  <int value="1" label="One returning account"/>
-  <int value="2" label="Multiple returning accounts"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">

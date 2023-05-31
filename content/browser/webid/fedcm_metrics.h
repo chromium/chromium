@@ -166,7 +166,7 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
-  enum class NumReturningAccounts {
+  enum class NumAccounts {
     kZero = 0,
     kOne = 1,
     kMultiple = 2,

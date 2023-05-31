@@ -3794,7 +3794,7 @@ be describing additional metrics about the same event.
       before this metric is recorded.
     </summary>
   </metric>
-  <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
+  <metric name="AutoReauthn.ReturningAccounts" enum="FedCmNumAccounts">
     <summary>
       Records whether there was zero, one, or multiple returning accounts when a
       site calls the FedCM API with autoReauthn: true. Records at most one

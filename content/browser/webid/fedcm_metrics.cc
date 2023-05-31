@@ -226,12 +226,12 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
     bool is_auto_reauthn_embargoed,
     absl::optional<base::TimeDelta> time_from_embargo,
     bool requires_user_mediation) {
-  NumReturningAccounts num_returning_accounts = NumReturningAccounts::kZero;
+  NumAccounts num_returning_accounts = NumAccounts::kZero;
   if (has_single_returning_account.has_value()) {
     if (*has_single_returning_account) {
-      num_returning_accounts = NumReturningAccounts::kOne;
+      num_returning_accounts = NumAccounts::kOne;
     } else if (auto_signin_account) {
-      num_returning_accounts = NumReturningAccounts::kMultiple;
+      num_returning_accounts = NumAccounts::kMultiple;
     }
 
     base::UmaHistogramEnumeration("Blink.FedCm.AutoReauthn.ReturningAccounts",

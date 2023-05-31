@@ -309,6 +309,14 @@ void FilterAccountsWithLoginHint(
   };
   accounts.erase(std::remove_if(accounts.begin(), accounts.end(), Filter),
                  accounts.end());
+  FedCmMetrics::NumAccounts num_matching = FedCmMetrics::NumAccounts::kZero;
+  if (accounts.size() == 1u) {
+    num_matching = FedCmMetrics::NumAccounts::kOne;
+  } else if (accounts.size() > 1u) {
+    num_matching = FedCmMetrics::NumAccounts::kMultiple;
+  }
+  base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
+                                num_matching);
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
