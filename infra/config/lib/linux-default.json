@@ -5,6 +5,7 @@
     "Cast Linux Debug": "Ubuntu-22.04",
     "Comparison Linux (reclient)": "Ubuntu-22.04",
     "Comparison Simple Chrome (reclient)": "Ubuntu-22.04",
+    "Leak Detection Linux": "Ubuntu-22.04",
     "Linux Builder": "Ubuntu-22.04",
     "Linux Builder (Wayland)": "Ubuntu-22.04",
     "Linux Builder (dbg)": "Ubuntu-22.04",
