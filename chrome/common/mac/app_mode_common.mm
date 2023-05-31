@@ -33,6 +33,7 @@ const char kLaunchedByChromeFrameworkDylibPath[] =
 const char kLaunchedForTest[] = "launched-for-test";
 const char kLaunchedAfterRebuild[] = "launched-after-rebuild";
 const char kIsNormalLaunch[] = "is-normal-launch";
+const char kLaunchChromeForTest[] = "launch-chrome-for-test";
 
 NSString* const kCFBundleDocumentTypesKey = @"CFBundleDocumentTypes";
 NSString* const kCFBundleTypeExtensionsKey = @"CFBundleTypeExtensions";

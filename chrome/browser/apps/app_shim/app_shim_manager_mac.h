@@ -47,6 +47,9 @@ namespace apps {
 // as possibly multiple windows within profiles).
 void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback);
 
+// Returns the callback set with SetMacShimStartupDoneCallbackForTesting;
+base::OnceClosure TakeShimStartupDoneCallbackForTesting();
+
 // This app shim handler that handles events for app shims that correspond to an
 // extension.
 class AppShimManager : public AppShimHostBootstrap::Client,

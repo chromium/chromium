@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 
@@ -52,13 +54,35 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CorruptAppShim) {
   helper_.CheckWindowCreated();
   helper_.ClosePwa();
   // Now mess up the shortcut.
-  helper_.CorruptAppShim(Site::kStandalone);
+  helper_.CorruptAppShim(Site::kStandalone, AppShimCorruption::kNoExecutable);
   // And verify that launching still (eventually) works.
   helper_.LaunchFromChromeApps(Site::kStandalone);
   helper_.CheckWindowCreated();
   helper_.ClosePwa();
   // Also re-launch from platform shortcut, to verify that the shortcut is fully
   // working.
+  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, IncompatibleAppShim) {
+  // Install and close the PWA.
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+  // Now mess up the shortcut.
+  helper_.CorruptAppShim(Site::kStandalone,
+                         AppShimCorruption::kIncompatibleVersion);
+  // Launching the platform shortcut should (eventually) work, even though
+  // the app shim won't be able to find the ChromeAppModeStart entrypoint.
+  // Note that this ends up triggering the same code path as the
+  // LaunchFromAppShimCallback test above.
+  // Since this launch ends up triggering the fallback launch code path,
+  // the regular "done" callback won't be called so make sure to forward the
+  // non-mac startup done callback to the app shim startup done callback.
+  web_app::startup::SetStartupDoneCallbackForTesting(base::BindOnce(
+      []() { apps::TakeShimStartupDoneCallbackForTesting().Run(); }));
+
   helper_.LaunchFromPlatformShortcut(Site::kStandalone);
   helper_.CheckWindowCreated();
 }
