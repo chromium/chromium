@@ -26,6 +26,8 @@ void PrivacyHubController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kUserCameraAllowed, true);
   registry->RegisterBooleanPref(prefs::kUserMicrophoneAllowed, true);
   registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionEnabled, false);
+  registry->RegisterBooleanPref(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
+  registry->RegisterIntegerPref(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
   registry->RegisterBooleanPref(prefs::kUserGeolocationAllowed, true);
 }
 

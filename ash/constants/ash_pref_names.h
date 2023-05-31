@@ -469,6 +469,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserCameraAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserMicrophoneAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUserSpeakOnMuteDetectionEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShouldShowSpeakOnMuteOptInNudge[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSpeakOnMuteOptInNudgeShownCount[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserGeolocationAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeviceGeolocationAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

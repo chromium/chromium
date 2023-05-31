@@ -426,6 +426,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Activates or deactivates keyboard mic if there's one.
   void SetKeyboardMicActive(bool active);
 
+  // Enables or disables the speak-on-mute detection.
+  void SetSpeakOnMuteDetection(bool som_on);
+
   // Changes the active nodes to the nodes specified by |new_active_ids|.
   // The caller can pass in the "complete" active node list of either input
   // nodes, or output nodes, or both. If only input nodes are passed in,

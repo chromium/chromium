@@ -5148,4 +5148,27 @@ TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
 
   EXPECT_EQ(1, test_observer_->noise_cancellation_state_change_count());
 }
+
+TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionSwitchTest) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  audio_nodes.push_back(internalMic);
+  SetUpCrasAudioHandlerWithPrimaryActiveNode(audio_nodes, internalMic);
+
+  // Speak-on-mute detection should still be disabled since it is not set during
+  // the initialization.
+  EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
+
+  // Simulate enable speak-on-mute detection from handler, which should enable
+  // speak-on-mute detection in the client.
+  cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/true);
+  EXPECT_TRUE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
+
+  // Simulate disable speak-on-mute detection from handler, which should disable
+  // speak-on-mute detection in the client.
+  cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/false);
+  EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
+}
+
 }  // namespace ash

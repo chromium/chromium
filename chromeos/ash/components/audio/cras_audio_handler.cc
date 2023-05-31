@@ -609,6 +609,10 @@ void CrasAudioHandler::SetKeyboardMicActive(bool active) {
     RemoveActiveNodeInternal(keyboard_mic->id, true);
 }
 
+void CrasAudioHandler::SetSpeakOnMuteDetection(bool som_on) {
+  CrasAudioClient::Get()->SetSpeakOnMuteDetection(som_on);
+}
+
 void CrasAudioHandler::AddActiveNode(uint64_t node_id, bool notify) {
   const AudioDevice* device = GetDeviceFromId(node_id);
   if (!device) {
@@ -1419,10 +1423,6 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)
     SetInputMute(true, InputMuteChangeMethod::kPhysicalShutter);
-
-  // Sets speak-on-mute detection enabled based on feature flag.
-  CrasAudioClient::Get()->SetSpeakOnMuteDetection(
-      features::IsSpeakOnMuteEnabled());
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
