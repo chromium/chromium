@@ -256,7 +256,7 @@ vars = {
   'llvm_force_head_revision': False,
 
   # Fetch Rust toolchain.
-  'checkout_rust': 'host_os == "linux"',
+  'checkout_rust': True,
 
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
