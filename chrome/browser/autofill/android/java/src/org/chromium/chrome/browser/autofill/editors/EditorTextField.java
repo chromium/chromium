@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.ALPHA_NUMERIC_INPUT;
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.EMAIL_ADDRESS_INPUT;
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.PERSON_NAME_INPUT;
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.PHONE_NUMBER_INPUT;
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.REGION_INPUT;
-import static org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType.STREET_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.ALPHA_NUMERIC_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.EMAIL_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.PERSON_NAME_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.PHONE_NUMBER_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.REGION_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType.STREET_ADDRESS_INPUT;
 
 import android.content.Context;
 import android.text.Editable;
@@ -35,7 +35,7 @@ import androidx.core.view.ViewCompat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.chromium.components.autofill.R;
+import org.chromium.chrome.browser.autofill.R;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */

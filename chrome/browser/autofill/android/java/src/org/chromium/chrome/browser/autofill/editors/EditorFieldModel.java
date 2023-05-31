@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.autofill.prefeditor;
+package org.chromium.chrome.browser.autofill.editors;
 
 import android.text.TextUtils;
 import android.text.TextWatcher;

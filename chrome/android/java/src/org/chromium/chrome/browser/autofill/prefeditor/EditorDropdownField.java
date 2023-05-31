@@ -23,10 +23,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
-import org.chromium.components.autofill.prefeditor.EditorFieldView;
-import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.DropdownKeyValue;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
+import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.prefeditor;
 
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

@@ -36,9 +36,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 

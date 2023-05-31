@@ -45,12 +45,12 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldView;
+import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
+import org.chromium.chrome.browser.autofill.editors.EditorTextField;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldView;
-import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
-import org.chromium.components.autofill.prefeditor.EditorTextField;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.AlwaysDismissedDialog;

@@ -48,15 +48,15 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.DropdownKeyValue;
+import org.chromium.chrome.browser.autofill.editors.EditorFieldModel.TextInputType;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridgeJni;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
-import org.chromium.components.autofill.prefeditor.EditorFieldModel.TextInputType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
