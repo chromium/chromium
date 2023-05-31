@@ -4252,6 +4252,9 @@
       # Removed from V8 builders since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Mac V8 FYI Release (Intel)',
+      # crbug.com/1450207
+      'mac-angle-chromium-intel',
+      'Mac FYI Release (Intel)',
     ],
     'modifications': {
       'Mac FYI ASAN (Intel)': {
