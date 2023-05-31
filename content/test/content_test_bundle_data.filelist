@@ -5476,6 +5476,8 @@ data/fenced_frames/basic.html
 data/fenced_frames/basic.html.mock-http-headers
 data/fenced_frames/basic_fenced_frame_src.html
 data/fenced_frames/basic_fenced_frame_src_navigate_on_click.html
+data/fenced_frames/basic_iframe.html
+data/fenced_frames/basic_iframe.html.mock-http-headers
 data/fenced_frames/empty.html
 data/fenced_frames/empty.html.mock-http-headers
 data/fenced_frames/empty404.html

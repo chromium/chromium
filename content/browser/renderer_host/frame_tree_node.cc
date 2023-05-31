@@ -894,26 +894,25 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
 }
 
 const absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFrameProperties() {
-  return GetFencedFramePropertiesForEditing();
+FrameTreeNode::GetFencedFrameProperties(bool force_tree_traversal) {
+  return GetFencedFramePropertiesForEditing(force_tree_traversal);
 }
 
 absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFramePropertiesForEditing() {
-  if (IsInFencedFrameTree()) {
+FrameTreeNode::GetFencedFramePropertiesForEditing(bool force_tree_traversal) {
+  if (!force_tree_traversal && IsInFencedFrameTree()) {
     return frame_tree().root()->fenced_frame_properties_;
   }
 
   // If we might be in a urn iframe, try to find the "urn iframe root",
   // and, if it exists, return the attached `FencedFrameProperties`.
-  if (blink::features::IsAllowURNsInIframeEnabled()) {
+  if (force_tree_traversal || blink::features::IsAllowURNsInIframeEnabled()) {
     FrameTreeNode* node = this;
-    while (node->parent()) {
-      CHECK(node->parent()->frame_tree_node());
+    while (node) {
       if (node->fenced_frame_properties_.has_value()) {
         return node->fenced_frame_properties_;
       }
-      node = node->parent()->frame_tree_node();
+      node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
     }
   }
 
@@ -926,7 +925,8 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing();
+      GetFencedFramePropertiesForEditing(
+          /*force_tree_traversal=*/true);
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
