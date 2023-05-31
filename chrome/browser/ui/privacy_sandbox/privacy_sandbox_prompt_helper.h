@@ -34,6 +34,46 @@ class PrivacySandboxPromptHelper
 
  private:
   friend class content::WebContentsUserData<PrivacySandboxPromptHelper>;
+  friend class PrivacySandboxPromptHelperTest;
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           PromptOpensOnNtp);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           PromptOpensAboutBlank);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           PromptOpensOnSettings);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           PromptOpensOnHistory);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           NoPromptNonDefaultNtp);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           NoPromptSync);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           NoPromptProfileSetup);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           UnsuitableUrl);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           SinglePromptPerBrowser);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxPromptHelperTestWithParam,
+                           MultipleBrowserWindows);
+
+  // Contains all the events that the helper goes through when attempting to
+  // show a Privacy Sandbox prompt. Must be kept in sync with the
+  // SettingsPrivacySandboxPromptHelperEvent enum in histograms/enums.xml.
+  enum class SettingsPrivacySandboxPromptHelperEvent {
+    kCreated = 0,
+    kPromptNotRequired = 1,
+    kNonTopFrameNavigation = 2,
+    kAboutBlankOpened = 3,
+    kUrlNotSuitable = 4,
+    kSyncSetupInProgress = 5,
+    kSigninDialogShown = 6,
+    kPromptAlreadyExistsForBrowser = 7,
+    kWindowTooSmall = 8,
+    kPromptShown = 9,
+    // Add values above this line with a corresponding label in
+    // tools/metrics/histograms/enums.xml
+    kMaxValue = kPromptShown,
+  };
 
   explicit PrivacySandboxPromptHelper(content::WebContents* web_contents);
 

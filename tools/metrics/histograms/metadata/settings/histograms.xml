@@ -496,6 +496,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.PromptHelperEvent"
+    enum="SettingsPrivacySandboxPromptHelperEvent" expires_after="2023-12-01">
+  <owner>sauski@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records each event that occurs when the Privacy Sandbox prompt helper is
+    attempting to find a suitable location to show any pending Privacy Sandbox
+    prompt.
+
+    The helper is only created and attached to the tab when a prompt is
+    required, and so these metrics are only recorded when a prompt is required.
+    Value 1 is recorded on navigations that occur while the helper still exists,
+    but after the prompt has been shown (as the tab that created the helper can
+    outlive the prompt)
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.PromptStartupState"
     enum="SettingsPrivacySandboxPromptStartupState" expires_after="2023-10-22">
   <owner>sauski@google.com</owner>

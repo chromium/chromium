@@ -95145,6 +95145,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              07/2022)"/>
 </enum>
 
+<enum name="SettingsPrivacySandboxPromptHelperEvent">
+  <int value="0" label="Helper Created"/>
+  <int value="1" label="Prompt not required"/>
+  <int value="2" label="Non top frame navigation"/>
+  <int value="3" label="About blank opened"/>
+  <int value="4" label="URL not suitable"/>
+  <int value="5" label="Sync setup in progress"/>
+  <int value="6" label="Signin dialog currently shown"/>
+  <int value="7" label="Prompt already exists for browser"/>
+  <int value="8" label="Window too small for dialog"/>
+  <int value="9" label="Prompt shown"/>
+</enum>
+
 <enum name="SettingsPrivacySandboxPromptStartupState">
   <int value="0" label="EEA consent prompt waiting to show"/>
   <int value="1" label="EEA notice prompt waiting to show"/>
