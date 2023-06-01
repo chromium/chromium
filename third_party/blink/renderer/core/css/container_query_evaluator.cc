@@ -150,9 +150,6 @@ bool ContainerQueryEvaluator::EvalAndAdd(
 
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
   if (!evaluator) {
-    if (selects_size || !selects_style) {
-      return false;
-    }
     evaluator = &container->EnsureContainerQueryEvaluator();
     evaluator->SetData(container->GetDocument(), *container, PhysicalSize(),
                        kPhysicalAxisNone);
@@ -163,24 +160,18 @@ bool ContainerQueryEvaluator::EvalAndAdd(
 }
 
 absl::optional<double> ContainerQueryEvaluator::Width() const {
-  if (!media_query_evaluator_) {
-    return absl::nullopt;
-  }
+  CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Width();
 }
 
 absl::optional<double> ContainerQueryEvaluator::Height() const {
-  if (!media_query_evaluator_) {
-    return absl::nullopt;
-  }
+  CHECK(media_query_evaluator_);
   return media_query_evaluator_->GetMediaValues().Height();
 }
 
 ContainerQueryEvaluator::Result ContainerQueryEvaluator::Eval(
     const ContainerQuery& container_query) const {
-  if (!media_query_evaluator_) {
-    return Result();
-  }
+  CHECK(media_query_evaluator_);
 
   MediaQueryResultFlags result_flags;
   bool value =
@@ -254,8 +245,10 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
     Element& container,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
-  if (size_ == size && contained_axes_ == contained_axes && !font_dirty_) {
-    return Change::kNone;
+  if (media_query_evaluator_) {
+    if (size_ == size && contained_axes_ == contained_axes && !font_dirty_) {
+      return Change::kNone;
+    }
   }
 
   SetData(document, container, size, contained_axes);
@@ -395,9 +388,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStyleChange()
 void ContainerQueryEvaluator::UpdateValuesIfNeeded(Document& document,
                                                    Element& container,
                                                    StyleRecalcChange change) {
-  if (!media_query_evaluator_) {
-    return;
-  }
+  CHECK(media_query_evaluator_);
   unsigned changed_flags = 0;
   if (change.RemUnitsMaybeChanged()) {
     changed_flags |= MediaQueryExpValue::kRootFontRelative;
