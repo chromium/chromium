@@ -125,6 +125,7 @@
     "linux-cr23-rel": "Ubuntu-22.04",
     "linux-dcheck-off-rel": "Ubuntu-22.04",
     "linux-exp-tsan-fyi-rel": "Ubuntu-22.04",
+    "linux-extended-tracing-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-lacros-rel-compilator": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
