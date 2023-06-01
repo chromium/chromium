@@ -134,7 +134,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         FontPreloader.getInstance().onPostInflationStartupCustomTabActivity();
 
-        mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        if (mRootUiCoordinator.getStatusBarColorController() != null) {
+            mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
+        }
 
         // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already
         // attached to a ChromeActivity, as the main tab might have been initialized prior to

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
@@ -627,12 +628,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new ScrimCoordinator.SystemUiScrimDelegate() {
                     @Override
                     public void setScrimColor(int scrimColor) {
-                        mStatusBarColorController.setScrimColor(scrimColor);
+                        if (mStatusBarColorController != null) {
+                            mStatusBarColorController.setScrimColor(scrimColor);
+                        }
                     }
 
                     @Override
                     public void setStatusBarScrimFraction(float scrimFraction) {
-                        mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+                        if (mStatusBarColorController != null) {
+                            mStatusBarColorController.setStatusBarScrimFraction(scrimFraction);
+                        }
                     }
 
                     @Override
@@ -838,7 +843,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mStatusIndicatorCoordinator = new StatusIndicatorCoordinator(mActivity,
                 mCompositorViewHolderSupplier.get().getResourceManager(), browserControlsSizer,
                 mTabObscuringHandlerSupplier.get(),
-                mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
+                mStatusBarColorController == null
+                        ? (() -> Color.BLACK)
+                        : mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
                 mCanAnimateBrowserControls, layoutManager::requestUpdate);
         layoutManager.addSceneOverlay(mStatusIndicatorCoordinator.getSceneLayer());
         mStatusIndicatorObserver = new StatusIndicatorCoordinator.StatusIndicatorObserver() {

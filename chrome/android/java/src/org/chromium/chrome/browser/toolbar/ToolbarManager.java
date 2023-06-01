@@ -250,6 +250,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private MenuButtonCoordinator mOverviewModeMenuButtonCoordinator;
     private HomepageManager.HomepageStateListener mHomepageStateListener;
+    @Nullable
     private StatusBarColorController mStatusBarColorController;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final BottomSheetController mBottomSheetController;
@@ -444,7 +445,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
             Supplier<Boolean> isInOverviewModeSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate,
+            @Nullable StatusBarColorController statusBarColorController,
+            AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
             @NonNull BottomSheetController bottomSheetController,
