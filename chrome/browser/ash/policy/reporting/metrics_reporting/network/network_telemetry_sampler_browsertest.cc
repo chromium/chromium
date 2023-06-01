@@ -204,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-// TODO(crbug.com/1450419): Flaky on Linux + ChromeOS
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1450419): Flaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Default DISABLED_Default
 #else
 #define MAYBE_Default Default
