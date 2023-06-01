@@ -22,7 +22,7 @@ class HashRealTimeService;
 
 // Singleton that owns HashRealTimeService objects, one for each active
 // Profile. It listens to profile destroy events and destroy its associated
-// service. It returns nullptr if the profile is in the Incognito mode.
+// service. It returns nullptr if the profile is in incognito or guest mode.
 class HashRealTimeServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Creates the service if it doesn't exist already for the given |profile|.

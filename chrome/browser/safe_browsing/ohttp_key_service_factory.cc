@@ -33,7 +33,6 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory()
           "SafeBrowsingOhttpKeyService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(NetworkContextServiceFactory::GetInstance());
 }
