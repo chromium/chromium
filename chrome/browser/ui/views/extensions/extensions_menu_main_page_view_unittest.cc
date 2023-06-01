@@ -1142,7 +1142,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
       main_page()->GetExtensionRequestingAccessEntryForTesting(extension->id());
   ASSERT_TRUE(extension_entry);
   views::Button* extension_allow_button =
-      static_cast<views::Button*>(extension_entry->children()[2]);
+      static_cast<views::Button*>(extension_entry->children()[3]);
   ClickButton(extension_allow_button);
 
   WaitForAnimation();
@@ -1190,7 +1190,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ASSERT_TRUE(extension_entry);
   ASSERT_EQ(extension_entry->children().size(), 4u);
   views::Button* extension_dismiss_button =
-      static_cast<views::Button*>(extension_entry->children()[3]);
+      static_cast<views::Button*>(extension_entry->children()[2]);
   ClickButton(extension_dismiss_button);
 
   WaitForAnimation();

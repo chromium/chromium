@@ -241,11 +241,8 @@ MessageSection::MessageSection(
                       .SetTextStyle(views::style::STYLE_EMPHASIZED)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
                   // Empty container for the extensions requesting access.
-                  views::Builder<views::BoxLayoutView>()
-                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                      .SetProperty(
-                          views::kMarginsKey,
-                          gfx::Insets::TLBR(control_vertical_margin, 0, 0, 0))))
+                  views::Builder<views::BoxLayoutView>().SetOrientation(
+                      views::BoxLayout::Orientation::kVertical)))
       .BuildChildren();
 }
 
@@ -311,6 +308,9 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
     auto* layout_provider = ChromeLayoutProvider::Get();
     const int control_vertical_margin = layout_provider->GetDistanceMetric(
         DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+    const int related_control_horizontal_margin =
+        layout_provider->GetDistanceMetric(
+            DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
 
     auto item =
         views::Builder<views::FlexLayoutView>()
@@ -327,13 +327,18 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                                      views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kUnbounded)),
                 views::Builder<views::MdTextButton>()
-                    .SetCallback(base::BindRepeating(allow_callback_, id))
-                    .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT)),
-                views::Builder<views::MdTextButton>()
                     .SetCallback(base::BindRepeating(dismiss_callback_, id))
                     .SetText(l10n_util::GetStringUTF16(
-                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT)))
+
+                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_DISMISS_BUTTON_TEXT)),
+                views::Builder<views::MdTextButton>()
+                    .SetCallback(base::BindRepeating(allow_callback_, id))
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT))
+                    .SetProperty(
+                        views::kMarginsKey,
+                        gfx::Insets::TLBR(0, related_control_horizontal_margin,
+                                          0, 0)))
             .Build();
     extension_entries_.insert({id, item.get()});
     requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
