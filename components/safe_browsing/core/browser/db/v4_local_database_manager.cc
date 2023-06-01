@@ -33,6 +33,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
@@ -822,6 +823,15 @@ AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
   PendingCheck* check_ptr = check.get();
   AsyncMatch match;
 
+  if (GetPrefixMatchesIsAsync() && !callback.is_null()) {
+    // If StopOnSBThread is called weak_factory_ will get invalidated and
+    // HandleAllowlistCheckContinuation won't be called. We still want to run
+    // the callback though. See comment in CheckUrlForHighConfidenceAllowlist
+    // on why this returns true.
+    callback =
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), true);
+  }
+
   GetPrefixMatches(
       check_ptr,
       base::BindOnce(&V4LocalDatabaseManager::HandleAllowlistCheckContinuation,
@@ -1150,6 +1160,12 @@ void V4LocalDatabaseManager::RespondSafeToQueuedAndPendingChecks() {
   // possibility of concurrent modifications while iterating.
   PendingChecks pending_checks = CopyAndRemoveAllPendingChecks();
   for (PendingCheck* it : pending_checks) {
+    if (it->client_callback_type == ClientCallbackType::CHECK_OTHER &&
+        GetPrefixMatchesIsAsync()) {
+      // In this case there's a callback that will run when weak_factory_ is
+      // invalidated.
+      continue;
+    }
     // We don't own the unique pointer for the pending check, so we do not
     // perform cleanup on it while responding to the client.
     RespondToClientWithoutPendingCheckCleanup(it);
