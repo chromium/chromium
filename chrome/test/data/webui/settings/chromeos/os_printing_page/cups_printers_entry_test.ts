@@ -4,12 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {PrinterListEntry, PrinterStatusReason, PrinterType, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
+import {PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterType, SettingsCupsPrintersEntryElement} from 'chrome://os-settings/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 
 function createPrinterEntry(printerType: PrinterType): PrinterListEntry {
   return {
@@ -188,5 +190,40 @@ suite('<settings-cups-printers-entry>', () => {
         createPrinterEntry(PrinterType.SAVED);
     assertTrue(isVisible(printerEntryTestElement.shadowRoot!.querySelector(
         '#printerStatusIcon')));
+  });
+
+  // Verify clicking the setup or save button is recorded to metrics.
+  test('recordUserActionMetric', () => {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate =
+        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+
+    // Enable the save printer buttons.
+    printerEntryTestElement.savingPrinter = false;
+    printerEntryTestElement.userPrintersAllowed = true;
+
+    // Verify saving an automatic printer is recorded.
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.AUTOMATIC);
+    flush();
+    printerEntryTestElement.shadowRoot!
+        .querySelector<HTMLElement>('#automaticPrinterButton')!.click();
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countMetricValue(
+            'Printing.CUPS.SettingsUserAction',
+            PrinterSettingsUserAction.SAVE_PRINTER));
+
+    // Verify saving a discovered printer is recorded.
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.DISCOVERED);
+    flush();
+    printerEntryTestElement.shadowRoot!
+        .querySelector<HTMLElement>('#setupPrinterButton')!.click();
+    assertEquals(
+        2,
+        fakeMetricsPrivate.countMetricValue(
+            'Printing.CUPS.SettingsUserAction',
+            PrinterSettingsUserAction.SAVE_PRINTER));
   });
 });

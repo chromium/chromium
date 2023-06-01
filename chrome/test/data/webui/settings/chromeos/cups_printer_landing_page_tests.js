@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrintersBrowserProxyImpl, PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -10,11 +10,12 @@ import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertGE, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGE, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCupsPrinterInfo, createPrinterListEntry, getPrinterEntries} from './cups_printer_test_utils.js';
+import {FakeMetricsPrivate} from './fake_metrics_private.js';
 import {TestCupsPrintersBrowserProxy} from './test_cups_printers_browser_proxy.js';
 
 const arrowUpEvent = new KeyboardEvent(
@@ -1098,6 +1099,49 @@ suite('CupsSavedPrintersTests', function() {
           // Printer list length is <= 3, Show more button should be hidden.
           assertFalse(!!savedPrintersElement.shadowRoot.querySelector(
               '#show-more-container'));
+        });
+  });
+
+  test('RecordUserActionMetric', function() {
+    const fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
+    createCupsPrinterPage([
+      createCupsPrinterInfo('test1', '1', 'id1'),
+      createCupsPrinterInfo('test2', '2', 'id2'),
+    ]);
+    return cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList')
+        .then(() => {
+          // Wait for saved printers to populate.
+          flush();
+
+          savedPrintersElement =
+              page.shadowRoot.querySelector('settings-cups-saved-printers');
+          assertTrue(!!savedPrintersElement);
+
+          // Remove the first saved printer then verify the action is recorded.
+          return removePrinter(
+              cupsPrintersBrowserProxy, savedPrintersElement, /*index=*/ 0);
+        })
+        .then(() => {
+          assertEquals(
+              1,
+              fakeMetricsPrivate.countMetricValue(
+                  'Printing.CUPS.SettingsUserAction',
+                  PrinterSettingsUserAction.REMOVE_PRINTER));
+
+          // Click the next printer's Edit button then verify the action is
+          // recorded.
+          const savedPrinterEntries = getPrinterEntries(savedPrintersElement);
+          clickButton(savedPrinterEntries[0].shadowRoot.querySelector(
+              '.icon-more-vert'));
+          clickButton(
+              savedPrintersElement.shadowRoot.querySelector('#editButton'));
+          assertEquals(
+              1,
+              fakeMetricsPrivate.countMetricValue(
+                  'Printing.CUPS.SettingsUserAction',
+                  PrinterSettingsUserAction.EDIT_PRINTER));
         });
   });
 });

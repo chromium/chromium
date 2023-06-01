@@ -352,6 +352,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.SettingsUserAction"
+    enum="PrinterSettingsUserAction" expires_after="2024-05-30">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the action a user takes on the OS Printer settings page.
+  </summary>
+</histogram>
+
 <histogram name="Printing.CUPS.TotalNetworkPrintersCount" units="printers"
     expires_after="2023-11-12">
   <owner>bmgordon@chromium.org</owner>

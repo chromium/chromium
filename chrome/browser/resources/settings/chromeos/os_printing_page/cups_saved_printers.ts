@@ -25,6 +25,7 @@ import {recordSettingChange} from '../metrics_recorder.js';
 
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
 import {PrinterListEntry} from './cups_printer_types.js';
+import {PrinterSettingsUserAction, recordPrinterSettingsUserAction} from './cups_printers.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 import {getTemplate} from './cups_saved_printers.html.js';
@@ -271,6 +272,7 @@ export class SettingsCupsSavedPrintersElement extends
         });
     this.dispatchEvent(editCupsPrinterDetailsEvent);
     this.closeActionMenu_();
+    recordPrinterSettingsUserAction(PrinterSettingsUserAction.EDIT_PRINTER);
   }
 
   private onRemoveClick_(): void {
@@ -280,6 +282,7 @@ export class SettingsCupsSavedPrintersElement extends
     this.activePrinter = null;
     this.activePrinterListEntryIndex_ = -1;
     this.closeActionMenu_();
+    recordPrinterSettingsUserAction(PrinterSettingsUserAction.REMOVE_PRINTER);
   }
 
   private onShowMoreClick_(): void {

@@ -86588,6 +86588,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="4" label="Printer provider Web Store app launched"/>
 </enum>
 
+<enum name="PrinterSettingsUserAction">
+  <int value="0" label="Add printer manually"/>
+  <int value="1" label="Save printer"/>
+  <int value="2" label="Edit printer"/>
+  <int value="3" label="Remove printer"/>
+  <int value="4" label="Click help link"/>
+</enum>
+
 <enum name="PrinterSetupResult">
   <int value="0" label="Fatal Error"/>
   <int value="1" label="Success"/>
