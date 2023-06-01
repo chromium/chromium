@@ -157,8 +157,8 @@ class LocalSessionEventHandlerImplTest : public testing::Test {
   testing::NiceMock<MockDelegate> mock_delegate_;
   testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
   SyncedSessionTracker session_tracker_;
-  TestSyncedWindowDelegatesGetter window_getter_;
   std::unique_ptr<LocalSessionEventHandlerImpl> handler_;
+  TestSyncedWindowDelegatesGetter window_getter_;
 };
 
 // Populate the mock tab delegate with some data and navigation
