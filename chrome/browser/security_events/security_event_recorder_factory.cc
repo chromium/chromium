@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/security_events/security_event_recorder_impl.h"
@@ -21,7 +22,8 @@
 
 // static
 SecurityEventRecorderFactory* SecurityEventRecorderFactory::GetInstance() {
-  return base::Singleton<SecurityEventRecorderFactory>::get();
+  static base::NoDestructor<SecurityEventRecorderFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -43,7 +45,7 @@ SecurityEventRecorderFactory::SecurityEventRecorderFactory()
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
-SecurityEventRecorderFactory::~SecurityEventRecorderFactory() {}
+SecurityEventRecorderFactory::~SecurityEventRecorderFactory() = default;
 
 KeyedService* SecurityEventRecorderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
