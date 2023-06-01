@@ -255,7 +255,8 @@ def main(argv):
 
   if args.in_files is not None:
 
-    manifest_path = os.path.join(args.gen_dir, f'{args.output_suffix}.manifest')
+    manifest_path = os.path.join(args.gen_dir,
+                                 f'{args.output_suffix}_manifest.json')
     with open(manifest_path, 'w', encoding='utf-8') as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir

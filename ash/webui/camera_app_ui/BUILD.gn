@@ -120,7 +120,7 @@ generate_grd("build_grd") {
   out_grd = resources_grd_file
   grdp_files = [ generated_grdp_file ]
 
-  manifest_files = [ "$target_gen_dir/resources/build_ts.manifest" ]
+  manifest_files = [ "$target_gen_dir/resources/build_ts_manifest.json" ]
   input_files_base_dir = rebase_path("resources", "//")
   input_files = []
 

@@ -107,7 +107,7 @@ template("build_webui_tests") {
     out_grd = "$target_gen_dir/resources.grdp"
     deps = [ ":build_ts" ]
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
     if (defined(invoker.static_files)) {
       deps += [ ":preprocess_static_files" ]
       manifest_files +=

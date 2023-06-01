@@ -15,7 +15,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash)
 
 preprocessed_dir = "$target_gen_dir/preprocessed"
-preprocessed_manifest = "preprocessed.manifest"
+preprocessed_manifest = "preprocessed_manifest.json"
 
 web_component_files = [
   "keyboard_diagram.js",
@@ -335,8 +335,8 @@ generate_grd("build_grd") {
   ]
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
-      filter_include(get_target_outputs(":preprocess"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ]) +
+      filter_include(get_target_outputs(":preprocess"), [ "*_manifest.json" ])
   grd_prefix = "ash_webui_common"
   out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "ash/common"

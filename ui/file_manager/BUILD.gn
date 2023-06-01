@@ -330,7 +330,7 @@ generate_grd("build_grd") {
     ]
   } else {
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   }
 }
 
@@ -375,8 +375,9 @@ generate_grd("build_tests_gen_grdp") {
   out_grd = "$target_gen_dir/tests_gen_resources.grdp"
 
   manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ]) +
-      filter_include(get_target_outputs(":test_build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ]) +
+      filter_include(get_target_outputs(":test_build_ts"),
+                     [ "*_manifest.json" ])
 
   deps = [
     ":build_ts",
