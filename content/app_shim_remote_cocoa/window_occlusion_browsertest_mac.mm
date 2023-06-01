@@ -25,9 +25,13 @@ namespace {
 const int kNeverCalled = -100;
 
 struct FeatureState {
-  bool feature_enabled = false;
   bool enhanced_occlusion_detection_enabled = false;
-  bool display_sleep_detection_enabled = false;
+};
+
+struct Version {
+  int32_t major;
+  int32_t minor;
+  bool supported;
 };
 
 }  // namespace
@@ -141,6 +145,8 @@ struct FeatureState {
 - (instancetype)init {
   self = [super init];
 
+  // The tests should access WebContentsOcclusionCheckerMac directly, rather
+  // than through NSClassFromString(). See crbug.com/1450724 .
   [WebContentVisibilityUpdateWatcher performOcclusionStateUpdatesSwizzler]
       .reset(new base::mac::ScopedObjCClassSwizzler(
           NSClassFromString(@"WebContentsOcclusionCheckerMac"),
@@ -329,12 +335,9 @@ class WindowOcclusionBrowserTestMac
       public ContentBrowserTest {
  public:
   WindowOcclusionBrowserTestMac() {
-    if (GetParam().feature_enabled) {
+    if (GetParam().enhanced_occlusion_detection_enabled) {
       base::FieldTrialParams params;
-      if (GetParam().enhanced_occlusion_detection_enabled)
-        params["EnhancedWindowOcclusionDetection"] = "true";
-      if (GetParam().display_sleep_detection_enabled)
-        params["DisplaySleepAndAppHideDetection"] = "true";
+      params["EnhancedWindowOcclusionDetection"] = "true";
       _features.InitAndEnableFeatureWithParameters(
           features::kMacWebContentsOcclusion, params);
     } else {
@@ -343,9 +346,10 @@ class WindowOcclusionBrowserTestMac
   }
 
   void SetUp() override {
-    if (base::mac::IsAtLeastOS13()) {
+    if (![NSClassFromString(@"WebContentsOcclusionCheckerMac")
+            manualOcclusionDetectionSupportedForCurrentMacOSVersion]) {
       GTEST_SKIP()
-          << "Manual window occlusion detection is broken on macOS Ventura.";
+          << "Manual window occlusion detection is broken on macOS 13.0-13.2.";
     }
     ContentBrowserTest::SetUp();
   }
@@ -467,8 +471,7 @@ class WindowOcclusionBrowserTestMac
   void OrderWindowFront(NSWindow* window) {
     base::scoped_nsobject<WebContentVisibilityUpdateCounter> watcher;
 
-    if (!kEnhancedWindowOcclusionDetection.Get() &&
-        !kDisplaySleepAndAppHideDetection.Get()) {
+    if (!kEnhancedWindowOcclusionDetection.Get()) {
       watcher.reset([[WebContentVisibilityUpdateCounter alloc] init]);
     }
 
@@ -477,8 +480,6 @@ class WindowOcclusionBrowserTestMac
 
     if (kEnhancedWindowOcclusionDetection.Get()) {
       WaitForOcclusionUpdate();
-    } else if (!kDisplaySleepAndAppHideDetection.Get()) {
-      EXPECT_TRUE([WebContentVisibilityUpdateCounter methodNeverCalled]);
     }
   }
 
@@ -569,55 +570,45 @@ using WindowOcclusionBrowserTestMacWithoutOcclusionFeature =
     WindowOcclusionBrowserTestMac;
 using WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature =
     WindowOcclusionBrowserTestMac;
-using WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature =
-    WindowOcclusionBrowserTestMac;
 
 // Tests that should only work without the occlusion detection feature.
-INSTANTIATE_TEST_SUITE_P(
-    NoFeature,
-    WindowOcclusionBrowserTestMacWithoutOcclusionFeature,
-    ::testing::Values(FeatureState{.feature_enabled = false},
-                      // Feature should be a no-op without parameters.
-                      FeatureState{.feature_enabled = true}));
+INSTANTIATE_TEST_SUITE_P(NoFeature,
+                         WindowOcclusionBrowserTestMacWithoutOcclusionFeature,
+                         ::testing::Values(FeatureState{
+                             .enhanced_occlusion_detection_enabled = false}));
 
 // Tests that should work with or without the occlusion detection feature.
 INSTANTIATE_TEST_SUITE_P(
     Common,
     WindowOcclusionBrowserTestMac,
-    ::testing::Values(FeatureState{.feature_enabled = false},
-                      FeatureState{.feature_enabled = true},
-                      FeatureState{
-                          .feature_enabled = true,
-                          .enhanced_occlusion_detection_enabled = true},
-                      FeatureState{.feature_enabled = true,
-                                   .display_sleep_detection_enabled = true},
-                      FeatureState{.feature_enabled = true,
-                                   .enhanced_occlusion_detection_enabled = true,
-                                   .display_sleep_detection_enabled = true}));
+    ::testing::Values(
+        FeatureState{.enhanced_occlusion_detection_enabled = false},
+        FeatureState{.enhanced_occlusion_detection_enabled = true}));
 
 // Tests that require enhanced window occlusion detection.
 INSTANTIATE_TEST_SUITE_P(
     EnhancedWindowOcclusionDetection,
     WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature,
-    ::testing::Values(
-        FeatureState{.feature_enabled = true,
-                     .enhanced_occlusion_detection_enabled = true},
-        FeatureState{.feature_enabled = true,
-                     .enhanced_occlusion_detection_enabled = true,
-                     .display_sleep_detection_enabled = true}));
+    ::testing::Values(FeatureState{
+        .enhanced_occlusion_detection_enabled = true}));
 
-// Tests that require display sleep and app hide detection.
-INSTANTIATE_TEST_SUITE_P(
-    DisplaySleepAndAppHideDetection,
-    WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature,
-    ::testing::Values(FeatureState{.feature_enabled = true,
-                                   .display_sleep_detection_enabled = true},
-                      FeatureState{.feature_enabled = true,
-                                   .enhanced_occlusion_detection_enabled = true,
-                                   .display_sleep_detection_enabled = true}));
+// Tests that we correctly disallow unsupported macOS versions.
+IN_PROC_BROWSER_TEST_P(WindowOcclusionBrowserTestMac, MacOSVersionChecking) {
+  Class WebContentsOcclusionCheckerMac =
+      NSClassFromString(@"WebContentsOcclusionCheckerMac");
+  std::vector<Version> versions = {
+      {11, 0, true},  {12, 0, true},  {12, 9, true}, {13, 0, false},
+      {13, 1, false}, {13, 2, false}, {13, 3, true}, {14, 0, true}};
 
-// Test that enhanced occlusion detection doesn't work if the feature's not
-// enabled.
+  for (const auto& version : versions) {
+    bool supported = [WebContentsOcclusionCheckerMac manualOcclusionDetectionSupportedForVersion:version.major
+                                                                                                :version.minor];
+    EXPECT_EQ(supported, version.supported);
+  }
+}
+
+// Tests that enhanced occlusion detection isn't triggered if the feature's
+// not enabled.
 IN_PROC_BROWSER_TEST_P(WindowOcclusionBrowserTestMacWithoutOcclusionFeature,
                        ManualOcclusionDetectionDisabled) {
   InitWindowA();
@@ -820,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Checks that web contents are marked kHidden on display sleep.
 IN_PROC_BROWSER_TEST_P(
-    WindowOcclusionBrowserTestMacWithDisplaySleepDetectionFeature,
+    WindowOcclusionBrowserTestMacWithOcclusionDetectionFeature,
     OcclusionDetectionOnDisplaySleep) {
   InitWindowA();
 

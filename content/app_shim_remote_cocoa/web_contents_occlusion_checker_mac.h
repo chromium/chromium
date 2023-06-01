@@ -31,6 +31,14 @@ extern CONTENT_EXPORT const base::FeatureParam<bool>
 
 + (instancetype)sharedInstance;
 
+// Returns YES if the specified version is less than 13.0 or more than 13.2.
+// Manual occlusion detection is not supported on macOS 13.0-13.2.
++ (BOOL)manualOcclusionDetectionSupportedForVersion:(int32_t)major
+                                                   :(int32_t)minor;
+
+// Returns YES if manual occlusion detection is supported for the current macOS.
++ (BOOL)manualOcclusionDetectionSupportedForCurrentMacOSVersion;
+
 // API exposed for testing.
 
 // Resets the state of `sharedInstance` during tests.
