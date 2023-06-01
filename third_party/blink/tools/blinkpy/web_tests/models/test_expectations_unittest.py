@@ -335,6 +335,7 @@ class SystemConfigurationEditorTests(Base):
             'win': ['win7', 'win10'],
             'linux': ['precise', 'trusty']
         }
+        self.maxDiff = None
 
     def set_up_using_raw_expectations(self, content):
         self._general_exp_filename = self._port.host.filesystem.join(
@@ -454,6 +455,138 @@ class SystemConfigurationEditorTests(Base):
                 crbug.com/123 [ Mac10.12 ] failures/expected/text.html?\* [ Failure ]  # comment
 
                 [ Mac10.11 ] failures/expected/text.html?\* [ Crash Failure ]
+                """))
+
+    def test_merge_versions_os(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win ]
+            # results: [ Failure Crash ]
+            # Below Expectation should be merged
+            crbug.com/123 [ Win7 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Mac10.10 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Mac10.11 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/456 [ Mac10.12 ] failures/expected/text.html?\* [ Failure ]  # comment 2
+            crbug.com/456 [ Mac10.13 ] failures/expected/text.html?\* [ Failure ]  # comment 2
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win ]
+                # results: [ Failure Crash ]
+                # Below Expectation should be merged
+                crbug.com/123 [ Win7 ] failures/expected/text.html?\* [ Failure ]  # comment
+                crbug.com/123 crbug.com/456 [ Mac ] failures/expected/text.html?\* [ Failure ]  # comment, comment 2
+                """))
+
+    def test_merge_versions_generic(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win Precise Trusty Linux ]
+            # results: [ Failure Crash ]
+            # Below Expectation should be merged
+            crbug.com/123 [ Win7 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Win10 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Precise ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Trusty ] failures/expected/text.html?\* [ Failure ]  # comment
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win Precise Trusty Linux ]
+                # results: [ Failure Crash ]
+                # Below Expectation should be merged
+                crbug.com/123 failures/expected/text.html?\* [ Failure ]  # comment
+                """))
+
+    def test_merge_versions_with_other_specifiers(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Win7 Win10 Win ]
+            # tags: [ Debug Release ]
+            # results: [ Failure Crash ]
+            crbug.com/123 [ Debug Win7 ] failures/expected/text.html?\* [ Crash ]  # DCHECK triggered
+            crbug.com/123 [ Debug Win10 ] failures/expected/text.html?\* [ Crash ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Win7 Win10 Win ]
+                # tags: [ Debug Release ]
+                # results: [ Failure Crash ]
+                crbug.com/123 [ Debug Win ] failures/expected/text.html?\* [ Crash ]  # DCHECK triggered
+                """))
+
+    def test_merge_versions_skip_with_different_results(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win Precise Trusty Linux ]
+            # results: [ Failure Crash ]
+            # The Win and Linux expectations should be merged.
+            # The Mac results prevent merging to a generic expectation.
+            crbug.com/123 [ Win7 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Win10 ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Crash Failure ]  # comment
+            crbug.com/123 [ Precise ] failures/expected/text.html?\* [ Failure ]  # comment
+            crbug.com/123 [ Trusty ] failures/expected/text.html?\* [ Failure ]  # comment
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Mac10.10 Mac10.11 Mac10.12 Mac10.13 Mac Win7 Win10 Win Precise Trusty Linux ]
+                # results: [ Failure Crash ]
+                # The Win and Linux expectations should be merged.
+                # The Mac results prevent merging to a generic expectation.
+                crbug.com/123 [ Win ] failures/expected/text.html?\* [ Failure ]  # comment
+                crbug.com/123 [ Mac ] failures/expected/text.html?\* [ Crash Failure ]  # comment
+                crbug.com/123 [ Linux ] failures/expected/text.html?\* [ Failure ]  # comment
+                """))
+
+    def test_merge_versions_skip_with_disjoint_specifiers(self):
+        raw_expectations = textwrap.dedent("""\
+            # tags: [ Win7 Win10 Win ]
+            # tags: [ Debug Release ]
+            # results: [ Failure Crash ]
+            # Debug and Release describe disjoint test configurations.
+            crbug.com/123 [ Debug Win7 ] failures/expected/text.html?\* [ Failure ]
+            crbug.com/123 [ Release Win10 ] failures/expected/text.html?\* [ Failure ]
+            """)
+        self.set_up_using_raw_expectations(raw_expectations)
+        self._system_config_remover.merge_versions(
+            'failures/expected/text.html?*')
+        self._system_config_remover.update_expectations()
+        updated_exps = self._port.host.filesystem.read_text_file(
+            self._general_exp_filename)
+        self.assertEqual(
+            updated_exps,
+            textwrap.dedent("""\
+                # tags: [ Win7 Win10 Win ]
+                # tags: [ Debug Release ]
+                # results: [ Failure Crash ]
+                # Debug and Release describe disjoint test configurations.
+                crbug.com/123 [ Debug Win7 ] failures/expected/text.html?\* [ Failure ]
+                crbug.com/123 [ Release Win10 ] failures/expected/text.html?\* [ Failure ]
                 """))
 
     def test_remove_mac_version_from_mac_expectation(self):

@@ -34,7 +34,16 @@ import re
 from collections import defaultdict
 from collections import OrderedDict
 from functools import reduce
-from typing import Collection, Dict, FrozenSet, List, Optional, Tuple
+from typing import (
+    ClassVar,
+    Collection,
+    Dict,
+    FrozenSet,
+    List,
+    Optional,
+    Set,
+    Tuple,
+)
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.models import typ_types
@@ -501,6 +510,8 @@ class TestExpectations:
 
 
 class SystemConfigurationEditor:
+    ALL_SYSTEMS: ClassVar[str] = ''  # Sentinel value to indicate no tag
+
     def __init__(self, test_expectations: TestExpectations):
         self._test_expectations = test_expectations
         macros = self._test_expectations.port.configuration_specifier_macros()
@@ -516,7 +527,7 @@ class SystemConfigurationEditor:
         self._generic_exp_file_path = \
             self._test_expectations.port.path_to_generic_test_expectations_file()
         fs = self._test_expectations.port.host.filesystem
-        self._tags_in_expectation = self._tags_in_expectation_file(
+        self._tags_in_file = self._tags_in_expectation_file(
             self._generic_exp_file_path,
             fs.read_text_file(self._generic_exp_file_path))
 
@@ -538,10 +549,10 @@ class SystemConfigurationEditor:
 
     def _resolve_versions(self, tags: FrozenSet[str]) -> FrozenSet[str]:
         tag = self._system_tag(tags)
-        if tag:
-            return self._versions_by_os.get(tag, {tag})
-        # A line without any OS/version specifiers applies to all versions.
-        return self._version_specifiers
+        if tag == self.ALL_SYSTEMS:
+            # A line without any OS/version specifiers applies to all versions.
+            return self._version_specifiers
+        return self._versions_by_os.get(tag, {tag})
 
     def _system_tag(self, tags: FrozenSet[str]) -> str:
         maybe_version = tags & self._version_specifiers
@@ -552,17 +563,34 @@ class SystemConfigurationEditor:
         elif maybe_os:
             (os, ) = maybe_os
             return os
-        return ''
+        return self.ALL_SYSTEMS
 
-    def _simplify_versions(self, versions: FrozenSet[str]) -> FrozenSet[str]:
-        system_specifiers = set(versions)
+    def _simplify_versions(self,
+                           versions: FrozenSet[str]) -> Dict[str, Set[str]]:
+        """Find a minimal set of system specifiers to write.
+
+        Returns:
+            A map from new system specifiers to old ones in `versions`. System
+            specifiers may be at the OS or version level. Tags that could not
+            be simplified are mapped identically (e.g., Mac -> {Mac}).
+        """
+        system_specifiers = defaultdict(set)
         for os, os_versions in self._versions_by_os.items():
             # If all the versions of an OS are in the system specifiers set, then
             # replace all those specifiers with the OS specifier.
-            if os_versions <= system_specifiers:
-                system_specifiers -= os_versions
-                system_specifiers.add(os)
-        return frozenset(system_specifiers)
+            if os_versions <= versions:
+                system_specifiers[os].update(os_versions)
+        for version in versions - frozenset().union(
+                *system_specifiers.values()):
+            system_specifiers[version].add(version)
+        if set(system_specifiers) >= self._os_specifiers:
+            return {self.ALL_SYSTEMS: set(versions)}
+        # Skip tags not listed in TestExpectations
+        return {
+            new_tag: old_tags
+            for new_tag, old_tags in system_specifiers.items()
+            if new_tag in self._tags_in_file
+        }
 
     def update_versions(self,
                         test_name: str,
@@ -613,6 +641,59 @@ class SystemConfigurationEditor:
             self._test_expectations.add_expectations(
                 self._generic_exp_file_path, [new_exp], anchor_exp.lineno)
 
+    def merge_versions(self, test_name: str):
+        """Merge test expectations for systems with the same results."""
+        expectations = self._test_expectations.get_expectations_from_file(
+            self._generic_exp_file_path, test_name)
+        exps_by_other_tags = defaultdict(list)
+        for exp in expectations:
+            other_tags = exp.tags - {self._system_tag(exp.tags)}
+            exps_by_other_tags[other_tags, exp.results].append(exp)
+        exps_to_remove = []
+        # Try to collapse the group along the system tag dimension.
+        for (other_tags, _), exp_group in exps_by_other_tags.items():
+            exps_by_system_tags = {
+                self._system_tag(exp.tags): exp
+                for exp in exp_group
+            }
+            system_tags = self._simplify_versions(
+                frozenset(exps_by_system_tags))
+            for new_tag, old_tags in system_tags.items():
+                exps_to_remove.extend(exps_by_system_tags[tag]
+                                      for tag in old_tags if tag != new_tag)
+                if new_tag not in old_tags:
+                    new_tags = set(other_tags)
+                    if new_tag != self.ALL_SYSTEMS:
+                        new_tags.add(new_tag)
+                    old_exps = [exps_by_system_tags[tag] for tag in old_tags]
+                    new_exp = self._merge_expectations(old_exps, new_tags)
+                    self._test_expectations.add_expectations(
+                        self._generic_exp_file_path, [new_exp], new_exp.lineno)
+        self._test_expectations.remove_expectations(
+            self._generic_exp_file_path, exps_to_remove)
+
+    def _merge_expectations(self, exps: List[typ_types.Expectation],
+                            tags: FrozenSet[str]) -> typ_types.Expectation:
+        reasons = {exp.reason.strip() for exp in exps}
+        comments = set()
+        for exp in exps:
+            comment = exp.trailing_comments.strip()
+            if comment.startswith('#'):
+                comment = comment[1:].strip()
+            if comment:
+                comments.add(comment)
+        new_comment = '  # ' + ', '.join(sorted(comments)) if comments else ''
+        assert len({exp.test for exp in exps}) == 1
+        assert len({exp.results for exp in exps}) == 1
+        return typ_types.Expectation(
+            lineno=exps[0].lineno,
+            is_slow_test=any(exp.is_slow_test for exp in exps),
+            reason=' '.join(sorted(reason for reason in reasons if reason)),
+            trailing_comments=new_comment,
+            test=exps[0].test,
+            results=exps[0].results,
+            tags=tags)
+
     def _find_marker(self,
                      marker: Optional[str] = None) -> typ_types.Expectation:
         lines = self._test_expectations.get_updated_lines(
@@ -651,17 +732,17 @@ class SystemConfigurationEditor:
             other_specifiers = (exp.tags - self._os_specifiers -
                                 self._version_specifiers)
             systems = self._simplify_versions(versions)
-            # Skip tags not listed in TestExpectations
-            systems &= self._tags_in_expectation
+            tag_sets = [({system} if system != self.ALL_SYSTEMS else set())
+                        | other_specifiers for system in sorted(systems)]
             residual_exps = [
-                typ_types.Expectation(tags=({system} | other_specifiers),
+                typ_types.Expectation(tags=tags,
                                       results=exp.results,
                                       is_slow_test=exp.is_slow_test,
                                       reason=exp.reason,
                                       test=exp.test,
                                       lineno=exp.lineno,
                                       trailing_comments=exp.trailing_comments)
-                for system in sorted(systems)
+                for tags in tag_sets
             ]
             self._test_expectations.remove_expectations(
                 self._generic_exp_file_path, [exp])
