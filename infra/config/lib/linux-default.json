@@ -122,6 +122,7 @@
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-chromeos-rel-compilator": "Ubuntu-22.04",
     "linux-code-coverage": "Ubuntu-22.04",
+    "linux-cr23-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-lacros-rel-compilator": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
