@@ -368,6 +368,16 @@
           'shards': 12,
         },
       },
+      'Mac13 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 12,
+        },
+      },
       'Mac13 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
@@ -721,6 +731,16 @@
         },
       },
       'Mac12 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 18,
+        },
+      },
+      'Mac13 Tests': {
         'swarming': {
           'dimension_sets': [
             {
@@ -1138,6 +1158,12 @@
         },
       },
       'Mac12 Tests': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 20,  # crbug.com/1361887
+        },
+      },
+      'Mac13 Tests': {
         'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
@@ -1808,6 +1834,11 @@
         },
       },
       'Mac12 Tests': {
+        'swarming': {
+          'shards': 12,
+        },
+      },
+      'Mac13 Tests': {
         'swarming': {
           'shards': 12,
         },
@@ -2799,6 +2830,11 @@
           'shards': 6,
         },
       },
+      'Mac13 Tests': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'Mac13 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
         'swarming': {
@@ -3698,6 +3734,12 @@
           'shards': 4,
         },
       },
+      'Mac13 Tests': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'Mac13 Tests (dbg)':{
         'swarming': {
           'shards': 3,
@@ -3831,6 +3873,9 @@
         'ci_only': True,
       },
       'Mac12 Tests': {
+        'ci_only': True,
+      },
+      'Mac13 Tests': {
         'ci_only': True,
       },
       # If you change this, make similar changes in android-x86-code-coverage below
