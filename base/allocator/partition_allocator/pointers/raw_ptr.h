@@ -1188,6 +1188,13 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 
+// This flag is used to tag a subset of dangling pointers. Similarly to
+// DanglingUntriaged, those pointers are known to be dangling. However, we also
+// detected that those raw_ptr's were never released (either by calling
+// raw_ptr's destructor or by resetting its value), which can ultimately put
+// pressure on the BRP quarantine.
+constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
+
 namespace std {
 
 // Override so set/map lookups do not create extra raw_ptr. This also allows
