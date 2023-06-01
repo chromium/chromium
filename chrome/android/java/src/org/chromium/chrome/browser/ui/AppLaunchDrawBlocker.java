@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -75,6 +77,7 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Boolean> mIsTabletSupplier;
     private final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
     private final Supplier<Boolean> mIsInstantStartEnabledSupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     /**
      * An app draw blocker that takes care of blocking the draw when we are restoring tabs with
@@ -112,6 +115,7 @@ public class AppLaunchDrawBlocker {
             @NonNull Supplier<Boolean> isTabletSupplier,
             @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
             @NonNull Supplier<Boolean> isInstantStartEnabledSupplier,
+            @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull IncognitoRestoreAppLaunchDrawBlockerFactory
                     incognitoRestoreAppLaunchDrawBlockerFactory) {
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -142,6 +146,7 @@ public class AppLaunchDrawBlocker {
         mIsTabletSupplier = isTabletSupplier;
         mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
         mIsInstantStartEnabledSupplier = isInstantStartEnabledSupplier;
+        mProfileSupplier = profileSupplier;
         mIncognitoRestoreAppLaunchDrawBlocker = incognitoRestoreAppLaunchDrawBlockerFactory.create(
                 intentSupplier, shouldIgnoreIntentSupplier, activityLifecycleDispatcher,
                 this::onIncognitoRestoreUnblockConditionsFired);
@@ -192,8 +197,10 @@ public class AppLaunchDrawBlocker {
     }
 
     private void writeSearchEngineHadLogoPref() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
         boolean searchEngineHasLogo =
-                TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                TemplateUrlServiceFactory.getForProfile(profile.getOriginalProfile())
                         .doesDefaultSearchEngineHaveLogo();
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, searchEngineHasLogo);
@@ -292,13 +299,22 @@ public class AppLaunchDrawBlocker {
      */
     private void recordBlockDrawForInitialTabHistograms(
             boolean isTabRegularNtp, boolean isOverviewShownWithoutInstantStart) {
+        if (!mProfileSupplier.hasValue()) {
+            new OneShotCallback<>(mProfileSupplier, (profile) -> {
+                recordBlockDrawForInitialTabHistograms(
+                        isTabRegularNtp, isOverviewShownWithoutInstantStart);
+            });
+            return;
+        }
+
         long durationDrawBlocked =
                 SystemClock.elapsedRealtime() - mTimeStartedBlockingDrawForInitialTab;
 
         boolean singleUrlBarNtp = false;
         if (!isOverviewShownWithoutInstantStart) {
             boolean searchEngineHasLogo =
-                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                    TemplateUrlServiceFactory
+                            .getForProfile(mProfileSupplier.get().getOriginalProfile())
                             .doesDefaultSearchEngineHaveLogo();
             boolean singleUrlBarMode =
                     NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);

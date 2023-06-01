@@ -448,6 +448,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 () -> findViewById(android.R.id.content),
                 this::getIntent, this::shouldIgnoreIntent, this::isTablet,
                 this::shouldShowOverviewPageOnStart, this::isInstantStartEnabled,
+                mTabModelProfileSupplier,
                 new IncognitoRestoreAppLaunchDrawBlockerFactory(this::getSavedInstanceState,
                         getTabModelSelectorSupplier()));
         // clang-format on
