@@ -15,7 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Responsible for hosting properties of the improved bookmark folder select view. */
-public class ImprovedBookmarkFolderSelectViewProperties {
+public class ImprovedBookmarkFolderSelectRowProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     // Sets the background color for the start image, both for the image and folder view.
     public static final WritableIntPropertyKey START_AREA_BACKGROUND_COLOR =

@@ -53,11 +53,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/** Render tests for the {@link ImprovedBookmarkFolderSelectView}. */
+/** Render tests for the {@link ImprovedBookmarkFolderSelectRow}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-public class ImprovedBookmarkFolderSelectViewRenderTest {
+public class ImprovedBookmarkFolderSelectRowRenderTest {
     private static final String TITLE = "Test title";
     private static final String READING_LIST_TITLE = "Reading list";
     private static final int CHILD_COUNT = 5;
@@ -99,9 +99,9 @@ public class ImprovedBookmarkFolderSelectViewRenderTest {
     private Drawable mDrawable;
 
     private LinearLayout mContentView;
-    private ImprovedBookmarkFolderSelectView mView;
+    private ImprovedBookmarkFolderSelectRow mView;
 
-    public ImprovedBookmarkFolderSelectViewRenderTest(boolean nightModeEnabled) {
+    public ImprovedBookmarkFolderSelectRowRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -149,7 +149,7 @@ public class ImprovedBookmarkFolderSelectViewRenderTest {
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            mView = (ImprovedBookmarkFolderSelectView) LayoutInflater
+            mView = (ImprovedBookmarkFolderSelectRow) LayoutInflater
                             .from(mActivityTestRule.getActivity())
                             .inflate(R.layout.improved_bookmark_folder_select_layout, null);
             mContentView.addView(mView);
@@ -161,8 +161,8 @@ public class ImprovedBookmarkFolderSelectViewRenderTest {
     @Feature({"RenderTest"})
     public void testNormal() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                    new ImprovedBookmarkFolderSelectViewCoordinator(mActivityTestRule.getActivity(),
+            ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                    new ImprovedBookmarkFolderSelectRowCoordinator(mActivityTestRule.getActivity(),
                             mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
         });
         mRenderTestRule.render(mContentView, "normal");
@@ -176,8 +176,8 @@ public class ImprovedBookmarkFolderSelectViewRenderTest {
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(anyBoolean(), anyBoolean());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                    new ImprovedBookmarkFolderSelectViewCoordinator(mActivityTestRule.getActivity(),
+            ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                    new ImprovedBookmarkFolderSelectRowCoordinator(mActivityTestRule.getActivity(),
                             mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
         });
         mRenderTestRule.render(mContentView, "top_level_folder");
@@ -191,8 +191,8 @@ public class ImprovedBookmarkFolderSelectViewRenderTest {
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(anyBoolean(), anyBoolean());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                    new ImprovedBookmarkFolderSelectViewCoordinator(mActivityTestRule.getActivity(),
+            ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                    new ImprovedBookmarkFolderSelectRowCoordinator(mActivityTestRule.getActivity(),
                             mView, mBookmarkImageFetcher, mReadingListFolderId, mBookmarkModel);
         });
         mRenderTestRule.render(mContentView, "reading_list");

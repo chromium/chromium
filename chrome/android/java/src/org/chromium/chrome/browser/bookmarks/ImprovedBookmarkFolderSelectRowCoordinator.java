@@ -22,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Business logic for the improved bookmark folder select view. */
-public class ImprovedBookmarkFolderSelectViewCoordinator {
+public class ImprovedBookmarkFolderSelectRowCoordinator {
     private final Context mContext;
     private final View mView;
     private final PropertyModel mModel;
@@ -38,51 +38,51 @@ public class ImprovedBookmarkFolderSelectViewCoordinator {
      * @param bookmarkId The folder to show the row for.
      * @param bookmarkModel The bookmark model used to query bookmark properties.
      */
-    public ImprovedBookmarkFolderSelectViewCoordinator(Context context,
-            ImprovedBookmarkFolderSelectView view, BookmarkImageFetcher bookmarkImageFetcher,
+    public ImprovedBookmarkFolderSelectRowCoordinator(Context context,
+            ImprovedBookmarkFolderSelectRow view, BookmarkImageFetcher bookmarkImageFetcher,
             BookmarkId bookmarkId, BookmarkModel bookmarkModel) {
         mContext = context;
         mView = view;
-        mModel = new PropertyModel(ImprovedBookmarkFolderSelectViewProperties.ALL_KEYS);
+        mModel = new PropertyModel(ImprovedBookmarkFolderSelectRowProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
-                mModel, mView, ImprovedBookmarkFolderSelectViewBinder::bind);
+                mModel, mView, ImprovedBookmarkFolderSelectRowViewBinder::bind);
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mBookmarkId = bookmarkId;
         mBookmarkModel = bookmarkModel;
         mBookmarkItem = mBookmarkModel.getBookmarkById(mBookmarkId);
 
         int type = mBookmarkId.getType();
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_ICON_DRAWABLE,
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_ICON_DRAWABLE,
                 BookmarkUtils.getFolderIcon(mContext, type, BookmarkRowDisplayPref.VISUAL));
         if (type == BookmarkType.READING_LIST) {
-            mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_AREA_BACKGROUND_COLOR,
+            mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_AREA_BACKGROUND_COLOR,
                     SemanticColorUtils.getColorPrimaryContainer(mContext));
-            mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_ICON_TINT,
+            mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_ICON_TINT,
                     ColorStateList.valueOf(
                             SemanticColorUtils.getDefaultIconColorAccent1(mContext)));
         } else {
-            mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_AREA_BACKGROUND_COLOR,
+            mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
-            mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_ICON_TINT,
+            mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_ICON_TINT,
                     AppCompatResources.getColorStateList(
                             mContext, R.color.default_icon_color_secondary_tint_list));
         }
 
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.TITLE,
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.TITLE,
                 mBookmarkModel.getBookmarkTitle(mBookmarkId));
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.FOLDER_CHILD_COUNT,
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.FOLDER_CHILD_COUNT,
                 mBookmarkModel.getChildCount(mBookmarkId));
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.END_ICON_VISIBLE, true);
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.ROW_CLICK_LISTENER,
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.END_ICON_VISIBLE, true);
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.ROW_CLICK_LISTENER,
                 (v)
                         -> {
                                 // TODO(crbug.com/1448933): Implement new move activity.
                         });
-        mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+        mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                 new Pair<>(null, null));
         if (BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, mBookmarkId)) {
             mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(mBookmarkItem, (imagePair) -> {
-                mModel.set(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                mModel.set(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                         imagePair);
             });
         }

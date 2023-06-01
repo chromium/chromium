@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectView;
-import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectViewCoordinator;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRow;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkFolderSelectRowCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -49,7 +49,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
     private static final String TAG = "BookmarkEdit";
 
-    private ImprovedBookmarkFolderSelectViewCoordinator mFolderSelectCoordinator;
+    private ImprovedBookmarkFolderSelectRowCoordinator mFolderSelectCoordinator;
 
     private BookmarkModel mModel;
     private BookmarkId mBookmarkId;
@@ -131,8 +131,8 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
         Resources res = this.getResources();
         Profile profile = Profile.getLastUsedRegularProfile();
-        mFolderSelectCoordinator = new ImprovedBookmarkFolderSelectViewCoordinator(this,
-                (ImprovedBookmarkFolderSelectView) findViewById(R.id.improved_folder_row),
+        mFolderSelectCoordinator = new ImprovedBookmarkFolderSelectRowCoordinator(this,
+                (ImprovedBookmarkFolderSelectRow) findViewById(R.id.improved_folder_row),
                 new BookmarkImageFetcher(this, mModel,
                         ImageFetcherFactory.createImageFetcher(
                                 ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),

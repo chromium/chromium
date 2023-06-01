@@ -23,14 +23,14 @@ import org.chromium.chrome.R;
  * 1. Launch an activity to select a new folder.
  * 2. Within that activity select a folder or subfolder.
  */
-public class ImprovedBookmarkFolderSelectView extends FrameLayout {
+public class ImprovedBookmarkFolderSelectRow extends FrameLayout {
     private View mRowView;
     private ImprovedBookmarkFolderView mFolderView;
     private TextView mTitleView;
     private View mEndIconView;
 
     /** Constructor for inflating from XML. */
-    public ImprovedBookmarkFolderSelectView(Context context, AttributeSet attrs) {
+    public ImprovedBookmarkFolderSelectRow(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

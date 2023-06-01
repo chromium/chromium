@@ -44,11 +44,11 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 
-/** Unit tests for {@link ImprovedBookmarkFolderSelectViewCoordinator}. */
+/** Unit tests for {@link ImprovedBookmarkFolderSelectRowCoordinator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
+public class ImprovedBookmarkFolderSelectRowCoordinatorTest {
     private static final String TITLE = "Test title";
     private static final String READING_LIST_TITLE = "Reading list";
     private static final int CHILD_COUNT = 5;
@@ -73,7 +73,7 @@ public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
             false, 0, false);
 
     @Mock
-    private ImprovedBookmarkFolderSelectView mView;
+    private ImprovedBookmarkFolderSelectRow mView;
     @Mock
     private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock
@@ -107,21 +107,21 @@ public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
 
     @Test
     public void testConstructor_withImages() {
-        ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectViewCoordinator(
+        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                new ImprovedBookmarkFolderSelectRowCoordinator(
                         mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
         PropertyModel model = coordinator.getModel();
 
-        assertEquals(TITLE, model.get(ImprovedBookmarkFolderSelectViewProperties.TITLE));
+        assertEquals(TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
         assertEquals(CHILD_COUNT,
-                model.get(ImprovedBookmarkFolderSelectViewProperties.FOLDER_CHILD_COUNT));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.FOLDER_CHILD_COUNT));
         assertNotNull(
-                model.get(ImprovedBookmarkFolderSelectViewProperties.START_AREA_BACKGROUND_COLOR));
-        assertNotNull(model.get(ImprovedBookmarkFolderSelectViewProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkFolderSelectViewProperties.START_ICON_TINT));
-        assertTrue(model.get(ImprovedBookmarkFolderSelectViewProperties.END_ICON_VISIBLE));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.START_AREA_BACKGROUND_COLOR));
+        assertNotNull(model.get(ImprovedBookmarkFolderSelectRowProperties.START_ICON_DRAWABLE));
+        assertNotNull(model.get(ImprovedBookmarkFolderSelectRowProperties.START_ICON_TINT));
+        assertTrue(model.get(ImprovedBookmarkFolderSelectRowProperties.END_ICON_VISIBLE));
         assertEquals(new Pair<>(mDrawable, mDrawable),
-                model.get(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
 
         verify(mView).setTitle(TITLE);
         verify(mView).setStartAreaBackgroundColor(anyInt());
@@ -141,12 +141,12 @@ public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
                                 -> callback.onResult(new Pair<>(null, null)))
                 .when(mBookmarkImageFetcher)
                 .fetchFirstTwoImagesForFolder(any(), any());
-        ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectViewCoordinator(
+        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                new ImprovedBookmarkFolderSelectRowCoordinator(
                         mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
         PropertyModel model = coordinator.getModel();
         assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
     }
 
     @Test
@@ -154,12 +154,12 @@ public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
         doReturn(Arrays.asList(mFolderId))
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(anyBoolean(), anyBoolean());
-        ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectViewCoordinator(
+        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                new ImprovedBookmarkFolderSelectRowCoordinator(
                         mActivity, mView, mBookmarkImageFetcher, mFolderId, mBookmarkModel);
         PropertyModel model = coordinator.getModel();
         assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
     }
 
     @Test
@@ -167,16 +167,16 @@ public class ImprovedBookmarkFolderSelectViewCoordinatorTest {
         doReturn(Arrays.asList(mReadingListFolderId))
                 .when(mBookmarkModel)
                 .getTopLevelFolderIds(anyBoolean(), anyBoolean());
-        ImprovedBookmarkFolderSelectViewCoordinator coordinator =
-                new ImprovedBookmarkFolderSelectViewCoordinator(mActivity, mView,
+        ImprovedBookmarkFolderSelectRowCoordinator coordinator =
+                new ImprovedBookmarkFolderSelectRowCoordinator(mActivity, mView,
                         mBookmarkImageFetcher, mReadingListFolderId, mBookmarkModel);
         PropertyModel model = coordinator.getModel();
 
         assertEquals(
-                READING_LIST_TITLE, model.get(ImprovedBookmarkFolderSelectViewProperties.TITLE));
+                READING_LIST_TITLE, model.get(ImprovedBookmarkFolderSelectRowProperties.TITLE));
         assertEquals(READING_LIST_CHILD_COUNT,
-                model.get(ImprovedBookmarkFolderSelectViewProperties.FOLDER_CHILD_COUNT));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.FOLDER_CHILD_COUNT));
         assertEquals(new Pair<>(null, null),
-                model.get(ImprovedBookmarkFolderSelectViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+                model.get(ImprovedBookmarkFolderSelectRowProperties.START_IMAGE_FOLDER_DRAWABLES));
     }
 }
