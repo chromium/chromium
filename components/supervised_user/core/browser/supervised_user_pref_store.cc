@@ -61,6 +61,10 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
         supervised_user::kSigninAllowed,
         prefs::kSigninAllowed,
     },
+    {
+        supervised_user::kSigninAllowedOnNextStartup,
+        prefs::kSigninAllowedOnNextStartup,
+    },
 };
 
 }  // namespace

@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 
