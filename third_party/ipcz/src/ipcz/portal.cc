@@ -78,8 +78,7 @@ IpczResult Portal::Merge(Portal& other) {
 }
 
 IpczResult Portal::Put(absl::Span<const uint8_t> data,
-                       absl::Span<const IpczHandle> handles,
-                       const IpczPutLimits* limits) {
+                       absl::Span<const IpczHandle> handles) {
   std::vector<Ref<APIObject>> objects;
   if (!ValidateAndAcquireObjectsForTransitFrom(*this, handles, objects)) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
@@ -87,10 +86,6 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
 
   if (router_->IsPeerClosed()) {
     return IPCZ_RESULT_NOT_FOUND;
-  }
-
-  if (limits && router_->GetOutboundCapacityInBytes(*limits) < data.size()) {
-    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
   }
 
   Parcel parcel;
@@ -118,20 +113,9 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
 }
 
 IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
-                            const IpczPutLimits* limits,
                             size_t& num_data_bytes,
                             void*& data) {
   const bool allow_partial = (flags & IPCZ_BEGIN_PUT_ALLOW_PARTIAL) != 0;
-  if (limits) {
-    size_t max_num_data_bytes = router_->GetOutboundCapacityInBytes(*limits);
-    if (max_num_data_bytes < num_data_bytes) {
-      num_data_bytes = max_num_data_bytes;
-      if (!allow_partial || max_num_data_bytes == 0) {
-        return IPCZ_RESULT_RESOURCE_EXHAUSTED;
-      }
-    }
-  }
-
   if (router_->IsPeerClosed()) {
     return IPCZ_RESULT_NOT_FOUND;
   }

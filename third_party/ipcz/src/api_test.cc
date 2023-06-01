@@ -156,8 +156,6 @@ TEST_F(APITest, QueryPortalStatus) {
   EXPECT_EQ(0u, status.flags & IPCZ_PORTAL_STATUS_DEAD);
   EXPECT_EQ(0u, status.num_local_parcels);
   EXPECT_EQ(0u, status.num_local_bytes);
-  EXPECT_EQ(0u, status.num_remote_parcels);
-  EXPECT_EQ(0u, status.num_remote_bytes);
 
   Close(b);
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -337,11 +335,6 @@ TEST_F(APITest, BeginEndPutFailure) {
   // Null data.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &num_bytes, nullptr));
-
-  // Invalid options.
-  IpczBeginPutOptions options = {.size = 0};
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().BeginPut(a, IPCZ_NO_FLAGS, &options, &num_bytes, &data));
 
   // Start a put transaction to test EndPut().
   EXPECT_EQ(IPCZ_RESULT_OK,

@@ -389,7 +389,6 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/sequenced_queue_test.cc",
     "merge_portals_test.cc",
     "parcel_test.cc",
-    "queueing_test.cc",
     "reference_drivers/sync_reference_driver_test.cc",
     "remote_portal_test.cc",
     "trap_test.cc",

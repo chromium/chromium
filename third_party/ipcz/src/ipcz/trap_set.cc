@@ -37,27 +37,11 @@ IpczTrapConditionFlags GetSatisfiedConditionsForUpdate(
       status.num_local_bytes > conditions.min_local_bytes) {
     event_flags |= IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES;
   }
-  if ((conditions.flags & IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS) &&
-      status.num_remote_parcels < conditions.max_remote_parcels) {
-    event_flags |= IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS;
-  }
-  if ((conditions.flags & IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES) &&
-      status.num_remote_bytes < conditions.max_remote_bytes) {
-    event_flags |= IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES;
-  }
   if ((conditions.flags & IPCZ_TRAP_NEW_LOCAL_PARCEL) &&
       reason == TrapSet::UpdateReason::kNewLocalParcel) {
     event_flags |= IPCZ_TRAP_NEW_LOCAL_PARCEL;
   }
   return event_flags;
-}
-
-bool NeedRemoteParcels(IpczTrapConditionFlags flags) {
-  return (flags & IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS) != 0;
-}
-
-bool NeedRemoteBytes(IpczTrapConditionFlags flags) {
-  return (flags & IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES) != 0;
 }
 
 }  // namespace
@@ -102,12 +86,6 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
   }
 
   traps_.emplace_back(conditions, handler, context);
-  if (NeedRemoteParcels(conditions.flags)) {
-    ++num_traps_monitoring_remote_parcels_;
-  }
-  if (NeedRemoteBytes(conditions.flags)) {
-    ++num_traps_monitoring_remote_bytes_;
-  }
   return IPCZ_RESULT_OK;
 }
 
@@ -130,12 +108,6 @@ void TrapSet::UpdatePortalStatus(const OperationContext& context,
     }
     dispatcher.DeferEvent(trap.handler, trap.context, flags, status);
     it = traps_.erase(it);
-    if (NeedRemoteParcels(flags)) {
-      --num_traps_monitoring_remote_parcels_;
-    }
-    if (NeedRemoteBytes(flags)) {
-      --num_traps_monitoring_remote_bytes_;
-    }
   }
 }
 
@@ -150,8 +122,6 @@ void TrapSet::RemoveAll(const OperationContext& context,
                           last_known_status_);
   }
   traps_.clear();
-  num_traps_monitoring_remote_parcels_ = 0;
-  num_traps_monitoring_remote_bytes_ = 0;
 }
 
 TrapSet::Trap::Trap(IpczTrapConditions conditions,

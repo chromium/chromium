@@ -622,58 +622,15 @@ typedef uint32_t IpczConnectNodeFlags;
 // the connecting node will be delegated to the connectee.
 #define IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE IPCZ_FLAG_BIT(3)
 
-// Optional limits provided by IpczPutOptions for Put() or IpczBeginPutOptions
-// for BeginPut().
-struct IPCZ_ALIGN(8) IpczPutLimits {
-  // The exact size of this structure in bytes. Must be set accurately before
-  // passing the structure to any API functions.
-  size_t size;
-
-  // Specifies the maximum number of unread parcels to allow in a portal's
-  // queue. If a Put() or BeginPut() call specifying this limit would cause the
-  // receiver's number of number of queued unread parcels to exceed this value,
-  // the call will fail with IPCZ_RESULT_RESOURCE_EXHAUSTED.
-  size_t max_queued_parcels;
-
-  // Specifies the maximum number of data bytes to allow in a portal's queue.
-  // If a Put() or BeginPut() call specifying this limit would cause the number
-  // of data bytes across all queued unread parcels to exceed this value, the
-  // call will fail with IPCZ_RESULT_RESOURCE_EXHAUSTED.
-  size_t max_queued_bytes;
-};
-
-// Options given to Put() to modify its default behavior.
-struct IPCZ_ALIGN(8) IpczPutOptions {
-  // The exact size of this structure in bytes. Must be set accurately before
-  // passing the structure to Put().
-  size_t size;
-
-  // Optional limits to apply when determining if the Put() should be completed.
-  const struct IpczPutLimits* limits;
-};
-
 // See BeginPut() and the IPCZ_BEGIN_PUT_* flags described below.
 typedef uint32_t IpczBeginPutFlags;
 
 // Indicates that the caller is willing to produce less data than originally
 // requested by their `*num_bytes` argument to BeginPut(). If the implementation
-// would prefer a smaller chunk of data or if the requested size would exceed
-// limits specified in the call's corresponding IpczPutLimits, passing this flag
-// may allow the call to succeed while returning a smaller acceptable value in
-// `*num_bytes`, rather than simply failing the call with
-// IPCZ_RESULT_RESOURCE_EXHAUSTED.
+// would prefer a smaller chunk of data, passing this flag may allow the call to
+// succeed while returning a smaller acceptable value in `*num_bytes`, rather
+// than simply failing the call with IPCZ_RESULT_RESOURCE_EXHAUSTED.
 #define IPCZ_BEGIN_PUT_ALLOW_PARTIAL IPCZ_FLAG_BIT(0)
-
-// Options given to BeginPut() to modify its default behavior.
-struct IPCZ_ALIGN(8) IpczBeginPutOptions {
-  // The exact size of this structure in bytes. Must be set accurately before
-  // passing the structure to BeginPut().
-  size_t size;
-
-  // Optional limits to apply when determining if the BeginPut() should be
-  // completed.
-  const struct IpczPutLimits* limits;
-};
 
 // See EndPut() and the IPCZ_END_PUT_* flags described below.
 typedef uint32_t IpczEndPutFlags;
@@ -820,13 +777,6 @@ struct IPCZ_ALIGN(8) IpczPortalStatus {
   // The number of unretrieved bytes (across all unretrieved parcels) queued on
   // this portal.
   size_t num_local_bytes;
-
-  // The number of unretrieved parcels queued on the opposite portal.
-  size_t num_remote_parcels;
-
-  // The number of unretrieved bytes (across all unretrieved parcels) queued on
-  // the opposite portal.
-  size_t num_remote_bytes;
 };
 
 // Flags given to IpczTrapConditions to indicate which types of conditions a
@@ -871,23 +821,9 @@ typedef uint32_t IpczTrapConditionFlags;
 // IpczTrapConditions. Level-triggered.
 #define IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES IPCZ_FLAG_BIT(4)
 
-// Triggers a trap event whenever the number of parcels queued for retrieval on
-// the opposite portal drops below the threshold given by `max_remote_parcels`
-// IpczTrapConditions. Level-triggered.
-#define IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS IPCZ_FLAG_BIT(5)
-
-// Triggers a trap event whenever the number of bytes queued for retrieval on
-// the opposite portal drops below the threshold given by `max_remote_bytes` in
-// IpczTrapConditions. Level-triggered.
-#define IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES IPCZ_FLAG_BIT(6)
-
 // Triggers a trap event whenever the number of locally available parcels
 // increases by any amount. Edge-triggered.
 #define IPCZ_TRAP_NEW_LOCAL_PARCEL IPCZ_FLAG_BIT(7)
-
-// Triggers a trap event whenever the number of queued remote parcels decreases
-// by any amount. Edge-triggered.
-#define IPCZ_TRAP_CONSUMED_REMOTE_PARCEL IPCZ_FLAG_BIT(8)
 
 // Indicates that the trap event is being fired from within the extent of an
 // ipcz API call (i.e., as opposed to being fired from within the extent of an
@@ -918,14 +854,6 @@ struct IPCZ_ALIGN(8) IpczTrapConditions {
   // See IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES. If that flag is not set in `flags`,
   // this field is ignored.
   size_t min_local_bytes;
-
-  // See IPCZ_TRAP_BELOW_MAX_REMOTE_PARCELS. If that flag is not set in `flags`,
-  // this field is ignored.
-  size_t max_remote_parcels;
-
-  // See IPCZ_TRAP_BELOW_MAX_REMOTE_BYTES. If that flag is not set in `flags`,
-  // this field is ignored.
-  size_t max_remote_bytes;
 };
 
 // Structure passed to each IpczTrapEventHandler invocation with details about
@@ -1251,8 +1179,6 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // `flags` is unused and must be IPCZ_NO_FLAGS.
   //
-  // `options` may be null.
-  //
   // If this call fails (returning anything other than IPCZ_RESULT_OK), any
   // provided handles remain property of the caller. If it succeeds, their
   // ownership is assumed by ipcz.
@@ -1265,6 +1191,8 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // writing. In such cases, a two-phase put operation can be used instead, by
   // calling BeginPut() and EndPut() as defined below.
   //
+  // `options` is ignored and must be null.
+  //
   // Returns:
   //
   //    IPCZ_RESULT_OK if the provided data and handles were successfully placed
@@ -1272,24 +1200,19 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` is null but
   //        `num_bytes` is non-zero, `handles` is null but `num_handles` is
-  //        non-zero, `options` is non-null but invalid, one of the handles in
-  //        `handles` is equal to `portal` or its (local) opposite if
-  //        applicable, or if any handle in `handles` is invalid or not
-  //        serializable.
-  //
-  //    IPCZ_RESULT_RESOURCE_EXHAUSTED if `options->limits` is non-null and at
-  //        least one of the specified limits would be violated by the
-  //        successful completion of this call.
+  //        non-zero, one of the handles in `handles` is equal to `portal` or
+  //        its (local) opposite if applicable, or if any handle in `handles` is
+  //        invalid or not serializable.
   //
   //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
   //        already been closed and anything put into this portal would be lost.
-  IpczResult(IPCZ_API* Put)(IpczHandle portal,                      // in
-                            const void* data,                       // in
-                            size_t num_bytes,                       // in
-                            const IpczHandle* handles,              // in
-                            size_t num_handles,                     // in
-                            uint32_t flags,                         // in
-                            const struct IpczPutOptions* options);  // in
+  IpczResult(IPCZ_API* Put)(IpczHandle portal,          // in
+                            const void* data,           // in
+                            size_t num_bytes,           // in
+                            const IpczHandle* handles,  // in
+                            size_t num_handles,         // in
+                            uint32_t flags,             // in
+                            const void* options);       // in
 
   // BeginPut()
   // ==========
@@ -1304,16 +1227,15 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // of `*num_bytes` conveys the actual capacity available for writing at
   // `data`.
   //
-  // Limits provided to BeginPut() elicit similar behavior to Put(), with the
-  // exception that `flags` may specify IPCZ_BEGIN_PUT_ALLOW_PARTIAL to allow
-  // BeginPut() to succeed even the caller's suggested value of
-  // `*num_bytes` would cause the portal to exceed the maximum queued byte limit
-  // given by `options->limits`. In that case BeginPut() may update `*num_bytes`
-  // to reflect the remaining capacity of the portal, allowing the caller to
-  // commit at least some portion of their data with EndPut().
+  // `flags` may specify IPCZ_BEGIN_PUT_ALLOW_PARTIAL to allow the
+  // implementation to select a smaller data size than the input value of
+  // `*num_bytes` if it might have a good reason to do so (e.g. performance or
+  // resource limitations).
   //
   // Handles to transmit within a two-phase put are provided when committing the
   // operation with EndPut().
+  //
+  // `options` is ignored and must be null.
   //
   // Returns:
   //
@@ -1325,8 +1247,7 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        set in `flags`) the capacity requested by the input value of
   //        `*num_bytes`.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` is null, or
-  //        options is non-null but invalid.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid or `data` is null.
   //
   //    IPCZ_RESULT_RESOURCE_EXHAUSTED if completing the put with the number of
   //        bytes specified by `*num_bytes` would cause the portal to exceed the
@@ -1336,12 +1257,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
   //        already been closed and anything put into this portal would be lost.
-  IpczResult(IPCZ_API* BeginPut)(
-      IpczHandle portal,                          // in
-      IpczBeginPutFlags flags,                    // in
-      const struct IpczBeginPutOptions* options,  // in
-      size_t* num_bytes,                          // in/out
-      void** data);                               // out
+  IpczResult(IPCZ_API* BeginPut)(IpczHandle portal,        // in
+                                 IpczBeginPutFlags flags,  // in
+                                 const void* options,      // in
+                                 size_t* num_bytes,        // in/out
+                                 void** data);             // out
 
   // EndPut()
   // ========

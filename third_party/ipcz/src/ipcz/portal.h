@@ -49,10 +49,8 @@ class Portal : public APIObjectImpl<Portal, APIObject::kPortal> {
   IpczResult Merge(Portal& other);
 
   IpczResult Put(absl::Span<const uint8_t> data,
-                 absl::Span<const IpczHandle> handles,
-                 const IpczPutLimits* limits);
+                 absl::Span<const IpczHandle> handles);
   IpczResult BeginPut(IpczBeginPutFlags flags,
-                      const IpczPutLimits* limits,
                       size_t& num_data_bytes,
                       void*& data);
   IpczResult CommitPut(const void* data,
