@@ -450,7 +450,7 @@ body.check-select .dialog-header
   height: 40px;
   margin: 4px;
   min-width: 40px;
-  padding: 0;
+  padding: 10px;
   width: 40px;
 }
 
