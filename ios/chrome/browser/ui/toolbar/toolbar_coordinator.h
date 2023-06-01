@@ -16,6 +16,8 @@
 @protocol SharingPositioner;
 @class SecondaryToolbarCoordinator;
 @class SecondaryToolbarViewController;
+@protocol ViewRevealingAnimatee;
+@class ViewRevealingVerticalPanHandler;
 
 /// Coordinator above primary and secondary toolbars. It does not have a
 /// view controller. This object is also an interface between multiple toolbars
@@ -48,6 +50,16 @@
 
 /// Returns the sharing positioner for the current toolbar configuration.
 - (id<SharingPositioner>)sharingPositioner;
+
+#pragma mark ViewRevealing
+
+/// A reference to the view controller that implements the view revealing
+/// vertical pan handler delegate methods.
+- (id<ViewRevealingAnimatee>)viewRevealingAnimatee;
+/// Sets the pan gesture handler for the view controller that implements the
+/// view revealing.
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
 @end
 

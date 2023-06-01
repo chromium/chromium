@@ -1931,13 +1931,10 @@ enum HeaderBehaviour {
   [panHandler addAnimatee:self];
 
   DCHECK([self isViewLoaded]);
-  CHECK(self.toolbarCoordinator.primaryToolbarCoordinator.animatee);
 
-  [panHandler
-      addAnimatee:self.toolbarCoordinator.primaryToolbarCoordinator.animatee];
+  [panHandler addAnimatee:self.toolbarCoordinator.viewRevealingAnimatee];
 
-  self.toolbarCoordinator.primaryToolbarCoordinator.panGestureHandler =
-      panHandler;
+  self.toolbarCoordinator.panGestureHandler = panHandler;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.legacyTabStripCoordinator.panGestureHandler = panHandler;
   }
@@ -1960,7 +1957,7 @@ enum HeaderBehaviour {
 - (void)thumbStripDisabled {
   DCHECK([self isThumbStripEnabled]);
 
-  self.toolbarCoordinator.primaryToolbarCoordinator.panGestureHandler = nil;
+  self.toolbarCoordinator.panGestureHandler = nil;
   if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
     self.legacyTabStripCoordinator.panGestureHandler = nil;
   }

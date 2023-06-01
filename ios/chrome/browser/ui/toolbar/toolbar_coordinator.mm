@@ -91,6 +91,8 @@
   self.started = NO;
 }
 
+#pragma mark - Public
+
 - (UIViewController*)primaryToolbarViewController {
   return self.primaryToolbarCoordinator.viewController;
 }
@@ -101,6 +103,18 @@
 
 - (id<SharingPositioner>)sharingPositioner {
   return self.primaryToolbarCoordinator.SharingPositioner;
+}
+
+#pragma mark ViewRevealing
+
+- (id<ViewRevealingAnimatee>)viewRevealingAnimatee {
+  CHECK(self.primaryToolbarCoordinator.animatee);
+  return self.primaryToolbarCoordinator.animatee;
+}
+
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler {
+  [self.primaryToolbarCoordinator setPanGestureHandler:panGestureHandler];
 }
 
 #pragma mark - NewTabPageControllerDelegate
