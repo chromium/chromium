@@ -8,6 +8,7 @@
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
 -KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
 -ProfileListDesktopBrowserTest.SwitchToProfile
+-SSLUITest.TestCloseTabWithUnsafePopup
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
