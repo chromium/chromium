@@ -151,6 +151,7 @@
     "linux-wpt-content-shell-fyi-rel": "Ubuntu-22.04",
     "linux-wpt-content-shell-leak-detection": "Ubuntu-22.04",
     "linux-wpt-fyi-rel": "Ubuntu-22.04",
+    "linux-wpt-identity-fyi-rel": "Ubuntu-22.04",
     "linux-x64-castos": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng-compilator": "Ubuntu-22.04",
