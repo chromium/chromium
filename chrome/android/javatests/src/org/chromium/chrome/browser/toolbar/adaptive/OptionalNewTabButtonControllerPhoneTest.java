@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -195,6 +196,7 @@ public class OptionalNewTabButtonControllerPhoneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1450561")
     public void testButton_hidesOnNTP() {
         sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
         TestThreadUtils.runOnUiThreadBlocking(
