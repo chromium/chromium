@@ -95,6 +95,7 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kMathMLText, @"AXMathText"},
       {ax::mojom::Role::kMathMLUnder, @"AXMathUnderOver"},
       {ax::mojom::Role::kMathMLUnderOver, @"AXMathUnderOver"},
+      {ax::mojom::Role::kMeter, @"AXMeter"},
       {ax::mojom::Role::kNavigation, @"AXLandmarkNavigation"},
       {ax::mojom::Role::kNote, @"AXDocumentNote"},
       {ax::mojom::Role::kRegion, @"AXLandmarkRegion"},
