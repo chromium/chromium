@@ -29,10 +29,10 @@
 #include "base/time/time.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/sync/base/time.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -1158,7 +1158,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
   DCHECK(per_user_vault);
 
   const base::Time current_time = clock_->Now();
-  base::Time last_failed_request_time = syncer::ProtoTimeToTime(
+  base::Time last_failed_request_time = ProtoTimeToTime(
       per_user_vault->last_failed_request_millis_since_unix_epoch());
 
   // Fix |last_failed_request_time| if it's set to the future.
@@ -1177,7 +1177,7 @@ void StandaloneTrustedVaultBackend::
 
   FindUserVault(primary_account_->gaia)
       ->set_last_failed_request_millis_since_unix_epoch(
-          syncer::TimeToProtoTime(clock_->Now()));
+          TimeToProtoTime(clock_->Now()));
   WriteDataToDisk();
 }
 
