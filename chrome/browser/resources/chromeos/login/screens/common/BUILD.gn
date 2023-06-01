@@ -56,6 +56,7 @@ js_type_check("closure_compile_local") {
     ":os_trial",
     ":parental_handoff",
     ":pin_setup",
+    ":placeholder",
     ":recommend_apps",
     ":saml_confirm_password",
     ":signin_fatal_error",
@@ -545,6 +546,18 @@ js_library("gaia_info") {
   extra_deps = [ ":web_components" ]
 }
 
+# Template used by the `tools/oobe/generate_screen_template.py` script.
+js_library("placeholder") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/placeholder.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("recommend_apps") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/recommend_apps.js" ]
   deps = [
@@ -738,6 +751,7 @@ html_to_js("web_components") {
     "os_trial.js",
     "parental_handoff.js",
     "pin_setup.js",
+    "placeholder.js",
     "recommend_apps.js",
     "saml_confirm_password.js",
     "signin_fatal_error.js",

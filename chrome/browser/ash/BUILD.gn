@@ -1824,6 +1824,10 @@ source_set("ash") {
     "login/screens/parental_handoff_screen.h",
     "login/screens/pin_setup_screen.cc",
     "login/screens/pin_setup_screen.h",
+
+    # Template used by the `tools/oobe/generate_screen_template.py` script.
+    "login/screens/placeholder_screen.cc",
+    "login/screens/placeholder_screen.h",
     "login/screens/quick_start_screen.cc",
     "login/screens/quick_start_screen.h",
     "login/screens/recommend_apps/fake_recommend_apps_fetcher.cc",
