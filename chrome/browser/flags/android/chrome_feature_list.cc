@@ -160,7 +160,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
     &kAndroidSearchEngineChoiceNotification,
-    &kAndroidWidgetFullscreenToast,
     &kAndroidImprovedBookmarks,
     &kAnimatedImageDragShadow,
     &kAppMenuMobileSiteOption,
@@ -453,10 +452,6 @@ BASE_FEATURE(kAndroidSearchEngineChoiceNotification,
 BASE_FEATURE(kAndroidImprovedBookmarks,
              "AndroidImprovedBookmarks",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidWidgetFullscreenToast,
-             "AndroidWidgetFullscreenToast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",

@@ -7601,10 +7601,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-toast-manager", flag_descriptions::kUseToastManagerName,
      flag_descriptions::kUseToastManagerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(::features::kUseToastManager)},
-    {"android-widget-fullscreen-toast",
-     flag_descriptions::kAndroidWidgetFullscreenToastName,
-     flag_descriptions::kAndroidWidgetFullscreenToastDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidWidgetFullscreenToast)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

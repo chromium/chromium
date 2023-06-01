@@ -129,13 +129,9 @@ found in the LICENSE file.
     <!-- ModalDialogView dimensions -->
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
-    <!-- Full Screen Dimensions -->
-    <dimen name="fullscreen_toast_elevation">@dimen/custom_tabs_elevation</dimen>
-
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">56dp</dimen>
     <dimen name="custom_tabs_control_container_height">56dp</dimen>
-    <dimen name="fullscreen_notification_max_width">320dp</dimen>
 
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">56dp</dimen>

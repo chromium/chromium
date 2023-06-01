@@ -111,7 +111,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
-    public static final String ANDROID_WIDGET_FULLSCREEN_TOAST = "AndroidWidgetFullscreenToast";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_LANGUAGE_PROMPT = "AppLanguagePrompt";
     public static final String APP_LANGUAGE_PROMPT_ULP = "AppLanguagePromptULP";

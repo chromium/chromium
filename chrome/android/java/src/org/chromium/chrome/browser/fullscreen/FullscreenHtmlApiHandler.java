@@ -35,8 +35,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fullscreen.FullscreenToast.CustomViewToast;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAttributeKeys;
@@ -46,7 +44,6 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -298,13 +295,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private FullscreenToast getToast() {
         if (mToast == null) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WIDGET_FULLSCREEN_TOAST)) {
-                mToast = new FullscreenToast.AndroidToast(
-                        mActivity, this::getPersistentFullscreenMode);
-            } else {
-                mToast = new FullscreenToast.CustomViewToast(mActivity, mHandler,
-                        () -> mTab, () -> mContentViewInFullscreen, () -> mTabInFullscreen);
-            }
+            mToast = new FullscreenToast.AndroidToast(mActivity, this::getPersistentFullscreenMode);
         }
         return mToast;
     }
@@ -741,18 +732,6 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
     boolean isToastVisibleForTesting() {
         return getToast().isVisible();
-    }
-
-    int getToastBottomMarginForTesting() {
-        return ((CustomViewToast) getToast()).getToastBottomMarginForTesting();
-    }
-
-    void setVersionCompatForTesting(DimensionCompat compat) {
-        ((CustomViewToast) getToast()).setDimensionCompatForTesting(compat);
-    }
-
-    void triggerWindowLayoutChangeForTesting() {
-        ((CustomViewToast) getToast()).triggerWindowLayoutForTesting();
     }
 
     private static void setSystemUiVisibility(View contentView, int systemUiVisibility) {
