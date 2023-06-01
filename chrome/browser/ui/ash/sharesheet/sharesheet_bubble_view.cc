@@ -13,6 +13,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -190,14 +191,9 @@ void SharesheetBubbleView::ShowBubble(
 
   main_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  // TODO(melzhang): Clean this up after MTP Copy To Clipboard changes land,
-  // which makes Copy To Clipboard always visible.
-  //
-  // When there are no targets, don't show any previews.
-  bool show_content_previews = !targets.empty();
   header_view_ =
       main_view_->AddChildView(std::make_unique<SharesheetHeaderView>(
-          intent_->Clone(), delegator_->GetProfile(), show_content_previews));
+          intent_->Clone(), delegator_->GetProfile()));
   body_view_ = main_view_->AddChildView(std::make_unique<views::View>());
   body_view_->SetID(BODY_VIEW_ID);
   body_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -213,58 +209,35 @@ void SharesheetBubbleView::ShowBubble(
   footer_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  if (targets.empty()) {
-    auto* image =
-        body_view_->AddChildView(std::make_unique<views::ImageView>());
-    image->SetImage(
-        ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-            IDR_SHARESHEET_EMPTY_STATE_IMAGE));
-    image->SetProperty(views::kMarginsKey,
-                       gfx::Insets::TLBR(0, 0, kSpacing, 0));
-    auto* color_provider = AshColorProvider::Get();
-    body_view_->AddChildView(CreateShareLabel(
-        l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_PRIMARY_LABEL),
-        CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-        color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary),
-        gfx::ALIGN_CENTER));
-    body_view_->AddChildView(CreateShareLabel(
-        l10n_util::GetStringUTF16(IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL),
-        CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY, kPrimaryTextLineHeight,
-        color_provider->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorSecondary),
-        gfx::ALIGN_CENTER, views::style::STYLE_PRIMARY));
-  } else {
-    if (show_content_previews) {
-      header_body_separator_ =
-          body_view_->AddChildView(std::make_unique<views::Separator>());
-      if (chromeos::features::IsJellyEnabled()) {
-        header_body_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-      }
-    }
+  // There is always at least 1 target as Copy To Clipboard is always visible.
+  CHECK_GT(targets.size(), 0u);
+  header_body_separator_ =
+      body_view_->AddChildView(std::make_unique<views::Separator>());
+  if (chromeos::features::IsJellyEnabled()) {
+    header_body_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+  }
 
-    const size_t targets_size = targets.size();
-    auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
-    scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
-    body_view_->AddChildView(std::move(scroll_view));
+  const size_t targets_size = targets.size();
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
+  scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
+  body_view_->AddChildView(std::move(scroll_view));
 
-    if (expanded_view_) {
-      body_footer_separator_ =
-          body_view_->AddChildView(std::make_unique<views::Separator>());
-      if (chromeos::features::IsJellyEnabled()) {
-        body_footer_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
-      }
-      expand_button_ =
-          footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
-              base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
-                                  base::Unretained(this))));
-    } else if (targets_size <= kMaxTargetsPerRow * kMaxRowsForDefaultView) {
-      // When we have between 1 and 8 targets inclusive. Update |footer_layout|
-      // padding.
-      footer_layout->set_inside_border_insets(
-          gfx::Insets::VH(kFooterNoExtensionVerticalPadding, 0));
+  if (expanded_view_) {
+    body_footer_separator_ =
+        body_view_->AddChildView(std::make_unique<views::Separator>());
+    if (chromeos::features::IsJellyEnabled()) {
+      body_footer_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
     }
+    expand_button_ =
+        footer_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
+            base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
+                                base::Unretained(this))));
+  } else if (targets_size <= kMaxTargetsPerRow * kMaxRowsForDefaultView) {
+    // When we have between 1 and 8 targets inclusive. Update |footer_layout|
+    // padding.
+    footer_layout->set_inside_border_insets(
+        gfx::Insets::VH(kFooterNoExtensionVerticalPadding, 0));
   }
 
   main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);

@@ -259,8 +259,7 @@ END_METADATA
 // SharesheetHeaderView --------------------------------------------------------
 
 SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
-                                           Profile* profile,
-                                           bool show_content_previews)
+                                           Profile* profile)
     : profile_(profile),
       intent_(std::move(intent)),
       thumbnail_loader_(profile) {
@@ -284,11 +283,10 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
 
   const bool has_files = !intent_->files.empty();
   // The image view is initialised first to ensure its left most placement.
-  if (show_content_previews) {
-    auto file_count = intent_->files.size();
-    image_preview_ =
-        AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
-  }
+  auto file_count = intent_->files.size();
+  image_preview_ =
+      AddChildView(std::make_unique<SharesheetImagePreview>(file_count));
+
   // A separate view is created for the share title and preview string views.
   text_view_ = AddChildView(std::make_unique<views::View>());
   text_view_->SetID(HEADER_VIEW_TEXT_PREVIEW_ID);
@@ -308,21 +306,20 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
                 AshColorProvider::Get()->GetContentLayerColor(
                     AshColorProvider::ContentLayerType::kTextColorPrimary),
                 gfx::ALIGN_LEFT));
-  if (show_content_previews) {
-    ShowTextPreview();
-    if (has_files) {
-      ResolveImages();
-    } else {
-      DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
-      const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kIconColorProminent);
-      gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
-          GetTextVectorIcon(),
-          sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);
-      image_preview_->GetImageViewAt(0)->SetImage(
-          CreateMimeTypeIcon(file_type_icon, kImagePreviewFullSize));
-      image_preview_->SetBackgroundColorForIndex(0, icon_color);
-    }
+
+  ShowTextPreview();
+  if (has_files) {
+    ResolveImages();
+  } else {
+    DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
+    const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kIconColorProminent);
+    gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
+        GetTextVectorIcon(),
+        sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);
+    image_preview_->GetImageViewAt(0)->SetImage(
+        CreateMimeTypeIcon(file_type_icon, kImagePreviewFullSize));
+    image_preview_->SetBackgroundColorForIndex(0, icon_color);
   }
 }
 
