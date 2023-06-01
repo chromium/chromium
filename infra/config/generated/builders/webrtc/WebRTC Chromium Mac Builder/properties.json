@@ -16,8 +16,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "dcheck",
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -44,8 +43,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "dcheck",
-                  "mb",
-                  "mac_toolchain"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",

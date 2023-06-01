@@ -93,5 +93,6 @@
     ]
   },
   "builder_group": "chromium.webrtc.fyi",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "xcode_build_version": "14e222b"
 }

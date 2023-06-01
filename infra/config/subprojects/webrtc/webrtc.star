@@ -147,7 +147,6 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
@@ -168,7 +167,6 @@ builder(
             apply_configs = [
                 "dcheck",
                 "mb",
-                "mac_toolchain",
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
