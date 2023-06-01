@@ -20,10 +20,6 @@ function saveDump() {
   chrome.send('saveDump');
 }
 
-function reportProcess(pid: number) {
-  chrome.send('reportProcess', [pid]);
-}
-
 function startProfiling(pid: number) {
   chrome.send('startProfiling', [pid]);
 }
@@ -72,8 +68,7 @@ function onProcessListReceived(data: ProcessList) {
 
     const button = document.createElement('button');
     if (profiled) {
-      button.innerText = '\uD83D\uDC1E Report';
-      button.onclick = () => reportProcess(procId);
+      button.innerText = 'Profiling...';
     } else {
       button.innerText = '\u2600 Start profiling';
       button.onclick = () => startProfiling(procId);
