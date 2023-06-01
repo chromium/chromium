@@ -7,6 +7,8 @@
 load("@builtin//struct.star", "module")
 
 __KNOWN_CONFIG_OPTIONS = [
+    "remote_all",
+    "remote_nasm",
     "rewrapper_to_reproxy",
 ]
 
