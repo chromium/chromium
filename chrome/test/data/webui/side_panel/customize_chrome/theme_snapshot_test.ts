@@ -95,8 +95,13 @@ suite('ThemeSnapshotTest', () => {
         CustomizeThemeType.CLASSIC_CHROME);
     assertEquals(
         $$<HTMLImageElement>(
-            themeSnapshotElement, '.snapshot-container #miniNewTabPage')!
-            .getAttribute('aria-labelledby'),
+            themeSnapshotElement, '#classicChromeBackground img')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'mini_new_tab_page.svg');
+    assertEquals(
+        $$<HTMLImageElement>(
+            themeSnapshotElement,
+            '#classicChromeBackground img')!.getAttribute('aria-labelledby'),
         'classicChromeThemeTitle');
     assertEquals(
         'Classic Chrome',
@@ -107,6 +112,32 @@ suite('ThemeSnapshotTest', () => {
         $$(themeSnapshotElement,
            '.snapshot-container #classicChromeBackground')!,
         'background-color', 'rgb(20, 83, 154)');
+  });
+
+  test('gm3 classic chrome preview shows correct image', async () => {
+    // Arrange.
+    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+    createThemeSnapshotElement();
+    const theme = createTheme();
+
+    // Act.
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertEquals(1, handler.getCallCount('updateTheme'));
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.CLASSIC_CHROME);
+    assertEquals(
+        $$<HTMLImageElement>(
+            themeSnapshotElement, '#classicChromeBackground img')!.src,
+        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
+            'gm3_mini_new_tab_page.svg');
   });
 
   test('uploading a background updates theme snapshot', async () => {
