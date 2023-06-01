@@ -42,6 +42,19 @@ static_assert(kMaxManifestSize <=
                   network::SimpleURLLoader::kMaxBoundedStringDownloadSize,
               "Max manifest size bigger than largest allowed download size");
 
+void RespondWithHttpStatusCodeError(const GURL& final_url,
+                                    net::HttpStatusCode http_status_code,
+                                    const ErrorLogger& log,
+                                    PaymentManifestDownloadCallback callback) {
+  std::string error_message = base::ReplaceStringPlaceholders(
+      errors::kPaymentManifestDownloadFailedWithHttpStatusCode,
+      {final_url.spec(), base::NumberToString(http_status_code),
+       net::GetHttpReasonPhrase(http_status_code)},
+      nullptr);
+  log.Error(error_message);
+  std::move(callback).Run(final_url, std::string(), error_message);
+}
+
 // Invokes |callback| with |error_format|.
 void RespondWithError(const base::StringPiece& error_format,
                       const GURL& final_url,
@@ -99,8 +112,9 @@ GURL ParseRedirectUrl(const net::RedirectInfo& redirect_info,
     return GURL();
   }
 
-  if (!IsValidManifestUrl(redirect_info.new_url, log, out_error_message))
+  if (!IsValidManifestUrl(redirect_info.new_url, log, out_error_message)) {
     return GURL();
+  }
 
   return redirect_info.new_url;
 }
@@ -205,12 +219,14 @@ void PaymentManifestDownloader::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
     std::unique_ptr<std::string> response_body) {
   scoped_refptr<net::HttpResponseHeaders> headers;
-  if (url_loader->ResponseInfo())
+  if (url_loader->ResponseInfo()) {
     headers = url_loader->ResponseInfo()->headers;
+  }
 
   std::string response_body_str;
-  if (response_body.get())
+  if (response_body.get()) {
     response_body_str = std::move(*response_body);
+  }
 
   OnURLLoaderCompleteInternal(url_loader, url_loader->GetFinalURL(),
                               response_body_str, headers,
@@ -229,17 +245,27 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   std::unique_ptr<Download> download = std::move(download_it->second);
   downloads_.erase(download_it);
 
-  if (net_error != net::OK) {
-    RespondWithError(errors::kPaymentManifestDownloadFailed, final_url, *log_,
-                     std::move(download->callback));
+  if (net_error != net::OK &&
+      net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
+    std::string error_message = base::ReplaceStringPlaceholders(
+        errors::kPaymentManifestDownloadFailedWithNetworkError,
+        {final_url.spec(), net::ErrorToShortString(net_error),
+         base::NumberToString(net_error)},
+        nullptr);
+    log_->Error(error_message);
+    std::move(download->callback).Run(final_url, std::string(), error_message);
     return;
   }
 
   std::string error_message;
   if (download->type == Download::Type::RESPONSE_BODY) {
-    if (!headers || headers->response_code() != net::HTTP_OK) {
+    if (!headers) {
       RespondWithError(errors::kPaymentManifestDownloadFailed, final_url, *log_,
                        std::move(download->callback));
+    } else if (headers->response_code() != net::HTTP_OK) {
+      RespondWithHttpStatusCodeError(
+          final_url, static_cast<net::HttpStatusCode>(headers->response_code()),
+          *log_, std::move(download->callback));
     } else {
       RespondWithContent(response_body, errors::kNoContentInPaymentManifest,
                          final_url, *log_, std::move(download->callback));
@@ -257,8 +283,9 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
 
   if (headers->response_code() != net::HTTP_OK &&
       headers->response_code() != net::HTTP_NO_CONTENT) {
-    RespondWithError(errors::kPaymentManifestDownloadFailed, final_url, *log_,
-                     std::move(download->callback));
+    RespondWithHttpStatusCodeError(
+        final_url, static_cast<net::HttpStatusCode>(headers->response_code()),
+        *log_, std::move(download->callback));
     return;
   }
 
@@ -279,8 +306,9 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     }
 
     auto rel = params.find("rel");
-    if (rel == params.end())
+    if (rel == params.end()) {
       continue;
+    }
 
     std::vector<std::string> rel_parts =
         base::SplitString(rel->second.value_or(""), HTTP_LWS,

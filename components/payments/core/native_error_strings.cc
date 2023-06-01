@@ -97,6 +97,12 @@ const char kPaymentManifestCrossSiteRedirectNotAllowed[] =
 const char kPaymentManifestDownloadFailed[] =
     "Unable to download payment manifest \"$1\".";
 
+const char kPaymentManifestDownloadFailedWithNetworkError[] =
+    "Unable to download payment manifest \"$1\". $2 ($3)";
+
+const char kPaymentManifestDownloadFailedWithHttpStatusCode[] =
+    "Unable to download payment manifest \"$1\". HTTP $2 $3.";
+
 const char kPaymentManifestCSPDenied[] =
     "Content Security Policy denied the download of payment manifest \"$1\".";
 
