@@ -5002,7 +5002,6 @@ static_library("browser") {
       "//ash/components/arc:arc_base_utils",
       "//ash/components/arc/mojom",
       "//ash/constants",
-      "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//ash/webui/camera_app_ui",
       "//ash/webui/camera_app_ui:mojo_bindings",
@@ -8145,7 +8144,6 @@ static_library("test_support") {
     ]
     configs += [ "//build/config/linux/dbus" ]
     deps += [
-      "//ash/public/cpp",
       "//chrome/browser/ash",
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/test:test_support_ui",

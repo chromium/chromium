@@ -4209,6 +4209,7 @@ if (!is_android) {
         "../browser/ash/system/device_disabling_browsertest.cc",
         "../browser/ash/system/timezone_resolver_manager_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
+        "../browser/ash/url_handler_browsertest.cc",
         "../browser/ash/video_conference/video_conference_app_service_client_browsertest.cc",
         "../browser/ash/video_conference/video_conference_integration_browsertest.cc",
         "../browser/ash/wallpaper/wallpaper_drivefs_delegate_impl_browsertest.cc",

@@ -3109,6 +3109,8 @@ source_set("ash") {
     "tpm_firmware_update_notification.h",
     "u2f_notification.cc",
     "u2f_notification.h",
+    "url_handler.cc",
+    "url_handler.h",
     "usb/cros_usb_detector.cc",
     "usb/cros_usb_detector.h",
     "video_conference/video_conference_app_service_client.cc",

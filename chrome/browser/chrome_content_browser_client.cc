@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -193,7 +192,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -313,7 +311,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -388,7 +385,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/scanning/url_constants.h"
@@ -409,20 +405,18 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
-#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ash/url_handler.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_dialog.h"
 #include "chromeos/ash/services/network_health/public/cpp/network_health_helper.h"
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -611,7 +605,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -7550,101 +7543,10 @@ bool ChromeContentBrowserClient::OpenExternally(
     const GURL& url,
     WindowOpenDisposition disposition) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This code is all about the following: When Lacros is the only browser, we
-  // must not open full-blown Ash browser windows.
-
-  if (!crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
-    // We're running neither Lacros-Primary nor Lacros-Only, nothing to do.
-    return false;
-  }
-
-  if (chromeos::IsKioskSession()) {
-    // Kiosk sessions already hide the navigation bar and block window creation.
-    // Moreover, they don't support SWAs which we might end up trying to run
-    // below.
-    return false;
-  }
-
-  if (disposition == WindowOpenDisposition::NEW_POPUP) {
-    // Some applications still open popup windows that need to stay in Ash:
-    // - Gallery (chrome://media-app), see OPEN_IN_SANDBOXED_VIEWER in
-    //   ash/webui/media_app_ui/resources/js/launch.js.
-    // - nassh, see showLoginPopup in nassh/js/nassh_relay_corp.js.
-    return false;
-  }
-
-  // Handle capturing system apps directly, as otherwise an additional empty
-  // browser window could be created.
-  Profile* profile = Profile::FromBrowserContext(opener->GetBrowserContext());
-  const absl::optional<ash::SystemWebAppType> capturing_system_app_type =
-      ash::GetCapturingSystemAppForURL(profile, url);
-  if (capturing_system_app_type) {
-    ash::SystemAppLaunchParams swa_params;
-    swa_params.url = url;
-    ash::LaunchSystemWebAppAsync(profile, capturing_system_app_type.value(),
-                                 swa_params);
-    return true;
-  }
-
-  const bool from_webui = opener->GetWebUI() != nullptr;
-  const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
-
-  // If Lacros is the only browser, we forcibly open various URLs (mostly
-  // chrome://) in the OS_URL_HANDLER SWA.
-  if (is_lacros_only &&
-      // Terminal's tabs must remain in the Terminal SWA.
-      // TODO(neis): Actually limit this exception to Terminal if possible.
-      // Also, remove Terminal from ChromeWebUIControllerFactory's
-      // GetListOfAcceptableURLs or at least make TryLaunchOsUrlHandler return
-      // false for it somehow.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-      ash::TryLaunchOsUrlHandler(url)) {
-    return true;
-  }
-
-  // If Lacros is the primary browser, we intercept requests from Ash WebUIs and
-  // redirect them to Lacros via crosapi. This is to make window.open and <a
-  // href target="_blank"> links in WebUIs (e.g. ChromeOS Settings app) open in
-  // Lacros rather than in Ash. NOTE: This is breaking change for calls to
-  // window.open, as the return value will always be null. By excluding popups
-  // and devtools:// and chrome:// URLs, we exclude the existing uses of
-  // window.open that make use of the return value (these will have to be dealt
-  // with separately) as well as some existing links that currently must remain
-  // in Ash.
-  // If Lacros is the only browser, we do this even for non-WebUI sources.
-  bool should_open_in_lacros =
-      (is_lacros_only || from_webui) &&
-      !url.SchemeIs(content::kChromeDevToolsScheme) &&
-      !url.SchemeIs(content::kChromeUIScheme) &&
-      // Terminal's tabs must remain in Ash.
-      !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
-      // OS Settings's Accessibility section links to chrome-extensions://
-      // URLs for Text-to-Speech engines that are installed in Ash.
-      !url.SchemeIs(extensions::kExtensionScheme);
-  if (should_open_in_lacros) {
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
-    return true;
-  }
-
-  // If Lacros is the only browser, we should get here only in exceptional
-  // cases. Some of these exceptions may not even be needed anymore. Record a
-  // crash dump for various cases so that we can better understand the
-  // situation. For now, continue as usual afterwards (i.e. don't handle the
-  // request here).
-  if (is_lacros_only &&
-      // We know that Terminal still needs to open Ash windows, no need to dump.
-      !(url.SchemeIs(content::kChromeUIUntrustedScheme) && url.has_host() &&
-        url.host() == "terminal")) {
-    SCOPED_CRASH_KEY_STRING32("CCBC", "OpenExternally",
-                              url.possibly_invalid_spec());
-    base::debug::DumpWithoutCrashing();
-    LOG(WARNING) << "Allowing Ash window creation for url " << url;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+  return ash::TryOpenUrl(url, disposition, opener->GetWebUI());
+#else
   return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeContentBrowserClient::OnSharedStorageWorkletHostCreated(
