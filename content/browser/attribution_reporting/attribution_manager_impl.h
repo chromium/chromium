@@ -234,6 +234,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();
 
+  void OnUserVisibleTaskStarted();
+  void OnUserVisibleTaskComplete();
+
   void OnClearDataComplete();
 
   void ProcessNextOsEvent();
@@ -262,13 +265,13 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   // The task runner for all attribution reporting storage operations.
   // Updateable to allow for priority to be temporarily increased to
-  // `USER_VISIBLE` when a clear data task is queued or running. Otherwise
-  // `BEST_EFFORT` is used.
+  // `USER_VISIBLE` when a user-visible storage task is queued or running.
+  // Otherwise `BEST_EFFORT` is used.
   scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 
-  // How many clear data storage tasks are queued or running currently, i.e.
-  // have been posted but the reply has not been run.
-  int num_pending_clear_data_tasks_ = 0;
+  // How many user-visible storage tasks are queued or running currently,
+  // i.e. have been posted but the reply has not been run.
+  int num_pending_user_visible_tasks_ = 0;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 

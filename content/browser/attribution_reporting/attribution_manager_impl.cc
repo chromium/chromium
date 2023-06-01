@@ -870,6 +870,8 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
                                      /*is_debug_report=*/true));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
     base::OnceCallback<void(std::vector<StoredSource>)> callback) {
   const int kMaxSources = 1000;
@@ -878,6 +880,8 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
       .Then(std::move(callback));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
     int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
@@ -886,6 +890,8 @@ void AttributionManagerImpl::GetPendingReportsForInternalUse(
       .Then(std::move(callback));
 }
 
+// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
+// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::SendReportsForWebUI(
     const std::vector<AttributionReport::Id>& ids,
     base::OnceClosure done) {
@@ -923,9 +929,11 @@ void AttributionManagerImpl::ClearData(
                                  delete_rate_limit_data, std::move(barrier));
   }
 
-  // When a clear data task is queued or running, we use a higher priority.
-  ++num_pending_clear_data_tasks_;
-  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+  // TODO(apaseltiner): It's not necessarily true that this deletion is user
+  // visible, as a site can initiate deletion via the Clear-Site-Data header. We
+  // could inspect `delete_rate_limit_data` to determine this, as its value is
+  // true only for user-initiated deletions, not site-initiated ones.
+  OnUserVisibleTaskStarted();
 
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
@@ -935,23 +943,35 @@ void AttributionManagerImpl::ClearData(
                          weak_factory_.GetWeakPtr())));
 }
 
-void AttributionManagerImpl::OnClearDataComplete() {
-  DCHECK_GT(num_pending_clear_data_tasks_, 0);
-  --num_pending_clear_data_tasks_;
+void AttributionManagerImpl::OnUserVisibleTaskStarted() {
+  // When a user-visible task is queued or running, we use a higher priority.
+  ++num_pending_user_visible_tasks_;
+  storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
+}
 
-  // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0) {
+void AttributionManagerImpl::OnUserVisibleTaskComplete() {
+  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  --num_pending_user_visible_tasks_;
+
+  // No more user-visible tasks, so we can reset the priority.
+  if (num_pending_user_visible_tasks_ == 0) {
     storage_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
   }
+}
 
+void AttributionManagerImpl::OnClearDataComplete() {
+  OnUserVisibleTaskComplete();
   NotifySourcesChanged();
   NotifyReportsChanged();
 }
 
 void AttributionManagerImpl::GetAllDataKeys(
     base::OnceCallback<void(std::set<DataKey>)> callback) {
+  OnUserVisibleTaskStarted();
   attribution_storage_.AsyncCall(&AttributionStorage::GetAllDataKeys)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void AttributionManagerImpl::RemoveAttributionDataByDataKey(
@@ -966,20 +986,13 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
       /*domains=*/{}, BrowsingDataFilterBuilder::Mode::kDelete,
       /*delete_rate_limit_data=*/true, std::move(barrier));
 
+  OnUserVisibleTaskStarted();
+
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)
       .Then(std::move(callback).Then(
-          // TODO(crbug.com/1446693): Replace this lambda with
-          // `OnClearDataComplete()` so that observers are notified and the
-          // task-runner priority is restored.
-          base::BindOnce(
-              [](base::WeakPtr<AttributionManagerImpl> manager) {
-                if (manager) {
-                  manager->NotifySourcesChanged();
-                  manager->NotifyReportsChanged();
-                }
-              },
-              weak_factory_.GetWeakPtr())));
+          base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
