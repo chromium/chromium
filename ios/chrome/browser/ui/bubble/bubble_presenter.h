@@ -12,7 +12,6 @@
 @class BubbleViewControllerPresenter;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
-@protocol ToolbarCommands;
 class WebStateList;
 
 namespace feature_engagement {
@@ -38,7 +37,6 @@ class Tracker;
 
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
 @property(nonatomic, weak) UIViewController* rootViewController;
-@property(nonatomic, weak) id<ToolbarCommands> toolbarHandler;
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
 // Stops this presenter.

@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
@@ -63,9 +62,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_coordinator.h"
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
+#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
@@ -225,21 +222,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
     [popup_menu_coordinator_ start];
 
-    toolbar_coordinator_adaptor_ =
-        [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:dispatcher];
-
-    location_bar_coordinator_ =
-        [[LocationBarCoordinator alloc] initWithBrowser:browser_.get()];
-    [location_bar_coordinator_ start];
-
-    primary_toolbar_coordinator_ =
-        [[PrimaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
-    primary_toolbar_coordinator_.locationBarCoordinator =
-        location_bar_coordinator_;
-    [primary_toolbar_coordinator_ start];
-
-    secondary_toolbar_coordinator_ =
-        [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    toolbar_coordinator_ =
+        [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    [toolbar_coordinator_ start];
 
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForBrowserState(
@@ -281,8 +266,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     BrowserViewControllerDependencies dependencies;
     dependencies.bubblePresenter = bubble_presenter_;
     dependencies.popupMenuCoordinator = popup_menu_coordinator_;
-    dependencies.primaryToolbarCoordinator = primary_toolbar_coordinator_;
-    dependencies.secondaryToolbarCoordinator = secondary_toolbar_coordinator_;
+    dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
     dependencies.legacyTabStripCoordinator = legacy_tab_strip_coordinator_;
     dependencies.sideSwipeController = side_swipe_controller_;
@@ -336,7 +320,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   }
 
   void TearDown() override {
-    [location_bar_coordinator_ stop];
     [tab_events_mediator_ disconnect];
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
@@ -393,10 +376,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   UIWindow* window_;
   SceneState* scene_state_;
   PopupMenuCoordinator* popup_menu_coordinator_;
-  LocationBarCoordinator* location_bar_coordinator_;
-  ToolbarCoordinatorAdaptor* toolbar_coordinator_adaptor_;
-  PrimaryToolbarCoordinator* primary_toolbar_coordinator_;
-  SecondaryToolbarCoordinator* secondary_toolbar_coordinator_;
+  ToolbarCoordinator* toolbar_coordinator_;
   TabStripCoordinator* tab_strip_coordinator_;
   TabStripLegacyCoordinator* legacy_tab_strip_coordinator_;
   SideSwipeController* side_swipe_controller_;

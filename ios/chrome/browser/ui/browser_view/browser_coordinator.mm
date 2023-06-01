@@ -130,7 +130,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
-#import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
@@ -171,7 +170,7 @@
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_coordinating.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
+#import "ios/chrome/browser/ui/toolbar/toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
@@ -330,9 +329,6 @@ enum class ToolbarKind {
 @property(nonatomic, strong)
     FormInputAccessoryCoordinator* formInputAccessoryCoordinator;
 
-// Coordinator for the location bar containing the omnibox.
-@property(nonatomic, strong) LocationBarCoordinator* locationBarCoordinator;
-
 // The container coordinators for the infobar modalities.
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
@@ -449,9 +445,7 @@ enum class ToolbarKind {
   BubblePresenter* _bubblePresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
-  ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
-  PrimaryToolbarCoordinator* _primaryToolbarCoordinator;
-  SecondaryToolbarCoordinator* _secondaryToolbarCoordinator;
+  ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
   SideSwipeController* _sideSwipeController;
@@ -763,23 +757,8 @@ enum class ToolbarKind {
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   _urlLoadingBrowserAgent = UrlLoadingBrowserAgent::FromBrowser(self.browser);
 
-  self.locationBarCoordinator =
-      [[LocationBarCoordinator alloc] initWithBrowser:self.browser];
-
-  _primaryToolbarCoordinator =
-      [[PrimaryToolbarCoordinator alloc] initWithBrowser:self.browser];
-  _primaryToolbarCoordinator.locationBarCoordinator =
-      self.locationBarCoordinator;
-
-  _secondaryToolbarCoordinator =
-      [[SecondaryToolbarCoordinator alloc] initWithBrowser:self.browser];
-
-  _toolbarCoordinatorAdaptor =
-      [[ToolbarCoordinatorAdaptor alloc] initWithDispatcher:_dispatcher];
-
-  [_toolbarCoordinatorAdaptor addToolbarCoordinator:_primaryToolbarCoordinator];
-  [_toolbarCoordinatorAdaptor
-      addToolbarCoordinator:_secondaryToolbarCoordinator];
+  _toolbarCoordinator =
+      [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
@@ -789,8 +768,6 @@ enum class ToolbarKind {
       [[BubblePresenter alloc] initWithTracker:engagementTracker
                         hostContentSettingsMap:settingsMap
                                   webStateList:self.browser->GetWebStateList()];
-  _bubblePresenter.toolbarHandler =
-      HandlerForProtocol(_dispatcher, ToolbarCommands);
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
                             forProtocol:@protocol(HelpCommands)];
@@ -803,11 +780,11 @@ enum class ToolbarKind {
   _sideSwipeController =
       [[SideSwipeController alloc] initWithBrowser:self.browser];
   [_sideSwipeController setSnapshotDelegate:self];
-  _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinatorAdaptor;
+  _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeController.primaryToolbarSnapshotProvider =
-      _primaryToolbarCoordinator;
+      _toolbarCoordinator.primaryToolbarCoordinator;
   _sideSwipeController.secondaryToolbarSnapshotProvider =
-      _secondaryToolbarCoordinator;
+      _toolbarCoordinator.secondaryToolbarCoordinator;
 
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
@@ -831,7 +808,7 @@ enum class ToolbarKind {
   self.popupMenuCoordinator =
       [[PopupMenuCoordinator alloc] initWithBrowser:self.browser];
   self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
-  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
+  self.popupMenuCoordinator.UIUpdater = _toolbarCoordinator;
   // Coordinator `start` is executed before setting it's `baseViewController`.
   // It is done intentionally, since this does not affecting the coordinator's
   // behavior but helps command handler setup below.
@@ -854,7 +831,7 @@ enum class ToolbarKind {
   _NTPCoordinator = [[NewTabPageCoordinator alloc]
        initWithBrowser:self.browser
       componentFactory:[[NewTabPageComponentFactory alloc] init]];
-  _NTPCoordinator.toolbarDelegate = _toolbarCoordinatorAdaptor;
+  _NTPCoordinator.toolbarDelegate = _toolbarCoordinator;
   _NTPCoordinator.bubblePresenter = _bubblePresenter;
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
@@ -870,10 +847,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.popupMenuCoordinator = self.popupMenuCoordinator;
   _viewControllerDependencies.ntpCoordinator = _NTPCoordinator;
   _viewControllerDependencies.lensCoordinator = _lensCoordinator;
-  _viewControllerDependencies.primaryToolbarCoordinator =
-      _primaryToolbarCoordinator;
-  _viewControllerDependencies.secondaryToolbarCoordinator =
-      _secondaryToolbarCoordinator;
+  _viewControllerDependencies.toolbarCoordinator = _toolbarCoordinator;
   _viewControllerDependencies.tabStripCoordinator = _tabStripCoordinator;
   _viewControllerDependencies.legacyTabStripCoordinator =
       _legacyTabStripCoordinator;
@@ -931,11 +905,9 @@ enum class ToolbarKind {
   _lensCoordinator.baseViewController = self.viewController;
   [_lensCoordinator start];
 
-  self.locationBarCoordinator.delegate = self.viewController;
-  self.locationBarCoordinator.popupPresenterDelegate = self.viewController;
-  [self.locationBarCoordinator start];
-
-  [_primaryToolbarCoordinator start];
+  _toolbarCoordinator.omniboxFocusDelegate = self.viewController;
+  _toolbarCoordinator.popupPresenterDelegate = self.viewController;
+  [_toolbarCoordinator start];
 
   _loadQueryCommandsHandler =
       HandlerForProtocol(_dispatcher, LoadQueryCommands);
@@ -958,8 +930,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.popupMenuCoordinator = nil;
   _viewControllerDependencies.ntpCoordinator = nil;
   _viewControllerDependencies.lensCoordinator = nil;
-  _viewControllerDependencies.primaryToolbarCoordinator = nil;
-  _viewControllerDependencies.secondaryToolbarCoordinator = nil;
+  _viewControllerDependencies.toolbarCoordinator = nil;
   _viewControllerDependencies.tabStripCoordinator = nil;
   _viewControllerDependencies.legacyTabStripCoordinator = nil;
   _viewControllerDependencies.sideSwipeController = nil;
@@ -982,9 +953,7 @@ enum class ToolbarKind {
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
   _sideSwipeController = nil;
-  _toolbarCoordinatorAdaptor = nil;
-  _secondaryToolbarCoordinator = nil;
-  _primaryToolbarCoordinator = nil;
+  _toolbarCoordinator = nil;
   _loadQueryCommandsHandler = nil;
   _omniboxCommandsHandler = nil;
 
@@ -1009,9 +978,6 @@ enum class ToolbarKind {
 
   [self.browserContainerCoordinator stop];
   self.browserContainerCoordinator = nil;
-
-  [self.locationBarCoordinator stop];
-  self.locationBarCoordinator = nil;
 
   [_NTPCoordinator stop];
   _NTPCoordinator = nil;
@@ -1356,8 +1322,7 @@ enum class ToolbarKind {
   // Exit fullscreen if needed to make sure that share button is visible.
   _fullscreenController->ExitFullscreen();
 
-  id<SharingPositioner> positioner =
-      _primaryToolbarCoordinator.SharingPositioner;
+  id<SharingPositioner> positioner = _toolbarCoordinator.sharingPositioner;
   UIBarButtonItem* anchor = nil;
   if ([positioner respondsToSelector:@selector(barButtonItem)]) {
     anchor = positioner.barButtonItem;
