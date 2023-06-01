@@ -83,7 +83,8 @@
     "linux-wpt-input-fyi-rel": "Ubuntu-22.04",
     "win-annotator-rel": "Ubuntu-22.04",
     "win-cr23-rel": "Ubuntu-22.04",
-    "win-network-sandbox-tester": "Ubuntu-22.04"
+    "win-network-sandbox-tester": "Ubuntu-22.04",
+    "win-perfetto-rel": "Ubuntu-22.04"
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
