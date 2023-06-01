@@ -89,6 +89,9 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
 
   const int renderer_process_id_;
 
+  // Represents if the renderer has a permission to send/receive MIDI messages.
+  bool has_midi_permission_;
+
   // Represents if the renderer has a permission to send/receive MIDI SysEX
   // messages.
   bool has_midi_sysex_permission_;

@@ -11099,6 +11099,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
   <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
   <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
+  <int value="302" label="MH_MIDI_PERMISSION"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

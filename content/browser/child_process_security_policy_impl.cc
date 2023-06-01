@@ -24,6 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "components/permissions/features.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/process_lock.h"
@@ -342,9 +343,15 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   explicit SecurityState(BrowserContext* browser_context)
       : enabled_bindings_(0),
         can_read_raw_cookies_(false),
+        can_send_midi_(false),
         can_send_midi_sysex_(false),
         browser_context_(browser_context),
-        resource_context_(browser_context->GetResourceContext()) {}
+        resource_context_(browser_context->GetResourceContext()) {
+    if (!base::FeatureList::IsEnabled(
+            permissions::features::kBlockMidiByDefault)) {
+      can_send_midi_ = true;
+    }
+  }
 
   SecurityState(const SecurityState&) = delete;
   SecurityState& operator=(const SecurityState&) = delete;
@@ -449,7 +456,10 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     can_read_raw_cookies_ = false;
   }
 
+  void GrantPermissionForMidi() { can_send_midi_ = true; }
+
   void GrantPermissionForMidiSysEx() {
+    can_send_midi_ = true;
     can_send_midi_sysex_ = true;
   }
 
@@ -597,7 +607,25 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return can_read_raw_cookies_;
   }
 
-  bool can_send_midi_sysex() const {
+  bool CanSendMidi() const {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kBlockMidiByDefault)) {
+      // Ensure the flags are in a consistent state: we can only send SysEx
+      // messages if we can also send non-SysEx messages
+      CHECK(can_send_midi_ || !can_send_midi_sysex_);
+      return can_send_midi_;
+    } else {
+      return true;
+    }
+  }
+
+  bool CanSendMidiSysEx() const {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kBlockMidiByDefault)) {
+      // Ensure the flags are in a consistent state: we can only send SysEx
+      // messages if we can also send non-SysEx messages
+      CHECK(can_send_midi_ || !can_send_midi_sysex_);
+    }
     return can_send_midi_sysex_;
   }
 
@@ -660,6 +688,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   int enabled_bindings_;
 
   bool can_read_raw_cookies_;
+
+  bool can_send_midi_;
 
   bool can_send_midi_sysex_;
 
@@ -1059,6 +1089,21 @@ void ChildProcessSecurityPolicyImpl::GrantCopyIntoFileSystem(
 void ChildProcessSecurityPolicyImpl::GrantDeleteFromFileSystem(
     int child_id, const std::string& filesystem_id) {
   GrantPermissionsForFileSystem(child_id, filesystem_id, DELETE_FILE_GRANT);
+}
+
+void ChildProcessSecurityPolicyImpl::GrantSendMidiMessage(int child_id) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kBlockMidiByDefault)) {
+    base::AutoLock lock(lock_);
+
+    auto state = security_state_.find(child_id);
+    if (state == security_state_.end()) {
+      return;
+    }
+
+    state->second->GrantPermissionForMidi();
+  }
+  return;
 }
 
 void ChildProcessSecurityPolicyImpl::GrantSendMidiSysExMessage(int child_id) {
@@ -2011,6 +2056,17 @@ void ChildProcessSecurityPolicyImpl::RegisterFileSystemPermissionPolicy(
   file_system_policy_map_[type] = policy;
 }
 
+bool ChildProcessSecurityPolicyImpl::CanSendMidiMessage(int child_id) {
+  base::AutoLock lock(lock_);
+
+  auto state = security_state_.find(child_id);
+  if (state == security_state_.end()) {
+    return false;
+  }
+
+  return state->second->CanSendMidi();
+}
+
 bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(int child_id) {
   base::AutoLock lock(lock_);
 
@@ -2018,7 +2074,7 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(int child_id) {
   if (state == security_state_.end())
     return false;
 
-  return state->second->can_send_midi_sysex();
+  return state->second->CanSendMidiSysEx();
 }
 
 void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(

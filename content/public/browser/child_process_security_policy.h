@@ -202,7 +202,11 @@ class ChildProcessSecurityPolicy {
   // is allowed to use WebUI bindings.
   virtual bool HasWebUIBindings(int child_id) = 0;
 
-  // Grants permission to send system exclusive message to any MIDI devices.
+  // Grants permission to send messages to any MIDI devices.
+  virtual void GrantSendMidiMessage(int child_id) = 0;
+
+  // Grants permission to send system exclusive (SysEx) messages to any MIDI
+  // devices.
   virtual void GrantSendMidiSysExMessage(int child_id) = 0;
 
   // Returns true if the process is permitted to read and modify the data for
