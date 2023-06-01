@@ -4,15 +4,22 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "media/base/video_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
-void RecordUma(GDMPreferCurrentTabResult result) {
+void RecordUma(GDMPreferCurrentTabResult result,
+               base::TimeTicks dialog_open_time) {
   base::UmaHistogramEnumeration(
       "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.UserInteraction", result);
+
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
+      "Media.Ui.GetDisplayMedia.PreferCurrentTabFlow.DialogDuration",
+      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
+      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTime(elapsed);
 }
 
 gfx::ImageSkia ScaleBitmap(const SkBitmap& bitmap, gfx::Size size) {

@@ -4953,6 +4953,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.{Flow}.DialogDuration" units="ms"
+    expires_after="2024-05-29">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <summary>
+    The time-duration the DesktopMediaPickerDialog is opened when
+    getDisplayMedia is called with the preferCurrentTab constraint either set to
+    true (PreferCurrentTabFlow) or unspecified/false (BasicFlow). The duration
+    is recorded each time the dialog is closed.
+  </summary>
+  <token key="Flow">
+    <variant name="BasicFlow"/>
+    <variant name="PreferCurrentTabFlow"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Media.UnderflowDuration2" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

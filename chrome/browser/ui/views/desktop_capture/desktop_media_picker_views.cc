@@ -96,24 +96,24 @@ enum class GDMResult {
   kMaxValue = kUserSelectedThisTab
 };
 
-void RecordUma(GDMResult result) {
+void RecordUma(GDMResult result, base::TimeTicks dialog_open_time) {
   base::UmaHistogramEnumeration(
       "Media.Ui.GetDisplayMedia.BasicFlow.UserInteraction", result);
+
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - dialog_open_time;
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
+      "Media.Ui.GetDisplayMedia.BasicFlow.DialogDuration",
+      /*minimum=*/base::Milliseconds(500), /*maximum=*/base::Seconds(45),
+      /*bucket_count=*/91, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTime(elapsed);
 }
 
-void RecordUmaDismissal(DialogType dialog_type) {
+void RecordUmaCancellation(DialogType dialog_type,
+                           base::TimeTicks dialog_open_time) {
   if (dialog_type == DialogType::kPreferCurrentTab) {
-    RecordUma(GDMPreferCurrentTabResult::kDialogDismissed);
+    RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
   } else {
-    RecordUma(GDMResult::kDialogDismissed);
-  }
-}
-
-void RecordUmaCancellation(DialogType dialog_type) {
-  if (dialog_type == DialogType::kPreferCurrentTab) {
-    RecordUma(GDMPreferCurrentTabResult::kUserCancelled);
-  } else {
-    RecordUma(GDMResult::kUserCancelled);
+    RecordUma(GDMResult::kUserCancelled, dialog_open_time);
   }
 }
 
@@ -123,7 +123,8 @@ void RecordUmaCancellation(DialogType dialog_type) {
 void RecordUmaSelection(DialogType dialog_type,
                         content::GlobalRenderFrameHostId capturer_global_id,
                         const DesktopMediaID& selected_media,
-                        DesktopMediaList::Type source_type) {
+                        DesktopMediaList::Type source_type,
+                        base::TimeTicks dialog_open_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   switch (source_type) {
@@ -132,17 +133,19 @@ void RecordUmaSelection(DialogType dialog_type,
 
     case DesktopMediaList::Type::kScreen:
       if (dialog_type == DialogType::kPreferCurrentTab) {
-        RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen);
+        RecordUma(GDMPreferCurrentTabResult::kUserSelectedScreen,
+                  dialog_open_time);
       } else {
-        RecordUma(GDMResult::kUserSelectedScreen);
+        RecordUma(GDMResult::kUserSelectedScreen, dialog_open_time);
       }
       break;
 
     case DesktopMediaList::Type::kWindow:
       if (dialog_type == DialogType::kPreferCurrentTab) {
-        RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow);
+        RecordUma(GDMPreferCurrentTabResult::kUserSelectedWindow,
+                  dialog_open_time);
       } else {
-        RecordUma(GDMResult::kUserSelectedWindow);
+        RecordUma(GDMResult::kUserSelectedWindow, dialog_open_time);
       }
       break;
 
@@ -160,16 +163,19 @@ void RecordUmaSelection(DialogType dialog_type,
         RecordUma(
             current_tab_selected
                 ? GDMPreferCurrentTabResult::kUserSelectedThisTabAsGenericTab
-                : GDMPreferCurrentTabResult::kUserSelectedOtherTab);
+                : GDMPreferCurrentTabResult::kUserSelectedOtherTab,
+            dialog_open_time);
       } else {
         RecordUma(current_tab_selected ? GDMResult::kUserSelectedThisTab
-                                       : GDMResult::kUserSelectedOtherTab);
+                                       : GDMResult::kUserSelectedOtherTab,
+                  dialog_open_time);
       }
       break;
     }
 
     case DesktopMediaList::Type::kCurrentTab:
-      RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
+      RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab,
+                dialog_open_time);
       break;
   }
 }
@@ -339,7 +345,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
           params.web_contents
               ? params.web_contents->GetPrimaryMainFrame()->GetGlobalId()
               : content::GlobalRenderFrameHostId()),
-      parent_(parent) {
+      parent_(parent),
+      dialog_open_time_(base::TimeTicks::Now()) {
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
 
@@ -634,8 +641,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() = default;
 
-DialogType DesktopMediaPickerDialogView::GetDialogType() const {
-  return dialog_type_;
+void DesktopMediaPickerDialogView::RecordUmaDismissal() const {
+  if (dialog_type_ == DialogType::kPreferCurrentTab) {
+    RecordUma(GDMPreferCurrentTabResult::kDialogDismissed, dialog_open_time_);
+  } else {
+    RecordUma(GDMResult::kDialogDismissed, dialog_open_time_);
+  }
 }
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
@@ -837,7 +848,7 @@ bool DesktopMediaPickerDialogView::Accept() {
                        audio_share_checkbox_->GetChecked();
   if (is_get_display_media_call_) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
-                       GetSelectedSourceListType());
+                       GetSelectedSourceListType(), dialog_open_time_);
   }
 
   if (parent_)
@@ -849,7 +860,7 @@ bool DesktopMediaPickerDialogView::Accept() {
 
 bool DesktopMediaPickerDialogView::Cancel() {
   if (is_get_display_media_call_) {
-    RecordUmaCancellation(dialog_type_);
+    RecordUmaCancellation(dialog_type_, dialog_open_time_);
   }
   return views::DialogDelegateView::Cancel();
 }
@@ -949,7 +960,7 @@ DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
   if (dialog_) {
     if (is_get_display_media_call_) {
-      RecordUmaDismissal(dialog_->GetDialogType());
+      dialog_->RecordUmaDismissal();
     }
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();

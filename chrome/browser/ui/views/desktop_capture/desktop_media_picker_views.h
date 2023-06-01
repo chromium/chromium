@@ -49,6 +49,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
       delete;
   ~DesktopMediaPickerDialogView() override;
 
+  void RecordUmaDismissal() const;
+
   // Called by parent (DesktopMediaPickerViews) when it's destroyed.
   void DetachParent();
 
@@ -60,10 +62,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnSourceListLayoutChanged();
   void OnDelegatedSourceListDismissed();
   void OnCanReselectChanged(const DesktopMediaListController* controller);
-
-  // Relevant for UMA. (E.g. for DesktopMediaPickerViews to report
-  // when the dialog gets dismissed.)
-  DialogType GetDialogType() const;
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;
@@ -143,6 +141,9 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DialogType dialog_type_;
 
   absl::optional<content::DesktopMediaID> accepted_source_;
+
+  // For recording dialog-duration UMA histograms.
+  const base::TimeTicks dialog_open_time_;
 };
 
 // Implementation of DesktopMediaPicker for Views.

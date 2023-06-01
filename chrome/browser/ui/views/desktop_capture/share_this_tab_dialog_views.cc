@@ -48,17 +48,13 @@ constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
 
-void RecordUmaDismissal() {
-  RecordUma(GDMPreferCurrentTabResult::kDialogDismissed);
+void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
+  RecordUma(GDMPreferCurrentTabResult::kUserCancelled, dialog_open_time);
 }
 
-void RecordUmaCancellation() {
-  RecordUma(GDMPreferCurrentTabResult::kUserCancelled);
-}
-
-void RecordUmaSelection() {
+void RecordUmaSelection(base::TimeTicks dialog_open_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
+  RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab, dialog_open_time);
 }
 
 // The length of the initial delay during which the "Allow"-button is disabled
@@ -85,7 +81,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
               switches::kThisTabCaptureAutoAccept)),
       auto_reject_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kThisTabCaptureAutoReject)) {
+              switches::kThisTabCaptureAutoReject)),
+      dialog_open_time_(base::TimeTicks::Now()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
 
@@ -178,6 +175,10 @@ ShareThisTabDialogView::ShareThisTabDialogView(
 
 ShareThisTabDialogView::~ShareThisTabDialogView() = default;
 
+void ShareThisTabDialogView::RecordUmaDismissal() const {
+  RecordUma(GDMPreferCurrentTabResult::kDialogDismissed, dialog_open_time_);
+}
+
 void ShareThisTabDialogView::DetachParent() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   parent_ = nullptr;
@@ -209,7 +210,7 @@ bool ShareThisTabDialogView::Accept() {
     desktop_media_id.audio_share =
         audio_toggle_button_ && audio_toggle_button_->GetIsOn();
     parent_->NotifyDialogResult(desktop_media_id);
-    RecordUmaSelection();
+    RecordUmaSelection(dialog_open_time_);
   }
 
   // Return true to close the window.
@@ -220,7 +221,7 @@ bool ShareThisTabDialogView::Cancel() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_view_->StopRefreshing();
   activation_timer_.Stop();
-  RecordUmaCancellation();
+  RecordUmaCancellation(dialog_open_time_);
   return views::DialogDelegateView::Cancel();
 }
 
@@ -336,7 +337,7 @@ ShareThisTabDialogViews::ShareThisTabDialogViews() : dialog_(nullptr) {
 ShareThisTabDialogViews::~ShareThisTabDialogViews() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (dialog_) {
-    RecordUmaDismissal();
+    dialog_->RecordUmaDismissal();
     dialog_->DetachParent();
     dialog_->GetWidget()->Close();
   }
