@@ -436,7 +436,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self setSearchBarEnabled:self.shouldEnableSearchBar];
   [self updatePasswordCheckButtonWithState:self.passwordCheckState];
   [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
-  [self updatePasswordCheckSection];
+  [self updatePasswordCheckSectionWithState:self.passwordCheckState];
   [self updateUIForEditState];
 }
 
@@ -833,7 +833,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     return;
   }
 
-  [self updatePasswordCheckSection];
+  [self updatePasswordCheckSectionWithState:state];
 
   // When the Password Checkup feature is enabled, this timestamp only appears
   // in the detail text of the Password Checkup status cell. It is therefore
@@ -1688,6 +1688,19 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   }
 }
 
+- (void)setPasswordProblemsItemAccessibilityLabelForSafeState {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus
+                              sectionIdentifier:SectionIdentifierPasswordCheck];
+  UITableViewCell* passwordProblemsCell =
+      [self.tableView cellForRowAtIndexPath:indexPath];
+  passwordProblemsCell.accessibilityLabel = [NSString
+      stringWithFormat:
+          @"%@. %@", passwordProblemsCell.accessibilityLabel,
+          l10n_util::GetNSString(
+              IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)];
+}
+
 // Logs metrics related to favicons for the Password Manager.
 - (void)logMetricsForFavicons {
   DCHECK(!_faviconMetricLogged);
@@ -1825,7 +1838,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self deleteItemAtIndexPaths:indexPaths];
 }
 
-- (void)updatePasswordCheckSection {
+- (void)updatePasswordCheckSectionWithState:(PasswordCheckUIState)state {
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierPasswordCheck]) {
     return;
@@ -1835,6 +1848,11 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       performBatchUpdates:^{
         if (_passwordProblemsItem) {
           [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+          // When in safe state, a custom accessibility label needs to be set
+          // for the Password Checkup cell.
+          if (state == PasswordCheckStateSafe) {
+            [self setPasswordProblemsItemAccessibilityLabelForSafeState];
+          }
         }
         if (_checkForProblemsItem) {
           // If kIOSPasswordCheckup feature is disabled, only reconfigure the
