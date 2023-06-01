@@ -139,6 +139,7 @@
     "linux-layout-tests-edit-ng": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
     "linux-mbi-mode-per-render-process-host-rel": "Ubuntu-22.04",
+    "linux-mbi-mode-per-site-instance-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
     "linux-rel-compilator": "Ubuntu-22.04",
     "linux-wayland-rel": "Ubuntu-22.04",
