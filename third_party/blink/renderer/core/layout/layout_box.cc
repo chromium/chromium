@@ -555,33 +555,6 @@ void LayoutBox::WillBeRemovedFromTree() {
   LayoutBoxModelObject::WillBeRemovedFromTree();
 }
 
-void LayoutBox::RemoveFloatingOrPositionedChildFromBlockLists() {
-  NOT_DESTROYED();
-  DCHECK(IsFloatingOrOutOfFlowPositioned());
-
-  if (DocumentBeingDestroyed())
-    return;
-
-  if (IsFloating()) {
-    LayoutBlockFlow* parent_block_flow = nullptr;
-    for (LayoutObject* curr = Parent(); curr; curr = curr->Parent()) {
-      auto* curr_block_flow = DynamicTo<LayoutBlockFlow>(curr);
-      if (curr_block_flow) {
-        if (!parent_block_flow) {
-          parent_block_flow = curr_block_flow;
-        }
-      }
-    }
-
-    if (parent_block_flow) {
-      parent_block_flow->MarkAllDescendantsWithFloatsForLayout(this, false);
-    }
-  }
-
-  if (IsOutOfFlowPositioned())
-    LayoutBlock::RemovePositionedObject(this);
-}
-
 void LayoutBox::StyleWillChange(StyleDifference diff,
                                 const ComputedStyle& new_style) {
   NOT_DESTROYED();
@@ -634,12 +607,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
           SetShouldDoFullPaintInvalidation();
         else if (new_style.HasOutOfFlowPosition())
           Parent()->SetChildNeedsLayout();
-        if (!RuntimeEnabledFeatures::
-                LayoutDisableBrokenFloatInvalidationEnabled() &&
-            IsFloating() && !IsOutOfFlowPositioned() &&
-            new_style.HasOutOfFlowPosition()) {
-          RemoveFloatingOrPositionedChildFromBlockLists();
-        }
       }
 
       bool will_become_inflow = false;
@@ -845,12 +812,8 @@ void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
   }
 
   if (shape_outside || shape_outside != old_shape_outside) {
-    if (RuntimeEnabledFeatures::LayoutDisableBrokenFloatInvalidationEnabled()) {
-      if (auto* containing_block = ContainingBlock()) {
-        containing_block->SetChildNeedsLayout();
-      }
-    } else {
-      RemoveFloatingOrPositionedChildFromBlockLists();
+    if (auto* containing_block = ContainingBlock()) {
+      containing_block->SetChildNeedsLayout();
     }
   }
 }
@@ -2647,13 +2610,8 @@ void LayoutBox::ImageChanged(WrappedImagePtr image,
     ShapeOutsideInfo& info = ShapeOutsideInfo::EnsureInfo(*this);
     if (!info.IsComputingShape()) {
       info.MarkShapeAsDirty();
-      if (RuntimeEnabledFeatures::
-              LayoutDisableBrokenFloatInvalidationEnabled()) {
-        if (auto* containing_block = ContainingBlock()) {
-          containing_block->SetChildNeedsLayout();
-        }
-      } else {
-        RemoveFloatingOrPositionedChildFromBlockLists();
+      if (auto* containing_block = ContainingBlock()) {
+        containing_block->SetChildNeedsLayout();
       }
     }
   }

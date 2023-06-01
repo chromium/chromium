@@ -2800,16 +2800,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
           *this);
     }
 
-    if (IsFloating() &&
-        (style_->UnresolvedFloating() != new_style.UnresolvedFloating())) {
-      // For changes in float styles, we need to conceivably remove ourselves
-      // from the floating objects list.
-      if (!RuntimeEnabledFeatures::
-              LayoutDisableBrokenFloatInvalidationEnabled()) {
-        To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
-      }
-    } else if (IsOutOfFlowPositioned() &&
-               (style_->GetPosition() != new_style.GetPosition())) {
+    if (IsOutOfFlowPositioned() &&
+        (style_->GetPosition() != new_style.GetPosition())) {
       // For changes in positioning styles, we need to conceivably remove
       // ourselves from the positioned objects list.
       LayoutBlock::RemovePositionedObject(To<LayoutBox>(this));

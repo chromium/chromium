@@ -1343,9 +1343,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
 
-  void RemoveFloatingOrPositionedChildFromBlockLists();
-
-  bool ShrinkToAvoidFloats() const;
   virtual bool CreatesNewFormattingContext() const {
     NOT_DESTROYED();
     return true;

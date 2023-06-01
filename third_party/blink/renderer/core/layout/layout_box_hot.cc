@@ -17,36 +17,6 @@
 
 namespace blink {
 
-DISABLE_CFI_PERF
-bool LayoutBox::ShrinkToAvoidFloats() const {
-  NOT_DESTROYED();
-  // Floating objects don't shrink.  Objects that don't avoid floats don't
-  // shrink.
-  if (IsInline() || !CreatesNewFormattingContext() || IsFloating())
-    return false;
-
-  // Only auto width objects can possibly shrink to avoid floats.
-  if (!StyleRef().UsedWidth().IsAuto()) {
-    return false;
-  }
-
-  // If the containing block is LayoutNG, we will not let legacy layout deal
-  // with positioning of floats or sizing of auto-width new formatting context
-  // block level objects adjacent to them.
-  if (const auto* containing_block = ContainingBlock()) {
-    if (containing_block->IsLayoutNGObject())
-      return false;
-  }
-
-  // Legends are taken out of the normal flow, and are laid out at the very
-  // start of the fieldset, and are therefore not affected by floats (that may
-  // appear earlier in the DOM).
-  if (IsRenderedLegend())
-    return false;
-
-  return true;
-}
-
 // Hit Testing
 bool LayoutBox::MayIntersect(const HitTestResult& result,
                              const HitTestLocation& hit_test_location,

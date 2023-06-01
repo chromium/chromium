@@ -79,10 +79,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   bool CanContainFirstFormattedLine() const;
 
-  void MarkAllDescendantsWithFloatsForLayout(
-      LayoutBox* float_to_remove = nullptr,
-      bool in_layout = true);
-
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;

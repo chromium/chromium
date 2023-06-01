@@ -105,7 +105,6 @@ TrackedContainerMap& GetPositionedContainerMap() {
 
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
-      descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
       has_svg_text_descendants_(false) {
   // LayoutBlockFlow calls setChildrenInline(true).

@@ -95,18 +95,11 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   DCHECK_EQ(old_child->Parent(), owner);
   DCHECK_EQ(this, owner->VirtualChildren());
 
-  if (RuntimeEnabledFeatures::LayoutDisableBrokenFloatInvalidationEnabled()) {
-    if (!owner->DocumentBeingDestroyed() &&
-        old_child->IsOutOfFlowPositioned()) {
+  if (!owner->DocumentBeingDestroyed()) {
+    if (old_child->IsOutOfFlowPositioned()) {
       LayoutBlock::RemovePositionedObject(To<LayoutBox>(old_child));
     }
-  } else {
-    if (old_child->IsFloatingOrOutOfFlowPositioned()) {
-      To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
-    }
-  }
 
-  if (!owner->DocumentBeingDestroyed()) {
     // So that we'll get the appropriate dirty bit set (either that a normal
     // flow child got yanked or that a positioned child got yanked). We also
     // issue paint invalidations, so that the area exposed when the child
@@ -119,9 +112,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
       }
     }
     InvalidatePaintOnRemoval(*old_child);
-  }
 
-  if (!owner->DocumentBeingDestroyed()) {
     if (notify_layout_object) {
       LayoutCounter::LayoutObjectSubtreeWillBeDetached(old_child);
       old_child->WillBeRemovedFromTree();
