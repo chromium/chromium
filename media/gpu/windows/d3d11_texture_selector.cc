@@ -194,10 +194,11 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
 
 std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
+    gfx::ColorSpace color_space,
     gfx::Size size) {
   // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
-  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
-                                                   device);
+  return std::make_unique<DefaultTexture2DWrapper>(size, color_space,
+                                                   OutputDXGIFormat(), device);
 }
 
 bool TextureSelector::DoesDecoderOutputUseSharedHandle() const {
@@ -230,6 +231,7 @@ CopyTextureSelector::~CopyTextureSelector() = default;
 
 std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
+    gfx::ColorSpace color_space,
     gfx::Size size) {
   D3D11_TEXTURE2D_DESC texture_desc = {};
   texture_desc.MipLevels = 1;
@@ -257,8 +259,9 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
 
   return std::make_unique<CopyingTexture2DWrapper>(
       size,
-      std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat(),
-                                                device),
+      std::make_unique<DefaultTexture2DWrapper>(
+          size, output_color_space_.value_or(color_space), OutputDXGIFormat(),
+          device),
       video_processor_proxy_, out_texture, output_color_space_);
 }
 

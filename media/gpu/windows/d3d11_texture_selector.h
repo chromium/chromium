@@ -51,6 +51,7 @@ class MEDIA_GPU_EXPORT TextureSelector {
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
+      gfx::ColorSpace color_space,
       gfx::Size size);
 
   virtual bool DoesDecoderOutputUseSharedHandle() const;
@@ -96,6 +97,7 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
+      gfx::ColorSpace color_space,
       gfx::Size size) override;
 
   bool DoesDecoderOutputUseSharedHandle() const override;
