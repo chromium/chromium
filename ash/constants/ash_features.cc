@@ -2476,6 +2476,11 @@ BASE_FEATURE(kInputDeviceSettingsSplit,
              "InputDeviceSettingsSplit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables peripheral customization to be split per device.
+BASE_FEATURE(kPeripheralCustomization,
+             "PeripheralCustomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
 BASE_FEATURE(kPerUserMetrics,
@@ -2707,6 +2712,10 @@ bool IsDeskTemplateSyncEnabled() {
 
 bool IsInputDeviceSettingsSplitEnabled() {
   return base::FeatureList::IsEnabled(kInputDeviceSettingsSplit);
+}
+
+bool IsPeripheralCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kPeripheralCustomization);
 }
 
 bool IsDisplayAlignmentAssistanceEnabled() {

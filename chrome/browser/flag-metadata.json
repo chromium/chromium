@@ -2980,6 +2980,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-peripheral-customization",
+    "owners": ["dpad", "zentaro", "cros-peripherals@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "enable-phone-hub-call-notification",
     "owners": [ "jonmann", "nayebi" ],
     "expiry_milestone": 125

@@ -159,6 +159,8 @@ extern const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kInputDeviceSettingsSplit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kPeripheralCustomization);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpress);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn);
@@ -749,6 +751,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsSplitEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPeripheralCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDnsOverHttpsWithIdentifiersEnabled();

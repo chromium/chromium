@@ -7385,6 +7385,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableInputDeviceSettingsSplitDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kInputDeviceSettingsSplit)},
 
+    {"enable-peripheral-customization",
+     flag_descriptions::kEnablePeripheralCustomizationName,
+     flag_descriptions::kEnablePeripheralCustomizationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPeripheralCustomization)},
+
     {"enable-rgb-keyboard", flag_descriptions::kEnableRgbKeyboardName,
      flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kRgbKeyboard)},

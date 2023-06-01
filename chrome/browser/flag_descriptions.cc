@@ -1160,6 +1160,12 @@ const char kEnableInputDeviceSettingsSplitName[] =
 const char kEnableInputDeviceSettingsSplitDescription[] =
     "Enable input device settings to be split per-device.";
 
+const char kEnablePeripheralCustomizationName[] =
+    "Enable peripheral customization";
+const char kEnablePeripheralCustomizationDescription[] =
+    "Enable peripheral customization to allow users to customize buttons on "
+    "their peripherals.";
+
 const char kExperimentalRgbKeyboardPatternsName[] =
     "Enable experimental RGB Keyboard patterns support";
 const char kExperimentalRgbKeyboardPatternsDescription[] =

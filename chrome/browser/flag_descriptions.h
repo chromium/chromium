@@ -736,6 +736,9 @@ extern const char kEnablePenetratingImageSelectionDescription[];
 extern const char kEnablePerfettoSystemTracingName[];
 extern const char kEnablePerfettoSystemTracingDescription[];
 
+extern const char kEnablePeripheralCustomizationName[];
+extern const char kEnablePeripheralCustomizationDescription[];
+
 extern const char kEnablePixelCanvasRecordingName[];
 extern const char kEnablePixelCanvasRecordingDescription[];
 

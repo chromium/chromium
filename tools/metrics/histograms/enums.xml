@@ -64248,6 +64248,7 @@ from previous Chrome versions.
   <int value="717020975" label="ForceOffTextAutosizing:disabled"/>
   <int value="717591093" label="UrlLoaderSyncClient:disabled"/>
   <int value="717827121" label="ChromeSharingHub:disabled"/>
+  <int value="717913871" label="PeripheralCustomization:disabled"/>
   <int value="719267310"
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
@@ -64959,6 +64960,7 @@ from previous Chrome versions.
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:enabled"/>
   <int value="1107293950" label="WebUIBrandingUpdate:disabled"/>
   <int value="1107543566" label="enable-one-copy"/>
+  <int value="1108200393" label="PeripheralCustomization:enabled"/>
   <int value="1108663108" label="disable-device-discovery-notifications"/>
   <int value="1109907837"
       label="PrefetchMainResourceNetworkIsolationKey:enabled"/>
