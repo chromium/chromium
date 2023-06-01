@@ -57,7 +57,7 @@ void ShowIdleBubble(Browser* browser,
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
-  bubble->set_close_on_deactivate(true);
+  bubble->set_close_on_deactivate(false);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->Show();
 }
