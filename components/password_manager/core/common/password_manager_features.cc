@@ -258,7 +258,7 @@ BASE_FEATURE(kUnifiedCredentialManagerDryRun,
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 BASE_FEATURE(kUnifiedPasswordManagerAndroid,
-             "UnifiedPasswordManagerAndroid",
+             "UnifiedPasswordManagerAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables use of Google Mobile services for non-sycned password storage.
