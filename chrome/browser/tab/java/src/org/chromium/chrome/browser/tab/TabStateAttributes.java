@@ -91,6 +91,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
         mTab = tab;
         if (creationState == null || creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
             mDirtinessState = DirtinessState.DIRTY;
+            CriticalPersistedTabData.from(mTab).setShouldSave();
         } else if (creationState == TabCreationState.LIVE_IN_FOREGROUND
                 || creationState == TabCreationState.LIVE_IN_BACKGROUND) {
             mDirtinessState = DirtinessState.UNTIDY;
