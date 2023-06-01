@@ -47,11 +47,6 @@ BASE_FEATURE(kWebAuthnPhoneConfirmationSheet,
              "WebAuthenticationPhoneConfirmationSheet",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Add in M113. Remove in or after M116.
-BASE_FEATURE(kWebAuthnNewPrioritiesImpl,
-             "WebAuthenticationNewPrioritiesImpl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Added in M114. Not yet enabled by default.
 BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",

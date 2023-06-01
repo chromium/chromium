@@ -166,14 +166,12 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(
     std::u16string in_name,
     std::u16string in_short_name,
     const gfx::VectorIcon& in_icon,
-    base::RepeatingClosure in_callback,
-    bool is_priority)
+    base::RepeatingClosure in_callback)
     : type(std::move(in_type)),
       name(std::move(in_name)),
       short_name(std::move(in_short_name)),
       icon(in_icon),
-      callback(std::move(in_callback)),
-      priority(is_priority) {}
+      callback(std::move(in_callback)) {}
 AuthenticatorRequestDialogModel::Mechanism::~Mechanism() = default;
 AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
 
@@ -224,19 +222,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
   use_conditional_mediation_ = use_conditional_mediation;
 
   PopulateMechanisms();
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPrioritiesImpl)) {
-    priority_mechanism_index_ = IndexOfPriorityMechanism();
-  } else {
-    priority_mechanism_index_.reset();
-    if (mechanisms_.size() == 1) {
-      priority_mechanism_index_ = 0;
-    } else if (mechanisms_.size() > 1) {
-      const auto it = base::ranges::find_if(mechanisms_, &Mechanism::priority);
-      if (it != mechanisms_.end()) {
-        priority_mechanism_index_ = std::distance(mechanisms_.begin(), it);
-      }
-    }
-  }
+  priority_mechanism_index_ = IndexOfPriorityMechanism();
 
   if (use_conditional_mediation_) {
     // This is a conditional mediation request.
@@ -1124,15 +1110,6 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
 void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
-  const bool is_passkey_request =
-      ((is_get_assertion &&
-        (transport_availability_.has_empty_allow_list ||
-         transport_availability_.is_only_hybrid_or_internal)) ||
-       (!is_get_assertion && resident_key_requirement() !=
-                                 device::ResidentKeyRequirement::kDiscouraged));
-  // priority_transport contains the transport that should be activated
-  // immediately, if this is a getAssertion.
-  absl::optional<AuthenticatorTransport> priority_transport;
 
   std::vector<AuthenticatorTransport> transports_to_list_if_active;
   if (!use_conditional_mediation_ &&
@@ -1140,20 +1117,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                      AuthenticatorTransport::kInternal)) {
     // Conditional requests offer platform credentials through the autofill UI.
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
-    bool make_credential_prefer_internal =
-        !is_get_assertion && kShowCreatePlatformPasskeyStep;
-    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      // Do not prefer the internal authenticator for passkeys requests if the
-      // QR-code first flow is enabled.
-      make_credential_prefer_internal =
-          make_credential_prefer_internal && !is_passkey_request;
-    }
-    if (transport_availability_.has_platform_authenticator_credential ==
-            device::FidoRequestHandlerBase::RecognizedCredential::
-                kHasRecognizedCredential ||
-        make_credential_prefer_internal) {
-      priority_transport = AuthenticatorTransport::kInternal;
-    }
   }
   transports_to_list_if_active.push_back(
       AuthenticatorTransport::kUsbHumanInterfaceDevice);
@@ -1179,9 +1142,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         if (base::Contains(transport_availability_.available_transports,
                            kCable)) {
           transports_to_list_if_active.push_back(kCable);
-          if (!priority_transport) {
-            priority_transport = kCable;
-          }
 
           // If this is a caBLEv1 or server-link request then offering to "Try
           // Again" is unfortunate because the server won't send another ping
@@ -1200,8 +1160,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         Mechanism::ICloudKeychain(), name, name, kSmartphoneIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartICloudKeychain,
-            base::Unretained(this), mechanisms_.size()),
-        /*priority=*/false);
+            base::Unretained(this), mechanisms_.size()));
   }
 
   // The Windows API option comes first so that it gets focus and people can
@@ -1214,20 +1173,11 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     // request, except for:
     //  - conditional UI
     //  - "legacy" caBLE (caBLEv1 and server-link caBLEv2 on a.g.c)
-    bool is_legacy_cable =
-        cable_ui_type_ && cable_ui_type_ != CableUIType::CABLE_V2_2ND_FACTOR;
-    bool win_api_should_be_priority =
-        !use_conditional_mediation_ && !is_legacy_cable &&
-        (!is_passkey_request ||
-         transport_availability_.has_platform_authenticator_credential ==
-             device::FidoRequestHandlerBase::RecognizedCredential::
-                 kHasRecognizedCredential);
     mechanisms_.emplace_back(
         Mechanism::WindowsAPI(), desc, desc,
         GetTransportIcon(AuthenticatorTransport::kInternal),
         base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
-                            base::Unretained(this), mechanisms_.size()),
-        !priority_transport.has_value() && win_api_should_be_priority);
+                            base::Unretained(this), mechanisms_.size()));
   }
 
   bool specific_phones_listed = false;
@@ -1245,8 +1195,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
           std::move(short_name), kSmartphoneIcon,
           base::BindRepeating(&AuthenticatorRequestDialogModel::ContactPhone,
                               base::Unretained(this), phone_name,
-                              mechanisms_.size()),
-          /*priority=*/false);
+                              mechanisms_.size()));
       specific_phones_listed = true;
     }
     bool skip_to_phone_confirmation =
@@ -1263,24 +1212,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
 
   if (include_add_phone_option) {
-    // If there's no other priority mechanism, no phones, no platform
-    // credentials, and this is a passkey request, jump directly to showing a QR
-    // code.
-    bool is_priority = false;
-    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      // On Windows WebAuthn API < 4, we cannot tell in advance if the platform
-      // authenticator can fulfill a get assertion request. In that case, don't
-      // jump to the QR code.
-      bool platform_authenticator_could_fulfill_get_assertion =
-          is_get_assertion && !use_conditional_mediation_ &&
-          transport_availability_.has_platform_authenticator_credential !=
-              device::FidoRequestHandlerBase::RecognizedCredential::
-                  kNoRecognizedCredential;
-      is_priority = !priority_transport.has_value() &&
-                    !base::ranges::any_of(mechanisms_, &Mechanism::priority) &&
-                    paired_phone_names().empty() && is_passkey_request &&
-                    !platform_authenticator_could_fulfill_get_assertion;
-    }
     const std::u16string label = l10n_util::GetStringUTF16(
         specific_phones_listed
             ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL
@@ -1289,8 +1220,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
-            base::Unretained(this), mechanisms_.size()),
-        is_priority);
+            base::Unretained(this), mechanisms_.size()));
   }
 
   for (const auto transport : transports_to_list_if_active) {
@@ -1304,12 +1234,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         GetTransportShortDescription(transport), GetTransportIcon(transport),
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
-            base::Unretained(this), transport, mechanisms_.size()),
-        priority_transport.has_value() && *priority_transport == transport);
+            base::Unretained(this), transport, mechanisms_.size()));
   }
-
-  // At most one mechanism has priority.
-  DCHECK_LE(base::ranges::count_if(mechanisms_, &Mechanism::priority), 1);
 }
 
 absl::optional<size_t>

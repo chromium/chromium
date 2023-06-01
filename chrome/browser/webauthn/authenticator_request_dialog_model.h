@@ -196,8 +196,7 @@ class AuthenticatorRequestDialogModel {
               std::u16string name,
               std::u16string short_name,
               const gfx::VectorIcon& icon,
-              base::RepeatingClosure callback,
-              bool is_priority);
+              base::RepeatingClosure callback);
     ~Mechanism();
     Mechanism(Mechanism&&);
     Mechanism(const Mechanism&) = delete;
@@ -208,9 +207,6 @@ class AuthenticatorRequestDialogModel {
     const std::u16string short_name;
     const raw_ref<const gfx::VectorIcon> icon;
     const base::RepeatingClosure callback;
-    // priority is true if this mechanism should be activated immediately.
-    // Only a single Mechanism in a list should have priority.
-    const bool priority;
   };
 
   // PairedPhone represents a paired caBLEv2 device.
