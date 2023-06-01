@@ -1762,6 +1762,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.TemplateURL.Events" enum="SearchTemplateURLEvent"
     expires_after="2023-05-01">
+  <obsolete>
+    Expired and removed 05/2023.
+  </obsolete>
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

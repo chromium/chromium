@@ -316,13 +316,6 @@ TemplateURLService::~TemplateURLService() {
 }
 
 // static
-void TemplateURLService::LogSearchTemplateURLEvent(
-    SearchTemplateURLEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Search.TemplateURL.Events", event,
-                            SEARCH_TEMPLATE_URL_EVENT_MAX);
-}
-
-// static
 void TemplateURLService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -1213,8 +1206,7 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
         syncer::SyncChange::ChangeTypeToString(iter->change_type());
     if (iter->change_type() == syncer::SyncChange::ACTION_DELETE) {
       if (!existing_turl) {
-        // Can't DELETE a non-existent engine, although we log it.
-        LogSearchTemplateURLEvent(SYNC_DELETE_FAIL_NONEXISTENT_ENGINE);
+        // Can't DELETE a non-existent engine.
         error = syncer::ModelError(FROM_HERE, error_msg);
         continue;
       }
@@ -1232,9 +1224,6 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       // likely a source of duplicate search engine entries. crbug.com/1022775
       if (existing_turl != GetDefaultSearchProvider()) {
         Remove(existing_turl);
-        LogSearchTemplateURLEvent(SYNC_DELETE_SUCCESS);
-      } else {
-        LogSearchTemplateURLEvent(SYNC_DELETE_FAIL_DEFAULT_SEARCH_PROVIDER);
       }
       continue;
     }
@@ -1247,12 +1236,6 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
            iter->change_type() == syncer::SyncChange::ACTION_UPDATE);
 
     if (!existing_turl) {
-      if (iter->change_type() == syncer::SyncChange::ACTION_UPDATE) {
-        // This can happen if we have silently deleted a replaceable engine due
-        // to keyword conflict, and Sync server sends us an UPDATE to it.
-        LogSearchTemplateURLEvent(SYNC_UPDATE_CONVERTED_TO_ADD);
-      }
-
       base::AutoReset<DefaultSearchChangeOrigin> change_origin_add(
           &dsp_change_origin_, DSP_CHANGE_SYNC_ADD);
       // Force the local ID to kInvalidTemplateURLID so we can add it.
@@ -1262,22 +1245,8 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       TemplateURL* added = Add(std::make_unique<TemplateURL>(data));
       if (added) {
         MaybeUpdateDSEViaPrefs(added);
-
-        LogSearchTemplateURLEvent(SYNC_ADD_SUCCESS);
-      } else {
-        // Currently, in practice, this means that we tried to add a replaceable
-        // duplicate that was worse than our existing entry, but the API doesn't
-        // promise that, so we just log a generic SYNC_ADD_FAIL_OTHER_ERROR.
-        LogSearchTemplateURLEvent(SYNC_ADD_FAIL_OTHER_ERROR);
       }
     } else {
-      if (iter->change_type() == syncer::SyncChange::ACTION_ADD) {
-        // This can happen if we have ignored a DELETE request in the past to
-        // avoid deleting the default search provider, and later on, Sync tries
-        // to re-ADD something it thinks it has deleted.
-        LogSearchTemplateURLEvent(SYNC_ADD_CONVERTED_TO_UPDATE);
-      }
-
       // Since we've already found |existing_turl| by GUID, this Update() should
       // always return true, but we still don't want to crash if it fails.
       DCHECK(existing_turl);
@@ -1285,7 +1254,6 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       DCHECK(update_success);
 
       MaybeUpdateDSEViaPrefs(existing_turl);
-      LogSearchTemplateURLEvent(SYNC_UPDATE_SUCCESS);
     }
   }
 
