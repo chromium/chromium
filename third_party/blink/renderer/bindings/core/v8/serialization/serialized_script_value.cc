@@ -356,7 +356,7 @@ void SerializedScriptValue::TransferOffscreenCanvas(
       return;
     }
     if (offscreen_canvases[i]->RenderingContext()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "OffscreenCanvas at index " +
                                             String::Number(i) +
                                             " has an associated context.");

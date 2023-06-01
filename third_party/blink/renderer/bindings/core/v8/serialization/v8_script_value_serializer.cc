@@ -706,15 +706,15 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
       return false;
     }
     if (canvas->IsNeutered()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "An OffscreenCanvas could not be cloned because it was detached.");
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
+                                        "An OffscreenCanvas could not be "
+                                        "transferred because it was detached.");
       return false;
     }
     if (canvas->RenderingContext()) {
       exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "An OffscreenCanvas could not be cloned "
+          DOMExceptionCode::kInvalidStateError,
+          "An OffscreenCanvas could not be transferred "
           "because it had a rendering context.");
       return false;
     }
