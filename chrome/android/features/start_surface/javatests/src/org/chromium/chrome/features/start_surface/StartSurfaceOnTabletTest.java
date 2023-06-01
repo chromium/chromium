@@ -361,14 +361,16 @@ public class StartSurfaceOnTabletTest {
 
         Resources res = cta.getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
-        int expectedVerticalMargin =
-                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_margin_tablet);
+        int expectedTopMargin =
+                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
+        int expectedBottomMargin =
+                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         MarginLayoutParams marginLayoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         Assert.assertEquals(expectedLogoHeight, marginLayoutParams.height);
-        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.topMargin);
-        Assert.assertEquals(expectedVerticalMargin, marginLayoutParams.bottomMargin);
+        Assert.assertEquals(expectedTopMargin, marginLayoutParams.topMargin);
+        Assert.assertEquals(expectedBottomMargin, marginLayoutParams.bottomMargin);
     }
 
     @Test
