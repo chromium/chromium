@@ -8,16 +8,12 @@
 #include <linux/input.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
-#include <xkbcommon/xkbcommon.h>
 
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/current_thread.h"
-#include "base/task/thread_pool.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
 #include "components/exo/keyboard_observer.h"
@@ -25,11 +21,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/scoped_xkb.h"  // nogncheck
 #include "ui/events/ozone/evdev/event_device_util.h"
-#include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
-#include "ui/events/ozone/layout/xkb/xkb_modifier_converter.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -58,8 +50,6 @@ class WaylandKeyboardDeviceConfigurationDelegate
     ime_controller->AddObserver(this);
     ui::DeviceDataManager::GetInstance()->AddObserver(this);
     ash::input_method::InputMethodManager::Get()->AddImeMenuObserver(this);
-    // Call this once to setup initial installed keyboard layout data.
-    ImeMenuListChanged();
     ProcessKeyBitsUpdate();
     OnKeyboardLayoutNameChanged(ime_controller->keyboard_layout_name());
   }
@@ -132,17 +122,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
     for (const auto& descriptor : enabled_ime_descriptors) {
       const std::string& keyboard_layout = descriptor.keyboard_layout();
       if (!base::Contains(installed_keyboard_layouts_, keyboard_layout)) {
-        std::unique_ptr<char, base::FreeDeleter>* xkb_keymap_str =
-            new std::unique_ptr<char, base::FreeDeleter>();
-        sequenced_task_runner_->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(
-                &WaylandKeyboardDeviceConfigurationDelegate::GetXkbKeymap,
-                weak_factory_.GetWeakPtr(), keyboard_layout, xkb_keymap_str),
-            base::BindOnce(&WaylandKeyboardDeviceConfigurationDelegate::
-                               OnKeyboardLayoutInstalled,
-                           weak_factory_.GetWeakPtr(), keyboard_layout,
-                           base::Owned(xkb_keymap_str)));
+        OnKeyboardLayoutInstalled(keyboard_layout);
       }
     }
 
@@ -159,32 +139,8 @@ class WaylandKeyboardDeviceConfigurationDelegate
       override {}
 
  private:
-  void OnKeyboardLayoutInstalled(
-      const std::string& layout_name,
-      std::unique_ptr<char, base::FreeDeleter>* keymap_str) {
-    // Wayland methods should be run in UI Thread.
-    DCHECK(base::CurrentUIThread::IsSet());
-
-    base::StringPiece keymap = keymap_str->get();
-    // Send the content of |keymap| with trailing '\0' termination via shared
-    // memory.
-    base::UnsafeSharedMemoryRegion shared_keymap_region =
-        base::UnsafeSharedMemoryRegion::Create(keymap.size() + 1);
-    base::WritableSharedMemoryMapping shared_keymap =
-        shared_keymap_region.Map();
-    base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
-        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
-            std::move(shared_keymap_region));
-    DCHECK(shared_keymap.IsValid());
-
-    std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size());
-    static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()] = '\0';
-
-    zcr_keyboard_device_configuration_v1_send_layout_install(
-        resource_, layout_name.c_str(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
-        platform_shared_keymap.GetPlatformHandle().fd, keymap.size() + 1);
-    wl_client_flush(client());
-  }
+  // TODO: Implement this method to send layout_install event.
+  void OnKeyboardLayoutInstalled(const std::string& layout_name) {}
 
   // Notify key bits update.
   void ProcessKeyBitsUpdate() {
@@ -223,33 +179,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
     wl_client_flush(client());
   }
 
-  // This method shouldn't run on UI thread since it involves I/O operation.
-  void GetXkbKeymap(
-      const std::string& layout_name,
-      std::unique_ptr<char, base::FreeDeleter>* keymap_str) const {
-    std::string layout_id, layout_variant;
-    ui::XkbKeyboardLayoutEngine::ParseLayoutName(layout_name, &layout_id,
-                                                 &layout_variant);
-    xkb_rule_names names = {.rules = nullptr,
-                            .model = "pc101",
-                            .layout = layout_id.c_str(),
-                            .variant = layout_variant.c_str(),
-                            .options = ""};
-
-    std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
-        xkb_keymap_new_from_names(xkb_context_.get(), &names,
-                                  XKB_KEYMAP_COMPILE_NO_FLAGS));
-
-    *keymap_str = std::unique_ptr<char, base::FreeDeleter>(
-        xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
-  }
-
   wl_client* client() const { return wl_resource_get_client(resource_); }
-
-  // XKB Context to read XKB files. This variable should only be used inside
-  // `GetXkbKeymap` to avoid race condition.
-  std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context_{
-      xkb_context_new(XKB_CONTEXT_NO_FLAGS)};
 
   raw_ptr<wl_resource, ExperimentalAsh> resource_;
   raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
@@ -257,12 +187,6 @@ class WaylandKeyboardDeviceConfigurationDelegate
   // List of acknowledged installed keyboard layouts. Used to determine if there
   // are new keyboard layouts installed.
   std::set<std::string> installed_keyboard_layouts_;
-
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})};
-  base::WeakPtrFactory<WaylandKeyboardDeviceConfigurationDelegate>
-      weak_factory_{this};
 };
 
 void keyboard_device_configuration_destroy(wl_client* client,
