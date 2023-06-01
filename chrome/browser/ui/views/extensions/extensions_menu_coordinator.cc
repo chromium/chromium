@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "extensions/common/extension_features.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -72,7 +73,7 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_delegate->set_margins(gfx::Insets(0));
   bubble_delegate->set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+          ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   // Let anchor view's MenuButtonController handle the highlight.
   bubble_delegate->set_highlight_button_when_shown(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
