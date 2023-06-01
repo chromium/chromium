@@ -31,6 +31,37 @@ class UnsentLogStoreMetrics;
 // Maintains a list of unsent logs that are written and restored from disk.
 class UnsentLogStore : public LogStore {
  public:
+  // Configurable capacities for unsent log store.
+  //
+  // When saving logs to disk, stores either the first |min_log_count| logs, or
+  // at least |min_queue_size_bytes| bytes of logs. If |this| contains more than
+  // |min_log_count| logs AND a total bytes larger than |min_queue_size_bytes|,
+  // older logs will be dropped for newer logs.
+  //
+  // Either |min_queue_size_bytes| or |min_log_count| must be greater than 0.
+  //
+  // Individual logs greater than |max_log_size_bytes| will not be written to
+  // disk. If |max_log_size_bytes| is zero, logs of any size will be written to
+  // disk.
+  struct UnsentLogStoreLimits {
+    // Minimum number of unsent logs persisted before older logs are trimmed.
+    //
+    // log_count >= |min_log_count| AND total_queue_bytes >=
+    // |min_queue_size_bytes| for logs to be dropped. See comments for
+    // UnsentLogStoreLimits for more details.
+    size_t min_log_count = 0;
+
+    // Minimum bytes that the queue can hold before older logs are trimmed.
+    //
+    // Number of logs >= |min_log_count| AND total_queue_size >=
+    // |min_queue_size_bytes| for logs to be dropped. See comments for
+    // UnsentLogStoreLimits for more details.
+    size_t min_queue_size_bytes = 0;
+
+    // Logs greater than this size will not be written to disk.
+    size_t max_log_size_bytes = 0;
+  };
+
   // Constructs an UnsentLogStore that stores data in |local_state| under the
   // preference |log_data_pref_name|.
   // Calling code is responsible for ensuring that the lifetime of |local_state|
@@ -39,12 +70,6 @@ class UnsentLogStore : public LogStore {
   // The optional |metadata_pref_name| is the preference that is used to store
   // the unsent logs info while the unset logs are persisted. That info will be
   // recorded as UMA metrics in next browser startup.
-  //
-  // When saving logs to disk, stores either the first |min_log_count| logs, or
-  // at least |min_log_bytes| bytes of logs, whichever is greater.
-  //
-  // If the optional |max_log_size| parameter is non-zero, all logs larger than
-  // that limit will be skipped when writing to disk.
   //
   // |signing_key| is used to produce an HMAC-SHA256 signature of the logged
   // data, which will be uploaded with the log and used to validate data
@@ -56,9 +81,7 @@ class UnsentLogStore : public LogStore {
                  PrefService* local_state,
                  const char* log_data_pref_name,
                  const char* metadata_pref_name,
-                 size_t min_log_count,
-                 size_t min_log_bytes,
-                 size_t max_log_size,
+                 UnsentLogStoreLimits log_store_limits,
                  const std::string& signing_key,
                  MetricsLogsEventManager* logs_event_manager);
 
@@ -222,14 +245,7 @@ class UnsentLogStore : public LogStore {
   // nullptr if the metadata isn't desired.
   const char* metadata_pref_name_;
 
-  // We will keep at least this |min_log_count_| logs or |min_log_bytes_| bytes
-  // of logs, whichever is greater, when trimming logs.  These apply after
-  // skipping logs greater than |max_log_size_|.
-  const size_t min_log_count_;
-  const size_t min_log_bytes_;
-
-  // Logs greater than this size will not be written to disk.
-  const size_t max_log_size_;
+  const UnsentLogStoreLimits log_store_limits_;
 
   // Used to create a signature of log data, in order to verify reported data is
   // authentic.

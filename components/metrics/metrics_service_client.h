@@ -40,14 +40,17 @@ namespace structured {
 class StructuredMetricsService;
 }
 
-// The maximum capacity (bytes) of the queue for logs to be persisted. This
-// will be applied to both log queues (initial/ongoing). This ensures that a
-// reasonable amount of history will be stored even if there is a long series of
-// very small logs.
-extern const base::FeatureParam<int> kMaxLogQueueBytes;
+// The minimum number bytes of the queue to be persisted before logs are
+// dropped. This will be applied to both log queues (initial/ongoing). This
+// ensures that a reasonable amount of history will be stored even if there is a
+// long series of very small logs.
+//
+// Refer to //components/metrics/unsent_log_store.h for more details on when
+// logs are dropped.
+extern const base::FeatureParam<int> kMinLogQueueBytes;
 
-// The maximum number of ongoing logs to persist in the queue to send during
-// this or future sessions.
+// The minimum number of ongoing logs to persist in the queue before logs are
+// dropped.
 //
 // Note that each ongoing log may be pretty large, since "initial" logs must
 // first be sent before any ongoing logs are transmitted. "Initial" logs will
@@ -58,7 +61,10 @@ extern const base::FeatureParam<int> kMaxLogQueueBytes;
 // A "standard shutdown" will create a small log, including just the data that
 // was not yet been transmitted, and that is normal (to have exactly one
 // ongoing_log_ at startup).
-extern const base::FeatureParam<int> kMaxOngoingLogQueueCount;
+//
+// Refer to //components/metrics/unsent_log_store.h for more details on when
+// logs are dropped.
+extern const base::FeatureParam<int> kMinOngoingLogQueueCount;
 
 // An abstraction of operations that depend on the embedder's (e.g. Chrome)
 // environment.

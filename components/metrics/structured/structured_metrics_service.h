@@ -11,6 +11,7 @@
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
 #include "components/metrics/structured/structured_metrics_scheduler.h"
+#include "components/metrics/unsent_log_store.h"
 
 FORWARD_DECLARE_TEST(StructuredMetricsServiceTest, RotateLogs);
 
@@ -92,7 +93,7 @@ class StructuredMetricsService final {
   static std::string SerializeLog(const ChromeUserMetricsExtension& uma_proto);
 
   // Retrieves the storage parameters to control the reporting service.
-  static reporting::StorageLimits GetLogStoreLimits();
+  static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();
 
   // Manages on-device recording of events.
   std::unique_ptr<StructuredMetricsRecorder> recorder_;

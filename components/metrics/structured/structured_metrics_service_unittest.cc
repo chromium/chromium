@@ -69,14 +69,14 @@ class StructuredMetricsServiceTest : public testing::Test {
   StructuredMetricsServiceTest() {
     reporting::StructuredMetricsReportingService::RegisterPrefs(
         prefs_.registry());
-
-    Recorder::GetInstance()->SetUiTaskRunner(
-        task_environment_.GetMainThreadTaskRunner());
-    StructuredMetricsClient::Get()->SetDelegate(&test_recorder_);
   }
 
   void SetUp() override {
     feature_list_.InitWithFeatures({kEnabledStructuredMetricsService}, {});
+
+    Recorder::GetInstance()->SetUiTaskRunner(
+        task_environment_.GetMainThreadTaskRunner());
+    StructuredMetricsClient::Get()->SetDelegate(&test_recorder_);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -86,6 +86,8 @@ class StructuredMetricsServiceTest : public testing::Test {
 
     WriteTestingProfileKeys();
   }
+
+  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
 
   void Init() {
     auto recorder = std::unique_ptr<StructuredMetricsRecorder>(
@@ -149,8 +151,10 @@ class StructuredMetricsServiceTest : public testing::Test {
     metrics::UnsentLogStore result_unsent_log_store(
         std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_,
         prefs::kLogStoreName, /*metadata_pref_name=*/nullptr,
-        /*min_log_count=*/3, /*min_log_bytes=*/1000,
-        /*max_log_size=*/0,
+        // Set to 3 so logs are not dropped in the test.
+        UnsentLogStore::UnsentLogStoreLimits{
+            .min_log_count = 3,
+        },
         /*signing_key=*/std::string(),
         /*logs_event_manager=*/nullptr);
 

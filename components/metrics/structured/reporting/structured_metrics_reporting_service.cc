@@ -14,18 +14,16 @@ namespace metrics::structured::reporting {
 StructuredMetricsReportingService::StructuredMetricsReportingService(
     MetricsServiceClient* client,
     PrefService* local_state,
-    const StorageLimits& storage_limits)
+    const UnsentLogStore::UnsentLogStoreLimits& storage_limits)
     : ReportingService(client,
                        local_state,
-                       storage_limits.max_log_size,
+                       storage_limits.max_log_size_bytes,
                        /*logs_event_manager=*/nullptr),
       log_store_(std::make_unique<StructuredMetricsLogMetrics>(),
                  local_state,
                  prefs::kLogStoreName,
                  /* metadata_pref_name=*/nullptr,
-                 storage_limits.min_log_queue_count,
-                 storage_limits.min_log_queue_size,
-                 storage_limits.max_log_size,
+                 storage_limits,
                  client->GetUploadSigningKey(),
                  /* logs_event_manager=*/nullptr) {}
 

@@ -97,7 +97,8 @@ StructuredMetricsService::StructuredMetricsService(
   }
 
   // Setup the reporting service.
-  const reporting::StorageLimits storage_limits = GetLogStoreLimits();
+  const UnsentLogStore::UnsentLogStoreLimits storage_limits =
+      GetLogStoreLimits();
 
   reporting_service_ =
       std::make_unique<reporting::StructuredMetricsReportingService>(
@@ -175,11 +176,12 @@ void StructuredMetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   reporting::StructuredMetricsReportingService::RegisterPrefs(registry);
 }
 
-reporting::StorageLimits StructuredMetricsService::GetLogStoreLimits() {
-  return reporting::StorageLimits{
-      .min_log_queue_count = static_cast<size_t>(kMinLogQueueCount.Get()),
-      .min_log_queue_size = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
-      .max_log_size = static_cast<size_t>(kMaxLogSizeBytes.Get()),
+UnsentLogStore::UnsentLogStoreLimits
+StructuredMetricsService::GetLogStoreLimits() {
+  return UnsentLogStore::UnsentLogStoreLimits{
+      .min_log_count = static_cast<size_t>(kMinLogQueueCount.Get()),
+      .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
+      .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
   };
 }
 

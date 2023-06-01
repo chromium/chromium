@@ -19,18 +19,23 @@
 
 namespace metrics {
 
-const base::FeatureParam<int> kMaxLogQueueBytes{
+// TODO(b/282078734): Names "max_*" are the original names when the experiment
+// first started. These should be renamed after the experiment is over.
+const base::FeatureParam<int> kMinLogQueueBytes{
     &features::kStructuredMetrics, "max_log_queue_bytes",
     300 * 1024  // 300 KiB
 };
 
-const base::FeatureParam<int> kMaxOngoingLogQueueCount{
+const base::FeatureParam<int> kMinOngoingLogQueueCount{
     &features::kStructuredMetrics, "max_ongoing_log_queue_count", 8};
 
 namespace {
 
 // The minimum time in seconds between consecutive metrics report uploads.
 constexpr int kMetricsUploadIntervalSecMinimum = 20;
+
+// Initial logs can be of any size.
+constexpr size_t kMaxInitialLogSize = 0;
 
 // If a metrics log upload fails, and the transmission is over this byte count,
 // then we will discard the log, and not try to retransmit it. We also don't
@@ -43,9 +48,8 @@ constexpr size_t kMaxOngoingLogSize = 1024 * 1024;  // 1 MiB
 constexpr size_t kMaxOngoingLogSize = 100 * 1024;  // 100 KiB
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// The minimum number of "initial" logs to save, and hope to send during a
-// future Chrome session. Initial logs contain crash stats, and are pretty
-// small.
+// The minimum number of "initial" logs to save before logs are dropped. Initial
+// logs contain crash stats, and are pretty small.
 constexpr size_t kMinInitialLogQueueCount = 20;
 
 }  // namespace
@@ -150,17 +154,22 @@ MetricsServiceClient::AddOnClonedInstallDetectedCallback(
 }
 
 MetricsLogStore::StorageLimits MetricsServiceClient::GetStorageLimits() const {
-  // TODO(b/283126298): Rename min_* variable names to max_* to more accurately
-  // reflect what the variable names represent.
   return {
-      /*min_initial_log_queue_count=*/kMinInitialLogQueueCount,
-      /*min_initial_log_queue_size=*/
-      static_cast<size_t>(kMaxLogQueueBytes.Get()),
-      /*min_ongoing_log_queue_count=*/
-      static_cast<size_t>(kMaxOngoingLogQueueCount.Get()),
-      /*min_ongoing_log_queue_size=*/
-      static_cast<size_t>(kMaxLogQueueBytes.Get()),
-      /*max_ongoing_log_size=*/kMaxOngoingLogSize,
+      .initial_log_queue_limits =
+          UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count = kMinInitialLogQueueCount,
+              .min_queue_size_bytes =
+                  static_cast<size_t>(kMinLogQueueBytes.Get()),
+              .max_log_size_bytes = static_cast<size_t>(kMaxInitialLogSize),
+          },
+      .ongoing_log_queue_limits =
+          UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count =
+                  static_cast<size_t>(kMinOngoingLogQueueCount.Get()),
+              .min_queue_size_bytes =
+                  static_cast<size_t>(kMinLogQueueBytes.Get()),
+              .max_log_size_bytes = static_cast<size_t>(kMaxOngoingLogSize),
+          },
   };
 }
 

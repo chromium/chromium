@@ -75,6 +75,8 @@ class StructuredMetricsProviderTest : public testing::Test {
     task_environment_.AdvanceClock(base::Days(1000));
   }
 
+  void TearDown() override { StructuredMetricsClient::Get()->UnsetDelegate(); }
+
   base::FilePath TempDirPath() { return temp_dir_.GetPath(); }
 
   base::FilePath ProfileKeyFilePath() {

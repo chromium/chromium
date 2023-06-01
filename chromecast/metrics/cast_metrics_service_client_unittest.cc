@@ -63,26 +63,36 @@ TEST_F(CastMetricsServiceClientTest, UsesDelegateToGetStorageLimits) {
   FakeCastMetricsServiceDelegate delegate;
   CastMetricsServiceClient client(&delegate, nullptr, nullptr);
 
+  // Set arbitrary limits to ensure the limits propagate to the client
+  // correctly.
   ::metrics::MetricsLogStore::StorageLimits expected_limits = {
-      /*min_initial_log_queue_count=*/10,
-      /*min_initial_log_queue_size=*/2000,
-      /*min_ongoing_log_queue_count=*/30,
-      /*min_ongoing_log_queue_size=*/4000,
-      /*max_ongoing_log_size=*/5000,
+      .initial_log_queue_limits =
+          ::metrics::UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count = 10,
+              .min_queue_size_bytes = 2000,
+          },
+      .ongoing_log_queue_limits =
+          ::metrics::UnsentLogStore::UnsentLogStoreLimits{
+              .min_log_count = 30,
+              .min_queue_size_bytes = 4000,
+              .max_log_size_bytes = 5000,
+          },
   };
   delegate.SetStorageLimits(expected_limits);
   ::metrics::MetricsLogStore::StorageLimits actual_limits =
       client.GetStorageLimits();
-  EXPECT_EQ(actual_limits.min_initial_log_queue_count,
-            expected_limits.min_initial_log_queue_count);
-  EXPECT_EQ(actual_limits.min_initial_log_queue_size,
-            expected_limits.min_initial_log_queue_size);
-  EXPECT_EQ(actual_limits.min_ongoing_log_queue_count,
-            expected_limits.min_ongoing_log_queue_count);
-  EXPECT_EQ(actual_limits.min_ongoing_log_queue_size,
-            expected_limits.min_ongoing_log_queue_size);
-  EXPECT_EQ(actual_limits.max_ongoing_log_size,
-            expected_limits.max_ongoing_log_size);
+  EXPECT_EQ(actual_limits.initial_log_queue_limits.min_log_count,
+            expected_limits.initial_log_queue_limits.min_log_count);
+  EXPECT_EQ(actual_limits.initial_log_queue_limits.min_queue_size_bytes,
+            expected_limits.initial_log_queue_limits.min_queue_size_bytes);
+  EXPECT_EQ(actual_limits.initial_log_queue_limits.max_log_size_bytes,
+            expected_limits.initial_log_queue_limits.max_log_size_bytes);
+  EXPECT_EQ(actual_limits.ongoing_log_queue_limits.min_log_count,
+            expected_limits.ongoing_log_queue_limits.min_log_count);
+  EXPECT_EQ(actual_limits.ongoing_log_queue_limits.min_queue_size_bytes,
+            expected_limits.ongoing_log_queue_limits.min_queue_size_bytes);
+  EXPECT_EQ(actual_limits.ongoing_log_queue_limits.max_log_size_bytes,
+            expected_limits.ongoing_log_queue_limits.max_log_size_bytes);
 }
 
 }  // namespace
