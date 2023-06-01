@@ -1226,6 +1226,7 @@ if (!is_ios && !is_cronet_build) {
     if (is_win) {
       data += [
         "//third_party/apache-win32/",
+        "//third_party/apache-windows-arm64/",
         "//third_party/perl/perl/",
       ]
       data_deps += [ "//build/win:copy_cdb_to_output" ]
