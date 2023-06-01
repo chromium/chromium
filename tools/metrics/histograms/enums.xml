@@ -95428,6 +95428,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Creation of the exit event mutex failed."/>
 </enum>
 
+<enum name="SetWallpaperResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Permission Denied"/>
+  <int value="2" label="Network Error"/>
+  <int value="3" label="Decoding Error"/>
+</enum>
+
 <enum name="SevenZipResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

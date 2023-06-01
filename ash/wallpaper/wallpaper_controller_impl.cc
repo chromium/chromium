@@ -954,6 +954,8 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
   if (!CanSetUserWallpaper(params.account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -2070,7 +2072,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
     const base::FilePath& file_path) {
   bool file_exists = !file_path.empty();
   if (!file_exists) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2086,7 +2088,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
     const OnlineWallpaperParams& params,
     const base::flat_map<std::string, base::FilePath>& url_to_file_path_map) {
   if (url_to_file_path_map.empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2117,7 +2119,7 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
   }
 
   // Report that setting the wallpaper failed.
-  std::move(callback).Run(false);
+  std::move(callback).Run(/*success=*/false);
 
   // Daily wallpaper should schedule retry.
   if (type == WallpaperType::kDaily)
@@ -2130,11 +2132,17 @@ void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
-  if (callback)
+  if (callback) {
     std::move(callback).Run(success);
+  }
   if (!success) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kDecodingError);
     LOG(ERROR) << "Failed to decode online wallpaper.";
     return;
+  } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kSuccess);
   }
 
   if (save_file) {
@@ -2904,7 +2912,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     SetWallpaperCallback callback,
     bool success) {
   if (success) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
@@ -2980,6 +2988,8 @@ void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
   gfx::ImageSkia variant_to_use = online_wallpaper_variant_to_use_;
   online_wallpaper_variant_to_use_ = gfx::ImageSkia();
   if (!success) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOnline, SetWallpaperResult::kNetworkError);
     std::move(callback).Run(success);
     return;
   }

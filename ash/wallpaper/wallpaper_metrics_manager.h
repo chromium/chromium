@@ -9,9 +9,20 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/scoped_observation.h"
 
 namespace ash {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SetWallpaperResult {
+  kSuccess = 0,
+  kPermissionDenied,
+  kNetworkError,
+  kDecodingError,
+  kMaxValue = kDecodingError,
+};
 
 // The implementation of WallpaperControllerObserver that saves metrics.
 class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
@@ -29,6 +40,7 @@ class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
   void OnWallpaperPreviewStarted() override;
 
   void LogSettingTimeOfDayWallpaperAfterOobe(bool success);
+  void LogWallpaperResult(WallpaperType type, SetWallpaperResult reason);
 
  private:
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>

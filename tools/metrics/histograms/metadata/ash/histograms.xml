@@ -6880,6 +6880,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wallpaper.{WallpaperType}.Result"
+    enum="SetWallpaperResult" expires_after="2024-06-01">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the result of user's attempt to set a wallpaper. Recorded when a user
+    selects a wallpaper from the personalization hub.
+  </summary>
+  <token key="WallpaperType">
+    <variant name="Online"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
     expires_after="2023-11-12">
   <owner>sammiequon@chromium.org</owner>
