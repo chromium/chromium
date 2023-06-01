@@ -2117,6 +2117,8 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
       {"url_3", AutocompleteMatchType::HISTORY_CLUSTER},
   };
   PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+  for (auto& m : matches)
+    m.allowed_to_be_default_match = false;
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -2564,19 +2566,11 @@ TEST_F(AutocompleteResultTest, MaybeCullTailSuggestions) {
   EXPECT_THAT(test({n, n, td, td}), testing::ElementsAre(td, td));
   EXPECT_THAT(test({n, n, td, t}), testing::ElementsAre(td, t));
 
+  // When there are both history cluster and tail suggestions, history cluster
+  // suggestions should be hidden.
   // A history cluster suggestion.
   CullTailTestMatch h{u"H", AutocompleteMatchType::HISTORY_CLUSTER, false};
-  // When there are both history cluster and tail suggestions, tail suggestions
-  // should be hidden.
-  EXPECT_THAT(test({nd, td, t, h}), testing::ElementsAre(nd, h));
-
-  {
-    // When there are both history cluster and tail suggestions, history cluster
-    // suggestions should be hidden.
-    base::test::ScopedFeatureList feature_list{
-        omnibox::kPreferTailOverHistoryClusterSuggestions};
-    EXPECT_THAT(test({nd, td, t, h}), testing::ElementsAre(nd, tdp, t));
-  }
+  EXPECT_THAT(test({nd, td, t, h}), testing::ElementsAre(nd, tdp, t));
 }
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

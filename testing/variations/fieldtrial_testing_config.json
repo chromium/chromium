@@ -7652,32 +7652,6 @@
             ]
         }
     ],
-    "JourneysSuggestionRow": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "omnibox_history_cluster_provider_inherit_search_match_score": "false",
-                        "omnibox_history_cluster_provider_rank_above_searches": "false",
-                        "omnibox_history_cluster_provider_shortcuts": "true"
-                    },
-                    "enable_features": [
-                        "JourneysOmniboxHistoryClusterProvider",
-                        "OmniboxPreferTailOverHistoryClusterSuggestions"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysZeroStateFiltering": [
         {
             "platforms": [
