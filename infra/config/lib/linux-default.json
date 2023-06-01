@@ -131,6 +131,7 @@
     "linux-headless-shell-rel": "Ubuntu-22.04",
     "linux-inverse-fieldtrials-fyi-rel": "Ubuntu-22.04",
     "linux-js-code-coverage": "Ubuntu-22.04",
+    "linux-lacros-code-coverage": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-lacros-rel-compilator": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
