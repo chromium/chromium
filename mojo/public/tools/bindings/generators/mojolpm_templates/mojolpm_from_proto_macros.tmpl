@@ -3,7 +3,11 @@
 
 {%- macro declare_array(type, kind) %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set mojom_maybe_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.kind|is_nullable_kind %}
+{%-     set mojom_maybe_type = kind.kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set mojom_maybe_type = mojom_type %}
+{%-   endif %}
 bool FromProto(
   const {{type}}& input,
   std::vector<{{mojom_type}}>& output);{{"\n"-}}
@@ -26,7 +30,11 @@ bool FromProto(
 {%- macro declare_map(type, kind) %}
 {%-   set mojom_key_type = kind.key_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-   set mojom_value_type = kind.value_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set mojom_maybe_value_type = kind.value_kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.value_kind|is_nullable_kind %}
+{%-     set mojom_maybe_value_type = kind.value_kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set mojom_maybe_value_type = mojom_value_type %}
+{%-   endif %}
 bool FromProto(
   const {{type}}& input,
   base::flat_map<{{mojom_key_type}},
@@ -69,7 +77,6 @@ bool FromProto(
 
 {%- macro define_array(type, kind) %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set mojom_maybe_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
 bool FromProto(
     const {{type}}& input,
     std::vector<{{mojom_type}}>& output) {
@@ -79,7 +86,9 @@ bool FromProto(
   for (const auto& entry : input.values()) {
     {{mojom_type}} value{ {{- kind.kind|default_constructor_args -}} };
 {%-   if kind.kind|is_nullable_kind %}
-    {{mojom_maybe_type}} maybe_value{ {{- kind.kind|default_constructor_args -}} };
+{%-     set unnullable_kind = kind.kind|to_unnullable_kind %}
+{%-     set mojom_maybe_type = unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+    {{mojom_maybe_type}} maybe_value{ {{- unnullable_kind|default_constructor_args -}} };
     if (FromProto(entry.value(), maybe_value)) {
       value = std::move(maybe_value);
     }
@@ -122,7 +131,6 @@ bool FromProto(
 {%- macro define_map(type, kind) %}
 {%-   set mojom_key_type = kind.key_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
 {%-   set mojom_value_type = kind.value_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set mojom_maybe_value_type = kind.value_kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
 bool FromProto(
     const {{type}}& input,
     base::flat_map<{{mojom_key_type}},
@@ -130,9 +138,11 @@ bool FromProto(
   bool result = true;
   for (const auto& entry : input.values()) {
 {%-   if kind.value_kind|is_nullable_kind %}
+{%-     set unnullable_value_kind = kind.value_kind|to_unnullable_kind %}
+{%-     set mojom_maybe_value_type = unnullable_value_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
     {{mojom_key_type}} key{ {{- kind.key_kind|default_constructor_args -}} };
     {{mojom_value_type}} value{ {{- kind.value_kind|default_constructor_args -}} };
-    {{mojom_maybe_value_type}} maybe_value{ {{- kind.value_kind|default_constructor_args -}} };
+    {{mojom_maybe_value_type}} maybe_value{ {{- unnullable_value_kind|default_constructor_args -}} };
 
     if (FromProto(entry.key(), key)) {
       if (FromProto(entry.value(), maybe_value)) {
@@ -258,10 +268,11 @@ bool FromProto(
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-       set field_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
   {{field_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
 {%-       if kind|is_nullable_kind %}
-  {{field_maybe_mojom_type}} local_maybe_{{name}}{ {{- kind|default_constructor_args -}} };
+{%-         set unnullable_kind = kind|to_unnullable_kind %}
+{%-         set field_maybe_mojom_type = unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+  {{field_maybe_mojom_type}} local_maybe_{{name}}{ {{- unnullable_kind|default_constructor_args -}} };
 {%-       endif %}
 {%-     endfor %}
 
@@ -334,9 +345,10 @@ bool FromProto(
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
     case {{union_type}}::k{{("m_" ~ name)|under_to_camel}}: {
 {%-       if kind|is_nullable_kind %}
-{%-         set field_maybe_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-         set unnullable_kind = kind|to_unnullable_kind %}
+{%-         set field_maybe_mojom_type = unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
       {{field_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
-      {{field_maybe_mojom_type}} maybe_local_{{name}}{ {{- kind|default_constructor_args -}} };
+      {{field_maybe_mojom_type}} maybe_local_{{name}}{ {{- unnullable_kind|default_constructor_args -}} };
       if (FromProto(input.m_{{name}}(), maybe_local_{{name}})) {
         local_{{name}} = std::move(maybe_local_{{name}});
       }

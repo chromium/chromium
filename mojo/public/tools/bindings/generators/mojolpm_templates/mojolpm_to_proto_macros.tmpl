@@ -3,7 +3,11 @@
 
 {%- macro declare_array(type, kind) %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.kind|is_nullable_kind %}
+{%-     set maybe_mojom_type = kind.kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set maybe_mojom_type = mojom_type %}
+{%-   endif %}
 bool ToProto(
 {%-   if kind.kind|is_move_only_kind %}
   std::vector<{{mojom_type}}>&& input,
@@ -73,7 +77,11 @@ bool ToProto(
 {%- macro define_array(type, kind) %}
 {%-   set maybe_const = "const " if not kind.kind|is_move_only_kind else "" %}
 {%-   set mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
-{%-   set maybe_mojom_type = kind.kind|cpp_wrapper_type(add_same_module_namespaces=true, ignore_nullable=true) %}
+{%-   if kind.kind|is_nullable_kind %}
+{%-     set maybe_mojom_type = kind.kind|to_unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{%-   else %}
+{%-     set maybe_mojom_type = mojom_type %}
+{%-   endif %}
 bool ToProto(
 {%-   if kind.kind|is_move_only_kind %}
   std::vector<{{mojom_type}}>&& input,

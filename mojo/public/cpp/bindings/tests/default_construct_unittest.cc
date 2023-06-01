@@ -123,4 +123,9 @@ TEST_F(DefaultConstructTest, TypeWithPrivatelyDefaultConstructibleField) {
   EXPECT_EQ(container.test_struct.value(), 0);
 }
 
+TEST(DefaultConstructOptionalTest, InitializedToNullopt) {
+  auto container = mojom::OptionalTestStructContainer::New();
+  EXPECT_EQ(absl::nullopt, container->test_struct);
+}
+
 }  // namespace mojo::test::default_construct

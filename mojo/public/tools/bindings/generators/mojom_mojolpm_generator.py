@@ -268,6 +268,7 @@ class Generator(CppGenerator):
         "is_struct_kind": mojom.IsStructKind,
         "is_typemapped_kind": self._IsTypemappedKind,
         "is_union_kind": mojom.IsUnionKind,
+        "to_unnullable_kind": self._ToUnnullableKind,
         "under_to_camel": self._UnderToCamel,
     }
     return cpp_filters
@@ -499,9 +500,9 @@ class Generator(CppGenerator):
     return False
 
   def _DefaultConstructorArgs(self, kind):
-    if not self._IsDefaultConstructible(kind):
-      return "mojo::internal::DefaultConstructTag()"
-    return ""
+    if mojom.IsNullableKind(kind) or self._IsDefaultConstructible(kind):
+      return ""
+    return "mojo::internal::DefaultConstructTag()"
 
   def _EnumFieldName(self, name, kind):
     # The WebFeature enum has entries that differ only by the casing of the
@@ -518,3 +519,7 @@ class Generator(CppGenerator):
         field_names[field.name] = new_field_name
       self.enum_name_cache[kind] = field_names
     return self.enum_name_cache[kind][name]
+
+  def _ToUnnullableKind(self, kind):
+    assert mojom.IsNullableKind(kind)
+    return kind.MakeUnnullableKind()
