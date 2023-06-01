@@ -50,20 +50,35 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
     }
     DCHECK(win_values[1]->IsObject());
     v8::Local<v8::Object> prev_ad = win_values[1].As<v8::Object>();
-    v8::Local<v8::Value> serialized_metadata;
-    v8::Local<v8::Value> metadata;
     // TODO(crbug.com/1448936): Remove this condition logic when we can assume
     // it is true (30 days after switching to a Chrome version at least this
     // recent).
     // If prev_ad has "renderURL" instead of "render_url" it must be the newer
     // version. In that version the metadata is still kept as serialized JSON
     // and needs to be parsed again. If it has metadata, parse it.
-    if (prev_ad->Has(context, render_url_key).FromMaybe(false) &&
-        prev_ad->Get(context, metadata_key).ToLocal(&serialized_metadata) &&
-        serialized_metadata->IsString()) {
-      if (!v8::JSON::Parse(context, serialized_metadata.As<v8::String>())
-               .ToLocal(&metadata) ||
-          !prev_ad->Set(context, metadata_key, metadata).FromMaybe(false)) {
+    // We also need to provide the render URL in a "render_url" field for
+    // backward compatibility.
+    // TODO(crbug.com/1441988): Remove render_url alias when it is no longer
+    // needed for compatibility.
+    if (prev_ad->Has(context, render_url_key).FromMaybe(false)) {
+      v8::Local<v8::Value> serialized_metadata;
+      v8::Local<v8::Value> metadata;
+      if (prev_ad->Get(context, metadata_key).ToLocal(&serialized_metadata) &&
+          serialized_metadata->IsString()) {
+        if (!v8::JSON::Parse(context, serialized_metadata.As<v8::String>())
+                 .ToLocal(&metadata) ||
+            !prev_ad->Set(context, metadata_key, metadata).FromMaybe(false)) {
+          return v8::MaybeLocal<v8::Value>();
+        }
+      }
+      // For compatibility we need to provide the render URL as the "render_url"
+      // attribute in addition to the "renderURL" attribute.
+      v8::Local<v8::Value> render_url;
+      if (!prev_ad->Get(context, render_url_key).ToLocal(&render_url) ||
+          !prev_ad
+               ->Set(context, v8_helper->CreateStringFromLiteral("render_url"),
+                     render_url)
+               .FromMaybe(false)) {
         return v8::MaybeLocal<v8::Value>();
       }
     }

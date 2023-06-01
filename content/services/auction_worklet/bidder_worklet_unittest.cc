@@ -3721,40 +3721,43 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
       {
           CreateWinList(win1),
           "browserSignals.prevWins",
-          R"([[200,{"renderURL":"ad1"}]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}]])",
       },
       // Make sure it's passed on as an object and not a string.
       {
           CreateWinList(win1),
           "browserSignals.prevWins[0]",
-          R"([200,{"renderURL":"ad1"}])",
+          R"([200,{"renderURL":"ad1","render_url":"ad1"}])",
       },
       // Test rounding.
       {
           CreateWinList(win2),
           "browserSignals.prevWins",
-          R"([[100,{"renderURL":"ad2","metadata":{"key":"value"}}]])",
+          R"([[100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}]])",
       },
       // Multiple previous wins.
       {
           CreateWinList(win1, win2),
           "browserSignals.prevWins",
-          R"([[200,{"renderURL":"ad1"}],)"
-          R"([100,{"renderURL":"ad2","metadata":{"key":"value"}}]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}],)"
+          R"([100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}]])",
       },
       // Times are trimmed at 0.
       {
           CreateWinList(future_win),
           "browserSignals.prevWins",
-          R"([[0,{"renderURL":"future_ad"}]])",
+          R"([[0,{"renderURL":"future_ad","render_url":"future_ad"}]])",
       },
       // Out of order wins should be sorted.
       {
           CreateWinList(win2, future_win, win1),
           "browserSignals.prevWins",
-          R"([[200,{"renderURL":"ad1"}],)"
-          R"([100,{"renderURL":"ad2","metadata":{"key":"value"}}],)"
-          R"([0,{"renderURL":"future_ad"}]])",
+          R"([[200,{"renderURL":"ad1","render_url":"ad1"}],)"
+          R"([100,{"renderURL":"ad2",)"
+          R"("metadata":{"key":"value"},"render_url":"ad2"}],)"
+          R"([0,{"renderURL":"future_ad","render_url":"future_ad"}]])",
       },
   };
 
