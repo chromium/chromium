@@ -338,6 +338,54 @@ TEST_F(NotificationCenterTrayTest,
   EXPECT_FALSE(secondary_notification_counter_view->GetVisible());
 }
 
+// Test fixture that disables notification popups.
+class NotificationCenterTrayNoPopupsTest : public NotificationCenterTrayTest {
+ public:
+  NotificationCenterTrayNoPopupsTest() = default;
+  NotificationCenterTrayNoPopupsTest(
+      const NotificationCenterTrayNoPopupsTest&) = delete;
+  NotificationCenterTrayNoPopupsTest& operator=(
+      const NotificationCenterTrayNoPopupsTest&) = delete;
+  ~NotificationCenterTrayNoPopupsTest() override = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSuppressMessageCenterPopups);
+    NotificationCenterTrayTest::SetUp();
+  }
+};
+
+// Tests that `NotificationCenterTray`'s `TrayItemView`s show up when adding a
+// secondary display. Notification popups are disabled for this test because the
+// presence of a popup actually hides the issue (i.e. the secondary display's
+// `NotificationCenterTray`'s `TrayItemView`s work as intended when a popup is
+// present). This covers b/281158734.
+TEST_F(NotificationCenterTrayNoPopupsTest,
+       TrayItemsVisibleWhenAddingSecondaryDisplay) {
+  // Start with one display.
+  UpdateDisplay("800x799");
+
+  // Add a pinned notification and a non-pinned notification.
+  test_api()->AddNotification();
+  test_api()->AddPinnedNotification();
+
+  // Verify that both the notification counter as well as an icon for the pinned
+  // notification are visible in the notification center tray.
+  ASSERT_TRUE(test_api()->IsPinnedIconShown());
+  ASSERT_TRUE(test_api()->IsNotificationCounterShown());
+
+  // Add a secondary display.
+  UpdateDisplay("800x799,800x799");
+  auto secondary_display_id = display_manager()->GetDisplayAt(1).id();
+
+  // Verify that both the notification counter as well as an icon for the pinned
+  // notification are visible in the secondary display's notification center
+  // tray.
+  EXPECT_TRUE(test_api()->IsPinnedIconShownOnDisplay(secondary_display_id));
+  EXPECT_TRUE(
+      test_api()->IsNotificationCounterShownOnDisplay(secondary_display_id));
+}
+
 // Test suite for the notification center when `kPrivacyIndicators` is enabled.
 class NotificationCenterTrayPrivacyIndicatorsTest : public AshTestBase {
  public:

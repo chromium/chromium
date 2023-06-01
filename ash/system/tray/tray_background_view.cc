@@ -276,11 +276,11 @@ TrayBackgroundView::TrayBackgroundView(
   layer()->SetOpacity(0.0f);
 }
 
-void TrayBackgroundView::AddObserver(Observer* observer) {
+void TrayBackgroundView::AddTrayBackgroundViewObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void TrayBackgroundView::RemoveObserver(Observer* observer) {
+void TrayBackgroundView::RemoveTrayBackgroundViewObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 

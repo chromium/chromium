@@ -6,6 +6,7 @@
 
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/tray/tray_container.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
 
@@ -18,24 +19,35 @@ StatusAreaAnimationController::StatusAreaAnimationController(
     return;
   }
 
-  notification_center_tray_->AddObserver(this);
+  notification_center_tray_->AddTrayBackgroundViewObserver(this);
+  notification_center_tray_->AddNotificationCenterTrayObserver(this);
   notification_center_tray_default_animation_enabler_ =
       std::make_unique<base::ScopedClosureRunner>(
           notification_center_tray->SetUseCustomVisibilityAnimations());
   notification_center_tray_item_animation_enablers_ =
       std::list<base::ScopedClosureRunner>();
-  DisableNotificationCenterTrayItemAnimations();
 }
 
 StatusAreaAnimationController::~StatusAreaAnimationController() {
   if (notification_center_tray_) {
-    notification_center_tray_->RemoveObserver(this);
+    notification_center_tray_->RemoveNotificationCenterTrayObserver(this);
+    notification_center_tray_->RemoveTrayBackgroundViewObserver(this);
   }
 }
 
 void StatusAreaAnimationController::OnVisiblePreferredChanged(
     bool visible_preferred) {
   PerformAnimation(visible_preferred);
+}
+
+void StatusAreaAnimationController::OnAllTrayItemsAdded() {
+  // `NotificationCenterTray`'s `TrayItemView`s need to have their animations
+  // disabled ahead of the first time the `NotificationCenterTray` becomes
+  // visible. This is the right time to disable those animations because it is
+  // after all the `TrayItemView`s have been added to the tray but before the
+  // tray has had a chance to update its visibility from the default non-visible
+  // state.
+  DisableNotificationCenterTrayItemAnimations();
 }
 
 void StatusAreaAnimationController::

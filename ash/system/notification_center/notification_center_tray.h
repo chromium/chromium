@@ -35,10 +35,22 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
  public:
   METADATA_HEADER(NotificationCenterTray);
 
+  // Inherit from this class to be notified of events that happen for a specific
+  // `NotificationCenterTray`.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when all `TrayItemView`s are done being added to this
+    // `NotificationCenterTray`.
+    virtual void OnAllTrayItemsAdded() = 0;
+  };
+
   explicit NotificationCenterTray(Shelf* shelf);
   NotificationCenterTray(const NotificationCenterTray&) = delete;
   NotificationCenterTray& operator=(const NotificationCenterTray&) = delete;
   ~NotificationCenterTray() override;
+
+  void AddNotificationCenterTrayObserver(Observer* observer);
+  void RemoveNotificationCenterTrayObserver(Observer* observer);
 
   // Called when UnifiedSystemTray's preferred visibility changes.
   void OnSystemTrayVisibilityChanged(bool system_tray_visible);
@@ -54,6 +66,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   void UpdateVisibility();
 
   // TrayBackgroundView:
+  void Initialize() override;
   std::u16string GetAccessibleNameForBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -102,6 +115,8 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   // date tray. This flag keeps track of the system tray's visibility being set
   // by the status area widget.
   bool system_tray_visible_ = true;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

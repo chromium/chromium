@@ -22,6 +22,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -137,6 +139,15 @@ bool NotificationCenterTestApi::IsBubbleShown() {
   return notification_center_tray_->is_active() && GetWidget()->IsVisible();
 }
 
+bool NotificationCenterTestApi::IsNotificationCounterShown() {
+  return IsNotificationCounterShownOnDisplay(primary_display_id_);
+}
+
+bool NotificationCenterTestApi::IsNotificationCounterShownOnDisplay(
+    int64_t display_id) {
+  return GetNotificationCounterOnDisplay(display_id)->GetVisible();
+}
+
 bool NotificationCenterTestApi::IsPinnedIconShown() {
   return IsPinnedIconShownOnDisplay(primary_display_id_);
 }
@@ -158,10 +169,47 @@ bool NotificationCenterTestApi::IsTrayShown() {
   return notification_center_tray_->GetVisible();
 }
 
+bool NotificationCenterTestApi::IsTrayShownOnDisplay(int64_t display_id) {
+  auto* notification_center_tray = GetTrayOnDisplay(display_id);
+  CHECK(notification_center_tray);
+  return notification_center_tray->GetVisible();
+}
+
+bool NotificationCenterTestApi::IsTrayAnimating() {
+  return notification_center_tray_->layer()->GetAnimator()->is_animating();
+}
+
+bool NotificationCenterTestApi::IsTrayAnimatingOnDisplay(int64_t display_id) {
+  auto* notification_center_tray = GetTrayOnDisplay(display_id);
+  CHECK(notification_center_tray);
+  return notification_center_tray->layer()->GetAnimator()->is_animating();
+}
+
+bool NotificationCenterTestApi::IsNotificationCounterAnimating() {
+  return IsNotificationCounterAnimatingOnDisplay(primary_display_id_);
+}
+
+bool NotificationCenterTestApi::IsNotificationCounterAnimatingOnDisplay(
+    int64_t display_id) {
+  return GetNotificationCounterOnDisplay(display_id)->IsAnimating();
+}
+
 bool NotificationCenterTestApi::IsDoNotDisturbIconShown() {
   return notification_center_tray_->notification_icons_controller_
       ->quiet_mode_view()
       ->GetVisible();
+}
+
+NotificationCounterView* NotificationCenterTestApi::GetNotificationCounter() {
+  return GetNotificationCounterOnDisplay(primary_display_id_);
+}
+
+NotificationCounterView*
+NotificationCenterTestApi::GetNotificationCounterOnDisplay(int64_t display_id) {
+  auto* notification_center_tray = GetTrayOnDisplay(display_id);
+  CHECK(notification_center_tray);
+  return notification_center_tray->notification_icons_controller_
+      ->notification_counter_view();
 }
 
 message_center::MessageView*
