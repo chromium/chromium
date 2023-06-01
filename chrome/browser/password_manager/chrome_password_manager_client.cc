@@ -1373,6 +1373,9 @@ void ChromePasswordManagerClient::HideFillingUI() {
   if (generation_controller) {
     generation_controller->HideBottomSheetIfNeeded();
   }
+  if (touch_to_fill_controller_) {
+    touch_to_fill_controller_->Reset();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

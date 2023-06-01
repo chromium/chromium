@@ -239,6 +239,16 @@ BASE_FEATURE(kPasswordGenerationBottomSheet,
              "PasswordGenerationBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the refactored Password Suggestion bottom sheet (Touch-To-Fill).
+// The goal of the refactoring is to transfer the knowledge about the
+// Touch-To-Fill feature to the browser code completely and so to simplify the
+// renderer code. In the refactored version it will be decided inside the the
+// `ContentPasswordManagerDriver::ShowPasswordSuggestions` whether to show the
+// TTF to the user.
+BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
+             "PasswordSuggestionBottomSheetV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.
 BASE_FEATURE(kUnifiedCredentialManagerDryRun,

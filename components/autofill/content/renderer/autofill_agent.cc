@@ -1264,7 +1264,10 @@ void AutofillAgent::FormControlElementClicked(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  password_autofill_agent_->TryToShowKeyboardReplacingSurface(element);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
+    password_autofill_agent_->TryToShowKeyboardReplacingSurface(element);
+  }
 #endif
 
   ShowSuggestions(
