@@ -643,27 +643,6 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Navigation"})
-    public void testNotCalledForIframeUuidInPackageSchemeNavigations() throws Throwable {
-        standardSetup();
-
-        final String uuidInPackageSchemeUrl =
-                "uuid-in-package:f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
-        final String pageWithIframeUrl = addPageToTestServer("/iframe_intercept.html",
-                makeHtmlPageFrom("", "<iframe src=\"" + uuidInPackageSchemeUrl + "\" />"));
-
-        final int shouldOverrideUrlLoadingCallCount =
-                mShouldOverrideUrlLoadingHelper.getCallCount();
-
-        mActivityTestRule.loadUrlSync(
-                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithIframeUrl);
-
-        Assert.assertEquals(
-                shouldOverrideUrlLoadingCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
-    }
-
     /**
      * Worker method for the various redirect tests.
      *
