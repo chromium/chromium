@@ -2072,10 +2072,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNewSubtreeRoot",
-      status: "stable",
-    },
-    {
       name: "LayoutNewSVGForeignObjectEntry",
       status: "stable",
     },

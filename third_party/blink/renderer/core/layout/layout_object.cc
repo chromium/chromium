@@ -1288,25 +1288,30 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       return false;
     }
 
-    if (const NGLayoutResult* layout_result =
-            layout_box->GetCachedLayoutResult(nullptr)) {
-      const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+    const NGLayoutResult* layout_result =
+        layout_box->GetCachedLayoutResult(nullptr);
 
-      // Fragmented nodes cannot be relayout roots.
-      if (fragment.BreakToken())
-        return false;
+    // We need a previous layout result to begin layout at a subtree root.
+    if (!layout_result) {
+      return false;
+    }
 
-      // In LayoutNG, if box has any OOF descendants, they are propagated to
-      // parent. Therefore, we must mark parent chain for layout.
-      if (fragment.HasOutOfFlowPositionedDescendants())
-        return false;
+    const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
 
-      // Anchor queries should be propagated across the layout boundaries, even
-      // when `contain: strict` is explicitly set.
-      if (fragment.HasAnchorQuery())
-        return false;
-    } else if (RuntimeEnabledFeatures::LayoutNewSubtreeRootEnabled()) {
-      // We need a previous layout result to begin layout at a subtree root.
+    // Fragmented nodes cannot be relayout roots.
+    if (fragment.BreakToken()) {
+      return false;
+    }
+
+    // If a box has any OOF descendants, they are propagated up the tree to
+    // accumulate their static-position.
+    if (fragment.HasOutOfFlowPositionedDescendants()) {
+      return false;
+    }
+
+    // Anchor queries should be propagated across the layout boundaries, even
+    // when `contain: strict` is explicitly set.
+    if (fragment.HasAnchorQuery()) {
       return false;
     }
 

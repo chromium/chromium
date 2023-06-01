@@ -979,37 +979,6 @@ void LayoutBox::LayoutSubtreeRoot() {
   }
 }
 
-void LayoutBox::LayoutSubtreeRootOld() {
-  NOT_DESTROYED();
-  if (!IsLayoutNGObject() && GetSingleCachedLayoutResult()) {
-    // If this object is laid out by the legacy engine, while its containing
-    // block is laid out by NG, it means that we normally (when laying out
-    // starting at the real root, i.e. LayoutView) enter layout of this object
-    // from NG code. This takes care of setting up a BoxLayoutExtraInput
-    // structure, which makes legacy layout behave when managed by NG. Make a
-    // short detour via NG just to set things up to re-enter legacy layout
-    // correctly.
-    DCHECK_EQ(PhysicalFragmentCount(), 1u);
-    LayoutPoint old_location = Location();
-
-    // Make a copy of the cached constraint space, since we'll overwrite the
-    // layout result object as part of performing layout.
-    auto constraint_space =
-        GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
-
-    NGBlockNode(this).Layout(constraint_space);
-
-    // Restore the old location. While it's usually the job of the containing
-    // block to position its children, out-of-flow positioned objects set
-    // their own position, which could be wrong in this case.
-    SetLocation(old_location);
-  } else {
-    UpdateLayout();
-  }
-
-  GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
-}
-
 // ClientWidth and ClientHeight represent the interior of an object excluding
 // border and scrollbar.
 DISABLE_CFI_PERF

@@ -679,11 +679,7 @@ bool LocalFrameView::LayoutFromRootObject(LayoutObject& root) {
     }
   }
 
-  if (RuntimeEnabledFeatures::LayoutNewSubtreeRootEnabled()) {
-    To<LayoutBox>(root).LayoutSubtreeRoot();
-  } else {
-    To<LayoutBox>(root).LayoutSubtreeRootOld();
-  }
+  To<LayoutBox>(root).LayoutSubtreeRoot();
   return true;
 }
 
