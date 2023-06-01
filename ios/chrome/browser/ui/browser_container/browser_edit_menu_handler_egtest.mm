@@ -369,9 +369,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 // Tests the menu on a normal word.
 - (void)testBasicMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -386,9 +386,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testEditableMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -408,9 +408,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testURLMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -430,9 +430,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testEmailMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -450,9 +450,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testPhoneMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -470,9 +470,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testDateMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
@@ -489,9 +489,9 @@ NSArray* BuildExpectedMenu(EditMenuAdditionType additions) {
 
 - (void)testUnitMenu {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1445963): Test failing on iOS 16.4+ devices.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.4+ devices.");
+  // TODO(crbug.com/1445963): Test failing on iOS 16.2+ devices.
+  if (@available(iOS 16.2, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1445963: Fails on iOS 16.2+ devices.");
   }
 #endif
 
