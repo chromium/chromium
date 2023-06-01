@@ -1,6 +1,9 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {TestRunner} from 'test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
 (async function() {
   TestRunner.addResult('The \'disable cache\' flag must affect on the certificate fetch request.\n');
 
@@ -10,7 +13,6 @@
       'https://127.0.0.1:8443/loading/sxg/resources/127.0.0.1.sxg.pem.cbor';
   const innerUrl = 'https://127.0.0.1:8443/loading/sxg/resources/inner-url.html';
 
-  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.NetworkAgent.setCacheDisabled(false);
 
