@@ -138,6 +138,12 @@ class NigoriModelTypeProcessorTest : public testing::Test {
     processor_.ConnectSync(std::move(mock_commit_queue_));
   }
 
+  void SimulateSyncStopping(SyncStopMetadataFate fate) {
+    // Drop unowned reference before stopping processor which will destroy it.
+    mock_commit_queue_ptr_ = nullptr;
+    processor_.OnSyncStopping(fate);
+  }
+
   MockNigoriSyncBridge* mock_nigori_sync_bridge() {
     return &mock_nigori_sync_bridge_;
   }
@@ -167,7 +173,7 @@ class NigoriModelTypeProcessorTest : public testing::Test {
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
   std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
-  raw_ptr<MockCommitQueue, DanglingUntriaged> mock_commit_queue_ptr_;
+  raw_ptr<MockCommitQueue> mock_commit_queue_ptr_;
   NigoriModelTypeProcessor processor_;
 };
 
@@ -503,7 +509,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndKeepMetadata) {
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
   EXPECT_CALL(*mock_nigori_sync_bridge(), ApplyDisableSyncChanges()).Times(0);
-  processor()->OnSyncStopping(syncer::KEEP_METADATA);
+  SimulateSyncStopping(syncer::KEEP_METADATA);
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
@@ -517,7 +523,7 @@ TEST_F(NigoriModelTypeProcessorTest, ShouldStopSyncingAndClearMetadata) {
 
   ASSERT_TRUE(processor()->IsConnectedForTest());
   EXPECT_CALL(*mock_nigori_sync_bridge(), ApplyDisableSyncChanges());
-  processor()->OnSyncStopping(syncer::CLEAR_METADATA);
+  SimulateSyncStopping(syncer::CLEAR_METADATA);
   EXPECT_FALSE(processor()->IsConnectedForTest());
 }
 
