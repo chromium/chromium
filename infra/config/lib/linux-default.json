@@ -39,6 +39,7 @@
     "lacros-amd64-generic-binary-size-rel": "Ubuntu-22.04",
     "lacros-amd64-generic-rel": "Ubuntu-22.04",
     "lacros-amd64-generic-rel (reclient)": "Ubuntu-22.04",
+    "lacros-amd64-generic-rel-fyi": "Ubuntu-22.04",
     "lacros-amd64-generic-rel-skylab": "Ubuntu-22.04",
     "lacros-arm-generic-rel": "Ubuntu-22.04",
     "lacros-arm-generic-rel-skylab": "Ubuntu-22.04",
