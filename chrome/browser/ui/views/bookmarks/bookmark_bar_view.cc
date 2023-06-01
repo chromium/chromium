@@ -218,8 +218,9 @@ class BookmarkButtonBase : public views::LabelButton {
   BookmarkButtonBase(PressedCallback callback, const std::u16string& title)
       : LabelButton(std::move(callback), title) {
     ConfigureInkDropForToolbar(this);
-    SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+
+    SetImageLabelSpacing(
+        GetLayoutConstant(BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING));
 
     views::InstallPillHighlightPathGenerator(this);
 

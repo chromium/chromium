@@ -33,6 +33,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return features::IsChromeRefresh2023()
                  ? (touch_ui ? 0 : 8)
                  : GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+    case BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING:
+      return features::IsChromeRefresh2023() ? 6 : 8;
     case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
     case WEB_APP_PAGE_ACTION_ICON_SIZE:

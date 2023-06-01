@@ -24,6 +24,10 @@ enum LayoutConstant {
   // The horizontal padding between buttons within the Bookmarks Bar.
   BOOKMARK_BAR_BUTTON_PADDING,
 
+  // The horizontal padding between the image and the title of the bookmark
+  // button.
+  BOOKMARK_BAR_BUTTON_IMAGE_LABEL_PADDING,
+
   // The size of icons used in Download bubbles.
   // TODO(crbug/1296323): We should be sourcing the size of the file icon from
   // the layout
