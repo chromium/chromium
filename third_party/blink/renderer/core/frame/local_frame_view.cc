@@ -2018,6 +2018,21 @@ bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
       DocumentLifecycle::kLayoutClean, reason);
 }
 
+void LocalFrameView::ScheduleVisualUpdateForVisualOverflowIfNeeded() {
+  LocalFrame& local_frame_root = GetFrame().LocalFrameRoot();
+  // We need a full lifecycle update to recompute visual overflow if we are
+  // not already targeting kPaintClean or we have already passed
+  // CompositingInputs in the current frame.
+  if (local_frame_root.View()->target_state_ < DocumentLifecycle::kPaintClean ||
+      Lifecycle().GetState() >= DocumentLifecycle::kCompositingInputsClean) {
+    // Schedule visual update to process the paint invalidation in the next
+    // cycle.
+    local_frame_root.ScheduleVisualUpdateUnlessThrottled();
+  }
+  // Otherwise the visual overflow will be updated in the compositing inputs
+  // phase of this lifecycle.
+}
+
 void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
   LocalFrame& local_frame_root = GetFrame().LocalFrameRoot();
   // We need a full lifecycle update to clear pending paint invalidations.
@@ -2540,6 +2555,19 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
       frame_view.Lifecycle().AdvanceTo(
           DocumentLifecycle::kInCompositingInputsUpdate);
+
+      // Validate all HighlightMarkers of all non-throttled LocalFrameViews
+      // before compositing inputs phase so the nodes affected by markers
+      // removed/added are invalidated (for both visual overflow and repaint)
+      // and then painted during this lifecycle.
+      if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
+        if (HighlightRegistry* highlight_registry =
+                window->Supplementable<LocalDOMWindow>::RequireSupplement<
+                    HighlightRegistry>()) {
+          highlight_registry->ValidateHighlightMarkers();
+        }
+      }
+
       frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
       frame_view.GetLayoutView()->CommitPendingSelection();
     });
@@ -2563,17 +2591,6 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   ForAllNonThrottledLocalFrameViews(
       [](LocalFrameView& frame_view) {
         frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPrePaint);
-
-        // Validate all HighlightMarkers of all non-throttled LocalFrameViews
-        // before paint phase so the nodes affected by markers removed/added are
-        // invalidated and then painted during this lifecycle.
-        if (LocalDOMWindow* window = frame_view.GetFrame().DomWindow()) {
-          if (HighlightRegistry* highlight_registry =
-                  window->Supplementable<LocalDOMWindow>::RequireSupplement<
-                      HighlightRegistry>()) {
-            highlight_registry->ValidateHighlightMarkers();
-          }
-        }
 
         // Propagate dirty bits in the frame into the parent frame so that
         // pre-paint reaches into this frame.

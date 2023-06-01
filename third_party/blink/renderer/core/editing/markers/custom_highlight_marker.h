@@ -30,11 +30,15 @@ class CORE_EXPORT CustomHighlightMarker final : public HighlightPseudoMarker {
   const Highlight* GetHighlight() const { return highlight_; }
   const AtomicString& GetHighlightName() const { return highlight_name_; }
 
+  void SetHasVisualOverflow(bool has_overflow);
+  bool HasVisualOverflow() const;
+
   void Trace(blink::Visitor*) const override;
 
  private:
   const AtomicString highlight_name_;
   const Member<Highlight> highlight_;
+  bool highlight_has_visual_overflow_ = false;
 };
 
 template <>

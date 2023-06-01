@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -796,6 +797,23 @@ DocumentMarkerVector DocumentMarkerController::Markers() const {
               return marker1->StartOffset() < marker2->StartOffset();
             });
   return result;
+}
+
+void DocumentMarkerController::ApplyToMarkersOfType(
+    base::FunctionRef<void(WeakMember<Text>, DocumentMarker*)> func,
+    DocumentMarker::MarkerType type) {
+  if (!PossiblyHasMarkers(type)) {
+    return;
+  }
+  MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(type)];
+  DCHECK(marker_map);
+  for (auto& node_markers : *marker_map) {
+    DocumentMarkerList* list = node_markers.value;
+    const HeapVector<Member<DocumentMarker>>& markers = list->GetMarkers();
+    for (auto& marker : markers) {
+      func(node_markers.key, marker);
+    }
+  }
 }
 
 DocumentMarkerVector

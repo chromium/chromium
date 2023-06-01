@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 
 #include "build/chromeos_buildflags.h"
+#include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
@@ -468,12 +470,10 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 
   // Following effects, such as shadows, operate on the text decorations,
   // so compute text decoration overflow first.
-  absl::optional<LayoutRect> decoration_rect = ComputeDecorationOverflow(
+  LayoutRect decoration_rect = ComputeDecorationOverflow(
       cursor, style, scaled_font, rect_in_container.offset, ink_overflow,
       inline_context);
-  if (decoration_rect) {
-    ink_overflow.Unite(decoration_rect.value());
-  }
+  ink_overflow.Unite(decoration_rect);
 
   if (style.GetTextEmphasisMark() != TextEmphasisMark::kNone) {
     ink_overflow = ComputeEmphasisMarkOverflow(style, rect_in_container.size,
@@ -549,11 +549,13 @@ LayoutRect NGInkOverflow::ComputeDecorationOverflow(
         style, scaled_font, container_offset, ink_overflow, inline_context);
   }
 
+  bool do_highlights =
+      RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled();
   bool do_spelling_grammar =
       RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled() ||
       RuntimeEnabledFeatures::CSSPaintingForSpellingGrammarErrorsEnabled();
 
-  if (do_spelling_grammar) {
+  if (do_highlights || do_spelling_grammar) {
     // To extract decorations due to markers, we need a fragment item and a
     // node. Ideally we would use cursor.Current().GetNode() but that's const
     // and the style functions we need to access pseudo styles take non-const
@@ -572,19 +574,41 @@ LayoutRect NGInkOverflow::ComputeDecorationOverflow(
 
     DocumentMarkerController& controller = text_node->GetDocument().Markers();
 
-    DocumentMarkerVector spelling_markers = controller.MarkersFor(
-        *text_node, DocumentMarker::MarkerTypes::Spelling());
-    LayoutRect spelling_bound = ComputeSpellingOrGrammarOverflow(
-        spelling_markers, DocumentMarker::kSpelling, fragment_item, text_node,
-        style, scaled_font, container_offset, ink_overflow, inline_context);
-    accumulated_bound.Unite(spelling_bound);
+    if (do_highlights) {
+      DocumentMarkerVector target_markers = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::TextFragment());
+      if (!target_markers.empty()) {
+        LayoutRect target_bound = ComputeMarkerOverflow(
+            target_markers, DocumentMarker::kTextFragment, fragment_item,
+            text_node, style, scaled_font, container_offset, ink_overflow,
+            inline_context);
+        accumulated_bound.Unite(target_bound);
+      }
+      DocumentMarkerVector custom_markers = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
+      if (!custom_markers.empty()) {
+        LayoutRect custom_bound = ComputeCustomHighlightOverflow(
+            custom_markers, fragment_item, text_node, style, scaled_font,
+            container_offset, ink_overflow, inline_context);
+        accumulated_bound.Unite(custom_bound);
+      }
+    }
 
-    DocumentMarkerVector grammar_markers = controller.MarkersFor(
-        *text_node, DocumentMarker::MarkerTypes::Grammar());
-    LayoutRect grammar_bound = ComputeSpellingOrGrammarOverflow(
-        grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
-        style, scaled_font, container_offset, ink_overflow, inline_context);
-    accumulated_bound.Unite(grammar_bound);
+    if (do_spelling_grammar) {
+      DocumentMarkerVector spelling_markers = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::Spelling());
+      LayoutRect spelling_bound = ComputeMarkerOverflow(
+          spelling_markers, DocumentMarker::kSpelling, fragment_item, text_node,
+          style, scaled_font, container_offset, ink_overflow, inline_context);
+      accumulated_bound.Unite(spelling_bound);
+
+      DocumentMarkerVector grammar_markers = controller.MarkersFor(
+          *text_node, DocumentMarker::MarkerTypes::Grammar());
+      LayoutRect grammar_bound = ComputeMarkerOverflow(
+          grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
+          style, scaled_font, container_offset, ink_overflow, inline_context);
+      accumulated_bound.Unite(grammar_bound);
+    }
   }
   return accumulated_bound;
 }
@@ -632,7 +656,7 @@ LayoutRect NGInkOverflow::ComputeAppliedDecorationOverflow(
   return EnclosingLayoutRect(accumulated_bound);
 }
 
-LayoutRect NGInkOverflow::ComputeSpellingOrGrammarOverflow(
+LayoutRect NGInkOverflow::ComputeMarkerOverflow(
     const DocumentMarkerVector& markers,
     const DocumentMarker::MarkerType type,
     const NGFragmentItem* fragment_item,
@@ -659,11 +683,12 @@ LayoutRect NGInkOverflow::ComputeSpellingOrGrammarOverflow(
       return LayoutRect();
     }
     LayoutRect decoration_bound;
-    if (pseudo_style) {
+    if (pseudo_style && pseudo_style->HasAppliedTextDecorations()) {
       decoration_bound = ComputeAppliedDecorationOverflow(
           *pseudo_style, scaled_font, offset_in_container, ink_overflow,
           inline_context);
-    } else {
+    } else if (type == DocumentMarker::kSpelling ||
+               type == DocumentMarker::kGrammar) {
       const AppliedTextDecoration synthesised{
           NGHighlightPainter::LineFor(type),
           {},
@@ -675,6 +700,46 @@ LayoutRect NGInkOverflow::ComputeSpellingOrGrammarOverflow(
           &synthesised);
     }
     accumulated_bound.Unite(decoration_bound);
+  }
+  return accumulated_bound;
+}
+
+LayoutRect NGInkOverflow::ComputeCustomHighlightOverflow(
+    const DocumentMarkerVector& markers,
+    const NGFragmentItem* fragment_item,
+    Text* text_node,
+    const ComputedStyle& style,
+    const Font& scaled_font,
+    const PhysicalOffset& offset_in_container,
+    const LayoutRect& ink_overflow,
+    const NGInlinePaintContext* inline_context) {
+  LayoutRect accumulated_bound;
+  for (auto marker : markers) {
+    const unsigned marker_start_offset =
+        NGHighlightPainter::GetTextContentOffset(*text_node,
+                                                 marker->StartOffset());
+    const unsigned marker_end_offset = NGHighlightPainter::GetTextContentOffset(
+        *text_node, marker->EndOffset());
+    if (marker_start_offset > fragment_item->EndOffset() ||
+        marker_end_offset < fragment_item->StartOffset()) {
+      return LayoutRect();
+    }
+
+    const CustomHighlightMarker& highlight_marker =
+        To<CustomHighlightMarker>(*marker);
+    auto pseudo_style = fragment_item->Type() == NGFragmentItem::kSvgText
+                            ? nullptr
+                            : HighlightStyleUtils::HighlightPseudoStyle(
+                                  text_node, style, kPseudoIdHighlight,
+                                  highlight_marker.GetHighlightName());
+
+    LayoutRect decoration_bound;
+    if (pseudo_style && pseudo_style->HasAppliedTextDecorations()) {
+      decoration_bound = ComputeAppliedDecorationOverflow(
+          *pseudo_style, scaled_font, offset_in_container, ink_overflow,
+          inline_context);
+      accumulated_bound.Unite(decoration_bound);
+    }
   }
   return accumulated_bound;
 }

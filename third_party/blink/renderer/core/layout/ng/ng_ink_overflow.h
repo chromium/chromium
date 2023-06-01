@@ -191,11 +191,23 @@ class CORE_EXPORT NGInkOverflow {
       const NGInlinePaintContext* inline_context,
       const AppliedTextDecoration* decoration_override = nullptr);
 
-  static LayoutRect ComputeSpellingOrGrammarOverflow(
+  // For all markers but custom highlights. i.e. those with only one
+  // potential style for the type, regardless of which marker it is.
+  static LayoutRect ComputeMarkerOverflow(
       const DocumentMarkerVector& markers,
       const DocumentMarker::MarkerType type,
       const NGFragmentItem* fragment_item,
       Text* node,
+      const ComputedStyle& style,
+      const Font& scaled_font,
+      const PhysicalOffset& offset_in_container,
+      const LayoutRect& ink_overflow,
+      const NGInlinePaintContext* inline_context);
+
+  static LayoutRect ComputeCustomHighlightOverflow(
+      const DocumentMarkerVector& markers,
+      const NGFragmentItem* fragment_item,
+      Text* text_node,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,

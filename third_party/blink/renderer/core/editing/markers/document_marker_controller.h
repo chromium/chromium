@@ -175,6 +175,13 @@ class CORE_EXPORT DocumentMarkerController final
       DocumentMarker::MarkerTypes = DocumentMarker::MarkerTypes::All()) const;
   DocumentMarkerVector Markers() const;
 
+  // Apply a function to all the markers of a particular type. The
+  // function receives the text node and marker, for every <node,marker>
+  // pair in the marker set.
+  void ApplyToMarkersOfType(
+      base::FunctionRef<void(WeakMember<Text>, DocumentMarker*)>,
+      DocumentMarker::MarkerType);
+
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
   DocumentMarkerVector CustomHighlightMarkersNotOverlapping(const Text&) const;
 

@@ -64,10 +64,7 @@ PhysicalRect MarkerRectForForeground(const NGFragmentItem& text_fragment,
   std::tie(start_position, end_position) =
       text_fragment.LineLeftAndRightForOffsets(text, start_offset, end_offset);
 
-  const LayoutUnit height = text_fragment.Size()
-                                .ConvertToLogical(static_cast<WritingMode>(
-                                    text_fragment.Style().GetWritingMode()))
-                                .block_size;
+  const LayoutUnit height = text_fragment.InkOverflow().Height();
   return {start_position, LayoutUnit(), end_position - start_position, height};
 }
 
@@ -969,7 +966,6 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
       // TODO(crbug.com/1434114) expand range to include partial glyphs, then
       // paint with clipping (NGTextPainter::PaintSelectedText)
-
       PaintDecorationsExceptLineThrough(part);
       text_painter_.Paint(
           fragment_paint_info_.Slice(part.range.from, part.range.to),
@@ -1021,6 +1017,8 @@ PseudoId NGHighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
       return kPseudoIdSpellingError;
     case DocumentMarker::kGrammar:
       return kPseudoIdGrammarError;
+    case DocumentMarker::kTextFragment:
+      return kPseudoIdTargetText;
     default:
       NOTREACHED();
       return {};
