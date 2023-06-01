@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -1231,7 +1232,7 @@ void FocusFakebox() {
 
 // Tests that in SRP/webpage state, pressing on forward delete HW key would
 // erase the selected url.
-- (void)testHWBackspaceKey {
+- (void)testHardwareBackspaceKey {
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
 
@@ -1246,6 +1247,67 @@ void FocusFakebox() {
   // Omnibox now should be empty.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxText("")];
+}
+
+// Tests that in SRP/webpage state, pressing Left/right arrows HW keyboard keys
+// would exit pre-edit state and put the cursor to the end (right arrow) or to
+// the begining (left arrow)
+- (void)testHardwareLeftRightArrowKey {
+  [ChromeEarlGrey loadURL:_URL];
+  [ChromeEarlGrey waitForWebStateContainingText:kPage1];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  // Omnibox contains the page url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+
+  // Simulate press the HW right arrow key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"rightArrow" flags:0];
+
+  // Type something
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"hello" flags:0];
+
+  // Omnibox now should contain the page url suffixed with 'hello'
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent() +
+                                                      "hello")];
+
+  [self defocusOmnibox];
+
+  [ChromeEarlGreyUI focusOmnibox];
+  // Omnibox contains the page url.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
+
+  // Simulate press the HW right arrow key.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"leftArrow" flags:0];
+
+  // Type something
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"hello" flags:0];
+
+  // Omnibox now should contain the page url prefixed with 'hello'
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("hello" +
+                                                      _URL.GetContent())];
+}
+
+#pragma mark - Helpers
+
+// defocus the omnibox.
+- (void)defocusOmnibox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // "escape" is a hardcoded key string in hardware_keyboard_util that maps to
+    // a HIDUsageCode.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+  } else {
+    id<GREYMatcher> cancelButton =
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 @end
