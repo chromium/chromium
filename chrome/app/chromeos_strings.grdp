@@ -6175,15 +6175,6 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
       Data associated with this app may be removed from this device
   </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_TITLE" desc="Title shown in notification that prompts users for feedback">
-    How was your gameplay experience?
-  </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_MESSAGE" desc="Message shown in notification that prompts users for feedback">
-    Help us improve gaming on Chromebooks
-  </message>
-  <message name="IDS_BOREALIS_FEEDBACK_NOTIFICATION_SOURCE" desc="Source of notification that prompts users for feedback">
-    Chromebook Gaming
-  </message>
   <message name="IDS_BOREALIS_SPLASHSCREEN_MESSAGE" desc="Message on splashscreen when starting Steam on Chrome OS.">
     starting up...
   </message>

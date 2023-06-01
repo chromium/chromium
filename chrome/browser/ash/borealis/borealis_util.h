@@ -13,8 +13,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget.h"
 
-class Profile;
-
 namespace borealis {
 
 // This is used by the Borealis installer app.
@@ -52,6 +50,10 @@ struct CompatToolInfo {
   std::string slr = "None";
 };
 
+// Returns true if it's a non game borealis app (e.g. Steam client).
+// Note that this does not check if the app is from the Borealis VM.
+bool IsNonGameBorealisApp(const std::string& app_id);
+
 // Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
@@ -59,18 +61,6 @@ absl::optional<int> GetBorealisAppId(std::string exec);
 
 // Returns the Borealis app ID of the |window|, or nullopt on failure.
 absl::optional<int> GetBorealisAppId(const aura::Window* window);
-
-// Creates a URL for a feedback form with prefilled app/device info, or an
-// invalid URL if we don't want to collect feedback for the given |app_id|. Will
-// invoke |url_callback| when the url is ready.
-void FeedbackFormUrl(Profile* const profile,
-                     const std::string& app_id,
-                     const std::string& window_title,
-                     base::OnceCallback<void(GURL)> url_callback);
-
-// Returns true if it's a non game borealis app (e.g. Steam client).
-// Note that this does not check if the app is from the Borealis VM.
-bool IsNonGameBorealisApp(const std::string& app_id);
 
 // Checks that a given URL has the allowed scheme and that its contents starts
 // with one of the URLs in the allowlist.

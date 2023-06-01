@@ -37,8 +37,6 @@ class BorealisLaunchOptions {
     absl::optional<base::FilePath> extra_disk = absl::nullopt;
 
     bool auto_shutdown = true;
-
-    bool feedback_forms = true;
   };
 
   explicit BorealisLaunchOptions(Profile* profile);
