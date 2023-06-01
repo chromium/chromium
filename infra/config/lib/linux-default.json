@@ -115,6 +115,7 @@
     "linux-annotator-rel": "Ubuntu-22.04",
     "linux-arm64-castos": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
+    "linux-blink-heap-verification-try": "Ubuntu-22.04",
     "linux-chromeos-compile-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-chromeos-rel-compilator": "Ubuntu-22.04",
