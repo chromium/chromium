@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
@@ -125,8 +126,16 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
   }
 };
 
+// Test is flaky on ChromeOS. https://crbug.com/1450432
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_QuickAnswersViewAboveNotification \
+  DISABLED_QuickAnswersViewAboveNotification
+#else
+#define MAYBE_QuickAnswersViewAboveNotification \
+  QuickAnswersViewAboveNotification
+#endif
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
-                       QuickAnswersViewAboveNotification) {
+                       MAYBE_QuickAnswersViewAboveNotification) {
   SetQuickAnswersEnabled(true);
 
   views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
@@ -167,8 +176,15 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
       quick_answers_view_widget->GetNativeView()));
 }
 
+// Test is flaky on ChromeOS. https://crbug.com/1450432
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_UserConsentViewAboveNotification \
+  DISABLED_UserConsentViewAboveNotification
+#else
+#define MAYBE_UserConsentViewAboveNotification UserConsentViewAboveNotification
+#endif
 IN_PROC_BROWSER_TEST_F(QuickAnswersBrowserTest,
-                       UserConsentViewAboveNotification) {
+                       MAYBE_UserConsentViewAboveNotification) {
   views::NamedWidgetShownWaiter user_consent_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), UserConsentView::kWidgetName);
 
