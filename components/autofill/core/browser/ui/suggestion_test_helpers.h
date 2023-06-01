@@ -5,98 +5,41 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_TEST_HELPERS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_TEST_HELPERS_H_
 
-#include <string>
-
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-// Gmock matcher that allows checking a member of the Suggestion class in a
-// vector. This wraps a GMock container matcher, converts the suggestion
-// members to a vector, and then runs the container matcher against the result
-// to test an argument. See SuggestionVectorMainTextsAre() below.
-template <typename EltType>
-class SuggestionVectorMembersAreMatcher
-    : public testing::MatcherInterface<const std::vector<Suggestion>&> {
- public:
-  typedef std::vector<EltType> Container;
-  typedef testing::Matcher<Container> ContainerMatcher;
-
-  SuggestionVectorMembersAreMatcher(const ContainerMatcher& seq_matcher,
-                                    EltType Suggestion::*elt)
-      : container_matcher_(seq_matcher), element_(elt) {}
-
-  bool MatchAndExplain(const std::vector<Suggestion>& suggestions,
-                       testing::MatchResultListener* listener) const override {
-    Container container;
-    for (const auto& suggestion : suggestions)
-      container.push_back(suggestion.*element_);
-    return container_matcher_.MatchAndExplain(container, listener);
-  }
-
-  void DescribeTo(::std::ostream* os) const override {
-    container_matcher_.DescribeTo(os);
-  }
-
-  void DescribeNegationTo(::std::ostream* os) const override {
-    container_matcher_.DescribeNegationTo(os);
-  }
-
- private:
-  ContainerMatcher container_matcher_;
-  EltType Suggestion::*element_;
-};
-
-// Use this matcher to compare a sequence vector's IDs to a list. In an
-// EXPECT_CALL statement, use the following for an vector<Suggestion> argument
-// to compare the IDs against a constant list:
-//   SuggestionVectorIdsAre(1, 2, 3, 4)
 template <class... Matchers>
 inline auto SuggestionVectorIdsAre(const Matchers&... matchers) {
   return ::testing::ElementsAre(
       ::testing::Field("frontend_id", &Suggestion::frontend_id, matchers)...);
 }
 
-// Use this matcher to compare a sequence vector's main_texts to a list. In an
-// EXPECT_CALL statement, use the following for an vector<Suggestion> argument
-// to compare the IDs against a constant list:
-//   SuggestionVectorMainTextsAre(testing::ElementsAre(text1, text2, text3,
-//   text4))
-template <class EltsAreMatcher>
-inline testing::Matcher<const std::vector<Suggestion>&>
-SuggestionVectorMainTextsAre(const EltsAreMatcher& elts_are_matcher) {
-  return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<Suggestion::Text>(
-          elts_are_matcher, &Suggestion::main_text));
+template <class... Matchers>
+inline auto SuggestionVectorMainTextsAre(const Matchers&... matchers) {
+  return ::testing::ElementsAre(
+      ::testing::Field("main_text", &Suggestion::main_text, matchers)...);
 }
 
-// Like SuggestionVectorMainTextsAre above, but tests the labels.
-template <class EltsAreMatcher>
-inline testing::Matcher<const std::vector<Suggestion>&>
-SuggestionVectorLabelsAre(const EltsAreMatcher& elts_are_matcher) {
-  return testing::MakeMatcher(new SuggestionVectorMembersAreMatcher<
-                              std::vector<std::vector<Suggestion::Text>>>(
-      elts_are_matcher, &Suggestion::labels));
+template <class... Matchers>
+inline auto SuggestionVectorLabelsContains(const Matchers&... matchers) {
+  return ::testing::Contains(
+      ::testing::Field("labels", &Suggestion::labels, matchers)...);
 }
 
-// Like SuggestionVectorMainTextsAre above, but tests the icons.
-template <class EltsAreMatcher>
-inline testing::Matcher<const std::vector<Suggestion>&>
-SuggestionVectorIconsAre(const EltsAreMatcher& elts_are_matcher) {
-  return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<std::string>(elts_are_matcher,
-                                                         &Suggestion::icon));
+template <class... Matchers>
+inline auto SuggestionVectorIconsAre(const Matchers&... matchers) {
+  return ::testing::ElementsAre(
+      ::testing::Field("icon", &Suggestion::icon, matchers)...);
 }
 
-// Like SuggestionVectorMainTextsAre above, but tests the trailing_icon.
-template <class EltsAreMatcher>
-inline testing::Matcher<const std::vector<Suggestion>&>
-SuggestionVectorStoreIndicatorIconsAre(const EltsAreMatcher& elts_are_matcher) {
-  return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<std::string>(
-          elts_are_matcher, &Suggestion::trailing_icon));
+template <class... Matchers>
+inline auto SuggestionVectorStoreIndicatorIconsAre(
+    const Matchers&... matchers) {
+  return ::testing::ElementsAre(
+      ::testing::Field("icon", &Suggestion::trailing_icon, matchers)...);
 }
 
 }  // namespace autofill
