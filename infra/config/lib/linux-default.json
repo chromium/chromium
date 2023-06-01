@@ -44,6 +44,7 @@
     "lacros-amd64-generic-rel-skylab-fyi": "Ubuntu-22.04",
     "lacros-arm-generic-rel": "Ubuntu-22.04",
     "lacros-arm-generic-rel-skylab": "Ubuntu-22.04",
+    "lacros-arm-generic-rel-skylab-fyi": "Ubuntu-22.04",
     "lacros-arm64-generic-rel": "Ubuntu-22.04",
     "lacros-arm64-generic-rel-skylab": "Ubuntu-22.04",
     "linux-ash-chromium-generator-rel": "Ubuntu-22.04",
