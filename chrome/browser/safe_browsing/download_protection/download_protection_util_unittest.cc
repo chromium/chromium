@@ -6,6 +6,7 @@
 
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "net/cert/x509_util.h"
@@ -287,6 +288,40 @@ TEST(DownloadProtectionUtilTest, OnlyOneDeepestEntryPrioritized) {
   EXPECT_EQ(selected_binaries[0].file_path(), "hidden/in/deep/path/random.dll");
   EXPECT_EQ(selected_binaries[1].file_path(), "evil.exe");
   EXPECT_EQ(selected_binaries[2].file_path(), "hidden/in/deep/path/other.dll");
+}
+
+TEST(DownloadProtectionUtilTest, NonWildcardEntryDeterministic) {
+  safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous;
+  {
+    // Setup fake file-type config so that this test is not dependent on the
+    // actual policy values.
+    auto fake_config = std::make_unique<DownloadFileTypeConfig>();
+    fake_config->set_max_archived_binaries_to_report(10);
+    fake_config->mutable_default_file_type()->add_platform_settings();
+    scoped_dangerous.SwapConfig(fake_config);
+  }
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      binaries;
+  for (int i = 0; i < 12; i++) {
+    ClientDownloadRequest::ArchivedBinary exe;
+    exe.set_file_path("evil" + base::NumberToString(i + 1) + ".exe");
+    exe.set_is_executable(true);
+    *binaries.Add() = exe;
+  }
+
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected_binaries = SelectArchiveEntries(binaries);
+  ASSERT_EQ(selected_binaries.size(), 10);
+  for (int i = 0; i < 9; i++) {
+    EXPECT_EQ(selected_binaries[i + 1].file_path(),
+              "evil" + base::NumberToString(i + 1) + ".exe");
+  }
+
+  EXPECT_TRUE(selected_binaries[0].file_path() == "evil10.exe" ||
+              selected_binaries[0].file_path() == "evil11.exe" ||
+              selected_binaries[0].file_path() == "evil12.exe")
+      << "Wilcard entry is " << selected_binaries[0].file_path();
 }
 
 }  // namespace safe_browsing
