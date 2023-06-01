@@ -5,6 +5,7 @@
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 
 #include "media/capture/video/linux/video_capture_device_factory_v4l2.h"
+#include "media/capture/video/video_capture_metrics.h"
 
 namespace media {
 
@@ -18,6 +19,7 @@ VideoCaptureDeviceFactoryLinux::~VideoCaptureDeviceFactoryLinux() = default;
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryLinux::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  LogCaptureDeviceHashedModelId(device_descriptor);
   return factory_->CreateDevice(device_descriptor);
 }
 
