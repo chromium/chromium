@@ -189,7 +189,7 @@
     "chai-as-promised": "7.1.1",
     "chai-exclude": "2.1.0",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1140464",
+    "devtools-protocol": "0.0.1151065",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
