@@ -10329,7 +10329,7 @@
                 {
                     "name": "Enabled_Nonstable_20230531",
                     "enable_features": [
-                        "PreconnectCreateNewTab"
+                        "PreconnectOnTabCreation"
                     ]
                 }
             ]
@@ -12632,6 +12632,7 @@
                         "spare_tab_initialize_renderer": "true"
                     },
                     "enable_features": [
+                        "SpareTab",
                         "StartSurfaceSpareTab"
                     ]
                 },
@@ -12641,6 +12642,7 @@
                         "spare_tab_initialize_renderer": "false"
                     },
                     "enable_features": [
+                        "SpareTab",
                         "StartSurfaceSpareTab"
                     ]
                 }
