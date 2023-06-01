@@ -8,7 +8,6 @@ for more details about the presubmit API built into depot_tools.
 """
 import os
 
-USE_PYTHON3 = True
 
 TEST_PATTERNS = [r'.+_test.py$']
 
@@ -21,13 +20,7 @@ def _CommonChecks(input_api, output_api):
     env['PYTHONPATH'] = input_api.os_path.pathsep.join((pythonpath))
 
     return input_api.canned_checks.RunUnitTestsInDirectory(
-        input_api,
-        output_api,
-        '.',
-        files_to_check=TEST_PATTERNS,
-        env=env,
-        run_on_python2=False,
-        skip_shebang_check=True)
+        input_api, output_api, '.', files_to_check=TEST_PATTERNS, env=env)
 
 
 def CheckChangeOnUpload(input_api, output_api):

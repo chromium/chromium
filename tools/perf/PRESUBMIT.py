@@ -12,8 +12,6 @@ import os
 
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
-
 
 def _CommonChecks(input_api, output_api, block_on_failure=False):
   """Performs common checks that vary between commit and upload.

@@ -6,8 +6,6 @@
 Runs Python unit tests in /tools/vim/tests on upload.
 """
 
-USE_PYTHON3 = True
-
 
 def CheckChangeOnUpload(input_api, output_api):
   results = []
@@ -28,10 +26,7 @@ def CheckChangeOnUpload(input_api, output_api):
       any([input_api.re.match(r'tests(/|\\)',f) for f in affected_files]):
     results += input_api.RunTests(
         input_api.canned_checks.GetUnitTests(
-            input_api,
-            output_api, ['tests/chromium.ycm_extra_conf_unittest.py'],
-            run_on_python2=False,
-            run_on_python3=True,
-            skip_shebang_check=True))
+            input_api, output_api,
+            ['tests/chromium.ycm_extra_conf_unittest.py']))
 
   return results

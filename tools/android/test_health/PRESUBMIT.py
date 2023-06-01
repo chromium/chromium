@@ -9,7 +9,6 @@ for more details on the presubmit API built into depot_tools.
 
 import pathlib
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -26,9 +25,7 @@ def _PythonChecks(input_api, output_api):
         output_api,
         input_api.PresubmitLocalPath(),
         files_to_check=[r'.+_unittest\.py$'],
-        files_to_skip=[],
-        run_on_python2=False,
-        run_on_python3=True)
+        files_to_skip=[])
 
     return input_api.RunTests(checks, False)
 

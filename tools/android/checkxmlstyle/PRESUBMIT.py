@@ -9,9 +9,6 @@ for more details on the presubmit API built into depot_tools.
 """
 
 
-USE_PYTHON3 = True
-
-
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
 
@@ -23,9 +20,6 @@ def CheckChangeOnCommit(input_api, output_api):
 def _CommonChecks(input_api, output_api):
   result = []
   result.extend(
-      input_api.canned_checks.RunUnitTests(input_api,
-                                           output_api,
-                                           ['./checkxmlstyle_test.py'],
-                                           run_on_python2=False,
-                                           run_on_python3=True))
+      input_api.canned_checks.RunUnitTests(input_api, output_api,
+                                           ['./checkxmlstyle_test.py']))
   return result

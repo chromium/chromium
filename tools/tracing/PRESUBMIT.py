@@ -8,7 +8,6 @@ details on the presubmit API built into gcl.
 """
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
@@ -21,12 +20,7 @@ def RunUnittests(input_api, output_api):
 
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api,
-          output_api,
-          '.',
-          files_to_check=[r'.+_unittest\.py$'],
-          run_on_python2=not USE_PYTHON3,
-          skip_shebang_check=True))
+          input_api, output_api, '.', files_to_check=[r'.+_unittest\.py$']))
   return results
 
 
