@@ -160,6 +160,7 @@
     "linux_chromium_asan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng-compilator": "Ubuntu-22.04",
     "linux_chromium_clobber_deterministic": "Ubuntu-22.04",
+    "linux_chromium_clobber_rel_ng": "Ubuntu-22.04",
     "linux_chromium_compile_dbg_ng": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng-compilator": "Ubuntu-22.04",
