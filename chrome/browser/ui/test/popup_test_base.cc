@@ -31,9 +31,7 @@ class BoundsChangeWaiter final : public views::WidgetObserver {
             browser->window()->GetNativeWindow())),
         move_by_(move_by),
         resize_by_(resize_by),
-        initial_bounds_(widget_->GetWindowBoundsInScreen()) {
-    widget_->AddObserver(this);
-  }
+        initial_bounds_(widget_->GetWindowBoundsInScreen()) {}
 
   BoundsChangeWaiter(const BoundsChangeWaiter&) = delete;
   BoundsChangeWaiter& operator=(const BoundsChangeWaiter&) = delete;
@@ -42,7 +40,7 @@ class BoundsChangeWaiter final : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& rect) final {
-    if (BoundsChangeMeetsThreshold(rect)) {
+    if (BoundsChangeMeetsThreshold(widget_->GetWindowBoundsInScreen())) {
       widget_->RemoveObserver(this);
       run_loop_.Quit();
     }
@@ -51,6 +49,7 @@ class BoundsChangeWaiter final : public views::WidgetObserver {
   // Wait for changes to occur, or return immediately if they already have.
   void Wait() {
     if (!BoundsChangeMeetsThreshold(widget_->GetWindowBoundsInScreen())) {
+      widget_->AddObserver(this);
       run_loop_.Run();
     }
   }
