@@ -150,6 +150,13 @@ void ArcIdleManager::OnConnectionClosed() {
 
 void ArcIdleManager::ThrottleInstance(bool should_throttle) {
   // Note: this never happens in between StopObservers() - StartObservers();
+  if (!first_idle_happened_ && !should_throttle) {
+    // Both the ArcIdleManager and Android start life as un-throttled (not
+    // idle). Until it's time to throttle Android, the state is aligned, and
+    // there's no need to send requests to change state.
+    return;
+  }
+  first_idle_happened_ = true;
   LogScreenOffTimer(/*toggle_timer*/ should_throttle);
   delegate_->SetInteractiveMode(bridge_, !should_throttle);
 }

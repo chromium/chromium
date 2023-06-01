@@ -94,7 +94,7 @@ TEST_F(ArcCpuThrottleObserverTest, TestStatusChanges) {
                                      base::Unretained(&test_observer)));
   EXPECT_TRUE(throttle()->HasServiceObserverForTesting(observer()));
 
-  EXPECT_EQ(0, test_observer.count());
+  EXPECT_EQ(1, test_observer.count());
   EXPECT_EQ(0, test_observer.active_count());
   EXPECT_EQ(0, test_observer.enforced_count());
 
@@ -102,14 +102,14 @@ TEST_F(ArcCpuThrottleObserverTest, TestStatusChanges) {
   EXPECT_FALSE(observer()->enforced());
 
   observer()->OnThrottle(false);  // Not throttled.
-  EXPECT_EQ(1, test_observer.count());
+  EXPECT_EQ(2, test_observer.count());
   EXPECT_EQ(1, test_observer.active_count());
   EXPECT_EQ(0, test_observer.enforced_count());
   EXPECT_TRUE(observer()->active());
   EXPECT_FALSE(observer()->enforced());
 
   observer()->OnThrottle(true);  // Yes, throttled.
-  EXPECT_EQ(2, test_observer.count());
+  EXPECT_EQ(3, test_observer.count());
   EXPECT_EQ(1, test_observer.active_count());
   EXPECT_EQ(0, test_observer.enforced_count());
   EXPECT_FALSE(observer()->active());

@@ -74,6 +74,7 @@ class ArcIdleManager : public KeyedService,
   void ThrottleInstance(bool should_idle) override;
 
  private:
+  bool first_idle_happened_ = false;
   std::unique_ptr<Delegate> delegate_;
   bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   SEQUENCE_CHECKER(sequence_checker_);
