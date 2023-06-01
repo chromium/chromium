@@ -129,6 +129,11 @@ FormatPixmapSupport GetFormatPixmapSupport(
 bool set_format_supported_metric = false;
 #endif
 
+void RecordIsNewMultiplanarFormat(bool is_multiplanar) {
+  base::UmaHistogramBoolean("GPU.SharedImage.IsNewMultiplanarFormat",
+                            is_multiplanar);
+}
+
 }  // namespace
 
 // Overrides for flat_set lookups:
@@ -456,6 +461,11 @@ bool SharedImageFactory::CreateSharedImage(
     return false;
   }
 
+  // Log UMA for multiplanar shared image formats.
+  if (format.is_multi_plane()) {
+    RecordIsNewMultiplanarFormat(/*is_multiplanar*/ true);
+  }
+
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
   bool use_compound = false;
@@ -514,6 +524,11 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            std::string debug_label) {
   auto si_format = viz::GetSharedImageFormat(format);
   gfx::GpuMemoryBufferType gmb_type = handle.type;
+
+  // Log UMA for multiplanar shared image formats.
+  if (si_format.IsLegacyMultiplanar()) {
+    RecordIsNewMultiplanarFormat(/*is_multiplanar*/ false);
+  }
 
   bool use_compound = false;
   auto* factory = GetFactoryByUsage(usage, si_format, size,
