@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
 #import "base/ios/block_types.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -114,8 +115,13 @@ using signin_metrics::PromoAction;
 
   self.signinStateOnStart =
       signin::GetPrimaryIdentitySigninState(self.browser->GetBrowserState());
-  DCHECK_NE(IdentitySigninStateSignedInWithSyncEnabled,
-            self.signinStateOnStart);
+  if (IdentitySigninStateSignedInWithSyncEnabled == self.signinStateOnStart) {
+    // TODO(crbug.com/1410747): This needs to be converted to a CHECK() once
+    // the bug is fixed.
+    NOTREACHED() << "The user is currently signed in while opening open the "
+                    "sign-in dialog."
+                 << base::SysNSStringToUTF8([self description]);
+  }
   self.signinIdentityOnStart =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
