@@ -8,7 +8,6 @@
 
 #import "base/command_line.h"
 #import "base/containers/contains.h"
-#import "base/files/file.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_string_value_serializer.h"
@@ -36,7 +35,6 @@
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
-#import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -1455,23 +1453,6 @@ int watchRunNumber = 0;
   chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
       NO;
   LogUserInteractionWithFullscreenPromo();
-}
-
-#pragma mark - First Run Utilities
-
-+ (void)writeFirstRunSentinel {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  FirstRun::RemoveSentinel();
-  base::File::Error fileError;
-  FirstRun::CreateSentinel(&fileError);
-  FirstRun::LoadSentinelInfo();
-}
-
-+ (void)removeFirstRunSentinel {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  if (FirstRun::RemoveSentinel()) {
-    FirstRun::LoadSentinelInfo();
-  }
 }
 
 @end
