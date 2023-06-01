@@ -575,6 +575,7 @@ ios_builder(
         "ci/ios16-sdk-simulator",
     ],
     os = os.MAC_13,
+    cpu = cpu.ARM64,
     xcode = xcode.x14betabots,
 )
 
