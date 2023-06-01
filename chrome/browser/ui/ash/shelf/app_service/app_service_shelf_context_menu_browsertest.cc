@@ -218,6 +218,94 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuWebAppBrowserTest,
   }
 }
 
+class AppServiceShelfContextMenuTabbedWebAppBrowserTest
+    : public AppServiceShelfContextMenuBrowserTest {
+ public:
+  AppServiceShelfContextMenuTabbedWebAppBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsTabStrip},
+        {features::kDesktopPWAsTabStripSettings});
+  }
+  ~AppServiceShelfContextMenuTabbedWebAppBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
+                       SetOpenInWindow) {
+  Profile* profile = browser()->profile();
+  base::UserActionTester user_action_tester;
+
+  auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info->start_url = GURL("https://example.org");
+  web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+  web_app::AppId app_id =
+      web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
+
+  // Select the "Open in window" menu item.
+  absl::optional<MenuSection> menu_section =
+      GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
+  ASSERT_TRUE(menu_section);
+  menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  web_app::WebAppProvider::GetForTest(profile)
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(menu_section->sub_model->IsItemCheckedAt(1));
+
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+            1);
+
+  // App window should have tab strip.
+  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  EXPECT_TRUE(app_browser->app_controller()->has_tab_strip());
+}
+
+class AppServiceShelfContextMenuNonTabbedWebAppBrowserTest
+    : public AppServiceShelfContextMenuBrowserTest {
+ public:
+  AppServiceShelfContextMenuNonTabbedWebAppBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kDesktopPWAsTabStrip,
+             features::kDesktopPWAsTabStripSettings});
+  }
+  ~AppServiceShelfContextMenuNonTabbedWebAppBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
+                       SetOpenInWindow) {
+  Profile* profile = browser()->profile();
+  base::UserActionTester user_action_tester;
+
+  auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info->start_url = GURL("https://example.org");
+  web_app_install_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  web_app_install_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+  web_app::AppId app_id =
+      web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
+
+  // Select the "Open in window" menu item.
+  absl::optional<MenuSection> menu_section =
+      GetContextMenuSectionForAppCommand(app_id, ash::USE_LAUNCH_TYPE_WINDOW);
+  ASSERT_TRUE(menu_section);
+  menu_section->sub_model->ActivatedAt(menu_section->command_index);
+  web_app::WebAppProvider::GetForTest(profile)
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(menu_section->sub_model->IsItemCheckedAt(1));
+
+  EXPECT_EQ(user_action_tester.GetActionCount("WebApp.SetWindowMode.Window"),
+            1);
+
+  // App window should not have a tab strip since the flag is disabled.
+  Browser* app_browser = web_app::LaunchWebAppBrowser(profile, app_id);
+  EXPECT_FALSE(app_browser->app_controller()->has_tab_strip());
+}
+
 class AppServiceShelfContextMenuCrostiniAppBrowserTest
     : public AppServiceShelfContextMenuBrowserTest {
  public:
