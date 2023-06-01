@@ -107,7 +107,8 @@
                         }];
   _closeAllInactiveButton =
       [[UIBarButtonItem alloc] initWithPrimaryAction:closeAllInactiveAction];
-  _closeAllInactiveButton.accessibilityIdentifier = kInactiveTabGridIdentifier;
+  _closeAllInactiveButton.accessibilityIdentifier =
+      kInactiveTabGridCloseAllButtonIdentifier;
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil

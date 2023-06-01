@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -133,6 +134,8 @@ UIImage* ConfirmationAlertImage() {
   } else {
     _confirmationAlert.modalPresentationStyle = UIModalPresentationFormSheet;
   }
+  _confirmationAlert.view.accessibilityIdentifier =
+      kInactiveTabsUserEducationAccessibilityIdentifier;
 
   [self.baseViewController presentViewController:_confirmationAlert
                                         animated:YES
