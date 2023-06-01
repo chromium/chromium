@@ -21,24 +21,13 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class AppControllerProfileObserver;
-class AppControllerNativeThemeObserver;
-@class AppShimMenuController;
 class BookmarkMenuBridge;
-class CommandUpdater;
 class GURL;
-@class HandoffManager;
 class HistoryMenuBridge;
-class HandoffObserver;
 class Profile;
-@class ProfileMenuController;
-class QuitWithAppsController;
-class ScopedKeepAlive;
-@class ShareMenuController;
 class TabMenuBridge;
 
 namespace ui {
@@ -52,90 +41,8 @@ class ColorProvider;
     : NSObject <NSUserInterfaceValidations,
                 NSMenuDelegate,
                 NSApplicationDelegate,
-                ASWebAuthenticationSessionWebBrowserSessionHandling> {
- @private
-  // Manages the state of the command menu items.
-  std::unique_ptr<CommandUpdater> _menuState;
+                ASWebAuthenticationSessionWebBrowserSessionHandling>
 
-  // The profile last used by a Browser. It is this profile that was used to
-  // build the user-data specific main menu items.
-  raw_ptr<Profile, DanglingUntriaged> _lastProfile;
-
-  // The ProfileObserver observes the ProfileAttributesStorage and gets notified
-  // when a profile has been deleted.
-  std::unique_ptr<AppControllerProfileObserver>
-      _profileAttributesStorageObserver;
-
-  // The NativeThemeObserver observes system-wide theme related settings
-  // change.
-  std::unique_ptr<AppControllerNativeThemeObserver> _nativeThemeObserver;
-
-  // Management of the bookmark menu which spans across all windows
-  // (and Browser*s). |profileBookmarkMenuBridgeMap_| is a cache that owns one
-  // pointer to a BookmarkMenuBridge for each profile. |bookmarkMenuBridge_| is
-  // a weak pointer that is updated to match the corresponding cache entry
-  // during a profile switch.
-  raw_ptr<BookmarkMenuBridge, DanglingUntriaged> _bookmarkMenuBridge;
-  std::map<base::FilePath, std::unique_ptr<BookmarkMenuBridge>>
-      _profileBookmarkMenuBridgeMap;
-
-  std::unique_ptr<HistoryMenuBridge> _historyMenuBridge;
-
-  // Controller that manages main menu items for packaged apps.
-  base::scoped_nsobject<AppShimMenuController> _appShimMenuController;
-
-  // The profile menu, which appears right before the Help menu. It is only
-  // available when multiple profiles is enabled.
-  base::scoped_nsobject<ProfileMenuController> _profileMenuController;
-
-  // Controller for the macOS system share menu.
-  base::scoped_nsobject<ShareMenuController> _shareMenuController;
-
-  std::unique_ptr<TabMenuBridge> _tabMenuBridge;
-
-  // If we're told to open URLs (in particular, via |-application:openURLs:| by
-  // Launch Services) before we've launched the browser, we queue them up in
-  // |startupUrls_| so that they can go in the first browser window/tab.
-  std::vector<GURL> _startupUrls;
-  BOOL _startupComplete;
-
-  // Outlets for the close tab/window menu items so that we can adjust the
-  // command-key equivalent depending on the kind of window and how many
-  // tabs it has.
-  NSMenuItem* _closeTabMenuItem;
-  NSMenuItem* _closeWindowMenuItem;
-
-  std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
-  PrefChangeRegistrar _localPrefRegistrar;
-
-  // Displays a notification when quitting while apps are running.
-  scoped_refptr<QuitWithAppsController> _quitWithAppsController;
-
-  // Responsible for maintaining all state related to the Handoff feature.
-  base::scoped_nsobject<HandoffManager> _handoffManager;
-
-  // Observes changes to the active web contents.
-  std::unique_ptr<HandoffObserver> _handoff_observer;
-
-  // This will be true after receiving a NSWorkspaceWillPowerOffNotification.
-  BOOL _isPoweringOff;
-
-  // This will be true after receiving a |-applicationWillTerminate:| event.
-  BOOL _isShuttingDown;
-
-  // Request to keep the browser alive during that object's lifetime.
-  std::unique_ptr<ScopedKeepAlive> _keep_alive;
-
-  // Remembers whether _lastProfile had TabRestoreService entries. This is saved
-  // when _lastProfile is destroyed and Chromium enters the zero-profile state.
-  //
-  // By remembering this bit, Chromium knows whether to enable or disable
-  // Cmd+Shift+T and the related "File > Reopen Closed Tab" entry.
-  BOOL _tabRestoreWasEnabled;
-
-  // The color provider associated with the last active browser view.
-  raw_ptr<const ui::ColorProvider, DanglingUntriaged> _lastActiveColorProvider;
-}
 // The app-wide singleton AppController. Guaranteed to be the delegate of NSApp
 // inside of Chromium (not inside of app shims; see AppShimDelegate). Guaranteed
 // to not be nil.

@@ -9,6 +9,10 @@
 
 #include "base/mac/scoped_aedesc.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Extracts the URL from |event| and forwards it to an already-running Chromium

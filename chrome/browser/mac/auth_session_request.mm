@@ -26,6 +26,10 @@
 #include "net/base/mac/url_conversions.h"
 #include "url/url_canon.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // A navigation throttle that calls a closure when a navigation to a specified
@@ -87,7 +91,7 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
 }  // namespace
 
 AuthSessionRequest::~AuthSessionRequest() {
-  std::string uuid = base::SysNSStringToUTF8(request_.get().UUID.UUIDString);
+  std::string uuid = base::SysNSStringToUTF8(request_.UUID.UUIDString);
 
   auto iter = GetMap().find(uuid);
   if (iter == GetMap().end())
@@ -211,7 +215,7 @@ AuthSessionRequest::AuthSessionRequest(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<AuthSessionRequest>(*web_contents),
       browser_(browser),
-      request_(request, base::scoped_policy::RETAIN),
+      request_(request),
       scheme_(scheme) {
   std::string uuid = base::SysNSStringToUTF8(request.UUID.UUIDString);
   GetMap()[uuid] = this;

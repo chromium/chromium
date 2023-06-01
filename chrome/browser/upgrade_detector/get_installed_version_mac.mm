@@ -14,6 +14,10 @@
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/chrome_features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 InstalledAndCriticalVersion GetInstalledVersionSynchronous() {

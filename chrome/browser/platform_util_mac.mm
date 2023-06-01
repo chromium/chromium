@@ -22,6 +22,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace platform_util {
 
 // Returns true if revealing file paths in the Finder should be skipped

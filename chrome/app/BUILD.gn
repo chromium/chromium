@@ -208,10 +208,6 @@ static_library("test_support") {
   ]
   public_deps = []
 
-  if (is_mac) {
-    deps += [ "//chrome/browser:browser_arc" ]
-  }
-
   if (!is_fuchsia) {
     # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     deps += [

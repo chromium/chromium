@@ -6,6 +6,10 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 TEST(AuthSessionRequestTest, SchemeCanonicalization) {
   if (@available(macOS 10.15, *)) {
     EXPECT_EQ("abcdefg", AuthSessionRequest::CanonicalizeScheme("abcdefg"));

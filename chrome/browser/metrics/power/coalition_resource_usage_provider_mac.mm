@@ -9,6 +9,10 @@
 #include "components/power_metrics/mach_time_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Details about whether it's possible to get coalition resource usage data on

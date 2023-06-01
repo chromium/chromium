@@ -2844,7 +2844,6 @@ if (!is_android) {
       deps += [
         ":browser_tests_arc",
         "//chrome/app_shim",
-        "//chrome/browser:browser_arc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
         "//chrome/browser/ui:ui_arc",
@@ -5564,6 +5563,7 @@ if (is_mac) {
     testonly = true
     sources = [
       "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
+      "../browser/mac/auth_session_request_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/scoped_menu_bar_lock_unittest.mm",
@@ -5586,6 +5586,7 @@ if (is_mac) {
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app_shim:app_shim",
+      "//chrome/browser",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/mac:keystone_glue",
@@ -6653,7 +6654,6 @@ test("unit_tests") {
       "../browser/app_controller_mac_unittest.mm",
       "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
-      "../browser/mac/auth_session_request_unittest.mm",
       "../browser/mac/exception_processor_unittest.mm",
       "../browser/metrics/power/coalition_resource_usage_provider_mac_unittest.mm",
       "../browser/metrics/power/coalition_resource_usage_provider_test_util_mac.cc",

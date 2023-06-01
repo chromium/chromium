@@ -13,11 +13,8 @@
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_mac.h"
 
-@interface BrowserCrApplication : NSApplication<CrAppProtocol,
-                                                CrAppControlProtocol> {
- @private
-  BOOL _handlingSendEvent;
-}
+@interface BrowserCrApplication
+    : NSApplication <CrAppProtocol, CrAppControlProtocol>
 
 // Our implementation of |-terminate:| only attempts to terminate the
 // application, i.e., begins a process which may lead to termination. This

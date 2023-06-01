@@ -11,6 +11,10 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Cocoa intends a smart dragging source, while `DragDownloadItem()` is a simple
 // "start dragging this" fire-and-forget. This is a generic source just good
 // enough to satisfy AppKit.
@@ -55,7 +59,7 @@ void DragDownloadItem(const download::DownloadItem* download,
 
   NSURL* file_url = base::mac::FilePathToNSURL(download->GetTargetFilePath());
   NSDraggingItem* file_item =
-      [[[NSDraggingItem alloc] initWithPasteboardWriter:file_url] autorelease];
+      [[NSDraggingItem alloc] initWithPasteboardWriter:file_url];
   if (icon) {
     NSImage* file_image = icon->ToNSImage();
     NSSize image_size = file_image.size;

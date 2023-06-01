@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <AppKit/AppKit.h>
-
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
+
+#include <AppKit/AppKit.h>
 
 #include <vector>
 

@@ -134,28 +134,6 @@ source_set("browser_process") {
   ]
 }
 
-if (is_mac) {
-  source_set("browser_arc") {
-    # TODO(https://crbug.com/1280317): Merge back into the `browser` target.
-    sources = [
-      "apps/intent_helper/mac_intent_picker_helpers.h",
-      "apps/intent_helper/mac_intent_picker_helpers.mm",
-      "mac/relauncher.h",
-      "mac/relauncher.mm",
-    ]
-    configs += [ "//build/config/compiler:enable_arc" ]
-    deps = [
-      "//base",
-      "//chrome/common:non_code_constants",
-      "//content/public/common",
-      "//net",
-      "//third_party/abseil-cpp:absl",
-      "//ui/base",
-      "//url",
-    ]
-  }
-}
-
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("browser") {
@@ -5927,12 +5905,18 @@ static_library("browser") {
     }
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "accessibility/caption_settings_dialog.h",
       "accessibility/caption_settings_dialog_mac.cc",
       "app_controller_mac.h",
       "app_controller_mac.mm",
+      "apps/intent_helper/mac_intent_picker_helpers.h",
+      "apps/intent_helper/mac_intent_picker_helpers.mm",
       "badging/badge_manager_delegate_mac.cc",
       "badging/badge_manager_delegate_mac.h",
       "browser_process_platform_part_mac.h",
@@ -5979,6 +5963,8 @@ static_library("browser") {
       "mac/mac_startup_profiler.h",
       "mac/nsprocessinfo_additions.h",
       "mac/nsprocessinfo_additions.mm",
+      "mac/relauncher.h",
+      "mac/relauncher.mm",
       "media/webrtc/media_authorization_wrapper_mac.h",
       "media/webrtc/system_media_capture_permissions_mac.h",
       "media/webrtc/system_media_capture_permissions_mac.mm",
@@ -6019,7 +6005,6 @@ static_library("browser") {
       "webshare/mac/sharing_service_operation.mm",
     ]
     deps += [
-      ":browser_arc",
       "//chrome/app:notification_metrics",
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
@@ -6042,7 +6027,6 @@ static_library("browser") {
       "//third_party/google_toolbox_for_mac",
     ]
     allow_circular_includes_from += [
-      ":browser_arc",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui:ui_arc",
     ]
