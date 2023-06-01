@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -84,6 +85,10 @@ class FilteredReportQueue {
     Filter() = default;
   };
 
+  // Events filtering UMA metric name.
+  static constexpr char kFilteredOutEventsUma[] =
+      "Browser.ERP.FilteredOutEvents";
+
   FilteredReportQueue<T>(std::unique_ptr<Filter> filter,
                          std::unique_ptr<ReportQueue> report_queue)
       : filter_(std::move(filter)), report_queue_(std::move(report_queue)) {}
@@ -100,9 +105,11 @@ class FilteredReportQueue {
                ReportQueue::EnqueueCallback callback) const {
     const auto status = filter_->is_accepted(record);
     if (!status.ok()) {
+      base::UmaHistogramBoolean(kFilteredOutEventsUma, true);
       std::move(callback).Run(status);
       return;
     }
+    base::UmaHistogramBoolean(kFilteredOutEventsUma, false);
     report_queue_->Enqueue(std::move(record), priority, std::move(callback));
   }
 
@@ -118,9 +125,11 @@ class FilteredReportQueue {
                ReportQueue::EnqueueCallback callback) const {
     const auto status = filter_->is_accepted(record);
     if (!status.ok()) {
+      base::UmaHistogramBoolean(kFilteredOutEventsUma, true);
       std::move(callback).Run(status);
       return;
     }
+    base::UmaHistogramBoolean(kFilteredOutEventsUma, false);
     report_queue_->Enqueue(std::make_unique<U>(std::move(record)), priority,
                            std::move(callback));
   }

@@ -164,6 +164,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.ERP.FilteredOutEvents" units="BooleanFiltered"
+    expires_after="2024-05-23">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Records whether an event is filtered out by FilteredReportQueue.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.RateLimitedEvents" units="BooleanAccepted"
+    expires_after="2024-05-23">
+  <owner>lbaraz@chromium.org</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Records whether an event is accepted by ReportQueue rate limiter.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.RecordsPerUpload" units="records"
     expires_after="2024-01-31">
   <owner>jrhilke@chromium.org</owner>

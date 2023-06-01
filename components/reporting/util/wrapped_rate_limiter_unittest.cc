@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -14,7 +15,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 namespace reporting {
 namespace {
@@ -34,6 +37,7 @@ class WrappedRateLimiterTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 
   WrappedRateLimiter::SmartPtr wrapped_rate_limiter_{
       nullptr, base::OnTaskRunnerDeleter(nullptr)};
@@ -46,6 +50,9 @@ TEST_F(WrappedRateLimiterTest, SuccessfulAcquire) {
   test::TestEvent<bool> acuire_event;
   async_acquire_cb_.Run(123U, acuire_event.cb());
   EXPECT_TRUE(acuire_event.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  WrappedRateLimiter::kRateLimitedEventsUma),
+              UnorderedElementsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(WrappedRateLimiterTest, RejectedAcquire) {
@@ -53,6 +60,9 @@ TEST_F(WrappedRateLimiterTest, RejectedAcquire) {
   test::TestEvent<bool> acuire_event;
   async_acquire_cb_.Run(123U, acuire_event.cb());
   EXPECT_FALSE(acuire_event.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  WrappedRateLimiter::kRateLimitedEventsUma),
+              UnorderedElementsAre(base::Bucket(false, 1)));
 }
 
 TEST_F(WrappedRateLimiterTest, MultipleCalls) {
@@ -66,26 +76,45 @@ TEST_F(WrappedRateLimiterTest, MultipleCalls) {
     test::TestEvent<bool> acuire_event;
     async_acquire_cb_.Run(123U, acuire_event.cb());
     EXPECT_TRUE(acuire_event.result());
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    WrappedRateLimiter::kRateLimitedEventsUma),
+                UnorderedElementsAre(base::Bucket(true, 1)));
   }
   {
     test::TestEvent<bool> acuire_event;
     async_acquire_cb_.Run(123U, acuire_event.cb());
     EXPECT_FALSE(acuire_event.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            WrappedRateLimiter::kRateLimitedEventsUma),
+        UnorderedElementsAre(base::Bucket(true, 1), base::Bucket(false, 1)));
   }
   {
     test::TestEvent<bool> acuire_event;
     async_acquire_cb_.Run(123U, acuire_event.cb());
     EXPECT_TRUE(acuire_event.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            WrappedRateLimiter::kRateLimitedEventsUma),
+        UnorderedElementsAre(base::Bucket(true, 2), base::Bucket(false, 1)));
   }
   {
     test::TestEvent<bool> acuire_event;
     async_acquire_cb_.Run(123U, acuire_event.cb());
     EXPECT_FALSE(acuire_event.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            WrappedRateLimiter::kRateLimitedEventsUma),
+        UnorderedElementsAre(base::Bucket(true, 2), base::Bucket(false, 2)));
   }
   {
     test::TestEvent<bool> acuire_event;
     async_acquire_cb_.Run(123U, acuire_event.cb());
     EXPECT_TRUE(acuire_event.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            WrappedRateLimiter::kRateLimitedEventsUma),
+        UnorderedElementsAre(base::Bucket(true, 3), base::Bucket(false, 2)));
   }
 }
 
@@ -95,6 +124,9 @@ TEST_F(WrappedRateLimiterTest, AcquireAfterDestruction) {
   wrapped_rate_limiter_.reset();
   async_acquire_cb_.Run(123U, acuire_event.cb());
   EXPECT_FALSE(acuire_event.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  WrappedRateLimiter::kRateLimitedEventsUma),
+              UnorderedElementsAre(base::Bucket(false, 1)));
 }
 }  // namespace
 }  // namespace reporting

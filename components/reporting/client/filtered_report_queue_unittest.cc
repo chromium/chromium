@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/report_queue.h"
@@ -24,6 +25,7 @@ using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
+using ::testing::UnorderedElementsAre;
 
 namespace reporting {
 namespace {
@@ -39,6 +41,7 @@ class MockFilter : public FilteredReportQueue<T>::Filter {
 class FilteredReportQueueTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(FilteredReportQueueTest, StringAcceptedTest) {
@@ -61,6 +64,8 @@ TEST_F(FilteredReportQueueTest, StringAcceptedTest) {
   test::TestEvent<Status> enqueued;
   queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(false, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, StringRejectedTest) {
@@ -81,6 +86,8 @@ TEST_F(FilteredReportQueueTest, StringRejectedTest) {
       enqueued.result(),
       AllOf(Property(&Status::error_code, Eq(error::CANCELLED)),
             Property(&Status::error_message, StrEq("Rejected in test"))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, MixedStringsTest) {
@@ -104,6 +111,8 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+                UnorderedElementsAre(base::Bucket(false, 1)));
   }
 
   {
@@ -116,6 +125,9 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
         enqueued.result(),
         AllOf(Property(&Status::error_code, Eq(error::ALREADY_EXISTS)),
               Property(&Status::error_message, StrEq("Duplicated in test"))));
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
   }
 
   {
@@ -130,6 +142,9 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(kTestMessage, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 2), base::Bucket(true, 1)));
   }
 }
 
@@ -158,6 +173,8 @@ TEST_F(FilteredReportQueueTest, JsonAcceptedTest) {
   test::TestEvent<Status> enqueued;
   queue->Enqueue(std::move(test_dict), Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(false, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, JsonRejectedTest) {
@@ -183,6 +200,8 @@ TEST_F(FilteredReportQueueTest, JsonRejectedTest) {
       enqueued.result(),
       AllOf(Property(&Status::error_code, Eq(error::CANCELLED)),
             Property(&Status::error_message, StrEq("Rejected in test"))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, MixedJsonTest) {
@@ -211,6 +230,8 @@ TEST_F(FilteredReportQueueTest, MixedJsonTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_dict.Clone(), Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+                UnorderedElementsAre(base::Bucket(false, 1)));
   }
 
   {
@@ -223,6 +244,9 @@ TEST_F(FilteredReportQueueTest, MixedJsonTest) {
         enqueued.result(),
         AllOf(Property(&Status::error_code, Eq(error::ALREADY_EXISTS)),
               Property(&Status::error_message, StrEq("Duplicated in test"))));
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
   }
 
   {
@@ -237,6 +261,9 @@ TEST_F(FilteredReportQueueTest, MixedJsonTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_dict.Clone(), Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 2), base::Bucket(true, 1)));
   }
 }
 
@@ -263,6 +290,8 @@ TEST_F(FilteredReportQueueTest, ProtoAcceptedTest) {
   test::TestEvent<Status> enqueued;
   queue->Enqueue(std::move(test_message), Priority::IMMEDIATE, enqueued.cb());
   EXPECT_OK(enqueued.result());
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(false, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, ProtoRejectedTest) {
@@ -286,6 +315,8 @@ TEST_F(FilteredReportQueueTest, ProtoRejectedTest) {
       enqueued.result(),
       AllOf(Property(&Status::error_code, Eq(error::CANCELLED)),
             Property(&Status::error_message, StrEq("Rejected in test"))));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+              UnorderedElementsAre(base::Bucket(true, 1)));
 }
 
 TEST_F(FilteredReportQueueTest, MixedProtoTest) {
@@ -312,6 +343,8 @@ TEST_F(FilteredReportQueueTest, MixedProtoTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_message, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+                UnorderedElementsAre(base::Bucket(false, 1)));
   }
 
   {
@@ -324,6 +357,9 @@ TEST_F(FilteredReportQueueTest, MixedProtoTest) {
         enqueued.result(),
         AllOf(Property(&Status::error_code, Eq(error::ALREADY_EXISTS)),
               Property(&Status::error_message, StrEq("Duplicated in test"))));
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
   }
 
   {
@@ -338,6 +374,9 @@ TEST_F(FilteredReportQueueTest, MixedProtoTest) {
     test::TestEvent<Status> enqueued;
     queue->Enqueue(test_message, Priority::IMMEDIATE, enqueued.cb());
     EXPECT_OK(enqueued.result());
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(queue->kFilteredOutEventsUma),
+        UnorderedElementsAre(base::Bucket(false, 2), base::Bucket(true, 1)));
   }
 }
 }  // namespace
