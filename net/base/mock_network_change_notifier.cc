@@ -103,6 +103,12 @@ MockNetworkChangeNotifier::GetCurrentConnectionCost() {
   return connection_cost_;
 }
 
+#if BUILDFLAG(IS_LINUX)
+AddressMapOwnerLinux* MockNetworkChangeNotifier::GetAddressMapOwnerInternal() {
+  return address_map_owner_;
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 MockNetworkChangeNotifier::MockNetworkChangeNotifier(
     std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier)
     : NetworkChangeNotifier(NetworkChangeCalculatorParams(),
