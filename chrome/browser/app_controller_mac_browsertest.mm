@@ -1206,6 +1206,15 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_EQ(incognito_browser, chrome::GetLastActiveBrowser());
+  // Assure that `windowDidBecomeMain` is called even if this browser process
+  // lost focus because of other browser processes in other shards taking
+  // focus. It prevents flakiness.
+  // See: https://crbug.com/1450491
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidBecomeMainNotification
+                    object:incognito_browser->window()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()];
 
   // Simulate click on "New Window".
   ui_test_utils::BrowserChangeObserver browser_added_observer(
