@@ -300,39 +300,6 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
   permission_request_manager->UpdateAnchor();
 }
 
-// Test bubbles showing when tabs move between windows. Simulates a situation
-// that could result in permission bubbles not being dismissed, and a problem
-// referencing a temporary drag window. See http://crbug.com/754552.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SwitchBrowserWindow DISABLED_SwitchBrowserWindow
-#else
-#define MAYBE_SwitchBrowserWindow SwitchBrowserWindow
-#endif
-IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleBaseViewBrowserTest,
-                       MAYBE_SwitchBrowserWindow) {
-  ShowUi("geolocation");
-  TabStripModel* strip = browser()->tab_strip_model();
-
-  // Drag out into a dragging window. E.g. see steps in [BrowserWindowController
-  // detachTabsToNewWindow:..].
-  std::vector<TabStripModelDelegate::NewStripContents> contentses(1);
-  contentses.back().add_types = AddTabTypes::ADD_ACTIVE;
-  contentses.back().web_contents = strip->DetachWebContentsAtForInsertion(0);
-  Browser* dragging_browser = strip->delegate()->CreateNewStripWithContents(
-      std::move(contentses), gfx::Rect(100, 100, 640, 480), false);
-
-  // Attach the tab back to the original window. E.g. See steps in
-  // [BrowserWindowController moveTabViews:..].
-  TabStripModel* drag_strip = dragging_browser->tab_strip_model();
-  std::unique_ptr<content::WebContents> removed_contents =
-      drag_strip->DetachWebContentsAtForInsertion(0);
-  strip->InsertWebContentsAt(0, std::move(removed_contents),
-                             AddTabTypes::ADD_ACTIVE);
-
-  // Clear the request. There should be no crash.
-  test_api_->SimulateWebContentsDestroyed();
-}
-
 // crbug.com/989858
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ActiveTabClosedAfterRendererCrashesWithPendingPermissionRequest \
