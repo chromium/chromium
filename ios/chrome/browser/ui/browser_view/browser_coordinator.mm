@@ -1137,7 +1137,7 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.priceNotificationsIPHPresenter =
       self.priceNotificationsIPHCoordinator;
 
-  if (IsCredentialProviderExtensionPromoEnabled()) {
+  if (IsCredentialProviderExtensionPromoEnabled() || IsIOSSetUpListEnabled()) {
     _credentialProviderPromoCoordinator =
         [[CredentialProviderPromoCoordinator alloc]
             initWithBaseViewController:self.viewController
