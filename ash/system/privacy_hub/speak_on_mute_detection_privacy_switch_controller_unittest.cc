@@ -6,9 +6,12 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 
@@ -18,9 +21,13 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
  public:
   PrivacyHubSpeakOnMuteControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // We need the privacy hub feature flag to have the controller constructed,
+    // and the video conference feature flag together with the camera effects
+    // switch to enable video conference.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kCrosPrivacyHub, ash::features::kSpeakOnMuteEnabled},
-        {});
+        {ash::features::kCrosPrivacyHub, ash::features::kVideoConference}, {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
   }
 
   ~PrivacyHubSpeakOnMuteControllerTest() override = default;
@@ -52,6 +59,11 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
  private:
   raw_ptr<SpeakOnMuteDetectionPrivacySwitchController>
       speak_on_mute_controller_;
+  // Instantiates a fake controller (the real one is created in
+  // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+  // ash unit tests).
+  FakeVideoConferenceTrayController fake_video_conference_tray_controller_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -431,7 +431,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("showPrivacyHubFuturePage",
                           ash::features::IsCrosPrivacyHubV2Enabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",
-                          ash::features::IsSpeakOnMuteEnabled());
+                          ash::features::IsVideoConferenceEnabled());
 
   html_source->AddString(
       "smartPrivacyDesc",

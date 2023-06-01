@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
@@ -25,7 +26,7 @@ SpeakOnMuteDetectionPrivacySwitchController::
   CrasAudioHandler::Get()->SetSpeakOnMuteDetection(/*som_on=*/false);
 
   // Only observes `SessionController` if the feature is enabled.
-  if (!features::IsSpeakOnMuteEnabled()) {
+  if (!features::IsVideoConferenceEnabled()) {
     return;
   }
   SessionControllerImpl* session_controller =

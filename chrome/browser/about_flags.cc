@@ -4080,9 +4080,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBluetoothFlossCoredumpDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::bluetooth::features::kBluetoothFlossCoredump)},
-    {"speak-on-mute-detection", flag_descriptions::kSpeakOnMuteName,
-     flag_descriptions::kSpeakOnMuteDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kSpeakOnMuteEnabled)},
     {kBluetoothUseFlossInternalName, flag_descriptions::kBluetoothUseFlossName,
      flag_descriptions::kBluetoothUseFlossDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(floss::features::kFlossEnabled)},
