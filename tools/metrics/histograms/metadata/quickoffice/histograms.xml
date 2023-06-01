@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Quickoffice.csvFormattedCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.csvNonEmptyCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.csvSheetCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docPageCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docParagraphCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docSectionCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docxPageCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docxParagraphCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.docxSectionCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.ErrorTypes" enum="QuickofficeErrorTypes"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.FileFormat" enum="QuickofficeFileFormat"
-    expires_after="2023-09-03">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptMasterCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptSlideCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptxMasterCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.pptxSlideCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsFormattedCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsNonEmptyCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsSheetCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxFormattedCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxNonEmptyCellCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quickoffice.xlsxSheetCount" units="units"
-    expires_after="2023-07-01">
+    expires_after="2024-07-01">
   <owner>joelhockey@google.com</owner>
   <owner>quickoffice-chrome-eng@google.com</owner>
   <summary>
