@@ -68,6 +68,7 @@
     "linux-lacros-dbg-tests-fyi": "Ubuntu-22.04",
     "linux-lacros-tester-fyi-rel": "Ubuntu-22.04",
     "linux-lacros-tester-rel": "Ubuntu-22.04",
+    "linux-lacros-version-skew-fyi": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
     "linux-remote-ssd-rel-dev": "Ubuntu-22.04"
