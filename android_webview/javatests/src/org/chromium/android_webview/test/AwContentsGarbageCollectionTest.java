@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
@@ -160,12 +161,12 @@ public class AwContentsGarbageCollectionTest {
             mActivityTestRule.loadUrlAsync(
                     containerView.getAwContents(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
             TestThreadUtils.runOnUiThreadBlocking(() -> {
-                WebContentsAccessibility webContentsA11y =
-                        WebContentsAccessibility.fromWebContents(containerView.getWebContents());
                 // Enable a11y for testing.
-                webContentsA11y.setAccessibilityEnabledForTesting();
+                AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                 // Initialize native object.
                 containerView.getAccessibilityNodeProvider();
+                WebContentsAccessibility webContentsA11y =
+                        WebContentsAccessibility.fromWebContents(containerView.getWebContents());
                 Assert.assertTrue(webContentsA11y.isNativeInitialized());
             });
 

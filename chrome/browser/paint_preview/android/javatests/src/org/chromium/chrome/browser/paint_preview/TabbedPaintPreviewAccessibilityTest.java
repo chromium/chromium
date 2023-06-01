@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -106,7 +107,7 @@ public class TabbedPaintPreviewAccessibilityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WebContentsAccessibility wcax = tabbedPaintPreview.getPlayerManagerForTesting()
                                                     .getWebContentsAccessibilityForTesting();
-            wcax.setAccessibilityEnabledForTesting();
+            AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
             long time = SystemClock.uptimeMillis();
             MotionEvent e =
                     MotionEvent.obtain(time, time, MotionEvent.ACTION_HOVER_ENTER, 20, 20, 0);

@@ -96,11 +96,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     /* @Before */
     public void setupTestFramework() {
-        mWcax = getWebContentsAccessibility();
-        mWcax.setAccessibilityEnabledForTesting();
         AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
         AccessibilityState.setEventTypeMaskForTesting(EVENT_TYPE_MASK_ALL);
 
+        mWcax = getWebContentsAccessibility();
         mNodeProvider = getAccessibilityNodeProvider();
 
         mTracker = new AccessibilityActionAndEventTracker();

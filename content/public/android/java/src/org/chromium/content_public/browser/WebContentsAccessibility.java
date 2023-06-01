@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 
 /**
@@ -32,12 +30,6 @@ public interface WebContentsAccessibility {
      *  @return {@code true} if the framework has been initialized.
      */
     boolean isNativeInitialized();
-
-    /**
-     *  Enables a11y for testing.
-     */
-    @VisibleForTesting
-    void setAccessibilityEnabledForTesting();
 
     /**
      * If native accessibility is enabled and no other views are temporarily
