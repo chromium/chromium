@@ -129,6 +129,7 @@
     "linux-fieldtrial-rel": "Ubuntu-22.04",
     "linux-gcc-rel": "Ubuntu-22.04",
     "linux-headless-shell-rel": "Ubuntu-22.04",
+    "linux-inverse-fieldtrials-fyi-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-lacros-rel-compilator": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
