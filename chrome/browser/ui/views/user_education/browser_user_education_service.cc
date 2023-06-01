@@ -483,9 +483,11 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHDownloadToolbarButtonFeature:
   registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
+      std::move(FeaturePromoSpecification::CreateForToastPromo(
                     feature_engagement::kIPHDownloadToolbarButtonFeature,
-                    kDownloadToolbarButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO)
+                    kDownloadToolbarButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO,
+                    IDS_DOWNLOAD_BUBBLE_PROMO_SCREENREADER,
+                    FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)
                     .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_PROMO_TITLE)));
 

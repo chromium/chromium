@@ -2647,7 +2647,11 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PROMO"
                desc="Text for the in-product-help bubble shown for the download bubble.">
-        Manage files as they download, and open them when they’re done
+        Manage files as they download, and open them when they're done
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PROMO_SCREENREADER"
+               desc="Text read by the screenreader when the in-product-help bubble is shown for the download bubble.">
+        Downloads are now in the toolbar
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_PROMO_TITLE"
                desc="Title for the in-product-help bubble shown for the download bubble.">

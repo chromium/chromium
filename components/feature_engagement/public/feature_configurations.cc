@@ -298,17 +298,16 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    // Don't show if user has already seen an IPH this session.
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
+    SessionRateImpact session_rate_impact;
+    session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->session_rate_impact = session_rate_impact;
     // Show the promo max once a year if the user hasn't interacted with the
     // download bubble within the last 21 days.
     config->trigger = EventConfig("download_bubble_iph_trigger",
                                   Comparator(EQUAL, 0), 360, 360);
     config->used = EventConfig("download_bubble_interaction",
                                Comparator(EQUAL, 0), 21, 360);
-    // Allow snoozing for 7 days, up to 3 times.
-    config->snooze_params.snooze_interval = 7;
-    config->snooze_params.max_limit = 3;
     return config;
   }
 
