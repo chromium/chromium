@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">デスク</translation>
 <translation id="1018219910092211213">DNS を解決できません</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 限定アセットが利用可能</translation>
 <translation id="1022433422498218992">一般設定</translation>
 <translation id="1022628058306505708">地球の動き</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3226657629376379887">レイアウトの操作メニュー</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" />　限定</translation>
 <translation id="3268178239013324452">失敗 - 扉が開いています</translation>
 <translation id="3275729367986477355">アバターの画像</translation>
 <translation id="3283504360622356314">{0,plural, =1{ファイルを編集}other{ファイルを編集}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3639846061339007994">上</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
+<translation id="3663574643422533538"><ph name="PRODUCT_NAME" /> 限定アートワークを選択する</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4111761024568264522">USB タッチパッド</translation>
+<translation id="4113067922640381334">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />をご利用いただけます</translation>
 <translation id="4117637339509843559">ダークモード</translation>
 <translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4131410914670010031">白黒</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8593058461203131755">メディアを一時停止する</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8651481478098336970">音量をミュート</translation>
 <translation id="8655295600908251630">チャンネル</translation>

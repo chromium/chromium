@@ -1291,6 +1291,7 @@
 <translation id="4150099059797363385">Канверт Chinese № 4</translation>
 <translation id="4151403195736952345">Выкарыстоўваць глабальныя стандартныя налады (выяўляць)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Старонка 1}one{Старонка {COUNT}}few{Старонка {COUNT}}many{Старонка {COUNT}}other{Старонка {COUNT}}}</translation>
+<translation id="4154277373259957087">Цяпер Chrome уносіць даныя спосабаў аплаты толькі пасля спраўджання асобы. Калі вы хочаце змяніць гэтыя параметры, перайдзіце ў <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
@@ -1852,6 +1853,7 @@
 <translation id="5471337644440862957">Камедыйныя фільмы</translation>
 <translation id="5481076368049295676">Праз гэта змесціва на вашу прыладу можа ўсталявацца небяспечнае праграмнае забеспячэнне, якое будзе красці або выдаляць інфармацыю. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
+<translation id="5483838506518938965">Усё гатова</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
 <translation id="5487426985799386720">Ежа і напоі</translation>
 <translation id="5490432419156082418">Адрасы і іншае</translation>

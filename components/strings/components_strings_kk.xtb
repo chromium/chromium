@@ -1294,6 +1294,7 @@
 <translation id="4150099059797363385">Chinese #4 хатқалтасы</translation>
 <translation id="4151403195736952345">Ғаламдық әдепкі мәнді пайдалану (анықтау)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
+<translation id="4154277373259957087">Chrome енді төлеу әдістерін толтырмас бұрын жеке басыңызды растайды. Мұны <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ішінде кез келген уақытта жаңартуға болады.</translation>
 <translation id="4154664944169082762">Саусақ іздері</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
@@ -1857,6 +1858,7 @@
 <translation id="5471337644440862957">Комедиялар</translation>
 <translation id="5481076368049295676">Бұл контент құрылғыңызға ақпаратыңызды ұрлайтын не жоятын қауіпті бағдарламалық құралды орнатуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Жарамды мекенжайды енгізу</translation>
+<translation id="5483838506518938965">Барлығы дайын</translation>
 <translation id="5485973315555778056">Бұлт компьютері</translation>
 <translation id="5487426985799386720">Тамақ пен сусын</translation>
 <translation id="5490432419156082418">Мекенжайлар және басқа ақпарат</translation>

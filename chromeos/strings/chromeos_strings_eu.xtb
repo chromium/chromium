@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Lan-eremuak</translation>
 <translation id="1018219910092211213">Ezin da ebatzi DNSa</translation>
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
+<translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> gailuaren baliabide esklusiboak eskuragai</translation>
 <translation id="1022433422498218992">Kontrolatzeko aukera orokorrak</translation>
 <translation id="1022628058306505708">Lurraren fluxua</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Eskanerren bila</translation>
 <translation id="3226657629376379887">Diseinuaren ekintza-menua</translation>
 <translation id="3246869037381808805">Egun bat baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> gailuko esklusiboak</translation>
 <translation id="3268178239013324452">Hutsegitea - Atea irekita dago</translation>
 <translation id="3275729367986477355">Abatarra</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editatu fitxategia}other{Editatu fitxategiak}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Pribatutasun-pantaila aldatzeko etengailua</translation>
 <translation id="3639846061339007994">goiko</translation>
 <translation id="3651050199673793219">Hautatu tenperatura-unitatea</translation>
+<translation id="3663574643422533538">Hautatu <ph name="PRODUCT_NAME" /> gailuko artelan esklusiboak</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Hautatu <ph name="TITLE" /> (<ph name="DESC" />) albuma</translation>
 <translation id="4111761024568264522">USB bidezko ukipen-panela</translation>
+<translation id="4113067922640381334">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="4117637339509843559">Modu iluna</translation>
 <translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Hasieratu gabe</translation>
 <translation id="8593058461203131755">pausatu multimedia-edukia</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
+<translation id="8626489604350149811"><ph name="APN_NAME" /> APNarekin erlazionatutako ekintza gehiago</translation>
 <translation id="86356131183441916">More argia</translation>
 <translation id="8651481478098336970">desaktibatu bolumena</translation>
 <translation id="8655295600908251630">Kanala</translation>

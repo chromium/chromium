@@ -1291,6 +1291,7 @@
 <translation id="4150099059797363385">Zərf Çin #4</translation>
 <translation id="4151403195736952345">Qlobal defolt istifadə edin (Defekt)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Səhifə 1}other{Səhifə {COUNT}}}</translation>
+<translation id="4154277373259957087">Chrome ödəniş metodlarını doldurmazdan əvvəl kimliyinizi doğrulayacaq. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> bölməsində yeniləyə bilərsiniz.</translation>
 <translation id="4154664944169082762">Barmaq izi</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
@@ -1854,6 +1855,7 @@
 <translation id="5471337644440862957">Komediya filmləri</translation>
 <translation id="5481076368049295676">Bu kontent cihazda məlumatı oğurlayan və ya silən təhlükəli proqram təminatı quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Etibarlı ünvan əlavə edin</translation>
+<translation id="5483838506518938965">Hər şey hazırdır</translation>
 <translation id="5485973315555778056">Bulud cihazı</translation>
 <translation id="5487426985799386720">Qida və içki</translation>
 <translation id="5490432419156082418">Ünvanlar və s.</translation>

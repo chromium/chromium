@@ -2475,6 +2475,7 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
 <translation id="3339271789059866414">システム プロキシ サービスを利用できるようにするかどうかとシステム サービスのプロキシ認証情報を設定します。
       このポリシーが設定されていない場合、システム プロキシ サービスは利用できません。</translation>
 <translation id="334231891933432876">アカウントの認証が無効になったら直ちにユーザーをログアウトする</translation>
+<translation id="3345323903592385588">インストーラで VM 構成が表示される順序。複数の VM 構成が指定されている場合は、display_order 値が小さいものから表示されます。デフォルトは 0 です。</translation>
 <translation id="3348799281602260763">有効にすると、WebRTC ピア接続が TLS/DTLS プロトコルのサポートが終了したバージョン（DTLS 1.0、TLS 1.0、TLS 1.1）にダウングレードされる可能性があります。
       このポリシーを無効にするか、未設定のままにすると、これらの TLS/DTLS バージョンは無効になります。
 
@@ -5300,6 +5301,21 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="614665605501218241">ウェブサイトがリストに指定されている場合、より限定されたプライベート ネットワークのエンドポイントに対して、そのサイトからの安全でない方法でのリクエストを許可する。</translation>
 <translation id="614753473456574270">ユーザーに安全性の低い PIN の設定を許可しない</translation>
 <translation id="6150320133676152520">ロック画面とログイン画面で PIN の自動送信を無効にする</translation>
+<translation id="61518106107420459">このポリシーでは、ユーザーに操作を求めずにサイレント インストールするアプリと拡張機能のリストを指定します。ユーザーは、ここで指定されたアプリや拡張機能をアンインストールすることも無効化することもできません。権限は、enterprise.deviceAttributes 拡張機能 API と enterprise.platformKeys 拡張機能 API に対するものを含め、暗黙的に付与されます（これら 2 つの API は、強制的にインストールされたアプリや拡張機能以外には利用できません）。
+
+      このポリシーが未設定の場合、どのアプリや拡張機能も自動的にインストールされることはなく、ユーザーは <ph name="PRODUCT_NAME" /> からアプリや拡張機能をアンインストールできます。
+
+      このポリシーは <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ポリシーよりも優先されます。以前に強制的にインストールされたアプリまたは拡張機能をこのリストから削除すると、そのアプリや拡張機能は <ph name="PRODUCT_NAME" /> から自動的にアンインストールされます。
+
+      <ph name="MS_WIN_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、<ph name="MS_AD_NAME" /> ドメインまたは <ph name="MS_AAD_NAME" /> に追加されたインスタンスと、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスのみです。
+
+       <ph name="MAC_OS_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、MDM を介して管理されるか MCX を介してドメインに追加されたインスタンスと、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスのみです。
+
+      どの拡張機能についても、ユーザーがデベロッパー ツールを使用してソースコードを変更する可能性があります（その場合、拡張機能が機能しなくなることがあります）。こうした変更を禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定してください。
+
+      このポリシーの各リスト項目には、拡張機能 ID と「更新」URL（省略可）をセミコロン（;）で区切った文字列を指定します。拡張機能 ID は 32 文字の文字列で、たとえばデベロッパー モードで chrome://extensions を開くと確認できます。「更新」URL を指定する場合は、更新マニフェスト XML ドキュメントを指定する必要があります（https://developer.chrome.com/extensions/autoupdate）。デフォルトでは Chrome ウェブストアの更新 URL が使用されます。このポリシーで設定した「更新」URL は初回のインストールでのみ使用され、その後の拡張機能の更新には、拡張機能のマニフェストで指定した更新 URL が使用されます。
+
+       注: このポリシーはシークレット モードには適用されません。拡張機能のホスティングについてご確認ください（https://developer.chrome.com/extensions/hosting）。</translation>
 <translation id="6155350825868160236">スペルミスの解決に Google のウェブサービスを使用するかどうかをユーザーが選択できるようにする</translation>
 <translation id="6155936611791017817">ログイン画面での大きいカーソルのデフォルト状態を設定する</translation>
 <translation id="6157537876488211233">プロキシ バイパス ルールのカンマ区切りリスト</translation>
