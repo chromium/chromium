@@ -2030,7 +2030,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
-    enum="MenuSourceType" expires_after="2023-06-01">
+    enum="MenuSourceType" expires_after="2023-12-01">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2044,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
-    units="ms" expires_after="2023-06-01">
+    units="ms" expires_after="2023-12-01">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
