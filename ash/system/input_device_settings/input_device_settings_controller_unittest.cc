@@ -301,6 +301,9 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(account_id_2,
                                            std::move(user_2_prefs));
+    session_controller->AddUserSession(kUserEmail3,
+                                       user_manager::USER_TYPE_REGULAR,
+                                       /*provide_pref_service=*/false);
 
     session_controller->SwitchActiveUser(account_id_1);
     session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
@@ -321,6 +324,13 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::TearDown();
 
     task_runner_.reset();
+  }
+
+  void SetActiveUser(const AccountId& account_id) {
+    TestSessionControllerClient* session_controller =
+        GetSessionControllerClient();
+    session_controller->SwitchActiveUser(account_id);
+    session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
  protected:
@@ -412,7 +422,8 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenFlagDisabled) {
                                      prefs::kTouchpadDeviceSettingsDictPref));
 }
 
-TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenAltFlagDisabled) {
+TEST_F(InputDeviceSettingsControllerTest,
+       DeletesSimulateRightClickPrefsWhenAltFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
@@ -420,26 +431,56 @@ TEST_F(InputDeviceSettingsControllerTest, DeletesPrefsWhenAltFlagDisabled) {
   RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
 
   base::Value::Dict test_pref_value;
-  base::Value::Dict test_pref_dict;
-  test_pref_dict.Set(
+  base::Value::Dict six_pack_remappings_dict;
+  six_pack_remappings_dict.Set(
       prefs::kTouchpadSettingSimulateRightClick,
       static_cast<int>(ui::mojom::SimulateRightClickModifier::kAlt));
-  test_pref_value.Set("key", std::move(test_pref_dict));
+  test_pref_value.Set("key", std::move(six_pack_remappings_dict));
   user_prefs->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                       test_pref_value.Clone());
-  TestSessionControllerClient* session_controller =
-      GetSessionControllerClient();
-  session_controller->AddUserSession(kUserEmail3,
-                                     user_manager::USER_TYPE_REGULAR,
-                                     /*provide_pref_service=*/false);
-  session_controller->SetUserPrefService(account_id_3, std::move(user_prefs));
+  GetSessionControllerClient()->SetUserPrefService(account_id_3,
+                                                   std::move(user_prefs));
 
-  session_controller->SwitchActiveUser(account_id_3);
-  session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+  SetActiveUser(account_id_3);
   PrefService* active_pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   base::Value::Dict devices_dict =
       active_pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref)
+          .Clone();
+  base::Value::Dict* existing_settings_dict = devices_dict.FindDict("key");
+  EXPECT_EQ(base::Value::Dict(), *existing_settings_dict);
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       DeletesSixPackKeyPrefsWhenAltFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAltClickAndSixPackCustomization);
+  auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
+
+  base::Value::Dict test_pref_value;
+  base::Value::Dict six_pack_remappings_dict;
+  base::Value::Dict settings_dict;
+
+  six_pack_remappings_dict.Set(
+      prefs::kSixPackKeyPageUp,
+      static_cast<int>(ui::mojom::SimulateRightClickModifier::kAlt));
+
+  settings_dict.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
+                    std::move(six_pack_remappings_dict));
+
+  test_pref_value.Set("key", std::move(settings_dict));
+  user_prefs->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
+                      test_pref_value.Clone());
+  GetSessionControllerClient()->SetUserPrefService(account_id_3,
+                                                   std::move(user_prefs));
+
+  SetActiveUser(account_id_3);
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict devices_dict =
+      active_pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref)
           .Clone();
   base::Value::Dict* existing_settings_dict = devices_dict.FindDict("key");
   EXPECT_EQ(base::Value::Dict(), *existing_settings_dict);
