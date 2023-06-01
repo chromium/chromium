@@ -1199,7 +1199,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       specific_phones_listed = true;
     }
     bool skip_to_phone_confirmation =
-        base::FeatureList::IsEnabled(device::kWebAuthnPhoneConfirmationSheet) &&
         is_get_assertion &&
         transport_availability_.has_platform_authenticator_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
@@ -1298,8 +1297,7 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
       }
     }
 
-    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI) &&
-        is_passkey_request && paired_phone_names().empty() &&
+    if (is_passkey_request && paired_phone_names().empty() &&
         // On Windows WebAuthn API < 4, we cannot tell in advance if the
         // platform authenticator can fulfill a get assertion request. In that
         // case, don't jump to the QR code.
@@ -1315,35 +1313,25 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     const bool is_passkey_request =
         resident_key_requirement() !=
         device::ResidentKeyRequirement::kDiscouraged;
-    if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
-      if (is_passkey_request) {
-        // If attachment=any, then don't jump to suggesting a phone.
-        // TODO(crbug.com/1426628): makeCredential requests should always have
-        // `make_credential_attachment` set. Stop being hesitant.
-        if ((!transport_availability_.make_credential_attachment ||
-             *transport_availability_.make_credential_attachment !=
-                 device::AuthenticatorAttachment::kAny) &&
-            paired_phone_names().empty()) {
-          priority_list.emplace_back(Mechanism::AddPhone());
-        }
-      } else {
-        // This seems like it might be an error (crbug.com/1426244) as we might
-        // still want to jump to platform authenticators for passkey requests if
-        // we don't jump to a phone.
-        if (kShowCreatePlatformPasskeyStep) {
-          priority_list.emplace_back(
-              Mechanism::Transport(AuthenticatorTransport::kInternal));
-        }
-        priority_list.emplace_back(Mechanism::WindowsAPI());
+    if (is_passkey_request) {
+      // If attachment=any, then don't jump to suggesting a phone.
+      // TODO(crbug.com/1426628): makeCredential requests should always have
+      // `make_credential_attachment` set. Stop being hesitant.
+      if ((!transport_availability_.make_credential_attachment ||
+           *transport_availability_.make_credential_attachment !=
+               device::AuthenticatorAttachment::kAny) &&
+          paired_phone_names().empty()) {
+        priority_list.emplace_back(Mechanism::AddPhone());
       }
     } else {
+      // This seems like it might be an error (crbug.com/1426244) as we might
+      // still want to jump to platform authenticators for passkey requests if
+      // we don't jump to a phone.
       if (kShowCreatePlatformPasskeyStep) {
         priority_list.emplace_back(
             Mechanism::Transport(AuthenticatorTransport::kInternal));
       }
-      if (!is_passkey_request) {
-        priority_list.emplace_back(Mechanism::WindowsAPI());
-      }
+      priority_list.emplace_back(Mechanism::WindowsAPI());
     }
   }
 

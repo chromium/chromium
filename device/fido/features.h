@@ -40,15 +40,6 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidHybridClientUi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 
-// Enable some experimental UI changes
-COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
-
-// Show a "Use the passkey from your phone" sheet instead of the mechanism
-// selection screen if we are confident a request can be resolved using an
-// already paired phone.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnPhoneConfirmationSheet);
-
 // Use the Android 14 Credential Manager API.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);

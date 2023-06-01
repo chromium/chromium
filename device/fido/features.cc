@@ -39,14 +39,6 @@ BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
              "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebAuthPasskeysUI,
-             "WebAuthenticationPasskeysUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebAuthnPhoneConfirmationSheet,
-             "WebAuthenticationPhoneConfirmationSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Added in M114. Not yet enabled by default.
 BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",
