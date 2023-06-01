@@ -5,6 +5,10 @@ This is the user manual for
 
 [TOC]
 
+## Command line usage
+
+Command line arguments for the updater client are documented in the [functional spec](functional_spec.md#Command-Line).
+
 ## Error codes
 
 The updater setup process can exit with the following error codes:
@@ -103,3 +107,8 @@ substituted at runtime.
 
 For more information, please see the
 [functional spec](functional_spec.md#Application-Commands).
+
+## Logging
+
+The updater writes logs to its product directory. See
+[the functional spec](functional_spec.md#logging) for details.

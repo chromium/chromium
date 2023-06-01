@@ -134,6 +134,63 @@ To update these copies of the updaters:
 
 ## Building
 
+### Configuring the build
+
+After creating your build configuration directory via
+[`gn gen`](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Setting-up-the-build)
+(this step is equivalent across all platforms), you will need to use
+[`gn args`](https://www.chromium.org/developers/gn-build-configuration/) to
+configure the build appropriately.
+
+#### Flags required for building successfully
+
+As of 2023-05-24, the updater cannot be built in component mode. It is also not
+specifically designed to be built without the updater being enabled. You must
+specify these options to `gn` via `gn args`:
+
+```
+is_component_build=false
+enable_updater=true
+```
+
+Depending on other configuration options, the default `symbol_level`, 2, might
+produce object files too large for the linker to handle (in debug builds).
+Partial symbols, via `symbol_level=1`, fix this. Omitting almost all symbols
+via `symbol_level=0` reuslts in a smaller and faster build but makes debugging
+nearly impossible (call stacks will not be symbolicated).
+
+#### Faster builds
+
+Building on Goma is typically much faster than your workstation. After you've
+set up Goma, specify it in `gn args` with `use_goma=true`.
+
+To get started on Goma, and for more information on how to use it, review its
+[public documentation](https://chromium.googlesource.com/infra/goma/client/+/HEAD/doc/early-access-guide.md)
+or its
+[Google-internal documentation](https://go.corp.google.com/how-to-use-goma).
+
+#### More release-like builds
+
+Chromium projects build in debug mode by default. Release builds (also called
+"opt", or "optimized", builds) are faster to link and run more efficiently;
+they are, of course, much harder to debug. For a release build, add the
+following to the build configuration's `gn args`:
+
+```
+is_debug=false
+```
+
+With a Google `src-internal` checkout, you can create a Chrome-branded build:
+
+```
+is_chrome_branded=true
+include_branded_entitlements=false
+```
+
+Updater branding affects the path the updater installs itself to, among other
+things. Differently-branded copies of Chromium Updater are intended to coexist
+on a machine, operating independently from each other.
+
 ### Cleaning the build output
 Running `ninja` with `t clean` cleans the build out directory. For example:
 ```
@@ -156,6 +213,16 @@ You can then run the following command to update IDL COM files for all flavors:
 python3 tools/win/update_idl.py
 ```
 
+### Build artifacts
+
+Build outputs will land in the directory created by `gn gen` that you have been
+providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
+contains copies of the "final" outputs created by the build. `UpdaterSetup` is
+probably what you want for installing the updater you have built.
+
+TODO(crbug.com/1448700): list the relevant/interesting outputs here and what
+they are, why they're relevant/interesting, etc.
+
 ## Debugging
 ### Debug into Windows update service
 
@@ -177,13 +244,20 @@ breakpoint at the place you want to debug.
 
 ### Logging
 
-Both the updater and the unit tests can create program logs. The log destination
-is different: the updater logs in the product directory, while the unit tests
-log into a directory defined by the environment variable `${ISOLATED_OUTDIR}`.
-When run by Swarming, the updater logs are copied into `${ISOLATED_OUTDIR}` too,
-so that after the swarming task has completed, both types of logs are
-available as CAS outputs. The logs for `updater_tests_system` and
-`integration_test_helper` are merged into `updater_tests_system.log`.
+Both the updater and the unit tests can create program logs.
+
+#### Updater logs
+
+The updater itself logs in the product directory.
+
+#### Unit test logs
+
+The unit tests log into a directory defined by the environment variable
+`${ISOLATED_OUTDIR}`. When run by Swarming, the updater logs are copied
+into `${ISOLATED_OUTDIR}` too, so that after the swarming task has completed,
+both types of logs are available as CAS outputs. The logs for
+`updater_tests_system` and `integration_test_helper` are merged into
+`updater_tests_system.log`.
 
 Non-bot systems can set up this environment variable to collect logs for
 debugging when the tests are run locally.
@@ -206,3 +280,25 @@ using the typical workflow: `git cl upload`
 name of the trybot you found.
 4. Monitor and debug any failures as you normally would for any
 builder or tester.
+
+## Troubleshooting
+
+### Build errors
+
+* **Maybe it's not you.** If you pulled from `origin/main` since your last
+  successful build, or have never successfully built on your current branch,
+  and the build errors you're seeing aren't obviously related to any changes
+  you've made,
+  [check the tree status](https://chromium-status.appspot.com/status_viewer).
+  Did you pull down a broken version? If so, and the revert is in, pull again
+  and see if it works better. Or skip checking the tree status and just try
+  this as your first debugging step for build breaks after a pull.
+* **Dependencies are a fast-moving target.** Remember to run `gclient sync -D`
+  after every pull from `origin/main` _and_ every branch change. If you aren't
+  sure whether you ran it, just run it, it's fast if you don't need it.
+* **Is the Goma client ready?** If your build is failing quickly with a
+  bunch of errors related to Goma, run `goma_ctl ensure_start` and try again.
+* **Symbols too big?** If your build is failing during linking, check your
+  `gn args` to verify that `symbol_level=1` (or `0`) is present. If it's not,
+  you're running into a known issue where the default symbol level, `2`,
+  outputs symbols too large for the linker to comprehend.
