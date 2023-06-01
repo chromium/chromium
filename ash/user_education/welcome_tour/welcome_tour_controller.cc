@@ -14,6 +14,7 @@
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
 #include "base/check_op.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -254,7 +255,6 @@ void WelcomeTourController::MaybeStartTutorial() {
   OnWelcomeTourStarted();
 }
 
-// TODO(http://b/277091650): Show scrim.
 // TODO(http://b/277091006): Stabilize app launches.
 // TODO(http://b/277091067): Stabilize apps in launcher.
 // TODO(http://b/277091443): Stabilize apps in shelf.
@@ -264,11 +264,12 @@ void WelcomeTourController::MaybeStartTutorial() {
 // TODO(http://b/277091643): Stabilize notifications.
 // TODO(http://b/277091624): Stabilize nudges/toasts.
 void WelcomeTourController::OnWelcomeTourStarted() {
+  scrim_ = std::make_unique<WelcomeTourScrim>();
+
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourStarted();
   }
 }
-// TODO(http://b/277091650): Hide scrim.
 // TODO(http://b/277091006): Restore app launches.
 // TODO(http://b/277091067): Restore apps in launcher.
 // TODO(http://b/277091443): Restore apps in shelf.
@@ -278,6 +279,8 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091643): Restore notifications.
 // TODO(http://b/277091624): Restore nudges/toasts.
 void WelcomeTourController::OnWelcomeTourEnded() {
+  scrim_.reset();
+
   for (auto& observer : observer_list_) {
     observer.OnWelcomeTourEnded();
   }

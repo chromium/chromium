@@ -5,6 +5,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -17,10 +18,15 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/mock_welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
+#include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -32,6 +38,7 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
 using ::testing::Contains;
@@ -253,6 +260,79 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
     std::move(ended_callback).Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
+}
+
+// WelcomeTourControllerRunTest ------------------------------------------------
+
+// Base class for tests of the `WelcomeTourController` that run the Welcome
+// Tour in order to assert expectations before, during, and/or after run time.
+class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
+ public:
+  // Runs the Welcome Tour, invoking the specified `in_progress_callback` just
+  // after the Welcome Tour has started. Note that this method will not return
+  // until the Welcome Tour has ended.
+  void Run(base::OnceClosure in_progress_callback) {
+    // Ensure `controller` exists.
+    auto* const controller = WelcomeTourController::Get();
+    ASSERT_TRUE(controller);
+
+    // Ensure `delegate` exists.
+    auto* const delegate = user_education_delegate();
+    ASSERT_TRUE(delegate);
+
+    // Observe the `controller` for Welcome Tour start/end events.
+    StrictMock<MockWelcomeTourControllerObserver> observer;
+    base::ScopedObservation<WelcomeTourController,
+                            WelcomeTourControllerObserver>
+        observation{&observer};
+    observation.Observe(controller);
+
+    // When the Welcome Tour starts/ends, signal the appropriate future.
+    base::test::TestFuture<void> started_future;
+    base::test::TestFuture<void> ended_future;
+    EXPECT_CALL(observer, OnWelcomeTourStarted)
+        .WillOnce(RunOnceClosure(started_future.GetCallback()));
+    EXPECT_CALL(observer, OnWelcomeTourEnded)
+        .WillOnce(RunOnceClosure(ended_future.GetCallback()));
+
+    // When the Welcome Tour is started, cache the callback to invoke to
+    // complete the tutorial.
+    base::OnceClosure completed_callback;
+    EXPECT_CALL(
+        *delegate,
+        StartTutorial(_, Eq(TutorialId::kWelcomeTourPrototype1), _, _, _))
+        .WillOnce(MoveArg<3>(&completed_callback));
+
+    // Simulate login of the primary user. Note that this should trigger the
+    // Welcome Tour to start automatically.
+    SimulateUserLogin("primary@test");
+    EXPECT_TRUE(started_future.Wait());
+
+    // Invoke the `in_progress_callback` so that tests can assert expectations
+    // while the Welcome Tour is in progress.
+    std::move(in_progress_callback).Run();
+
+    // Complete the tutorial by invoking the cached callback.
+    std::move(completed_callback).Run();
+    EXPECT_TRUE(ended_future.Wait());
+  }
+};
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that scrims are added to all root windows only while the Welcome
+// Tour is in progress.
+TEST_F(WelcomeTourControllerRunTest, Scrim) {
+  // Case: Before Welcome Tour.
+  ExpectScrimsOnAllRootWindows(false);
+
+  // Case: During Welcome Tour.
+  ASSERT_NO_FATAL_FAILURE(
+      Run(/*in_progress_callback=*/base::BindLambdaForTesting(
+          [&]() { ExpectScrimsOnAllRootWindows(true); })));
+
+  // Case: After Welcome Tour.
+  ExpectScrimsOnAllRootWindows(false);
 }
 
 }  // namespace ash
