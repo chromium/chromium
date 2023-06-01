@@ -297,7 +297,7 @@ void UpdateNeedsRedraw(
 bool RenderPassNeedsFullDamage(ResolvedPassData& resolved_pass) {
   auto& aggregation = resolved_pass.aggregation();
 
-  static const bool can_skip_render_pass = base::FeatureList::IsEnabled(
+  const bool can_skip_render_pass = base::FeatureList::IsEnabled(
       features::kAllowUndamagedNonrootRenderPassToSkip);
   if (can_skip_render_pass) {
     // Needs full damage when
