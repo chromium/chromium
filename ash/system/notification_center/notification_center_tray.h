@@ -22,6 +22,7 @@ class Widget;
 namespace ash {
 
 class NotificationListView;
+class NotificationMetricsRecorder;
 class PrivacyIndicatorsTrayItemView;
 class Shelf;
 class TrayBubbleView;
@@ -82,6 +83,10 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
+
+  // Manages notification metrics.
+  const std::unique_ptr<NotificationMetricsRecorder>
+      notification_metrics_recorder_;
 
   // Manages showing notification icons in the tray.
   const std::unique_ptr<NotificationIconsController>

@@ -1683,6 +1683,8 @@ component("ash") {
     "system/notification_center/notification_center_view.h",
     "system/notification_center/notification_list_view.cc",
     "system/notification_center/notification_list_view.h",
+    "system/notification_center/notification_metrics_recorder.cc",
+    "system/notification_center/notification_metrics_recorder.h",
     "system/notification_center/stacked_notification_bar.cc",
     "system/notification_center/stacked_notification_bar.h",
     "system/overview/overview_button_tray.cc",

@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
 #include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_metrics_recorder.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -28,11 +29,14 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kNotificationCenter,
                          RoundedCornerBehavior::kStartRounded),
+      notification_metrics_recorder_(
+          std::make_unique<NotificationMetricsRecorder>(this)),
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(
               shelf,
               /*model=*/nullptr,
               /*notification_center_tray=*/this)) {
+  DCHECK(features::IsQsRevampEnabled());
   SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
   set_use_bounce_in_animation(false);
 
