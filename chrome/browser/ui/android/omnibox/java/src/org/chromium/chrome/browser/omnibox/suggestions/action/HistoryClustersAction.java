@@ -26,8 +26,10 @@ public class HistoryClustersAction extends OmniboxAction {
     /** Associated user query, guaranteed to be a non-empty string. */
     public final @NonNull String query;
 
-    public HistoryClustersAction(long nativeInstance, @NonNull String hint, @NonNull String query) {
-        super(OmniboxActionId.HISTORY_CLUSTERS, nativeInstance, hint, JOURNEYS_ICON);
+    public HistoryClustersAction(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @NonNull String query) {
+        super(OmniboxActionId.HISTORY_CLUSTERS, nativeInstance, hint, accessibilityHint,
+                JOURNEYS_ICON);
         assert !TextUtils.isEmpty(query);
         this.query = query;
     }

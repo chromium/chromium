@@ -44,11 +44,13 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
     intptr_t instance,
     const std::u16string& hint,
+    const std::u16string& accessibility_hint,
     OmniboxPedalId pedal_id) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildOmniboxPedal(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
           static_cast<int32_t>(pedal_id)));
 }
 
@@ -56,11 +58,13 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     JNIEnv* env,
     intptr_t instance,
     const std::u16string& hint,
+    const std::u16string& accessibility_hint,
     const std::string& query) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildHistoryClustersAction(
           env, g_java_factory.Get(), instance,
           base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
           base::android::ConvertUTF8ToJavaString(env, query)));
 }
 
@@ -68,12 +72,15 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     intptr_t instance,
     const std::u16string& hint,
+    const std::u16string& accessibility_hint,
     int action_type,
     const std::string& action_uri) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildActionInSuggest(
           env, g_java_factory.Get(), instance,
-          base::android::ConvertUTF16ToJavaString(env, hint), action_type,
+          base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
+          action_type,
           base::android::ConvertUTF8ToJavaString(env, action_uri)));
 }
 

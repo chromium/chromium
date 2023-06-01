@@ -74,21 +74,21 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT,
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST,
+                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
                     },
                     {
                         omnibox::ActionInfo_ActionType_DIRECTIONS,
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT,
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST,
+                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
                     },
                     {
                         omnibox::ActionInfo_ActionType_REVIEWS,
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT,
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST,
+                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
                     }};
 
   for (const auto& test_case : test_cases) {

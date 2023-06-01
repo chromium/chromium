@@ -165,14 +165,15 @@ public class OmniboxActionsTest {
     }
 
     private AutocompleteMatch createDummyHistoryClustersAction(String name) {
-        return createDummySuggestion(List.of(new HistoryClustersAction(0, "hint", name)));
+        return createDummySuggestion(
+                List.of(new HistoryClustersAction(0, "hint", "accessibility", name)));
     }
 
     private AutocompleteMatch createDummyActionInSuggest(ActionInfo.ActionType... types) {
         var actions = new ArrayList<OmniboxAction>();
         for (var type : types) {
-            actions.add(new OmniboxActionInSuggest(
-                    type.getNumber(), "hint", type.getNumber(), "https://www.google.com"));
+            actions.add(new OmniboxActionInSuggest(type.getNumber(), "hint", "accessibility",
+                    type.getNumber(), "https://www.google.com"));
         }
 
         return createDummySuggestion(actions);

@@ -85,7 +85,7 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(
                         ToActionHint(action_info.action_type()),
                         ToActionContents(action_info.action_type()),
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST),
+                        ToActionContents(action_info.action_type())),
                     {}),
       action_info{std::move(action_info)},
       search_terms_args{std::move(search_terms_args)} {}
@@ -98,7 +98,8 @@ OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
         env, reinterpret_cast<intptr_t>(this), strings_.hint,
-        action_info.action_type(), action_info.action_uri()));
+        strings_.accessibility_hint, action_info.action_type(),
+        action_info.action_uri()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

@@ -59,7 +59,8 @@ public class OmniboxActionInSuggestUnitTest {
     @Test
     public void creation_usesCustomIconForKnownActionTypes() {
         for (var kesemActionType : sKnownActionTypes) {
-            var action = new OmniboxActionInSuggest(0, "hint", kesemActionType, "");
+            var action =
+                    new OmniboxActionInSuggest(0, "hint", "accessibility", kesemActionType, "");
             assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -68,7 +69,8 @@ public class OmniboxActionInSuggestUnitTest {
     public void creation_usesFallbackIconForUnknownActionTypes() {
         for (var kesemActionType : EntityInfoProto.ActionInfo.ActionType.values()) {
             if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
-            var action = new OmniboxActionInSuggest(0, "hint", kesemActionType.getNumber(), "");
+            var action = new OmniboxActionInSuggest(
+                    0, "hint", "accessibility", kesemActionType.getNumber(), "");
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -78,7 +80,7 @@ public class OmniboxActionInSuggestUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> new OmniboxActionInSuggest(
-                                0, null, EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
+                                0, null, "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     @Test
@@ -86,7 +88,7 @@ public class OmniboxActionInSuggestUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> new OmniboxActionInSuggest(
-                                0, "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
+                                0, "", "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     @Test
@@ -99,7 +101,8 @@ public class OmniboxActionInSuggestUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> OmniboxActionInSuggest.from(new OmniboxAction(
-                                OmniboxActionId.ACTION_IN_SUGGEST, 0, "hint", null) {
+                                OmniboxActionId.ACTION_IN_SUGGEST, 0, "hint", "accessibility",
+                                null) {
                     @Override
                     public void execute(OmniboxActionDelegate d) {}
                 }));
@@ -107,8 +110,8 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
-        OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(
-                0, "hint", EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE, ""));
+        OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(0, "hint",
+                "accessibility", EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE, ""));
     }
 
     /**
@@ -117,7 +120,7 @@ public class OmniboxActionInSuggestUnitTest {
     private OmniboxAction buildActionInSuggest(
             EntityInfoProto.ActionInfo.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
-        return new OmniboxActionInSuggest(0, "wink", type.getNumber(), uri);
+        return new OmniboxActionInSuggest(0, "wink", "accessibility", type.getNumber(), uri);
     }
 
     @Test

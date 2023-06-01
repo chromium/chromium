@@ -176,7 +176,8 @@ base::android::ScopedJavaLocalRef<jobject>
 HistoryClustersAction::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
     j_omnibox_action_.Reset(BuildHistoryClustersAction(
-        env, reinterpret_cast<intptr_t>(this), strings_.hint, query_));
+        env, reinterpret_cast<intptr_t>(this), strings_.hint,
+        strings_.accessibility_hint, query_));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

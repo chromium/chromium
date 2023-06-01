@@ -75,34 +75,37 @@ public class OmniboxActionFactoryImplUnitTest {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
         assertNotNull(HistoryClustersAction.from(
-                OmniboxActionFactoryImpl.get().buildHistoryClustersAction(0, "hint", "query")));
+                OmniboxActionFactoryImpl.get().buildHistoryClustersAction(
+                        0, "hint", "accessibility", "query")));
     }
 
     @Test
     public void omniboxPedalsDowncasting() {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
-        assertNotNull(
-                OmniboxPedal.from(OmniboxActionFactoryImpl.get().buildOmniboxPedal(0, "hint", 1)));
+        assertNotNull(OmniboxPedal.from(
+                OmniboxActionFactoryImpl.get().buildOmniboxPedal(0, "hint", "accessibility", 1)));
     }
 
     @Test
     public void omniboxActionInSuggestDowncasting() {
         // The underlying code will throw if instance is not valid.
         // Checking for null in case that changes.
-        assertNotNull(OmniboxActionInSuggest.from(
-                OmniboxActionFactoryImpl.get().buildActionInSuggest(0, "hint", 1, "url")));
+        assertNotNull(
+                OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(
+                        0, "hint", "accessibility", 1, "url")));
     }
 
     @Test
     public void actionInSuggest_callActionNotCreatedWhenDialerUnavailable() {
-        assertNull(OmniboxActionFactoryImpl.get().setDialerAvailable(false).buildActionInSuggest(
-                0, "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, "url"));
+        assertNull(OmniboxActionFactoryImpl.get().setDialerAvailable(false).buildActionInSuggest(0,
+                "hint", "accessibility", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, "url"));
     }
 
     @Test
     public void actionInSuggest_callActionCreatedWhenDialerAvailable() {
         assertNotNull(OmniboxActionFactoryImpl.get().setDialerAvailable(true).buildActionInSuggest(
-                0, "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, "url"));
+                0, "hint", "accessibility", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
+                "url"));
     }
 }

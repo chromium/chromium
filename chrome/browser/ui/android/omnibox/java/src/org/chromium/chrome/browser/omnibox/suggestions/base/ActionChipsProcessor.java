@@ -10,7 +10,6 @@ import android.util.ArrayMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -74,9 +73,7 @@ public class ActionChipsProcessor {
             final var chipModel =
                     new PropertyModel.Builder(ChipProperties.ALL_KEYS)
                             .with(ChipProperties.TEXT, chip.hint)
-                            .with(ChipProperties.CONTENT_DESCRIPTION,
-                                    mContext.getString(
-                                            R.string.accessibility_omnibox_pedal, chip.hint))
+                            .with(ChipProperties.CONTENT_DESCRIPTION, chip.accessibilityHint)
                             .with(ChipProperties.ENABLED, true)
                             .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
                             .with(ChipProperties.ICON, chip.icon.iconRes)

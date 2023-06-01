@@ -42,16 +42,19 @@ public abstract class OmniboxAction {
     public final @OmniboxActionId int actionId;
     /** The string to present/announce to the user when the action is shown. */
     public final @NonNull String hint;
+    /** The text to announce when the action chip is focused. */
+    public final @NonNull String accessibilityHint;
     /** The icon to use to decorate the Action chip. */
     public final @NonNull ChipIcon icon;
     /** The corresponding native instance, or 0 if the native instance is not available. */
     private long mNativeInstance;
 
     public OmniboxAction(@OmniboxActionId int actionId, long nativeInstance, @NonNull String hint,
-            @Nullable ChipIcon icon) {
+            @NonNull String accessibilityHint, @Nullable ChipIcon icon) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
         this.hint = hint;
+        this.accessibilityHint = accessibilityHint;
         this.icon = icon != null ? icon : DEFAULT_ICON;
         mNativeInstance = nativeInstance;
     }

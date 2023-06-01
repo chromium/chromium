@@ -56,23 +56,25 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
     }
 
     @Override
-    public @Nullable OmniboxAction buildOmniboxPedal(
-            long nativeInstance, @NonNull String hint, @OmniboxPedalId int pedalId) {
-        return new OmniboxPedal(nativeInstance, hint, pedalId);
+    public @Nullable OmniboxAction buildOmniboxPedal(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId) {
+        return new OmniboxPedal(nativeInstance, hint, accessibilityHint, pedalId);
     }
 
     @Override
     public @Nullable OmniboxAction buildActionInSuggest(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
         if (actionType == EntityInfoProto.ActionInfo.ActionType.CALL_VALUE && !mDialerAvailable) {
             return null;
         }
-        return new OmniboxActionInSuggest(nativeInstance, hint, actionType, actionUri);
+        return new OmniboxActionInSuggest(
+                nativeInstance, hint, accessibilityHint, actionType, actionUri);
     }
 
     @Override
-    public @Nullable OmniboxAction buildHistoryClustersAction(
-            long nativeInstance, @NonNull String hint, @NonNull String query) {
-        return new HistoryClustersAction(nativeInstance, hint, query);
+    public @Nullable OmniboxAction buildHistoryClustersAction(long nativeInstance,
+            @NonNull String hint, @NonNull String accessibilityHint, @NonNull String query) {
+        return new HistoryClustersAction(nativeInstance, hint, accessibilityHint, query);
     }
 }

@@ -29,8 +29,9 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     private final @NonNull String mActionUri;
 
     public OmniboxActionInSuggest(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
-        super(OmniboxActionId.ACTION_IN_SUGGEST, nativeInstance, hint,
+        super(OmniboxActionId.ACTION_IN_SUGGEST, nativeInstance, hint, accessibilityHint,
                 ICON_MAP.get(actionType, null));
         this.actionType = actionType;
         mActionUri = actionUri;

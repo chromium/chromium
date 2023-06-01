@@ -25,8 +25,9 @@ public class OmniboxPedal extends OmniboxAction {
     /** The type of the underlying pedal. */
     public final @OmniboxPedalId int pedalId;
 
-    public OmniboxPedal(long nativeInstance, @NonNull String hint, @OmniboxPedalId int pedalId) {
-        super(OmniboxActionId.PEDAL, nativeInstance, hint,
+    public OmniboxPedal(long nativeInstance, @NonNull String hint,
+            @NonNull String accessibilityHint, @OmniboxPedalId int pedalId) {
+        super(OmniboxActionId.PEDAL, nativeInstance, hint, accessibilityHint,
                 pedalId == OmniboxPedalId.PLAY_CHROME_DINO_GAME ? DINO_GAME_ICON : null);
         this.pedalId = pedalId;
     }
