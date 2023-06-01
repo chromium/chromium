@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests presence and order of tracing events for a browser navigation.\n`);
   await TestRunner.loadTestModule(`performance_test_runner`);
