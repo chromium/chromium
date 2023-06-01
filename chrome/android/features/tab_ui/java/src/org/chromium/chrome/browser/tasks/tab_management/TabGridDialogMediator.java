@@ -342,6 +342,21 @@ public class TabGridDialogMediator
         }
     }
 
+    /**
+     * @return a boolean indicating if the result of handling the backpress was successful.
+     */
+    public boolean handleBackPress() {
+        if (mTabSelectionEditorControllerSupplier != null
+                && mTabSelectionEditorControllerSupplier.hasValue()
+                && mTabSelectionEditorControllerSupplier.get().isVisible()) {
+            mTabSelectionEditorControllerSupplier.get().hide();
+            return !mTabSelectionEditorControllerSupplier.get().isVisible();
+        }
+        hideDialog(true);
+        RecordUserAction.record("TabGridDialog.Exit");
+        return !isVisible();
+    }
+
     // @TabGridDialogView.VisibilityListener
     @Override
     public void finishedHidingDialogView() {
