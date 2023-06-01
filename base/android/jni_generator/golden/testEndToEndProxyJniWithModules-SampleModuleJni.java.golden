@@ -17,7 +17,7 @@ class SampleModuleJni implements SampleModule.Natives {
       new JniStaticTestMocker<SampleModule.Natives>() {
     @Override
     public void setInstanceForTesting(SampleModule.Natives instance) {
-      if (!org.chromium.base.natives.GEN_JNI.TESTING_ENABLED) {
+      if (!module_GEN_JNI.TESTING_ENABLED) {
         throw new RuntimeException(
             "Tried to set a JNI mock when mocks aren't enabled!");
       }
@@ -27,20 +27,20 @@ class SampleModuleJni implements SampleModule.Natives {
 
   @Override
   public void foo() {
-    GEN_JNI.org_chromium_example_jni_1generator_SampleModule_foo();
+    module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_foo();
   }
 
   @Override
   public boolean bar(int a) {
-    return (boolean) GEN_JNI.org_chromium_example_jni_1generator_SampleModule_bar(a);
+    return (boolean) module_GEN_JNI.org_chromium_example_jni_1generator_SampleModule_bar(a);
   }
 
   public static SampleModule.Natives get() {
-    if (GEN_JNI.TESTING_ENABLED) {
+    if (module_GEN_JNI.TESTING_ENABLED) {
       if (testInstance != null) {
         return testInstance;
       }
-      if (GEN_JNI.REQUIRE_MOCK) {
+      if (module_GEN_JNI.REQUIRE_MOCK) {
         throw new UnsupportedOperationException(
             "No mock found for the native implementation of SampleModule.Natives. "
             + "The current configuration requires implementations be mocked.");

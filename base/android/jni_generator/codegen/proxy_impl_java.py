@@ -7,6 +7,7 @@ def Generate(jni_obj, *, gen_jni_class, script_name):
   visibility = 'public ' if jni_obj.proxy_interface.is_public else ''
   interface_name = jni_obj.proxy_interface.name_with_dots
   impl_name = f'{jni_obj.java_class.name}Jni'
+  gen_jni = gen_jni_class.name
 
   sb = []
   sb.append(f"""\
@@ -34,7 +35,7 @@ import {gen_jni_class.full_name_with_dots};
       new JniStaticTestMocker<{interface_name}>() {{
     @Override
     public void setInstanceForTesting({interface_name} instance) {{
-      if (!org.chromium.base.natives.GEN_JNI.TESTING_ENABLED) {{
+      if (!{gen_jni}.TESTING_ENABLED) {{
         throw new RuntimeException(
             "Tried to set a JNI mock when mocks aren't enabled!");
       }}
@@ -53,17 +54,17 @@ import {gen_jni_class.full_name_with_dots};
     sb.append(f"""
   @Override
   public {native.return_type} {native.name}({sig_params}) {{
-    {return_prefix}GEN_JNI.{native.proxy_name}({call_params});
+    {return_prefix}{gen_jni}.{native.proxy_name}({call_params});
   }}
 """)
 
   sb.append(f"""
   public static {interface_name} get() {{
-    if (GEN_JNI.TESTING_ENABLED) {{
+    if ({gen_jni}.TESTING_ENABLED) {{
       if (testInstance != null) {{
         return testInstance;
       }}
-      if (GEN_JNI.REQUIRE_MOCK) {{
+      if ({gen_jni}.REQUIRE_MOCK) {{
         throw new UnsupportedOperationException(
             "No mock found for the native implementation of {interface_name}. "
             + "The current configuration requires implementations be mocked.");
