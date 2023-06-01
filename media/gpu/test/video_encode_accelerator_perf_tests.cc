@@ -21,7 +21,7 @@
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
-#include "media/gpu/test/video.h"
+#include "media/gpu/test/raw_video.h"
 #include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
@@ -612,7 +612,7 @@ class VideoEncoderTest : public ::testing::Test {
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
       absl::optional<uint32_t> encode_rate,
       bool measure_quality) {
-    Video* video = g_env->GenerateNV12Video();
+    RawVideo* video = g_env->GenerateNV12Video();
     VideoCodecProfile profile = g_env->Profile();
     const media::VideoBitrateAllocation& bitrate = g_env->BitrateAllocation();
     const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
@@ -713,17 +713,13 @@ class VideoEncoderTest : public ::testing::Test {
   // Create bitstream processors for quality performance tests.
   std::vector<std::unique_ptr<BitstreamProcessor>>
   CreateBitstreamProcessorsForQualityPerformance(
-      Video* video,
+      RawVideo* video,
       VideoCodecProfile profile,
       const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
 
-    raw_data_helper_ = RawDataHelper::Create(video, g_env->Reverse());
-    if (!raw_data_helper_) {
-      LOG(ERROR) << "Failed to create raw data helper";
-      return bitstream_processors;
-    }
+    raw_data_helper_ = std::make_unique<RawDataHelper>(video, g_env->Reverse());
 
     auto decoder_buffer_validator = DecoderBufferValidator::Create(
         profile, gfx::Rect(video->Resolution()),
@@ -740,8 +736,7 @@ class VideoEncoderTest : public ::testing::Test {
           /*spatial_layer_resolutions=*/{}, decoder_buffer_validator_));
       if (g_env->SaveOutputBitstream()) {
         bitstream_processors.emplace_back(BitstreamFileWriter::Create(
-            g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
-                                  video->FilePath().BaseName()),
+            g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile)),
             VideoCodecProfileToVideoCodec(profile), video->Resolution(),
             video->FrameRate(), video->NumFrames()));
       }
@@ -760,8 +755,7 @@ class VideoEncoderTest : public ::testing::Test {
           if (g_env->SaveOutputBitstream()) {
             bitstream_processors.emplace_back(BitstreamFileWriter::Create(
                 g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
-                                      video->FilePath().BaseName(), true, sid,
-                                      tid),
+                                      true, sid, tid),
                 VideoCodecProfileToVideoCodec(profile),
                 spatial_layer_resolutions[sid], video->FrameRate(),
                 video->NumFrames(), sid, tid, spatial_layer_resolutions));
@@ -908,7 +902,7 @@ TEST_F(VideoEncoderTest,
 
 int main(int argc, char** argv) {
   // Set the default test data path.
-  media::test::Video::SetTestDataPath(media::GetTestDataPath());
+  media::test::RawVideo::SetTestDataPath(media::GetTestDataPath());
 
   // Print the help message if requested. This needs to be done before
   // initializing gtest, to overwrite the default gtest help message.
