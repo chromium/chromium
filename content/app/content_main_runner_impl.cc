@@ -1242,7 +1242,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 #endif
 
     if (start_minimal_browser)
-      ForceInProcessNetworkService(true);
+      ForceInProcessNetworkService();
 
     discardable_shared_memory_manager_ =
         std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();

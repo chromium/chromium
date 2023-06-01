@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
@@ -30,10 +31,6 @@ constexpr base::FeatureParam<int> kNetworkServiceOutOfProcessThresholdMb{
     "network_service_oop_threshold_mb", 1077};
 #endif
 
-// Indicates whether the network service is forced to be running in the browser
-// process.
-bool g_force_in_process_network_service = false;
-
 }  // namespace
 
 bool IsOutOfProcessNetworkService() {
@@ -41,6 +38,17 @@ bool IsOutOfProcessNetworkService() {
 }
 
 bool IsInProcessNetworkService() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
+    return true;
+  }
+
+  const absl::optional<bool>& forced_in_or_out =
+      content::GetForcedNetworkServiceProcessInOrOut();
+  if (forced_in_or_out) {
+    return *forced_in_or_out;
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Check RAM size before looking at kNetworkServiceInProcess flag
   // so that we can throttle the finch groups including control.
@@ -50,17 +58,11 @@ bool IsInProcessNetworkService() {
   }
 #endif
 
-  if (g_force_in_process_network_service ||
-      base::FeatureList::IsEnabled(features::kNetworkServiceInProcess) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
-    return true;
-  }
-  return false;
+  return base::FeatureList::IsEnabled(features::kNetworkServiceInProcess);
 }
 
-void ForceInProcessNetworkService(bool is_forced) {
-  g_force_in_process_network_service = is_forced;
+void ForceInProcessNetworkService() {
+  ForceInProcessNetworkServiceImpl();
 }
 
 }  // namespace content

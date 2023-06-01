@@ -1369,6 +1369,8 @@ source_set("browser") {
     "network/network_errors_listing_ui.h",
     "network/network_quality_observer_impl.cc",
     "network/network_quality_observer_impl.h",
+    "network/network_service_util_internal.cc",
+    "network/network_service_util_internal.h",
     "network/reporting_service_proxy.cc",
     "network/reporting_service_proxy.h",
     "network/shared_dictionary_util.cc",

@@ -19,6 +19,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/network/network_service_util_internal.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -402,8 +403,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceConnectionTypeSyncedBrowserTest,
 class NetworkServiceOutOfProcessBrowserTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceOutOfProcessBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kNetworkServiceInProcess);
+    ForceOutOfProcessNetworkServiceImpl();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(IsOutOfProcessNetworkService());
   }
 
  private:

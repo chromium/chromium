@@ -783,7 +783,7 @@ const scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunner() {
 }
 
 void ForceCreateNetworkServiceDirectlyForTesting() {
-  ForceInProcessNetworkService(true);
+  ForceInProcessNetworkService();
   g_force_create_network_service_directly = true;
 }
 

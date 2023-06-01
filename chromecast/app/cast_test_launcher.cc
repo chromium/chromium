@@ -61,6 +61,6 @@ int main(int argc, char** argv) {
 
   chromecast::shell::CastTestLauncherDelegate launcher_delegate;
   mojo::core::Init();
-  content::ForceInProcessNetworkService(true);
+  content::ForceInProcessNetworkService();
   return content::LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

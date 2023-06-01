@@ -47,7 +47,7 @@ void ContentTestSuite::Initialize() {
 
   InitializeResourceBundle();
 
-  ForceInProcessNetworkService(true);
+  ForceInProcessNetworkService();
 
   ContentTestSuiteBase::Initialize();
   {

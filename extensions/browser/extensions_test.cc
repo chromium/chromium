@@ -53,7 +53,7 @@ void ExtensionsTest::SetExtensionsBrowserClient(
 }
 
 void ExtensionsTest::SetUp() {
-  content::ForceInProcessNetworkService(true);
+  content::ForceInProcessNetworkService();
   browser_context_ = std::make_unique<content::TestBrowserContext>();
   incognito_context_ = CreateTestIncognitoContext();
 

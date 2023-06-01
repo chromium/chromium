@@ -66,7 +66,7 @@ class ComponentsTestSuite : public base::TestSuite {
 #if BUILDFLAG(USE_BLINK)
     gl::GLSurfaceTestSupport::InitializeOneOff();
 
-    content::ForceInProcessNetworkService(true);
+    content::ForceInProcessNetworkService();
 
     // Setup content scheme statics.
     {
