@@ -402,10 +402,6 @@ int SharedImageFormat::BitsPerPixel() const {
     case BGRA_1010102:
     case RG16_EXT:
       return 32;
-    case P010:
-      return 24;
-    case YUVA_420_TRIPLANAR:
-      return 20;
     case RGBA_4444:
     case RGB_565:
     case LUMINANCE_F16:
@@ -413,15 +409,18 @@ int SharedImageFormat::BitsPerPixel() const {
     case BGR_565:
     case RG_88:
       return 16;
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-      return 12;
     case ALPHA_8:
     case LUMINANCE_8:
     case RED_8:
       return 8;
     case ETC1:
       return 4;
+    case P010:
+    case YUVA_420_TRIPLANAR:
+    case YVU_420:
+    case YUV_420_BIPLANAR:
+      // Legacy multiplanar formats are not supported.
+      CHECK(0);
   }
   NOTREACHED_NORETURN();
 }

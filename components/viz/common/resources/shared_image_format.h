@@ -147,7 +147,8 @@ class VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat {
   // YUV_420_BIPLANAR, YVU_420, YUVA_420_TRIPLANAR, P010.
   bool IsLegacyMultiplanar() const;
 
-  // NOTE: Supported only for single-plane formats.
+  // NOTE: Supported only for true single-plane formats (i.e., formats for
+  // which is_single_plane() is true and IsLegacyMultiplanar() is false).
   int BitsPerPixel() const;
 
   bool operator==(const SharedImageFormat& o) const;
