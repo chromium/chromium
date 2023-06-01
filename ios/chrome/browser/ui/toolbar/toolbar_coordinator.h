@@ -16,6 +16,7 @@
 @protocol SharingPositioner;
 @class SecondaryToolbarCoordinator;
 @class SecondaryToolbarViewController;
+@protocol SideSwipeToolbarSnapshotProviding;
 @protocol ViewRevealingAnimatee;
 @class ViewRevealingVerticalPanHandler;
 
@@ -60,6 +61,13 @@
 /// view revealing.
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler;
+
+#pragma mark SnapshotProviding
+
+/// Returns the snapshop provider of primary toolbar.
+- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider;
+/// Returns the snapshop provider of secondary toolbar.
+- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider;
 
 @end
 

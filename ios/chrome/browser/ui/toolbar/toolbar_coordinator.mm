@@ -117,6 +117,16 @@
   [self.primaryToolbarCoordinator setPanGestureHandler:panGestureHandler];
 }
 
+#pragma mark SnapshotProviding
+
+- (id<SideSwipeToolbarSnapshotProviding>)primaryToolbarSnapshotProvider {
+  return self.primaryToolbarCoordinator;
+}
+
+- (id<SideSwipeToolbarSnapshotProviding>)secondaryToolbarSnapshotProvider {
+  return self.secondaryToolbarCoordinator;
+}
+
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {

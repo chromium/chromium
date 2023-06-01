@@ -782,9 +782,9 @@ enum class ToolbarKind {
   [_sideSwipeController setSnapshotDelegate:self];
   _sideSwipeController.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeController.primaryToolbarSnapshotProvider =
-      _toolbarCoordinator.primaryToolbarCoordinator;
+      _toolbarCoordinator.primaryToolbarSnapshotProvider;
   _sideSwipeController.secondaryToolbarSnapshotProvider =
-      _toolbarCoordinator.secondaryToolbarCoordinator;
+      _toolbarCoordinator.secondaryToolbarSnapshotProvider;
 
   _bookmarksCoordinator =
       [[BookmarksCoordinator alloc] initWithBrowser:self.browser];

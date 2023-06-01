@@ -2682,11 +2682,11 @@ enum HeaderBehaviour {
 
   [swipeView
       setTopToolbarImage:
-          [self.toolbarCoordinator.primaryToolbarCoordinator
+          [self.toolbarCoordinator.primaryToolbarSnapshotProvider
               toolbarSideSwipeSnapshotForWebState:webStateBeingActivated]];
   [swipeView
       setBottomToolbarImage:
-          [self.toolbarCoordinator.secondaryToolbarCoordinator
+          [self.toolbarCoordinator.secondaryToolbarSnapshotProvider
               toolbarSideSwipeSnapshotForWebState:webStateBeingActivated]];
 
   SnapshotTabHelper::FromWebState(webStateBeingActivated)
