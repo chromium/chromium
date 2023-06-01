@@ -702,6 +702,7 @@ extern const char kWebAppsDailyMetrics[];
 extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
+extern const char kWebAppsAppAgnosticMlState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
 extern const char kWebAppsDidMigrateDefaultChromeApps[];
 extern const char kWebAppsUninstalledDefaultChromeApps[];

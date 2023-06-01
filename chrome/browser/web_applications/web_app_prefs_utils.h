@@ -87,6 +87,26 @@ void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id);
 // previous interactions with this promo.
 bool ShouldShowIph(PrefService* pref_service, const AppId& app_id);
 
+extern const char kLastTimeMlInstallIgnored[];
+extern const char kLastTimeMlInstallDismissed[];
+extern const char kConsecutiveMlInstallNotAcceptedCount[];
+
+// The user has ignored the installation dialog and it went away due to
+// another interaction (e.g. the tab was changed, page navigated, etc).
+void RecordMlInstallIgnored(PrefService* pref_service,
+                            const AppId& app_id,
+                            base::Time time);
+// The user has taken active action on the dialog to make it go away.
+void RecordMlInstallDismissed(PrefService* pref_service,
+                              const AppId& app_id,
+                              base::Time time);
+void RecordMlInstallAccepted(PrefService* pref_service,
+                             const AppId& app_id,
+                             base::Time time);
+
+bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
+                                            const AppId& app_id);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREFS_UTILS_H_

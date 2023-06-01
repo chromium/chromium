@@ -235,6 +235,15 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual bool IsAppPartiallyInstalledForSiteUrl(
       const GURL& site_url) const = 0;
 
+  // The user has ignored the installation dialog and it went away due to
+  // another interaction (e.g. the tab was changed, page navigated, etc).
+  virtual void SaveInstallationIgnoredForMl(const GURL& manifest_id) = 0;
+  // The user has taken active action on the dialog to make it go away.
+  virtual void SaveInstallationDismissedForMl(const GURL& manifest_id) = 0;
+  virtual void SaveInstallationAcceptedForMl(const GURL& manifest_id) = 0;
+  virtual bool IsMlPromotionBlockedByHistoryGuardrail(
+      const GURL& manifest_id) = 0;
+
  protected:
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;

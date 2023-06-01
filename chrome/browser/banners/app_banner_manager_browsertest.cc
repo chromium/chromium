@@ -113,6 +113,14 @@ class AppBannerManagerTest : public AppBannerManager {
     return false;
   }
 
+  void SaveInstallationDismissedForMl(const GURL& manifest_id) override {}
+  void SaveInstallationIgnoredForMl(const GURL& manifest_id) override {}
+  void SaveInstallationAcceptedForMl(const GURL& manifest_id) override {}
+  bool IsMlPromotionBlockedByHistoryGuardrail(
+      const GURL& manifest_id) override {
+    return false;
+  }
+
  protected:
   // The overridden RequestAppBanner() can filter out about:blank calls
   // to force Stop() to be called, however, the newly introduced

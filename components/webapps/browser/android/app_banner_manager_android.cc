@@ -185,12 +185,6 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
                                                         manifest_id_);
 }
 
-// TODO(eirage): Implement for Android.
-bool AppBannerManagerAndroid::IsAppFullyInstalledForSiteUrl(
-    const GURL& site_url) const {
-  return false;
-}
-
 void AppBannerManagerAndroid::ResetCurrentPageData() {
   AppBannerManager::ResetCurrentPageData();
   native_app_data_.Reset();
@@ -544,8 +538,32 @@ bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
   return Java_AppBannerManager_isRelatedNonWebAppInstalled(env, java_id);
 }
 
+// TODO(eirage): Implement for Android.
+bool AppBannerManagerAndroid::IsAppFullyInstalledForSiteUrl(
+    const GURL& site_url) const {
+  return false;
+}
+
 bool AppBannerManagerAndroid::IsAppPartiallyInstalledForSiteUrl(
     const GURL& site_url) const {
+  return false;
+}
+
+void AppBannerManagerAndroid::SaveInstallationDismissedForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+void AppBannerManagerAndroid::SaveInstallationIgnoredForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+void AppBannerManagerAndroid::SaveInstallationAcceptedForMl(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
+}
+bool AppBannerManagerAndroid::IsMlPromotionBlockedByHistoryGuardrail(
+    const GURL& manifest_id) {
+  // TODO(https://crbug.com/1449993): Implement.
   return false;
 }
 
