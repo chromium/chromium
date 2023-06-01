@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -245,6 +247,23 @@ bool TabHoverCardController::disable_animations_for_testing_ = false;
 
 TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
     : tab_strip_(tab_strip) {
+  if (PrefService* pref_service = g_browser_process->local_state()) {
+    // Hovercard image previews are still not fully rolled out to all platforms
+    // so we default the pref to the state of the feature rollout.
+    pref_service->SetDefaultPrefValue(prefs::kHoverCardImagesEnabled,
+                                      base::Value(base::FeatureList::IsEnabled(
+                                          features::kTabHoverCardImages)));
+
+    // Register for previews enabled pref change events.
+    hover_card_image_previews_enabled_ = AreHoverCardImagesEnabled();
+    pref_change_registrar_.Init(pref_service);
+    pref_change_registrar_.Add(
+        prefs::kHoverCardImagesEnabled,
+        base::BindRepeating(
+            &TabHoverCardController::OnHovercardImagesEnabledChanged,
+            base::Unretained(this)));
+  }
+
   // Possibly apply memory pressure override for testing.
   auto override = GetMemoryPressureOverride();
   if (override) {
@@ -261,7 +280,8 @@ TabHoverCardController::~TabHoverCardController() = default;
 
 // static
 bool TabHoverCardController::AreHoverCardImagesEnabled() {
-  return base::FeatureList::IsEnabled(features::kTabHoverCardImages);
+  PrefService* pref_service = g_browser_process->local_state();
+  return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
 }
 
 // static
@@ -525,10 +545,10 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
       base::BindRepeating(&TabHoverCardController::OnFadeAnimationEnded,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  if (!thumbnail_observer_ && AreHoverCardImagesEnabled()) {
+  if (!thumbnail_observer_ && hover_card_image_previews_enabled_) {
     thumbnail_observer_ = std::make_unique<TabHoverCardThumbnailObserver>();
     thumbnail_subscription_ = thumbnail_observer_->AddCallback(
-        base::BindRepeating(&TabHoverCardController::OnPreviewImageAvaialble,
+        base::BindRepeating(&TabHoverCardController::OnPreviewImageAvailable,
                             weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -755,7 +775,7 @@ void TabHoverCardController::OnSlideAnimationComplete(
   OnCardFullyVisible();
 }
 
-void TabHoverCardController::OnPreviewImageAvaialble(
+void TabHoverCardController::OnPreviewImageAvailable(
     TabHoverCardThumbnailObserver* observer,
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
@@ -790,4 +810,12 @@ void TabHoverCardController::OnMemoryPressureChanged(
   // memory pressure drops back to zero; however, the user is unlikely to be
   // hovering a card through an entire CRITICAL -> NORMAL transition so as a
   // simplification we simply don't care.
+}
+
+void TabHoverCardController::OnHovercardImagesEnabledChanged() {
+  hover_card_image_previews_enabled_ = AreHoverCardImagesEnabled();
+  if (!hover_card_image_previews_enabled_) {
+    thumbnail_subscription_ = base::CallbackListSubscription();
+    thumbnail_observer_.reset();
+  }
 }

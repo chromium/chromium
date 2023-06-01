@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event.h"
 #include "ui/views/animation/bubble_slide_animator.h"
 #include "ui/views/animation/widget_fade_animator.h"
@@ -65,6 +66,8 @@ class TabHoverCardController : public views::ViewObserver {
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowWrongTabDoesntCrash);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest,
                            SetPreviewWithNoHoverCardDoesntCrash);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, ShowPreviewsForTab);
+  FRIEND_TEST_ALL_PREFIXES(TabHoverCardControllerTest, DisablePreviewsForTab);
   class EventSniffer;
 
   enum ThumbnailWaitState {
@@ -111,11 +114,13 @@ class TabHoverCardController : public views::ViewObserver {
                                   double value);
   void OnSlideAnimationComplete(views::BubbleSlideAnimator* animator);
 
-  void OnPreviewImageAvaialble(TabHoverCardThumbnailObserver* observer,
+  void OnPreviewImageAvailable(TabHoverCardThumbnailObserver* observer,
                                gfx::ImageSkia thumbnail_image);
 
   void OnMemoryPressureChanged(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+
+  void OnHovercardImagesEnabledChanged();
 
   bool waiting_for_preview() const {
     return thumbnail_wait_state_ != ThumbnailWaitState::kNotWaiting;
@@ -161,6 +166,10 @@ class TabHoverCardController : public views::ViewObserver {
   base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_ =
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+
+  // Tracks changes to the hover card image previews preferences
+  PrefChangeRegistrar pref_change_registrar_;
+  bool hover_card_image_previews_enabled_ = false;
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;

@@ -3684,4 +3684,7 @@ const char kHttpAllowlist[] = "https_upgrades.policy.http_allowlist";
 // `HttpsUpgradesEnabled` enterprise policy.
 const char kHttpsUpgradesEnabled[] = "https_upgrades.policy.upgrades_enabled";
 
+// Whether the hovercard image previews is enabled
+const char kHoverCardImagesEnabled[] = "browser.hovercard_images_enabled";
+
 }  // namespace prefs

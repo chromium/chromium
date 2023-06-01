@@ -507,10 +507,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         ResourceUsageTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
-    ThumbnailTabHelper::CreateForWebContents(web_contents);
-  }
+  ThumbnailTabHelper::CreateForWebContents(web_contents);
+
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
   if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled()) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);

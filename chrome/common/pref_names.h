@@ -1296,6 +1296,8 @@ extern const char kOutOfProcessSystemDnsResolutionEnabled[];
 extern const char kHttpAllowlist[];
 extern const char kHttpsUpgradesEnabled[];
 
+extern const char kHoverCardImagesEnabled[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
