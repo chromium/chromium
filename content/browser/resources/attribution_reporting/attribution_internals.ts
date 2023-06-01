@@ -9,7 +9,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {TriggerVerification} from './attribution.mojom-webui.js';
+import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
 import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, OsRegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -1190,7 +1190,22 @@ class AttributionInternals implements ObserverInterface {
       }
 
       const attributionSupport = document.querySelector<HTMLElement>('#attribution-support')!;
-      attributionSupport.innerText = response.attributionSupport;
+      switch (response.attributionSupport) {
+        case AttributionSupport.kWeb:
+          attributionSupport.innerText = 'web';
+          break;
+        case AttributionSupport.kWebAndOs:
+          attributionSupport.innerText = 'os, web';
+          break;
+        case AttributionSupport.kOs:
+          attributionSupport.innerText = 'os';
+          break;
+        case AttributionSupport.kNone:
+          attributionSupport.innerText = '';
+          break;
+        default:
+          assertNotReached();
+      }
     });
 
     this.updateSources();

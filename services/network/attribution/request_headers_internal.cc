@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,6 +28,15 @@ using GreaseContext =
     ::network::AttributionReportingEligibleGreaseOptions::GreaseContext;
 
 using ::network::mojom::AttributionReportingEligibility;
+
+void AddTrueValuedDictMember(
+    std::vector<net::structured_headers::DictionaryMember>& dict,
+    std::string key) {
+  dict.emplace_back(std::move(key),
+                    net::structured_headers::ParameterizedMember(
+                        net::structured_headers::Item(true),
+                        net::structured_headers::Parameters()));
+}
 
 }  // namespace
 
@@ -69,12 +79,6 @@ std::string SerializeAttributionReportingEligibleHeader(
   const char* const kTrigger = "trigger";
 
   std::vector<net::structured_headers::DictionaryMember> eligibilities;
-  const auto add_eligibility = [&eligibilities](std::string key) {
-    eligibilities.emplace_back(std::move(key),
-                               net::structured_headers::ParameterizedMember(
-                                   net::structured_headers::Item(true),
-                                   net::structured_headers::Parameters()));
-  };
 
   const char* grease1;
   const char* grease2;
@@ -86,23 +90,23 @@ std::string SerializeAttributionReportingEligibleHeader(
       grease2 = kTrigger;
       break;
     case AttributionReportingEligibility::kEventSource:
-      add_eligibility(kEventSource);
+      AddTrueValuedDictMember(eligibilities, kEventSource);
       grease1 = kTrigger;
       grease2 = kNavigationSource;
       break;
     case AttributionReportingEligibility::kNavigationSource:
-      add_eligibility(kNavigationSource);
+      AddTrueValuedDictMember(eligibilities, kNavigationSource);
       grease1 = kEventSource;
       grease2 = kTrigger;
       break;
     case AttributionReportingEligibility::kTrigger:
-      add_eligibility(kTrigger);
+      AddTrueValuedDictMember(eligibilities, kTrigger);
       grease1 = kNavigationSource;
       grease2 = kEventSource;
       break;
     case AttributionReportingEligibility::kEventSourceOrTrigger:
-      add_eligibility(kEventSource);
-      add_eligibility(kTrigger);
+      AddTrueValuedDictMember(eligibilities, kEventSource);
+      AddTrueValuedDictMember(eligibilities, kTrigger);
       grease1 = kNavigationSource;
       grease2 = nullptr;
       break;
@@ -135,7 +139,7 @@ std::string SerializeAttributionReportingEligibleHeader(
       case GreaseContext::kNone:
         break;
       case GreaseContext::kKey:
-        add_eligibility(base::StrCat({"not-", grease}));
+        AddTrueValuedDictMember(eligibilities, base::StrCat({"not-", grease}));
         break;
       case GreaseContext::kValue:
         if (!eligibilities.empty()) {
@@ -172,6 +176,24 @@ std::string SerializeAttributionReportingEligibleHeader(
   DCHECK(eligible_header.has_value());
 
   return std::move(*eligible_header);
+}
+
+std::string GetAttributionSupportHeader(
+    mojom::AttributionSupport attribution_support) {
+  std::vector<net::structured_headers::DictionaryMember> registrars;
+
+  if (HasAttributionOsSupport(attribution_support)) {
+    AddTrueValuedDictMember(registrars, "os");
+  }
+  if (HasAttributionWebSupport(attribution_support)) {
+    AddTrueValuedDictMember(registrars, "web");
+  }
+
+  absl::optional<std::string> support_header =
+      net::structured_headers::SerializeDictionary(
+          net::structured_headers::Dictionary(std::move(registrars)));
+  DCHECK(support_header.has_value());
+  return std::move(*support_header);
 }
 
 }  // namespace network

@@ -51,6 +51,10 @@ std::string SerializeAttributionReportingEligibleHeader(
     mojom::AttributionReportingEligibility,
     const AttributionReportingEligibleGreaseOptions&);
 
+// Returns the value to be set for the `Attribution-Reporting-Support` request
+// header.
+std::string GetAttributionSupportHeader(mojom::AttributionSupport);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_ATTRIBUTION_REQUEST_HEADERS_INTERNAL_H_
