@@ -57,17 +57,16 @@ using GetSettingsSignalsCallback =
 
 class SettingsSignalsCollectorTest : public testing::Test {
  protected:
-  SettingsSignalsCollectorTest()
-      : signal_collector_(std::move(settings_client)) {}
+  SettingsSignalsCollectorTest() {
+    auto settings_client = std::make_unique<StrictMock<MockSettingsClient>>();
+    settings_client_ = settings_client.get();
+    signal_collector_ =
+        std::make_unique<SettingsSignalsCollector>(std::move(settings_client));
+  }
 
   base::test::TaskEnvironment task_environment_;
-
-  std::unique_ptr<StrictMock<MockSettingsClient>> settings_client =
-      std::make_unique<StrictMock<MockSettingsClient>>();
-  raw_ptr<StrictMock<MockSettingsClient>> settings_client_ =
-      settings_client.get();
-
-  SettingsSignalsCollector signal_collector_;
+  std::unique_ptr<SettingsSignalsCollector> signal_collector_;
+  raw_ptr<StrictMock<MockSettingsClient>> settings_client_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this
@@ -76,7 +75,7 @@ TEST_F(SettingsSignalsCollectorTest, SupportedSettingsSignalNames) {
   const std::array<SignalName, 1> supported_signals{
       {SignalName::kSystemSettings}};
 
-  const auto names_set = signal_collector_.GetSupportedSignalNames();
+  const auto names_set = signal_collector_->GetSupportedSignalNames();
 
   EXPECT_EQ(names_set.size(), supported_signals.size());
   for (const auto& signal_name : supported_signals) {
@@ -89,8 +88,8 @@ TEST_F(SettingsSignalsCollectorTest, GetSettingsSignal_Unsupported) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(signal_name, CreateRequest(signal_name), response,
-                              run_loop.QuitClosure());
+  signal_collector_->GetSignal(signal_name, CreateRequest(signal_name),
+                               response, run_loop.QuitClosure());
 
   run_loop.Run();
 
@@ -105,7 +104,7 @@ TEST_F(SettingsSignalsCollectorTest, GetSignal_Settings_MissingParameters) {
   SignalName signal_name = SignalName::kSystemSettings;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(
+  signal_collector_->GetSignal(
       signal_name,
       CreateRequest(signal_name, /*with_settings_parameter=*/false), response,
       run_loop.QuitClosure());
@@ -146,8 +145,8 @@ TEST_F(SettingsSignalsCollectorTest, GetSignal_SettingsInfo) {
 
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
-  signal_collector_.GetSignal(signal_name, request, response,
-                              run_loop.QuitClosure());
+  signal_collector_->GetSignal(signal_name, request, response,
+                               run_loop.QuitClosure());
 
   run_loop.Run();
 
