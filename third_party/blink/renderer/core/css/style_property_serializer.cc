@@ -396,7 +396,6 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kGridArea:
     case CSSPropertyID::kGap:
     case CSSPropertyID::kListStyle:
-    case CSSPropertyID::kOffset:
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kWebkitMask:
@@ -1360,44 +1359,77 @@ String StylePropertySerializer::FontSynthesisValue() const {
 }
 
 String StylePropertySerializer::OffsetValue() const {
-  StringBuilder result;
-  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    const CSSValue* position =
-        property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetPosition());
-    if (!position->IsInitialValue()) {
-      result.Append(position->CssText());
-    }
-  }
+  const CSSValue* position =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetPosition());
   const CSSValue* path =
       property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetPath());
   const CSSValue* distance =
       property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetDistance());
   const CSSValue* rotate =
       property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetRotate());
-  if (!path->IsInitialValue()) {
+  const CSSValue* anchor =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetAnchor());
+
+  auto is_initial_identifier_value = [](const CSSValue* value,
+                                        CSSValueID id) -> bool {
+    return value->IsIdentifierValue() &&
+           DynamicTo<CSSIdentifierValue>(value)->GetValueID() == id;
+  };
+
+  bool use_distance =
+      distance && !(distance->IsNumericLiteralValue() &&
+                    To<CSSNumericLiteralValue>(*distance).DoubleValue() == 0.0);
+  const auto* rotate_list_value = DynamicTo<CSSValueList>(rotate);
+  bool is_rotate_auto = rotate_list_value && rotate_list_value->length() == 1 &&
+                        is_initial_identifier_value(&rotate_list_value->First(),
+                                                    CSSValueID::kAuto);
+  bool is_rotate_zero =
+      rotate_list_value && rotate_list_value->length() == 1 &&
+      rotate_list_value->First().IsNumericLiteralValue() &&
+      (To<CSSNumericLiteralValue>(rotate_list_value->First()).DoubleValue() ==
+       0.0);
+  bool is_rotate_auto_zero =
+      rotate_list_value && rotate_list_value->length() == 2 &&
+      rotate_list_value->Item(1).IsNumericLiteralValue() &&
+      (To<CSSNumericLiteralValue>(rotate_list_value->Item(1)).DoubleValue() ==
+       0.0) &&
+      is_initial_identifier_value(&rotate_list_value->Item(0),
+                                  CSSValueID::kAuto);
+  bool use_rotate =
+      rotate && ((use_distance && is_rotate_zero) ||
+                 (!is_initial_identifier_value(rotate, CSSValueID::kAuto) &&
+                  !is_rotate_auto && !is_rotate_auto_zero));
+  bool use_path =
+      path && (use_rotate || use_distance ||
+               !is_initial_identifier_value(path, CSSValueID::kNone));
+  bool use_position =
+      position &&
+      (!use_path || !is_initial_identifier_value(position, CSSValueID::kAuto));
+  bool use_anchor =
+      anchor && (!is_initial_identifier_value(anchor, CSSValueID::kAuto));
+
+  StringBuilder result;
+  if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
+    if (use_position) {
+      result.Append(position->CssText());
+    }
+  }
+  if (use_path) {
     if (!result.empty()) {
       result.Append(" ");
     }
     result.Append(path->CssText());
-    if (!distance->IsInitialValue()) {
-      result.Append(" ");
-      result.Append(distance->CssText());
-    }
-    if (!rotate->IsInitialValue()) {
-      result.Append(" ");
-      result.Append(rotate->CssText());
-    }
-  } else {
-    // The longhand values cannot be serialized as a valid shorthand value.
-    // Serialize them as individual longhands instead.
-    if (!distance->IsInitialValue() || !rotate->IsInitialValue()) {
-      return String();
-    }
+  }
+  if (use_distance) {
+    result.Append(" ");
+    result.Append(distance->CssText());
+  }
+  if (use_rotate) {
+    result.Append(" ");
+    result.Append(rotate->CssText());
   }
   if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
-    const CSSValue* anchor =
-        property_set_.GetPropertyCSSValue(GetCSSPropertyOffsetAnchor());
-    if (!anchor->IsInitialValue()) {
+    if (use_anchor) {
       result.Append(" / ");
       result.Append(anchor->CssText());
     }
