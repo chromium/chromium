@@ -252,25 +252,13 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   }
 }
 
-std::string GetEagernessHistogramSuffix(
-    const blink::mojom::SpeculationEagerness& eagerness) {
-  switch (eagerness) {
-    case blink::mojom::SpeculationEagerness::kEager:
-      return "Eager";
-    case blink::mojom::SpeculationEagerness::kModerate:
-      return "Moderate";
-    case blink::mojom::SpeculationEagerness::kConservative:
-      return "Conservative";
-  }
-}
-
 void RecordWasBlockedUntilHeadWhenServingHistogram(
     const blink::mojom::SpeculationEagerness& eagerness,
     bool blocked_until_head) {
   base::UmaHistogramBoolean(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
-          GetEagernessHistogramSuffix(eagerness).c_str()),
+          GetPrefetchEagernessHistogramSuffix(eagerness).c_str()),
       blocked_until_head);
 }
 
@@ -282,7 +270,7 @@ void RecordBlockUntilHeadDurationHistogram(
       base::StringPrintf(
           "PrefetchProxy.AfterClick.BlockUntilHeadDuration.%s.%s",
           served ? "Served" : "NotServed",
-          GetEagernessHistogramSuffix(eagerness).c_str()),
+          GetPrefetchEagernessHistogramSuffix(eagerness).c_str()),
       block_until_head_duration);
 }
 

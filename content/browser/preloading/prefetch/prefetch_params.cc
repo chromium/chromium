@@ -240,6 +240,18 @@ bool PrefetchShouldBlockUntilHead(
   }
 }
 
+std::string GetPrefetchEagernessHistogramSuffix(
+    const blink::mojom::SpeculationEagerness& eagerness) {
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      return "Eager";
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return "Moderate";
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return "Conservative";
+  }
+}
+
 bool IsContentPrefetchHoldback() {
   return base::GetFieldTrialParamByFeatureAsBool(
       features::kPrefetchUseContentRefactor, "prefetch_holdback", false);

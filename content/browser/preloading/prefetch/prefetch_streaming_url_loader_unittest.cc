@@ -263,7 +263,9 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient,
       received_redirects_;
 };
 
-class PrefetchStreamingURLLoaderTest : public ::testing::Test {
+class PrefetchStreamingURLLoaderTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     task_environment_ =
@@ -285,7 +287,11 @@ class PrefetchStreamingURLLoaderTest : public ::testing::Test {
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
 };
 
-TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
+// The parameter should determine if the test should call
+// SetOnReceivedHeadCallback and check that callback is later called.
+INSTANTIATE_TEST_SUITE_P(All, PrefetchStreamingURLLoaderTest, testing::Bool());
+
+TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -296,6 +302,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -323,10 +330,18 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates receiving the head and body for the prefetch.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -386,7 +401,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
       PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
+TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent1 = "example";
@@ -398,6 +413,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -425,6 +441,11 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates receiving the head for the prefetch, receiving part of the body
   // data, start to serve the prefetch, and then getting the rest of the body
   // data. This should result in the data being streamed directly to the serving
@@ -432,6 +453,9 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   test_url_loader_factory()->SimulateReceiveHead(
       net::HTTP_OK, kBodyContent1.size() + kBodyContent2.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -503,7 +527,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
       PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
+TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -514,6 +538,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -541,10 +566,18 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates a successful prefetch that is not used.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -559,7 +592,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, SuccessfulNotServed) {
       PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
+TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
 
@@ -569,6 +602,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
@@ -593,10 +627,18 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates a prefetch with a non-2XX response. This should be marked as not
   // servable.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_NOT_FOUND, 0);
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -607,7 +649,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
       PrefetchStreamingURLLoaderStatus::kFailedInvalidHead, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, FailedNetError) {
+TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -618,6 +660,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetError) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -645,10 +688,18 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetError) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates a prefetch with a non-OK net error.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -665,7 +716,62 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetError) {
       PrefetchStreamingURLLoaderStatus::kFailedNetError, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
+TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadNotReveived) {
+  base::HistogramTester histogram_tester;
+  const GURL kTestUrl = GURL("https://example.com");
+  const std::string kBodyContent = "example body";
+
+  std::unique_ptr<network::ResourceRequest> prefetch_request =
+      std::make_unique<network::ResourceRequest>();
+  prefetch_request->url = kTestUrl;
+  prefetch_request->method = "GET";
+
+  base::RunLoop on_head_received_loop;
+  base::RunLoop on_response_complete_loop;
+
+  // Create the |PrefetchStreamingURLLoader| that is being tested.
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::make_unique<PrefetchStreamingURLLoader>(
+          test_url_loader_factory(), std::move(prefetch_request),
+          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          base::BindOnce([](network::mojom::URLResponseHead* head) {
+            NOTREACHED();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          }),
+          base::BindOnce(
+              [](base::RunLoop* on_response_complete_loop,
+                 const network::URLLoaderCompletionStatus& completion_status) {
+                on_response_complete_loop->Quit();
+              },
+              &on_response_complete_loop),
+          base::BindRepeating(
+              [](const net::RedirectInfo& redirect_info,
+                 const network::mojom::URLResponseHead& response_head) {
+                NOTREACHED();
+              }));
+
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
+  // Simulate getting a non-OK net error.
+  test_url_loader_factory()->SimulateResponseComplete(net::ERR_FAILED);
+  on_response_complete_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
+
+  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+
+  streaming_loader.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
+      PrefetchStreamingURLLoaderStatus::kFailedNetError, 1);
+}
+
+TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -676,6 +782,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -703,12 +810,20 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates receiving the head for the prefetch, receiving part of the body
   // data, start to serve the prefetch, and then getting a net error. The error
   // should be passed to the serving URL loader.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -775,7 +890,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
       PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
+TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const GURL kRedirectUrl = GURL("https://redirect.com");
@@ -789,6 +904,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   base::RunLoop on_receive_redirect_loop;
   base::RunLoop on_follow_redirect_loop;
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -818,6 +934,11 @@ TEST_F(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
               },
               &on_receive_redirect_loop));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   ASSERT_TRUE(test_url_loader_factory()->test_url_loader());
   test_url_loader_factory()->test_url_loader()->SetOnFollowRedirectClosure(
       on_follow_redirect_loop.QuitClosure());
@@ -835,6 +956,9 @@ TEST_F(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -918,7 +1042,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
       PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
+TEST_P(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -929,6 +1053,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_receive_redirect_loop;
+  base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
@@ -951,6 +1076,11 @@ TEST_F(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
               },
               &on_receive_redirect_loop));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
                                               net::HTTP_PERMANENT_REDIRECT);
@@ -958,6 +1088,9 @@ TEST_F(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
 
   streaming_loader->HandleRedirect(
       PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect);
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -968,7 +1101,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, IneligibleRedirect) {
       PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
+TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -1000,6 +1133,15 @@ TEST_F(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
                 on_receive_redirect_loop->Quit();
               },
               &on_receive_redirect_loop));
+
+  if (GetParam()) {
+    // When a redirect causes a change in network context, the
+    // on_receive_head_callback_ is not called, and is passed to the follow up
+    // PrefetchStreamingURLLoader that will follow the redirect in the other
+    // network context.
+    streaming_loader->SetOnReceivedHeadCallback(
+        base::BindOnce([]() { NOTREACHED(); }));
+  }
 
   // Simulate a redirect that should not be followed by the URL loader.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
@@ -1059,7 +1201,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
       1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest,
+TEST_P(PrefetchStreamingURLLoaderTest,
        PausedEligibleRedirect_UrlLoaderDisconnect) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
@@ -1071,6 +1213,7 @@ TEST_F(PrefetchStreamingURLLoaderTest,
   prefetch_request->method = "GET";
 
   base::RunLoop on_receive_redirect_loop;
+  base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
@@ -1093,6 +1236,11 @@ TEST_F(PrefetchStreamingURLLoaderTest,
               },
               &on_receive_redirect_loop));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulate a redirect that should be followed by the URL loader. The URL
   // loader needs to pause until the eligibility check is complete.
   test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
@@ -1106,6 +1254,9 @@ TEST_F(PrefetchStreamingURLLoaderTest,
 
   streaming_loader->HandleRedirect(
       PrefetchStreamingURLLoaderStatus::kFollowRedirect);
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   // Since the network URL loader was disconnected, then redirect cannot be
   // followed and the prefetch should not be servable.
@@ -1118,7 +1269,7 @@ TEST_F(PrefetchStreamingURLLoaderTest,
       PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, Decoy) {
+TEST_P(PrefetchStreamingURLLoaderTest, Decoy) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -1129,6 +1280,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, Decoy) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_received_loop;
+  base::RunLoop on_head_received_loop;
   base::RunLoop on_response_complete_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
@@ -1155,11 +1307,20 @@ TEST_F(PrefetchStreamingURLLoaderTest, Decoy) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   // Simulates a successful prefetch that is not used. However, since the
   // prefetch is marked as a decoy, it cannot be served.
   test_url_loader_factory()->SimulateReceiveHead(net::HTTP_OK,
                                                  kBodyContent.size());
   on_response_received_loop.Run();
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
 
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
 
@@ -1176,7 +1337,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, Decoy) {
       PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy, 1);
 }
 
-TEST_F(PrefetchStreamingURLLoaderTest, Timeout) {
+TEST_P(PrefetchStreamingURLLoaderTest, Timeout) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
   const std::string kBodyContent = "example body";
@@ -1187,6 +1348,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, Timeout) {
   prefetch_request->method = "GET";
 
   base::RunLoop on_response_complete_loop;
+  base::RunLoop on_head_received_loop;
 
   // Create the |PrefetchStreamingURLLoader| that is being tested.
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
@@ -1210,8 +1372,16 @@ TEST_F(PrefetchStreamingURLLoaderTest, Timeout) {
                 NOTREACHED();
               }));
 
+  if (GetParam()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        on_head_received_loop.QuitClosure());
+  }
+
   task_environment()->FastForwardBy(base::Seconds(1));
   on_response_complete_loop.Run();
+  if (GetParam()) {
+    on_head_received_loop.Run();
+  }
 
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
 

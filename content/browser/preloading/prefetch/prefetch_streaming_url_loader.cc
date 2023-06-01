@@ -349,6 +349,9 @@ void PrefetchStreamingURLLoader::OnComplete(
     // Note that we may have already started serving the prefetch if it was
     // marked as servable in |OnReceiveResponse|.
     servable_ = false;
+    if (on_received_head_callback_) {
+      std::move(on_received_head_callback_).Run();
+    }
   }
 
   std::move(on_prefetch_response_completed_callback_)

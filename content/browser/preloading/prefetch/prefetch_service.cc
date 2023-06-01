@@ -1442,6 +1442,7 @@ void PrefetchService::GetPrefetchToServe(
 
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << url
            << "): PrefetchContainer is not servable";
+  prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
   std::move(on_prefetch_to_serve_ready).Run(nullptr);
 }
 
