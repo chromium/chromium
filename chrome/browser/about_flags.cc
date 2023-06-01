@@ -8762,7 +8762,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"csc-vss", flag_descriptions::kCscVssName,
      flag_descriptions::kCscVssDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(visual_search::features::kVisualSearchSuggestions)},
+     FEATURE_VALUE_TYPE(
+         companion::visual_search::features::kVisualSearchSuggestions)},
 
     {"enable-lens-region-search-static-page",
      flag_descriptions::kLensRegionSearchStaticPageName,

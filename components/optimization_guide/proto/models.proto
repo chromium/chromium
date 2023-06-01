@@ -190,6 +190,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_WEB_APP_INSTALLATION_PROMO = 32;
   // Target for generic text embedder model.
   OPTIMIZATION_TARGET_TEXT_EMBEDDER = 33;
+  // Target for classifying and extracting search images on web page.
+  OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION = 34;
 }
 
 // The model engine versions that can be used to do model inference.

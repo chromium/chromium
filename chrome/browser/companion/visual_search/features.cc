@@ -9,7 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace visual_search {
+namespace companion::visual_search {
 namespace features {
 
 BASE_FEATURE(kVisualSearchSuggestions,
@@ -32,4 +32,4 @@ absl::optional<std::string> GetVisualSearchConfigForCompanionOverride() {
 }
 
 }  // namespace switches
-}  // namespace visual_search
+}  // namespace companion::visual_search

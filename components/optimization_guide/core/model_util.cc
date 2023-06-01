@@ -103,6 +103,8 @@ std::string GetStringNameForOptimizationTarget(
       return "WebAppInstallationPromo";
     case proto::OPTIMIZATION_TARGET_TEXT_EMBEDDER:
       return "TextEmbedder";
+    case proto::OPTIMIZATION_TARGET_VISUAL_SEARCH_CLASSIFICATION:
+      return "VisualSearchClassification";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
