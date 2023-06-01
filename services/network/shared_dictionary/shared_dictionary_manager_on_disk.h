@@ -92,7 +92,12 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   };
 
   class ClearDataTask;
+  class CacheEvictionTask;
+  class ExpiredDictionaryDeletionTask;
+
   class ClearDataTaskInfo;
+  class CacheEvictionTaskInfo;
+  class ExpiredDictionaryDeletionTaskInfo;
 
   void OnDictionaryWrittenInDiskCache(
       const net::SharedDictionaryStorageIsolationKey& isolation_key,
@@ -116,8 +121,13 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void OnFinishSerializedTask();
   void MaybeStartSerializedTask();
 
+  void MaybePostCacheEvictionTask();
+  void MaybePostExpiredDictionaryDeletionTask();
+
   void OnDictionaryDeletedFromDatabase(
       const std::set<base::UnguessableToken>& disk_cache_key_tokens);
+
+  uint64_t cache_max_size() const { return cache_max_size_; }
 
   uint64_t cache_max_size_;
   SharedDictionaryDiskCache disk_cache_;
@@ -125,6 +135,9 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
 
   std::unique_ptr<SerializedTask> running_serialized_task_;
   std::deque<std::unique_ptr<SerializedTaskInfo>> pending_serialized_task_info_;
+
+  bool cache_eviction_task_queued_ = false;
+  bool expired_entry_deletion_task_queued_ = false;
 
   base::WeakPtrFactory<SharedDictionaryManagerOnDisk> weak_factory_{this};
 };

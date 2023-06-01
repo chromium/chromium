@@ -4774,6 +4774,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeWhenAdded"
+    units="bytes" expires_after="2023-12-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The total size of shared dictionary on disk. Emitted when
+    SharedDictionaryManagerOnDisk succeeded to store a dictionary in disk cache
+    and database.
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryWriterInMemory.DictionarySize"
     units="bytes" expires_after="2023-12-01">
   <owner>horo@chromium.org</owner>
