@@ -18,7 +18,7 @@ void MenuConfig::Init() {
   separator_spacing_height = 7;
   separator_lower_height = 8;
   separator_upper_height = 8;
-  align_arrow_and_shortcut = true;
+  reserve_dedicated_arrow_column = false;
   offset_context_menus = true;
   corner_radius = 2;
 

@@ -105,13 +105,13 @@ static constexpr int kChildXPadding = 8;
 int MenuItemView::icon_area_width_ = 0;
 
 // static
-int MenuItemView::label_start_;
+int MenuItemView::label_start_ = 0;
 
 // static
-int MenuItemView::item_right_margin_;
+int MenuItemView::trailing_padding_ = 0;
 
 // static
-int MenuItemView::pref_menu_height_;
+int MenuItemView::pref_menu_height_ = 0;
 
 MenuItemView::MenuItemView(MenuDelegate* delegate)
     : MenuItemView(/* parent */ nullptr,
@@ -710,7 +710,8 @@ void MenuItemView::Layout() {
   } else {
     // Child views are laid out right aligned and given the full height. To
     // right align start with the last view and progress to the first.
-    int child_x = width() - (use_right_margin_ ? item_right_margin_ : 0);
+    int child_end =
+        width() - (children_use_full_width_ ? 0 : trailing_padding_);
     for (View* child : base::Reversed(children())) {
       if (icon_view_ == child)
         continue;
@@ -721,8 +722,8 @@ void MenuItemView::Layout() {
       if (vertical_separator_ == child)
         continue;
       int width = child->GetPreferredSize().width();
-      child->SetBounds(child_x - width, 0, width, height());
-      child_x -= width + kChildXPadding;
+      child->SetBounds(child_end - width, 0, width, height());
+      child_end -= width + kChildXPadding;
     }
 
     // Position the icons.
@@ -831,9 +832,14 @@ MenuItemView::~MenuItemView() {
 void MenuItemView::UpdateMenuPartSizes() {
   const MenuConfig& config = MenuConfig::instance();
 
-  item_right_margin_ = config.label_to_arrow_padding + config.arrow_width +
-                       config.arrow_to_edge_padding +
-                       config.item_horizontal_border_padding;
+  const bool have_arrow_column =
+      config.reserve_dedicated_arrow_column &&
+      base::ranges::any_of(submenu_->GetMenuItems(), &MenuItemView::HasSubmenu);
+  trailing_padding_ =
+      config.item_horizontal_padding +
+      (have_arrow_column ? (config.arrow_width + config.arrow_to_edge_padding)
+                         : 0) +
+      config.item_horizontal_border_padding;
   icon_area_width_ = std::max(
       HasChecksOrRadioButtons() ? config.check_width : 0,
       (has_icons_ && !config.icons_in_label) ? GetMaxIconViewWidth() : 0);
@@ -1014,7 +1020,7 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   int accel_width = parent_menu_item_->GetSubmenu()->max_minor_text_width();
   int label_start = GetLabelStartForThisItem();
 
-  int width = this->width() - label_start - accel_width - item_right_margin_;
+  int width = this->width() - trailing_padding_ - accel_width - label_start;
   gfx::Rect text_bounds(label_start, top_margin, width, text_height);
   text_bounds.set_x(GetMirroredXForRect(text_bounds));
   int flags = GetDrawStringFlags();
@@ -1106,12 +1112,8 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   const int max_minor_text_width =
       parent_menu_item_->GetSubmenu()->max_minor_text_width();
   const MenuConfig& config = MenuConfig::instance();
-  const int minor_text_right_margin =
-      config.align_arrow_and_shortcut ? (config.arrow_to_edge_padding +
-                                         config.item_horizontal_border_padding)
-                                      : item_right_margin_;
   gfx::Rect minor_text_bounds(
-      width() - minor_text_right_margin - max_minor_text_width, GetTopMargin(),
+      width() - trailing_padding_ - max_minor_text_width, GetTopMargin(),
       max_minor_text_width, height() - GetTopMargin() - GetBottomMargin());
   minor_text_bounds.set_x(GetMirroredXForRect(minor_text_bounds));
 
@@ -1275,6 +1277,9 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   const gfx::FontList& font_list = GetFontList();
 
+  const int standard_width = GetLabelStartForThisItem() +
+                             gfx::GetStringWidth(title_, font_list) +
+                             trailing_padding_;
   if (GetMenuController() && GetMenuController()->use_ash_system_ui_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
 
@@ -1285,11 +1290,9 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     if (!IsContainer()) {
       // Calculate total item width to make sure the current |title_|
       // has enough room within the context menu.
-      dimensions.standard_width = std::clamp(
-          GetLabelStartForThisItem() + gfx::GetStringWidth(title_, font_list) +
-              item_right_margin_,
-          menu_config.touchable_menu_min_width,
-          menu_config.touchable_menu_max_width);
+      dimensions.standard_width =
+          std::clamp(standard_width, menu_config.touchable_menu_min_width,
+                     menu_config.touchable_menu_max_width);
 
       if (icon_view_) {
         dimensions.height =
@@ -1307,8 +1310,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   // Adjust item content height if menu has both items with and without icons.
   // This way all menu items will have the same height.
   if (!icon_view_ && GetRootMenuItem()->has_icons_) {
-    dimensions.height =
-        std::max(dimensions.height, MenuConfig::instance().check_height);
+    dimensions.height = std::max(dimensions.height, menu_config.check_height);
   }
 
   // In the container case, only the child size plus margins need to be
@@ -1323,9 +1325,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
 
   dimensions.height += GetBottomMargin() + GetTopMargin();
 
-  dimensions.standard_width = GetLabelStartForThisItem() +
-                              gfx::GetStringWidth(title_, font_list) +
-                              item_right_margin_;
+  dimensions.standard_width = standard_width;
 
   // Determine the length of the right-side text.
   dimensions.minor_text_width =
@@ -1360,12 +1360,7 @@ void MenuItemView::ApplyMinimumDimensions(MenuItemDimensions* dims) const {
   if (type_ == Type::kHighlighted)
     return;
 
-  int used =
-      dims->standard_width + dims->children_width + dims->minor_text_width;
   const MenuConfig& config = MenuConfig::instance();
-  if (used < config.minimum_menu_width)
-    dims->standard_width += (config.minimum_menu_width - used);
-
   dims->height = std::max(dims->height,
                           IsContainer() ? config.minimum_container_item_height
                                         : config.minimum_text_item_height);

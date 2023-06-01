@@ -51,7 +51,7 @@ void MenuConfig::InitCR2023() {
     return;
   }
   // CR2023 menu metrics
-  align_arrow_and_shortcut = true;
+  reserve_dedicated_arrow_column = false;
   separator_height = 17;
   separator_left_margin = 12;
   separator_right_margin = 12;
