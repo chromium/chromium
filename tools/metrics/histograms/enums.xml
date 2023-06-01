@@ -61182,7 +61182,6 @@ from previous Chrome versions.
   <int value="-918618075" label="enable-service-worker"/>
   <int value="-917218910" label="FirstPartyVietnameseInput:enabled"/>
   <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
-  <int value="-915442560" label="kAllowDevtoolsInSystemUI:disabled"/>
   <int value="-915328316" label="CupsIppPrintingBackend:disabled"/>
   <int value="-915035507" label="ArcPrintSpoolerExperiment:enabled"/>
   <int value="-914210146" label="enable-web-based-signin"/>
@@ -65056,7 +65055,6 @@ from previous Chrome versions.
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
-  <int value="1159984590" label="kAllowDevtoolsInSystemUI:enabled"/>
   <int value="1161822401" label="LoginDetection:enabled"/>
   <int value="1162420462" label="ShelfLauncherNudge:disabled"/>
   <int value="1162622865" label="EarlyCodeCache:disabled"/>

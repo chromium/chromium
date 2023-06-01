@@ -49,10 +49,7 @@ component("views") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//ash",
-      "//chrome/browser/ash/crosapi:browser_util",
-    ]
+    deps += [ "//ash" ]
   }
 }
 
