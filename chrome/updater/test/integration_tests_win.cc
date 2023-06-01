@@ -1359,20 +1359,6 @@ int RunVPythonCommand(const base::CommandLine& command_line) {
   return exit_code;
 }
 
-void RunTestServiceCommand(const std::string& sub_command) {
-  base::FilePath path(base::CommandLine::ForCurrentProcess()->GetProgram());
-  path = path.DirName();
-  path = MakeAbsoluteFilePath(path);
-  path = path.Append(FILE_PATH_LITERAL("test_service"))
-             .Append(FILE_PATH_LITERAL("updater_test_service_control.py"));
-  EXPECT_TRUE(base::PathExists(path));
-
-  base::CommandLine command(path);
-  command.AppendArg(sub_command);
-
-  EXPECT_EQ(RunVPythonCommand(command), 0);
-}
-
 void InvokeTestServiceFunction(const std::string& function_name,
                                const base::Value::Dict& arguments) {
   std::string arguments_json_string;

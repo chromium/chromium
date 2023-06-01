@@ -37,17 +37,13 @@ class UpdaterTestRPCHandler():
                                        env=env,
                                        cwd=cwd)
 
-            # TODO(crbug.com/1233612): `communicate()` in Python 2.7 does not
-            # support timeout value, pass the value here once we migrate
-            # to Python 3. Also don't forget to handle subprocess.TimeoutExpired
-            # exception.
-            stdout, stderr = process.communicate()
+            stdout, stderr = process.communicate(timeout)
             logging.info('Command %s stdout:\n %s', command, stdout)
             if stderr:
                 logging.error('Command %s stderr:\n %s', command, stderr)
 
             return (process.pid, process.returncode, stdout, stderr)
-        except OSError as err:
+        except (OSError, subprocess.TimeoutExpired) as err:
             logging.exception(err)
             return (None, None, None, None)
 

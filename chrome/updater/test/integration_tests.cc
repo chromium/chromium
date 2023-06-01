@@ -100,8 +100,6 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(Clean());
     ASSERT_NO_FATAL_FAILURE(ExpectClean());
-    // TODO(crbug.com/1233612) - reenable the code when system tests pass.
-    // SetUpTestService();
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234"),
                                           GURL("http://localhost:1235"),
                                           GURL("http://localhost:1236")));
@@ -138,9 +136,6 @@ class IntegrationTest : public ::testing::Test {
     CopyLog();
 
     DMCleanup();
-
-    // TODO(crbug.com/1233612) - reenable the code when system tests pass.
-    // TearDownTestService();
 
     // Updater process must not be running for `Clean()` to succeed.
     ASSERT_TRUE(WaitForUpdaterExit());
@@ -337,18 +332,6 @@ class IntegrationTest : public ::testing::Test {
 
   [[nodiscard]] bool WaitForUpdaterExit() {
     return test_commands_->WaitForUpdaterExit();
-  }
-
-  void SetUpTestService() {
-#if BUILDFLAG(IS_WIN)
-    test_commands_->SetUpTestService();
-#endif  // BUILDFLAG(IS_WIN)
-  }
-
-  void TearDownTestService() {
-#if BUILDFLAG(IS_WIN)
-    test_commands_->TearDownTestService();
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   void ExpectUpdateCheckSequence(ScopedServer* test_server,

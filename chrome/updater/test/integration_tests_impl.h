@@ -211,7 +211,6 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const base::Value::List& parameters,
                                        int expected_exit_code);
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope);
-void RunTestServiceCommand(const std::string& sub_command);
 
 // Calls a function defined in test/service/win/rpc_client.py.
 // Entries of the `arguments` dictionary should be the function's parameter
