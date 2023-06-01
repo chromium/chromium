@@ -53,7 +53,7 @@ class FakeTask : public Task {
 
  private:
   Type type_;
-  raw_ptr<Task> parent_;
+  raw_ptr<Task, DanglingUntriaged> parent_;
   SessionID tab_id_;
 };
 

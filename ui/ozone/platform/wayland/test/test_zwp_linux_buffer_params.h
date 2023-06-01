@@ -75,7 +75,7 @@ class TestZwpLinuxBufferParamsV1 : public ServerObject {
 
   // A buffer resource, which is created on Create or CreateImmed call. Can be
   // null if not created/failed to be created.
-  raw_ptr<wl_resource> buffer_resource_ = nullptr;
+  raw_ptr<wl_resource, DanglingUntriaged> buffer_resource_ = nullptr;
 };
 
 }  // namespace wl

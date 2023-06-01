@@ -69,7 +69,8 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<ImageButton> button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<ImageButton, DanglingUntriaged> button_ =
+      nullptr;  // owned by |widget_|.
 };
 
 TEST_F(ImageButtonFactoryWidgetTest, SetImageFromVectorIconWithColor) {

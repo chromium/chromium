@@ -126,7 +126,7 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
 
  private:
-  raw_ptr<Profile> testing_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> testing_profile_ = nullptr;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<views::View> testing_view_;
   FakeThemeService fake_theme_service_;

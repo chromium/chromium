@@ -489,7 +489,7 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
  private:
   // Cached pointer to BrowsingDataRemoverImpl for access to testing methods.
-  raw_ptr<BrowsingDataRemoverImpl> remover_;
+  raw_ptr<BrowsingDataRemoverImpl, DanglingUntriaged> remover_;
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;

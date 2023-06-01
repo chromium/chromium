@@ -203,7 +203,7 @@ class WEBVIEW_EXPORT WebView : public View,
   bool is_letterboxing_ = false;
   raw_ptr<content::BrowserContext> browser_context_;
   bool allow_accelerators_ = false;
-  raw_ptr<View> crashed_overlay_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> crashed_overlay_view_ = nullptr;
   bool is_primary_web_contents_for_window_ = false;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.

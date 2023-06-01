@@ -101,7 +101,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
       web_contents_delegate_;
 
   net::EmbeddedTestServer test_server_;
-  raw_ptr<PrerenderManager> prerender_manager_;
+  raw_ptr<PrerenderManager, DanglingUntriaged> prerender_manager_;
 };
 
 TEST_F(PrerenderManagerTest, StartCleanSearchSuggestionPrerender) {

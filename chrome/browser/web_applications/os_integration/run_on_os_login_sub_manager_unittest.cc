@@ -113,7 +113,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
   WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };

@@ -110,7 +110,7 @@ class MockReceiverCreator {
 
   // Retains a reference to |unique_receiver_| even after |this| loses its
   // ownership.
-  const raw_ptr<MockPresentationReceiver> receiver_;
+  const raw_ptr<MockPresentationReceiver, DanglingUntriaged> receiver_;
 };
 
 const char kPresentationSource[] = "https://www.example.com/presentation";

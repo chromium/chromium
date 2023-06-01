@@ -111,7 +111,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   // hosts this will be shut down prior to the rest of the browser.
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<feature_engagement::Tracker> tracker_;
   const std::string locale_;
   std::unique_ptr<Delegate> delegate_;

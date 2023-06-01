@@ -54,7 +54,7 @@ class DiceSignedInProfileCreator {
   // Callback invoked once the token service is ready for the new profile.
   void OnNewProfileTokensLoaded(Profile* new_profile);
 
-  const raw_ptr<Profile> source_profile_;
+  const raw_ptr<Profile, DanglingUntriaged> source_profile_;
   const CoreAccountId account_id_;
 
   base::OnceCallback<void(Profile*)> callback_;

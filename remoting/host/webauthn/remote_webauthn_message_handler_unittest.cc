@@ -82,8 +82,9 @@ class RemoteWebAuthnMessageHandlerTest : public testing::Test {
   protocol::RemoteWebAuthn GetLatestSentMessage();
 
   protocol::FakeMessagePipe fake_pipe_{/* asynchronous= */ false};
-  raw_ptr<MockRemoteWebAuthnStateChangeNotifier> mock_state_change_notifier_;
-  raw_ptr<RemoteWebAuthnMessageHandler> message_handler_;
+  raw_ptr<MockRemoteWebAuthnStateChangeNotifier, DanglingUntriaged>
+      mock_state_change_notifier_;
+  raw_ptr<RemoteWebAuthnMessageHandler, DanglingUntriaged> message_handler_;
 
  private:
   base::test::TaskEnvironment task_environment_;

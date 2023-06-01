@@ -78,7 +78,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<MediaLog> media_log_;
+  const raw_ptr<MediaLog, DanglingUntriaged> media_log_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 

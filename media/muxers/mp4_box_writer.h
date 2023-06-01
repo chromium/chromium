@@ -50,7 +50,7 @@ class MEDIA_EXPORT Mp4BoxWriter {
   const Mp4MuxerContext& context() const { return *context_; }
 
  private:
-  const raw_ref<const Mp4MuxerContext> context_;
+  const raw_ref<const Mp4MuxerContext, DanglingUntriaged> context_;
   std::vector<std::unique_ptr<Mp4BoxWriter>> child_boxes_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

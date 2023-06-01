@@ -114,7 +114,7 @@ class ObserveViewDeletion : public ViewObserver {
 
  private:
   base::ScopedObservation<View, ViewObserver> observer_{this};
-  raw_ptr<View> deleted_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> deleted_view_ = nullptr;
 };
 
 }  // namespace test
@@ -415,7 +415,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
     quit_closure_.Reset();
   }
 
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
 
   // Disable scrollbar hiding (i.e. disable overlay scrollbars) by default.
   bool use_overlay_scrollers_ = false;

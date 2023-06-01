@@ -157,7 +157,7 @@ class HeartbeatSenderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<MockHeartbeatClient> mock_client_;
+  raw_ptr<MockHeartbeatClient, DanglingUntriaged> mock_client_;
   std::unique_ptr<MockObserver> mock_observer_;
 
   std::unique_ptr<FakeSignalStrategy> signal_strategy_;

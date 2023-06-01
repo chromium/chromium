@@ -912,7 +912,8 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
 #endif
 
  private:
-  raw_ptr<UnittestGuestProfileManager> unittest_profile_manager_ = nullptr;
+  raw_ptr<UnittestGuestProfileManager, DanglingUntriaged>
+      unittest_profile_manager_ = nullptr;
 };
 
 TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {

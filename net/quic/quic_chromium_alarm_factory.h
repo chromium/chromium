@@ -39,7 +39,7 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
       quic::QuicConnectionArena* arena) override;
 
  private:
-  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_;
   const raw_ptr<const quic::QuicClock> clock_;
 };
 

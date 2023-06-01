@@ -218,7 +218,7 @@ class IDNSpoofChecker {
   // characters that look like digits (but not exclusively actual digits).
   bool IsDigitLookalike(const icu::UnicodeString& label);
 
-  raw_ptr<USpoofChecker> checker_;
+  raw_ptr<USpoofChecker, DanglingUntriaged> checker_;
   icu::UnicodeSet deviation_characters_;
   icu::UnicodeSet non_ascii_latin_letters_;
   icu::UnicodeSet kana_letters_exceptions_;

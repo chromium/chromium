@@ -334,7 +334,7 @@ class TabDesktopMediaListTest : public testing::Test,
   ScopedTestingLocalState local_state_;
 
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<Browser> browser_;
 
   // Must be listed before |list_|, so it's destroyed last.

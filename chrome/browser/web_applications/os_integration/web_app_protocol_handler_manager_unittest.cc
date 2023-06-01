@@ -74,7 +74,7 @@ class WebAppProtocolHandlerManagerTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 
   std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
 };

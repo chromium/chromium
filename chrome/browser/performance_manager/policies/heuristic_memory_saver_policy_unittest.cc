@@ -135,7 +135,7 @@ class HeuristicMemorySaverPolicyTest
 
  private:
   // Owned by the graph.
-  raw_ptr<HeuristicMemorySaverPolicy> policy_;
+  raw_ptr<HeuristicMemorySaverPolicy, DanglingUntriaged> policy_;
 
   TestNodeWrapper<PageNodeImpl> other_page_node_;
   TestNodeWrapper<ProcessNodeImpl> other_process_node_;

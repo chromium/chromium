@@ -82,7 +82,7 @@ class PriceTrackingBubbleCoordinator : public views::WidgetObserver {
  private:
   bool IsShowing();
 
-  const raw_ptr<views::View> anchor_view_;
+  const raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   views::ViewTracker tracker_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};

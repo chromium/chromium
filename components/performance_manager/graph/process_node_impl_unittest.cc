@@ -141,7 +141,8 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   }
 
  private:
-  raw_ptr<const ProcessNode> notified_process_node_ = nullptr;
+  raw_ptr<const ProcessNode, DanglingUntriaged> notified_process_node_ =
+      nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

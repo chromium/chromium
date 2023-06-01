@@ -467,7 +467,7 @@ class OptimizationGuideStore {
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;
 
   // Pref service. Not owned. Guaranteed to outlive |this|.
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

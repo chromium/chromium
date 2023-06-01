@@ -394,11 +394,12 @@ class SignedExchangeHandlerTest
 
  protected:
   const base::HistogramTester histogram_tester_;
-  raw_ptr<MockSignedExchangeCertFetcherFactory> mock_cert_fetcher_factory_;
+  raw_ptr<MockSignedExchangeCertFetcherFactory, DanglingUntriaged>
+      mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   std::unique_ptr<MockSCTAuditingDelegate> mock_sct_auditing_delegate_;
-  raw_ptr<net::MockSourceStream> source_;
+  raw_ptr<net::MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<SignedExchangeHandler> handler_;
 
  private:

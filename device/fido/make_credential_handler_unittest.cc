@@ -146,9 +146,9 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<test::FakeFidoDiscoveryFactory> fake_discovery_factory_ =
       std::make_unique<test::FakeFidoDiscoveryFactory>();
-  raw_ptr<test::FakeFidoDiscovery> discovery_;
-  raw_ptr<test::FakeFidoDiscovery> nfc_discovery_;
-  raw_ptr<test::FakeFidoDiscovery> platform_discovery_;
+  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> discovery_;
+  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> nfc_discovery_;
+  raw_ptr<test::FakeFidoDiscovery, DanglingUntriaged> platform_discovery_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<MockFidoDevice> pending_mock_platform_device_;
   TestMakeCredentialRequestCallback cb_;

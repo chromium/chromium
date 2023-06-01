@@ -173,10 +173,10 @@ class ContentSubresourceFilterWebContentsHelper
 
  private:
   DebugCrashWebContentsObserver debug_crash_observer_;
-  raw_ptr<SubresourceFilterProfileContext> profile_context_;
+  raw_ptr<SubresourceFilterProfileContext, DanglingUntriaged> profile_context_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  raw_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
+  raw_ptr<VerifiedRulesetDealer::Handle, DanglingUntriaged> dealer_handle_;
 
   // Set of frames across all pages in this WebContents that have had at least
   // one committed or aborted navigation. Keyed by FrameTreeNode ID.

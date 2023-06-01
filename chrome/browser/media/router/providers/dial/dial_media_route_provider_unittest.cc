@@ -425,7 +425,8 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
-  raw_ptr<TestDialActivityManager> activity_manager_ = nullptr;
+  raw_ptr<TestDialActivityManager, DanglingUntriaged> activity_manager_ =
+      nullptr;
   std::unique_ptr<DialMediaRouteProvider> provider_;
 
   MediaSinkInternal sink_{CreateDialSink(1)};

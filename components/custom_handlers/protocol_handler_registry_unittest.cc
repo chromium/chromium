@@ -219,7 +219,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
 
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  raw_ptr<TestProtocolHandlerRegistryDelegate>
+  raw_ptr<TestProtocolHandlerRegistryDelegate, DanglingUntriaged>
       delegate_;  // Registry assumes ownership of delegate_.
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler test_protocol_handler_;

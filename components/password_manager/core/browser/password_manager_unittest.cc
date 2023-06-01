@@ -647,7 +647,7 @@ class PasswordManagerTest : public testing::Test {
   testing::NiceMock<MockAffiliationService> mock_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  raw_ptr<MockAffiliatedMatchHelper> mock_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper, DanglingUntriaged> mock_match_helper_;
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;

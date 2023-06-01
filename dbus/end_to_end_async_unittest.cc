@@ -258,8 +258,8 @@ class EndToEndAsyncTest : public testing::Test {
   std::vector<std::string> error_names_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;
-  raw_ptr<ObjectProxy> object_proxy_;
-  raw_ptr<ObjectProxy> root_object_proxy_;
+  raw_ptr<ObjectProxy, DanglingUntriaged> object_proxy_;
+  raw_ptr<ObjectProxy, DanglingUntriaged> root_object_proxy_;
   std::unique_ptr<TestService> test_service_;
   // Text message from "Test" signal.
   std::string test_signal_string_;

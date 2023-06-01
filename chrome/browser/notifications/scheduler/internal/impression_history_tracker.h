@@ -214,7 +214,7 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   raw_ptr<base::Clock> clock_;
 
   // Delegate object.
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   base::WeakPtrFactory<ImpressionHistoryTrackerImpl> weak_ptr_factory_{this};
 };

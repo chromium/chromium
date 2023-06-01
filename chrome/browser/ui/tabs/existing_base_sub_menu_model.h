@@ -106,8 +106,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
  private:
   const raw_ptr<ui::SimpleMenuModel::Delegate> parent_delegate_;
-  const raw_ptr<TabStripModel> model_;
-  const raw_ptr<const content::WebContents> context_contents_;
+  const raw_ptr<TabStripModel, DanglingUntriaged> model_;
+  const raw_ptr<const content::WebContents, DanglingUntriaged>
+      context_contents_;
   const int min_command_id_;
   const int parent_new_command_id_;
 

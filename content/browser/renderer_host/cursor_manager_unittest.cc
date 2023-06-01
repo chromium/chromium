@@ -98,7 +98,7 @@ class CursorManagerTest : public testing::Test {
 
   // Tests should set this to nullptr if they've already triggered its
   // destruction.
-  raw_ptr<MockRenderWidgetHostViewForCursors> top_view_;
+  raw_ptr<MockRenderWidgetHostViewForCursors, DanglingUntriaged> top_view_;
 
   MockRenderWidgetHostDelegate delegate_;
 };

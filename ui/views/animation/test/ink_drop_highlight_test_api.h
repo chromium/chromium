@@ -50,7 +50,7 @@ class InkDropHighlightTestApi
 
  private:
   // The InkDropHighlight to provide internal access to.
-  raw_ptr<InkDropHighlight> ink_drop_highlight_;
+  raw_ptr<InkDropHighlight, DanglingUntriaged> ink_drop_highlight_;
 };
 
 }  // namespace test

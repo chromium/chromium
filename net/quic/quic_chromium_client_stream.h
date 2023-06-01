@@ -191,7 +191,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
 
     // Callback to be invoked when ReadBody completes asynchronously.
     CompletionOnceCallback read_body_callback_;
-    raw_ptr<IOBuffer> read_body_buffer_;
+    raw_ptr<IOBuffer, DanglingUntriaged> read_body_buffer_;
     int read_body_buffer_len_ = 0;
 
     // Callback to be invoked when WriteStreamData or WritevStreamData completes

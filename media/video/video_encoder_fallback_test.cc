@@ -82,8 +82,8 @@ class VideoEncoderFallbackTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  raw_ptr<MockVideoEncoder> main_video_encoder_;
-  raw_ptr<MockVideoEncoder> secondary_video_encoder_;
+  raw_ptr<MockVideoEncoder, DanglingUntriaged> main_video_encoder_;
+  raw_ptr<MockVideoEncoder, DanglingUntriaged> secondary_video_encoder_;
   std::unique_ptr<MockVideoEncoder> secondary_video_encoder_holder_;
   std::unique_ptr<VideoEncoderFallback> fallback_encoder_;
 };

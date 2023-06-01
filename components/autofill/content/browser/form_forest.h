@@ -214,7 +214,7 @@ class FormForest {
     // empty FrameData is created when a parent form can Resolve() a child's
     // LocalFrameToken and no form from that child frame has been seen yet.
     // However, if |child_forms| is non-empty, then driver is non-null.
-    raw_ptr<AutofillDriver> driver = nullptr;
+    raw_ptr<AutofillDriver, DanglingUntriaged> driver = nullptr;
   };
 
   FormForest();

@@ -113,7 +113,7 @@ class SandboxFileSystemTestHelper {
 
   blink::StorageKey storage_key_;
   const FileSystemType type_;
-  raw_ptr<FileSystemFileUtil> file_util_;
+  raw_ptr<FileSystemFileUtil, DanglingUntriaged> file_util_;
 };
 
 }  // namespace storage

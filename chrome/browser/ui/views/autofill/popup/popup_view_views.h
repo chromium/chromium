@@ -133,8 +133,8 @@ class PopupViewViews : public PopupBaseView,
   // The index of the row with a selected cell.
   absl::optional<size_t> row_with_selected_cell_;
   std::vector<RowPointer> rows_;
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
-  raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView, DanglingUntriaged> body_container_ = nullptr;
 
   base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
 };

@@ -96,7 +96,7 @@ class UnexportableKeyServiceImpl : public UnexportableKeyService {
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
-  const raw_ref<UnexportableKeyTaskManager> task_manager_;
+  const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
 
   // Helps mapping multiple `FromWrappedSigningKeySlowlyAsync()` requests with
   // the same wrapped key into the same key ID.

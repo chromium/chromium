@@ -408,7 +408,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  raw_ptr<MenuItemView> menu_item_view_;
+  raw_ptr<MenuItemView, DanglingUntriaged> menu_item_view_;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;

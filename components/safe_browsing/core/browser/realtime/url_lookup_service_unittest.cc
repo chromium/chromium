@@ -290,7 +290,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
-  raw_ptr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_ = nullptr;
+  raw_ptr<TestSafeBrowsingTokenFetcher, DanglingUntriaged> raw_token_fetcher_ =
+      nullptr;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;

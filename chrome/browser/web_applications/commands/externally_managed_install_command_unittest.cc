@@ -174,7 +174,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
 
  private:
   base::flat_map<AppId, BitmapData> app_to_icons_data_;
-  raw_ptr<TestShortcutManager> shortcut_manager_;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
 };
 

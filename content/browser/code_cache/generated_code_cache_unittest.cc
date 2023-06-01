@@ -140,7 +140,7 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
   bool received_;
   bool received_null_;
   base::FilePath cache_path_;
-  raw_ptr<disk_cache::Backend> backend_;
+  raw_ptr<disk_cache::Backend, DanglingUntriaged> backend_;
 };
 
 constexpr char GeneratedCodeCacheTest::kInitialUrl[];

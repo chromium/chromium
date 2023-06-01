@@ -54,7 +54,8 @@ class ScopedPowerMonitorTestSource {
 
  private:
   // Owned by PowerMonitor.
-  raw_ptr<PowerMonitorTestSource> power_monitor_test_source_ = nullptr;
+  raw_ptr<PowerMonitorTestSource, DanglingUntriaged>
+      power_monitor_test_source_ = nullptr;
 };
 
 class PowerMonitorTestObserver : public PowerSuspendObserver,

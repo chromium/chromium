@@ -276,8 +276,8 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
   }
 
   // Owned by TabStrip.
-  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

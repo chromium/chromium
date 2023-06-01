@@ -179,7 +179,8 @@ class FederatedAuthRequestImplLogoutTest
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
+  raw_ptr<FederatedAuthRequestImpl, DanglingUntriaged>
+      federated_auth_request_impl_;
 
   std::unique_ptr<TestLogoutIdpNetworkRequestManager> network_request_manager_;
 

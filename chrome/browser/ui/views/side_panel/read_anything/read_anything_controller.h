@@ -54,6 +54,6 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
 
   // ReadAnythingController is owned by ReadAnythingCoordinator which is a
   // browser user data, so this pointer is always valid.
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONTROLLER_H_

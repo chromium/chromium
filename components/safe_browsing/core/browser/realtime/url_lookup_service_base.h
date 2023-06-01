@@ -256,7 +256,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Unowned object used for getting and storing real time url check cache.
-  raw_ptr<VerdictCacheManager> cache_manager_;
+  raw_ptr<VerdictCacheManager, DanglingUntriaged> cache_manager_;
 
   // All requests that are sent but haven't received a response yet.
   PendingRTLookupRequests pending_requests_;
@@ -268,7 +268,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   // Unowned object used to retrieve referrer chains.
-  raw_ptr<ReferrerChainProvider> referrer_chain_provider_;
+  raw_ptr<ReferrerChainProvider, DanglingUntriaged> referrer_chain_provider_;
 
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;

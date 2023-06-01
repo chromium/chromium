@@ -94,7 +94,8 @@ class ChildFrameNavigationFilteringThrottle
   void ResumeNavigation();
 
   // Must outlive this class.
-  raw_ptr<AsyncDocumentSubresourceFilter> parent_frame_filter_;
+  raw_ptr<AsyncDocumentSubresourceFilter, DanglingUntriaged>
+      parent_frame_filter_;
 
   int pending_load_policy_calculations_ = 0;
   DeferStage defer_stage_ = DeferStage::kNotDeferring;

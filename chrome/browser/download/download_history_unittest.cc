@@ -501,9 +501,10 @@ class DownloadHistoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   std::unique_ptr<NiceMock<content::MockDownloadManager>> manager_;
-  raw_ptr<FakeHistoryAdapter> history_ = nullptr;
+  raw_ptr<FakeHistoryAdapter, DanglingUntriaged> history_ = nullptr;
   std::unique_ptr<DownloadHistory> download_history_;
-  raw_ptr<content::DownloadManager::Observer> manager_observer_ = nullptr;
+  raw_ptr<content::DownloadManager::Observer, DanglingUntriaged>
+      manager_observer_ = nullptr;
   size_t download_created_index_ = 0;
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;

@@ -290,7 +290,7 @@ class CloudBinaryUploadServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CloudBinaryUploadService> service_;
-  raw_ptr<MockBinaryFCMService> fcm_service_;
+  raw_ptr<MockBinaryFCMService, DanglingUntriaged> fcm_service_;
   FakeMultipartUploadRequestFactory fake_factory_;
   base::RepeatingClosure request_done_closure_;
   int fcm_connection_failures_ = 0;

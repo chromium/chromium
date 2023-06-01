@@ -461,7 +461,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   struct VABufferDescriptor {
     VABufferType type;
     size_t size;
-    raw_ptr<const void> data;
+    raw_ptr<const void, DanglingUntriaged> data;
   };
   [[nodiscard]] bool SubmitBuffers(
       const std::vector<VABufferDescriptor>& va_buffers);

@@ -252,7 +252,7 @@ class SyncerTest : public testing::Test,
   CancelationSignal cancelation_signal_;
   std::map<ModelType, MockModelTypeProcessor> mock_model_type_processors_;
 
-  raw_ptr<Syncer> syncer_ = nullptr;
+  raw_ptr<Syncer, DanglingUntriaged> syncer_ = nullptr;
 
   std::unique_ptr<SyncCycle> cycle_;
   MockNudgeHandler mock_nudge_handler_;

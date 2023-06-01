@@ -288,7 +288,7 @@ class CancelMenuOnMousePressView : public View {
   gfx::Size CalculatePreferredSize() const override { return size(); }
 
  private:
-  raw_ptr<MenuController> controller_;
+  raw_ptr<MenuController, DanglingUntriaged> controller_;
 };
 
 }  // namespace
@@ -930,14 +930,15 @@ class MenuControllerTest : public ViewsTestBase,
   }
 
   // Not owned.
-  raw_ptr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
+  raw_ptr<ReleaseRefTestViewsDelegate, DanglingUntriaged> test_views_delegate_ =
+      nullptr;
 
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<TestMenuItemViewShown> menu_item_;
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
-  raw_ptr<MenuController> menu_controller_ = nullptr;
+  raw_ptr<MenuController, DanglingUntriaged> menu_controller_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, MenuControllerTest, testing::Bool());

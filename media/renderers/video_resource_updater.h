@@ -207,10 +207,11 @@ class MEDIA_EXPORT VideoResourceUpdater
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::ContextProvider, DanglingUntriaged> context_provider_;
   const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
   const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
-  const raw_ptr<viz::ClientResourceProvider> resource_provider_;
+  const raw_ptr<viz::ClientResourceProvider, DanglingUntriaged>
+      resource_provider_;
   const bool use_stream_video_draw_quad_;
   const bool use_gpu_memory_buffer_resources_;
   // TODO(crbug.com/759456): Remove after r16 is used without the flag.

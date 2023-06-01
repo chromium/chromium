@@ -233,7 +233,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   void InitializeSyncBlocker();
 
   // Weak pointer.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

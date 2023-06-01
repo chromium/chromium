@@ -258,7 +258,7 @@ class ForwardingAudioStreamFactoryTest : public RenderViewHostTestHarness {
   static const uint32_t kSharedMemoryCount;
   static const bool kEnableAgc;
   MockStreamFactory stream_factory_;
-  raw_ptr<RenderFrameHost> other_rfh_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> other_rfh_;
   std::unique_ptr<MockBrokerFactory> broker_factory_;
 };
 

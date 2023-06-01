@@ -140,7 +140,7 @@ class TableViewTestHelper {
   }
 
  private:
-  raw_ptr<TableView> table_;
+  raw_ptr<TableView, DanglingUntriaged> table_;
 };
 
 namespace {
@@ -589,7 +589,7 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  raw_ptr<TableView> table_ = nullptr;
+  raw_ptr<TableView, DanglingUntriaged> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 

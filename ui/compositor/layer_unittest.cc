@@ -2171,7 +2171,7 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_;
-  raw_ptr<Layer> layer_;
+  raw_ptr<Layer, DanglingUntriaged> layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
 };

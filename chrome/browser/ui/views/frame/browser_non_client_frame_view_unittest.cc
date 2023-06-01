@@ -39,7 +39,7 @@ class BrowserNonClientFrameViewTest : public TestWithBrowserView {
 
  protected:
   // Owned by the browser view.
-  raw_ptr<BrowserNonClientFrameView> frame_view_ = nullptr;
+  raw_ptr<BrowserNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
 };
 
 class BrowserNonClientFrameViewPopupTest

@@ -213,8 +213,8 @@ class WebViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<views::WebView::ScopedWebContentsCreatorForTesting>
       scoped_web_contents_creator_;
 
-  raw_ptr<Widget> top_level_widget_ = nullptr;
-  raw_ptr<WebView> web_view_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> top_level_widget_ = nullptr;
+  raw_ptr<WebView, DanglingUntriaged> web_view_ = nullptr;
 };
 
 // Tests that attaching and detaching a WebContents to a WebView makes the

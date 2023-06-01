@@ -340,10 +340,11 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
   }
 
  protected:
-  raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
+  raw_ptr<extensions::TestEventRouter, DanglingUntriaged> event_router_ =
+      nullptr;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  raw_ptr<ui::TestClipboard> test_clipboard_;
+  raw_ptr<ui::TestClipboard, DanglingUntriaged> test_clipboard_;
   scoped_refptr<device_reauth::MockDeviceAuthenticator>
       biometric_authenticator_;
 

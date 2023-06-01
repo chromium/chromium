@@ -134,7 +134,7 @@ class AnimationThroughputReporter::AnimationTracker
   // Whether this class should delete itself on animation ended.
   bool should_delete_ = false;
 
-  const raw_ptr<LayerAnimator> animator_;
+  const raw_ptr<LayerAnimator, DanglingUntriaged> animator_;
 
   absl::optional<ThroughputTracker> throughput_tracker_;
 

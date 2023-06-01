@@ -167,7 +167,7 @@ class NigoriModelTypeProcessorTest : public testing::Test {
  private:
   testing::NiceMock<MockNigoriSyncBridge> mock_nigori_sync_bridge_;
   std::unique_ptr<testing::NiceMock<MockCommitQueue>> mock_commit_queue_;
-  raw_ptr<MockCommitQueue> mock_commit_queue_ptr_;
+  raw_ptr<MockCommitQueue, DanglingUntriaged> mock_commit_queue_ptr_;
   NigoriModelTypeProcessor processor_;
 };
 

@@ -99,7 +99,8 @@ class PageAnchorsMetricsObserverTest
     PopulateRequiredTimingFields(&timing_);
   }
 
-  raw_ptr<TestPageAnchorsMetricsObserver> pam_observer_ = nullptr;
+  raw_ptr<TestPageAnchorsMetricsObserver, DanglingUntriaged> pam_observer_ =
+      nullptr;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
   GURL navigation_url_{"https://chromium.org"};

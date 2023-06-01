@@ -148,7 +148,7 @@ class UnpackedInstaller
   base::WeakPtr<ExtensionService> service_weak_;
 
   // The Profile the extension is being installed in.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // The pathname of the directory to load from, which is an absolute path
   // after GetAbsolutePath has been called.

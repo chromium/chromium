@@ -153,8 +153,10 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   permissions::MockPermissionRequest request_;
-  raw_ptr<permissions::PermissionRequestManager> manager_ = nullptr;
-  raw_ptr<content::NavigationController> controller_ = nullptr;
+  raw_ptr<permissions::PermissionRequestManager, DanglingUntriaged> manager_ =
+      nullptr;
+  raw_ptr<content::NavigationController, DanglingUntriaged> controller_ =
+      nullptr;
 };
 
 TEST_F(ContentSettingImageModelTest, Update) {

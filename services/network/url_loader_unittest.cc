@@ -1170,7 +1170,7 @@ class URLLoaderTest : public testing::Test {
   net::ScopedTestRoot scoped_test_root_;
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<net::ScopedDefaultHostResolverProc> mock_host_resolver_;
-  raw_ptr<net::TestNetworkDelegate>
+  raw_ptr<net::TestNetworkDelegate, DanglingUntriaged>
       unowned_test_network_delegate_;  // owned by |url_request_context_|
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   URLLoaderContextForTests url_loader_context_for_tests_;

@@ -282,7 +282,7 @@ class HttpServerPropertiesManagerTest : public testing::Test,
     return http_server_properties_dict;
   }
 
-  raw_ptr<MockPrefDelegate>
+  raw_ptr<MockPrefDelegate, DanglingUntriaged>
       pref_delegate_;  // Owned by HttpServerPropertiesManager.
   std::unique_ptr<HttpServerProperties> http_server_props_;
   base::Time one_day_from_now_;

@@ -720,9 +720,9 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   QuicConnectivityMonitor connectivity_monitor_;
 
-  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ = nullptr;
 
-  raw_ptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 

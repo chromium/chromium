@@ -180,8 +180,9 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
     return base::SingleThreadTaskRunner::GetCurrentDefault();
   }
 
-  raw_ptr<FakeSerialEnumerator> enumerator_;
-  raw_ptr<BluetoothSerialDeviceEnumerator> bluetooth_enumerator_;
+  raw_ptr<FakeSerialEnumerator, DanglingUntriaged> enumerator_;
+  raw_ptr<BluetoothSerialDeviceEnumerator, DanglingUntriaged>
+      bluetooth_enumerator_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<MockBluetoothAdapter>();
   scoped_refptr<MockBluetoothSocket> mock_socket_ =

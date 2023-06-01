@@ -549,7 +549,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
-  raw_ptr<MockHistoryBackendClient> history_backend_client_;
+  raw_ptr<MockHistoryBackendClient, DanglingUntriaged> history_backend_client_;
   scoped_refptr<TestHistoryBackendForSync> fake_history_backend_;
   raw_ptr<TypedURLSyncBridge> typed_url_sync_bridge_ = nullptr;
   NiceMock<MockModelTypeChangeProcessor> mock_processor_;

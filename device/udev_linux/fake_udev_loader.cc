@@ -23,7 +23,7 @@ struct udev_list_entry {
   udev_list_entry& operator=(const udev_list_entry& other) = delete;
 
   const std::string name;
-  raw_ptr<udev_list_entry> next = nullptr;
+  raw_ptr<udev_list_entry, DanglingUntriaged> next = nullptr;
 };
 
 struct udev_device {

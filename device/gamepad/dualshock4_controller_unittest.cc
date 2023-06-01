@@ -178,8 +178,8 @@ class Dualshock4ControllerTest : public testing::Test {
   const std::vector<uint8_t> bluetooth_stop_vibration_report_;
   int callback_count_;
   mojom::GamepadHapticsResult callback_result_;
-  raw_ptr<FakeHidWriter> usb_writer_;
-  raw_ptr<FakeHidWriter> bluetooth_writer_;
+  raw_ptr<FakeHidWriter, DanglingUntriaged> usb_writer_;
+  raw_ptr<FakeHidWriter, DanglingUntriaged> bluetooth_writer_;
   std::unique_ptr<Dualshock4Controller> ds4_usb_;
   std::unique_ptr<Dualshock4Controller> ds4_bluetooth_;
   base::test::TaskEnvironment task_environment_{

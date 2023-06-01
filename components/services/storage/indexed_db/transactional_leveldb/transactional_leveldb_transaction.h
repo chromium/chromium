@@ -108,7 +108,7 @@ class TransactionalLevelDBTransaction
 
   void EvictLoadedIterators();
 
-  const raw_ptr<TransactionalLevelDBDatabase> db_;
+  const raw_ptr<TransactionalLevelDBDatabase, DanglingUntriaged> db_;
   // Non-null until the transaction is committed or rolled back.
   std::unique_ptr<LevelDBScope> scope_;
   bool finished_ = false;

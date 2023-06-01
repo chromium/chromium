@@ -269,7 +269,7 @@ class POLICY_EXPORT Schema {
   void MaskSensitiveValuesRecursive(base::Value* value) const;
 
   scoped_refptr<const InternalStorage> storage_;
-  raw_ptr<const internal::SchemaNode> node_;
+  raw_ptr<const internal::SchemaNode, DanglingUntriaged> node_;
 };
 
 }  // namespace policy

@@ -126,8 +126,8 @@ class RequestDispatcherTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ConfigHolder> config_holder_;
-  raw_ptr<MockRequestHandler> request_handler1_ = nullptr;
-  raw_ptr<MockRequestHandler> request_handler2_ = nullptr;
+  raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler1_ = nullptr;
+  raw_ptr<MockRequestHandler, DanglingUntriaged> request_handler2_ = nullptr;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;
 };
 

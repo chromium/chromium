@@ -837,7 +837,7 @@ class CC_EXPORT LayerTreeImpl {
   int source_frame_number_;
   uint64_t trace_id_ = 0;
   int is_first_frame_after_commit_tracker_;
-  raw_ptr<HeadsUpDisplayLayerImpl> hud_layer_;
+  raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;
   PropertyTrees property_trees_;
   SkColor4f background_color_;
 

@@ -365,9 +365,9 @@ class OsIntegrationManager : public AppRegistrarObserver {
       base::OnceClosure update_finished_callback);
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;

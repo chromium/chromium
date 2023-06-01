@@ -289,8 +289,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<NiceMock<MockAutofillExternalDelegate>> external_delegate_;
   std::unique_ptr<NiceMock<MockAutofillPopupView>> autofill_popup_view_;
-  raw_ptr<NiceMock<TestAutofillPopupController>> autofill_popup_controller_ =
-      nullptr;
+  raw_ptr<NiceMock<TestAutofillPopupController>, DanglingUntriaged>
+      autofill_popup_controller_ = nullptr;
 };
 
 TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {

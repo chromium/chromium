@@ -79,8 +79,8 @@ class TestSelectionDeviceManager : public GlobalObject {
 
  private:
   const std::unique_ptr<Delegate> delegate_;
-  raw_ptr<TestSelectionDevice> device_ = nullptr;
-  raw_ptr<TestSelectionSource> source_ = nullptr;
+  raw_ptr<TestSelectionDevice, DanglingUntriaged> device_ = nullptr;
+  raw_ptr<TestSelectionSource, DanglingUntriaged> source_ = nullptr;
 };
 
 class TestSelectionOffer : public ServerObject {

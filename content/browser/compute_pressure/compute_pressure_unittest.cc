@@ -56,7 +56,7 @@ class PressureManagerSync {
   // The reference is immutable, so accessing it is thread-safe. The referenced
   // device::mojom::PressureManager implementation is called synchronously,
   // so it's acceptable to rely on its own thread-safety checks.
-  const raw_ref<device::mojom::PressureManager> manager_;
+  const raw_ref<device::mojom::PressureManager, DanglingUntriaged> manager_;
 };
 
 // Test double for PressureClient that records all updates.

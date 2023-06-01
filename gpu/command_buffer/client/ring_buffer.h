@@ -160,7 +160,7 @@ class GPU_EXPORT RingBuffer {
   uint32_t num_used_blocks_ = 0;
 
   // The physical address that corresponds to base_offset.
-  raw_ptr<void> base_;
+  raw_ptr<void, DanglingUntriaged> base_;
 };
 
 }  // namespace gpu

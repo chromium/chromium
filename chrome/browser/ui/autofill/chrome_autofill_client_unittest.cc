@@ -89,7 +89,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
-  raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
+  raw_ptr<TestPersonalDataManager, DanglingUntriaged> personal_data_manager_ =
+      nullptr;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   TestAutofillDriverInjector<TestContentAutofillDriver>

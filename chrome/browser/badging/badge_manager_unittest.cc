@@ -95,8 +95,8 @@ class BadgeManagerUnittest : public ::testing::Test {
   web_app::WebAppProvider& provider() { return *provider_; }
 
  private:
-  raw_ptr<TestBadgeManagerDelegate> delegate_;
-  raw_ptr<web_app::FakeWebAppProvider> provider_;
+  raw_ptr<TestBadgeManagerDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged> provider_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;

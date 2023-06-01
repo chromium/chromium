@@ -67,8 +67,8 @@ class WebAppProtocolHandlerManager {
                                     ResultCallback callback);
 
  private:
-  raw_ptr<WebAppRegistrar> app_registrar_;
-  const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> app_registrar_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace web_app

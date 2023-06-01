@@ -180,7 +180,7 @@ class PageInfoMainView : public views::View,
 
   raw_ptr<views::View> security_container_view_ = nullptr;
 
-  raw_ptr<views::LabelButton> reset_button_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> reset_button_ = nullptr;
 
   base::WeakPtrFactory<PageInfoMainView> weak_factory_{this};
 };

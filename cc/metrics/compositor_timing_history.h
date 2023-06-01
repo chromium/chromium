@@ -166,7 +166,8 @@ class CC_EXPORT CompositorTimingHistory {
   std::unique_ptr<UMAReporter> uma_reporter_;
 
   // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
-  raw_ptr<RenderingStatsInstrumentation> rendering_stats_instrumentation_;
+  raw_ptr<RenderingStatsInstrumentation, DanglingUntriaged>
+      rendering_stats_instrumentation_;
 };
 
 }  // namespace cc

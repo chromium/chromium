@@ -232,7 +232,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   ErrorCode last_error_code_ = ErrorCode::OK;
 
   // Used to set ConfirmationDialog behavior.
-  raw_ptr<FakeIt2MeDialogFactory> dialog_factory_ = nullptr;
+  raw_ptr<FakeIt2MeDialogFactory, DanglingUntriaged> dialog_factory_ = nullptr;
 
   absl::optional<base::Value::Dict> policies_;
 

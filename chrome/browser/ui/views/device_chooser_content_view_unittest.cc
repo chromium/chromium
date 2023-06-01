@@ -147,8 +147,9 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<MockTableViewObserver> table_observer_;
-  raw_ptr<FakeBluetoothChooserController> controller_ = nullptr;
-  raw_ptr<DeviceChooserContentView> content_view_ = nullptr;
+  raw_ptr<FakeBluetoothChooserController, DanglingUntriaged> controller_ =
+      nullptr;
+  raw_ptr<DeviceChooserContentView, DanglingUntriaged> content_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 };
 

@@ -1003,7 +1003,8 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
+          DanglingUntriaged>
       mock_delegate_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler

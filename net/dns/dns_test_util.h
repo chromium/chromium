@@ -337,7 +337,7 @@ struct MockDnsClientRule {
   uint16_t qtype;
   bool secure;
   bool delay;
-  raw_ptr<URLRequestContext> context;
+  raw_ptr<URLRequestContext, DanglingUntriaged> context;
 };
 
 typedef std::vector<MockDnsClientRule> MockDnsClientRuleList;

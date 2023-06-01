@@ -92,7 +92,8 @@ class PrefetchPageLoadMetricsObserverTest
     PopulateRequiredTimingFields(&timing_);
   }
 
-  raw_ptr<TestPrefetchPageLoadMetricsObserver> plm_observer_ = nullptr;
+  raw_ptr<TestPrefetchPageLoadMetricsObserver, DanglingUntriaged>
+      plm_observer_ = nullptr;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
   GURL navigation_url_{"https://chromium.org"};

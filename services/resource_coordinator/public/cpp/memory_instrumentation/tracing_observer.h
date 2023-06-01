@@ -57,7 +57,8 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   // Returns true if the dump mode is allowed for current tracing session.
   bool IsDumpModeAllowed(base::trace_event::MemoryDumpLevelOfDetail) const;
 
-  const raw_ptr<base::trace_event::MemoryDumpManager> memory_dump_manager_;
+  const raw_ptr<base::trace_event::MemoryDumpManager, DanglingUntriaged>
+      memory_dump_manager_;
   const raw_ptr<base::trace_event::TraceLog> trace_log_;
   std::unique_ptr<base::trace_event::TraceConfig::MemoryDumpConfig>
       memory_dump_config_;

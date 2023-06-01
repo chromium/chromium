@@ -84,7 +84,7 @@ class Spake2Authenticator : public Authenticator {
   std::string remote_cert_;
 
   // Used for both host and client authenticators.
-  raw_ptr<SPAKE2_CTX> spake2_context_;
+  raw_ptr<SPAKE2_CTX, DanglingUntriaged> spake2_context_;
   State state_;
   bool started_ = false;
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;

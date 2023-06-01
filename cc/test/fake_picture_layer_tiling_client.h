@@ -72,8 +72,8 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   std::unique_ptr<TileManager> tile_manager_;
   scoped_refptr<RasterSource> raster_source_;
   gfx::Size tile_size_;
-  raw_ptr<PictureLayerTilingSet> twin_set_;
-  raw_ptr<PictureLayerTiling> twin_tiling_;
+  raw_ptr<PictureLayerTilingSet, DanglingUntriaged> twin_set_;
+  raw_ptr<PictureLayerTiling, DanglingUntriaged> twin_tiling_;
   gfx::Rect text_rect_;
   Region invalidation_;
   bool has_valid_tile_priorities_;

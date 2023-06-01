@@ -57,7 +57,8 @@ class ChromeClientSideDetectionHostDelegateTest
   }
 
  protected:
-  raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_;
+  raw_ptr<SafeBrowsingNavigationObserverManager, DanglingUntriaged>
+      navigation_observer_manager_;
   std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
 };
 

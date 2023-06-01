@@ -35,7 +35,7 @@ class ProtocolHandlingSubManager : public OsIntegrationSubManager {
 
  private:
   const base::FilePath profile_path_;
-  const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
 
   base::WeakPtrFactory<ProtocolHandlingSubManager> weak_ptr_factory_{this};
 };

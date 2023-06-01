@@ -283,7 +283,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Bound to the lifetime of the browser context. Could be null in Incognito
   // mode or in test.
-  const raw_ptr<AttributionManager> attribution_manager_;
+  const raw_ptr<AttributionManager, DanglingUntriaged> attribution_manager_;
 
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>

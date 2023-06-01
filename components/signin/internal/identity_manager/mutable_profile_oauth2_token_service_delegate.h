@@ -196,7 +196,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   THREAD_CHECKER(thread_checker_);
 
   raw_ptr<SigninClient> client_;
-  raw_ptr<AccountTrackerService> account_tracker_service_;
+  raw_ptr<AccountTrackerService, DanglingUntriaged> account_tracker_service_;
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   scoped_refptr<TokenWebData> token_web_data_;
   signin::AccountConsistencyMethod account_consistency_;

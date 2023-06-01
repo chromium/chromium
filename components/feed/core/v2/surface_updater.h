@@ -130,7 +130,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   base::flat_set<ContentRevision> sent_content_;
 
   // Owned by |FeedStream|. Null when the model is not loaded.
-  raw_ptr<StreamModel> model_ = nullptr;
+  raw_ptr<StreamModel, DanglingUntriaged> model_ = nullptr;
 
   LaunchReliabilityLogger launch_reliability_logger_;
   bool load_stream_started_ = false;

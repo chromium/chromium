@@ -314,7 +314,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   TestWebHistoryService web_history_;
   TestSyncService sync_service_;
   TestBrowsingHistoryDriver driver_;
-  raw_ptr<base::MockOneShotTimer> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 

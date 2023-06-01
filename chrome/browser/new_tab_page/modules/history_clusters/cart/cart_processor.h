@@ -57,7 +57,7 @@ class CartProcessor {
       bool success,
       std::vector<CartDB::KeyAndValue> carts);
 
-  raw_ptr<CartService> cart_service_;
+  raw_ptr<CartService, DanglingUntriaged> cart_service_;
   base::WeakPtrFactory<CartProcessor> weak_ptr_factory_{this};
 };
 

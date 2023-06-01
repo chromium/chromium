@@ -35,7 +35,7 @@ class BadgeManagerDelegate {
 
  private:
   // The profile the badge manager delegate is associated with.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   // The badge manager that owns this delegate.
   raw_ptr<BadgeManager> badge_manager_;
 };

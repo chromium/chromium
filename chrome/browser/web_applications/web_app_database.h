@@ -84,7 +84,8 @@ class WebAppDatabase {
                      const absl::optional<syncer::ModelError>& error);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  const raw_ptr<AbstractWebAppDatabaseFactory> database_factory_;
+  const raw_ptr<AbstractWebAppDatabaseFactory, DanglingUntriaged>
+      database_factory_;
   ReportErrorCallback error_callback_;
 
   // Database is opened if store is created and all data read.

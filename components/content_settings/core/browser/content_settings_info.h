@@ -70,7 +70,7 @@ class ContentSettingsInfo {
   OriginRestriction origin_restriction() const { return origin_restriction_; }
 
  private:
-  raw_ptr<const WebsiteSettingsInfo> website_settings_info_;
+  raw_ptr<const WebsiteSettingsInfo, DanglingUntriaged> website_settings_info_;
   const std::vector<std::string> allowlisted_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;

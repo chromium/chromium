@@ -440,8 +440,9 @@ class FeedStream : public FeedApi,
   raw_ptr<PrefService> profile_prefs_;  // May be null.
   raw_ptr<FeedNetwork> feed_network_;
   raw_ptr<ImageFetcher> image_fetcher_;
-  raw_ptr<FeedStore> store_;
-  raw_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
+  raw_ptr<FeedStore, DanglingUntriaged> store_;
+  raw_ptr<PersistentKeyValueStoreImpl, DanglingUntriaged>
+      persistent_key_value_store_;
   raw_ptr<const WireResponseTranslator> wire_response_translator_;
 
   StreamModel::Context stream_model_context_;

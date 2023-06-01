@@ -132,7 +132,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<BookmarkModel> model_;
+  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:

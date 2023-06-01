@@ -52,7 +52,7 @@ class CachedResultWriterTest : public testing::Test {
  protected:
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<ClientResultPrefs> result_prefs_;
-  raw_ptr<ClientResultPrefs> client_result_prefs_ = nullptr;
+  raw_ptr<ClientResultPrefs, DanglingUntriaged> client_result_prefs_ = nullptr;
   std::unique_ptr<CachedResultWriter> cached_result_writer_;
   base::SimpleTestClock clock_;
 };

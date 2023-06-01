@@ -64,7 +64,7 @@ class TabSessionSource : public InputDelegate {
                    Tensor& inputs);
 
   const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
-  const raw_ptr<TabFetcher> tab_fetcher_;
+  const raw_ptr<TabFetcher, DanglingUntriaged> tab_fetcher_;
 };
 
 }  // namespace segmentation_platform::processing

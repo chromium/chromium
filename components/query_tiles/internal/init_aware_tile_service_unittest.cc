@@ -131,7 +131,7 @@ class InitAwareTileServiceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockInitializableTileService> mock_service_;
+  raw_ptr<MockInitializableTileService, DanglingUntriaged> mock_service_;
   std::unique_ptr<InitAwareTileService> init_aware_service_;
 };
 

@@ -126,7 +126,7 @@ class FakeTabContainerController final : public TabContainerController {
 
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
-  raw_ptr<const TabContainer> tab_container_;
+  raw_ptr<const TabContainer, DanglingUntriaged> tab_container_;
 
   // Set this to true to emulate a tab being animated outside `tab_container_`.
   bool is_animating_outside_container_ = false;
@@ -418,7 +418,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
 
   // Get the group tab's close button center point
   Tab* tab = tab_container_->GetTabAtModelIndex(1);
-  raw_ptr<TabCloseButton> tab_close_button = tab->close_button();
+  TabCloseButton* tab_close_button = tab->close_button();
   gfx::Point tab_center = tab_close_button->GetBoundsInScreen().CenterPoint();
 
   // Remove the tab

@@ -297,7 +297,7 @@ class ThemeSyncableServiceTest : public testing::Test,
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeThemeService> fake_theme_service_;
+  raw_ptr<FakeThemeService, DanglingUntriaged> fake_theme_service_;
   scoped_refptr<extensions::Extension> theme_extension_;
   std::unique_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;

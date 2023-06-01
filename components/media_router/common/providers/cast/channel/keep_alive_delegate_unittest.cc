@@ -109,8 +109,8 @@ class KeepAliveDelegateTest : public testing::Test {
   std::unique_ptr<KeepAliveDelegate> keep_alive_;
   scoped_refptr<Logger> logger_;
   raw_ptr<MockCastTransportDelegate> inner_delegate_;
-  raw_ptr<MockTimerWithMonitoredReset> liveness_timer_;
-  raw_ptr<MockTimerWithMonitoredReset> ping_timer_;
+  raw_ptr<MockTimerWithMonitoredReset, DanglingUntriaged> liveness_timer_;
+  raw_ptr<MockTimerWithMonitoredReset, DanglingUntriaged> ping_timer_;
 };
 
 TEST_F(KeepAliveDelegateTest, TestErrorHandledBeforeStarting) {

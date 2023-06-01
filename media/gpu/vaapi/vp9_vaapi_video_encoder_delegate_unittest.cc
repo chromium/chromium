@@ -301,7 +301,7 @@ class VP9VaapiVideoEncoderDelegateTest
 
   std::unique_ptr<VP9VaapiVideoEncoderDelegate> encoder_;
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
-  raw_ptr<MockVP9RateControl> mock_rate_ctrl_ = nullptr;
+  raw_ptr<MockVP9RateControl, DanglingUntriaged> mock_rate_ctrl_ = nullptr;
 };
 
 void VP9VaapiVideoEncoderDelegateTest::ResetEncoder() {

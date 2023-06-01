@@ -156,7 +156,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
 
   raw_ptr<extensions::AppWindow> app_window_ = nullptr;  // Not owned.
   raw_ptr<views::WebView> web_view_ = nullptr;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   std::unique_ptr<SkRegion> draggable_region_;
 

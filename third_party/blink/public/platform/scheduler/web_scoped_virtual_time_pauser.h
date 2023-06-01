@@ -63,7 +63,8 @@ class BLINK_PLATFORM_EXPORT WebScopedVirtualTimePauser {
   bool paused_ = false;
   bool virtual_time_enabled_when_paused_ = false;
   VirtualTaskDuration duration_ = VirtualTaskDuration::kInstant;
-  raw_ptr<scheduler::ThreadSchedulerBase> scheduler_;  // NOT OWNED
+  raw_ptr<scheduler::ThreadSchedulerBase, DanglingUntriaged>
+      scheduler_;  // NOT OWNED
   WebString debug_name_;
   intptr_t trace_id_;
 };

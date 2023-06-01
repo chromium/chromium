@@ -162,7 +162,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
   static absl::optional<double> animation_duration_for_testing_;
 
-  raw_ptr<Target> target_ = nullptr;
+  raw_ptr<Target, DanglingUntriaged> target_ = nullptr;
 };
 
 }  // namespace cc

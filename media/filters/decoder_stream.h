@@ -245,7 +245,7 @@ class MEDIA_EXPORT DecoderStream {
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;
 
-  raw_ptr<DemuxerStream> stream_;
+  raw_ptr<DemuxerStream, DanglingUntriaged> stream_;
 
   raw_ptr<CdmContext> cdm_context_;
 

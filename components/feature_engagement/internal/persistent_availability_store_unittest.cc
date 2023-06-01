@@ -92,7 +92,7 @@ class PersistentAvailabilityStoreTest : public testing::Test {
   std::map<std::string, Availability> db_availabilities_;
 
   // The database that is in use.
-  raw_ptr<leveldb_proto::test::FakeDB<Availability>> db_;
+  raw_ptr<leveldb_proto::test::FakeDB<Availability>, DanglingUntriaged> db_;
 
   // Constant test data.
   base::FilePath storage_dir_;

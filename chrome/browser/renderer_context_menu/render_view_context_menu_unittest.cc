@@ -572,7 +572,7 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
-  raw_ptr<TemplateURLService> template_url_service_;
+  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   std::unique_ptr<Browser> browser_;
 };
 

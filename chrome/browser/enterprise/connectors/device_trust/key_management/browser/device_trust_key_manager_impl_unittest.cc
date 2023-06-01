@@ -166,7 +166,8 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  raw_ptr<StrictMock<MockKeyRotationLauncher>> mock_launcher_;
+  raw_ptr<StrictMock<MockKeyRotationLauncher>, DanglingUntriaged>
+      mock_launcher_;
 
   std::unique_ptr<DeviceTrustKeyManagerImpl> key_manager_;
 };

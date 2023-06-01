@@ -104,7 +104,7 @@ class StyledLabelInWidgetTest : public ViewsTestBase {
   }
 
  private:
-  raw_ptr<StyledLabel> styled_;
+  raw_ptr<StyledLabel, DanglingUntriaged> styled_;
   std::unique_ptr<Widget> widget_;
 };
 

@@ -2739,12 +2739,13 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // Set by UseMockWorkletService(). Non-owning reference to the
   // AuctionProcessManager that will be / has been passed to the
   // InterestGroupManager.
-  raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
+  raw_ptr<MockAuctionProcessManager, DanglingUntriaged>
+      mock_auction_process_manager_ = nullptr;
 
   // If StartAuction() created a SameProcessAuctionProcessManager for
   // `auction_process_manager_`, this alises it.
   // Reset by other things that set `auction_process_manager_`.
-  raw_ptr<SameProcessAuctionProcessManager>
+  raw_ptr<SameProcessAuctionProcessManager, DanglingUntriaged>
       same_process_auction_process_manager_ = nullptr;
 
   // The TestInterestGroupManager is recreated and repopulated for each auction.

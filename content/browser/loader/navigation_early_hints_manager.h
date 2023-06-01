@@ -195,8 +195,8 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   base::OnceCallback<void(PreloadedResources)>
       preloads_completion_callback_for_testing_;
 
-  raw_ptr<network::mojom::NetworkContext> network_context_for_testing_ =
-      nullptr;
+  raw_ptr<network::mojom::NetworkContext, DanglingUntriaged>
+      network_context_for_testing_ = nullptr;
 };
 
 }  // namespace content

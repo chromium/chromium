@@ -89,7 +89,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
       WindowOpenDisposition disposition);
 
   FeedbackCommandSettings feedback_settings_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;

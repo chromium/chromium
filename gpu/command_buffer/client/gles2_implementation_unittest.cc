@@ -469,7 +469,7 @@ class GLES2ImplementationTest : public testing::Test {
   raw_ptr<MockClientGpuControl> gpu_control_;
   raw_ptr<GLES2CmdHelper> helper_;
   raw_ptr<MockTransferBuffer> transfer_buffer_;
-  raw_ptr<GLES2Implementation> gl_;
+  raw_ptr<GLES2Implementation, DanglingUntriaged> gl_;
   raw_ptr<CommandBufferEntry> commands_;
 };
 

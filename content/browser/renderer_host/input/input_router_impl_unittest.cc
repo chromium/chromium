@@ -600,7 +600,8 @@ class InputRouterImplTestBase : public testing::Test {
   std::unique_ptr<MockInputRouterImplClient> client_;
   std::unique_ptr<InputRouterImpl> input_router_;
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
-  raw_ptr<MockRenderWidgetHostViewForStylusWriting> mock_view_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting, DanglingUntriaged>
+      mock_view_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

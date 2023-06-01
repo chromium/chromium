@@ -533,7 +533,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   bool is_deleting_and_starting_over_ = false;
 
   // Raw pointer to the StoragePartitionImpl owning |this|.
-  raw_ptr<StoragePartitionImpl> storage_partition_ = nullptr;
+  raw_ptr<StoragePartitionImpl, DanglingUntriaged> storage_partition_ = nullptr;
 
   // Map that contains all service workers that are considered "running". Used
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.

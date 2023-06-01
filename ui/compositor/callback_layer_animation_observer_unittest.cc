@@ -126,11 +126,11 @@ class TestCallbacksThatExplicitlyDeletesObserver : public TestCallbacks {
 
  private:
   // The observer to delete, if non-NULL, in AnimationsStarted().
-  raw_ptr<CallbackLayerAnimationObserver>
+  raw_ptr<CallbackLayerAnimationObserver, DanglingUntriaged>
       observer_to_delete_in_animation_started_ = nullptr;
 
   // The observer to delete, if non-NULL, in AnimationsEnded().
-  raw_ptr<CallbackLayerAnimationObserver>
+  raw_ptr<CallbackLayerAnimationObserver, DanglingUntriaged>
       observer_to_delete_in_animation_ended_ = nullptr;
 };
 

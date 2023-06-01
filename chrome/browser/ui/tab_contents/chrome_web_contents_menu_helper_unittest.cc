@@ -40,7 +40,8 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
+      pref_service_;
 };
 }  // namespace
 

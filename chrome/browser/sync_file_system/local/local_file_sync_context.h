@@ -329,7 +329,7 @@ class LocalFileSyncContext
       base::File::Error error);
 
   const base::FilePath local_base_path_;
-  raw_ptr<leveldb::Env> env_override_;
+  raw_ptr<leveldb::Env, DanglingUntriaged> env_override_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

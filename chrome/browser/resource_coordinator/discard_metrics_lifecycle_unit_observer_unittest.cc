@@ -44,7 +44,7 @@ class DiscardMetricsLifecycleUnitObserverTest : public testing::Test {
   }
 
   // Owned by |lifecycle_unit|.
-  raw_ptr<DiscardMetricsLifecycleUnitObserver> observer_ =
+  raw_ptr<DiscardMetricsLifecycleUnitObserver, DanglingUntriaged> observer_ =
       new DiscardMetricsLifecycleUnitObserver();
 
   std::unique_ptr<TestLifecycleUnit> lifecycle_unit_ =

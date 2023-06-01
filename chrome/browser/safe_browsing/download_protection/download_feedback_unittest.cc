@@ -76,7 +76,7 @@ class FakeUploaderFactory : public TwoPhaseUploaderFactory {
       TwoPhaseUploader::FinishCallback finish_callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
-  raw_ptr<FakeUploader> uploader_;
+  raw_ptr<FakeUploader, DanglingUntriaged> uploader_;
 };
 
 std::unique_ptr<TwoPhaseUploader> FakeUploaderFactory::CreateTwoPhaseUploader(

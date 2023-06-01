@@ -412,7 +412,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages_;
   base::flat_set<mojom::PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
-  const raw_ptr<content::WebContents> initiator_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> initiator_;
 };
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)

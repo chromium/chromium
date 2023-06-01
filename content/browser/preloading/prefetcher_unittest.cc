@@ -99,7 +99,7 @@ class MockContentBrowserClient : public TestContentBrowserClient {
 
  private:
   raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockSpeculationHostDelegate> delegate_;
+  raw_ptr<MockSpeculationHostDelegate, DanglingUntriaged> delegate_;
 };
 
 class PrefetcherTest : public RenderViewHostTestHarness {

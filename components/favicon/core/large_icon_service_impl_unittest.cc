@@ -123,7 +123,7 @@ class LargeIconServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   ui::test::ScopedSetSupportedResourceScaleFactors
       scoped_set_supported_scale_factors_;
-  raw_ptr<NiceMock<MockImageFetcher>> mock_image_fetcher_;
+  raw_ptr<NiceMock<MockImageFetcher>, DanglingUntriaged> mock_image_fetcher_;
   testing::NiceMock<MockFaviconService> mock_favicon_service_;
   LargeIconServiceImpl large_icon_service_;
   base::HistogramTester histogram_tester_;

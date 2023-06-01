@@ -225,7 +225,7 @@ class RemotingSenderTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
 
-  raw_ptr<testing::StrictMock<FakeSender>> sender_;
+  raw_ptr<testing::StrictMock<FakeSender>, DanglingUntriaged> sender_;
   bool expecting_error_callback_run_ = false;
 
   std::unique_ptr<MojoSenderWrapper> mojo_sender_wrapper_;

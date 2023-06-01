@@ -198,7 +198,7 @@ class ExternallyManagedAppManagerTest
   int deduped_install_count_ = 0;
   int deduped_uninstall_count_ = 0;
 
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;

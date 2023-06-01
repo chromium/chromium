@@ -60,7 +60,7 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
   password_manager::PasswordForm pending_password_;
 
  private:
-  raw_ptr<PasswordSaveUpdateView> view_;
+  raw_ptr<PasswordSaveUpdateView, DanglingUntriaged> view_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 

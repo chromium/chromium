@@ -61,7 +61,7 @@ class MutedNotificationHandler : public NotificationHandler {
   Delegate* get_delegate_for_testing() const { return delegate_; }
 
  private:
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MUTED_NOTIFICATION_HANDLER_H_

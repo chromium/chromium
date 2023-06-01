@@ -158,9 +158,9 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
-  raw_ptr<FakeWebAppDatabaseFactory> database_factory_;
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
+  raw_ptr<FakeWebAppDatabaseFactory, DanglingUntriaged> database_factory_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };

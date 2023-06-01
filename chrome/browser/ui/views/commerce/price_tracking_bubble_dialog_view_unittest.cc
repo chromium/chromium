@@ -100,7 +100,7 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
 
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
 
  private:
   views::UniqueWidgetPtr anchor_widget_;

@@ -58,7 +58,7 @@ class PartialCircularBuffer {
   void DoWrite(const uint8_t* input, uint32_t input_size);
 
   // Used for reading and writing.
-  raw_ptr<BufferData> buffer_data_;
+  raw_ptr<BufferData, DanglingUntriaged> buffer_data_;
   uint32_t memory_buffer_size_;
   uint32_t data_size_;
   uint32_t position_;

@@ -1172,8 +1172,8 @@ class RestrictedDispatchClient : public Worker {
   }
 
   int ping_;
-  raw_ptr<RestrictedDispatchServer> server_;
-  raw_ptr<NonRestrictedDispatchServer> server2_;
+  raw_ptr<RestrictedDispatchServer, DanglingUntriaged> server_;
+  raw_ptr<NonRestrictedDispatchServer, DanglingUntriaged> server2_;
   raw_ptr<int> success_;
   raw_ptr<WaitableEvent> sent_ping_event_;
   std::unique_ptr<SyncChannel> non_restricted_channel_;
@@ -1286,7 +1286,7 @@ class RestrictedDispatchDeadlockServer : public Worker {
   int server_num_;
   raw_ptr<WaitableEvent> server_ready_event_;
   raw_ptr<WaitableEvent*> events_;
-  raw_ptr<RestrictedDispatchDeadlockServer> peer_;
+  raw_ptr<RestrictedDispatchDeadlockServer, DanglingUntriaged> peer_;
 };
 
 class RestrictedDispatchDeadlockClient2 : public Worker {
@@ -1409,8 +1409,8 @@ class RestrictedDispatchDeadlockClient1 : public Worker {
     }
   }
 
-  raw_ptr<RestrictedDispatchDeadlockServer> server_;
-  raw_ptr<RestrictedDispatchDeadlockClient2> peer_;
+  raw_ptr<RestrictedDispatchDeadlockServer, DanglingUntriaged> server_;
+  raw_ptr<RestrictedDispatchDeadlockClient2, DanglingUntriaged> peer_;
   raw_ptr<WaitableEvent> server_ready_event_;
   raw_ptr<WaitableEvent*> events_;
   bool received_msg_;

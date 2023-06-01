@@ -611,9 +611,10 @@ class ExternallyManagedAppManagerImplTest
   WebAppCommandScheduler& command_scheduler() { return provider().scheduler(); }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
-  raw_ptr<FakeInstallFinalizer> install_finalizer_;
-  raw_ptr<TestExternallyManagedAppManager> externally_managed_app_manager_impl_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeInstallFinalizer, DanglingUntriaged> install_finalizer_;
+  raw_ptr<TestExternallyManagedAppManager, DanglingUntriaged>
+      externally_managed_app_manager_impl_;
 
   TestExternallyManagedAppInstallTaskManager test_install_task_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

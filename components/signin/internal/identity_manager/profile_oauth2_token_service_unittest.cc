@@ -121,9 +121,10 @@ class ProfileOAuth2TokenServiceTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::
           IO};  // net:: stuff needs IO
                 // message loop.
-  raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_ = nullptr;
-  raw_ptr<FakeProfileOAuth2TokenServiceDelegate> delegate_ptr_ =
-      nullptr;  // Not owned.
+  raw_ptr<network::TestURLLoaderFactory, DanglingUntriaged>
+      test_url_loader_factory_ = nullptr;
+  raw_ptr<FakeProfileOAuth2TokenServiceDelegate, DanglingUntriaged>
+      delegate_ptr_ = nullptr;  // Not owned.
   std::unique_ptr<ProfileOAuth2TokenService> oauth2_service_;
   CoreAccountId account_id_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;

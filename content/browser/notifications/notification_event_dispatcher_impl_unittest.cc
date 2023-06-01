@@ -104,7 +104,7 @@ class NotificationEventDispatcherImplTest : public RenderViewHostTestHarness {
   };
   // Using a raw pointer because NotificationEventDispatcherImpl is a singleton
   // with private constructor and destructor, so unique_ptr is not an option.
-  raw_ptr<NotificationEventDispatcherImpl> dispatcher_;
+  raw_ptr<NotificationEventDispatcherImpl, DanglingUntriaged> dispatcher_;
 };
 
 TEST_F(NotificationEventDispatcherImplTest,

@@ -174,7 +174,7 @@ class LoadingPredictor : public KeyedService,
   }
 
   LoadingPredictorConfig config_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<ResourcePrefetchPredictor> resource_prefetch_predictor_;
   std::unique_ptr<LoadingStatsCollector> stats_collector_;
   std::unique_ptr<LoadingDataCollector> loading_data_collector_;

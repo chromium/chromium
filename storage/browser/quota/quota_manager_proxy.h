@@ -291,7 +291,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   //    constructed. This is because the easiest way to ensure that
   //    QuotaManagerImpl exposes its QuotaManagerProxy in a thread-safe manner
   //    is to have the QuotaManagerImpl's QuotaManagerProxy reference be const.
-  raw_ptr<QuotaManagerImpl> quota_manager_impl_
+  raw_ptr<QuotaManagerImpl, DanglingUntriaged> quota_manager_impl_
       GUARDED_BY_CONTEXT(quota_manager_impl_sequence_checker_);
 
   // TaskRunner that accesses QuotaManagerImpl's sequence.

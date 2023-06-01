@@ -64,7 +64,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
 
   // Bluetooth address of the underlying device.
   std::string device_address_;
-  raw_ptr<BluetoothDevice> device_ = nullptr;
+  raw_ptr<BluetoothDevice, DanglingUntriaged> device_ = nullptr;
 
  private:
   bool owns_reference_for_connection_ = false;

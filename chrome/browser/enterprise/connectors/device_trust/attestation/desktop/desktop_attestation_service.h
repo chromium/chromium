@@ -78,7 +78,7 @@ class DesktopAttestationService : public AttestationService {
   // Owned by the CBCMController, which is eventually owned by the browser
   // process. Since the current service is owned at the profile level, this
   // respects the browser shutdown sequence.
-  raw_ptr<DeviceTrustKeyManager> key_manager_;
+  raw_ptr<DeviceTrustKeyManager, DanglingUntriaged> key_manager_;
 
   // Used for retrieving a managed devices customer ID.
   const raw_ptr<policy::CloudPolicyStore> browser_cloud_policy_store_;

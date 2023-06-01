@@ -160,7 +160,7 @@ class AutoSelectCertificateTest : public testing::Test {
   scoped_refptr<net::X509Certificate> client_1_;
   scoped_refptr<net::X509Certificate> client_2_;
 
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 

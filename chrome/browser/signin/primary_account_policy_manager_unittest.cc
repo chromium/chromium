@@ -73,7 +73,7 @@ class PrimaryAccountPolicyManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };

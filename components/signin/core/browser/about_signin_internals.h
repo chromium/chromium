@@ -245,7 +245,7 @@ class AboutSigninInternals : public KeyedService,
   raw_ptr<SigninErrorController> signin_error_controller_;
 
   // Weak pointer to the AccountReconcilor.
-  raw_ptr<AccountReconcilor> account_reconcilor_;
+  raw_ptr<AccountReconcilor, DanglingUntriaged> account_reconcilor_;
 
   // Encapsulates the actual signin and token related values.
   // Most of the values are mirrored in the prefs for persistence.

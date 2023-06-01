@@ -131,7 +131,8 @@ class RemotingRegisterSupportHostTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<RemotingRegisterSupportHostRequest> register_host_request_;
-  raw_ptr<MockRegisterSupportHostClient> register_host_client_ = nullptr;
+  raw_ptr<MockRegisterSupportHostClient, DanglingUntriaged>
+      register_host_client_ = nullptr;
 
   std::unique_ptr<SignalStrategy> signal_strategy_;
   scoped_refptr<RsaKeyPair> key_pair_;

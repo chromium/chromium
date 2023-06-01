@@ -40,7 +40,7 @@ class OfflinerClientTest : public testing::Test {
       task_runner_current_default_handle_{task_runner_};
 
   MockProgressCallback progress_callback_;
-  raw_ptr<OfflinerStub> offliner_ = new OfflinerStub;
+  raw_ptr<OfflinerStub, DanglingUntriaged> offliner_ = new OfflinerStub;
   OfflinerClient client_{std::unique_ptr<OfflinerStub>(offliner_),
                          progress_callback_.Get()};
 };

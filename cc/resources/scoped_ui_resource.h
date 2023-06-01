@@ -46,7 +46,7 @@ class CC_EXPORT ScopedUIResource : public UIResourceClient {
                    const UIResourceBitmap& bitmap);
 
   UIResourceBitmap bitmap_;
-  raw_ptr<UIResourceManager> ui_resource_manager_;
+  raw_ptr<UIResourceManager, DanglingUntriaged> ui_resource_manager_;
   UIResourceId id_;
 };
 

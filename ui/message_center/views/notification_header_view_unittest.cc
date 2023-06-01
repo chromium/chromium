@@ -83,7 +83,8 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  raw_ptr<NotificationHeaderView> notification_header_view_ = nullptr;
+  raw_ptr<NotificationHeaderView, DanglingUntriaged> notification_header_view_ =
+      nullptr;
 
  private:
   views::Widget widget_;

@@ -211,7 +211,7 @@ class DeviceOAuth2TokenServiceTest : public testing::Test {
   std::unique_ptr<DeviceOAuth2TokenService, TokenServiceDeleter>
       oauth2_service_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;
-  raw_ptr<MockDeviceOAuth2TokenStore> token_store_;
+  raw_ptr<MockDeviceOAuth2TokenStore, DanglingUntriaged> token_store_;
 };
 
 void DeviceOAuth2TokenServiceTest::ReturnOAuthUrlFetchResults(

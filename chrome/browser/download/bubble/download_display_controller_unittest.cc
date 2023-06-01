@@ -110,7 +110,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   bool detail_shown_ = false;
   bool is_fullscreen_ = false;
   bool should_show_exclusive_access_bubble_ = true;
-  raw_ptr<DownloadDisplayController> controller_ = nullptr;
+  raw_ptr<DownloadDisplayController, DanglingUntriaged> controller_ = nullptr;
 };
 
 // TODO(chlily): Pull this and the very similar class in

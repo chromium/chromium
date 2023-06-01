@@ -85,7 +85,7 @@ class BaseRingBufferTest : public testing::Test {
   bool delay_set_token_;
 
   std::unique_ptr<int8_t[]> buffer_;
-  raw_ptr<int8_t> buffer_start_;
+  raw_ptr<int8_t, DanglingUntriaged> buffer_start_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

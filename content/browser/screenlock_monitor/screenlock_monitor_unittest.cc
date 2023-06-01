@@ -62,7 +62,8 @@ class ScreenlockMonitorTest : public testing::Test {
   ~ScreenlockMonitorTest() override = default;
 
  protected:
-  raw_ptr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
+  raw_ptr<ScreenlockMonitorTestSource, DanglingUntriaged>
+      screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{

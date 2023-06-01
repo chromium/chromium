@@ -95,7 +95,7 @@ class DecryptingRendererTest : public testing::Test {
   StrictMock<MockDecryptor> decryptor_;
   StrictMock<MockMediaResource> media_resource_;
   StrictMock<MockRendererClient> renderer_client_;
-  raw_ptr<StrictMock<MockRenderer>> renderer_;
+  raw_ptr<StrictMock<MockRenderer>, DanglingUntriaged> renderer_;
   std::unique_ptr<DecryptingRenderer> decrypting_renderer_;
   std::vector<std::unique_ptr<StrictMock<MockDemuxerStream>>> streams_;
 };

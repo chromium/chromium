@@ -39,8 +39,8 @@ class ExtensionActionManagerTest
   ExtensionRegistry* registry() { return registry_; }
 
  private:
-  raw_ptr<ExtensionRegistry> registry_;
-  raw_ptr<ExtensionActionManager> manager_;
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_;
+  raw_ptr<ExtensionActionManager, DanglingUntriaged> manager_;
 };
 
 ExtensionActionManagerTest::ExtensionActionManagerTest() = default;

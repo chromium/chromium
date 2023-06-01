@@ -200,7 +200,7 @@ class Http2Connection::ResponseDelegate : public HttpResponseDelegate {
   std::vector<std::unique_ptr<HttpResponse>> responses_;
   StreamId stream_id_;
   const raw_ptr<Http2Connection> connection_;
-  raw_ptr<DataFrameSource> data_frame_;
+  raw_ptr<DataFrameSource, DanglingUntriaged> data_frame_;
   base::WeakPtrFactory<ResponseDelegate> weak_factory_{this};
 };
 

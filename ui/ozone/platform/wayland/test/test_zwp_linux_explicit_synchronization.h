@@ -21,7 +21,7 @@ class TestLinuxSurfaceSynchronization : public ServerObject {
   wl_resource* surface_resource() const { return surface_resource_; }
 
  private:
-  raw_ptr<wl_resource> surface_resource_;
+  raw_ptr<wl_resource, DanglingUntriaged> surface_resource_;
 };
 
 // Manage wl_viewporter object.

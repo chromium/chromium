@@ -824,9 +824,10 @@ class ChromeHidTestHelper {
   }
 
  protected:
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   GURL origin_url_;
-  raw_ptr<MockHidConnectionTracker> hid_connection_tracker_ = nullptr;
+  raw_ptr<MockHidConnectionTracker, DanglingUntriaged> hid_connection_tracker_ =
+      nullptr;
   // This flag is expected to be set to true only for the scenario of extension
   // origin and kEnableWebHidOnExtensionServiceWorker enabled.
   bool supports_hid_connection_tracker_ = false;

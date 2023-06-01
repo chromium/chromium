@@ -46,7 +46,7 @@ class BluetoothLocalGattDescriptorTest : public BluetoothGattServerTest {
   base::WeakPtr<BluetoothLocalGattCharacteristic> characteristic_;
   base::WeakPtr<BluetoothLocalGattDescriptor> read_descriptor_;
   base::WeakPtr<BluetoothLocalGattDescriptor> write_descriptor_;
-  raw_ptr<BluetoothDevice> device_;
+  raw_ptr<BluetoothDevice, DanglingUntriaged> device_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)

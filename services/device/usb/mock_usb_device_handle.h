@@ -143,7 +143,7 @@ class MockUsbDeviceHandle : public UsbDeviceHandle {
   ~MockUsbDeviceHandle() override;
 
  private:
-  raw_ptr<UsbDevice> device_;
+  raw_ptr<UsbDevice, DanglingUntriaged> device_;
 };
 
 }  // namespace device

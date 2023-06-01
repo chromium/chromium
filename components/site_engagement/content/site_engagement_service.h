@@ -302,7 +302,7 @@ class SiteEngagementService : public KeyedService,
   void AddObserver(SiteEngagementObserver* observer);
   void RemoveObserver(SiteEngagementObserver* observer);
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   // The clock used to vend times.
   raw_ptr<base::Clock> clock_;

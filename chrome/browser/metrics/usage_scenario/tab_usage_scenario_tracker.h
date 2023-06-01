@@ -94,7 +94,7 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   VisibleTabsMap visible_tabs_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // WebContents currently playing video fullscreen.
-  base::flat_set<raw_ptr<content::WebContents>>
+  base::flat_set<raw_ptr<content::WebContents, DanglingUntriaged>>
       contents_playing_video_fullscreen_;
 
   display::ScopedDisplayObserver display_observer_{this};

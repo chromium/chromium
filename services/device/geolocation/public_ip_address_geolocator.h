@@ -55,7 +55,7 @@ class PublicIpAddressGeolocator : public mojom::Geolocation {
   base::Time last_updated_timestamp_;
 
   // Notifier to ask for IP-geolocation updates.
-  const raw_ptr<PublicIpAddressLocationNotifier> notifier_;
+  const raw_ptr<PublicIpAddressLocationNotifier, DanglingUntriaged> notifier_;
 
   // The most recent PartialNetworkTrafficAnnotationTag provided by a client.
   std::unique_ptr<const net::PartialNetworkTrafficAnnotationTag>

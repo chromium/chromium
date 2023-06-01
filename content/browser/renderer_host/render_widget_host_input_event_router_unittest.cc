@@ -99,7 +99,7 @@ class StubHitTestQuery : public viz::HitTestQuery {
   }
 
  private:
-  raw_ptr<const RenderWidgetHostViewBase> hittest_result_;
+  raw_ptr<const RenderWidgetHostViewBase, DanglingUntriaged> hittest_result_;
   const bool query_renderer_;
 };
 

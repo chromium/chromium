@@ -70,7 +70,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  raw_ptr<testing::StrictMock<MockOsIntegrationManager>>
+  raw_ptr<testing::StrictMock<MockOsIntegrationManager>, DanglingUntriaged>
       os_integration_manager_;
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
   base::HistogramTester histogram_tester_;

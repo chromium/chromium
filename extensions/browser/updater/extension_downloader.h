@@ -449,7 +449,7 @@ class ExtensionDownloader {
   std::map<ExtensionId, ExtensionDownloaderDelegate::PingResult> ping_results_;
 
   // Cache for .crx files.
-  raw_ptr<ExtensionCache> extension_cache_;
+  raw_ptr<ExtensionCache, DanglingUntriaged> extension_cache_;
 
   // May be used to fetch access tokens for protected download requests. May be
   // null. If non-null, guaranteed to outlive this object.

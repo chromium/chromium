@@ -387,7 +387,7 @@ class V8ContextTrackerInternalTearDownOrderTest
 
   raw_ptr<ProcessData> process_data_ = nullptr;
   raw_ptr<ProcessData> other_process_data_ = nullptr;
-  raw_ptr<ExecutionContextData> ec_data_ = nullptr;
+  raw_ptr<ExecutionContextData, DanglingUntriaged> ec_data_ = nullptr;
 };
 
 }  // namespace

@@ -4875,11 +4875,11 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> notifier_task_runner_;
-  raw_ptr<TestDnsConfigService> config_service_;
+  raw_ptr<TestDnsConfigService, DanglingUntriaged> config_service_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
 
   // Owned by |resolver_|.
-  raw_ptr<MockDnsClient> dns_client_ = nullptr;
+  raw_ptr<MockDnsClient, DanglingUntriaged> dns_client_ = nullptr;
 };
 
 TEST_F(HostResolverManagerDnsTest, FlushCacheOnDnsConfigChange) {

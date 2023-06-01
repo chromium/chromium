@@ -1436,7 +1436,7 @@ class ObserverDestroyingWindowOnAnimationEnded
       ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<Window> window_;
+  raw_ptr<Window, DanglingUntriaged> window_;
 };
 
 }  // namespace
@@ -1593,7 +1593,7 @@ class WindowDelegateHidingWindowIfOccluded : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> other_window_;
+  raw_ptr<Window, DanglingUntriaged> other_window_;
 };
 
 class WindowDelegateWithQueuedExpectation : public MockWindowDelegate {
@@ -1693,7 +1693,7 @@ class WindowDelegateDeletingWindow : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> other_window_ = nullptr;
+  raw_ptr<Window, DanglingUntriaged> other_window_ = nullptr;
 };
 
 }  // namespace
@@ -1963,7 +1963,7 @@ class WindowDelegateHidingWindow : public MockWindowDelegate {
   }
 
  private:
-  raw_ptr<Window> window_to_update_ = nullptr;
+  raw_ptr<Window, DanglingUntriaged> window_to_update_ = nullptr;
 };
 
 class WindowDelegateAddingAndHidingChild : public MockWindowDelegate {

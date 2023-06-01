@@ -250,7 +250,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   // Used to access blob storage context.
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  raw_ptr<Delegate> delegate_;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_;
 
   // Data downloaded from network, should be moved to avoid extra copy.
   std::string data_;

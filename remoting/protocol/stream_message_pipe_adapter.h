@@ -41,7 +41,7 @@ class StreamMessagePipeAdapter : public MessagePipe {
  private:
   void CloseOnError(int error);
 
-  raw_ptr<EventHandler> event_handler_ = nullptr;
+  raw_ptr<EventHandler, DanglingUntriaged> event_handler_ = nullptr;
 
   std::unique_ptr<P2PStreamSocket> socket_;
   ErrorCallback error_callback_;
@@ -74,7 +74,7 @@ class StreamMessageChannelFactoryAdapter : public MessageChannelFactory {
   void OnChannelCreated(ChannelCreatedCallback callback,
                         std::unique_ptr<P2PStreamSocket> socket);
 
-  raw_ptr<StreamChannelFactory> stream_channel_factory_;
+  raw_ptr<StreamChannelFactory, DanglingUntriaged> stream_channel_factory_;
   ErrorCallback error_callback_;
 };
 

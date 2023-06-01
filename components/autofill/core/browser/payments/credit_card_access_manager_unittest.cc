@@ -560,7 +560,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  raw_ptr<payments::TestPaymentsClient> payments_client_;
+  raw_ptr<payments::TestPaymentsClient, DanglingUntriaged> payments_client_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;

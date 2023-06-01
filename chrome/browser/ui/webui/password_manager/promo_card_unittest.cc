@@ -415,7 +415,7 @@ class PromoCardShortcutTest : public WebAppTest {
   web_app::FakeWebAppProvider* provider() { return provider_; }
 
  private:
-  raw_ptr<web_app::FakeWebAppProvider> provider_;
+  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged> provider_;
 };
 
 TEST_F(PromoCardShortcutTest, NoPromoIfShortcutInstalled) {

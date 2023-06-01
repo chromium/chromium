@@ -173,7 +173,8 @@ class RecentTabsSubMenuModelTest
   }
 
  private:
-  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
+  raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
+      session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
 };
 

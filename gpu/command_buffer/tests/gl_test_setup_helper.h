@@ -28,7 +28,7 @@ class GLTestSetupHelper : public testing::EmptyTestEventListener {
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  raw_ptr<gl::GLDisplay> display_ = nullptr;
+  raw_ptr<gl::GLDisplay, DanglingUntriaged> display_ = nullptr;
 };
 
 }  // namespace gpu

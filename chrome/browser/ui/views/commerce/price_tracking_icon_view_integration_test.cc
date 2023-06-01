@@ -142,7 +142,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
   MockShoppingListUiTabHelper* GetTabHelper() { return mock_tab_helper_.get(); }
 
  protected:
-  raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
+  raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
   base::UserActionTester user_action_tester_;
 
  private:

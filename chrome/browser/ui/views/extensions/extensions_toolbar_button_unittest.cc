@@ -27,7 +27,7 @@ class ExtensionsToolbarButtonUnitTest : public ExtensionsToolbarUnitTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester> web_contents_tester_;
+  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
   std::unique_ptr<ExtensionsMenuCoordinator> test_extensions_coordinator_;
 };
 

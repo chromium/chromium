@@ -108,12 +108,12 @@ class AccessCodeCastDiscoveryInterface {
   AddSinkResultCode IsResponseValid(
       const absl::optional<base::Value>& response);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   // Access code passed down from the WebUI and used in the construction of the
   // discovery interface object.
   const std::string access_code_;
 
-  const raw_ptr<LoggerImpl> logger_;
+  const raw_ptr<LoggerImpl, DanglingUntriaged> logger_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 

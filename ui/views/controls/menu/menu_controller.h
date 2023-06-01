@@ -309,7 +309,7 @@ class VIEWS_EXPORT MenuController
     ~State();
 
     // The selected menu item.
-    raw_ptr<MenuItemView> item = nullptr;
+    raw_ptr<MenuItemView, DanglingUntriaged> item = nullptr;
 
     // Used to capture a hot tracked child button when a nested menu is opened
     // and to restore the hot tracked state when exiting a nested menu.

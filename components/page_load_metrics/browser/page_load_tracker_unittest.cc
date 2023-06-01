@@ -133,7 +133,7 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
   base::flat_map<std::string, ukm::SourceId> ukm_source_ids_;
 
   PageLoadMetricsObserverEvents events_;
-  raw_ptr<TestPageLoadMetricsObserver> observer_;
+  raw_ptr<TestPageLoadMetricsObserver, DanglingUntriaged> observer_;
   bool is_observer_passed_ = false;
 
   GURL target_url_;

@@ -92,7 +92,7 @@ class SpdySessionPoolTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  raw_ptr<SpdySessionPool> spdy_session_pool_ = nullptr;
+  raw_ptr<SpdySessionPool, DanglingUntriaged> spdy_session_pool_ = nullptr;
   std::vector<std::unique_ptr<SSLSocketDataProvider>> ssl_data_vector_;
 };
 

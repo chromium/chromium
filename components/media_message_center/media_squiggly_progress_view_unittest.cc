@@ -44,7 +44,7 @@ class MediaSquigglyProgressViewTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MediaSquigglyProgressView> view_ = nullptr;
+  raw_ptr<MediaSquigglyProgressView, DanglingUntriaged> view_ = nullptr;
 };
 
 TEST_F(MediaSquigglyProgressViewTest, MediaPlaying) {

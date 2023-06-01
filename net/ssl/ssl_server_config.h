@@ -88,7 +88,7 @@ struct NET_EXPORT SSLServerConfig {
   // and must outlive any sockets spawned from this SSLServerContext.
   // This field is meaningful only if client certificates are requested.
   // If a verifier is not provided then all certificates are accepted.
-  raw_ptr<ClientCertVerifier> client_cert_verifier = nullptr;
+  raw_ptr<ClientCertVerifier, DanglingUntriaged> client_cert_verifier = nullptr;
 
   // The list of application level protocols supported with ALPN (Application
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols

@@ -163,7 +163,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   const FrameNode* created_frame_node() { return created_frame_node_; }
 
  private:
-  raw_ptr<const FrameNode> created_frame_node_ = nullptr;
+  raw_ptr<const FrameNode, DanglingUntriaged> created_frame_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

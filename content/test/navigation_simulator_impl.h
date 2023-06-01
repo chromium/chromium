@@ -344,13 +344,13 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // IMPORTANT: Because NavigationSimulator is used outside content/ where we
   // sometimes use WebContentsImpl and not TestWebContents, this cannot be
   // assumed to cast properly to TestWebContents.
-  raw_ptr<WebContentsImpl> web_contents_;
+  raw_ptr<WebContentsImpl, DanglingUntriaged> web_contents_;
 
   // The renderer associated with this navigation.
   // Note: this can initially be null for browser-initiated navigations.
-  raw_ptr<TestRenderFrameHost> render_frame_host_;
+  raw_ptr<TestRenderFrameHost, DanglingUntriaged> render_frame_host_;
 
-  raw_ptr<FrameTreeNode> frame_tree_node_;
+  raw_ptr<FrameTreeNode, DanglingUntriaged> frame_tree_node_;
 
   // The NavigationRequest associated with this navigation.
   raw_ptr<NavigationRequest> request_;

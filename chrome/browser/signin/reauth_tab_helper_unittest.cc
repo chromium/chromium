@@ -40,7 +40,7 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness {
   const GURL& reauth_url() { return reauth_url_; }
 
  private:
-  raw_ptr<ReauthTabHelper> tab_helper_ = nullptr;
+  raw_ptr<ReauthTabHelper, DanglingUntriaged> tab_helper_ = nullptr;
   base::MockOnceCallback<void(signin::ReauthResult)> mock_callback_;
   const GURL reauth_url_;
 };

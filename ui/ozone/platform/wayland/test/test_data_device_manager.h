@@ -38,8 +38,8 @@ class TestDataDeviceManager : public GlobalObject {
   }
 
  private:
-  raw_ptr<TestDataDevice> data_device_ = nullptr;
-  raw_ptr<TestDataSource> data_source_ = nullptr;
+  raw_ptr<TestDataDevice, DanglingUntriaged> data_device_ = nullptr;
+  raw_ptr<TestDataSource, DanglingUntriaged> data_source_ = nullptr;
 };
 
 }  // namespace wl

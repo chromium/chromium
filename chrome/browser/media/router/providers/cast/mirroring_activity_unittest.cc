@@ -177,9 +177,12 @@ class MirroringActivityTest
   }
 
   bool route_is_local_ = true;
-  raw_ptr<MockCastMessageChannel> channel_to_service_ = nullptr;
-  raw_ptr<MockMediaRouterDebugger> debugger_object_ = nullptr;
-  raw_ptr<MockMirroringServiceHost> mirroring_service_ = nullptr;
+  raw_ptr<MockCastMessageChannel, DanglingUntriaged> channel_to_service_ =
+      nullptr;
+  raw_ptr<MockMediaRouterDebugger, DanglingUntriaged> debugger_object_ =
+      nullptr;
+  raw_ptr<MockMirroringServiceHost, DanglingUntriaged> mirroring_service_ =
+      nullptr;
   NiceMock<MockMirroringServiceHostFactory> mirroring_service_host_factory_;
   NiceMock<MockMojoMediaRouter> media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;

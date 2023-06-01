@@ -314,7 +314,7 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
-  raw_ptr<TemplateURL> template_url_;
+  raw_ptr<TemplateURL, DanglingUntriaged> template_url_;
   std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
 };
 

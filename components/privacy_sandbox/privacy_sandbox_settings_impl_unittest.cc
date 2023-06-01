@@ -206,7 +206,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
+          DanglingUntriaged>
       mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;

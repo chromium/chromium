@@ -237,9 +237,10 @@ class FtlSignalStrategyTest : public testing::Test,
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  raw_ptr<MockOAuthTokenGetter> token_getter_ = nullptr;
-  raw_ptr<FakeRegistrationManager> registration_manager_ = nullptr;
-  raw_ptr<FakeMessagingClient> messaging_client_ = nullptr;
+  raw_ptr<MockOAuthTokenGetter, DanglingUntriaged> token_getter_ = nullptr;
+  raw_ptr<FakeRegistrationManager, DanglingUntriaged> registration_manager_ =
+      nullptr;
+  raw_ptr<FakeMessagingClient, DanglingUntriaged> messaging_client_ = nullptr;
   std::unique_ptr<FtlSignalStrategy> signal_strategy_;
 
   std::vector<SignalStrategy::State> state_history_;

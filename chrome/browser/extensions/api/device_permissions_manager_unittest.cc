@@ -88,7 +88,7 @@ class DevicePermissionsManagerTest : public testing::Test {
   void TearDown() override { env_.reset(nullptr); }
 
   std::unique_ptr<extensions::TestExtensionEnvironment> env_;
-  raw_ptr<const extensions::Extension> extension_;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
   device::FakeUsbDeviceManager fake_usb_manager_;
   device::mojom::UsbDeviceInfoPtr device0_;
   device::mojom::UsbDeviceInfoPtr device1_;

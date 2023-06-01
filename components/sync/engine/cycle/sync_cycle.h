@@ -118,7 +118,7 @@ class SyncCycle {
 
  private:
   // The context for this cycle, guaranteed to outlive |this|.
-  const raw_ptr<SyncCycleContext> context_;
+  const raw_ptr<SyncCycleContext, DanglingUntriaged> context_;
 
   // The delegate for this cycle, must never be null.
   const raw_ptr<Delegate> delegate_;

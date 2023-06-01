@@ -43,8 +43,8 @@ class ContextTestBase : public testing::Test {
   void TearDown() override { context_.reset(); }
 
  protected:
-  raw_ptr<gpu::gles2::GLES2Interface> gl_;
-  raw_ptr<gpu::ContextSupport> context_support_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_;
+  raw_ptr<gpu::ContextSupport, DanglingUntriaged> context_support_;
 
  private:
   gpu::InProcessGpuThreadHolder gpu_thread_holder_;

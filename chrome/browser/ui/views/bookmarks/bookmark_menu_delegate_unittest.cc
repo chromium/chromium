@@ -106,7 +106,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   // items of tyep SUBMENU.
   void LoadAllMenus() { LoadAllMenus(bookmark_menu_delegate_->menu()); }
 
-  raw_ptr<BookmarkModel> model_;
+  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
 
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
 

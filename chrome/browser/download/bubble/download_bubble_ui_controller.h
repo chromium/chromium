@@ -118,7 +118,7 @@ class DownloadBubbleUIController {
 
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
-  raw_ptr<DownloadBubbleUpdateService> update_service_;
+  raw_ptr<DownloadBubbleUpdateService, DanglingUntriaged> update_service_;
   raw_ptr<OfflineItemModelManager, DanglingUntriaged> offline_manager_;
 
   // DownloadDisplayController and DownloadBubbleUIController have the same

@@ -63,7 +63,7 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  raw_ptr<MessageCenter> message_center_;
+  raw_ptr<MessageCenter, DanglingUntriaged> message_center_;
 };
 
 TEST_F(NotificationUIManagerTest, SetupNotificationManager) {

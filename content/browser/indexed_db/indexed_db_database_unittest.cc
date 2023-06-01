@@ -129,7 +129,8 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  raw_ptr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
+  raw_ptr<FakeIndexedDBMetadataCoding, DanglingUntriaged> metadata_coding_ =
+      nullptr;
   bool error_called_ = false;
 
  private:
@@ -606,7 +607,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-  raw_ptr<IndexedDBTransaction> transaction_ = nullptr;
+  raw_ptr<IndexedDBTransaction, DanglingUntriaged> transaction_ = nullptr;
   PartitionedLockManager lock_manager_;
   bool error_called_ = false;
 

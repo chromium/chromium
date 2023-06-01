@@ -473,7 +473,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  raw_ptr<web_app::TestWebAppUrlLoader> url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged> url_loader_ =
+      nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

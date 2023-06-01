@@ -78,7 +78,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
 
   raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
   raw_ptr<views::ImageButton, DanglingUntriaged> settings_button_ = nullptr;
-  raw_ptr<views::ImageButton> snooze_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
   absl::optional<SkColor> icon_color_;

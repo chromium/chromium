@@ -109,7 +109,7 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
   std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
       database_;
   // Clock is owned by the service that creates this object.
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<base::Clock, DanglingUntriaged> clock_;
   base::WeakPtrFactory<ImageMetadataStoreLevelDB> weak_ptr_factory_{this};
 };
 

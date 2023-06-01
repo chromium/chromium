@@ -292,7 +292,8 @@ class UkmPageLoadMetricsObserverTest
   UkmPageLoadMetricsObserver* observer() const { return observer_; }
 
  private:
-  raw_ptr<UkmPageLoadMetricsObserver> observer_;  // Non-owning raw pointer.
+  raw_ptr<UkmPageLoadMetricsObserver, DanglingUntriaged>
+      observer_;  // Non-owning raw pointer.
 
   MockNetworkQualityProvider mock_network_quality_provider_;
 };

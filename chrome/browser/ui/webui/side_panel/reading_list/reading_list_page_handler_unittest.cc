@@ -193,7 +193,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestReadingListPageHandler> handler_;
-  raw_ptr<ReadingListModel> model_;
+  raw_ptr<ReadingListModel, DanglingUntriaged> model_;
 };
 
 TEST_F(TestReadingListPageHandlerTest, GetReadLaterEntries) {

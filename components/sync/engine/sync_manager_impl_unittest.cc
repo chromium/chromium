@@ -223,7 +223,7 @@ class SyncManagerImplTest : public testing::Test {
   // Owned by |sync_manager_|.
   raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
       nullptr;
-  raw_ptr<MockSyncScheduler> scheduler_ = nullptr;
+  raw_ptr<MockSyncScheduler, DanglingUntriaged> scheduler_ = nullptr;
 };
 
 // Test that the configuration params are properly created and sent to

@@ -168,7 +168,7 @@ class SourceBufferStateTest : public ::testing::Test {
 
   testing::StrictMock<MockMediaLog> media_log_;
   std::vector<std::unique_ptr<ChunkDemuxerStream>> demuxer_streams_;
-  raw_ptr<MockStreamParser> mock_stream_parser_;
+  raw_ptr<MockStreamParser, DanglingUntriaged> mock_stream_parser_;
   StreamParser::NewConfigCB new_config_cb_;
 };
 

@@ -764,7 +764,8 @@ class CONTENT_EXPORT MediaStreamManager
   const base::TimeDelta conditional_focus_window_;
 #endif
 
-  const raw_ptr<media::AudioSystem> audio_system_;  // not owned
+  const raw_ptr<media::AudioSystem, DanglingUntriaged>
+      audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
 

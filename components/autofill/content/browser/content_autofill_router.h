@@ -371,7 +371,8 @@ class ContentAutofillRouter {
 
   // The driver that triggered the last AskForValuesToFill() call.
   // Update with SetLastQueriedSource().
-  raw_ptr<ContentAutofillDriver> last_queried_source_ = nullptr;
+  raw_ptr<ContentAutofillDriver, DanglingUntriaged> last_queried_source_ =
+      nullptr;
   // The driver to which the last AskForValuesToFill() call was routed.
   // Update with SetLastQueriedTarget().
   raw_ptr<ContentAutofillDriver> last_queried_target_ = nullptr;

@@ -199,7 +199,7 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
 
   void ResetNativeNavButtonImagesFromButtonProvider() {
     struct {
-      raw_ptr<views::ImageButton> button;
+      raw_ptr<views::ImageButton, DanglingUntriaged> button;
       ui::NavButtonProvider::FrameButtonDisplayType type;
     } const kButtons[] = {
         {minimize_button_,
@@ -236,17 +236,18 @@ class BrowserFrameViewLayoutLinuxNativeTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::View> root_view_ = nullptr;
-  raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_manager_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> root_view_ = nullptr;
+  raw_ptr<BrowserFrameViewLayoutLinuxNative, DanglingUntriaged>
+      layout_manager_ = nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
   std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
   std::unique_ptr<ui::WindowFrameProvider> frame_provider_;
 
   // Widgets:
-  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
-  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
-  raw_ptr<views::ImageButton> restore_button_ = nullptr;
-  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
 };
 
 // Tests layout of native navigation buttons.

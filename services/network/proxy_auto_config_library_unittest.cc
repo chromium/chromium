@@ -263,7 +263,7 @@ class MockUDPSocket : public net::DatagramClientSocket {
   net::IPAddress local_ip_;
   net::Error connect_error_;
   bool connect_async_ = false;
-  raw_ptr<base::OnceClosure> connect_callback_;
+  raw_ptr<base::OnceClosure, DanglingUntriaged> connect_callback_;
 };
 
 class MockSocketFactory : public net::ClientSocketFactory {

@@ -102,7 +102,7 @@ class ImagePrefetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<MockImageLoader> image_loader_;
+  raw_ptr<MockImageLoader, DanglingUntriaged> image_loader_;
   std::unique_ptr<ImagePrefetcher> image_prefetcher_;
 };
 

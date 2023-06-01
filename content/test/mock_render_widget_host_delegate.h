@@ -70,11 +70,11 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
  private:
   std::unique_ptr<NativeWebKeyboardEvent> last_event_;
-  raw_ptr<RenderWidgetHostImpl> rwh_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
   bool is_fullscreen_ = false;
   TextInputManager text_input_manager_;
-  raw_ptr<RenderWidgetHostImpl> focused_widget_ = nullptr;
+  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;
   KeyboardEventProcessingResult pre_handle_keyboard_event_result_ =
       KeyboardEventProcessingResult::NOT_HANDLED;
   StubRenderViewHostDelegateView rvh_delegate_view_;

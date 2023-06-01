@@ -242,7 +242,7 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   raw_ptr<void> buffer_;
   unsigned int size_;
   raw_ptr<CommandBufferHelper> helper_;
-  raw_ptr<TransferBufferInterface> transfer_buffer_;
+  raw_ptr<TransferBufferInterface, DanglingUntriaged> transfer_buffer_;
 };
 
 template <typename T>

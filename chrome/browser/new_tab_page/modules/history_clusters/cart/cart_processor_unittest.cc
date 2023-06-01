@@ -91,7 +91,7 @@ class CartProcessorTest : public BrowserWithTestWindowTest {
              })}};
   }
 
-  raw_ptr<MockCartService> mock_cart_service_;
+  raw_ptr<MockCartService, DanglingUntriaged> mock_cart_service_;
   std::unique_ptr<CartProcessor> cart_processor_;
 };
 

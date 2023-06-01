@@ -216,7 +216,7 @@ class ExtensionServiceTestBase : public testing::Test {
 
   // The ExtensionService, whose lifetime is managed by |profile|'s
   // ExtensionSystem.
-  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_;
   ScopedTestingLocalState testing_local_state_;
 
  private:
@@ -233,7 +233,7 @@ class ExtensionServiceTestBase : public testing::Test {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
   // The associated ExtensionRegistry, for convenience.
-  raw_ptr<extensions::ExtensionRegistry> registry_;
+  raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> registry_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

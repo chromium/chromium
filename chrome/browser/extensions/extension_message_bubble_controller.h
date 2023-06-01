@@ -205,7 +205,7 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   void OnClose();
 
   // A weak pointer to the Browser we are associated with. Not owned by us.
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<Browser, DanglingUntriaged> browser_;
 
   // The associated ToolbarActionsModel. Not owned.
   raw_ptr<ToolbarActionsModel> model_;

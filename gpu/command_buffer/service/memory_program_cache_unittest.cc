@@ -204,8 +204,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   GpuProcessActivityFlags activity_flags_;
   std::unique_ptr<MemoryProgramCache> cache_;
   ShaderManager shader_manager_;
-  raw_ptr<Shader> vertex_shader_;
-  raw_ptr<Shader> fragment_shader_;
+  raw_ptr<Shader, DanglingUntriaged> vertex_shader_;
+  raw_ptr<Shader, DanglingUntriaged> fragment_shader_;
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;

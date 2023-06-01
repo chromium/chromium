@@ -116,7 +116,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
-  raw_ptr<MediaLog> media_log_;
+  raw_ptr<MediaLog, DanglingUntriaged> media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 

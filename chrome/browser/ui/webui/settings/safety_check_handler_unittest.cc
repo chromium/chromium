@@ -334,8 +334,9 @@ class SafetyCheckHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<safety_check::TestUpdateCheckHelper> update_helper_ = nullptr;
-  raw_ptr<TestVersionUpdater> version_updater_ = nullptr;
+  raw_ptr<safety_check::TestUpdateCheckHelper, DanglingUntriaged>
+      update_helper_ = nullptr;
+  raw_ptr<TestVersionUpdater, DanglingUntriaged> version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
   scoped_refptr<TestPasswordsDelegate> test_passwords_delegate_;
   raw_ptr<extensions::ExtensionPrefs> test_extension_prefs_ = nullptr;

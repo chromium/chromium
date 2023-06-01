@@ -68,7 +68,7 @@ class PluginListTest : public testing::Test {
 
   // Owns the PluginList but cannot be a std::unique_ptr due to private
   // ctor/dtor.
-  raw_ptr<PluginList> plugin_list_;
+  raw_ptr<PluginList, DanglingUntriaged> plugin_list_;
   WebPluginInfo foo_plugin_;
   WebPluginInfo bar_plugin_;
 };

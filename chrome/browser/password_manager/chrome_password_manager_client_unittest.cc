@@ -335,7 +335,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 
   bool metrics_enabled_ = false;
 
-  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
+  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

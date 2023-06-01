@@ -81,7 +81,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
   bool IsTransitionReentrant(bool new_fullscreen);
 
   WindowState state_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
 };
 
 FullscreenControllerTestWindow::FullscreenControllerTestWindow()
@@ -227,7 +227,7 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
   // FullscreenControllerStateTest:
   bool ShouldSkipStateAndEventPair(State state, Event event) override;
   Browser* GetBrowser() override;
-  raw_ptr<FullscreenControllerTestWindow> window_ = nullptr;
+  raw_ptr<FullscreenControllerTestWindow, DanglingUntriaged> window_ = nullptr;
 };
 
 FullscreenControllerStateUnitTest::FullscreenControllerStateUnitTest() =

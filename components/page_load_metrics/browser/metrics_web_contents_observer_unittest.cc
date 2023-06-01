@@ -249,7 +249,8 @@ class MetricsWebContentsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder, DanglingUntriaged>
+      embedder_interface_;
 
  private:
   int num_errors_ = 0;

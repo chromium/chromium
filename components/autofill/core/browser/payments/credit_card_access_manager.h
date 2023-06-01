@@ -432,7 +432,7 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.
-  const raw_ptr<AutofillDriver> driver_;
+  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;

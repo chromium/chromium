@@ -174,7 +174,7 @@ class CastTransportTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<MockCastTransportDelegate> delegate_;
+  raw_ptr<MockCastTransportDelegate, DanglingUntriaged> delegate_;
   MockSocket mock_socket_;
   // This field is not a raw_ptr<> because templates made it difficult for the
   // rewriter to see that |.get()| needs to be appended.

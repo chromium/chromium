@@ -81,7 +81,7 @@ class AudioOutputTest : public testing::TestWithParam<bool> {
   std::unique_ptr<AudioManager> audio_manager_;
   std::unique_ptr<AudioDeviceInfoAccessorForTests> audio_manager_device_info_;
   AudioParameters stream_params_;
-  raw_ptr<AudioOutputStream> stream_ = nullptr;
+  raw_ptr<AudioOutputStream, DanglingUntriaged> stream_ = nullptr;
   bool should_use_aaudio_ = false;
   bool aaudio_is_supported_ = false;
 #if BUILDFLAG(IS_ANDROID)

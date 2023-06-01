@@ -125,7 +125,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   ~MockQuotaManagerProxy() override;
 
  private:
-  const raw_ptr<MockQuotaManager> mock_quota_manager_;
+  const raw_ptr<MockQuotaManager, DanglingUntriaged> mock_quota_manager_;
 
   blink::StorageKey last_notified_storage_key_;
   blink::mojom::StorageType last_notified_type_ =

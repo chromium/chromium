@@ -129,12 +129,12 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
   }
 
  private:
-  raw_ptr<sharing_hub::SharingHubBubbleViewImpl> bubble_;
+  raw_ptr<sharing_hub::SharingHubBubbleViewImpl, DanglingUntriaged> bubble_;
   testing::NiceMock<sharing_hub::FakeSharingHubBubbleController> controller_{
       kFirstPartyActions};
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<views::Widget> bubble_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
 };
 
 TEST_F(SharingHubBubbleTest, AllFirstPartyActionsAppearInOrder) {

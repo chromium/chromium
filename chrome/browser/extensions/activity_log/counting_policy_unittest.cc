@@ -381,7 +381,7 @@ class CountingPolicyTest : public testing::Test {
 
  protected:
   base::SimpleTestClock mock_clock_;
-  raw_ptr<ExtensionService> extension_service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
 

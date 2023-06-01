@@ -80,8 +80,9 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   HatsHandler* handler() { return handler_.get(); }
-  raw_ptr<MockHatsService> mock_hats_service_;
-  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
+  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
+      mock_sentiment_service_;
 
  protected:
   // This should only be accessed in the test constructor, to avoid race

@@ -193,7 +193,8 @@ class CaptivePortalTabHelperTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<CaptivePortalTabHelper> tab_helper_;
 
   // Owned by |tab_helper_|.
-  raw_ptr<testing::StrictMock<MockCaptivePortalTabReloader>> mock_reloader_;
+  raw_ptr<testing::StrictMock<MockCaptivePortalTabReloader>, DanglingUntriaged>
+      mock_reloader_;
 };
 
 TEST_F(CaptivePortalTabHelperTest, HttpSuccess) {

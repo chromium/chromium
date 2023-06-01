@@ -122,8 +122,8 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
   // The sender for child frame.
   std::unique_ptr<FakeContentCaptureSender> child_frame_sender_;
 
-  raw_ptr<content::RenderFrameHost> main_frame_ = nullptr;
-  raw_ptr<content::RenderFrameHost> child_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> child_frame_ = nullptr;
 
   // Expected removed Ids.
   std::vector<int64_t> expected_removed_ids_{2};

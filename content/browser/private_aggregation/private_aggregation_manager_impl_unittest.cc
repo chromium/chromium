@@ -90,9 +90,9 @@ class PrivateAggregationManagerImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   // Keep pointers around for EXPECT_CALL.
-  raw_ptr<MockPrivateAggregationBudgeter> budgeter_;
-  raw_ptr<MockPrivateAggregationHost> host_;
-  raw_ptr<MockAggregationService> aggregation_service_;
+  raw_ptr<MockPrivateAggregationBudgeter, DanglingUntriaged> budgeter_;
+  raw_ptr<MockPrivateAggregationHost, DanglingUntriaged> host_;
+  raw_ptr<MockAggregationService, DanglingUntriaged> aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
 };

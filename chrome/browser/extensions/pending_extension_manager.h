@@ -178,7 +178,7 @@ class PendingExtensionManager {
   void AddToMap(const std::string& id, PendingExtensionInfo info);
 
   // The BrowserContext with which the manager is associated.
-  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
   std::map<std::string, PendingExtensionInfo> pending_extensions_;
 

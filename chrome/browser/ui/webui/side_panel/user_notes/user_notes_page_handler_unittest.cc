@@ -83,7 +83,7 @@ class UserNotesPageHandlerTest : public BrowserWithTestWindowTest {
 
  protected:
   MockUserNotesPage page_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
 
  private:
   std::unique_ptr<TestUserNotesPageHandler> handler_;

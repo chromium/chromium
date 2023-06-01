@@ -221,7 +221,7 @@ class MockAudioOutputStream : public AudioOutputStream,
     NOTREACHED();
   }
 
-  raw_ptr<AudioOutputStream> impl_;
+  raw_ptr<AudioOutputStream, DanglingUntriaged> impl_;
   const AudioParameters::Format format_;
   base::OnceClosure close_callback_;
   raw_ptr<AudioOutputStream::AudioSourceCallback> callback_ = nullptr;
@@ -312,8 +312,10 @@ class AudioManagerForControllerTest final : public media::FakeAudioManager {
   }
 
   media::FakeAudioLogFactory fake_audio_log_factory_;
-  raw_ptr<MockAudioOutputStream> last_created_stream_ = nullptr;
-  raw_ptr<MockAudioOutputStream> last_closed_stream_ = nullptr;
+  raw_ptr<MockAudioOutputStream, DanglingUntriaged> last_created_stream_ =
+      nullptr;
+  raw_ptr<MockAudioOutputStream, DanglingUntriaged> last_closed_stream_ =
+      nullptr;
 };
 
 ACTION(PopulateBuffer) {

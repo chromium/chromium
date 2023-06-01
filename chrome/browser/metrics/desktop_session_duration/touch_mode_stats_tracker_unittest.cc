@@ -107,7 +107,7 @@ class TouchModeStatsTrackerTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<TouchModeStatsTracker> touch_mode_stats_tracker_;
 
  private:

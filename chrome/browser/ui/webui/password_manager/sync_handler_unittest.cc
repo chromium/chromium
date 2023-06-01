@@ -115,7 +115,7 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
   content::TestWebUI web_ui_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  raw_ptr<MockSyncService> mock_sync_service_;
+  raw_ptr<MockSyncService, DanglingUntriaged> mock_sync_service_;
   raw_ptr<SyncHandler> handler_;
 };
 

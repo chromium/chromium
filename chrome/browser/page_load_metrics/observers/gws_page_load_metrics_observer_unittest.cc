@@ -53,7 +53,7 @@ class GWSPageLoadMetricsObserverTest
   }
 
  protected:
-  raw_ptr<GWSPageLoadMetricsObserver> observer_ = nullptr;
+  raw_ptr<GWSPageLoadMetricsObserver, DanglingUntriaged> observer_ = nullptr;
 };
 
 class GWSPageLoadMetricsLoggerTest : public testing::Test {};

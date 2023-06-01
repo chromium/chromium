@@ -108,8 +108,8 @@ class PhishyInteractionTracker {
   bool is_phishy_ = false;
 
   // UI Manager that returns specific threat types for testing.
-  raw_ptr<safe_browsing::SafeBrowsingUIManager> ui_manager_for_testing_ =
-      nullptr;
+  raw_ptr<safe_browsing::SafeBrowsingUIManager, DanglingUntriaged>
+      ui_manager_for_testing_ = nullptr;
 };
 
 }  // namespace safe_browsing

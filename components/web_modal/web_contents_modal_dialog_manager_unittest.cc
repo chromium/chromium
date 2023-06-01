@@ -127,7 +127,7 @@ class WebContentsModalDialogManagerTest
 
   int next_dialog_id;
   std::unique_ptr<TestWebContentsModalDialogManagerDelegate> delegate;
-  raw_ptr<WebContentsModalDialogManager> manager;
+  raw_ptr<WebContentsModalDialogManager, DanglingUntriaged> manager;
   std::unique_ptr<WebContentsModalDialogManager::TestApi> test_api;
 };
 

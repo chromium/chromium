@@ -101,8 +101,8 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<views::Widget> bubble_widget_ = nullptr;
-  raw_ptr<ToolbarActionsBarBubbleViews> bubble_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_ = nullptr;
+  raw_ptr<ToolbarActionsBarBubbleViews, DanglingUntriaged> bubble_ = nullptr;
 };
 
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutActionButton) {

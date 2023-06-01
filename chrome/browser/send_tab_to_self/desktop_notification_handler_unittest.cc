@@ -136,8 +136,9 @@ class DesktopNotificationHandlerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  raw_ptr<SendTabToSelfModelMock> model_mock_;
-  raw_ptr<NotificationDisplayServiceMock> display_service_mock_;
+  raw_ptr<SendTabToSelfModelMock, DanglingUntriaged> model_mock_;
+  raw_ptr<NotificationDisplayServiceMock, DanglingUntriaged>
+      display_service_mock_;
 };
 
 TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {

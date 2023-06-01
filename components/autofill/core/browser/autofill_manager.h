@@ -530,7 +530,7 @@ class AutofillManager
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const raw_ptr<AutofillDriver> driver_;
+  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;
 
   // Do not access this directly. Instead, please use client() or
   // unsafe_client(). These functions check (or explicitly don't check) that the

@@ -622,9 +622,11 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         std::move(pref_store_contents_));
   }
 
-  raw_ptr<MockPrefHashStore> mock_pref_hash_store_;
-  raw_ptr<MockPrefHashStore> mock_external_validation_pref_hash_store_;
-  raw_ptr<MockHashStoreContents> mock_external_validation_hash_store_contents_;
+  raw_ptr<MockPrefHashStore, DanglingUntriaged> mock_pref_hash_store_;
+  raw_ptr<MockPrefHashStore, DanglingUntriaged>
+      mock_external_validation_pref_hash_store_;
+  raw_ptr<MockHashStoreContents, DanglingUntriaged>
+      mock_external_validation_hash_store_contents_;
   base::Value::Dict pref_store_contents_;
   scoped_refptr<MockValidationDelegateRecord> mock_validation_delegate_record_;
   std::unique_ptr<PrefHashFilter> pref_hash_filter_;

@@ -96,7 +96,7 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
 
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override;
 
-  raw_ptr<ChromeDownloadManagerDelegate> delegate_;
+  raw_ptr<ChromeDownloadManagerDelegate, DanglingUntriaged> delegate_;
 };
 
 TestDownloadCoreService::TestDownloadCoreService(Profile* profile)

@@ -85,9 +85,9 @@ class TestLayerTreeHostBase : public testing::Test {
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink_;
   std::unique_ptr<FakeLayerTreeHostImpl> host_impl_;
 
-  raw_ptr<FakePictureLayerImpl> pending_layer_;
-  raw_ptr<FakePictureLayerImpl> active_layer_;
-  raw_ptr<FakePictureLayerImpl> old_pending_layer_;
+  raw_ptr<FakePictureLayerImpl, DanglingUntriaged> pending_layer_;
+  raw_ptr<FakePictureLayerImpl, DanglingUntriaged> active_layer_;
+  raw_ptr<FakePictureLayerImpl, DanglingUntriaged> old_pending_layer_;
   const int root_id_;
   int next_layer_id_;
 };

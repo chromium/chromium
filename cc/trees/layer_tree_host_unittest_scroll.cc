@@ -751,8 +751,8 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
   gfx::PointF final_scroll_offset_;
 
   scoped_refptr<Layer> child_layer_;
-  raw_ptr<Layer> expected_scroll_layer_;
-  raw_ptr<Layer> expected_no_scroll_layer_;
+  raw_ptr<Layer, DanglingUntriaged> expected_scroll_layer_;
+  raw_ptr<Layer, DanglingUntriaged> expected_no_scroll_layer_;
 };
 
 TEST_F(LayerTreeHostScrollTestCaseWithChild, DeviceScaleFactor1_ScrollChild) {
@@ -2401,7 +2401,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   // These values should be used on the impl thread only.
   int num_begin_main_frames_impl_thread_;
   MockInputHandlerClient input_handler_client_;
-  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
+  raw_ptr<ScrollElasticityHelper, DanglingUntriaged> scroll_elasticity_helper_;
 
   // These values should be used on the main thread only.
   int num_begin_main_frames_main_thread_;

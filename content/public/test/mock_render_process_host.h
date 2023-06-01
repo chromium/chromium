@@ -336,7 +336,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   int bad_msg_count_;
   int id_;
   bool has_connection_;
-  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
   base::ObserverList<RenderProcessHostObserver> observers_;
 
   StoragePartitionConfig storage_partition_config_;

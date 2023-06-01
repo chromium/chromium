@@ -312,7 +312,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
 
  protected:
   base::ScopedTempDir extensions_dir_;
-  raw_ptr<MockSandboxedUnpackerClient> client_;
+  raw_ptr<MockSandboxedUnpackerClient, DanglingUntriaged> client_;
   scoped_refptr<SandboxedUnpacker> sandboxed_unpacker_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;

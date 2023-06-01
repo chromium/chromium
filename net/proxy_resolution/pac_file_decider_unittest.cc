@@ -131,7 +131,7 @@ class RuleBasedPacFileFetcher : public PacFileFetcher {
 
  private:
   raw_ptr<const Rules> rules_;
-  raw_ptr<URLRequestContext> request_context_ = nullptr;
+  raw_ptr<URLRequestContext, DanglingUntriaged> request_context_ = nullptr;
 };
 
 // A mock retriever, returns asynchronously when CompleteRequests() is called.

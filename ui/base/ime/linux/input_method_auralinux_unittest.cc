@@ -201,8 +201,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   uint32_t input_flags_;
   bool should_do_learning_;
   bool can_compose_inline_;
-  raw_ptr<TextInputClient> old_client_ = nullptr;
-  raw_ptr<TextInputClient> new_client_ = nullptr;
+  raw_ptr<TextInputClient, DanglingUntriaged> old_client_ = nullptr;
+  raw_ptr<TextInputClient, DanglingUntriaged> new_client_ = nullptr;
 };
 
 class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {

@@ -512,7 +512,8 @@ class PrefServiceSyncableMergeTest : public testing::Test {
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
       base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
   // Owned by prefs_;
-  const raw_ptr<PrefNotifierImpl> pref_notifier_ = new PrefNotifierImpl;
+  const raw_ptr<PrefNotifierImpl, DanglingUntriaged> pref_notifier_ =
+      new PrefNotifierImpl;
   scoped_refptr<TestingPrefStore> managed_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
   scoped_refptr<TestingPrefStore> user_prefs_ =

@@ -607,8 +607,8 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
 
  protected:
   // Weak references, for convenience.
-  raw_ptr<Extension> app1_;
-  raw_ptr<Extension> app2_;
+  raw_ptr<Extension, DanglingUntriaged> app1_;
+  raw_ptr<Extension, DanglingUntriaged> app2_;
 
  private:
   scoped_refptr<Extension> app1_scoped_;

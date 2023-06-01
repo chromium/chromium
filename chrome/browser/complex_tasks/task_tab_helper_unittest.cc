@@ -71,7 +71,7 @@ class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetController().GetLastCommittedEntry();
   }
 
-  raw_ptr<MockTaskTabHelper> task_tab_helper_;
+  raw_ptr<MockTaskTabHelper, DanglingUntriaged> task_tab_helper_;
 };
 
 TEST_F(TaskTabHelperUnitTest, TestGetCurrentTaskId) {

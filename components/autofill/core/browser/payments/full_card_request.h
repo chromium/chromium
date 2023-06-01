@@ -241,7 +241,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Responsible for updating the server card on disk after it's been unmasked.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
 
   // Receiver of the full PAN and CVC.
   base::WeakPtr<ResultDelegate> result_delegate_;

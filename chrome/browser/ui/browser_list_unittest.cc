@@ -118,7 +118,7 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
 
  private:
   std::set<Browser*> observed_browsers_;
-  raw_ptr<Browser> created_for_browser_;
+  raw_ptr<Browser, DanglingUntriaged> created_for_browser_;
 };
 
 // Class that creates BrowserObserverChild when a Browser is created;

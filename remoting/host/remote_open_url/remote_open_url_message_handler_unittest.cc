@@ -55,7 +55,7 @@ class RemoteOpenUrlMessageHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   protocol::FakeMessagePipe fake_pipe_{/* asynchronous= */ false};
-  raw_ptr<RemoteOpenUrlMessageHandler> message_handler_;
+  raw_ptr<RemoteOpenUrlMessageHandler, DanglingUntriaged> message_handler_;
 };
 
 RemoteOpenUrlMessageHandlerTest::RemoteOpenUrlMessageHandlerTest() {

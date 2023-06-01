@@ -471,7 +471,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   MockObserver observer_;
 
   // Owned by |model_|;
-  raw_ptr<FakeWindowCapturer> window_capturer_;
+  raw_ptr<FakeWindowCapturer, DanglingUntriaged> window_capturer_;
 
   webrtc::DesktopCapturer::SourceList window_list_;
   std::vector<views::UniqueWidgetPtr> desktop_widgets_;

@@ -44,7 +44,7 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   }
 
   // The PaymentRequestWebContentsManager under test.
-  raw_ptr<PaymentRequestWebContentsManager> manager_;
+  raw_ptr<PaymentRequestWebContentsManager, DanglingUntriaged> manager_;
 
  private:
   // Necessary supporting members to create the testing environment.

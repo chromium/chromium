@@ -47,7 +47,7 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
                                  ThrottleCheckResult cancel_result);
   SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
-  raw_ptr<PolicyBlocklistService> blocklist_service_;
+  raw_ptr<PolicyBlocklistService, DanglingUntriaged> blocklist_service_;
 
   raw_ptr<PrefService> prefs_;
 };

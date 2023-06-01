@@ -303,7 +303,7 @@ class GCM_EXPORT MCSClient {
   PersistentIdList restored_unackeds_server_ids_;
 
   // The GCM persistent store. Not owned.
-  raw_ptr<GCMStore> gcm_store_;
+  raw_ptr<GCMStore, DanglingUntriaged> gcm_store_;
 
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 

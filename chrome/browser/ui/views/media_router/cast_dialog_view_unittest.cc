@@ -204,7 +204,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> anchor_widget_;
   NiceMock<MockCastDialogController> controller_;
   CastDialogCoordinator cast_dialog_coordinator_;
-  raw_ptr<CastDialogView> dialog_ = nullptr;
+  raw_ptr<CastDialogView, DanglingUntriaged> dialog_ = nullptr;
   TestingProfile profile_;
 };
 

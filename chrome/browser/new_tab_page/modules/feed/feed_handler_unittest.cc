@@ -94,7 +94,7 @@ class FeedHandlerTest : public testing::Test {
 
  protected:
   std::unique_ptr<FeedHandler> handler_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

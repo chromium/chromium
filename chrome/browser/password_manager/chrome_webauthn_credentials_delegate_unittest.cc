@@ -132,7 +132,8 @@ class ChromeWebAuthnCredentialsDelegateTest
 #endif
 
  protected:
-  raw_ptr<ChromeWebAuthnCredentialsDelegate> credentials_delegate_;
+  raw_ptr<ChromeWebAuthnCredentialsDelegate, DanglingUntriaged>
+      credentials_delegate_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeAuthenticatorRequestDelegate>
       authenticator_request_delegate_;

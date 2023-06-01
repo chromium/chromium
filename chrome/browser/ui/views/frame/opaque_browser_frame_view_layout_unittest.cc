@@ -364,20 +364,21 @@ class OpaqueBrowserFrameViewLayoutTest
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::View> root_view_ = nullptr;
-  raw_ptr<OpaqueBrowserFrameViewLayout> layout_manager_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> root_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameViewLayout, DanglingUntriaged> layout_manager_ =
+      nullptr;
   std::unique_ptr<TestLayoutDelegate> delegate_;
 
   // Widgets:
-  raw_ptr<views::ImageButton> minimize_button_ = nullptr;
-  raw_ptr<views::ImageButton> maximize_button_ = nullptr;
-  raw_ptr<views::ImageButton> restore_button_ = nullptr;
-  raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> minimize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> maximize_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> restore_button_ = nullptr;
+  raw_ptr<views::ImageButton, DanglingUntriaged> close_button_ = nullptr;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION TabIconView* tab_icon_view_ = nullptr;
-  raw_ptr<views::Label> window_title_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> window_title_ = nullptr;
 };
 
 TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {

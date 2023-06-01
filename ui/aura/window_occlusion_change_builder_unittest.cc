@@ -45,7 +45,7 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
     last_occluded_region_ = window_->occluded_region_in_root();
   }
 
-  raw_ptr<Window> window_ = nullptr;
+  raw_ptr<Window, DanglingUntriaged> window_ = nullptr;
   int occlusion_change_count_ = 0;
   Window::OcclusionState last_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;

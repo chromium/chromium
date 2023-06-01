@@ -270,7 +270,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   media::MockDevice mock_device_;
-  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory, DanglingUntriaged> mock_device_factory_;
   std::unique_ptr<DeviceFactoryImpl> service_device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> source_provider_;
   mojo::Remote<mojom::VideoSource> source_remote_1_;

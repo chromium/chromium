@@ -141,7 +141,7 @@ class TextfieldFocuser : public View {
 
  private:
   bool consume_ = true;
-  raw_ptr<Textfield> textfield_;
+  raw_ptr<Textfield, DanglingUntriaged> textfield_;
 };
 
 class MockInputMethod : public ui::InputMethodBase {

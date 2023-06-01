@@ -55,7 +55,7 @@ class PartialTranslateManagerTest : public testing::Test {
 
  protected:
   // Owned by manager_.
-  raw_ptr<FakeContextualSearchDelegate> delegate_;
+  raw_ptr<FakeContextualSearchDelegate, DanglingUntriaged> delegate_;
   std::unique_ptr<PartialTranslateManager> manager_;
 };
 

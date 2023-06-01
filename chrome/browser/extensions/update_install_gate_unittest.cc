@@ -215,14 +215,14 @@ class UpdateInstallGateTest : public testing::Test {
   // and RenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
-  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
-  raw_ptr<TestExtensionSystem> system_ = nullptr;
-  raw_ptr<ExtensionService> service_ = nullptr;
-  raw_ptr<ExtensionRegistry> registry_ = nullptr;
-  raw_ptr<EventRouter> event_router_ = nullptr;
+  raw_ptr<TestExtensionSystem, DanglingUntriaged> system_ = nullptr;
+  raw_ptr<ExtensionService, DanglingUntriaged> service_ = nullptr;
+  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
+  raw_ptr<EventRouter, DanglingUntriaged> event_router_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Needed for creating ExtensionService.

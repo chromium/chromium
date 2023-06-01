@@ -292,9 +292,11 @@ class UserPolicySigninServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  raw_ptr<MockUserCloudPolicyStore> mock_store_ = nullptr;  // Not owned.
+  raw_ptr<MockUserCloudPolicyStore, DanglingUntriaged> mock_store_ =
+      nullptr;  // Not owned.
   SchemaRegistry schema_registry_;
-  raw_ptr<UserCloudPolicyManager> manager_ = nullptr;  // Not owned.
+  raw_ptr<UserCloudPolicyManager, DanglingUntriaged> manager_ =
+      nullptr;  // Not owned.
 
   // BrowserPolicyConnector and UrlFetcherFactory want to initialize and free
   // various components asynchronously via tasks, so create fake threads here.

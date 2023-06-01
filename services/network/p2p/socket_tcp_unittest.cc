@@ -108,7 +108,7 @@ class P2PSocketTcpTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::string sent_data_;
-  raw_ptr<FakeSocket> socket_;  // Owned by |socket_impl_|.
+  raw_ptr<FakeSocket, DanglingUntriaged> socket_;  // Owned by |socket_impl_|.
   std::unique_ptr<P2PSocketTcpBase> socket_impl_;
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<FakeSocketClient> fake_client_;

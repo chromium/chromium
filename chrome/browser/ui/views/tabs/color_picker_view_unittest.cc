@@ -87,7 +87,7 @@ class ColorPickerViewTest : public ChromeViewsTestBase {
   ::testing::NiceMock<
       base::MockCallback<ColorPickerView::ColorSelectedCallback>>
       color_selected_callback_;
-  raw_ptr<ColorPickerView> color_picker_;
+  raw_ptr<ColorPickerView, DanglingUntriaged> color_picker_;
 
  private:
   std::unique_ptr<views::Widget> widget_;

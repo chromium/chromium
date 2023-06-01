@@ -124,15 +124,15 @@ class FrameConnectedBluetoothDevicesTest
   }
 
  protected:
-  raw_ptr<FrameConnectedBluetoothDevices> map_ptr0_;
-  raw_ptr<FrameConnectedBluetoothDevices> map_ptr1_;
+  raw_ptr<FrameConnectedBluetoothDevices, DanglingUntriaged> map_ptr0_;
+  raw_ptr<FrameConnectedBluetoothDevices, DanglingUntriaged> map_ptr1_;
 
  private:
   mojo::Remote<blink::mojom::WebBluetoothService> service0_;
-  raw_ptr<WebBluetoothServiceImpl> service_ptr0_;
+  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged> service_ptr0_;
 
   mojo::Remote<blink::mojom::WebBluetoothService> service1_;
-  raw_ptr<WebBluetoothServiceImpl> service_ptr1_;
+  raw_ptr<WebBluetoothServiceImpl, DanglingUntriaged> service_ptr1_;
 
   scoped_refptr<NiceMockBluetoothAdapter> adapter_;
   NiceMockBluetoothDevice device0_;

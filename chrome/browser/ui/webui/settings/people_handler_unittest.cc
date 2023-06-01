@@ -366,7 +366,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
 
   testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_on_setup_in_progress_handle_destroyed_;
-  raw_ptr<syncer::MockSyncService> mock_sync_service_;
+  raw_ptr<syncer::MockSyncService, DanglingUntriaged> mock_sync_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   content::TestWebUI web_ui_;

@@ -71,7 +71,7 @@ class ShellNativeAppWindow : public NativeAppWindow {
   void SetActivateOnPointer(bool activate_on_pointer) override;
 
  private:
-  raw_ptr<AppWindow> app_window_;
+  raw_ptr<AppWindow, DanglingUntriaged> app_window_;
 };
 
 }  // namespace extensions

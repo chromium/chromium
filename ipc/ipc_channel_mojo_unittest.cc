@@ -1154,7 +1154,7 @@ class ListenerWithSyncAssociatedInterface
     receiver_.Bind(std::move(receiver));
   }
 
-  raw_ptr<IPC::Sender> sync_sender_ = nullptr;
+  raw_ptr<IPC::Sender, DanglingUntriaged> sync_sender_ = nullptr;
   int32_t next_expected_value_ = 0;
   int32_t response_value_ = 0;
   base::OnceClosure quit_closure_;

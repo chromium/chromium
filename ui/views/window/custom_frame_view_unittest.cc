@@ -66,10 +66,10 @@ class CustomFrameViewTest : public ViewsTestBase {
   std::unique_ptr<WidgetDelegate> widget_delegate_;
 
   // Parent container for |custom_frame_view_|
-  raw_ptr<Widget> widget_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
 
   // Owned by |widget_|
-  raw_ptr<CustomFrameView> custom_frame_view_;
+  raw_ptr<CustomFrameView, DanglingUntriaged> custom_frame_view_;
 };
 
 void CustomFrameViewTest::SetUp() {

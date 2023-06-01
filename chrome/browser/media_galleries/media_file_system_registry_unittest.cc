@@ -400,7 +400,8 @@ class MediaFileSystemRegistryTest : public ChromeRenderViewHostTestHarness {
   base::FilePath dcim_dir_;
 
   // MediaFileSystemRegistry owns this.
-  raw_ptr<TestMediaFileSystemContext> test_file_system_context_;
+  raw_ptr<TestMediaFileSystemContext, DanglingUntriaged>
+      test_file_system_context_;
 
   // Needed for extension service & friends to work.
 

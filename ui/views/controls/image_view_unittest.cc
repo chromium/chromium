@@ -90,7 +90,7 @@ class ImageViewTest : public ViewsTestBase,
   Widget* widget() { return &widget_; }
 
  private:
-  raw_ptr<ImageView> image_view_ = nullptr;
+  raw_ptr<ImageView, DanglingUntriaged> image_view_ = nullptr;
   Widget widget_;
 };
 

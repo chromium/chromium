@@ -138,7 +138,7 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
 
  private:
   TestPageActionIconDelegate delegate_;
-  raw_ptr<TestPageActionIconView> view_;
+  raw_ptr<TestPageActionIconView, DanglingUntriaged> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

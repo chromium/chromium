@@ -314,7 +314,8 @@ class P2PSocketUdpTest : public testing::Test {
   P2PMessageThrottler throttler_;
   ScopedFakeClock fake_clock_;
   base::circular_deque<FakeDatagramServerSocket::UDPPacket> sent_packets_;
-  raw_ptr<FakeDatagramServerSocket> socket_;  // Owned by |socket_impl_|.
+  raw_ptr<FakeDatagramServerSocket, DanglingUntriaged>
+      socket_;  // Owned by |socket_impl_|.
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<P2PSocketUdp> socket_impl_;
   std::unique_ptr<FakeSocketClient> fake_client_;

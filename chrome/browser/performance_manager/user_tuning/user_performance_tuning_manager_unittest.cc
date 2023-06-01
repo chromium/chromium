@@ -158,15 +158,18 @@ class UserPerformanceTuningManagerTest : public ::testing::Test {
 
   TestingPrefServiceSimple local_state_;
 
-  raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
-  raw_ptr<FakeHighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
+  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
+      sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
+      battery_level_provider_;
+  raw_ptr<FakeHighEfficiencyModeDelegate, DanglingUntriaged>
+      high_efficiency_mode_delegate_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ScopedFakePowerManagerClientLifetime fake_power_manager_client_lifetime_;
 #endif
-  raw_ptr<FakePowerMonitorSource> power_monitor_source_;
+  raw_ptr<FakePowerMonitorSource, DanglingUntriaged> power_monitor_source_;
   bool throttling_enabled_ = false;
   std::unique_ptr<UserPerformanceTuningManager> manager_;
 };

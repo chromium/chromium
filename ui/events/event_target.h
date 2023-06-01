@@ -137,7 +137,7 @@ class EVENTS_EXPORT EventTarget {
 
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
-  raw_ptr<EventHandler> target_handler_ = nullptr;
+  raw_ptr<EventHandler, DanglingUntriaged> target_handler_ = nullptr;
 };
 
 }  // namespace ui

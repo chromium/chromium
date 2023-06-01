@@ -382,8 +382,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  protected:
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
-  raw_ptr<ChromeLabsBubbleView> bubble_view_;
-  raw_ptr<views::Widget> bubble_widget_;
+  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> bubble_view_;
+  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)

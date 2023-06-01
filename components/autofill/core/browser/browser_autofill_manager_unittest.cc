@@ -1154,13 +1154,14 @@ class BrowserAutofillManagerTest : public testing::Test {
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  raw_ptr<TestAutofillExternalDelegate> external_delegate_;
+  raw_ptr<TestAutofillExternalDelegate, DanglingUntriaged> external_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<MockIBANManager> iban_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
-  raw_ptr<MockSingleFieldFormFillRouter> single_field_form_fill_router_;
+  raw_ptr<MockSingleFieldFormFillRouter, DanglingUntriaged>
+      single_field_form_fill_router_;
   raw_ptr<TestStrikeDatabase> strike_database_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
   raw_ptr<TestFormDataImporter> test_form_data_importer_;

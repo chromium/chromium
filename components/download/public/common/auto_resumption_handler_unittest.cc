@@ -113,7 +113,7 @@ class AutoResumptionHandlerTest : public testing::Test {
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
-  raw_ptr<download::test::MockTaskManager> task_manager_;
+  raw_ptr<download::test::MockTaskManager, DanglingUntriaged> task_manager_;
   std::unique_ptr<AutoResumptionHandler> auto_resumption_handler_;
   base::SimpleTestClock clock_;
 };

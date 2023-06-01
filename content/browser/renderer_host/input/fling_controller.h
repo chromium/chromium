@@ -165,7 +165,7 @@ class CONTENT_EXPORT FlingController {
   raw_ptr<FlingControllerEventSenderClient, DanglingUntriaged>
       event_sender_client_;
 
-  raw_ptr<FlingControllerSchedulerClient> scheduler_client_;
+  raw_ptr<FlingControllerSchedulerClient, DanglingUntriaged> scheduler_client_;
 
   // An object tracking the state of touchpad on the delivery of mouse events to
   // the renderer to filter mouse immediately after a touchpad fling canceling

@@ -109,7 +109,7 @@ class CastMediaSinkServiceTest : public ::testing::Test {
       mock_cast_socket_service_;
 
   std::unique_ptr<TestCastMediaSinkService> media_sink_service_;
-  raw_ptr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
+  raw_ptr<MockCastMediaSinkServiceImpl, DanglingUntriaged> mock_impl_ = nullptr;
   MockDnsSdRegistry test_dns_sd_registry_;
 };
 

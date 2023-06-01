@@ -153,7 +153,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // WebContents of the password protection event.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;

@@ -166,7 +166,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
                           int creation_flags);
 
   extensions::ExtensionList loaded_extensions_;
-  raw_ptr<const Extension> installed_extension_;
+  raw_ptr<const Extension, DanglingUntriaged> installed_extension_;
   bool was_update_;
   std::string old_name_;
   std::string unloaded_id_;

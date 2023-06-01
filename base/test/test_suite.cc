@@ -227,7 +227,8 @@ class CheckForLeakedGlobals : public testing::EmptyTestEventListener {
   }
 
  private:
-  raw_ptr<FeatureList> feature_list_set_before_test_ = nullptr;
+  raw_ptr<FeatureList, DanglingUntriaged> feature_list_set_before_test_ =
+      nullptr;
   raw_ptr<FeatureList> feature_list_set_before_case_ = nullptr;
   raw_ptr<ThreadPoolInstance> thread_pool_set_before_test_ = nullptr;
   raw_ptr<ThreadPoolInstance> thread_pool_set_before_case_ = nullptr;

@@ -105,7 +105,7 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   // Helper class to send decrypted DecoderBuffer to the client.
   std::unique_ptr<MojoDecoderBufferWriter> decrypted_buffer_writer_;
 
-  raw_ptr<media::Decryptor> decryptor_;
+  raw_ptr<media::Decryptor, DanglingUntriaged> decryptor_;
 
   // Holds the CdmContextRef to keep the CdmContext alive for the lifetime of
   // the |decryptor_|.

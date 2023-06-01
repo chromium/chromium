@@ -210,8 +210,9 @@ class FCMInvalidationListenerTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<TestFCMSyncNetworkChannel> fcm_sync_network_channel_;
-  raw_ptr<MockSubscriptionManager> subscription_manager_;
+  raw_ptr<TestFCMSyncNetworkChannel, DanglingUntriaged>
+      fcm_sync_network_channel_;
+  raw_ptr<MockSubscriptionManager, DanglingUntriaged> subscription_manager_;
 
  protected:
   // Tests need to access these directly.

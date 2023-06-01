@@ -192,7 +192,8 @@ class NotificationDisplayServiceImplTest
   }
 
  private:
-  raw_ptr<FakeNotificationBlocker> notification_blocker_ = nullptr;
+  raw_ptr<FakeNotificationBlocker, DanglingUntriaged> notification_blocker_ =
+      nullptr;
 };
 
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithoutBlockers) {

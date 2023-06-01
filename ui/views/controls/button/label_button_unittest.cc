@@ -131,14 +131,14 @@ class LabelButtonTest : public test::WidgetTest {
   }
 
  protected:
-  raw_ptr<TestLabelButton> button_ = nullptr;
+  raw_ptr<TestLabelButton, DanglingUntriaged> button_ = nullptr;
 
   SkColor themed_normal_text_color_ = 0;
   SkColor styled_normal_text_color_ = 0;
   SkColor styled_highlight_text_color_ = 0;
 
  private:
-  raw_ptr<Widget> test_widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> test_widget_ = nullptr;
 };
 
 TEST_F(LabelButtonTest, FocusBehavior) {
@@ -834,10 +834,10 @@ class InkDropLabelButtonTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 
   // The test target.
-  raw_ptr<LabelButton> button_ = nullptr;
+  raw_ptr<LabelButton, DanglingUntriaged> button_ = nullptr;
 
   // Weak ptr, |button_| owns the instance.
-  raw_ptr<test::TestInkDrop> test_ink_drop_ = nullptr;
+  raw_ptr<test::TestInkDrop, DanglingUntriaged> test_ink_drop_ = nullptr;
 };
 
 TEST_F(InkDropLabelButtonTest, HoverStateAfterMouseEnterAndExitEvents) {
@@ -908,9 +908,9 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
         std::make_unique<TestLabelButton>());
   }
 
-  raw_ptr<TestLabelButton> button_ = nullptr;
-  raw_ptr<Widget> test_widget_ = nullptr;
-  raw_ptr<Widget> dummy_widget_ = nullptr;
+  raw_ptr<TestLabelButton, DanglingUntriaged> button_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> test_widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> dummy_widget_ = nullptr;
   Button::ButtonState style_of_inactive_widget_;
 };
 

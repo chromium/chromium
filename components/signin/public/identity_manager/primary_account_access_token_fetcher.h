@@ -242,7 +242,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
                                   AccessTokenInfo access_token_info);
 
   std::string oauth_consumer_name_;
-  raw_ptr<IdentityManager> identity_manager_;
+  raw_ptr<IdentityManager, DanglingUntriaged> identity_manager_;
   ScopeSet scopes_;
 
   // Per the contract of this class, it is allowed for clients to delete this

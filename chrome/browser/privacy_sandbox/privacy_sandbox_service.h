@@ -555,7 +555,8 @@ class PrivacySandboxService : public KeyedService {
       bool did_consent) const;
 
  private:
-  raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
+  raw_ptr<privacy_sandbox::PrivacySandboxSettings, DanglingUntriaged>
+      privacy_sandbox_settings_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<content::InterestGroupManager> interest_group_manager_;
@@ -563,7 +564,7 @@ class PrivacySandboxService : public KeyedService {
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 #if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<TrustSafetySentimentService> sentiment_service_;
+  raw_ptr<TrustSafetySentimentService, DanglingUntriaged> sentiment_service_;
 #endif
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>

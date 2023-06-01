@@ -91,7 +91,7 @@ class SessionServiceBaseTestHelper {
   explicit SessionServiceBaseTestHelper(SessionServiceBase* base);
 
  private:
-  raw_ptr<SessionServiceBase> service_;
+  raw_ptr<SessionServiceBase, DanglingUntriaged> service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_BASE_TEST_HELPER_H_

@@ -105,7 +105,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   // |reading_list_ui_| to remain valid for the lifetime of |this|.
   const raw_ptr<ReadingListUI> reading_list_ui_;
   const raw_ptr<content::WebUI> web_ui_;
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   absl::optional<GURL> active_tab_url_;
   reading_list::mojom::CurrentPageActionButtonState

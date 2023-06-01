@@ -287,7 +287,7 @@ class OptOutBlocklistTest : public testing::Test {
   TestOptOutBlocklistDelegate blocklist_delegate_;
 
   base::SimpleTestClock test_clock_;
-  raw_ptr<TestOptOutStore> opt_out_store_;
+  raw_ptr<TestOptOutStore, DanglingUntriaged> opt_out_store_;
   base::Time start_;
 
   std::unique_ptr<TestOptOutBlocklist> block_list_;

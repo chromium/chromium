@@ -304,7 +304,8 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
       LOCKS_EXCLUDED(url_request_->lock_) override;
 
   // The UrlRequest which owns context that owns the callback.
-  const raw_ptr<Cronet_UrlRequestImpl> url_request_ = nullptr;
+  const raw_ptr<Cronet_UrlRequestImpl, DanglingUntriaged> url_request_ =
+      nullptr;
 
   // URL chain contains the URL currently being requested, and
   // all URLs previously requested. New URLs are added before

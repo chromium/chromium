@@ -238,7 +238,8 @@ class ClearBrowsingDataAction : public Action,
   }
 
   base::flat_set<ActionType> action_types_;
-  raw_ptr<content::BrowsingDataRemover> browsing_data_remover_for_testing_;
+  raw_ptr<content::BrowsingDataRemover, DanglingUntriaged>
+      browsing_data_remover_for_testing_;
   base::ScopedObservation<content::BrowsingDataRemover,
                           content::BrowsingDataRemover::Observer>
       observation_{this};

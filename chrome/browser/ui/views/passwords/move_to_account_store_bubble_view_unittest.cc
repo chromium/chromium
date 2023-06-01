@@ -31,7 +31,7 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  raw_ptr<MoveToAccountStoreBubbleView> view_;
+  raw_ptr<MoveToAccountStoreBubbleView, DanglingUntriaged> view_;
 };
 
 void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {

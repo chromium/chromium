@@ -428,7 +428,8 @@ class NET_EXPORT URLRequestContextBuilder {
   raw_ptr<NetLog> net_log_ = nullptr;
   std::unique_ptr<HostResolver> host_resolver_;
   std::string host_mapping_rules_;
-  raw_ptr<HostResolverManager> host_resolver_manager_ = nullptr;
+  raw_ptr<HostResolverManager, DanglingUntriaged> host_resolver_manager_ =
+      nullptr;
   raw_ptr<HostResolver::Factory> host_resolver_factory_ = nullptr;
   std::unique_ptr<ProxyConfigService> proxy_config_service_;
   bool pac_quick_check_enabled_ = true;

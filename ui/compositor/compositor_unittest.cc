@@ -506,7 +506,7 @@ class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
  private:
-  raw_ptr<Layer> parent_;
+  raw_ptr<Layer, DanglingUntriaged> parent_;
   std::vector<std::unique_ptr<Layer>> added_layers_;
   bool update_visual_state_called_ = false;
 };

@@ -118,7 +118,7 @@ class ClientCertificateFetcherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<scoped_refptr<net::X509Certificate>> client_certs_;

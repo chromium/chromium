@@ -78,7 +78,7 @@ class BrotliSourceStreamTest : public PlatformTest {
   scoped_refptr<IOBufferWithSize> out_buffer_;
 
  private:
-  raw_ptr<MockSourceStream> source_;
+  raw_ptr<MockSourceStream, DanglingUntriaged> source_;
   std::unique_ptr<SourceStream> brotli_stream_;
   std::unique_ptr<base::RunLoop> loop_;
 

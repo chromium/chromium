@@ -20,7 +20,7 @@ class PostSaveCompromisedBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  raw_ptr<PostSaveCompromisedBubbleView> view_;
+  raw_ptr<PostSaveCompromisedBubbleView, DanglingUntriaged> view_;
 };
 
 void PostSaveCompromisedBubbleViewTest::CreateViewAndShow(

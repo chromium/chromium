@@ -83,8 +83,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget> widget_ = nullptr;
-  raw_ptr<EditAddressProfileView> dialog_;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<EditAddressProfileView, DanglingUntriaged> dialog_;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 

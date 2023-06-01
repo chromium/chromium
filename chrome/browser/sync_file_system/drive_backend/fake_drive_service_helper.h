@@ -89,8 +89,8 @@ class FakeDriveServiceHelper {
   base::FilePath temp_dir_;
 
   // Not own.
-  raw_ptr<drive::FakeDriveService> fake_drive_service_;
-  raw_ptr<drive::DriveUploaderInterface> drive_uploader_;
+  raw_ptr<drive::FakeDriveService, DanglingUntriaged> fake_drive_service_;
+  raw_ptr<drive::DriveUploaderInterface, DanglingUntriaged> drive_uploader_;
 
   std::string sync_root_folder_title_;
 };

@@ -343,7 +343,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
       second_display_controller_;
   std::vector<std::unique_ptr<StrictMockDownloadItem>> items_;
   OfflineItemList offline_items_;
-  raw_ptr<NiceMock<content::MockDownloadManager>> manager_;
+  raw_ptr<NiceMock<content::MockDownloadManager>, DanglingUntriaged> manager_;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<
       NiceMock<offline_items_collection::MockOfflineContentProvider>>

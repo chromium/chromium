@@ -1451,7 +1451,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
   scoped_refptr<Layer> root_;
   scoped_refptr<SolidColorLayer> solid_color_layer_;
   scoped_refptr<TextureLayer> texture_layer_;
-  raw_ptr<TestLayerTreeFrameSink> frame_sink_ = nullptr;
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> frame_sink_ = nullptr;
   int num_frame_sinks_created_ = 0;
 };
 
@@ -1932,7 +1932,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
   scoped_refptr<CrossThreadSharedBitmap> bitmap_;
   // Keeps a pointer value of the first frame sink, which will be removed
   // from the host and destroyed.
-  raw_ptr<void> first_frame_sink_;
+  raw_ptr<void, DanglingUntriaged> first_frame_sink_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerLoseFrameSinkTest);

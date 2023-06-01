@@ -102,7 +102,7 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
     return factories;
   }
 
-  raw_ptr<BookmarkModel> GetBookmarkModel() { return bookmark_model_; }
+  BookmarkModel* GetBookmarkModel() { return bookmark_model_; }
 
  protected:
   // Creates a bookmark bubble view.
@@ -148,8 +148,8 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
  private:
   views::UniqueWidgetPtr anchor_widget_;
   base::test::ScopedFeatureList test_features_;
-  raw_ptr<BookmarkModel> bookmark_model_;
-  raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
+  raw_ptr<BookmarkModel, DanglingUntriaged> bookmark_model_;
+  raw_ptr<MockShoppingListUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.

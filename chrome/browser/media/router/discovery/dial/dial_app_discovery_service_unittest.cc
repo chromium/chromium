@@ -112,7 +112,7 @@ class DialAppDiscoveryServiceTest : public ::testing::Test {
   }
 
  protected:
-  raw_ptr<TestSafeDialAppInfoParser> test_parser_;
+  raw_ptr<TestSafeDialAppInfoParser, DanglingUntriaged> test_parser_;
   DialAppDiscoveryService dial_app_discovery_service_;
 
   // Must be on Chrome_UIThread, as `OnDialAppInfoFetchComplete` uses a

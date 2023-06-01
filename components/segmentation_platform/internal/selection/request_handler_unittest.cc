@@ -74,7 +74,7 @@ class RequestHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<Config> config_;
-  raw_ptr<MockResultProvider> result_provider_ = nullptr;
+  raw_ptr<MockResultProvider, DanglingUntriaged> result_provider_ = nullptr;
   std::unique_ptr<RequestHandler> request_handler_;
   ExecutionService execution_service_;
 };

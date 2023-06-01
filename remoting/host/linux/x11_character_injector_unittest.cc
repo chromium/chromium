@@ -152,7 +152,8 @@ class X11CharacterInjectorTest : public testing::Test {
   void InjectAndRun(const std::vector<uint32_t>& code_points);
 
   std::unique_ptr<X11CharacterInjector> injector_;
-  raw_ptr<FakeX11Keyboard> keyboard_;  // Owned by |injector_|.
+  raw_ptr<FakeX11Keyboard, DanglingUntriaged>
+      keyboard_;  // Owned by |injector_|.
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

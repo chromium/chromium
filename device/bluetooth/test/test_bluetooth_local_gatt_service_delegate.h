@@ -91,8 +91,9 @@ class TestBluetoothLocalGattServiceDelegate
 
  private:
   raw_ptr<BluetoothLocalGattService> expected_service_;
-  raw_ptr<BluetoothLocalGattCharacteristic> expected_characteristic_;
-  raw_ptr<BluetoothLocalGattDescriptor> expected_descriptor_;
+  raw_ptr<BluetoothLocalGattCharacteristic, DanglingUntriaged>
+      expected_characteristic_;
+  raw_ptr<BluetoothLocalGattDescriptor, DanglingUntriaged> expected_descriptor_;
 
   std::map<std::string, bool> notifications_started_for_characteristic_;
 };

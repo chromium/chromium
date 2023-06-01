@@ -38,10 +38,11 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest {
   const std::u16string initial_extension_name_;
   const std::u16string initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<ExtensionsMenuButton> primary_button_ = nullptr;
-  raw_ptr<HoverButton> pin_button_ = nullptr;
-  raw_ptr<HoverButton> context_menu_button_ = nullptr;
-  raw_ptr<TestToolbarActionViewController> controller_ = nullptr;
+  raw_ptr<ExtensionsMenuButton, DanglingUntriaged> primary_button_ = nullptr;
+  raw_ptr<HoverButton, DanglingUntriaged> pin_button_ = nullptr;
+  raw_ptr<HoverButton, DanglingUntriaged> context_menu_button_ = nullptr;
+  raw_ptr<TestToolbarActionViewController, DanglingUntriaged> controller_ =
+      nullptr;
 };
 
 void ExtensionMenuItemViewTest::SetUp() {

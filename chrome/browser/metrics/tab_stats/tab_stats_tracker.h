@@ -101,7 +101,7 @@ class TabStatsTracker : public TabStripModelObserver,
 
    private:
     // The delegate used to report the metrics.
-    raw_ptr<UmaStatsReportingDelegate> reporting_delegate_;
+    raw_ptr<UmaStatsReportingDelegate, DanglingUntriaged> reporting_delegate_;
 
     // The data store that houses the metrics.
     raw_ptr<TabStatsDataStore> data_store_;

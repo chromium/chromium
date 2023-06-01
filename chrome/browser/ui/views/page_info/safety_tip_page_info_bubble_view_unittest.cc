@@ -76,8 +76,8 @@ class SafetyTipPageInfoBubbleViewTest : public testing::Test {
   views::ScopedViewsTestHelper views_helper_{
       std::make_unique<ChromeTestViewsDelegate<>>()};
 
-  raw_ptr<PageInfoBubbleViewBase> bubble_ = nullptr;
-  raw_ptr<views::Widget> parent_window_ =
+  raw_ptr<PageInfoBubbleViewBase, DanglingUntriaged> bubble_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> parent_window_ =
       nullptr;  // Weak. Owned by the NativeWidget.
 };
 

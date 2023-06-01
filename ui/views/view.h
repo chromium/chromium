@@ -115,7 +115,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
 
   bool is_add = false;
   // New parent if |is_add| is true, old parent if |is_add| is false.
-  raw_ptr<View> parent = nullptr;
+  raw_ptr<View, DanglingUntriaged> parent = nullptr;
   // The view being added or removed.
   raw_ptr<View> child = nullptr;
   // If this is a move (reparent), meaning AddChildViewAt() is invoked with an
@@ -126,7 +126,7 @@ struct VIEWS_EXPORT ViewHierarchyChangedDetails {
   // being removed.
   // For the add part of move, |move_view| is the old parent of the View being
   // added.
-  raw_ptr<View> move_view = nullptr;
+  raw_ptr<View, DanglingUntriaged> move_view = nullptr;
 };
 
 using PropertyChangedCallback = ui::metadata::PropertyChangedCallback;

@@ -537,7 +537,8 @@ class PaymentsClientTest : public testing::Test {
 
   AutofillClient::PaymentsRpcResult result_ =
       AutofillClient::PaymentsRpcResult::kNone;
-  raw_ptr<payments::PaymentsClient::UnmaskDetails> unmask_details_;
+  raw_ptr<payments::PaymentsClient::UnmaskDetails, DanglingUntriaged>
+      unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
   PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
@@ -547,8 +548,8 @@ class PaymentsClientTest : public testing::Test {
   PaymentsClient::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_fields_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  raw_ptr<PaymentsClient::UnmaskResponseDetails> unmask_response_details_ =
-      nullptr;
+  raw_ptr<PaymentsClient::UnmaskResponseDetails, DanglingUntriaged>
+      unmask_response_details_ = nullptr;
   // The legal message returned from a GetDetails upload save preflight call.
   std::unique_ptr<base::Value::Dict> legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a

@@ -88,7 +88,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
   }
 
   size_t next_url_{0};
-  raw_ptr<FakeURLCheckerClient> fake_client_;
+  raw_ptr<FakeURLCheckerClient, DanglingUntriaged> fake_client_;
   std::unique_ptr<URLChecker> checker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

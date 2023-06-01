@@ -211,7 +211,7 @@ class ClientSessionTest : public testing::Test {
   MockClientStub client_stub_;
 
   // ClientSession owns |connection_| but tests need it to inject fake events.
-  raw_ptr<protocol::FakeConnectionToClient> connection_;
+  raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection_;
 
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
 

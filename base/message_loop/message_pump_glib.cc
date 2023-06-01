@@ -315,7 +315,7 @@ GSourceFuncs g_observer_funcs = {ObserverPrepare, ObserverCheck, nullptr,
 
 struct FdWatchSource : public GSource {
   raw_ptr<MessagePumpGlib> pump;
-  raw_ptr<MessagePumpGlib::FdWatchController> controller;
+  raw_ptr<MessagePumpGlib::FdWatchController, DanglingUntriaged> controller;
 };
 
 gboolean FdWatchSourcePrepare(GSource* source, gint* timeout_ms) {

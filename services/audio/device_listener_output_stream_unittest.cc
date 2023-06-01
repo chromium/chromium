@@ -62,7 +62,8 @@ class MockAudioOutputStream : public AudioOutputStream {
   }
 
  private:
-  raw_ptr<AudioOutputStream::AudioSourceCallback> provided_callback_ = nullptr;
+  raw_ptr<AudioOutputStream::AudioSourceCallback, DanglingUntriaged>
+      provided_callback_ = nullptr;
 };
 
 class FakeAudioManagerForDeviceChange : public media::FakeAudioManager {

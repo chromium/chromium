@@ -849,7 +849,7 @@ class SyntheticGestureControllerTestBase {
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
   content::BrowserTaskEnvironment env_;
-  raw_ptr<MockSyntheticGestureTarget> target_;
+  raw_ptr<MockSyntheticGestureTarget, DanglingUntriaged> target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;
   base::TimeTicks start_time_;

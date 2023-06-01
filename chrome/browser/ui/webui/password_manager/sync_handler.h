@@ -70,7 +70,7 @@ class SyncHandler : public content::WebUIMessageHandler,
   syncer::SyncService* GetSyncService() const;
 
   // Weak pointer.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};

@@ -20252,7 +20252,7 @@ class HttpNetworkTransactionReportingTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<TestReportingContext> test_reporting_context_;
+  raw_ptr<TestReportingContext, DanglingUntriaged> test_reporting_context_;
 };
 
 TEST_P(HttpNetworkTransactionReportingTest,
@@ -20406,7 +20406,8 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
   int reporting_upload_depth_ = 0;
 
  private:
-  raw_ptr<TestNetworkErrorLoggingService> test_network_error_logging_service_;
+  raw_ptr<TestNetworkErrorLoggingService, DanglingUntriaged>
+      test_network_error_logging_service_;
 };
 
 TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,

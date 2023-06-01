@@ -133,7 +133,7 @@ class LabelTest : public test::BaseControlTestWidget {
   Label* label() { return label_; }
 
  private:
-  raw_ptr<Label> label_ = nullptr;
+  raw_ptr<Label, DanglingUntriaged> label_ = nullptr;
 };
 
 // Test fixture for text selection related tests.

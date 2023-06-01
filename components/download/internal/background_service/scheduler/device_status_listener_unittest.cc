@@ -153,7 +153,7 @@ class DeviceStatusListenerTest : public testing::Test {
   // Needed for network change notifier and power monitor.
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedPowerMonitorTestSource power_source_;
-  raw_ptr<TestBatteryStatusListener> test_battery_listener_;
+  raw_ptr<TestBatteryStatusListener, DanglingUntriaged> test_battery_listener_;
   raw_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
 };

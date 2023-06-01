@@ -396,7 +396,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   const Identifier identifier_;
   // TODO(dmurph): Remove the need for this to be here (and then remove it).
-  raw_ptr<IndexedDBFactory> factory_;
+  raw_ptr<IndexedDBFactory, DanglingUntriaged> factory_;
   const raw_ptr<IndexedDBClassFactory> class_factory_;
   std::unique_ptr<IndexedDBMetadataCoding> metadata_coding_;
 

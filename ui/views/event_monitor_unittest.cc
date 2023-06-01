@@ -60,7 +60,7 @@ class EventMonitorTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
 };

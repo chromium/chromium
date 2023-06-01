@@ -71,7 +71,8 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
 };
 
 TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {

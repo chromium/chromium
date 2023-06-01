@@ -217,7 +217,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
 
   // Current window under pointer.
-  raw_ptr<WaylandWindow> window_ = nullptr;
+  raw_ptr<WaylandWindow, DanglingUntriaged> window_ = nullptr;
 
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;

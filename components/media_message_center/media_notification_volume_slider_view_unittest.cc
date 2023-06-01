@@ -57,7 +57,7 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MediaNotificationVolumeSliderView> volume_slider_;
+  raw_ptr<MediaNotificationVolumeSliderView, DanglingUntriaged> volume_slider_;
 };
 
 TEST_F(MediaNotificationVolumeSliderViewTest, SetVolume) {

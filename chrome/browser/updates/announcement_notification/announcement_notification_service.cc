@@ -192,8 +192,8 @@ class AnnouncementNotificationServiceImpl
     return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
   }
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   std::unique_ptr<Delegate> delegate_;
   raw_ptr<base::Clock> clock_;
 

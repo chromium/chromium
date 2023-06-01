@@ -171,7 +171,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
   std::map<std::string, proto::SegmentInfo> db_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> db_{nullptr};
   std::unique_ptr<SegmentInfoDatabase> segment_db_;
-  raw_ptr<SegmentInfoCache> segment_info_cache_;
+  raw_ptr<SegmentInfoCache, DanglingUntriaged> segment_info_cache_;
 };
 
 TEST_F(SegmentInfoDatabaseTest, Get) {

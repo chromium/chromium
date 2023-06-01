@@ -162,7 +162,7 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   NiceMock<MockDemuxer> demuxer_;
-  raw_ptr<StrictMock<MockPipeline>> pipeline_;
+  raw_ptr<StrictMock<MockPipeline>, DanglingUntriaged> pipeline_;
   PipelineController pipeline_controller_;
 
   bool was_seeked_ = false;

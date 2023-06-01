@@ -105,7 +105,7 @@ class FakeWebPushSender : public WebPushSender {
 
  private:
   std::string fcm_token_;
-  raw_ptr<crypto::ECPrivateKey> vapid_key_;
+  raw_ptr<crypto::ECPrivateKey, DanglingUntriaged> vapid_key_;
   absl::optional<WebPushMessage> message_;
   SendWebPushMessageResult result_;
 };
@@ -186,7 +186,7 @@ class SharingFCMSenderTest : public testing::Test {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
-  raw_ptr<FakeWebPushSender> fake_web_push_sender_;
+  raw_ptr<FakeWebPushSender, DanglingUntriaged> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sync_prefs_;

@@ -403,7 +403,7 @@ class BidirectionalStreamQuicImplTest
         : mode(mode), packet(packet) {}
     PacketToWrite(IoMode mode, int rv) : mode(mode), packet(nullptr), rv(rv) {}
     IoMode mode;
-    raw_ptr<quic::QuicReceivedPacket> packet;
+    raw_ptr<quic::QuicReceivedPacket, DanglingUntriaged> packet;
     int rv;
   };
 
@@ -769,7 +769,7 @@ class BidirectionalStreamQuicImplTest
   scoped_refptr<TestTaskRunner> runner_;
   std::unique_ptr<MockWrite[]> mock_writes_;
   quic::MockClock clock_;
-  raw_ptr<quic::QuicConnection> connection_;
+  raw_ptr<quic::QuicConnection, DanglingUntriaged> connection_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   TransportSecurityState transport_security_state_;

@@ -110,7 +110,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
       mojom::TrustTokenOperationStatus status) override;
 
  private:
-  raw_ptr<TrustTokenStore> token_store_;
+  raw_ptr<TrustTokenStore, DanglingUntriaged> token_store_;
 
   Params params_;
 

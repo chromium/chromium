@@ -63,7 +63,7 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
   std::set<EntryKey> locked_entries_;
   EntryKey last_added_entry_ = {TransferCacheEntryType::kRawMemory, ~0};
 
-  raw_ptr<GrDirectContext> context_ = nullptr;
+  raw_ptr<GrDirectContext, DanglingUntriaged> context_ = nullptr;
   sk_sp<GrDirectContext> owned_context_;
   size_t cached_items_limit_ = std::numeric_limits<size_t>::max();
 };

@@ -114,7 +114,7 @@ class TestExtensionEnvironment {
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_ = nullptr;
 };
 
 }  // namespace extensions

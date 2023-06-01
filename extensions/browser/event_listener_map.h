@@ -135,8 +135,9 @@ class EventListener {
   const std::string event_name_;
   const std::string extension_id_;
   const GURL listener_url_;
-  raw_ptr<content::RenderProcessHost> process_ = nullptr;
-  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<content::RenderProcessHost, DanglingUntriaged> process_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_ =
+      nullptr;
 
   const bool is_for_service_worker_ = false;
 

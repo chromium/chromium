@@ -256,7 +256,8 @@ class SyncServiceImplTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
-  raw_ptr<SyncClientMock> sync_client_;  // Owned by |service_|.
+  raw_ptr<SyncClientMock, DanglingUntriaged>
+      sync_client_;  // Owned by |service_|.
   // The controllers are owned by |service_|.
   std::map<ModelType, FakeDataTypeController*> controller_map_;
 };

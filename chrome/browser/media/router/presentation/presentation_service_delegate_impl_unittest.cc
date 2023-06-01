@@ -241,14 +241,14 @@ class PresentationServiceDelegateImplTest
             profile()));
   }
 
-  raw_ptr<MockMediaRouter> router_;
-  raw_ptr<PresentationServiceDelegateImpl> delegate_impl_;
+  raw_ptr<MockMediaRouter, DanglingUntriaged> router_;
+  raw_ptr<PresentationServiceDelegateImpl, DanglingUntriaged> delegate_impl_;
   const GURL presentation_url1_;
   const GURL presentation_url2_;
   std::vector<GURL> presentation_urls_;
   const GURL frame_url_;
   const url::Origin frame_origin_;
-  raw_ptr<MockLocalPresentationManager> mock_local_manager_;
+  raw_ptr<MockLocalPresentationManager, DanglingUntriaged> mock_local_manager_;
 
   // |source1_| and |source2_| correspond to |presentation_url1_| and
   // |presentation_url2_|, respectively.

@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   std::unique_ptr<RemotingSender> video_sender_;
 
   // Used only if StartRpcMessaging is called with a cast transport.
-  raw_ptr<media::cast::CastTransport> transport_ = nullptr;
+  raw_ptr<media::cast::CastTransport, DanglingUntriaged> transport_ = nullptr;
 
   // Used only if StartRpcMessaging is called with openscreen::cast::Sender
   // objects.

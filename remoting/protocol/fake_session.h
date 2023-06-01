@@ -73,7 +73,7 @@ class FakeSession : public Session {
   std::string jid_;
 
   std::unique_ptr<FakeAuthenticator> authenticator_;
-  raw_ptr<Transport> transport_;
+  raw_ptr<Transport, DanglingUntriaged> transport_;
 
   ErrorCode error_ = OK;
   bool closed_ = false;

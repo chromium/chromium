@@ -670,7 +670,7 @@ class MediaStreamManagerTest : public ::testing::Test
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  raw_ptr<MockVideoCaptureProvider> video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider, DanglingUntriaged> video_capture_provider_;
   std::unique_ptr<MediaStreamProviderListenerMock> stream_provider_listener_;
   size_t screen_count_ = 0;
   base::RunLoop run_loop_;

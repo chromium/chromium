@@ -64,9 +64,9 @@ class FirstPartySetsNavigationThrottleTest
 
  private:
   base::test::ScopedFeatureList features_;
-  raw_ptr<content::RenderFrameHost> subframe_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_;
   ScopedMockFirstPartySetsHandler first_party_sets_handler_;
-  raw_ptr<FirstPartySetsPolicyService> service_;
+  raw_ptr<FirstPartySetsPolicyService, DanglingUntriaged> service_;
 };
 
 TEST_F(FirstPartySetsNavigationThrottleTest,

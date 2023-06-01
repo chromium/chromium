@@ -146,7 +146,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
     }
   }
 
-  raw_ptr<const net::HttpResponseHeaders> response_headers_;
+  raw_ptr<const net::HttpResponseHeaders, DanglingUntriaged> response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {

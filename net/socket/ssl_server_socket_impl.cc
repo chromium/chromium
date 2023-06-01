@@ -167,7 +167,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   [[nodiscard]] int Init();
   void ExtractClientCert();
 
-  raw_ptr<SSLServerContextImpl> context_;
+  raw_ptr<SSLServerContextImpl, DanglingUntriaged> context_;
 
   NetLogWithSource net_log_;
 

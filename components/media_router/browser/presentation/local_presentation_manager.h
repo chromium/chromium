@@ -216,7 +216,8 @@ class LocalPresentationManager : public KeyedService {
 
     const blink::mojom::PresentationInfo presentation_info_;
     absl::optional<MediaRoute> route_;
-    raw_ptr<content::WebContents> receiver_web_contents_ = nullptr;
+    raw_ptr<content::WebContents, DanglingUntriaged> receiver_web_contents_ =
+        nullptr;
 
     // Callback to invoke whenever a receiver connection is available.
     content::ReceiverConnectionAvailableCallback receiver_callback_;

@@ -1058,7 +1058,8 @@ class URLRequestLoadTimingTest : public URLRequestTest {
   }
 
  private:
-  raw_ptr<URLRequestInterceptorWithLoadTimingInfo> interceptor_;
+  raw_ptr<URLRequestInterceptorWithLoadTimingInfo, DanglingUntriaged>
+      interceptor_;
 };
 
 // "Normal" LoadTimingInfo as returned by a job.  Everything is in order, not

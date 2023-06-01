@@ -314,7 +314,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   bool DidFetchAnyEndpoint() { return network_manager_->DidFetchAnyEndpoint(); }
 
  protected:
-  raw_ptr<RenderFrameHost> iframe_render_frame_host_;
+  raw_ptr<RenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
   raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;

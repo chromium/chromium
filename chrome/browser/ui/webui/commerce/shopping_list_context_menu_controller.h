@@ -45,7 +45,7 @@ class ShoppingListContextMenuController {
  private:
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
-  raw_ptr<ShoppingListHandler> shopping_list_hander_;
+  raw_ptr<ShoppingListHandler, DanglingUntriaged> shopping_list_hander_;
 };
 
 }  // namespace commerce

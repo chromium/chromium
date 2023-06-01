@@ -47,7 +47,7 @@ class AudioEncoderOpus : public AudioEncoder {
 
   int sampling_rate_;
   AudioPacket::Channels channels_;
-  raw_ptr<OpusEncoder> encoder_;
+  raw_ptr<OpusEncoder, DanglingUntriaged> encoder_;
 
   int frame_size_;
   std::unique_ptr<media::MultiChannelResampler> resampler_;

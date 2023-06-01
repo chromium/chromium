@@ -45,7 +45,8 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   content::TestWebUI web_ui_;
   certificate_manager::CertificatesHandler cert_handler_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
+      pref_service_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)

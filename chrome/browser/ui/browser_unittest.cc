@@ -355,7 +355,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
                                             reason);
     }
 
-    raw_ptr<Browser> browser_;  // Weak ptr.
+    raw_ptr<Browser, DanglingUntriaged> browser_;  // Weak ptr.
     BookmarkBar::State bookmark_bar_state_;
   };
 };

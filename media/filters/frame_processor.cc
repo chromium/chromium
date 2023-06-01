@@ -174,7 +174,7 @@ class MseTrackBuffer {
 
   // Pointer to the stream associated with this track. The stream is not owned
   // by |this|.
-  const raw_ptr<ChunkDemuxerStream> stream_;
+  const raw_ptr<ChunkDemuxerStream, DanglingUntriaged> stream_;
 
   // Queue of processed frames that have not yet been appended to |stream_|.
   // EnqueueProcessedFrame() adds to this queue, and FlushProcessedFrames()

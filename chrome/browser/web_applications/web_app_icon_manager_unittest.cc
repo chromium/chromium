@@ -278,9 +278,9 @@ class WebAppIconManagerTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
-  raw_ptr<WebAppInstallManager> install_manager_;
-  raw_ptr<WebAppIconManager> icon_manager_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
+  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_;
 
   scoped_refptr<TestFileUtils> file_utils_;
 };

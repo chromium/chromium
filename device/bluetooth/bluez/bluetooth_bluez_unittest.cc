@@ -504,11 +504,14 @@ class BluetoothBlueZTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<bluez::FakeBluetoothAdapterClient> fake_bluetooth_adapter_client_;
-  raw_ptr<bluez::FakeBluetoothAdminPolicyClient>
+  raw_ptr<bluez::FakeBluetoothAdapterClient, DanglingUntriaged>
+      fake_bluetooth_adapter_client_;
+  raw_ptr<bluez::FakeBluetoothAdminPolicyClient, DanglingUntriaged>
       fake_bluetooth_admin_policy_client_;
-  raw_ptr<bluez::FakeBluetoothBatteryClient> fake_bluetooth_battery_client_;
-  raw_ptr<bluez::FakeBluetoothDeviceClient> fake_bluetooth_device_client_;
+  raw_ptr<bluez::FakeBluetoothBatteryClient, DanglingUntriaged>
+      fake_bluetooth_battery_client_;
+  raw_ptr<bluez::FakeBluetoothDeviceClient, DanglingUntriaged>
+      fake_bluetooth_device_client_;
   scoped_refptr<BluetoothAdapter> adapter_;
 
   int callback_count_;

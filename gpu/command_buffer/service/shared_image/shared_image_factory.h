@@ -141,7 +141,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            viz::SharedImageFormat format,
                            gfx::GpuMemoryBufferType gmb_type);
 
-  raw_ptr<SharedImageManager> shared_image_manager_;
+  raw_ptr<SharedImageManager, DanglingUntriaged> shared_image_manager_;
   raw_ptr<SharedContextState> shared_context_state_;
   std::unique_ptr<MemoryTypeTracker> memory_tracker_;
 

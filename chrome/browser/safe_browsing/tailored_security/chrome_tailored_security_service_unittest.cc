@@ -200,7 +200,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   // This is required to create browser tabs in the tests.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
+      prefs_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_environment_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

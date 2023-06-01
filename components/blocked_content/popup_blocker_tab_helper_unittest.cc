@@ -82,7 +82,7 @@ class PopupBlockerTabHelperTest : public content::RenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<PopupBlockerTabHelper> helper_ = nullptr;
+  raw_ptr<PopupBlockerTabHelper, DanglingUntriaged> helper_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
 };

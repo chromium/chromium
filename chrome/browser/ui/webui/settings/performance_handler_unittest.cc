@@ -80,7 +80,7 @@ class PerformanceHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<PerformanceHandler> handler_;
   TestingProfile profile_;
-  raw_ptr<TestingProfile> incognito_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> incognito_profile_ = nullptr;
   std::unique_ptr<content::WebContents> web_contents_;
   std::vector<std::unique_ptr<Browser>> browsers_;
 };

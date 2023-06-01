@@ -420,7 +420,7 @@ class SiteSettingsHandler
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

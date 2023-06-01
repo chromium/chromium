@@ -41,7 +41,8 @@ class AudioContextManagerImplTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock& clock() { return clock_; }
 
  private:
-  raw_ptr<AudioContextManagerImpl> audio_context_manager_ = nullptr;
+  raw_ptr<AudioContextManagerImpl, DanglingUntriaged> audio_context_manager_ =
+      nullptr;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   base::SimpleTestTickClock clock_;
 };

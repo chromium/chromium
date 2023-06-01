@@ -222,7 +222,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
-  raw_ptr<Profile> profile2_;
+  raw_ptr<Profile, DanglingUntriaged> profile2_;
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;
   std::unique_ptr<Browser> browser4_;

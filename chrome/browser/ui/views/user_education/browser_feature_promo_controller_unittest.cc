@@ -237,8 +237,9 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
               controller_->GetPromoStatus(*feature));
   }
 
-  raw_ptr<BrowserFeaturePromoController> controller_;
-  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
+  raw_ptr<BrowserFeaturePromoController, DanglingUntriaged> controller_;
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>, DanglingUntriaged>
+      mock_tracker_;
   BrowserFeaturePromoController::TestLock lock_;
   int custom_callback_count_ = 0;
 

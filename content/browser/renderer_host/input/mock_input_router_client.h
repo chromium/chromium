@@ -86,7 +86,7 @@ class MockInputRouterClient : public InputRouterClient,
   bool NeedsBeginFrameForFlingProgress() override;
 
  private:
-  raw_ptr<InputRouter> input_router_;
+  raw_ptr<InputRouter, DanglingUntriaged> input_router_;
   int in_flight_event_count_;
 
   blink::mojom::InputEventResultState filter_state_;

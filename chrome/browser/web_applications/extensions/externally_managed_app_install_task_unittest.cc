@@ -380,12 +380,13 @@ class ExternallyManagedAppInstallTaskTest
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  raw_ptr<WebAppCommandScheduler> command_scheduler_ = nullptr;
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
-  raw_ptr<TestExternallyManagedAppInstallFinalizer> install_finalizer_ =
+  raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
       nullptr;
-  raw_ptr<FakeWebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
+  raw_ptr<FakeDataRetriever, DanglingUntriaged> data_retriever_ = nullptr;
+  raw_ptr<TestExternallyManagedAppInstallFinalizer, DanglingUntriaged>
+      install_finalizer_ = nullptr;
+  raw_ptr<FakeWebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

@@ -37,7 +37,7 @@ class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  raw_ptr<IntentPickerTabHelper> helper_;
+  raw_ptr<IntentPickerTabHelper, DanglingUntriaged> helper_;
 };
 
 TEST_F(IntentPickerTabHelperTest, ShowOrHideIcon) {

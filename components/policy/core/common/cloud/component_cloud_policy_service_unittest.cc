@@ -228,8 +228,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   // |cache_| is owned by the |service_| and is invalid once the |service_|
   // is destroyed.
   std::unique_ptr<ResourceCache> owned_cache_;
-  raw_ptr<ResourceCache> cache_;
-  raw_ptr<MockCloudPolicyClient> client_;
+  raw_ptr<ResourceCache, DanglingUntriaged> cache_;
+  raw_ptr<MockCloudPolicyClient, DanglingUntriaged> client_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
   SchemaRegistry registry_;

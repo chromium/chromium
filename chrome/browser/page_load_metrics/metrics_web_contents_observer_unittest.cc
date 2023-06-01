@@ -70,7 +70,8 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     observer->OnVisibilityChanged(content::Visibility::VISIBLE);
   }
 
-  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_ = nullptr;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder, DanglingUntriaged>
+      embedder_interface_ = nullptr;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

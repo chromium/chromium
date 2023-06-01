@@ -37,7 +37,7 @@ class MockVideoCaptureDeviceTest : public ::testing::Test {
   void SetUp() override;
 
  protected:
-  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory, DanglingUntriaged> mock_device_factory_;
   std::unique_ptr<DeviceFactoryImpl> mock_device_factory_adapter_;
 
   base::MockCallback<DeviceFactory::GetDeviceInfosCallback>

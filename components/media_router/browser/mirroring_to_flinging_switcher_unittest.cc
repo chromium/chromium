@@ -104,7 +104,7 @@ class MirroringToFlingingSwitcherTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   TestMediaRouterFactory media_router_factory_;
-  raw_ptr<MockMediaRouter> media_router_ = nullptr;
+  raw_ptr<MockMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
 };

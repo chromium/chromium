@@ -110,7 +110,7 @@ class SkeletonGenerator {
   // hostname without removing its diacritics.
   base::flat_set<char16_t> characters_with_multiple_skeletons_with_diacritics_;
 
-  raw_ptr<const USpoofChecker> checker_;
+  raw_ptr<const USpoofChecker, DanglingUntriaged> checker_;
 };
 
 #endif  // COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_SKELETON_GENERATOR_H_

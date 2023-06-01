@@ -961,7 +961,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   AllowInterestGroupContentBrowserClient content_browser_client_;
   TestKAnonymityServiceDelegate k_anon_delegate_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
-  raw_ptr<InterestGroupManagerImpl> manager_;
+  raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().

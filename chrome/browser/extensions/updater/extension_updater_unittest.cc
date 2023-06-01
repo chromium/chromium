@@ -273,7 +273,7 @@ class MockService : public TestExtensionService {
   }
 
  protected:
-  const raw_ptr<TestExtensionPrefs> prefs_;
+  const raw_ptr<TestExtensionPrefs, DanglingUntriaged> prefs_;
   PendingExtensionManager pending_extension_manager_;
   CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
 

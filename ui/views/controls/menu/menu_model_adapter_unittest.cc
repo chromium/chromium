@@ -127,7 +127,7 @@ class MenuModelBase : public ui::MenuModel {
 
     ItemType type;
     std::u16string label;
-    raw_ptr<ui::MenuModel> submenu;
+    raw_ptr<ui::MenuModel, DanglingUntriaged> submenu;
     bool enabled;
     bool visible;
     bool alerted = false;

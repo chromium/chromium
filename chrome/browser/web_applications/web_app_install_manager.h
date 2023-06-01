@@ -64,7 +64,7 @@ class WebAppInstallManager {
 
   void LogErrorObject(base::Value::Dict object);
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   std::unique_ptr<ErrorLog> error_log_;
   bool error_log_updated_ = false;

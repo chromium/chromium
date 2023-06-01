@@ -69,7 +69,7 @@ class ChromeLabsCoordinator : public views::ViewObserver {
       nullptr;
 
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
-  raw_ptr<flags_ui::FlagsState> flags_state_;
+  raw_ptr<flags_ui::FlagsState, DanglingUntriaged> flags_state_;
   std::unique_ptr<ChromeLabsViewController> controller_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_waiting_to_show_ = false;

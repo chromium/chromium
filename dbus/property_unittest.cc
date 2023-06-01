@@ -160,7 +160,7 @@ class PropertyTest : public testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;
-  raw_ptr<ObjectProxy> object_proxy_;
+  raw_ptr<ObjectProxy, DanglingUntriaged> object_proxy_;
   std::unique_ptr<Properties> properties_;
   std::unique_ptr<TestService> test_service_;
   // Properties updated.

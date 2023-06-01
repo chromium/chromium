@@ -78,9 +78,10 @@ class IdleTest : public ApiUnitTest {
   void SetUp() override;
 
  protected:
-  raw_ptr<IdleManager> idle_manager_;
-  raw_ptr<TestIdleProvider> idle_provider_;
-  raw_ptr<testing::StrictMock<MockEventDelegate>> event_delegate_;
+  raw_ptr<IdleManager, DanglingUntriaged> idle_manager_;
+  raw_ptr<TestIdleProvider, DanglingUntriaged> idle_provider_;
+  raw_ptr<testing::StrictMock<MockEventDelegate>, DanglingUntriaged>
+      event_delegate_;
 };
 
 void IdleTest::SetUp() {

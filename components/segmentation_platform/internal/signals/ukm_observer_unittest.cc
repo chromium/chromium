@@ -113,7 +113,7 @@ class UkmObserverTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
   std::unique_ptr<UkmObserver> ukm_observer_;
-  raw_ptr<MockUkmDatabase> ukm_database_;
+  raw_ptr<MockUkmDatabase, DanglingUntriaged> ukm_database_;
   std::unique_ptr<UkmDataManagerImpl> ukm_data_manager_;
   TestingPrefServiceSimple prefs_;
 };

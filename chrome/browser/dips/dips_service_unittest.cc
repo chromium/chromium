@@ -270,8 +270,9 @@ class DIPSServiceStateRemovalTest : public testing::Test {
   base::SimpleTestClock clock_;
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<content_settings::CookieSettings> cookie_settings_ = nullptr;
-  raw_ptr<DIPSService> service_ = nullptr;
+  raw_ptr<content_settings::CookieSettings, DanglingUntriaged>
+      cookie_settings_ = nullptr;
+  raw_ptr<DIPSService, DanglingUntriaged> service_ = nullptr;
 };
 
 TEST_F(DIPSServiceStateRemovalTest,

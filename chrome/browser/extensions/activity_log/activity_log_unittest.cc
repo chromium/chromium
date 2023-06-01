@@ -282,7 +282,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  raw_ptr<ExtensionService> extension_service_;
+  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
 };
 
 TEST_F(ActivityLogTest, Construct) {

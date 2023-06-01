@@ -44,7 +44,7 @@ class TrainingDataCache {
   TrainingRequestId GenerateNextId();
 
  private:
-  const raw_ptr<SegmentInfoDatabase> segment_info_database_;
+  const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_info_database_;
   TrainingRequestId::Generator request_id_generator;
   base::flat_map<proto::SegmentId,
                  base::flat_map<TrainingRequestId, proto::TrainingData>>

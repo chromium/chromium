@@ -33,7 +33,7 @@ class WebAppCommandSchedulerTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
 };
 
 TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {

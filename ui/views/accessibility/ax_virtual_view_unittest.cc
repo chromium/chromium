@@ -109,10 +109,10 @@ class AXVirtualViewTest : public ViewsTestBase {
     accessibility_events_.clear();
   }
 
-  raw_ptr<Widget> widget_;
-  raw_ptr<Button> button_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
+  raw_ptr<Button, DanglingUntriaged> button_;
   // Weak, |button_| owns this.
-  raw_ptr<AXVirtualView> virtual_label_;
+  raw_ptr<AXVirtualView, DanglingUntriaged> virtual_label_;
 
  private:
   std::vector<

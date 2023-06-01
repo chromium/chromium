@@ -139,8 +139,8 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   // These are raw pointers (vs unique pointers) because the views
   // system does its own internal memory management.
-  raw_ptr<views::Widget> widget_ = nullptr;
-  raw_ptr<WebDialogView> web_dialog_view_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<WebDialogView, DanglingUntriaged> web_dialog_view_ = nullptr;
   base::RepeatingClosure quit_closure_;
 
   std::unique_ptr<TestWebDialogViewWebDialogDelegate> web_dialog_delegate_;

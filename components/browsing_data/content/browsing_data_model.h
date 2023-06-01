@@ -260,7 +260,7 @@ class BrowsingDataModel {
   // context, but broken out to allow easier injection in tests.
   // TODO(crbug.com/1271155): More backends to come, they should all be broken
   // out from the browser context at the appropriate level.
-  raw_ptr<content::StoragePartition> storage_partition_;
+  raw_ptr<content::StoragePartition, DanglingUntriaged> storage_partition_;
 
   // Used to handle quota managed data on IO thread.
   scoped_refptr<BrowsingDataQuotaHelper> quota_helper_;

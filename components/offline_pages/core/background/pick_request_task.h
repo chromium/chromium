@@ -100,7 +100,7 @@ class PickRequestTask : public Task {
 
   // Member variables, all pointers are not owned here.
   raw_ptr<RequestQueueStore> store_;
-  raw_ptr<OfflinerPolicy> policy_;
+  raw_ptr<OfflinerPolicy, DanglingUntriaged> policy_;
   RequestPickedCallback picked_callback_;
   RequestNotPickedCallback not_picked_callback_;
   DeviceConditions device_conditions_;

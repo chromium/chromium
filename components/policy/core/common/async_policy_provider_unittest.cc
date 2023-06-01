@@ -85,7 +85,7 @@ class AsyncPolicyProviderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
   PolicyBundle initial_bundle_;
-  raw_ptr<MockPolicyLoader> loader_;
+  raw_ptr<MockPolicyLoader, DanglingUntriaged> loader_;
   std::unique_ptr<AsyncPolicyProvider> provider_;
 };
 

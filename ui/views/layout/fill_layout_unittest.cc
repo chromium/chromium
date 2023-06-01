@@ -58,7 +58,7 @@ class FillLayoutTest : public testing::Test {
   }
 
   // The test target.
-  raw_ptr<FillLayout> layout_ = nullptr;
+  raw_ptr<FillLayout, DanglingUntriaged> layout_ = nullptr;
 
   std::unique_ptr<View> host_;
 };

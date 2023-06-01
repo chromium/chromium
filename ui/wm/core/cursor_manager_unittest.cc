@@ -51,7 +51,7 @@ class CursorManagerTest : public aura::test::AuraTestBase {
       : delegate_(new TestingCursorManager),
         cursor_manager_(base::WrapUnique(delegate_.get())) {}
 
-  raw_ptr<TestingCursorManager> delegate_;
+  raw_ptr<TestingCursorManager, DanglingUntriaged> delegate_;
   wm::CursorManager cursor_manager_;
 };
 

@@ -44,7 +44,7 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
-  raw_ptr<UrgentPageDiscardingPolicy> policy_;
+  raw_ptr<UrgentPageDiscardingPolicy, DanglingUntriaged> policy_;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {

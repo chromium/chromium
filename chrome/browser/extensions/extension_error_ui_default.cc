@@ -197,7 +197,7 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   }
 
   raw_ptr<ExtensionErrorUI::Delegate> delegate_;
-  raw_ptr<ManagementPolicy> management_policy_;
+  raw_ptr<ManagementPolicy, DanglingUntriaged> management_policy_;
   int app_count_ = 0;
   int extension_count_ = 0;
   bool item_blocked_by_policy_exists_ = false;

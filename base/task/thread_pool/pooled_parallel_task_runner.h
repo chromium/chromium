@@ -37,7 +37,8 @@ class BASE_EXPORT PooledParallelTaskRunner : public TaskRunner {
   ~PooledParallelTaskRunner() override;
 
   const TaskTraits traits_;
-  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
+  const raw_ptr<PooledTaskRunnerDelegate, DanglingUntriaged>
+      pooled_task_runner_delegate_;
 };
 
 }  // namespace internal

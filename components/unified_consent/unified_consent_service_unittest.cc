@@ -42,7 +42,7 @@ class TestSyncService : public syncer::TestSyncService {
   }
 
  private:
-  raw_ptr<syncer::SyncServiceObserver> observer_ = nullptr;
+  raw_ptr<syncer::SyncServiceObserver, DanglingUntriaged> observer_ = nullptr;
 };
 
 }  // namespace

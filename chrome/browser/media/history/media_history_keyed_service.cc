@@ -74,10 +74,10 @@ class MediaHistoryKeyedService::StoreHolder {
   }
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   scoped_refptr<MediaHistoryStore> local_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
-  raw_ptr<MediaHistoryKeyedService> remote_ = nullptr;
+  raw_ptr<MediaHistoryKeyedService, DanglingUntriaged> remote_ = nullptr;
 };
 
 MediaHistoryKeyedService::MediaHistoryKeyedService(Profile* profile)

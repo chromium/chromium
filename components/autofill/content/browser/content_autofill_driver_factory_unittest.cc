@@ -216,7 +216,7 @@ class ContentAutofillDriverFactoryTest_WithTwoFrames
   content::RenderFrameHost* child_rfh() { return child_rfh_; }
 
  private:
-  raw_ptr<content::RenderFrameHost> child_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> child_rfh_ = nullptr;
 };
 
 TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {

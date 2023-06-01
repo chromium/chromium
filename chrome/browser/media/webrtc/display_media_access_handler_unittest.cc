@@ -227,7 +227,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   std::vector<FakeDesktopMediaPickerFactory::TestFlags> test_flags_;
 
  protected:
-  raw_ptr<FakeDesktopMediaPickerFactory> picker_factory_;
+  raw_ptr<FakeDesktopMediaPickerFactory, DanglingUntriaged> picker_factory_;
   std::unique_ptr<DisplayMediaAccessHandler> access_handler_;
 };
 

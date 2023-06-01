@@ -109,7 +109,7 @@ class TestInMemoryDownloadFactory : public InMemoryDownload::Factory {
   TestInMemoryDownload* last_created_download() { return download_; }
 
  private:
-  raw_ptr<TestInMemoryDownload> download_ = nullptr;
+  raw_ptr<TestInMemoryDownload, DanglingUntriaged> download_ = nullptr;
 };
 
 class InMemoryDownloadDriverTest : public testing::Test {
@@ -155,7 +155,7 @@ class InMemoryDownloadDriverTest : public testing::Test {
  private:
   testing::NiceMock<MockDriverClient> driver_client_;
   std::unique_ptr<InMemoryDownloadDriver> driver_;
-  raw_ptr<TestInMemoryDownloadFactory> factory_;
+  raw_ptr<TestInMemoryDownloadFactory, DanglingUntriaged> factory_;
 };
 
 // Verifies in memory download success and remove API.

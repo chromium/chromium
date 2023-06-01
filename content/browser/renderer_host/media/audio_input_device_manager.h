@@ -76,7 +76,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-  const raw_ptr<media::AudioSystem> audio_system_;
+  const raw_ptr<media::AudioSystem, DanglingUntriaged> audio_system_;
 };
 
 }  // namespace content

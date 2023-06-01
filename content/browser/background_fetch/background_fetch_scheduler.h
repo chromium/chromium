@@ -164,9 +164,9 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       std::map<std::string, std::string> metadata = {});
 
   // Owned by BackgroundFetchContext.
-  raw_ptr<BackgroundFetchDataManager> data_manager_;
+  raw_ptr<BackgroundFetchDataManager, DanglingUntriaged> data_manager_;
   raw_ptr<BackgroundFetchRegistrationNotifier> registration_notifier_;
-  raw_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
+  raw_ptr<BackgroundFetchDelegateProxy, DanglingUntriaged> delegate_proxy_;
   raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 
   BackgroundFetchEventDispatcher event_dispatcher_;

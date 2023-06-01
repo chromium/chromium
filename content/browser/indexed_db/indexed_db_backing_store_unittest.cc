@@ -465,10 +465,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
-  raw_ptr<PartitionedLockManager> lock_manager_;
+  raw_ptr<PartitionedLockManager, DanglingUntriaged> lock_manager_;
 
   IndexedDBBucketStateHandle bucket_state_handle_;
-  raw_ptr<TestableIndexedDBBackingStore> backing_store_ = nullptr;
+  raw_ptr<TestableIndexedDBBackingStore, DanglingUntriaged> backing_store_ =
+      nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 
   // Sample keys and values that are consistent.

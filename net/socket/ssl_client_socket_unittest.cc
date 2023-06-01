@@ -583,7 +583,7 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  raw_ptr<StreamSocket> socket_;
+  raw_ptr<StreamSocket, DanglingUntriaged> socket_;
 };
 
 // A mock CTVerifier that records every call to Verify but doesn't verify
@@ -828,7 +828,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   RecordingNetLogObserver log_observer_;
-  raw_ptr<ClientSocketFactory> socket_factory_;
+  raw_ptr<ClientSocketFactory, DanglingUntriaged> socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;

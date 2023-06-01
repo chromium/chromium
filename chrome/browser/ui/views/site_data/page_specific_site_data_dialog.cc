@@ -510,8 +510,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   // the actual content settings to determine the state.
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
-  raw_ptr<BrowsingDataModel> allowed_browsing_data_model_for_testing_ = nullptr;
-  raw_ptr<BrowsingDataModel> blocked_browsing_data_model_for_testing_ = nullptr;
+  raw_ptr<BrowsingDataModel, DanglingUntriaged>
+      allowed_browsing_data_model_for_testing_ = nullptr;
+  raw_ptr<BrowsingDataModel, DanglingUntriaged>
+      blocked_browsing_data_model_for_testing_ = nullptr;
   std::unique_ptr<FaviconCache> favicon_cache_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;

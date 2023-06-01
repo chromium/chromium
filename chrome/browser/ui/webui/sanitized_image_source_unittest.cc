@@ -81,7 +81,8 @@ class SanitizedImageSourceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<MockDataDecoderDelegate> mock_data_decoder_delegate_;
+  raw_ptr<MockDataDecoderDelegate, DanglingUntriaged>
+      mock_data_decoder_delegate_;
   std::unique_ptr<SanitizedImageSource> sanitized_image_source_;
 };
 

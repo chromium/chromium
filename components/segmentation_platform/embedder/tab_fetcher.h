@@ -42,14 +42,14 @@ class TabFetcher {
     // An ID for local tab derived from web contents or tab pointer. Do not use
     // the webcontents or tab by casting this pointer. Use the FindTab to fetch
     // the pointer, since the tab or webcontents could have been destroyed.
-    raw_ptr<void> web_contents_data;
+    raw_ptr<void, DanglingUntriaged> web_contents_data;
     raw_ptr<void> tab_android_data;
   };
 
   // Represents a local or foreign tab.
   struct Tab {
     // Local tab's webcontents.
-    raw_ptr<content::WebContents> webcontents{};
+    raw_ptr<content::WebContents, DanglingUntriaged> webcontents{};
     // Local tab's pointer, only available on Android.
     raw_ptr<TabAndroid> tab_android{};
     // Foreign tab's session data.

@@ -506,7 +506,7 @@ class TaskEnvironment {
 #endif
 
   // Owned by the ThreadPoolInstance.
-  raw_ptr<TestTaskTracker> task_tracker_ = nullptr;
+  raw_ptr<TestTaskTracker, DanglingUntriaged> task_tracker_ = nullptr;
 
   // Ensures destruction of lazy TaskRunners when this is destroyed.
   std::unique_ptr<base::internal::ScopedLazyTaskRunnerListForTesting>

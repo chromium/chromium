@@ -114,7 +114,7 @@ class MenuRunnerTest : public ViewsTestBase {
 
  private:
   // Owned by menu_runner_.
-  raw_ptr<views::TestMenuItemView> menu_item_view_ = nullptr;
+  raw_ptr<views::TestMenuItemView, DanglingUntriaged> menu_item_view_ = nullptr;
 
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -364,7 +364,7 @@ class MenuLauncherEventHandler : public ui::EventHandler {
   }
 
   raw_ptr<MenuRunner> runner_;
-  raw_ptr<Widget> owner_;
+  raw_ptr<Widget, DanglingUntriaged> owner_;
 };
 
 }  // namespace
@@ -414,8 +414,8 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   }
 
  private:
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<EventCountView> event_count_view_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<EventCountView, DanglingUntriaged> event_count_view_ = nullptr;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
 };
 
@@ -595,7 +595,8 @@ class MenuRunnerDestructionTest : public MenuRunnerTest {
 
  private:
   // Not owned
-  raw_ptr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
+  raw_ptr<ReleaseRefTestViewsDelegate, DanglingUntriaged> test_views_delegate_ =
+      nullptr;
 };
 
 base::WeakPtr<internal::MenuRunnerImpl>

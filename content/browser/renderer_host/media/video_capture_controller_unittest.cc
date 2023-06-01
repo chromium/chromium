@@ -158,7 +158,7 @@ class MockVideoCaptureControllerEventHandler
                                   base::Unretained(controller_), id, this));
   }
 
-  raw_ptr<VideoCaptureController> controller_;
+  raw_ptr<VideoCaptureController, DanglingUntriaged> controller_;
   media::VideoPixelFormat expected_pixel_format_ = media::PIXEL_FORMAT_I420;
   gfx::ColorSpace expected_color_space_ = gfx::ColorSpace::CreateREC709();
   media::VideoCaptureFeedback feedback_;

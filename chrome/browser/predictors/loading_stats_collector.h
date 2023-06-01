@@ -72,7 +72,7 @@ class LoadingStatsCollector {
   void CleanupAbandonedStats();
 
  private:
-  raw_ptr<ResourcePrefetchPredictor> predictor_;
+  raw_ptr<ResourcePrefetchPredictor, DanglingUntriaged> predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
 };

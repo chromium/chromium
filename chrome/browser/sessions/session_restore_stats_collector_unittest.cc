@@ -219,8 +219,9 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
 
   // These are recreated for each test. The reporting delegate allows the test
   // to observe the behaviour of the SessionRestoreStatsCollector under test.
-  raw_ptr<PassthroughStatsReportingDelegate> passthrough_reporting_delegate_;
-  raw_ptr<SessionRestoreStatsCollector> stats_collector_;
+  raw_ptr<PassthroughStatsReportingDelegate, DanglingUntriaged>
+      passthrough_reporting_delegate_;
+  raw_ptr<SessionRestoreStatsCollector, DanglingUntriaged> stats_collector_;
 };
 
 TEST_F(SessionRestoreStatsCollectorTest, MultipleTabsLoadSerially) {

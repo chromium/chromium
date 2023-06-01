@@ -308,7 +308,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
     tables_ = tables;
   }
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<TestObserver> observer_;
   const LoadingPredictorConfig config_;
   InitializationState initialization_state_;

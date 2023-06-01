@@ -228,7 +228,7 @@ class WebrtcVideoStatsDBImplTest : public ::testing::Test {
 
   // See documentation in SetUp()
   std::unique_ptr<FakeDB<WebrtcVideoStatsEntryProto>::EntryMap> fake_db_map_;
-  raw_ptr<FakeDB<WebrtcVideoStatsEntryProto>> fake_db_;
+  raw_ptr<FakeDB<WebrtcVideoStatsEntryProto>, DanglingUntriaged> fake_db_;
   std::unique_ptr<WebrtcVideoStatsDBImpl> stats_db_;
 };
 

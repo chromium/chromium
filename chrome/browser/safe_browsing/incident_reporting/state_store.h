@@ -102,10 +102,10 @@ class StateStore {
   void CleanLegacyValues(Transaction* transaction);
 
   // The profile to which this state corresponds.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // A read-only view on the profile's incidents_sent preference.
-  raw_ptr<const base::Value::Dict> incidents_sent_ = nullptr;
+  raw_ptr<const base::Value::Dict, DanglingUntriaged> incidents_sent_ = nullptr;
 
 #if DCHECK_IS_ON()
   // True when a Transaction instance is outstanding.

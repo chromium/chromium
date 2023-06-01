@@ -85,7 +85,8 @@ class BluetoothLocalGattServiceBlueZ
 
   // Delegate to receive read/write requests for attribute  values contained
   // in this service.
-  raw_ptr<device::BluetoothLocalGattService::Delegate> delegate_;
+  raw_ptr<device::BluetoothLocalGattService::Delegate, DanglingUntriaged>
+      delegate_;
 
   // Characteristics contained by this service.
   std::map<dbus::ObjectPath,

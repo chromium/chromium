@@ -77,7 +77,7 @@ class TestFacetManagerNotifier {
   NotificationAccuracy accuracy_;
   const base::TimeDelta too_late_delay_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  raw_ptr<FacetManager> facet_manager_;
+  raw_ptr<FacetManager, DanglingUntriaged> facet_manager_;
 };
 
 // Stub/mock implementation for FacetManagerHost.

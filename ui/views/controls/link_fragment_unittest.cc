@@ -71,7 +71,7 @@ class LinkFragmentTest : public test::BaseControlTestWidget {
   }
 
  private:
-  std::array<raw_ptr<LinkFragment>, 3> fragments_;
+  std::array<raw_ptr<LinkFragment, DanglingUntriaged>, 3> fragments_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 

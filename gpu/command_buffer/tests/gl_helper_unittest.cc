@@ -1256,7 +1256,7 @@ class GLHelperTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<GLInProcessContext> context_;
-  raw_ptr<gles2::GLES2Interface> gl_;
+  raw_ptr<gles2::GLES2Interface, DanglingUntriaged> gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;

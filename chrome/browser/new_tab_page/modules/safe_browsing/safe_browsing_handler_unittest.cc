@@ -79,10 +79,12 @@ class SafeBrowsingHandlerTest : public ::testing::Test {
  protected:
   std::unique_ptr<SafeBrowsingHandler> module_handler_;
   // Unowned MockSafeBrowsingMetricsCollector
-  raw_ptr<MockSafeBrowsingMetricsCollector> metrics_collector_;
+  raw_ptr<MockSafeBrowsingMetricsCollector, DanglingUntriaged>
+      metrics_collector_;
   // Unowned PrefService. Use TestingPrefServiceSyncable
   // as that is what TestingProfileManager returns.
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
+      pref_service_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

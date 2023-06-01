@@ -230,8 +230,8 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  raw_ptr<MockTranslateBubbleModel> mock_model_;
-  raw_ptr<TranslateBubbleView> bubble_;
+  raw_ptr<MockTranslateBubbleModel, DanglingUntriaged> mock_model_;
+  raw_ptr<TranslateBubbleView, DanglingUntriaged> bubble_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

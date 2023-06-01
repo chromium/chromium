@@ -81,12 +81,13 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   }
 
  protected:
-  raw_ptr<ChooserDialogView> dialog_ = nullptr;
-  raw_ptr<FakeBluetoothChooserController> controller_ = nullptr;
+  raw_ptr<ChooserDialogView, DanglingUntriaged> dialog_ = nullptr;
+  raw_ptr<FakeBluetoothChooserController, DanglingUntriaged> controller_ =
+      nullptr;
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 };
 
 TEST_F(ChooserDialogViewTest, ButtonState) {

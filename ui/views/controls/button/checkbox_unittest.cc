@@ -51,7 +51,7 @@ class CheckboxTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<Checkbox> checkbox_ = nullptr;
+  raw_ptr<Checkbox, DanglingUntriaged> checkbox_ = nullptr;
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {

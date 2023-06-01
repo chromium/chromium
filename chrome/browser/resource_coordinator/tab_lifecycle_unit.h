@@ -147,7 +147,7 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   raw_ptr<base::ObserverList<TabLifecycleObserver>::Unchecked> observers_;
 
   // TabStripModel to which this tab belongs.
-  raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
 
   // Last time at which this tab was focused, or TimeTicks::Max() if it is
   // currently focused. For tabs that aren't currently focused this is

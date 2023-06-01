@@ -34,7 +34,7 @@ class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
-  raw_ptr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
+  raw_ptr<VideoFeedbackStub, DanglingUntriaged> video_feedback_stub_ = nullptr;
 };
 
 }  // namespace remoting::protocol

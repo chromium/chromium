@@ -133,7 +133,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
   static const char kProfileName_[];
   static const TestData kTestData_[];
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
  private:

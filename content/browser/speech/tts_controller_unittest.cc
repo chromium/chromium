@@ -104,7 +104,7 @@ class MockTtsPlatformImpl : public TtsPlatform {
   }
 
  private:
-  const raw_ptr<TtsController> controller_;
+  const raw_ptr<TtsController, DanglingUntriaged> controller_;
   bool platform_supported_ = true;
   bool platform_initialized_ = true;
   std::vector<VoiceData> voices_;

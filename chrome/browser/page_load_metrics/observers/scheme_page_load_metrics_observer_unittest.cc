@@ -155,7 +155,7 @@ class SchemePageLoadMetricsObserverTest
         std::size(kUnderStatRecordingIntervalsSeconds) + 1, 0);
   }
 
-  raw_ptr<SchemePageLoadMetricsObserver> observer_;
+  raw_ptr<SchemePageLoadMetricsObserver, DanglingUntriaged> observer_;
 };
 
 TEST_F(SchemePageLoadMetricsObserverTest, HTTPNavigation) {

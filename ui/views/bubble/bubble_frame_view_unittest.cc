@@ -79,8 +79,9 @@ class TestBubbleFrameViewWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  const raw_ptr<Widget> widget_;
-  raw_ptr<View> contents_view_ = nullptr;  // Owned by |widget_|.
+  const raw_ptr<Widget, DanglingUntriaged> widget_;
+  raw_ptr<View, DanglingUntriaged> contents_view_ =
+      nullptr;  // Owned by |widget_|.
   bool should_show_close_ = false;
 };
 

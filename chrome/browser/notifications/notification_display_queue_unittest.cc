@@ -133,7 +133,8 @@ class NotificationDisplayQueueTest : public testing::Test {
  private:
   NotificationDisplayServiceMock service_;
   NotificationDisplayQueue queue_{&service_};
-  raw_ptr<FakeNotificationBlocker> notification_blocker_ = nullptr;
+  raw_ptr<FakeNotificationBlocker, DanglingUntriaged> notification_blocker_ =
+      nullptr;
 };
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithoutBlockers) {

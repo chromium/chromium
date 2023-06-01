@@ -173,7 +173,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  raw_ptr<ExtensionAction> extension_action_;
+  raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
   const raw_ptr<Browser> browser_;
 

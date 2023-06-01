@@ -119,9 +119,9 @@ class TabMemoryMetricsReporterTest : public testing::Test {
   std::unique_ptr<content::TestWebContentsFactory> test_web_contents_factory_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-  raw_ptr<content::WebContents> contents1_;
-  raw_ptr<content::WebContents> contents2_;
-  raw_ptr<content::WebContents> contents3_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents1_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents2_;
+  raw_ptr<content::WebContents, DanglingUntriaged> contents3_;
 };
 
 TEST_F(TabMemoryMetricsReporterTest, StartTrackingWithUnloaded) {

@@ -50,9 +50,9 @@ class SafeBrowsingHandler
   mojo::Receiver<ntp::safe_browsing::mojom::SafeBrowsingHandler> handler_;
   // Unowned copy of SafeBrowsingMetricsCollector, to log metrics and read/write
   // security sensitive events.
-  raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
+  raw_ptr<SafeBrowsingMetricsCollector, DanglingUntriaged> metrics_collector_;
   // Unowned copy of PrefService, to read/write prefs.
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   // Save value of last cooldown start time, in case dismissed module is
   // restored.
   int64_t saved_last_cooldown_start_time_;

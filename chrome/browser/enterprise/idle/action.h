@@ -112,7 +112,8 @@ class ActionFactory {
 
   ActionFactory();
 
-  raw_ptr<content::BrowsingDataRemover> browsing_data_remover_for_testing_;
+  raw_ptr<content::BrowsingDataRemover, DanglingUntriaged>
+      browsing_data_remover_for_testing_;
 };
 
 IdleDialog::ActionSet ActionsToActionSet(

@@ -130,7 +130,7 @@ class FakeDiscardableManager {
   std::map<GLuint, int32_t> textures_;
   size_t live_textures_count_ = 0;
   size_t cached_textures_limit_ = std::numeric_limits<size_t>::max();
-  raw_ptr<viz::TestGLES2Interface> gl_ = nullptr;
+  raw_ptr<viz::TestGLES2Interface, DanglingUntriaged> gl_ = nullptr;
 };
 
 class FakeGPUImageDecodeTestGLES2Interface : public viz::TestGLES2Interface,

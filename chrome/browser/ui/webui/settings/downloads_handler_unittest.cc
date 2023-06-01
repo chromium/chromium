@@ -81,7 +81,8 @@ class DownloadsHandlerTest : public testing::Test {
   raw_ptr<DownloadCoreService> service_;
   raw_ptr<content::MockDownloadManager>
       download_manager_;  // Owned by |profile_|.
-  raw_ptr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
+  raw_ptr<ChromeDownloadManagerDelegate, DanglingUntriaged>
+      chrome_download_manager_delegate_;
 
   bool connection_policy_enabled_;
   std::string account_name_, account_login_, folder_name_, folder_id_;

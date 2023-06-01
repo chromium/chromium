@@ -168,7 +168,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
 
  private:
   const raw_ptr<views::View> anchor_view_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
   const GURL webui_url_;
   const int task_manager_string_id_;
 };

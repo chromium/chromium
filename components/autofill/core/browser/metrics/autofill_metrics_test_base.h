@@ -219,10 +219,10 @@ class AutofillMetricsBaseTest {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
-  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
+  raw_ptr<ukm::TestUkmRecorder, DanglingUntriaged> test_ukm_recorder_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
-  raw_ptr<AutofillExternalDelegate> external_delegate_;
+  raw_ptr<AutofillExternalDelegate, DanglingUntriaged> external_delegate_;
 
  private:
   void CreateTestAutofillProfiles();

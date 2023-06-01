@@ -193,7 +193,8 @@ class FCMInvalidationServiceTestDelegate {
   // The service has to be below the provider since the service keeps
   // a non-owned pointer to the provider.
   std::unique_ptr<FCMInvalidationService> invalidation_service_;
-  raw_ptr<FCMInvalidationListener> fake_listener_;  // Owned by the service.
+  raw_ptr<FCMInvalidationListener, DanglingUntriaged>
+      fake_listener_;  // Owned by the service.
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FCMInvalidationServiceTest,

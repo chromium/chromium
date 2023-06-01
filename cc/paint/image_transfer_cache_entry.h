@@ -175,7 +175,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   bool fits_on_gpu() const;
 
  private:
-  raw_ptr<GrDirectContext> gr_context_ = nullptr;
+  raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
   sk_sp<SkImage> image_;
 

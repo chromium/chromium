@@ -54,8 +54,8 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
                 base::OnceClosure callback);
 
   const base::FilePath profile_path_;
-  const raw_ref<WebAppRegistrar> registrar_;
-  const raw_ref<WebAppSyncBridge> sync_bridge_;
+  const raw_ref<WebAppRegistrar, DanglingUntriaged> registrar_;
+  const raw_ref<WebAppSyncBridge, DanglingUntriaged> sync_bridge_;
 
   base::WeakPtrFactory<FileHandlingSubManager> weak_ptr_factory_{this};
 };

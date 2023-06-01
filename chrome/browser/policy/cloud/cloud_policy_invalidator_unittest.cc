@@ -201,7 +201,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   invalidation::FakeInvalidationService invalidation_service_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
-  raw_ptr<MockCloudPolicyClient> client_;
+  raw_ptr<MockCloudPolicyClient, DanglingUntriaged> client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SimpleTestClock clock_;
 

@@ -59,7 +59,8 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
   MOCK_METHOD1(SeekTo, void(double));
 
  protected:
-  raw_ptr<MediaControlsProgressView> progress_view_ = nullptr;
+  raw_ptr<MediaControlsProgressView, DanglingUntriaged> progress_view_ =
+      nullptr;
 
  private:
   views::Widget widget_;

@@ -79,7 +79,7 @@ class ServiceProxyImpl : public ServiceProxy,
   const bool force_refresh_results_ = false;
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;
-  const raw_ptr<SegmentInfoDatabase> segment_db_;
+  const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_db_;
   const raw_ptr<DefaultModelManager> default_manager_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
   const raw_ptr<const std::vector<std::unique_ptr<Config>>> configs_;

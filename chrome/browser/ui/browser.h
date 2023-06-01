@@ -1193,7 +1193,7 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   // This Browser's window.
-  raw_ptr<BrowserWindow> window_;
+  raw_ptr<BrowserWindow, DanglingUntriaged> window_;
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;

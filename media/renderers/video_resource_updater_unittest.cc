@@ -331,7 +331,7 @@ class VideoResourceUpdaterTest : public testing::Test {
   // VideoResourceUpdater registers as a MemoryDumpProvider, which requires
   // a TaskRunner.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<UploadCounterGLES2Interface> gl_;
+  raw_ptr<UploadCounterGLES2Interface, DanglingUntriaged> gl_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   FakeSharedBitmapReporter shared_bitmap_reporter_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;

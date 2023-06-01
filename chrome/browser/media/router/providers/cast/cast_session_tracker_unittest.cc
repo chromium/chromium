@@ -123,7 +123,7 @@ class CastSessionTrackerTest : public testing::Test {
   NiceMock<MockCastSessionObserver> observer_;
 
   MediaSinkInternal sink_ = CreateCastSink(1);
-  raw_ptr<CastSession> session_;
+  raw_ptr<CastSession, DanglingUntriaged> session_;
 };
 
 TEST_F(CastSessionTrackerTest, QueryReceiverOnSinkAdded) {

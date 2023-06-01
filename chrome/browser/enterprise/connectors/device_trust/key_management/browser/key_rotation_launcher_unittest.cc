@@ -115,7 +115,8 @@ class KeyRotationLauncherTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<testing::StrictMock<test::MockKeyRotationCommand>> mock_command_;
+  raw_ptr<testing::StrictMock<test::MockKeyRotationCommand>, DanglingUntriaged>
+      mock_command_;
   ScopedKeyRotationCommandFactory scoped_command_factory_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;

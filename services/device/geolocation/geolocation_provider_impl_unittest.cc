@@ -130,7 +130,7 @@ class GeolocationProviderTest : public testing::Test {
   base::ThreadChecker thread_checker_;
 
   // Owned by the GeolocationProviderImpl class.
-  raw_ptr<FakeLocationProvider> arbitrator_;
+  raw_ptr<FakeLocationProvider, DanglingUntriaged> arbitrator_;
 
   // True if |arbitrator_| is started.
   bool is_started_;

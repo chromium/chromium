@@ -1727,8 +1727,8 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
 
   std::unique_ptr<AggregatedRenderPass> render_pass_;
   gfx::Rect viewport_rect_;
-  raw_ptr<SharedQuadState> front_quad_state_;
-  raw_ptr<SharedQuadState> back_quad_state_;
+  raw_ptr<SharedQuadState, DanglingUntriaged> front_quad_state_;
+  raw_ptr<SharedQuadState, DanglingUntriaged> back_quad_state_;
   gfx::Rect quad_rect_;
   AggregatedRenderPassList pass_list_;
 };

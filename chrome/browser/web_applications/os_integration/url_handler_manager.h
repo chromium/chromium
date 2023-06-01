@@ -55,7 +55,7 @@ class UrlHandlerManager {
 
  private:
   const raw_ptr<Profile> profile_;
-  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_;
   std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
 };
 

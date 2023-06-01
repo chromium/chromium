@@ -78,7 +78,7 @@ class CaptureSchedulerTest : public testing::Test {
   base::SimpleTestTickClock tick_clock_;
 
   // Owned by |scheduler_|.
-  raw_ptr<base::MockOneShotTimer> capture_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> capture_timer_;
 
   bool capture_called_;
 };

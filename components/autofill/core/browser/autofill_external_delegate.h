@@ -164,7 +164,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const raw_ptr<AutofillDriver> driver_;  // weak
+  const raw_ptr<AutofillDriver, DanglingUntriaged> driver_;  // weak
 
   // The current form and field selected by Autofill.
   FormData query_form_;

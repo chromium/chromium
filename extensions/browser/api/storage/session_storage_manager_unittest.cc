@@ -60,7 +60,7 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   base::Value::Dict value_dict_;
 
   // Session storage manager being tested.
-  raw_ptr<SessionStorageManager> manager_;
+  raw_ptr<SessionStorageManager, DanglingUntriaged> manager_;
 };
 
 void SessionStorageManagerUnittest::SetUp() {

@@ -42,7 +42,7 @@ class ProfileIdServiceTest : public testing::Test {
                                                   &profile_prefs_);
   }
 
-  raw_ptr<MockProfileIdDelegate> mock_delegate_ = nullptr;
+  raw_ptr<MockProfileIdDelegate, DanglingUntriaged> mock_delegate_ = nullptr;
   TestingPrefServiceSimple profile_prefs_;
   std::unique_ptr<ProfileIdService> service_;
   base::HistogramTester histogram_tester_;

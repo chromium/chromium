@@ -46,7 +46,7 @@ class SessionRestoreDelegate {
     }
 
    private:
-    raw_ptr<content::WebContents> contents_;
+    raw_ptr<content::WebContents, DanglingUntriaged> contents_;
     bool is_active_;
     bool is_app_;            // Browser window is an app.
     bool is_internal_page_;  // Internal web UI page, like NTP or Settings.

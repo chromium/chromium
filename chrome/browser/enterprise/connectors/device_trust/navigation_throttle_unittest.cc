@@ -235,7 +235,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
       mock_user_permission_service_;
   std::unique_ptr<FakeDeviceTrustConnectorService> fake_connector_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockConsentRequester> mock_consent_requester_;
+  raw_ptr<MockConsentRequester, DanglingUntriaged> mock_consent_requester_;
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {

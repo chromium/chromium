@@ -41,9 +41,10 @@ class TabStripScrollContainerTest : public ChromeViewsTestBase {
   ~TabStripScrollContainerTest() override = default;
 
  protected:
-  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
-  raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
+  raw_ptr<TabStripScrollContainer, DanglingUntriaged>
+      tab_strip_scroll_container_ = nullptr;
+  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
   std::unique_ptr<views::Widget> root_widget_;
 };
 

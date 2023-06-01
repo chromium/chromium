@@ -382,7 +382,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   std::vector<views::LabelButton*> action_buttons_;
   std::vector<views::View*> item_views_;
   raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_view_ = nullptr;
-  raw_ptr<CompactTitleMessageView> compact_title_message_view_ = nullptr;
+  raw_ptr<CompactTitleMessageView, DanglingUntriaged>
+      compact_title_message_view_ = nullptr;
   raw_ptr<views::View> action_buttons_row_ = nullptr;
   raw_ptr<NotificationInputContainer> inline_reply_ = nullptr;
 

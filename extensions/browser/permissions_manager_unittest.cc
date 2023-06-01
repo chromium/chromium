@@ -68,9 +68,9 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   void SetUp() override;
 
   // PermissionsManager being tested.
-  raw_ptr<PermissionsManager> manager_;
+  raw_ptr<PermissionsManager, DanglingUntriaged> manager_;
 
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  raw_ptr<ExtensionPrefs, DanglingUntriaged> extension_prefs_;
 };
 
 void PermissionsManagerUnittest::SetUp() {

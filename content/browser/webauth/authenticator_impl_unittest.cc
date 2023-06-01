@@ -621,7 +621,8 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     mojo_error_handler_ = callback;
   }
 
-  raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
+  raw_ptr<device::test::VirtualFidoDeviceFactory, DanglingUntriaged>
+      virtual_device_factory_;
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
 #endif
@@ -6930,7 +6931,8 @@ class BlockingDelegateContentBrowserClient : public ContentBrowserClient {
 
  private:
   TestWebAuthenticationDelegate web_authentication_delegate_;
-  raw_ptr<BlockingAuthenticatorRequestDelegate> delegate_ = nullptr;
+  raw_ptr<BlockingAuthenticatorRequestDelegate, DanglingUntriaged> delegate_ =
+      nullptr;
 };
 
 class BlockingDelegateAuthenticatorImplTest : public AuthenticatorImplTest {

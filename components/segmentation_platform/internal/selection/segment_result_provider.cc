@@ -121,10 +121,10 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
                    ResultCallbackWithState callback,
                    bool success);
 
-  const raw_ptr<SegmentInfoDatabase> segment_database_;
+  const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_database_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
   const raw_ptr<DefaultModelManager> default_model_manager_;
-  const raw_ptr<ExecutionService> execution_service_;
+  const raw_ptr<ExecutionService, DanglingUntriaged> execution_service_;
   const raw_ptr<base::Clock> clock_;
   const bool force_refresh_results_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

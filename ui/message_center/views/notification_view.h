@@ -72,7 +72,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   void HeaderRowPressed();
 
   // Notification title, which is dynamically created inside view hierarchy.
-  raw_ptr<views::Label> title_view_ = nullptr;
+  raw_ptr<views::Label, DanglingUntriaged> title_view_ = nullptr;
 
   // Views for inline settings.
   raw_ptr<views::RadioButton> block_all_button_ = nullptr;

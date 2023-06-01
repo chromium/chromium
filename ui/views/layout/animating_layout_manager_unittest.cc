@@ -258,9 +258,10 @@ class AnimatingLayoutManagerTest : public testing::Test {
   const bool enable_animations_;
   ProposedLayout layout1_;
   ProposedLayout layout2_;
-  raw_ptr<View> view_;
+  raw_ptr<View, DanglingUntriaged> view_;
   std::vector<TestView*> children_;
-  raw_ptr<AnimatingLayoutManager> animating_layout_manager_ = nullptr;
+  raw_ptr<AnimatingLayoutManager, DanglingUntriaged> animating_layout_manager_ =
+      nullptr;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
   RenderModeLock render_mode_lock_;
@@ -4211,7 +4212,7 @@ class AnimatingLayoutManagerFlexRuleTest : public AnimatingLayoutManagerTest {
   static const FlexSpecification kScaleToMinimumSnapToZero;
 
  private:
-  raw_ptr<FlexLayout> flex_layout_;
+  raw_ptr<FlexLayout, DanglingUntriaged> flex_layout_;
   FlexRule flex_rule_;
 };
 
@@ -5186,10 +5187,10 @@ class AnimatingLayoutManagerSequenceTest : public ViewsTestBase {
 
   using WidgetAutoclosePtr = std::unique_ptr<Widget, WidgetCloser>;
 
-  raw_ptr<AnimatingLayoutManager> layout_manager_ = nullptr;
-  raw_ptr<View> child_view_ = nullptr;
-  raw_ptr<View> parent_view_ = nullptr;
-  raw_ptr<View> layout_view_ = nullptr;
+  raw_ptr<AnimatingLayoutManager, DanglingUntriaged> layout_manager_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> child_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> parent_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> layout_view_ = nullptr;
   std::unique_ptr<View> parent_view_ptr_;
   std::unique_ptr<View> layout_view_ptr_;
   WidgetAutoclosePtr widget_;

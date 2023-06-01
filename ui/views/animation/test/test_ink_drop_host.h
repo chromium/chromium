@@ -59,8 +59,10 @@ class TestInkDropHost : public View {
   mutable int num_ink_drop_ripples_created_ = 0;
   mutable int num_ink_drop_highlights_created_ = 0;
 
-  mutable raw_ptr<const InkDropRipple> last_ink_drop_ripple_ = nullptr;
-  mutable raw_ptr<const InkDropHighlight> last_ink_drop_highlight_ = nullptr;
+  mutable raw_ptr<const InkDropRipple, DanglingUntriaged>
+      last_ink_drop_ripple_ = nullptr;
+  mutable raw_ptr<const InkDropHighlight, DanglingUntriaged>
+      last_ink_drop_highlight_ = nullptr;
 
   // When true, the InkDropRipple/InkDropHighlight instances will have their
   // timers disabled after creation.

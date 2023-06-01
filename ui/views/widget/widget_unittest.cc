@@ -2110,12 +2110,12 @@ class WidgetObserverTest : public WidgetTest, public WidgetObserver {
  private:
   raw_ptr<Widget> active_ = nullptr;
 
-  raw_ptr<Widget> widget_closed_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_closed_ = nullptr;
   raw_ptr<Widget> widget_activated_ = nullptr;
-  raw_ptr<Widget> widget_deactivated_ = nullptr;
-  raw_ptr<Widget> widget_shown_ = nullptr;
-  raw_ptr<Widget> widget_hidden_ = nullptr;
-  raw_ptr<Widget> widget_bounds_changed_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_deactivated_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_shown_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_hidden_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_bounds_changed_ = nullptr;
 
   raw_ptr<Widget> widget_to_close_on_hide_ = nullptr;
 };
@@ -2841,7 +2841,8 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
     }
   };
 
-  raw_ptr<DesktopAuraTestValidPaintWidget> paint_widget_ = nullptr;
+  raw_ptr<DesktopAuraTestValidPaintWidget, DanglingUntriaged> paint_widget_ =
+      nullptr;
 };
 
 TEST_F(DesktopAuraPaintWidgetTest, DesktopNativeWidgetNoPaintAfterCloseTest) {
@@ -3207,8 +3208,8 @@ class CaptureEventConsumer : public ui::EventHandler {
     }
   }
 
-  raw_ptr<EventCountView> event_count_view_;
-  raw_ptr<Widget> widget_;
+  raw_ptr<EventCountView, DanglingUntriaged> event_count_view_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
 };
 
 }  // namespace
@@ -3267,7 +3268,7 @@ class ClosingEventObserver : public ui::EventObserver {
   }
 
  private:
-  raw_ptr<Widget> widget_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
 };
 
 class ClosingView : public View {

@@ -176,7 +176,7 @@ class DownloadDisplayController : public FullscreenObserver,
   // DownloadDisplayController and DownloadBubbleUIController have the same
   // lifetime. Both are owned, constructed together, and destructed together by
   // DownloadToolbarButtonView. If one is valid, so is the other.
-  raw_ptr<DownloadBubbleUIController> bubble_controller_;
+  raw_ptr<DownloadBubbleUIController, DanglingUntriaged> bubble_controller_;
 
   base::WeakPtrFactory<DownloadDisplayController> weak_factory_{this};
 };

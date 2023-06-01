@@ -217,7 +217,7 @@ class ButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestButton> button_;
+  raw_ptr<TestButton, DanglingUntriaged> button_;
   std::unique_ptr<TestButtonObserver> button_observer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };

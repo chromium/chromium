@@ -38,7 +38,7 @@ class InputFilter : public InputStub {
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  raw_ptr<InputStub> input_stub_;
+  raw_ptr<InputStub, DanglingUntriaged> input_stub_;
   bool enabled_;
 };
 

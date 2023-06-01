@@ -102,7 +102,7 @@ class MediaItemUIFooterViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<StopCastingHandler> handler_;
   std::unique_ptr<MockFooterViewDelegate> delegate_;
-  raw_ptr<MediaItemUIFooterView> view_ = nullptr;
+  raw_ptr<MediaItemUIFooterView, DanglingUntriaged> view_ = nullptr;
 };
 
 TEST_F(MediaItemUIFooterViewTest, ViewDuringCast) {

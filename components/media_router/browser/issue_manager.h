@@ -100,7 +100,7 @@ class IssueManager {
   base::ObserverList<IssuesObserver>::Unchecked issues_observers_;
 
   // Pointer to the top Issue in |issues_|, or |nullptr| if there are no issues.
-  raw_ptr<const Issue> top_issue_;
+  raw_ptr<const Issue, DanglingUntriaged> top_issue_;
 
   // The SingleThreadTaskRunner that this IssueManager runs on, and is used
   // for posting issue auto-dismissal tasks.

@@ -626,8 +626,8 @@ class LayerTreeHostContextCacheTest : public LayerTreeHostTest {
                  void(bool aggressively_free_resources));
   };
 
-  raw_ptr<MockContextSupport> mock_main_context_support_;
-  raw_ptr<MockContextSupport> mock_worker_context_support_;
+  raw_ptr<MockContextSupport, DanglingUntriaged> mock_main_context_support_;
+  raw_ptr<MockContextSupport, DanglingUntriaged> mock_worker_context_support_;
 };
 
 // Test if the LTH successfully frees resources on the main/worker
@@ -1498,7 +1498,7 @@ class LayerTreeHostTestLayerListSurfaceDamage : public LayerTreeHostTest {
   }
 
  private:
-  raw_ptr<Layer> root_;
+  raw_ptr<Layer, DanglingUntriaged> root_;
   scoped_refptr<Layer> child_a_;
   scoped_refptr<Layer> child_b_;
   scoped_refptr<Layer> child_c_;
@@ -5995,8 +5995,8 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
  private:
   FakeContentLayerClient client_;
-  raw_ptr<Layer> root_layer_;
-  raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;
+  raw_ptr<Layer, DanglingUntriaged> root_layer_;
+  raw_ptr<ScrollElasticityHelper, DanglingUntriaged> scroll_elasticity_helper_;
   int content_layer_id_;
   int num_draws_;
 };
@@ -6672,8 +6672,8 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer> layer_;
-  raw_ptr<FakeRecordingSource> recording_source_;
+  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
+  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationDisabled);
@@ -6724,8 +6724,8 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer> layer_;
-  raw_ptr<FakeRecordingSource> recording_source_;
+  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
+  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationSupportedButDisabled);
@@ -6773,8 +6773,8 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer> layer_;
-  raw_ptr<FakeRecordingSource> recording_source_;
+  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
+  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabled);
@@ -6839,8 +6839,8 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   }
 
   FakeContentLayerClient layer_client_;
-  raw_ptr<FakePictureLayer> layer_;
-  raw_ptr<FakeRecordingSource> recording_source_;
+  raw_ptr<FakePictureLayer, DanglingUntriaged> layer_;
+  raw_ptr<FakeRecordingSource, DanglingUntriaged> recording_source_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestGpuRasterizationEnabledWithMSAA);
@@ -10671,7 +10671,7 @@ class LayerTreeHostTestBeginFramePausedChanged : public LayerTreeHostTest {
   }
 
  private:
-  raw_ptr<TestLayerTreeFrameSink> layer_tree_frame_sink_;
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
 };
 MULTI_THREAD_TEST_F(LayerTreeHostTestBeginFramePausedChanged);
 

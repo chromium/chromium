@@ -141,7 +141,7 @@ class Service {
   SmsFetcherImpl fetcher_;
   std::unique_ptr<UserConsentHandler> consent_handler_;
   mojo::Remote<blink::mojom::WebOTPService> service_remote_;
-  raw_ptr<WebOTPService> service_;
+  raw_ptr<WebOTPService, DanglingUntriaged> service_;
 };
 
 class WebOTPServiceTest : public RenderViewHostTestHarness {

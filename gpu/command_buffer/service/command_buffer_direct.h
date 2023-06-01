@@ -68,7 +68,7 @@ class GPU_EXPORT CommandBufferDirect : public CommandBuffer,
 
  private:
   CommandBufferService service_;
-  raw_ptr<AsyncAPIInterface> handler_ = nullptr;
+  raw_ptr<AsyncAPIInterface, DanglingUntriaged> handler_ = nullptr;
 };
 
 }  // namespace gpu

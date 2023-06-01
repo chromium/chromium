@@ -45,7 +45,7 @@ class ProfileReportGeneratorDelegateBase
   policy::MachineLevelUserCloudPolicyManager* GetCloudPolicyManager() final;
 
  protected:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace enterprise_reporting

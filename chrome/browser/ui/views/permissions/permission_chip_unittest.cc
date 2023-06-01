@@ -141,7 +141,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   base::TimeDelta kChipCollapseDuration = base::Seconds(12);
   base::TimeDelta kNormalChipDismissDuration = base::Seconds(6);

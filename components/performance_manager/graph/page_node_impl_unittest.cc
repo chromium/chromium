@@ -272,7 +272,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   }
 
  private:
-  raw_ptr<const PageNode> notified_page_node_ = nullptr;
+  raw_ptr<const PageNode, DanglingUntriaged> notified_page_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

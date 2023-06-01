@@ -81,7 +81,8 @@ class SessionDataServiceTest : public BrowserWithTestWindowTest {
   SessionDataService* service() { return session_data_service_.get(); }
 
  private:
-  raw_ptr<StrictMock<TestSessionDataDeleter>> session_data_deleter_;
+  raw_ptr<StrictMock<TestSessionDataDeleter>, DanglingUntriaged>
+      session_data_deleter_;
   std::unique_ptr<SessionDataService> session_data_service_;
 };
 
