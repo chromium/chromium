@@ -133,7 +133,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     LOG(ERROR) << "No video specified";
     return nullptr;
   }
-  auto video = RawVideo::Create(video_path, video_metadata_path);
+  auto video = RawVideo::Create(video_path, video_metadata_path,
+                                /*read_all_frames=*/false);
   if (!video) {
     LOG(ERROR) << "Failed to prepare input source for " << video_path;
     return nullptr;

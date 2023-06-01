@@ -192,7 +192,10 @@ class AlignedDataHelper {
 
  private:
   struct VideoFrameData;
-
+  enum class CreateFrameMode {
+    kAllAtOnce,
+    kOnDemand,
+  };
   scoped_refptr<VideoFrame> CreateVideoFrameFromVideoFrameData(
       const VideoFrameData& video_frame_data,
       base::TimeDelta frame_timestamp) const;
@@ -210,6 +213,8 @@ class AlignedDataHelper {
   const uint32_t num_read_frames_;
 
   const bool reverse_;
+
+  const CreateFrameMode create_frame_mode_;
 
   // The index of VideoFrame to be read next.
   uint32_t frame_index_ = 0;

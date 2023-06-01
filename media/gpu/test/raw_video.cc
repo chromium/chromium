@@ -326,7 +326,8 @@ bool RawVideo::LoadMetadata(const base::FilePath& json_file_path,
 // static
 std::unique_ptr<RawVideo> RawVideo::Create(
     const base::FilePath& file_path,
-    const base::FilePath& metadata_file_path) {
+    const base::FilePath& metadata_file_path,
+    bool read_all_frames) {
   CHECK(!file_path.empty());
   const base::FilePath data_file_path = ResolveFilePath(file_path);
   if (data_file_path.empty()) {
@@ -363,9 +364,10 @@ std::unique_ptr<RawVideo> RawVideo::Create(
       << " video frame size computed by media::VideoFrame is different from"
       << " one computed by media::VideoFrameLayout";
 
-  if (metadata.num_frames > kMaxReadFrames) {
-    DLOG(WARNING) << "Limit video length to " << kMaxReadFrames << " frames";
-    metadata.num_frames = kMaxReadFrames;
+  if (!read_all_frames && metadata.num_frames > kLimitedReadFrames) {
+    DLOG(WARNING) << "Limit video length to " << kLimitedReadFrames
+                  << " frames";
+    metadata.num_frames = kLimitedReadFrames;
   }
 
   std::unique_ptr<base::MemoryMappedFile> memory_mapped_file;

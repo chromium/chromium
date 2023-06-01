@@ -391,6 +391,9 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
       num_frames_(video_->NumFrames()),
       num_read_frames_(num_read_frames),
       reverse_(reverse),
+      create_frame_mode_(num_frames_ > RawVideo::kLimitedReadFrames
+                             ? CreateFrameMode::kOnDemand
+                             : CreateFrameMode::kAllAtOnce),
       storage_type_(storage_type),
       visible_rect_(video_->VisibleRect()),
       natural_size_(natural_size),
@@ -412,6 +415,10 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
                                      kPlatformBufferAlignment);
   }
   LOG_ASSERT(layout_) << "Failed creating VideoFrameLayout";
+
+  if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
+    return;
+  }
 
   video_frame_data_.resize(num_frames_);
   for (size_t i = 0; i < num_frames_; i++) {
@@ -458,8 +465,16 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 
   const uint32_t read_frame_index =
       GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
-  return CreateVideoFrameFromVideoFrameData(video_frame_data_[read_frame_index],
-                                            frame_timestamp);
+  if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
+    auto frame_data = video_->GetFrame(read_frame_index);
+    VideoFrameData video_frame_data = CreateVideoFrameData(
+        storage_type_, frame_data, video_->FrameLayout(), *layout_);
+    return CreateVideoFrameFromVideoFrameData(video_frame_data,
+                                              frame_timestamp);
+  } else {
+    return CreateVideoFrameFromVideoFrameData(
+        video_frame_data_[read_frame_index], frame_timestamp);
+  }
 }
 
 scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(

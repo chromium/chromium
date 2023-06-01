@@ -27,9 +27,10 @@ namespace media::test {
 // about the video.
 class RawVideo final {
  public:
-  // The maximum number of read frames. If the number of frames in the file is
-  // more than this, the 61-th and later frames are just ignored.
-  static constexpr size_t kMaxReadFrames = 60;
+  // The maximum number of read frames if |read_all_frames| is false.
+  // If the number of frames in the file is more than this, the 61-th and later
+  // frames are just ignored.
+  static constexpr size_t kLimitedReadFrames = 60;
 
   // FrameData serves the access of the frame data.
   struct FrameData {
@@ -52,7 +53,8 @@ class RawVideo final {
   // metadata from |metadata_file_path|. Returns nullptr on fatal.
   static std::unique_ptr<RawVideo> Create(
       const base::FilePath& file_path,
-      const base::FilePath& metadata_file_path);
+      const base::FilePath& metadata_file_path,
+      bool read_all_frames);
 
   // Create RawVideo by converting |data_| to NV12.
   std::unique_ptr<RawVideo> CreateNV12Video() const;
