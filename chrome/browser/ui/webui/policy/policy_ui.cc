@@ -15,6 +15,8 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -174,3 +176,9 @@ PolicyUI::PolicyUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 PolicyUI::~PolicyUI() = default;
+
+// static
+void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
+                                true);
+}

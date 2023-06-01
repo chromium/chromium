@@ -1110,6 +1110,7 @@ policies:
   1109: DataUrlInSvgUseEnabled
   1110: RSAKeyUsageForLocalAnchorsEnabled
   1111: BeforeunloadEventCancelByPreventDefaultEnabled
+  1112: PolicyTestPageEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

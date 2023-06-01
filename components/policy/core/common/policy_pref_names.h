@@ -67,6 +67,7 @@ extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];
 extern const char kIncognitoModeAvailability[];
 extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
+extern const char kPolicyTestPageEnabled[];
 
 }  // namespace policy_prefs
 }  // namespace policy

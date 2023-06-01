@@ -318,6 +318,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDataUrlInSvgUseEnabled,
     prefs::kDataUrlInSvgUseEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kPolicyTestPageEnabled,
+    policy_prefs::kPolicyTestPageEnabled,
+    base::Value::Type::BOOLEAN},
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

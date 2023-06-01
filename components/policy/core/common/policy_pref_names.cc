@@ -139,5 +139,10 @@ const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
     "policy.beforeunload_event_cancel_by_prevent_default_enabled";
 
+// Boolean indicating whether Policy Test Page is Enabled.
+// The value is controlled by the PolicyTestPageEnabled policy.
+// If this is set to True, the page will be accessible.
+const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy
