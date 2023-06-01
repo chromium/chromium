@@ -81,8 +81,20 @@ export class SettingsOneDriveSubpageElement extends
     // TODO(jboulic): Implement open OneDrive folder.
   }
 
-  private onConnectDisconnectButtonClick_(): void {
-    // TODO(jboulic): Implement OneDrive connect/disconnect.
+  private async onConnectDisconnectButtonClick_(): Promise<void> {
+    if (this.connected_) {
+      const {success} =
+          await this.oneDriveProxy_.handler.disconnectFromOneDrive();
+      if (!success) {
+        console.error('Disconnecting from OneDrive failed');
+      }
+    } else {
+      const {success} = await this.oneDriveProxy_.handler.connectToOneDrive();
+      if (!success) {
+        console.error('Connecting to OneDrive failed');
+      }
+    }
+    // The UI is updated by listening to `onODFSMountOrUnmount`.
   }
 }
 

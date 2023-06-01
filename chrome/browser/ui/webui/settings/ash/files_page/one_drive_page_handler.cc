@@ -32,6 +32,12 @@ void OnGetEmailAddress(
   }
   std::move(callback).Run(absl::nullopt);
 }
+
+void OnRequestODFSMountResult(
+    OneDrivePageHandler::ConnectToOneDriveCallback callback,
+    base::File::Error result) {
+  std::move(callback).Run(result == base::File::Error::FILE_OK);
+}
 }  // namespace
 
 OneDrivePageHandler::OneDrivePageHandler(
@@ -82,6 +88,47 @@ void OneDrivePageHandler::GetUserEmailAddress(
   file_system->GetActions(
       {base::FilePath("/")},
       base::BindOnce(&OnGetEmailAddress, std::move(callback)));
+}
+
+void OneDrivePageHandler::ConnectToOneDrive(
+    ConnectToOneDriveCallback callback) {
+  file_system_provider::Service* service =
+      file_system_provider::Service::Get(profile_);
+  DCHECK(service);
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile_));
+  std::vector<file_system_provider::ProvidedFileSystemInfo>
+      odfs_file_system_infos =
+          service->GetProvidedFileSystemInfoList(provider_id);
+  if (odfs_file_system_infos.size() > 0) {
+    // ODFS is already mounted.
+    std::move(callback).Run(false);
+    return;
+  }
+  service->RequestMount(provider_id, base::BindOnce(&OnRequestODFSMountResult,
+                                                    std::move(callback)));
+}
+
+void OneDrivePageHandler::DisconnectFromOneDrive(
+    DisconnectFromOneDriveCallback callback) {
+  file_system_provider::Service* service =
+      file_system_provider::Service::Get(profile_);
+  DCHECK(service);
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile_));
+  std::vector<file_system_provider::ProvidedFileSystemInfo>
+      odfs_file_system_infos =
+          service->GetProvidedFileSystemInfoList(provider_id);
+  if (odfs_file_system_infos.size() == 0) {
+    // ODFS is not mounted.
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(
+      service->RequestUnmount(odfs_file_system_infos[0].provider_id(),
+                              odfs_file_system_infos[0].file_system_id()));
 }
 
 void OneDrivePageHandler::OnProvidedFileSystemMount(

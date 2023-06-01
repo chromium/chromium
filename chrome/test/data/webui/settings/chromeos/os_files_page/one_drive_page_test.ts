@@ -110,4 +110,34 @@ suite('<one-google-drive-subpage>', function() {
     assertEquals(
         'Connect account', connectDisconnectButton.textContent!.trim());
   });
+
+  test('Connect button click', async () => {
+    await setupOneDrivePage({email: null});
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+
+    connectDisconnectButton.click();
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('connectToOneDrive'));
+    assertEquals(
+        0, testOneDriveProxy.handler.getCallCount('disconnectFromOneDrive'));
+  });
+
+  test('Disconnect button click', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+
+    connectDisconnectButton.click();
+    assertEquals(
+        0, testOneDriveProxy.handler.getCallCount('connectToOneDrive'));
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('disconnectFromOneDrive'));
+  });
 });

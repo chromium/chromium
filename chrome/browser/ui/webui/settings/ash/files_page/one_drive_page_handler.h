@@ -35,6 +35,8 @@ class OneDrivePageHandler : public one_drive::mojom::PageHandler,
  private:
   // one_drive::mojom::PageHandler:
   void GetUserEmailAddress(GetUserEmailAddressCallback callback) override;
+  void ConnectToOneDrive(ConnectToOneDriveCallback callback) override;
+  void DisconnectFromOneDrive(DisconnectFromOneDriveCallback callback) override;
 
   // ash::file_system_provider::Observer overrides.
   void OnProvidedFileSystemMount(

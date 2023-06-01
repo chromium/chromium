@@ -18,6 +18,12 @@ interface PageHandler {
   // Returns the email address associated with the currently connected OneDrive
   // account.
   GetUserEmailAddress() => (string? email);
+
+  // Emits a OneDrive mount request and returns whether the request succeeded.
+  ConnectToOneDrive() => (bool success);
+
+  // Emits a OneDrive unmount request and returns whether the request succeeded.
+  DisconnectFromOneDrive() => (bool success);
 };
 
 // Interface for the OneDrive settings. Implemented in Javascript and
