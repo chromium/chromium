@@ -92,10 +92,11 @@ class DownloadBubbleRowView : public views::View,
 
   DownloadUIModel::BubbleUIInfo& ui_info() { return ui_info_; }
   void SetUIInfoForTesting(DownloadUIModel::BubbleUIInfo ui_info) {
-    ui_info_ = ui_info;
+    ui_info_ = std::move(ui_info);
   }
 
   void SimulateMainButtonClickForTesting(const ui::Event& event);
+  bool IsQuickActionButtonVisibleForTesting(DownloadCommands::Command command);
 
  protected:
   // Overrides ui::LayerDelegate:

@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -482,6 +483,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // order, i.e. buttons added first will appear first (left in LTR)
   quick_action_holder_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
+  // All the quick action buttons are added as children. Later on, only the ones
+  // that are enabled will be made visible in UpdateButtons().
   resume_action_ = AddQuickAction(DownloadCommands::RESUME);
   pause_action_ = AddQuickAction(DownloadCommands::PAUSE);
   show_in_folder_action_ = AddQuickAction(DownloadCommands::SHOW_IN_FOLDER);
@@ -649,7 +652,7 @@ void DownloadBubbleRowView::UpdateRowForFocus(
   bool should_set_focus = request_focus_on_last_quick_action &&
                           GetFocusManager() &&
                           !Contains(GetFocusManager()->GetFocusedView());
-  if (should_set_focus && ui_info_.quick_actions.size() != 0) {
+  if (should_set_focus && !ui_info_.quick_actions.empty()) {
     GetActionButtonForCommand(ui_info_.quick_actions.back().command)
         ->RequestFocus();
   }
@@ -691,9 +694,12 @@ void DownloadBubbleRowView::UpdateButtons() {
   open_when_complete_action_->SetVisible(false);
   cancel_action_->SetVisible(false);
   show_in_folder_action_->SetVisible(false);
-  open_when_complete_action_->SetVisible(false);
 
   for (const auto& action : ui_info_.quick_actions) {
+    if (!DownloadCommands(model_->GetWeakPtr())
+             .IsCommandEnabled(action.command)) {
+      continue;
+    }
     views::ImageButton* action_button =
         GetActionButtonForCommand(action.command);
     action_button->SetImageModel(
@@ -1086,6 +1092,15 @@ void DownloadBubbleRowView::SimulateMainButtonClickForTesting(
     const ui::Event& event) {
   static_cast<TransparentButton*>(transparent_button_)
       ->NotifyClickForTesting(event);  // IN-TEST
+}
+
+bool DownloadBubbleRowView::IsQuickActionButtonVisibleForTesting(
+    DownloadCommands::Command command) {
+  auto* button = GetActionButtonForCommand(command);
+  if (!button) {
+    return false;
+  }
+  return button->GetVisible();
 }
 
 BEGIN_METADATA(DownloadBubbleRowView, views::View)

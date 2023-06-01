@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/download_item_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +33,8 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
   DownloadBubbleRowViewTest()
       : TestWithBrowserView(
             content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
   }
 
   DownloadBubbleRowViewTest(const DownloadBubbleRowViewTest&) = delete;
@@ -120,6 +122,41 @@ TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
 TEST_F(DownloadBubbleRowViewTest, MainButtonPressed) {
   EXPECT_CALL(*download_item(), OpenDownload()).Times(1);
   row_view()->SimulateMainButtonClickForTesting(ui::test::TestEvent());
+}
+
+// Tests that only enabled quick actions that are in the `ui_info_` are visible
+// on the row view.
+TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
+  ON_CALL(*download_item(), GetState())
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  ON_CALL(*download_item(), CanShowInFolder()).WillByDefault(Return(true));
+  download_item()->NotifyObserversDownloadUpdated();
+  row_view()->SetUIInfoForTesting(
+      DownloadUIModel::BubbleUIInfo()
+          .AddQuickAction(DownloadCommands::PAUSE, u"label",
+                          &vector_icons::kPauseIcon)
+          .AddQuickAction(DownloadCommands::SHOW_IN_FOLDER, u"label",
+                          &vector_icons::kFolderIcon));
+  ASSERT_EQ(row_view()->ui_info().quick_actions.size(), 2u);
+
+  // Should not be available because they are not present in the ui_info.
+  EXPECT_FALSE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::OPEN_WHEN_COMPLETE));
+  EXPECT_FALSE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::RESUME));
+  EXPECT_FALSE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::CANCEL));
+  // Should not be available because the download is complete.
+  ASSERT_FALSE(DownloadCommands(row_view()->model()->GetWeakPtr())
+                   .IsCommandEnabled(DownloadCommands::PAUSE));
+  EXPECT_FALSE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::PAUSE));
+  // Should be available because it is present in the ui_info, and the
+  // DownloadItem state allows for this command.
+  ASSERT_TRUE(DownloadCommands(row_view()->model()->GetWeakPtr())
+                  .IsCommandEnabled(DownloadCommands::SHOW_IN_FOLDER));
+  EXPECT_TRUE(row_view()->IsQuickActionButtonVisibleForTesting(
+      DownloadCommands::SHOW_IN_FOLDER));
 }
 
 }  // namespace
