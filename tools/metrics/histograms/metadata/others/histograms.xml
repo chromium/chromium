@@ -5105,15 +5105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Downgrade.Type" enum="UserDataDowngradeType"
-    expires_after="2021-08-09">
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The type of User Data downgrade detected, if any. The &quot;none&quot;
-    bucket is not reported.
-  </summary>
-</histogram>
-
 <histogram name="Downgrade.UserDataDirMove.FailureCount" units="count"
     expires_after="2020-12-31">
   <obsolete>
