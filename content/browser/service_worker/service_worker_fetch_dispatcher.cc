@@ -56,6 +56,12 @@ namespace content {
 
 namespace {
 
+// TODO(crbug.com/1446228): When this is enabled, the browser will schedule
+// ServiceWorkerFetchDispatcher::ResponseCallback in a high priority task queue.
+BASE_FEATURE(kServiceWorkerFetchResponseCallbackUseHighPriority,
+             "ServiceWorkerFetchResponseCallbackUseHighPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void NotifyNavigationPreloadRequestSent(const network::ResourceRequest& request,
                                         const std::pair<int, int>& worker_id,
                                         const std::string& request_id) {
@@ -364,7 +370,14 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
           receiver,
       base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher,
       ServiceWorkerVersion* version)
-      : receiver_(this, std::move(receiver)),
+      : receiver_(
+            this,
+            std::move(receiver),
+            (base::FeatureList::IsEnabled(
+                 kServiceWorkerFetchResponseCallbackUseHighPriority)
+                 ? GetUIThreadTaskRunner(
+                       {BrowserTaskType::kServiceWorkerStorageControlResponse})
+                 : base::SequencedTaskRunner::GetCurrentDefault())),
         fetch_dispatcher_(fetch_dispatcher),
         version_(version) {
     receiver_.set_disconnect_handler(base::BindOnce(
