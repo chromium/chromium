@@ -98,16 +98,16 @@ GURL GetLocalizedURL(const GURL& original) {
 
 @property(nonatomic, copy) CrURL* headerURL;
 
-@property(nonatomic, copy) NSString* dismissedWarningsButtonText;
+@property(nonatomic, assign) NSInteger dismissedWarningsCount;
 
 @end
 
 @implementation FakePasswordIssuesConsumer
 
 - (void)setPasswordIssues:(NSArray<PasswordIssueGroup*>*)passwordIssueGroups
-    dismissedWarningsButtonText:(NSString*)buttonText {
+    dismissedWarningsCount:(NSInteger)dismissedWarningsCount {
   _passwordIssueGroups = passwordIssueGroups;
-  _dismissedWarningsButtonText = buttonText;
+  _dismissedWarningsCount = dismissedWarningsCount;
   _passwordIssuesListChangedWasCalled = YES;
 }
 
@@ -314,15 +314,14 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExampleString,
              /*expected_username=*/GetUsername2());
 
-  EXPECT_NSEQ(consumer().dismissedWarningsButtonText,
-              @"Dismissed Warnings (1)");
+  EXPECT_EQ(consumer().dismissedWarningsCount, 1);
 
   // Send only weak passwords to consumer.
   CreateMediator(WarningType::kWeakPasswordsWarning);
 
   CheckIssue();
 
-  EXPECT_FALSE(consumer().dismissedWarningsButtonText);
+  EXPECT_EQ(0, consumer().dismissedWarningsCount);
 
   // Send only reused passwords to consumer.
   CreateMediator(WarningType::kReusedPasswordsWarning);
@@ -331,14 +330,14 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   CheckIssue(/*group=*/0, /*index=*/1, /*expected_website=*/kExample3String,
              /*expected_username=*/GetUsername2());
 
-  EXPECT_FALSE(consumer().dismissedWarningsButtonText);
+  EXPECT_EQ(0, consumer().dismissedWarningsCount);
 
   // Send only dismissed passwords to consumer.
   CreateMediator(WarningType::kDismissedWarningsWarning);
 
   CheckIssue(/*group=*/0, /*index=*/0, /*expected_website=*/kExample3String);
 
-  EXPECT_FALSE(consumer().dismissedWarningsButtonText);
+  EXPECT_EQ(0, consumer().dismissedWarningsCount);
 }
 
 /// Tests the mediator sets the consumer title for compromised passwords.

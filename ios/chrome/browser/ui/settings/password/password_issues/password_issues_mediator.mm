@@ -135,15 +135,6 @@ NSArray<PasswordIssueGroup*>* GetPasswordIssueGroups(
   }
 }
 
-// Builds the text of the Dismissed Warnings button in the consumer.
-NSString* GetDismissedWarningsButtonText(NSInteger dismissed_warnings_count) {
-  return dismissed_warnings_count > 0
-             ? l10n_util::GetNSStringF(
-                   IDS_IOS_COMPROMISED_PASSWORD_ISSUES_DISMISSED_WARNINGS_BUTTON_TITLE,
-                   base::NumberToString16(dismissed_warnings_count))
-             : nil;
-}
-
 // Computes the number of dimissed insecure credentials warnings.
 // Only Compromissed credentials warnings can be dismissed, other warning types
 // always return 0.
@@ -292,10 +283,9 @@ NSInteger GetDismissedWarningsCount(
 
   NSArray<PasswordIssueGroup*>* passwordIssueGroups =
       GetPasswordIssueGroups(_warningType, insecureCredentialsForWarningType);
-  NSString* dismissedCredentialsButtonText =
-      GetDismissedWarningsButtonText(dismissedWarningsCount);
+
   [self.consumer setPasswordIssues:passwordIssueGroups
-       dismissedWarningsButtonText:dismissedCredentialsButtonText];
+            dismissedWarningsCount:dismissedWarningsCount];
 
   [self.consumer
       setNavigationBarTitle:[self
@@ -314,10 +304,10 @@ NSInteger GetDismissedWarningsCount(
       _manager->GetInsecureCredentials();
 
   [self.consumer
-                setPasswordIssues:GetPasswordIssueGroups(
-                                      WarningType::kCompromisedPasswordsWarning,
-                                      insecureCredentials)
-      dismissedWarningsButtonText:nil];
+           setPasswordIssues:GetPasswordIssueGroups(
+                                 WarningType::kCompromisedPasswordsWarning,
+                                 insecureCredentials)
+      dismissedWarningsCount:0];
 }
 
 // Computes the navigation bar title based on `_warningType` and number of

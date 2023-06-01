@@ -13,6 +13,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
@@ -140,22 +141,20 @@ class PasswordIssuesTableViewControllerTest
 
   // Adds password issue to the view controller.
   void AddPasswordIssue() {
-    SetIssuesAndDismissedWarningsButtonText(
-        @[ [[PasswordIssueGroup alloc]
-            initWithHeaderText:nil
-                passwordIssues:@[ CreateTestPasswordIssue() ]] ],
-        nil);
+    SetIssuesAndDismissedWarningsCount(@[ [[PasswordIssueGroup alloc]
+        initWithHeaderText:nil
+            passwordIssues:@[ CreateTestPasswordIssue() ]] ]);
   }
 
   // Passes the given PasswordIssues and text for dismissed warnings button to
   // the view controller.
-  void SetIssuesAndDismissedWarningsButtonText(
+  void SetIssuesAndDismissedWarningsCount(
       NSArray<PasswordIssueGroup*>* password_issue_groups,
-      NSString* dismissed_warnings_button_text = nil) {
+      NSInteger dismissed_warnings_count = 0) {
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());
     [passwords_controller setPasswordIssues:password_issue_groups
-                dismissedWarningsButtonText:dismissed_warnings_button_text];
+                     dismissedWarningsCount:dismissed_warnings_count];
   }
 
   // Sets the PasswordPasswordIssuesTableViewController header.
@@ -184,6 +183,18 @@ class PasswordIssuesTableViewControllerTest
     } else {
       EXPECT_FALSE(header.urls.count);
     }
+  }
+
+  // Verifies that the item for the dismissed warnings button is in the model
+  // with the right content.
+  void CheckDismissedWarningsButton(NSInteger expected_count, int section) {
+    TableViewMultiDetailTextItem* dismissed_warnings_button_item =
+        GetTableViewItem(/*section=*/section, /*item=*/0);
+    // Validate button text.
+    EXPECT_NSEQ(@"Dismissed Warnings", dismissed_warnings_button_item.text);
+    // Validate count.
+    EXPECT_NSEQ([@(expected_count) stringValue],
+                dismissed_warnings_button_item.trailingDetailText);
   }
 
   FakePasswordIssuesPresenter* presenter() { return presenter_; }
@@ -268,20 +279,18 @@ TEST_F(PasswordIssuesTableViewControllerTest,
   // Add two groups with headers and two issues each.
   NSString* first_header_text = @"Group Header 1";
   NSString* second_header_text = @"Group Header 2";
-  SetIssuesAndDismissedWarningsButtonText(
-      @[
-        [[PasswordIssueGroup alloc]
-            initWithHeaderText:first_header_text
-                passwordIssues:@[
-                  CreateTestPasswordIssue(), CreateTestPasswordIssue2()
-                ]],
-        [[PasswordIssueGroup alloc]
-            initWithHeaderText:second_header_text
-                passwordIssues:@[
-                  CreateTestPasswordIssue(), CreateTestPasswordIssue2()
-                ]]
-      ],
-      nil);
+  SetIssuesAndDismissedWarningsCount(@[
+    [[PasswordIssueGroup alloc]
+        initWithHeaderText:first_header_text
+            passwordIssues:@[
+              CreateTestPasswordIssue(), CreateTestPasswordIssue2()
+            ]],
+    [[PasswordIssueGroup alloc]
+        initWithHeaderText:second_header_text
+            passwordIssues:@[
+              CreateTestPasswordIssue(), CreateTestPasswordIssue2()
+            ]]
+  ]);
 
   // Model should have one section for each issue.
   EXPECT_EQ(4, NumberOfSections());
@@ -345,16 +354,18 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissWarningsTap) {
       password_manager::features::kIOSPasswordCheckup);
 
   CreateController();
-  SetIssuesAndDismissedWarningsButtonText(
+  SetIssuesAndDismissedWarningsCount(
       @[ [[PasswordIssueGroup alloc]
           initWithHeaderText:nil
               passwordIssues:@[ CreateTestPasswordIssue() ]] ],
-      @"Dismiss Warnings (1)");
+      1);
 
-  PasswordIssuesTableViewController* passwords_controller =
-      GetPasswordIssuesController();
+  CheckDismissedWarningsButton(/*expected_count=*/1, /*section=*/1);
 
   EXPECT_FALSE(presenter().dismissedWarningsPresented);
+
+  PasswordIssuesTableViewController* passwords_controller =
+      static_cast<PasswordIssuesTableViewController*>(controller());
   [passwords_controller tableView:passwords_controller.tableView
           didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1]];
   EXPECT_TRUE(presenter().dismissedWarningsPresented);
@@ -366,10 +377,9 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestChangePasswordTap) {
       password_manager::features::kIOSPasswordCheckup);
 
   PasswordIssue* password_issue = CreateTestPasswordIssue();
-  SetIssuesAndDismissedWarningsButtonText(
+  SetIssuesAndDismissedWarningsCount(
       @[ [[PasswordIssueGroup alloc] initWithHeaderText:nil
-                                         passwordIssues:@[ password_issue ]] ],
-      nil);
+                                         passwordIssues:@[ password_issue ]] ]);
 
   PasswordIssuesTableViewController* passwords_controller =
       static_cast<PasswordIssuesTableViewController*>(controller());
@@ -392,10 +402,8 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissAfterIssuesGone) {
 
   EXPECT_FALSE(presenter().dismissalTriggered);
 
-  PasswordIssuesTableViewController* passwords_controller =
-      GetPasswordIssuesController();
   // Simulate all content gone.
-  [passwords_controller setPasswordIssues:@[] dismissedWarningsButtonText:nil];
+  SetIssuesAndDismissedWarningsCount(@[]);
 
   EXPECT_TRUE(presenter().dismissalTriggered);
 }
