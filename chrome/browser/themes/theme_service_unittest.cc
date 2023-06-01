@@ -779,4 +779,18 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   EXPECT_TRUE(registry_->GetInstalledExtension(scoper.extension_id()));
 }
 
+// Sets and gets browser color scheme.
+TEST_F(ThemeServiceTest, SetBrowserColorScheme) {
+  // Default without anything explicitly set should be kSystem.
+  ThemeService::BrowserColorScheme color_scheme =
+      theme_service_->GetBrowserColorScheme();
+  EXPECT_EQ(color_scheme, ThemeService::BrowserColorScheme::kSystem);
+
+  // Set browser color scheme to light mode.
+  theme_service_->SetBrowserColorScheme(
+      ThemeService::BrowserColorScheme::kLight);
+  color_scheme = theme_service_->GetBrowserColorScheme();
+  EXPECT_EQ(color_scheme, ThemeService::BrowserColorScheme::kLight);
+}
+
 }  // namespace theme_service_internal

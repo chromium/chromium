@@ -185,8 +185,11 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // Returns the theme color for the current policy theme.
   virtual SkColor GetPolicyThemeColor() const;
 
+  // Sets the browser color scheme preference.
+  virtual void SetBrowserColorScheme(BrowserColorScheme color_scheme);
+
   // Gets the browser color scheme preference.
-  BrowserColorScheme GetBrowserColorScheme() const;
+  virtual BrowserColorScheme GetBrowserColorScheme() const;
 
   // Returns |ThemeService::ThemeReinstaller| for the current theme.
   std::unique_ptr<ThemeService::ThemeReinstaller>
