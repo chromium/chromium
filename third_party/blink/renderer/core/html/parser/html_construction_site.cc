@@ -364,8 +364,12 @@ void HTMLConstructionSite::FlushPendingText() {
       // case, just keep the entire string.
       break_index = string.length();
     }
+    unsigned substring_view_length = break_index - current_position;
     StringView substring_view =
-        string.SubstringView(current_position, break_index - current_position);
+        LIKELY(!current_position && substring_view_length >= string.length())
+            ? string
+            : string.SubstringView(current_position,
+                                   break_index - current_position);
     String substring = canonicalize_whitespace_strings_
                            ? TryCanonicalizeString(
                                  substring_view, pending_text_.whitespace_mode)
