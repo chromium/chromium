@@ -36,7 +36,6 @@
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
-#include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
@@ -162,62 +161,46 @@ VideoDecoderType D3D11VideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kD3D11;
 }
 
-HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
+bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
     const VideoDecoderConfig& config,
-    ComD3D11VideoDecoder video_decoder) {
+    std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::InitializeAcceleratedDecoder");
-  // If we got an 11.1 D3D11 Device, we can use a |ID3D11VideoContext1|,
-  // otherwise we have to make sure we only use a |ID3D11VideoContext|.
-  HRESULT hr;
-
-  // |device_context_| is the primary display context, but currently
-  // we share it for decoding purposes.
-  auto video_context = VideoContextWrapper::CreateWrapper(usable_feature_level_,
-                                                          device_context_, &hr);
-
-  if (!SUCCEEDED(hr))
-    return hr;
 
   profile_ = config.profile();
   if (config.codec() == VideoCodec::kVP9) {
-    accelerated_video_decoder_ = std::make_unique<VP9Decoder>(
-        std::make_unique<D3D11VP9Accelerator>(
-            this, media_log_.get(), video_device_, std::move(video_context)),
-        profile_, config.color_space_info());
+    accelerated_video_decoder_ =
+        std::make_unique<VP9Decoder>(std::make_unique<D3D11VP9Accelerator>(
+                                         this, media_log_.get(), video_device_),
+                                     profile_, config.color_space_info());
   } else if (config.codec() == VideoCodec::kH264) {
     accelerated_video_decoder_ = std::make_unique<H264Decoder>(
-        std::make_unique<D3D11H264Accelerator>(
-            this, media_log_.get(), video_device_, std::move(video_context)),
+        std::make_unique<D3D11H264Accelerator>(this, media_log_.get(),
+                                               video_device_),
         profile_, config.color_space_info());
   } else if (config.codec() == VideoCodec::kAV1) {
-    accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
-        std::make_unique<D3D11AV1Accelerator>(
-            this, media_log_.get(), video_device_, std::move(video_context)),
-        profile_, config.color_space_info());
+    accelerated_video_decoder_ =
+        std::make_unique<AV1Decoder>(std::make_unique<D3D11AV1Accelerator>(
+                                         this, media_log_.get(), video_device_),
+                                     profile_, config.color_space_info());
   } else if (config.codec() == VideoCodec::kHEVC) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
     accelerated_video_decoder_ = std::make_unique<H265Decoder>(
-        std::make_unique<D3D11H265Accelerator>(
-            this, media_log_.get(), video_device_, std::move(video_context)),
+        std::make_unique<D3D11H265Accelerator>(this, media_log_.get(),
+                                               video_device_),
         profile_, config.color_space_info());
 #else
-    return E_FAIL;
+    return false;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
-    return E_FAIL;
+    return false;
   }
 
-  if (set_accelerator_decoder_wrapper_cb_) {
-    set_accelerator_decoder_wrapper_cb_.Run(
-        CreateD3D11VideoDecoderWrapper(video_decoder));
-  }
+  // Provide the initial video decoder wrapper object.
+  DCHECK(set_accelerator_decoder_wrapper_cb_);
+  set_accelerator_decoder_wrapper_cb_.Run(std::move(video_decoder_wrapper));
 
-  // Provide the initial video decoder object.
-  DCHECK(set_accelerator_decoder_cb_);
-  set_accelerator_decoder_cb_.Run(std::move(video_decoder));
-
-  return hr;
+  return true;
 }
 
 D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
@@ -437,11 +420,12 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return NotifyError(std::move(video_decoder_or_error).error());
   }
 
-  hr = InitializeAcceleratedDecoder(config,
-                                    std::move(video_decoder_or_error).value());
+  bool ok = InitializeAcceleratedDecoder(
+      config, CreateD3D11VideoDecoderWrapper(
+                  std::move(video_decoder_or_error).value()));
 
-  if (!SUCCEEDED(hr)) {
-    return NotifyError(D3D11Status::Codes::kFailedToGetDeviceContext);
+  if (!ok) {
+    return NotifyError(D3D11Status::Codes::kDecoderUnsupportedCodec);
   }
 
   LogDecoderAdapterLUID();
@@ -693,12 +677,9 @@ void D3D11VideoDecoder::DoDecode() {
         return NotifyError(std::move(video_decoder_or_error).error());
       }
       auto video_decoder = std::move(video_decoder_or_error).value();
-      if (set_accelerator_decoder_wrapper_cb_) {
-        set_accelerator_decoder_wrapper_cb_.Run(
-            CreateD3D11VideoDecoderWrapper(video_decoder));
-      }
-      DCHECK(set_accelerator_decoder_cb_);
-      set_accelerator_decoder_cb_.Run(video_decoder);
+      DCHECK(set_accelerator_decoder_wrapper_cb_);
+      set_accelerator_decoder_wrapper_cb_.Run(
+          CreateD3D11VideoDecoderWrapper(video_decoder));
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
@@ -999,10 +980,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
       use_single_video_decoder_texture_;
   output_cb_.Run(frame);
   return true;
-}
-
-void D3D11VideoDecoder::SetDecoderCB(const SetAcceleratorDecoderCB& cb) {
-  set_accelerator_decoder_cb_ = cb;
 }
 
 void D3D11VideoDecoder::SetDecoderWrapperCB(

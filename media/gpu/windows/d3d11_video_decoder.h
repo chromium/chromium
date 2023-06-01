@@ -93,7 +93,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) override;
   bool OutputResult(const CodecPicture* picture,
                     D3D11PictureBuffer* picture_buffer) override;
-  void SetDecoderCB(const SetAcceleratorDecoderCB&) override;
   void SetDecoderWrapperCB(const SetAcceleratorDecoderWrapperCB&) override;
 
   static bool GetD3D11FeatureLevel(
@@ -144,9 +143,11 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Run the decoder loop.
   void DoDecode();
 
-  // instantiate |accelerated_video_decoder_| based on the video profile
-  HRESULT InitializeAcceleratedDecoder(const VideoDecoderConfig& config,
-                                       ComD3D11VideoDecoder video_decoder);
+  // Instantiate |accelerated_video_decoder_| based on the video profile.
+  // Returns false if the codec is unsupported.
+  bool InitializeAcceleratedDecoder(
+      const VideoDecoderConfig& config,
+      std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper);
 
   // Query the video device for a specific decoder ID.
   bool DeviceHasDecoderID(GUID decoder_guid);
@@ -295,7 +296,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   // Word-salad callback to set / update D3D11 Video callback to the
   // accelerator.  Needed for config changes.
-  SetAcceleratorDecoderCB set_accelerator_decoder_cb_;
   SetAcceleratorDecoderWrapperCB set_accelerator_decoder_wrapper_cb_;
 
   // The currently configured bit depth for the decoder. When this changes we

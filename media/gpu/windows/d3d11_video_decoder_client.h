@@ -30,9 +30,8 @@ class D3D11VideoDecoderClient {
                             D3D11PictureBuffer* picture_buffer) = 0;
 
   // Called by the accelerator to provide a callback that can be used to give
-  // the accelerator a D3D11VideoDecoder object.  Must be called during
+  // the accelerator a D3D11VideoDecoderWrapper object.  Must be called during
   // construction of the accelerator.
-  virtual void SetDecoderCB(const SetAcceleratorDecoderCB&) = 0;
   virtual void SetDecoderWrapperCB(const SetAcceleratorDecoderWrapperCB&) = 0;
 
  protected:

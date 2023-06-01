@@ -38,8 +38,7 @@ class D3D11H264Accelerator : public D3DAccelerator,
  public:
   D3D11H264Accelerator(D3D11VideoDecoderClient* client,
                        MediaLog* media_log,
-                       ComD3D11VideoDevice video_device,
-                       std::unique_ptr<VideoContextWrapper> video_context);
+                       ComD3D11VideoDevice video_device);
 
   D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
   D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;
