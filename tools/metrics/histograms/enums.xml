@@ -31259,6 +31259,8 @@ Called by update_document_policy_enum.py.-->
   <int value="18" label="Low DriveFS free space quota"/>
   <int value="19" label="Video encoder does not support reconfiguration"/>
   <int value="20" label="Stop screen recording keyboard shortcut"/>
+  <int value="21" label="Game dashboard stop recording button"/>
+  <int value="22" label="Game toolbar stop recording button"/>
 </enum>
 
 <enum name="EnhancedBookmarkViewMode">

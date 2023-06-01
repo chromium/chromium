@@ -597,6 +597,47 @@ TEST_P(GameDashboardCaptureModeHistogramTest,
   }
 }
 
+TEST_P(GameDashboardCaptureModeHistogramTest,
+       GameDashboardEndRecordingReasonHistogram) {
+  constexpr char kHistogramNameBase[] = "EndRecordingReason";
+
+  CaptureModeTestApi test_api;
+
+  const std::string histogram_name = BuildHistogramName(
+      kHistogramNameBase, test_api.GetBehavior(BehaviorType::kDefault),
+      /*append_ui_mode_suffix=*/true);
+
+  // Testing the game dashboard stop recording button enum.
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameDashboardStopRecordingButton,
+      /*expected_count=*/0);
+  StartGameCaptureModeSession();
+  StartVideoRecordingImmediately();
+  CaptureModeController::Get()->EndVideoRecording(
+      EndRecordingReason::kGameDashboardStopRecordingButton);
+  WaitForCaptureFileToBeSaved();
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameDashboardStopRecordingButton,
+      /*expected_count=*/1);
+
+  // Testing the game toolbar stop recording button enum.
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameToolbarStopRecordingButton,
+      /*expected_count=*/0);
+  StartGameCaptureModeSession();
+  StartVideoRecordingImmediately();
+  CaptureModeController::Get()->EndVideoRecording(
+      EndRecordingReason::kGameToolbarStopRecordingButton);
+  WaitForCaptureFileToBeSaved();
+  histogram_tester_.ExpectBucketCount(
+      histogram_name,
+      /*sample=*/EndRecordingReason::kGameToolbarStopRecordingButton,
+      /*expected_count=*/1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          GameDashboardCaptureModeHistogramTest,
                          ::testing::Bool());
