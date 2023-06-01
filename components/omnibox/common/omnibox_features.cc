@@ -261,11 +261,6 @@ BASE_FEATURE(kOnDeviceTailModel,
              "OmniboxOnDeviceTailModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, suggestions from a cgi param name match are scored to 0.
-BASE_FEATURE(kDisableCGIParamMatching,
-             "OmniboxDisableCGIParamMatching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, the shortcut provider is more aggressive in scoring. The exact
 // details will change over time; but ATM, the shortcut provider will chose 1
 // candidate to compete with HUP's URL-what-you-typed suggestion for the default

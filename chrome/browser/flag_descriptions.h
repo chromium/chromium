@@ -1221,9 +1221,6 @@ extern const char kOmniboxCR23ExpandedStateSuggestIconsDescription[];
 extern const char kOmniboxCR23SteadyStateIconsName[];
 extern const char kOmniboxCR23SteadyStateIconsDescription[];
 
-extern const char kOmniboxDisableCGIParamMatchingName[];
-extern const char kOmniboxDisableCGIParamMatchingDescription[];
-
 extern const char kOmniboxIgnoreIntermediateResultsName[];
 extern const char kOmniboxIgnoreIntermediateResultsDescription[];
 

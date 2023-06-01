@@ -5498,11 +5498,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-disable-cgi-param-matching",
-    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "omnibox-discard-temporary-input-on-tab-switch",
     "owners": [ "manukh", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120

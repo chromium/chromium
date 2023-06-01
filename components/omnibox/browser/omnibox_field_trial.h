@@ -349,10 +349,6 @@ bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 
-// Returns true if CGI parameter names should not be considered when scoring
-// suggestions.
-bool ShouldDisableCGIParamMatching();
-
 // If true, enables a "starter pack" of @history, @bookmarks, and @settings
 // scopes for Site Search.
 bool IsSiteSearchStarterPackEnabled();

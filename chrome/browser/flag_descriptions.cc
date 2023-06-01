@@ -2166,11 +2166,6 @@ const char kOmniboxCR23SteadyStateIconsName[] = "Omnibox Steady State Icons";
 const char kOmniboxCR23SteadyStateIconsDescription[] =
     "Updates Omnibox steady state icons to comply with CR23 guidelines.";
 
-const char kOmniboxDisableCGIParamMatchingName[] =
-    "Disable CGI Param Name Matching";
-const char kOmniboxDisableCGIParamMatchingDescription[] =
-    "Disables using matches in CGI parameter names while scoring suggestions.";
-
 const char kOmniboxIgnoreIntermediateResultsName[] =
     "Ignore intermediate Autocomplete results.";
 const char kOmniboxIgnoreIntermediateResultsDescription[] =

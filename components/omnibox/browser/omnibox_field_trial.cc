@@ -661,10 +661,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   return constraint;
 }
 
-bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
-  return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
-}
-
 bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
 }
