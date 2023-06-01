@@ -2275,12 +2275,6 @@ list.autocomplete-suggestions > [lead] {
   background-color: var(--cros-menu-item-background-hover);
 }
 
-.cr-dialog-container.files-ng #suggest-app-dialog.cr-dialog-frame {
-  max-width: unset !important;
-  min-width: unset !important;
-  width: 735px;
-}
-
 .error-dialog-frame .error-dialog-img {
   background-image: -webkit-image-set(
     url(chrome://theme/IDR_ERROR_NETWORK_GENERIC) 1x,

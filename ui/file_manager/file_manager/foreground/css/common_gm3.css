@@ -322,27 +322,45 @@ html[dir='rtl'] .entry-name {
 }
 
 .cr-dialog-container .cr-dialog-close {
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+  --ripple-opacity: 100%;
+  border: none;
+  border-radius: 16px;
+  color: var(--cros-sys-on_surface);
   display: none;
-}
-
-.cr-dialog-container #suggest-app-dialog .cr-dialog-close,
-.cr-dialog-container #default-task-dialog .cr-dialog-close {
-  -webkit-mask-image: url(../images/common/ic_close.svg);
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-sys-on_surface);
-  cursor: pointer;
-  display: inline-block;
   height: 32px;
+  min-width: 32px;
+  padding: 0;
   position: absolute;
   right: 16px;
   top: 16px;
   width: 32px;
 }
 
+html.focus-outline-visible .cr-dialog-container
+    .cr-dialog-close:not(:active):focus {
+  outline: 2px solid var(--cros-sys-focus_ring);
+}
+
+.cr-dialog-container #default-task-dialog .cr-dialog-close {
+  display: inline-block;
+}
+
+.cr-dialog-container .cr-dialog-close > .icon {
+  -webkit-mask-image: url(../images/common/ic_close.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px;
+  background-color: currentColor;
+  height: 32px;
+  position: absolute;
+  width: 32px;
+}
+
 :root[dir='rtl'] .cr-dialog-container .cr-dialog-close,
 :host-context(:root[dir='rtl']) .cr-dialog-container .cr-dialog-close {
-  left: 6px;
+  left: 16px;
   right: unset !important;
 }
 
