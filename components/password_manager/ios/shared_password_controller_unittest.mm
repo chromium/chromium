@@ -438,13 +438,13 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
                   type:@"focus"
             typedValue:@""
                frameID:kTestFrameID];
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:@"value"
-                       displayDescription:@"display-description"
-                                     icon:nil
-                               identifier:0
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"value"
+       displayDescription:@"display-description"
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
 
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
@@ -518,7 +518,7 @@ TEST_F(SharedPasswordControllerTest,
                  ASSERT_EQ(1UL, suggestions.count);
                  FormSuggestion* suggestion = suggestions.firstObject;
                  EXPECT_EQ(autofill::PopupItemId::kGeneratePasswordEntry,
-                           suggestion.identifier);
+                           suggestion.popupItemId);
                  EXPECT_EQ(delegate, controller_);
                  completion_was_called = YES;
                }];
@@ -567,7 +567,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-               identifier:autofill::PopupItemId::kGeneratePasswordEntry
+              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 
@@ -636,7 +636,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-               identifier:autofill::PopupItemId::kGeneratePasswordEntry
+              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 

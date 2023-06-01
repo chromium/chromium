@@ -62,9 +62,6 @@ CWV_EXPORT
 // credit card network icon.
 @property(nonatomic, readonly, nullable) UIImage* icon;
 
-// The unique identifier associated with the suggestion.
-@property(nonatomic, readonly) NSInteger uniqueIdentifier;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // YES if this is a password autofill suggestion.

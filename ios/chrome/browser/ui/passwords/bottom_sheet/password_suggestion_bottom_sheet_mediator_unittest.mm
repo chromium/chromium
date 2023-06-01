@@ -83,16 +83,17 @@
 
 + (instancetype)providerWithSuggestions {
   NSArray<FormSuggestion*>* suggestions = @[
-    [FormSuggestion suggestionWithValue:@"foo"
-                     displayDescription:nil
-                                   icon:nil
-                             identifier:0
-                      backendIdentifier:nil
-                         requiresReauth:NO],
+    [FormSuggestion
+        suggestionWithValue:@"foo"
+         displayDescription:nil
+                       icon:nil
+                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+          backendIdentifier:nil
+             requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                             identifier:1
+                            popupItemId:autofill::PopupItemId::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -326,7 +327,7 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, SuggestionUsernameHasSuffix) {
                                                kPasswordFormSuggestionSuffix]
        displayDescription:nil
                      icon:nil
-               identifier:0
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   absl::optional<password_manager::CredentialUIEntry> credential =
@@ -349,12 +350,13 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest,
   expectedCredential.facets = {facet};
   [mediator_ setCredentialsForTesting:{expectedCredential}];
 
-  FormSuggestion* suggestion = [FormSuggestion suggestionWithValue:@"test1"
-                                                displayDescription:nil
-                                                              icon:nil
-                                                        identifier:0
-                                                 backendIdentifier:nil
-                                                    requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"test1"
+       displayDescription:nil
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
   absl::optional<password_manager::CredentialUIEntry> credential =
       [mediator_ getCredentialForFormSuggestion:suggestion];
   EXPECT_TRUE(credential.has_value());

@@ -437,10 +437,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
-  // TODO(crbug.com/1394920): Make `suggestion.identifier` a `PopupItemId`.
-  autofill::Suggestion::FrontendId frontend_id =
-      static_cast<autofill::PopupItemId>(suggestion.identifier);
-
   if (suggestion.acceptanceA11yAnnouncement != nil) {
     __weak AutofillAgent* weakSelf = self;
     // The announcement is done asyncronously with certain delay to make sure
@@ -469,14 +465,15 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         });
   }
 
-  if (frontend_id.is_an_address_or_card_popup_item_id()) {
+  if (suggestion.popupItemId == autofill::PopupItemId::kAddressEntry ||
+      suggestion.popupItemId == autofill::PopupItemId::kCreditCardEntry) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.frontend_id = frontend_id;
+      autofill_suggestion.frontend_id = suggestion.popupItemId;
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
@@ -504,16 +501,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
 
-  if (frontend_id.as_popup_item_id() ==
-      autofill::PopupItemId::kAutocompleteEntry) {
+  if (suggestion.popupItemId == autofill::PopupItemId::kAutocompleteEntry) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
              formName:SysNSStringToUTF8(formName)
                 value:SysNSStringToUTF16(suggestion.value)
               inFrame:frame];
-  } else if (frontend_id.as_popup_item_id() ==
-             autofill::PopupItemId::kClearForm) {
+  } else if (suggestion.popupItemId == autofill::PopupItemId::kClearForm) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -529,7 +524,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
           suggestionHandledCompletionCopy();
         }));
 
-  } else if (frontend_id.as_popup_item_id() ==
+  } else if (suggestion.popupItemId ==
              autofill::PopupItemId::kShowAccountCards) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
@@ -537,7 +532,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED() << "unknown identifier " << frontend_id;
+    NOTREACHED() << "unknown identifier " << suggestion.popupItemId;
   }
 }
 
@@ -697,9 +692,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                suggestionWithValue:value
                 displayDescription:displayDescription
                               icon:icon
-                        identifier:base::to_underlying(
-                                       popup_suggestion.frontend_id
-                                           .as_popup_item_id())
+                       popupItemId:popup_suggestion.frontend_id
+                                       .as_popup_item_id()
                  backendIdentifier:
                      SysUTF8ToNSString(
                          popup_suggestion

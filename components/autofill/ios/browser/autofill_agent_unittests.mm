@@ -260,7 +260,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kShowAccountCards,
-            completion_handler_suggestions[0].identifier);
+            completion_handler_suggestions[0].popupItemId);
 }
 
 // Tests that only credit card suggestions would have icons.
@@ -449,11 +449,11 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kClearForm,
-            completion_handler_suggestions[0].identifier);
+            completion_handler_suggestions[0].popupItemId);
   EXPECT_EQ(autofill::PopupItemId::kAddressEntry,
-            completion_handler_suggestions[1].identifier);
+            completion_handler_suggestions[1].popupItemId);
   EXPECT_EQ(autofill::PopupItemId::kAddressEntry,
-            completion_handler_suggestions[2].identifier);
+            completion_handler_suggestions[2].popupItemId);
 }
 
 // Tests that when Autofill suggestions are made available to AutofillAgent
@@ -505,11 +505,11 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
   EXPECT_EQ(PopupItemId::kClearForm,
-            completion_handler_suggestions[0].identifier);
+            completion_handler_suggestions[0].popupItemId);
   EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
-            completion_handler_suggestions[1].identifier);
+            completion_handler_suggestions[1].popupItemId);
   EXPECT_EQ(autofill::PopupItemId::kCreditCardEntry,
-            completion_handler_suggestions[2].identifier);
+            completion_handler_suggestions[2].popupItemId);
 }
 
 // Test that every frames are processed whatever is the order of pageloading

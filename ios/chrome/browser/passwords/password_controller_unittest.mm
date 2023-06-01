@@ -627,13 +627,13 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
 
   block_was_called = NO;
 
-  FormSuggestion* suggestion =
-      [FormSuggestion suggestionWithValue:suggestion_text
-                       displayDescription:nil
-                                     icon:nil
-                               identifier:0
-                        backendIdentifier:nil
-                           requiresReauth:NO];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:suggestion_text
+       displayDescription:nil
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
 
   SuggestionHandledCompletion completion = ^{
     block_was_called = YES;
