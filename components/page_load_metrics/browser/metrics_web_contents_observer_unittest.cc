@@ -97,6 +97,7 @@ class MetricsWebContentsObserverTest
   }
 
   void TearDown() override {
+    embedder_interface_ = nullptr;
     content::SetBrowserClientForTesting(original_browser_client_);
     RenderViewHostTestHarness::TearDown();
   }
@@ -249,8 +250,7 @@ class MetricsWebContentsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<TestMetricsWebContentsObserverEmbedder, DanglingUntriaged>
-      embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
 
  private:
   int num_errors_ = 0;
