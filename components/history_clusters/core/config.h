@@ -314,13 +314,6 @@ struct Config {
 
   // WebUI features and params.
 
-  // Whether show either the hide visits thumbs-down or menu item on individual
-  // visits of persisted clusters. Which is shown depends on `hide_visits_icon`.
-  bool hide_visits = false;
-
-  // Whether to the icon or menu item.
-  bool hide_visits_icon = true;
-
   // Whether new tab groups created by "Open all in new tab group" should be
   // named after the cluster title. If false, the new tab group is anonymous,
   // which is the pre-M115 behavior.

@@ -40,10 +40,6 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       prefs->IsManagedPreference(history_clusters::prefs::kVisible));
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
-  source->AddBoolean("isHideVisitsEnabled",
-                     history_clusters::GetConfig().hide_visits);
-  source->AddBoolean("isHideVisitsIconEnabled",
-                     history_clusters::GetConfig().hide_visits_icon);
   source->AddBoolean(
       "isHistoryClustersImagesEnabled",
       history_clusters::GetConfig().images &&

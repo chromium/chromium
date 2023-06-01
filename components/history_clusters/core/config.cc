@@ -348,11 +348,6 @@ Config::Config() {
 
   // WebUI features and params.
   {
-    hide_visits = base::FeatureList::IsEnabled(internal::kHideVisits);
-
-    hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
-        internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
-
     named_new_tab_groups =
         base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }

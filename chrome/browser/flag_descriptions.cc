@@ -1905,10 +1905,6 @@ const char kJourneysContentClusteringName[] =
 const char kJourneysContentClusteringDescription[] =
     "Enables clustering page loads using content annotations.";
 
-const char kJourneysHideVisitsName[] = "History Journeys Hide Visits";
-const char kJourneysHideVisitsDescription[] =
-    "Adds a UI element to hide individual cluster visits in the webUI.";
-
 const char kJourneysImagesName[] = "History Journeys Images";
 const char kJourneysImagesDescription[] =
     "Enables Images for the History Journeys UI.";

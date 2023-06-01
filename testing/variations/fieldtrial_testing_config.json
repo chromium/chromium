@@ -7634,29 +7634,6 @@
             ]
         }
     ],
-    "JourneysHide": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Icon",
-                    "params": {
-                        "hide_visits_icon": "true"
-                    },
-                    "enable_features": [
-                        "HistoryClustersHideVisits"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysNonSupportedLocales": [
         {
             "platforms": [
