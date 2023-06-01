@@ -70,6 +70,7 @@ const char kHost[] = "foo.com";
 const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
 const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
+const char kPhReportingUrl[] = "https://foobar.com/";
 
 }  // namespace
 
@@ -84,6 +85,8 @@ struct CompanionScriptBuilder {
   absl::optional<PromoType> promo_type;
   absl::optional<PromoAction> promo_action;
   absl::optional<std::string> exps_promo_url;
+  absl::optional<PhFeedback> ph_feedback;
+  absl::optional<std::string> reporting_url;
   absl::optional<bool> is_exps_opted_in;
   absl::optional<UiSurface> ui_surface;
   absl::optional<int> ui_surface_position;
@@ -122,6 +125,16 @@ struct CompanionScriptBuilder {
 
     if (exps_promo_url.has_value()) {
       ss << "message['expsPromoUrl'] = '" << exps_promo_url.value() << "';";
+    }
+
+    if (ph_feedback.has_value()) {
+      ss << "message['phFeedback'] = "
+         << base::NumberToString(static_cast<size_t>(ph_feedback.value()))
+         << ";";
+    }
+
+    if (reporting_url.has_value()) {
+      ss << "message['reportingUrl'] = '" << reporting_url.value() << "';";
     }
 
     if (is_exps_opted_in.has_value()) {
@@ -813,6 +826,35 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
   ExpectUkmEntry(
       &ukm_recorder,
       ukm::builders::Companion_PageView::kRegionSearch_ClickCountName, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PhFeedbackWithReportContent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show exps promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPhFeedback);
+  builder.ph_feedback = PhFeedback::kReportContent;
+  builder.reporting_url = kPhReportingUrl;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the exps URL.
+  WaitForTabCount(2);
+  EXPECT_TRUE(
+      web_contents()->GetVisibleURL().spec().starts_with(kPhReportingUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,

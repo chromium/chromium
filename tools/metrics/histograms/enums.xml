@@ -18244,6 +18244,7 @@ Called by update_net_error_codes.py.-->
 <enum name="Companion.PhFeedback">
   <int value="1" label="Thumbs up"/>
   <int value="2" label="Thumbs down"/>
+  <int value="3" label="Report content"/>
 </enum>
 
 <enum name="Companion.PromoEvent">

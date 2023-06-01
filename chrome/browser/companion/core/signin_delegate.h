@@ -32,8 +32,8 @@ class SigninDelegate {
   // Enable the setting for make searches and browsing better.
   virtual void EnableMsbb(bool enable_msbb) = 0;
 
-  // Loads exps promo URL in the browser.
-  virtual void LoadExpsPromUrl(const GURL& exps_promo_url) = 0;
+  // Loads URL in the browser in a new tab.
+  virtual void LoadUrlInNewTab(const GURL& url) = 0;
 };
 
 }  // namespace companion

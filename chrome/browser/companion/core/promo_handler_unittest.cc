@@ -22,7 +22,7 @@ class MockSigninDelegate : public SigninDelegate {
   MOCK_METHOD0(IsSignedIn, bool());
   MOCK_METHOD0(StartSigninFlow, void());
   MOCK_METHOD1(EnableMsbb, void(bool));
-  MOCK_METHOD1(LoadExpsPromUrl, void(const GURL&));
+  MOCK_METHOD1(LoadUrlInNewTab, void(const GURL&));
 };
 
 }  // namespace
@@ -73,11 +73,11 @@ TEST_F(PromoHandlerTest, ExpsPromo) {
                                 absl::nullopt);
   EXPECT_EQ(1, pref_service_.GetInteger(kExpsPromoDeclinedCountPref));
 
-  EXPECT_CALL(signin_delegate_, LoadExpsPromUrl(testing::_)).Times(0);
+  EXPECT_CALL(signin_delegate_, LoadUrlInNewTab(testing::_)).Times(0);
   promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kAccepted,
                                 absl::nullopt);
 
-  EXPECT_CALL(signin_delegate_, LoadExpsPromUrl(testing::_)).Times(1);
+  EXPECT_CALL(signin_delegate_, LoadUrlInNewTab(testing::_)).Times(1);
   promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kAccepted,
                                 GURL());
 }

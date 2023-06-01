@@ -36,6 +36,7 @@ enum ParamType {
 
   // Arguments for MethodType.kOnPhFeedback.
   PH_FEEDBACK = 'phFeedback',
+  REPORTING_URL = 'reportingUrl',
 
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
@@ -214,7 +215,10 @@ function onCompanionMessageEvent(event: MessageEvent) {
     companionProxy.handler.onCqCandidatesAvailable(
         data[ParamType.CQ_TEXT_DIRECTIVES]);
   } else if (methodType === MethodType.kOnPhFeedback) {
-    companionProxy.handler.onPhFeedback(data[ParamType.PH_FEEDBACK]);
+    const reportingUrl = new Url();
+    reportingUrl.url = data[ParamType.REPORTING_URL] || '';
+    companionProxy.handler.onPhFeedback(
+        data[ParamType.PH_FEEDBACK], reportingUrl);
   } else if (methodType === MethodType.kOnCqJumptagClicked) {
     companionProxy.handler.onCqJumptagClicked(data[ParamType.CQ_JUMPTAG_TEXT]);
   }

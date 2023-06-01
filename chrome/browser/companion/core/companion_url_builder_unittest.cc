@@ -33,7 +33,7 @@ class MockSigninDelegate : public SigninDelegate {
   MOCK_METHOD0(IsSignedIn, bool());
   MOCK_METHOD0(StartSigninFlow, void());
   MOCK_METHOD1(EnableMsbb, void(bool));
-  MOCK_METHOD1(LoadExpsPromUrl, void(const GURL&));
+  MOCK_METHOD1(LoadUrlInNewTab, void(const GURL&));
 };
 
 }  // namespace

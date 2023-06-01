@@ -246,7 +246,9 @@ void CompanionPageHandler::OnCqCandidatesAvailable(
 }
 
 void CompanionPageHandler::OnPhFeedback(
-    side_panel::mojom::PhFeedback ph_feedback) {
+    side_panel::mojom::PhFeedback ph_feedback,
+    const absl::optional<GURL>& reporting_url) {
+  signin_delegate_->LoadUrlInNewTab(reporting_url.value());
   metrics_logger_->OnPhFeedback(ph_feedback);
 }
 
