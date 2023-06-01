@@ -61,6 +61,11 @@ TEST_F(UserActivationStateTest, ConsumptionTest) {
   EXPECT_FALSE(user_activation_state.ConsumeIfActive());
 }
 
+// MSan changes the timing of user activations, so skip this test.  We could
+// memorize the changes, but they're arbitrary and not worth enforcing.  We
+// could also move the timeouts into a header, but there's value in having
+// them hardcoded here in case of accidental changes to the timeout.
+#if !defined(MEMORY_SANITIZER)
 TEST_F(UserActivationStateTest, ExpirationTest) {
   UserActivationState user_activation_state;
 
@@ -76,6 +81,7 @@ TEST_F(UserActivationStateTest, ExpirationTest) {
   EXPECT_TRUE(user_activation_state.HasBeenActive());
   EXPECT_FALSE(user_activation_state.IsActive());
 }
+#endif  // !MEMORY_SANITIZER
 
 TEST_F(UserActivationStateTest, ClearingTest) {
   UserActivationState user_activation_state;
@@ -91,6 +97,11 @@ TEST_F(UserActivationStateTest, ClearingTest) {
   EXPECT_FALSE(user_activation_state.IsActive());
 }
 
+// MSan changes the timing of user activations, so skip this test.  We could
+// memorize the changes, but they're arbitrary and not worth enforcing.  We
+// could also move the timeouts into a header, but there's value in having
+// them hardcoded here in case of accidental changes to the timeout.
+#if !defined(MEMORY_SANITIZER)
 TEST_F(UserActivationStateTest, ConsumptionPlusExpirationTest) {
   UserActivationState user_activation_state;
 
@@ -118,5 +129,6 @@ TEST_F(UserActivationStateTest, ConsumptionPlusExpirationTest) {
   user_activation_state.Activate(mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
 }
+#endif  // !MEMORY_SANITIZER
 
 }  // namespace blink

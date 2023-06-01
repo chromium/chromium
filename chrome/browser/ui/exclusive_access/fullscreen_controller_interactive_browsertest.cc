@@ -453,10 +453,17 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
+#if !defined(MEMORY_SANITIZER)
   // Lock the mouse without a user gesture, expect no response.
   PressKeyAndWaitForMouseLockRequest(ui::VKEY_D);
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_FALSE(IsMouseLocked());
+#else
+  // MSan builds change the timing of user gestures, which this part of the test
+  // depends upon.  See `fullscreen_mouselock.html` for more details, but the
+  // main idea is that it waits ~5 seconds after the keypress and assumes that
+  // the user gesture has expired.
+#endif
 
   // Lock the mouse with a user gesture.
   PressKeyAndWaitForMouseLockRequest(ui::VKEY_1);
