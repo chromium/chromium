@@ -34,7 +34,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.addResult('Database Length: ' + databases.length);
     TestRunner.addResult('Database Entries:');
     for (let j = 0; j < databases.length; ++j)
-      TestRunner.addResult(`  Storage key:${databases[j].storageKey}, Database Name:${databases[j].name}`);
+      TestRunner.addResult(`  Storage key:${databases[j].storageBucket.storageKey}, Database Name:${databases[j].name}`);
     TestRunner.addResult('**done**\n');
   }
 
