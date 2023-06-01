@@ -164,6 +164,7 @@
     "linux_chromium_compile_dbg_ng": "Ubuntu-22.04",
     "linux_chromium_compile_rel_ng": "Ubuntu-22.04",
     "linux_chromium_dbg_ng": "Ubuntu-22.04",
+    "linux_chromium_msan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng-compilator": "Ubuntu-22.04",
     "mac-rel": "Ubuntu-22.04",
