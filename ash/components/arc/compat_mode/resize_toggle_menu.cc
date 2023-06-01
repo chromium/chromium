@@ -9,10 +9,12 @@
 #include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -51,6 +53,14 @@ class RoundedCornerBubbleDialogDelegateView
       frame->SetCornerRadius(corner_radius_);
   }
 
+  void OnThemeChanged() override {
+    views::BubbleDialogDelegateView::OnThemeChanged();
+    if (chromeos::features::IsJellyEnabled()) {
+      set_color(GetColorProvider()->GetColor(
+          cros_tokens::kCrosSysSystemBaseElevated));
+    }
+  }
+
   base::WeakPtr<RoundedCornerBubbleDialogDelegateView> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -71,7 +81,8 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   // TODO(b/193195191): Investigate why we can't use FlexLayout.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(16, 0, 14, 0)));
+      gfx::Insets::TLBR(16, 0, chromeos::features::IsJellyEnabled() ? 12 : 14,
+                        0)));
 
   AddChildView(
       views::Builder<views::ImageView>()
@@ -81,30 +92,52 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
           .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
           .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0))
           .Build());
-  AddChildView(views::Builder<views::Label>()
-                   .CopyAddressTo(&title_)
-                   .SetBackgroundColor(SK_ColorTRANSPARENT)
-                   .SetText(l10n_util::GetStringUTF16(title_string_id))
-                   .SetVerticalAlignment(gfx::ALIGN_BOTTOM)
-                   .SetLineHeight(16)
-                   .SetMultiLine(true)
-                   .SetAllowCharacterBreak(true)
-                   .Build());
+  const raw_ptr<views::Label> label =
+      AddChildView(views::Builder<views::Label>()
+                       .CopyAddressTo(&title_)
+                       .SetBackgroundColor(SK_ColorTRANSPARENT)
+                       .SetText(l10n_util::GetStringUTF16(title_string_id))
+                       .SetVerticalAlignment(gfx::ALIGN_BOTTOM)
+                       .SetLineHeight(16)
+                       .SetMultiLine(true)
+                       .SetAllowCharacterBreak(true)
+                       .Build());
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(
+        ash::TypographyToken::kCrosButton2, *label);
+  }
 
   SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
 
   constexpr int kBorderThicknessDp = 1;
-  const auto radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium);
-  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, radius,
+  const auto button_radius =
+      chromeos::features::IsJellyEnabled()
+          ? 12
+          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::Emphasis::kMedium);
+  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, button_radius,
                                            gfx::kPlaceholderColor));
-  SetBackground(
-      views::CreateRoundedRectBackground(gfx::kPlaceholderColor, radius));
+  SetBackground(views::CreateRoundedRectBackground(gfx::kPlaceholderColor,
+                                                   button_radius));
 
+  const int focus_ring_radius =
+      chromeos::features::IsJellyEnabled()
+          ? 16
+          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::Emphasis::kMedium);
+  // With Jellyroll, the ring should have a 4dp gap from the view. Setting a
+  // negative inset makes insets "outsets".
+  const int focus_ring_inset = chromeos::features::IsJellyEnabled() ? -4 : 0;
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), radius);
+  views::InstallRoundRectHighlightPathGenerator(
+      this, gfx::Insets(focus_ring_inset), focus_ring_radius);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    views::FocusRing::Get(this)->SetColorId(
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
+  }
 }
 
 ResizeToggleMenu::MenuButtonView::~MenuButtonView() = default;
@@ -130,6 +163,29 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   if (!GetWidget())
     return;
   const auto* color_provider = GetColorProvider();
+
+  if (chromeos::features::IsJellyEnabled()) {
+    const auto icon_color =
+        is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
+                     : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
+    icon_view_->SetImage(gfx::CreateVectorIcon(*icon_, icon_color));
+
+    const auto text_color =
+        is_selected_ ? color_provider->GetColor(cros_tokens::kCrosSysOnPrimary)
+                     : color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
+    title_->SetEnabledColor(text_color);
+
+    const auto background_color =
+        is_selected_
+            ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+            : color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
+    background()->SetNativeControlColor(background_color);
+
+    const auto border_color = SK_ColorTRANSPARENT;
+    GetBorder()->set_color(border_color);
+
+    return;
+  }
 
   const ui::ColorId selection_color_id = cros_tokens::kColorSelection;
 
@@ -237,7 +293,7 @@ ResizeToggleMenu::MakeBubbleDelegateView(
     views::Widget* parent,
     gfx::Rect anchor_rect,
     base::RepeatingCallback<void(ResizeCompatMode)> command_handler) {
-  constexpr int kCornerRadius = 16;
+  const int kCornerRadius = chromeos::features::IsJellyEnabled() ? 12 : 16;
 
   auto delegate_view =
       std::make_unique<RoundedCornerBubbleDialogDelegateView>(kCornerRadius);
