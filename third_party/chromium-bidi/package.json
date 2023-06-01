@@ -176,7 +176,7 @@
     "@types/argparse": "2.0.10",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
-    "@types/debug": "4.1.7",
+    "@types/debug": "4.1.8",
     "@types/mocha": "10.0.1",
     "@types/node": "18.16.0",
     "@types/sinon": "10.0.14",
