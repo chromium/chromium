@@ -8834,9 +8834,7 @@
   "chromeos-js-code-coverage": {
     "gtest_tests": [
       {
-        "args": [
-          "--gtest_filter=*PersonalizationApp*:*OSSettings*"
-        ],
+        "args": [],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
