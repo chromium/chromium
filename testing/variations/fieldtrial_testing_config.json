@@ -7209,6 +7209,21 @@
             ]
         }
     ],
+    "IOSPhoneNumberExperience": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePhoneNumbersExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPinnedTabs": [
         {
             "platforms": [
