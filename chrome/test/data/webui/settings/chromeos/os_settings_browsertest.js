@@ -408,7 +408,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'MultidevicePageMultideviceSubPage',
-   'multidevice_page/multidevice_subpage_tests.js'
+   'multidevice_page/multidevice_subpage_test.js'
  ],
  [
    'MultiDevicePageMultideviceCombinedSetupItem',

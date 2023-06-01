@@ -130,6 +130,7 @@ export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/mu
 export {SettingsMultideviceFeatureItemElement} from './multidevice_page/multidevice_feature_item.js';
 export {SettingsMultideviceFeatureToggleElement} from './multidevice_page/multidevice_feature_toggle.js';
 export {SettingsMultideviceSmartlockItemElement} from './multidevice_page/multidevice_smartlock_item.js';
+export {SettingsMultideviceSubpageElement} from './multidevice_page/multidevice_subpage.js';
 export {SettingsMultideviceTaskContinuationDisabledLinkElement} from './multidevice_page/multidevice_task_continuation_disabled_link.js';
 export {SettingsMultideviceTaskContinuationItemElement} from './multidevice_page/multidevice_task_continuation_item.js';
 export {SettingsMultideviceWifiSyncDisabledLinkElement} from './multidevice_page/multidevice_wifi_sync_disabled_link.js';
