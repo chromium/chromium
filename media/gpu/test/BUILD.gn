@@ -88,8 +88,6 @@ source_set("helpers") {
     "image_quality_metrics.h",
     "raw_video.cc",
     "raw_video.h",
-    "video.cc",
-    "video.h",
     "video_bitstream.cc",
     "video_bitstream.h",
     "video_frame_helpers.cc",
