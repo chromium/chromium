@@ -51,8 +51,7 @@
   }
 
   .text-container {
-    align-items: center;
-    display: flex;
+    display: block;
     flex-direction: column;
     justify-content: center;
     margin-inline-end: 16px;
@@ -134,10 +133,12 @@
         </div>
         <div class="text-container">
           <div class="screen-title"> [[i18nDynamic(locale, screen.title)]]</div>
-          <div class="screen-subtitle">[[getSubtitile_(locale)]]</div>
+          <div class="screen-subtitle">[[getSubtitle_(locale, screen.subtitle,
+                                              screen.screenID )]]</div>
         </div>
         <div class="info-icon">
           <iron-icon hidden="[[isSyncedIconHidden(screen.is_synced ,
+                                            screen.is_completed ,
                                             screen.selected)]]"
               id="sync" icon="oobe-20:sync"></iron-icon>
           <iron-icon hidden="[[!screen.selected]]"

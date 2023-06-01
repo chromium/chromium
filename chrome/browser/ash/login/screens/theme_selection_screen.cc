@@ -93,6 +93,19 @@ ThemeSelectionScreen::ThemeSelectionScreen(
 
 ThemeSelectionScreen::~ThemeSelectionScreen() = default;
 
+std::string ThemeSelectionScreen::RetrieveChoobeSubtitle() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  ThemeSelectionScreen::SelectedTheme theme = GetSelectedTheme(profile);
+  switch (theme) {
+    case ThemeSelectionScreen::SelectedTheme::kAuto:
+      return "autoThemeLabel";
+    case ThemeSelectionScreen::SelectedTheme::kDark:
+      return "darkThemeLabel";
+    case ThemeSelectionScreen::SelectedTheme::kLight:
+      return "lightThemeLabel";
+  }
+}
+
 bool ThemeSelectionScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (context.skip_post_login_screens_for_tests)
     return true;
@@ -180,10 +193,17 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
 ScreenSummary ThemeSelectionScreen::GetScreenSummary() {
   ScreenSummary summary;
   summary.screen_id = ThemeSelectionScreenView::kScreenId;
-  summary.icon_id = "oobe-32:stars";
+  summary.icon_id = "oobe-40:theme-choobe";
   summary.title_id = "choobeThemeSelectionTitle";
   summary.is_revisitable = true;
   summary.is_synced = false;
+
+  if (WizardController::default_controller()
+          ->choobe_flow_controller()
+          ->IsScreenCompleted(ThemeSelectionScreenView::kScreenId)) {
+    summary.subtitle_resource = RetrieveChoobeSubtitle();
+  }
+
   return summary;
 }
 

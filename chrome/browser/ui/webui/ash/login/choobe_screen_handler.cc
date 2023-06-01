@@ -26,6 +26,10 @@ void ChoobeScreenHandler::DeclareLocalizedValues(
   builder->Add("choobeScreenDescription", IDS_OOBE_CHOOBE_DESCRIPTION);
   builder->Add("choobeScreenSkip", IDS_OOBE_CHOOBE_SKIP_BUTTON);
   builder->Add("choobeReturnButton", IDS_OOBE_CHOOBE_RETURN_BUTTON);
+
+  // Accessibility Message.
+  builder->Add("choobeSyncedTile", IDS_OOBE_CHOOBE_TILE_SYNCED);
+  builder->Add("choobeVisitedTile", IDS_OOBE_CHOOBE_TILE_VISITED);
 }
 
 void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
@@ -34,6 +38,10 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
     base::Value::Dict screen_dict;
     screen_dict.Set("screenID", base::Value(screen.screen_id.name));
     screen_dict.Set("title", base::Value(screen.title_id));
+    if (screen.subtitle_resource.has_value()) {
+      screen_dict.Set("subtitle",
+                      base::Value(screen.subtitle_resource.value()));
+    }
     screen_dict.Set("icon", base::Value(screen.icon_id));
     screen_dict.Set("selected", false);
     screen_dict.Set("is_revisitable", screen.is_revisitable);

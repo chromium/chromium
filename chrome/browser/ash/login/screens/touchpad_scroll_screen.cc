@@ -155,16 +155,30 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
+std::string TouchpadScrollScreen::RetrieveChoobeSubtitle() {
+  if (GetNaturalScrollPrefValue()) {
+    return "choobeTouchpadScrollSubtitleEnabled";
+  }
+  return "choobeTouchpadScrollSubtitleDisabled";
+}
+
 ScreenSummary TouchpadScrollScreen::GetScreenSummary() {
   ScreenSummary summary;
   summary.screen_id = TouchpadScrollScreenView::kScreenId;
-  summary.icon_id = "oobe-32:scroll-direction";
+  summary.icon_id = "oobe-40:scroll-choobe";
   summary.title_id = "choobeTouchpadScrollTitle";
-  summary.is_revisitable = false;
+  summary.is_revisitable = true;
   summary.is_synced = !ProfileManager::GetActiveUserProfile()
                            ->GetPrefs()
                            ->FindPreference(prefs::kNaturalScroll)
                            ->IsDefaultValue();
+  if (summary.is_synced ||
+      (WizardController::default_controller()
+           ->choobe_flow_controller()
+           ->IsScreenCompleted(TouchpadScrollScreenView::kScreenId))) {
+    summary.subtitle_resource = RetrieveChoobeSubtitle();
+  }
+
   return summary;
 }
 

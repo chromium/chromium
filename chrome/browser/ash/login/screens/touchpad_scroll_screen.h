@@ -61,6 +61,8 @@ class TouchpadScrollScreen : public BaseScreen {
   // Get user synced preferences for touchpad scroll direction.
   bool GetNaturalScrollPrefValue();
 
+  std::string RetrieveChoobeSubtitle();
+
   bool ignore_pref_sync_for_testing_ = false;
 
   base::WeakPtr<TouchpadScrollScreenView> view_;

@@ -105,8 +105,13 @@ export class OobeScreensList extends OobeScreensListBase {
     this.notifyPath('screensList_');
   }
 
-  getSubtitile_(locale, screen_subtitle) {
+  getSubtitle_(locale, screen_subtitle, screen_id) {
     if (screen_subtitle) {
+      // display size screen is special case as the subtitle include directly
+      // the percentage  and will be displayed directly without i18n.
+      if (screen_id === 'display-size') {
+        return screen_subtitle;
+      }
       return this.i18nDynamic(locale, screen_subtitle);
     }
     return '';
@@ -116,8 +121,8 @@ export class OobeScreensList extends OobeScreensListBase {
     return (!is_revisitable) && is_completed;
   }
 
-  isSyncedIconHidden(is_synced, is_selected) {
-    return (!is_synced) || (is_selected);
+  isSyncedIconHidden(is_synced, is_completed, is_selected) {
+    return (!is_synced) || (is_selected) || (is_completed);
   }
 
   isScreenVisited(is_selected, is_completed) {

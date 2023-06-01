@@ -220,13 +220,29 @@ void DisplaySizeScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
+std::string DisplaySizeScreen::RetrieveChoobeSubtitle() {
+  int percentage =
+      std::round(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetDouble(
+                     prefs::kOobeDisplaySizeFactorDeferred) *
+                 100);
+
+  return base::NumberToString(percentage) + "%";
+}
+
 ScreenSummary DisplaySizeScreen::GetScreenSummary() {
   ScreenSummary summary;
   summary.screen_id = DisplaySizeScreenView::kScreenId;
-  summary.icon_id = "oobe-32:display";
+  summary.icon_id = "oobe-40:display-size-choobe";
   summary.title_id = "choobeDisplaySizeTitle";
   summary.is_revisitable = true;
   summary.is_synced = false;
+
+  if (WizardController::default_controller()
+          ->choobe_flow_controller()
+          ->IsScreenCompleted(DisplaySizeScreenView::kScreenId)) {
+    summary.subtitle_resource = RetrieveChoobeSubtitle();
+  }
+
   return summary;
 }
 
