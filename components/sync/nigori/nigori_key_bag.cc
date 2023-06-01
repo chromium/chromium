@@ -78,6 +78,12 @@ NigoriKeyBag NigoriKeyBag::CreateFromProto(const sync_pb::NigoriKeyBag& proto) {
       DLOG(ERROR) << "Invalid NigoriKey protocol buffer message.";
     }
   }
+  for (const sync_pb::PrivateKey& key : proto.private_key()) {
+    if (!output.AddKeyPairFromProto(key)) {
+      DLOG(WARNING) << "Could not add PrivateKey protocol buffer message.";
+    }
+  }
+
   return output;
 }
 
@@ -165,6 +171,20 @@ void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
   for (const auto& [public_key, key_pair] : other.key_pairs_map_) {
     key_pairs_map_.emplace(public_key, CloneKeyPair(key_pair));
   }
+}
+
+bool NigoriKeyBag::AddKeyPairFromProto(const sync_pb::PrivateKey& key) {
+  std::vector<uint8_t> private_key(key.x25519_private_key().begin(),
+                                   key.x25519_private_key().end());
+  absl::optional<PublicPrivateKeyPair> key_pair =
+      PublicPrivateKeyPair::CreateByImport(private_key);
+
+  if (!key_pair.has_value()) {
+    return false;
+  }
+
+  AddKeyPair(std::move(key_pair.value()), key.version());
+  return true;
 }
 
 void NigoriKeyBag::AddKeyPair(PublicPrivateKeyPair key_pair, uint32_t version) {

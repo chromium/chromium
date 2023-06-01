@@ -197,5 +197,18 @@ TEST(NigoriKeyBagTest, ShouldAddMultipleKeyPairs) {
   EXPECT_TRUE(key_bag.HasKeyPair(3));
 }
 
+TEST(NigoriKeyBagTest, ShouldCreateNonEmptyKeyPairsFromProto) {
+  NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
+
+  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+
+  const NigoriKeyBag restored_key_bag =
+      NigoriKeyBag::CreateFromProto(original_key_bag.ToProto());
+
+  EXPECT_TRUE(restored_key_bag.HasKeyPair(0));
+  EXPECT_TRUE(restored_key_bag.HasKeyPair(1));
+}
+
 }  // namespace
 }  // namespace syncer
