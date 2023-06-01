@@ -1027,14 +1027,17 @@ testcase.searchDocumentsProviderWithTypeOptions = async () => {
  * files exposed via Documents Provider.
  */
 testcase.searchDocumentsProviderWithRecencyOptions = async () => {
-  const recentHello = ENTRIES.hello.cloneWith({
-    nameText: 'hello-recent.txt',
-    lastModifiedTime: getDateWithDayDiff(3),
-    targetPath: 'hello-recent.txt',
-  });
+  const recentHellos = [];
+  for (let i = 0; i < 10; ++i) {
+    recentHellos.push(ENTRIES.hello.cloneWith({
+      nameText: `hello-recent-${i}.txt`,
+      lastModifiedTime: getDateWithDayDiff(4 - (i % 3)),
+      targetPath: `hello-recent-${i}.txt`,
+    }));
+  }
   await addEntries(
       ['documents_provider'],
-      COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET.concat([recentHello]));
+      COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET.concat(recentHellos));
 
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -1046,18 +1049,17 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   // Search the DocumentsProvider for files with "hello" in their name.
   await remoteCall.typeSearchText(appId, 'hello');
 
-  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    ENTRIES.hello,
-    recentHello,
-  ]));
+  // Expect the original hello and recent hello files to be present.
+  await remoteCall.waitForFiles(
+      appId,
+      TestEntryInfo.getExpectedRows(recentHellos.concat([ENTRIES.hello])));
 
   // Click the fourth button, which is "Last week" option.
   chrome.test.assertTrue(
       !!await remoteCall.selectSearchOption(appId, 'recency', 4),
       'Failed to click "Last week" recency selector');
 
-  // Expect only the recent hello file to be found.
-  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
-    recentHello,
-  ]));
+  // Expect all rececent hello files to be present.
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows(recentHellos));
 };

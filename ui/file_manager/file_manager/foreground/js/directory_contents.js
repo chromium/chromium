@@ -398,14 +398,28 @@ export class SearchV2ContentScanner extends ContentScanner {
    */
   makeReadEntriesRecursivelyPromise_(
       folder, modifiedTimestamp, category, maxResults) {
+    // A promise that resolves to an entry if it is modified after cutoffDate or
+    // null, otherwise. Used to filter entries by modified time. If we fail to
+    // get metadata for an entry we return it without comparison, to be on the
+    // safe side.
+    const newDateFilterPromise = (entry, cutoffDate) => new Promise(resolve => {
+      entry.getMetadata(
+          (metadata) => {
+            resolve(metadata.modificationTime > cutoffDate ? entry : null);
+          },
+          () => {
+            resolve(entry);
+          });
+    });
     return new Promise((resolve, reject) => {
       const collectedEntries = [];
+      let workLeft = 1;
       util.readEntriesRecursively(
           folder,
+          // More entries found callback.
           (entries) => {
             const filtered = entries.filter(entry => {
-              const name = entry.name.toLowerCase();
-              if (name.indexOf(this.query_) < 0) {
+              if (entry.name.toLowerCase().indexOf(this.query_) < 0) {
                 return false;
               }
               if (category !== chrome.fileManagerPrivate.FileCategory.ALL) {
@@ -418,19 +432,35 @@ export class SearchV2ContentScanner extends ContentScanner {
             if (modifiedTimestamp === 0) {
               collectedEntries.push(...filtered);
             } else {
-              filtered.map(entry => {
-                entry.getMetadata(metadata => {
-                  if (metadata.modificationTime.getTime() > modifiedTimestamp) {
-                    collectedEntries.push(entry);
-                  }
-                });
-              });
+              workLeft += filtered.length;
+              const cutoff = new Date(modifiedTimestamp);
+              Promise
+                  .all(filtered.map(
+                      entry => newDateFilterPromise(entry, cutoff)))
+                  .then((modified) => {
+                    collectedEntries.push(...modified.filter(e => e !== null));
+                    workLeft -= modified.length;
+                    if (workLeft <= 0) {
+                      resolve(collectedEntries);
+                    }
+                  });
             }
           },
+          // All entries read callback.
           () => {
-            resolve(collectedEntries);
+            if (--workLeft <= 0) {
+              resolve(collectedEntries);
+            }
           },
-          reject,
+          // Error callback.
+          () => {
+            if (!this.cancelled_ && collectedEntries.length >= maxResults) {
+              resolve(collectedEntries);
+            } else {
+              reject();
+            }
+          },
+          // Should stop callback.
           () => {
             return collectedEntries.length >= maxResults || this.cancelled_;
           });
