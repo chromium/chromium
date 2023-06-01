@@ -64,6 +64,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/tween.h"
@@ -290,7 +291,10 @@ void Tab::Layout() {
   UpdateIconVisibility();
 
   int start = contents_rect.x();
-  if (extra_padding_before_content_) {
+
+  // ChromeRefresh doesnt respect this extra padding since it has exact values
+  // for left/right padding.
+  if (extra_padding_before_content_ && !features::IsChromeRefresh2023()) {
     constexpr int kExtraLeftPaddingToBalanceCloseButtonPadding = 4;
     start += kExtraLeftPaddingToBalanceCloseButtonPadding;
   }
