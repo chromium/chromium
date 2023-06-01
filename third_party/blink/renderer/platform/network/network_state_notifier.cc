@@ -77,13 +77,13 @@ NetworkStateNotifier::ScopedNotifier::ScopedNotifier(
     NetworkStateNotifier& notifier)
     : notifier_(notifier) {
   DCHECK(IsMainThread());
-  before_ = notifier_.has_override_ ? notifier_.override_ : notifier_.state_;
+  before_ = notifier_->has_override_ ? notifier_->override_ : notifier_->state_;
 }
 
 NetworkStateNotifier::ScopedNotifier::~ScopedNotifier() {
   DCHECK(IsMainThread());
   const NetworkState& after =
-      notifier_.has_override_ ? notifier_.override_ : notifier_.state_;
+      notifier_->has_override_ ? notifier_->override_ : notifier_->state_;
   if ((after.type != before_.type ||
        after.max_bandwidth_mbps != before_.max_bandwidth_mbps ||
        after.effective_type != before_.effective_type ||
@@ -92,12 +92,12 @@ NetworkStateNotifier::ScopedNotifier::~ScopedNotifier() {
        after.downlink_throughput_mbps != before_.downlink_throughput_mbps ||
        after.save_data != before_.save_data) &&
       before_.connection_initialized) {
-    notifier_.NotifyObservers(notifier_.connection_observers_,
-                              ObserverType::kConnectionType, after);
+    notifier_->NotifyObservers(notifier_->connection_observers_,
+                               ObserverType::kConnectionType, after);
   }
   if (after.on_line != before_.on_line && before_.on_line_initialized) {
-    notifier_.NotifyObservers(notifier_.on_line_state_observers_,
-                              ObserverType::kOnLineState, after);
+    notifier_->NotifyObservers(notifier_->on_line_state_observers_,
+                               ObserverType::kOnLineState, after);
   }
 }
 

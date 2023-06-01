@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WRITING_MODE_UTILS_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -207,13 +208,13 @@ class LogicalToPhysicalGetter {
                    block_start_getter,
                    block_end_getter) {}
 
-  Value Left() const { return (object_.*converter_.Left())(); }
-  Value Right() const { return (object_.*converter_.Right())(); }
-  Value Top() const { return (object_.*converter_.Top())(); }
-  Value Bottom() const { return (object_.*converter_.Bottom())(); }
+  Value Left() const { return (*object_.*converter_.Left())(); }
+  Value Right() const { return (*object_.*converter_.Right())(); }
+  Value Top() const { return (*object_.*converter_.Top())(); }
+  Value Bottom() const { return (*object_.*converter_.Bottom())(); }
 
  private:
-  const Object& object_;
+  const raw_ref<const Object> object_;
   LogicalToPhysical<Getter> converter_;
 };
 
@@ -236,21 +237,21 @@ class PhysicalToLogicalGetter {
                    bottom_getter,
                    left_getter) {}
 
-  Value InlineStart() const { return (object_.*converter_.InlineStart())(); }
-  Value InlineEnd() const { return (object_.*converter_.InlineEnd())(); }
-  Value BlockStart() const { return (object_.*converter_.BlockStart())(); }
-  Value BlockEnd() const { return (object_.*converter_.BlockEnd())(); }
-  Value Over() const { return (object_.*converter_.Over())(); }
-  Value Under() const { return (object_.*converter_.Under())(); }
-  Value LineLeft() const { return (object_.*converter_.LineLeft())(); }
-  Value LineRight() const { return (object_.*converter_.LineRight())(); }
-  Value Start() const { return (object_.*converter_.Start())(); }
-  Value End() const { return (object_.*converter_.End())(); }
-  Value Before() const { return (object_.*converter_.Before())(); }
-  Value After() const { return (object_.*converter_.After())(); }
+  Value InlineStart() const { return (*object_.*converter_.InlineStart())(); }
+  Value InlineEnd() const { return (*object_.*converter_.InlineEnd())(); }
+  Value BlockStart() const { return (*object_.*converter_.BlockStart())(); }
+  Value BlockEnd() const { return (*object_.*converter_.BlockEnd())(); }
+  Value Over() const { return (*object_.*converter_.Over())(); }
+  Value Under() const { return (*object_.*converter_.Under())(); }
+  Value LineLeft() const { return (*object_.*converter_.LineLeft())(); }
+  Value LineRight() const { return (*object_.*converter_.LineRight())(); }
+  Value Start() const { return (*object_.*converter_.Start())(); }
+  Value End() const { return (*object_.*converter_.End())(); }
+  Value Before() const { return (*object_.*converter_.Before())(); }
+  Value After() const { return (*object_.*converter_.After())(); }
 
  private:
-  const Object& object_;
+  const raw_ref<const Object> object_;
   PhysicalToLogical<Getter> converter_;
 };
 
@@ -273,13 +274,13 @@ class PhysicalToLogicalSetter {
                    block_start_setter,
                    block_end_setter) {}
 
-  void SetLeft(Value v) { (object_.*converter_.Left())(v); }
-  void SetRight(Value v) { (object_.*converter_.Right())(v); }
-  void SetTop(Value v) { (object_.*converter_.Top())(v); }
-  void SetBottom(Value v) { (object_.*converter_.Bottom())(v); }
+  void SetLeft(Value v) { (*object_.*converter_.Left())(v); }
+  void SetRight(Value v) { (*object_.*converter_.Right())(v); }
+  void SetTop(Value v) { (*object_.*converter_.Top())(v); }
+  void SetBottom(Value v) { (*object_.*converter_.Bottom())(v); }
 
  private:
-  Object& object_;
+  const raw_ref<Object> object_;
   // This converter converts logical setters to physical setters which accept
   // physical values and call the logical setters to set logical values.
   LogicalToPhysical<Setter> converter_;
@@ -304,21 +305,21 @@ class LogicalToPhysicalSetter {
                    bottom_setter,
                    left_setter) {}
 
-  void SetInlineStart(Value v) { (object_.*converter_.InlineStart())(v); }
-  void SetInlineEnd(Value v) { (object_.*converter_.InlineEnd())(v); }
-  void SetBlockStart(Value v) { (object_.*converter_.BlockStart())(v); }
-  void SetBlockEnd(Value v) { (object_.*converter_.BlockEnd())(v); }
-  void SetOver(Value v) { (object_.*converter_.Over())(v); }
-  void SetUnder(Value v) { (object_.*converter_.Under())(v); }
-  void SetLineLeft(Value v) { (object_.*converter_.LineLeft())(v); }
-  void SetLineRight(Value v) { (object_.*converter_.LineRight())(v); }
-  void SetStart(Value v) { (object_.*converter_.Start())(v); }
-  void SetEnd(Value v) { (object_.*converter_.End())(v); }
-  void SetBefore(Value v) { (object_.*converter_.Before())(v); }
-  void SetAfter(Value v) { (object_.*converter_.After())(v); }
+  void SetInlineStart(Value v) { (*object_.*converter_.InlineStart())(v); }
+  void SetInlineEnd(Value v) { (*object_.*converter_.InlineEnd())(v); }
+  void SetBlockStart(Value v) { (*object_.*converter_.BlockStart())(v); }
+  void SetBlockEnd(Value v) { (*object_.*converter_.BlockEnd())(v); }
+  void SetOver(Value v) { (*object_.*converter_.Over())(v); }
+  void SetUnder(Value v) { (*object_.*converter_.Under())(v); }
+  void SetLineLeft(Value v) { (*object_.*converter_.LineLeft())(v); }
+  void SetLineRight(Value v) { (*object_.*converter_.LineRight())(v); }
+  void SetStart(Value v) { (*object_.*converter_.Start())(v); }
+  void SetEnd(Value v) { (*object_.*converter_.End())(v); }
+  void SetBefore(Value v) { (*object_.*converter_.Before())(v); }
+  void SetAfter(Value v) { (*object_.*converter_.After())(v); }
 
  private:
-  Object& object_;
+  const raw_ref<Object> object_;
   // This converter converts physical setters to logical setters which accept
   // logical values and call the physical setters to set physical values.
   PhysicalToLogical<Setter> converter_;

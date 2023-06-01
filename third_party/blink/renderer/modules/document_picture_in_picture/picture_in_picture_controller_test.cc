@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -682,7 +683,7 @@ class PictureInPictureControllerChromeClient
   MOCK_METHOD(void, SetWindowRect, (const gfx::Rect&, LocalFrame&));
 
  private:
-  DummyPageHolder* dummy_page_holder_;
+  raw_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
 // Tests for Picture in Picture with a mockable chrome client.  This makes it

@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -59,7 +61,7 @@ struct FrameFirstPaint {
         text_painted(false),
         image_painted(false) {}
 
-  const void* frame;
+  raw_ptr<const void> frame;
   bool first_painted : 1;
   bool text_painted : 1;
   bool image_painted : 1;
@@ -242,15 +244,16 @@ class PLATFORM_EXPORT PaintController {
                         PaintBenchmarkMode mode)
         : paint_controller_(paint_controller) {
       // Nesting is not allowed.
-      DCHECK_EQ(PaintBenchmarkMode::kNormal, paint_controller_.benchmark_mode_);
+      DCHECK_EQ(PaintBenchmarkMode::kNormal,
+                paint_controller_->benchmark_mode_);
       paint_controller.SetBenchmarkMode(mode);
     }
     ~ScopedBenchmarkMode() {
-      paint_controller_.SetBenchmarkMode(PaintBenchmarkMode::kNormal);
+      paint_controller_->SetBenchmarkMode(PaintBenchmarkMode::kNormal);
     }
 
    private:
-    PaintController& paint_controller_;
+    const raw_ref<PaintController> paint_controller_;
   };
 
   PaintBenchmarkMode GetBenchmarkMode() const { return benchmark_mode_; }
@@ -484,10 +487,10 @@ class PLATFORM_EXPORT PaintControllerCycleScope {
       : controller_(controller) {
     controller.StartCycle(record_debug_info);
   }
-  ~PaintControllerCycleScope() { controller_.FinishCycle(); }
+  ~PaintControllerCycleScope() { controller_->FinishCycle(); }
 
  protected:
-  PaintController& controller_;
+  const raw_ref<PaintController> controller_;
 };
 
 }  // namespace blink

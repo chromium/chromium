@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_RASTER_INVALIDATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_RASTER_INVALIDATOR_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -56,11 +57,11 @@ class DisplayItemRasterInvalidator {
       const gfx::Rect& new_visual_rect,
       PaintInvalidationReason reason);
 
-  RasterInvalidator& invalidator_;
+  const raw_ref<RasterInvalidator> invalidator_;
   RasterInvalidator::RasterInvalidationFunction raster_invalidation_function_;
-  const DisplayItemRange& old_display_items_;
-  const DisplayItemRange& new_display_items_;
-  const ChunkToLayerMapper& mapper_;
+  const raw_ref<const DisplayItemRange> old_display_items_;
+  const raw_ref<const DisplayItemRange> new_display_items_;
+  const raw_ref<const ChunkToLayerMapper> mapper_;
   // Maps clients to indices of display items in old_display_items_.
   HashMap<DisplayItemClientId, Vector<DisplayItemIterator>>
       old_display_items_index_;

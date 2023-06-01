@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -75,7 +76,7 @@ class AXTreeDistiller {
   // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
   // Fuchsia does not build with that buildflag so it is throwing
   // -Wunused-private-field errors. [[maybe_unused]] suppresses them.
-  [[maybe_unused]] content::RenderFrame* render_frame_;
+  [[maybe_unused]] raw_ptr<content::RenderFrame> render_frame_;
 
   // TODO(crbug.com/1266555): Ensure this is called even if ScreenAIService is
   // disconnected.

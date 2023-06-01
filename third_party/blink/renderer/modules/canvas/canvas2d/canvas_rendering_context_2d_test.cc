@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -413,7 +414,7 @@ class CanvasRenderingContext2DOverdrawTest
 
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  MockImageBufferSurfaceForOverwriteTesting* surface_ptr_;
+  raw_ptr<MockImageBufferSurfaceForOverwriteTesting> surface_ptr_;
   OverdrawHistogramBuckets expected_buckets_;
 };
 

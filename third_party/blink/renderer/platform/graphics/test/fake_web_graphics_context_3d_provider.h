@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_FAKE_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_FAKE_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/test/stub_decode_cache.h"
 #include "cc/tiles/image_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
@@ -109,15 +110,15 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
   viz::TestSharedImageInterface test_shared_image_interface_;
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
   std::unique_ptr<gpu::webgpu::WebGPUInterfaceStub> webgpu_interface_;
   sk_sp<GrDirectContext> gr_context_;
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
-  cc::ImageDecodeCache* image_decode_cache_;
-  viz::RasterContextProvider* raster_context_provider_;
+  raw_ptr<cc::ImageDecodeCache> image_decode_cache_;
+  raw_ptr<viz::RasterContextProvider> raster_context_provider_;
 };
 
 }  // namespace blink

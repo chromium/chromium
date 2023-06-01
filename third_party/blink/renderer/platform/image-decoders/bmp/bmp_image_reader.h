@@ -33,6 +33,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -314,10 +315,10 @@ class PLATFORM_EXPORT BMPImageReader final {
   void ColorCorrectCurrentRow();
 
   // The decoder that owns us.
-  ImageDecoder* parent_;
+  raw_ptr<ImageDecoder> parent_;
 
   // The destination for the pixel data.
-  ImageFrame* buffer_ = nullptr;
+  raw_ptr<ImageFrame> buffer_ = nullptr;
 
   // The file to decode.
   scoped_refptr<SegmentReader> data_;

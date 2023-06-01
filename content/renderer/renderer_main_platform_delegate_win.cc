@@ -35,7 +35,7 @@ RendererMainPlatformDelegate::~RendererMainPlatformDelegate() {
 }
 
 void RendererMainPlatformDelegate::PlatformInitialize() {
-  const base::CommandLine& command_line = *parameters_.command_line;
+  const base::CommandLine& command_line = *parameters_->command_line;
 
   // Be mindful of what resources you acquire here. They can be used by
   // malicious code if the renderer gets compromised.
@@ -61,7 +61,7 @@ void RendererMainPlatformDelegate::PlatformUninitialize() {
 
 bool RendererMainPlatformDelegate::EnableSandbox() {
   sandbox::TargetServices* target_services =
-      parameters_.sandbox_info->target_services;
+      parameters_->sandbox_info->target_services;
 
   if (target_services) {
     // Cause advapi32 to load before the sandbox is turned on.

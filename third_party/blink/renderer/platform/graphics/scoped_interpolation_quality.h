@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SCOPED_INTERPOLATION_QUALITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SCOPED_INTERPOLATION_QUALITY_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -25,16 +26,18 @@ class ScopedInterpolationQuality {
       : context_(context),
         previous_interpolation_quality_(context.ImageInterpolationQuality()) {
     if (previous_interpolation_quality_ != interpolation_quality)
-      context_.SetImageInterpolationQuality(interpolation_quality);
+      context_->SetImageInterpolationQuality(interpolation_quality);
   }
 
   ~ScopedInterpolationQuality() {
-    if (previous_interpolation_quality_ != context_.ImageInterpolationQuality())
-      context_.SetImageInterpolationQuality(previous_interpolation_quality_);
+    if (previous_interpolation_quality_ !=
+        context_->ImageInterpolationQuality()) {
+      context_->SetImageInterpolationQuality(previous_interpolation_quality_);
+    }
   }
 
  private:
-  GraphicsContext& context_;
+  const raw_ref<GraphicsContext> context_;
   const InterpolationQuality previous_interpolation_quality_;
 };
 

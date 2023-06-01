@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 
 #include "base/test/bind.h"
@@ -54,7 +55,8 @@ class AutomationInternalCustomBindingsTest
   }
 
  private:
-  AutomationInternalCustomBindings* automation_internal_bindings_ = nullptr;
+  raw_ptr<AutomationInternalCustomBindings> automation_internal_bindings_ =
+      nullptr;
 };
 
 TEST_F(AutomationInternalCustomBindingsTest, ActionStringMapping) {

@@ -743,8 +743,8 @@ void PaintArtifactCompositor::UpdateCompositorViewportProperties(
     cc::LayerTreeHost* layer_tree_host) {
   // The inner and outer viewports' existence is linked. That is, either they're
   // both null or they both exist.
-  CHECK_EQ(static_cast<bool>(properties.outer_scroll_translation),
-           static_cast<bool>(properties.inner_scroll_translation));
+  CHECK_EQ(static_cast<bool>(properties.outer_scroll_translation.get()),
+           static_cast<bool>(properties.inner_scroll_translation.get()));
   CHECK(!properties.outer_clip ||
         static_cast<bool>(properties.inner_scroll_translation));
 

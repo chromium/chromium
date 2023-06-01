@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -161,7 +162,7 @@ class URLLoader::Context : public ResourceRequestClient {
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(
       network::ResourceRequest* request);
 
-  URLLoader* loader_;
+  raw_ptr<URLLoader> loader_;
 
   KURL url_;
   // This is set in Start() and is used by SetSecurityStyleAndDetails() to
@@ -172,7 +173,7 @@ class URLLoader::Context : public ResourceRequestClient {
   // DevTools request id to that new request, and it will propagate here.
   bool has_devtools_request_id_;
 
-  URLLoaderClient* client_;
+  raw_ptr<URLLoaderClient> client_;
   // TODO(https://crbug.com/1137682): Remove |freezable_task_runner_|, migrating
   // the current usage to use |unfreezable_task_runner_| instead. Also, rename
   // |unfreezable_task_runner_| to |maybe_unfreezable_task_runner_| here and
@@ -185,7 +186,7 @@ class URLLoader::Context : public ResourceRequestClient {
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle_;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   const Vector<String> cors_exempt_header_list_;
-  base::WaitableEvent* terminate_sync_load_event_;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_;
 
   int request_id_;
   bool in_two_phase_read_ = false;

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,7 +98,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   }
 
  private:
-  media::MockVideoEncoder* const mock_encoder_;
+  const raw_ptr<media::MockVideoEncoder> mock_encoder_;
   base::OnceClosure dtor_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);

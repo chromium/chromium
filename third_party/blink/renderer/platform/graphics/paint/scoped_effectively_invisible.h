@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_EFFECTIVELY_INVISIBLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_SCOPED_EFFECTIVELY_INVISIBLE_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -24,12 +25,12 @@ class ScopedEffectivelyInvisible final {
   ScopedEffectivelyInvisible& operator=(const ScopedEffectivelyInvisible&) =
       delete;
   ~ScopedEffectivelyInvisible() {
-    paint_controller_.SetCurrentEffectivelyInvisible(
+    paint_controller_->SetCurrentEffectivelyInvisible(
         previous_effectively_invisible_);
   }
 
  private:
-  PaintController& paint_controller_;
+  const raw_ref<PaintController> paint_controller_;
   bool previous_effectively_invisible_;
 };
 

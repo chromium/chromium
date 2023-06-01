@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -95,7 +96,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
 
   void OnMojoDisconnect();
 
-  mojom::SafeBrowsing* safe_browsing_;
+  raw_ptr<mojom::SafeBrowsing> safe_browsing_;
   const int render_frame_id_;
 
   // These fields hold the connection to this instance's private connection to

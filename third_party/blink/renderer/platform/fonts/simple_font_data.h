@@ -27,6 +27,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
@@ -63,7 +64,7 @@ struct GlyphData {
       CanvasRotationInVertical rotation = CanvasRotationInVertical::kRegular)
       : glyph(g), font_data(f), canvas_rotation(rotation) {}
   Glyph glyph;
-  const SimpleFontData* font_data;
+  raw_ptr<const SimpleFontData> font_data;
   CanvasRotationInVertical canvas_rotation;
 };
 

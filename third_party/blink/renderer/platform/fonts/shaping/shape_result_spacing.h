@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_SPACING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_SPACING_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -34,7 +35,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
         is_after_expansion_(false),
         allow_word_spacing_anywhere_(allow_word_spacing_anywhere) {}
 
-  const TextContainerType& Text() const { return text_; }
+  const TextContainerType& Text() const { return *text_; }
   float LetterSpacing() const { return has_spacing_ ? letter_spacing_ : .0f; }
   float WordSpacing() const { return has_spacing_ ? word_spacing_ : .0f; }
   bool HasSpacing() const { return has_spacing_; }
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
 
   float NextExpansion();
 
-  const TextContainerType& text_;
+  const raw_ref<const TextContainerType> text_;
   float letter_spacing_;
   float word_spacing_;
   float expansion_;

@@ -39,7 +39,7 @@ SQLiteTransaction::~SQLiteTransaction() {
 
 void SQLiteTransaction::begin() {
   if (!in_progress_) {
-    DCHECK(!db_.transaction_in_progress_);
+    DCHECK(!db_->transaction_in_progress_);
     // Call BEGIN IMMEDIATE for a write transaction to acquire
     // a RESERVED lock on the DB file. Otherwise, another write
     // transaction (on another connection) could make changes
@@ -48,18 +48,18 @@ void SQLiteTransaction::begin() {
     // http://www.sqlite.org/lang_transaction.html
     // http://www.sqlite.org/lockingv3.html#locking
     if (read_only_)
-      in_progress_ = db_.ExecuteCommand("BEGIN");
+      in_progress_ = db_->ExecuteCommand("BEGIN");
     else
-      in_progress_ = db_.ExecuteCommand("BEGIN IMMEDIATE");
-    db_.transaction_in_progress_ = in_progress_;
+      in_progress_ = db_->ExecuteCommand("BEGIN IMMEDIATE");
+    db_->transaction_in_progress_ = in_progress_;
   }
 }
 
 void SQLiteTransaction::Commit() {
   if (in_progress_) {
-    DCHECK(db_.transaction_in_progress_);
-    in_progress_ = !db_.ExecuteCommand("COMMIT");
-    db_.transaction_in_progress_ = in_progress_;
+    DCHECK(db_->transaction_in_progress_);
+    in_progress_ = !db_->ExecuteCommand("COMMIT");
+    db_->transaction_in_progress_ = in_progress_;
   }
 }
 
@@ -70,24 +70,24 @@ void SQLiteTransaction::Rollback() {
   // fail, thus returning a non-zero/true result
   // (http://www.sqlite.org/lang_transaction.html).
   if (in_progress_) {
-    DCHECK(db_.transaction_in_progress_);
-    db_.ExecuteCommand("ROLLBACK");
+    DCHECK(db_->transaction_in_progress_);
+    db_->ExecuteCommand("ROLLBACK");
     in_progress_ = false;
-    db_.transaction_in_progress_ = false;
+    db_->transaction_in_progress_ = false;
   }
 }
 
 void SQLiteTransaction::Stop() {
   if (in_progress_) {
     in_progress_ = false;
-    db_.transaction_in_progress_ = false;
+    db_->transaction_in_progress_ = false;
   }
 }
 
 bool SQLiteTransaction::WasRolledBackBySqlite() const {
   // According to http://www.sqlite.org/c3ref/get_autocommit.html,
   // the auto-commit flag should be off in the middle of a transaction
-  return in_progress_ && db_.IsAutoCommitOn();
+  return in_progress_ && db_->IsAutoCommitOn();
 }
 
 }  // namespace blink

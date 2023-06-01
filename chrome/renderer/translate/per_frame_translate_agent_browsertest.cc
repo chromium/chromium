@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -164,7 +165,7 @@ class PerFrameTranslateAgentBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::TearDown();
   }
 
-  PerFrameTranslateAgent* translate_agent_;
+  raw_ptr<PerFrameTranslateAgent> translate_agent_;
 };
 
 // Tests that the browser gets notified of the translation failure if the

@@ -362,7 +362,7 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
     } else {
       range = run->FindGlyphDataRange(range_start, range_end);
       part_width = std::accumulate(
-          range.begin, range.end, 0.0f,
+          range.begin.get(), range.end.get(), 0.0f,
           [](float sum, auto& glyph) { return sum + glyph.advance; });
     }
 

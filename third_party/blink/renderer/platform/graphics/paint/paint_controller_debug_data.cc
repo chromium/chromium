@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
 #include <cinttypes>
@@ -21,11 +22,11 @@ class PaintController::PaintArtifactAsJSON {
                       DisplayItemList::JsonFlags flags)
       : artifact_(artifact),
         subsequences_(subsequences),
-        next_subsequence_(subsequences_.begin()),
+        next_subsequence_(subsequences_->begin()),
         flags_(flags) {}
 
   String ToString() {
-    return ChunksAsJSONArrayRecursive(0, artifact_.PaintChunks().size())
+    return ChunksAsJSONArrayRecursive(0, artifact_->PaintChunks().size())
         ->ToPrettyJSONString();
   }
 
@@ -33,8 +34,8 @@ class PaintController::PaintArtifactAsJSON {
   std::unique_ptr<JSONObject> SubsequenceAsJSONObjectRecursive();
   std::unique_ptr<JSONArray> ChunksAsJSONArrayRecursive(wtf_size_t, wtf_size_t);
 
-  const PaintArtifact& artifact_;
-  const Vector<SubsequenceMarkers>& subsequences_;
+  const raw_ref<const PaintArtifact> artifact_;
+  const raw_ref<const Vector<SubsequenceMarkers>> subsequences_;
   Vector<SubsequenceMarkers>::const_iterator next_subsequence_;
   DisplayItemList::JsonFlags flags_;
 };
@@ -49,7 +50,7 @@ PaintController::PaintArtifactAsJSON::SubsequenceAsJSONObjectRecursive() {
   json_object->SetString(
       "subsequence", String::Format("client: %p ", reinterpret_cast<void*>(
                                                        subsequence.client_id)) +
-                         artifact_.ClientDebugName(subsequence.client_id));
+                         artifact_->ClientDebugName(subsequence.client_id));
   json_object->SetArray(
       "chunks", ChunksAsJSONArrayRecursive(subsequence.start_chunk_index,
                                            subsequence.end_chunk_index));
@@ -64,7 +65,7 @@ PaintController::PaintArtifactAsJSON::ChunksAsJSONArrayRecursive(
   auto array = std::make_unique<JSONArray>();
   auto chunk_index = start_chunk_index;
 
-  while (next_subsequence_ != subsequences_.end() &&
+  while (next_subsequence_ != subsequences_->end() &&
          next_subsequence_->start_chunk_index < end_chunk_index) {
     const auto& subsequence = *next_subsequence_;
     if (!subsequence.client_id) {
@@ -76,15 +77,15 @@ PaintController::PaintArtifactAsJSON::ChunksAsJSONArrayRecursive(
     DCHECK_LE(subsequence.end_chunk_index, end_chunk_index);
 
     if (chunk_index < subsequence.start_chunk_index) {
-      artifact_.AppendChunksAsJSON(chunk_index, subsequence.start_chunk_index,
-                                   *array, flags_);
+      artifact_->AppendChunksAsJSON(chunk_index, subsequence.start_chunk_index,
+                                    *array, flags_);
     }
     array->PushObject(SubsequenceAsJSONObjectRecursive());
     chunk_index = subsequence.end_chunk_index;
   }
 
   if (chunk_index < end_chunk_index)
-    artifact_.AppendChunksAsJSON(chunk_index, end_chunk_index, *array, flags_);
+    artifact_->AppendChunksAsJSON(chunk_index, end_chunk_index, *array, flags_);
 
   return array;
 }

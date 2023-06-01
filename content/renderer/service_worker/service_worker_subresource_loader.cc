@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -188,7 +189,7 @@ class ServiceWorkerSubresourceLoader::StreamWaiter
   void OnAborted() override { owner_->OnBodyReadingComplete(net::ERR_ABORTED); }
 
  private:
-  ServiceWorkerSubresourceLoader* owner_;
+  raw_ptr<ServiceWorkerSubresourceLoader> owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
 };
 

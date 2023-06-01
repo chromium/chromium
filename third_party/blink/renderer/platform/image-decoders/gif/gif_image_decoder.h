@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include "third_party/skia/include/codec/SkCodec.h"
@@ -81,7 +82,7 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
   std::unique_ptr<SkCodec> codec_;
   // |codec_| owns the SegmentStream, but we need access to it to append more
   // data as it arrives.
-  SegmentStream* segment_stream_ = nullptr;
+  raw_ptr<SegmentStream> segment_stream_ = nullptr;
   mutable int repetition_count_ = kAnimationLoopOnce;
   int prior_frame_ = SkCodec::kNoFrame;
 };

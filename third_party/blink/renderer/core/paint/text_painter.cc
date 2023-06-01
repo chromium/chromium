@@ -126,8 +126,8 @@ void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
                                    unsigned to,
                                    DOMNodeId node_id,
                                    const AutoDarkMode& auto_dark_mode) {
-  DCHECK(from <= text_run_paint_info.run.length());
-  DCHECK(to <= text_run_paint_info.run.length());
+  DCHECK(from <= text_run_paint_info.run->length());
+  DCHECK(to <= text_run_paint_info.run->length());
 
   text_run_paint_info.from = from;
   text_run_paint_info.to = to;

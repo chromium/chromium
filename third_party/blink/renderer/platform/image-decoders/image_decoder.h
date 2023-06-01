@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -127,7 +128,7 @@ class PLATFORM_EXPORT ColorProfileTransform final {
   const skcms_ICCProfile* DstProfile() const;
 
  private:
-  const skcms_ICCProfile* src_profile_;
+  raw_ptr<const skcms_ICCProfile> src_profile_;
   skcms_ICCProfile dst_profile_;
 };
 

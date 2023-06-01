@@ -24,6 +24,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -83,7 +84,7 @@ class FlatBufferModelScorer : public Scorer {
   // Unowned. Points within flatbuffer_mapping_ and should not be free()d.
   // It remains valid till flatbuffer_mapping_ is valid and should be reassigned
   // if the mapping is updated.
-  const flat::ClientSideModel* flatbuffer_model_;
+  raw_ptr<const flat::ClientSideModel> flatbuffer_model_;
   base::ReadOnlySharedMemoryMapping flatbuffer_mapping_;
   google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>
       thresholds_;

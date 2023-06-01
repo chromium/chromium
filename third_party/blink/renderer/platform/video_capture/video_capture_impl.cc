@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -250,7 +251,7 @@ struct VideoCaptureImpl::BufferContext
   // The following is for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|.
 
   // Uses to create SharedImage from |gpu_memory_buffer_|.
-  media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
   // The task runner that |gpu_factories_| runs on.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
@@ -286,8 +287,8 @@ VideoCaptureImpl::VideoFrameBufferPreparer::buffer_context() const {
 bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
   // Prior to initializing, |frame_| and |gpu_memory_buffer_| are null.
   DCHECK(!frame_ && !gpu_memory_buffer_);
-  const auto& iter = video_capture_impl_.client_buffers_.find(buffer_id_);
-  DCHECK(iter != video_capture_impl_.client_buffers_.end());
+  const auto& iter = video_capture_impl_->client_buffers_.find(buffer_id_);
+  DCHECK(iter != video_capture_impl_->client_buffers_.end());
   buffer_context_ = iter->second;
   switch (buffer_context_->buffer_type()) {
     case VideoFrameBufferHandleType::kUnsafeShmemRegion:
@@ -376,10 +377,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
       // On Windows it might happen that the Renderer process loses GPU
       // connection, while the capturer process will continue to produce
       // GPU backed frames.
-      if (!video_capture_impl_.gpu_factories_ ||
-          !video_capture_impl_.media_task_runner_ ||
-          video_capture_impl_.gmb_not_supported_) {
-        video_capture_impl_.RequirePremappedFrames();
+      if (!video_capture_impl_->gpu_factories_ ||
+          !video_capture_impl_->media_task_runner_ ||
+          video_capture_impl_->gmb_not_supported_) {
+        video_capture_impl_->RequirePremappedFrames();
         if (!frame_info_->is_premapped || !buffer_context_->data()) {
           // If the frame isn't premapped, can't do anything here.
           return false;
@@ -398,8 +399,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
         break;
       }
 #endif
-      CHECK(video_capture_impl_.gpu_factories_);
-      CHECK(video_capture_impl_.media_task_runner_);
+      CHECK(video_capture_impl_->gpu_factories_);
+      CHECK(video_capture_impl_->media_task_runner_);
       // Create GpuMemoryBuffer from handle.
       if (!buffer_context_->GetGpuMemoryBuffer()) {
         gfx::BufferFormat gfx_format;
@@ -415,14 +416,14 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
         // buffer pool from the video capture service process, so we don't need
         // to destroy the GpuMemoryBuffer here.
         auto gmb =
-            video_capture_impl_.gpu_memory_buffer_support_
+            video_capture_impl_->gpu_memory_buffer_support_
                 ->CreateGpuMemoryBufferImplFromHandle(
                     buffer_context_->TakeGpuMemoryBufferHandle(),
                     gfx::Size(frame_info_->coded_size), gfx_format,
                     gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
-                    video_capture_impl_.gpu_factories_
+                    video_capture_impl_->gpu_factories_
                         ->GpuMemoryBufferManager(),
-                    video_capture_impl_.pool_);
+                    video_capture_impl_->pool_);
 
         // Keep one GpuMemoryBuffer for current GpuMemoryHandle alive,
         // so that any associated structures are kept alive while this buffer id
@@ -448,14 +449,14 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
 
       // Clone the GpuMemoryBuffer and wrap it in a VideoFrame.
       gpu_memory_buffer_ =
-          video_capture_impl_.gpu_memory_buffer_support_
+          video_capture_impl_->gpu_memory_buffer_support_
               ->CreateGpuMemoryBufferImplFromHandle(
                   std::move(buffer_handle),
                   buffer_context_->GetGpuMemoryBuffer()->GetSize(),
                   buffer_context_->GetGpuMemoryBuffer()->GetFormat(),
                   gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
-                  video_capture_impl_.gpu_factories_->GpuMemoryBufferManager(),
-                  video_capture_impl_.pool_,
+                  video_capture_impl_->gpu_factories_->GpuMemoryBufferManager(),
+                  video_capture_impl_->pool_,
                   base::span<uint8_t>(premapped_data,
                                       buffer_context_->data_size()));
       if (!gpu_memory_buffer_) {
@@ -497,8 +498,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   const gpu::Capabilities* context_capabilites =
       gpu_factories->ContextCapabilities();
   if (!context_capabilites || !context_capabilites->shared_image_d3d) {
-    video_capture_impl_.RequirePremappedFrames();
-    video_capture_impl_.gmb_not_supported_ = true;
+    video_capture_impl_->RequirePremappedFrames();
+    video_capture_impl_->gmb_not_supported_ = true;
     return false;
   }
 #endif
@@ -627,7 +628,7 @@ void VideoCaptureImpl::VideoFrameBufferPreparer::Finalize() {
       base::BindOnce(&VideoCaptureImpl::DidFinishConsumingFrame,
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &VideoCaptureImpl::OnAllClientsFinishedConsumingFrame,
-                         video_capture_impl_.weak_factory_.GetWeakPtr(),
+                         video_capture_impl_->weak_factory_.GetWeakPtr(),
                          buffer_id_, buffer_context_))));
   if (frame_info_->color_space.IsValid()) {
     frame_->set_color_space(frame_info_->color_space);
