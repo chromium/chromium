@@ -30,6 +30,7 @@
 import errno
 import logging
 import os
+import platform
 import tempfile
 
 # The _winreg library is only available on Windows.
@@ -73,7 +74,7 @@ class WinPort(base.Port):
                 version = host.platform.os_version
 
             port_name = port_name + '-' + version
-            if host.platform.get_machine() == 'arm64':
+            if 'ARM' in platform.processor():
                 port_name = port_name + '-arm64'
 
         return port_name
