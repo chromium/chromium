@@ -67,8 +67,6 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
-import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -329,10 +327,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      *  Keeps track of the pref for the last time since this activity was stopped.
      */
     private ChromeInactivityTracker mInactivityTracker;
-    /**
-     *  The controller for the auxiliary search.
-     */
-    private AuxiliarySearchController mAuxiliarySearchController;
 
     // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
@@ -1349,12 +1343,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
             }
 
-            mAuxiliarySearchController =
-                    AuxiliarySearchControllerFactory.createAuxiliarySearchController(
-                            Profile.getLastUsedRegularProfile(), mTabModelSelector);
-            mAuxiliarySearchController.register(this.getLifecycleDispatcher());
             mInactivityTracker.register(this.getLifecycleDispatcher());
-
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
             if (getSavedInstanceState() == null && intent != null) {
