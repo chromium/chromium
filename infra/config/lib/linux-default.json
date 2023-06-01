@@ -53,6 +53,7 @@
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-blink-animation-use-time-delta": "Ubuntu-22.04",
     "linux-blink-heap-verification": "Ubuntu-22.04",
+    "linux-blink-wpt-reset-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
     "linux-cfm-rel": "Ubuntu-22.04",
     "linux-chromeos-dbg": "Ubuntu-22.04",
