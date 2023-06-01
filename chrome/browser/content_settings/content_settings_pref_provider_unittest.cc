@@ -685,8 +685,11 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
 // If a setting is constrained to a session scope and a provider is made with
 // the `restore_Session` flag, the setting should not be cleared.
 TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
-  TestingProfile testing_profile;
-  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  PrefProvider::RegisterProfilePrefs(prefs.registry());
+
+  // Create a normal provider and set a setting.
+  PrefProvider provider(&prefs, /*off_the_record=*/false,
                         /*store_last_modified=*/true,
                         /*restore_session=*/false);
 
@@ -717,13 +720,13 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
   // back.
   provider.ShutdownOnUIThread();
 
-  PrefProvider provider2(testing_profile.GetPrefs(), /*off_the_record=*/false,
+  PrefProvider provider2(&prefs, /*off_the_record=*/false,
                          /*store_last_modified=*/true,
                          /*restore_session=*/true);
 
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
-      TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+      TestUtils::GetContentSetting(&provider2, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
   provider2.ShutdownOnUIThread();
 }
