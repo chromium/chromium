@@ -477,7 +477,7 @@ void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
     return;
   }
 
-  if (!launching_at_login_screen) {
+  if (launching_at_login_screen) {
     std::move(cb).Run();
     return;
   }
