@@ -8,10 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into gcl.
 """
 
-
-USE_PYTHON3 = True
-
-
 def RunUnittests(input_api, output_api):
   return input_api.canned_checks.RunPythonUnitTests(input_api,
                                                     output_api,

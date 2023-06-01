@@ -6,8 +6,6 @@
 Presubmit checks for SafeBrowsing real_time_url_checks_allowlist.
 """
 
-USE_PYTHON3 = True
-
 def _CheckIdHelper(contents, id_type):
     """Return the version or scheme id from the
     provided file contents.

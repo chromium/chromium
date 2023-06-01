@@ -6,8 +6,6 @@ are included in the launcher filter file."""
 
 from typing import Dict, List
 
-USE_PYTHON3 = True
-
 TOOL_PATH = 'tools/testing/launcher_filter_file.py'
 
 

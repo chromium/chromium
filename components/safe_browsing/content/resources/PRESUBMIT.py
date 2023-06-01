@@ -5,8 +5,6 @@
 """Presubmit checks for SafeBrowsing download_file_types.
 """
 
-USE_PYTHON3 = True
-
 def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
     # Don't report errors for "git cl presubmit --all/--files"
     if input_api.no_diffs:

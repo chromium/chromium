@@ -18,8 +18,6 @@ from typing import List
 import os
 import re
 
-USE_PYTHON3 = True
-
 OUTPUT_FILENAME = 'components_unittests.filter'
 
 

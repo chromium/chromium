@@ -8,8 +8,6 @@ See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 def CheckUrlPatternIndexFormatVersion(input_api, output_api):
   """ Checks the kUrlPatternIndexFormatVersion is modified when necessary.
 
