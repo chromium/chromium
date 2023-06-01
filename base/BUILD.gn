@@ -3375,6 +3375,7 @@ test("base_unittests") {
     "test/mock_callback_unittest.cc",
     "test/rectify_callback_unittest.cc",
     "test/repeating_test_future_unittest.cc",
+    "test/run_until_unittest.cc",
     "test/scoped_feature_list_unittest.cc",
     "test/scoped_logging_settings.h",
     "test/scoped_mock_clock_override_unittest.cc",

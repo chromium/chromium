@@ -48,6 +48,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -77,6 +78,7 @@ namespace ash {
 
 namespace {
 
+using base::test::RunUntil;
 using testing::_;
 using testing::ElementsAre;
 
@@ -253,32 +255,6 @@ const views::MenuItemView* GetMenuItemByCommandId(HoldingSpaceCommandId id) {
   }
   return nullptr;
 }
-
-// PredicateWaiter -------------------------------------------------------------
-
-// A class capable of waiting until a predicate returns true.
-class PredicateWaiter {
- public:
-  PredicateWaiter() = default;
-  PredicateWaiter(const PredicateWaiter&) = delete;
-  PredicateWaiter& operator=(const PredicateWaiter&) = delete;
-  ~PredicateWaiter() = default;
-
-  void WaitUntil(base::RepeatingCallback<bool()> predicate,
-                 base::TimeDelta polling_interval = base::Milliseconds(100)) {
-    DCHECK(polling_interval.is_positive());
-    if (predicate.Run())
-      return;
-    base::RunLoop run_loop;
-    base::RepeatingTimer scheduler;
-    scheduler.Start(FROM_HERE, polling_interval,
-                    base::BindLambdaForTesting([&]() {
-                      if (predicate.Run())
-                        run_loop.Quit();
-                    }));
-    run_loop.Run();
-  }
-};
 
 // ViewVisibilityChangedWaiter -------------------------------------------------
 
@@ -3267,7 +3243,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Wait until the `progress_indicator` is synced with the model, which happens
   // asynchronously in response to compositor scheduling.
-  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+  ASSERT_TRUE(RunUntil([&]() {
     return progress_indicator->progress() ==
            ProgressIndicator::kProgressComplete;
   }));
@@ -3284,8 +3260,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // Wait until the `progress_indicator` is synced with the model. Note that
   // this happens asynchronously since the `progress_indicator` does so in
   // response to compositor scheduling.
-  PredicateWaiter().WaitUntil(base::BindLambdaForTesting(
-      [&]() { return progress_indicator->progress() == 0.f; }));
+  ASSERT_TRUE(
+      RunUntil([&]() { return progress_indicator->progress() == 0.f; }));
 
   // The `default_tray_icon` should not be visible so as to avoid overlap with
   // the `progress_indicator`'s inner icon while in progress.
@@ -3297,7 +3273,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Wait until the `progress_indicator` is synced with the model, which happens
   // asynchronously in response to compositor scheduling.
-  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+  ASSERT_TRUE(RunUntil([&]() {
     return progress_indicator->progress() ==
            ProgressIndicator::kProgressComplete;
   }));
@@ -3339,8 +3315,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Wait until the `progress_indicator` is synced with the model, which happens
   // asynchronously in response to compositor scheduling.
-  PredicateWaiter().WaitUntil(base::BindLambdaForTesting(
-      [&]() { return progress_indicator->progress() == 0.f; }));
+  ASSERT_TRUE(
+      RunUntil([&]() { return progress_indicator->progress() == 0.f; }));
 
   // Verify image opacity/transform.
   EXPECT_EQ(image->GetTargetOpacity(), 0.f);
@@ -3353,7 +3329,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Wait until the `progress_indicator` is synced with the model, which happens
   // asynchronously in response to compositor scheduling.
-  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+  ASSERT_TRUE(RunUntil([&]() {
     return progress_indicator->progress() ==
            ProgressIndicator::kProgressComplete;
   }));
@@ -4011,7 +3987,7 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   } else {
     // For screen capture items, the holding space image should always be shown.
     EXPECT_TRUE(IsShowingImage(item_views.front()));
-  };
+  }
 
   // Right click the item view to show the context menu.
   RightClick(item_views.front());

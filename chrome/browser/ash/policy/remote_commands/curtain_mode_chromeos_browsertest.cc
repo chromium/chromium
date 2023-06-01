@@ -9,12 +9,11 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_switches.h"
@@ -64,38 +63,6 @@ class LoadWaiter : public ash::AshWebView::Observer {
       observation_;
 };
 
-// Use as `polling_interval` for `WaitUntil` when you know the
-// predicate should evaluate to true almost immediately, for example after a few
-// `PostTask` bounces.
-constexpr static base::TimeDelta kCheckOften = base::Milliseconds(1);
-
-using WaitUntilPredicate = base::RepeatingCallback<bool(void)>;
-
-// Waits until `predicate` evaluates to `true`.
-// If `predicate` is already true this will return immediately, otherwise
-// it will periodically evaluate `predicate` every `polling_interval` time.
-//
-// Returns true if `predicate` became true, or false if a timeout happens.
-//
-[[nodiscard]] bool WaitUntil(WaitUntilPredicate predicate,
-                             base::TimeDelta polling_interval) {
-  // No need to wait if the predicate is already true.
-  if (predicate.Run()) {
-    return true;
-  }
-
-  base::test::TestFuture<void> ready_signal_;
-  base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, polling_interval,  //
-              base::BindLambdaForTesting([&]() {
-                if (predicate.Run()) {
-                  ready_signal_.SetValue();
-                }
-              }));
-
-  return ready_signal_.Wait();
-}
-
 }  // namespace
 
 class CurtainModeChromeOsPixelTest
@@ -117,12 +84,10 @@ class CurtainModeChromeOsPixelTest
     auto& root_window_controller =
         CHECK_DEREF(ash::Shell::GetPrimaryRootWindowController());
 
-    EXPECT_TRUE(WaitUntil(
-        base::BindLambdaForTesting([&]() {
-          return root_window_controller.security_curtain_widget_controller() !=
-                 nullptr;
-        }),
-        kCheckOften));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return root_window_controller.security_curtain_widget_controller() !=
+             nullptr;
+    }));
 
     return root_window_controller.security_curtain_widget_controller()
         ->GetWidget();
