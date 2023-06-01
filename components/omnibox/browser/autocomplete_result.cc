@@ -542,7 +542,9 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
   // - TAB_SWITCH actions are not considered because they're never attached.
   if constexpr (is_android) {
-    static constexpr size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD = 2;
+    const size_t ACTIONS_IN_SUGGEST_CUTOFF_THRESHOLD =
+        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get() ? 1
+                                                                          : 2;
     static constexpr size_t PEDALS_CUTOFF_THRESHOLD = 3;
     std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
                                              OmniboxActionId::HISTORY_CLUSTERS,
