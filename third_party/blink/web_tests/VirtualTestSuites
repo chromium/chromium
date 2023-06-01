@@ -34,14 +34,14 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
     "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "lna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
     "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "lna-workers-enabled",
@@ -51,7 +51,7 @@
       "--enable-features=PrivateNetworkAccessForWorkers",
       "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"
     ],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "reduce-accept-language",
