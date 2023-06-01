@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
   EXPECT_EQ(last_topics_header().value(),
-            "t=(1;v=chrome.1:1:2), p=P00000000000");
+            "(1);v=chrome.1:1:2, ();p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
   EXPECT_EQ(last_topics_header().value(),
-            "t=(1;v=chrome.1:1:2), p=P00000000000");
+            "(1);v=chrome.1:1:2, ();p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsXHRDisabledBrowserTest,
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
   EXPECT_EQ(last_topics_header().value(),
-            "t=(1;v=chrome.1:1:2), p=P00000000000");
+            "(1);v=chrome.1:1:2, ();p=P00000000000");
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsXHRDisabledBrowserTest,
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
   EXPECT_EQ(last_topics_header().value(),
-            "t=(1;v=chrome.1:1:2), p=P00000000000");
+            "(1);v=chrome.1:1:2, ();p=P00000000000");
 }
 
 class PrivacySandboxAdsAPIsSharedStorageDisabledBrowserTest

@@ -30,13 +30,13 @@ using FollowRedirectParams =
     network::TestURLLoaderFactory::TestURLLoader::FollowRedirectParams;
 
 constexpr char kExpectedHeaderForEmptyTopics[] =
-    "t=(), p=P000000000000000000000000000";
+    "();p=P0000000000000000000000000000000";
 
 constexpr char kExpectedHeaderForOrigin1[] =
-    "t=(1;v=chrome.1:1:2), p=P00000000000";
+    "(1);v=chrome.1:1:2, ();p=P00000000000";
 
 constexpr char kExpectedHeaderForOrigin2[] =
-    "t=(2;v=chrome.1:1:2), p=P00000000000";
+    "(2);v=chrome.1:1:2, ();p=P00000000000";
 
 class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
  public:

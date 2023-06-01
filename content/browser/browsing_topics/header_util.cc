@@ -18,17 +18,12 @@ namespace content {
 
 namespace {
 
-// These numbers must align with the structured header's internal
-// implementation.
-// For ' ' character.
-constexpr int kInnerListItemsSeparatorLength = 1;
-// For ';' and '=' characters.
-constexpr int kParamsSeparatorLength = 2;
-
-constexpr int kParamKeyLength = 1;
+// The max number of digits in a topic. As new taxonomies are introduced and old
+// topics are expired, the expectation is this value will gradually grow.
 constexpr int kTopicMaxLength = 3;
 
-// Example: chrome.1:1:10
+// The number of characters in a version string, e.g., chrome.1:1:10. This will
+// grow as versions require more digits.
 constexpr int kVersionMaxLength = 13;
 
 static_assert(blink::features::kBrowsingTopicsConfigVersionDefault < 10,
@@ -47,93 +42,101 @@ static_assert(browsing_topics::SemanticTree::kNumTopics < 1000,
 
 const char kBrowsingTopicsRequestHeaderKey[] = "Sec-Browsing-Topics";
 
-net::structured_headers::ParameterizedItem CreateParameterizedTopic(
-    const blink::mojom::EpochTopicPtr& topic,
-    bool skip_version,
-    int& serialized_inner_list_length) {
-  if (skip_version) {
-    return net::structured_headers::ParameterizedItem(
-        net::structured_headers::Item(static_cast<int64_t>(topic->topic)), {});
-  }
-
-  serialized_inner_list_length +=
-      kParamsSeparatorLength + kParamKeyLength + topic->version.size();
-
-  return net::structured_headers::ParameterizedItem(
-      net::structured_headers::Item(static_cast<int64_t>(topic->topic)),
-      {{"v", net::structured_headers::Item(
-                 topic->version, net::structured_headers::Item::kTokenType)}});
-}
-
 std::string DeriveTopicsHeaderValue(
     const std::vector<blink::mojom::EpochTopicPtr>& topics,
     int num_versions_in_epochs) {
-  std::vector<net::structured_headers::ParameterizedItem> header_list;
-
-  // Manually derive the length of the inner topics list in serialized format.
-  int serialized_inner_list_length = 0;
-
+  net::structured_headers::List header_list;
   absl::optional<std::string> last_version;
+  std::vector<net::structured_headers::ParameterizedItem> cur_topics;
+
+  // Build up the header without the padding parameter.
   for (auto& topic : topics) {
-    int topic_digits_count = base::NumberToString(topic->topic).size();
-    CHECK_LE(topic_digits_count, kTopicMaxLength);
-
-    serialized_inner_list_length += topic_digits_count;
-    if (!header_list.empty()) {
-      serialized_inner_list_length += kInnerListItemsSeparatorLength;
+    bool new_version =
+        (!last_version.has_value() || last_version.value() != topic->version);
+    if (new_version) {
+      if (cur_topics.size() > 0) {
+        CHECK(last_version.has_value());
+        header_list.push_back(net::structured_headers::ParameterizedMember(
+            cur_topics,
+            {{"v",
+              net::structured_headers::Item(
+                  *last_version, net::structured_headers::Item::kTokenType)}}));
+        cur_topics.clear();
+      }
+      last_version = topic->version;
     }
-
-    bool skip_version =
-        (last_version && last_version.value() == topic->version);
-
-    header_list.push_back(CreateParameterizedTopic(
-        topic, skip_version, serialized_inner_list_length));
-    last_version = topic->version;
+    cur_topics.push_back(net::structured_headers::ParameterizedItem(
+        net::structured_headers::Item(static_cast<int64_t>(topic->topic)), {}));
   }
 
+  if (cur_topics.size() > 0) {
+    CHECK(last_version.has_value());
+    header_list.push_back(net::structured_headers::ParameterizedMember(
+        cur_topics, {{"v", net::structured_headers::Item(
+                               *last_version,
+                               net::structured_headers::Item::kTokenType)}}));
+  }
+
+  // The header is now complete, except for padding. We want the header to be of
+  // fixed size for the given number of versions in the list, so we add padding
+  // to make that happen.
+
+  // When adding padding, we'll always have at least 1 version.
+  if (num_versions_in_epochs == 0) {
+    num_versions_in_epochs = 1;
+  }
+
+  // The number of topics that should be in the padded response.
   int max_number_of_epochs =
       blink::features::kBrowsingTopicsNumberOfEpochsToExpose.Get();
   CHECK_LE(num_versions_in_epochs, max_number_of_epochs);
   CHECK_GT(max_number_of_epochs, 0);
 
-  // If there are no valid epochs, use the `max_padding_length` for epochs
-  // having same versions.
-  if (num_versions_in_epochs == 0) {
-    num_versions_in_epochs = 1;
+  // The padded length of the header given the number of versions.
+  // Example header: Sec-Browsing-Topics: (100 200);v=chrome.1:1:2,
+  // (300);v=chrome.1:1:4, ();p=P00
+  int max_length =
+      max_number_of_epochs * kTopicMaxLength +  // length of three topics
+      max_number_of_epochs -
+      num_versions_in_epochs +      // spaces between topics in a list
+      num_versions_in_epochs * 5 +  // '();v='
+      num_versions_in_epochs *
+          kVersionMaxLength +            // max length of the versions
+      (num_versions_in_epochs - 1) * 2;  // the ', ' between topic lists
+
+  // Add the bytes for the ", " between the last list and the padding list in
+  // the event that there are no topics.
+  if (header_list.size() == 0) {
+    max_length += 2;
   }
 
-  int max_padding_length =
-      max_number_of_epochs * kTopicMaxLength +
-      num_versions_in_epochs *
-          (kVersionMaxLength + kParamsSeparatorLength + kParamKeyLength) +
-      (max_number_of_epochs - 1) * kInnerListItemsSeparatorLength;
+  // How many bytes of padding do we need to add?
+  int padding_needed =
+      header_list.size() > 0
+          ? max_length -
+                net::structured_headers::SerializeList(header_list)->length()
+          : max_length;
 
-  // If `serialized_inner_list_length` is greater than
-  // `max_padding_length`, keep the header as-is and don't pad
-  // anything. This could happen in the following situations:
-  // - We have a newer config/taxonomoy version from Finch and haven't updated
-  //   the default parameter values.
-  // - A newer model is used on an old Chrome version.
-  // - There was a race between call to get `topics` and the call to get the
-  //   `num_versions_in_epochs`. This should be extremely unlikely to occur.
-  int padding_length = (serialized_inner_list_length <= max_padding_length)
-                           ? (max_padding_length - serialized_inner_list_length)
-                           : 0;
-  std::string padded_token =
-      base::StrCat({"P", std::string(padding_length, '0')});
+  // The padding should generally be >= 0. It can be negative in certain
+  // circumstances and we need to handle that here. It can be negative if a new
+  // version is rolled out via finch (e.g., model or taxonomy) that uses an
+  // extra digit in its number but the binary hasn't been updated to handle the
+  // extra digit yet. It could also happen if there is a race between getting
+  // topics and getting the number of distinct topic versions. We clamp to 0 to
+  // prevent breakage in these rare circumstances.
+  if (padding_needed < 0) {
+    padding_needed = 0;
+  }
 
-  std::vector<net::structured_headers::DictionaryMember> header_dict;
-  header_dict.emplace_back("t", net::structured_headers::ParameterizedMember(
-                                    std::move(header_list), {}));
-  header_dict.emplace_back(
-      "p", net::structured_headers::ParameterizedMember(
-               net::structured_headers::Item(
-                   padded_token, net::structured_headers::Item::kTokenType),
-               {}));
+  // Add the padding list at the end.
+  header_list.push_back(net::structured_headers::ParameterizedMember(
+      std::vector<net::structured_headers::ParameterizedItem>(),
+      {{"p", net::structured_headers::Item(
+                 base::StrCat({"P", std::string(padding_needed, '0')}),
+                 net::structured_headers::Item::kTokenType)}}));
 
   absl::optional<std::string> serialized_header =
-      net::structured_headers::SerializeDictionary(
-          net::structured_headers::Dictionary(std::move(header_dict)));
+      net::structured_headers::SerializeList(header_list);
   CHECK(serialized_header);
 
   return *serialized_header;
@@ -153,8 +156,9 @@ void HandleTopicsEligibleResponse(
 
   // Check the page's IsPrimary() status again in case it has changed since the
   // request time.
-  if (!request_initiator_frame.GetPage().IsPrimary())
+  if (!request_initiator_frame.GetPage().IsPrimary()) {
     return;
+  }
 
   // TODO(crbug.com/1244137): IsPrimary() doesn't actually detect portals yet.
   // Remove this when it does.

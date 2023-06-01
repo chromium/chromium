@@ -72,13 +72,13 @@ constexpr char kExpectedApiResult[] =
     "\"taxonomyVersion\":\"1\",\"topic\":10,\"version\":\"chrome.1:1:2\"};]";
 
 constexpr char kExpectedHeaderValueForEmptyTopics[] =
-    "t=(), p=P000000000000000000000000000";
+    "();p=P0000000000000000000000000000000";
 
 constexpr char kExpectedHeaderValueForSiteA[] =
-    "t=(1;v=chrome.1:1:2 10), p=P00000000";
+    "(1 10);v=chrome.1:1:2, ();p=P00000000";
 
 constexpr char kExpectedHeaderValueForSiteB[] =
-    "t=(1;v=chrome.1:1:2 7), p=P000000000";
+    "(1 7);v=chrome.1:1:2, ();p=P000000000";
 
 static constexpr char kBrowsingTopicsApiActionTypeHistogramId[] =
     "BrowsingTopics.ApiActionType";
