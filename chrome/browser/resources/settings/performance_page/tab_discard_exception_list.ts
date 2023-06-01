@@ -140,11 +140,13 @@ export class TabDiscardExceptionListElement extends
   }
 
   private getSiteList_() {
-    return this.siteList_.slice(0, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE);
+    return this.siteList_.slice(-TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE)
+        .reverse();
   }
 
   private getOverflowSiteList_() {
-    return this.siteList_.slice(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE);
+    return this.siteList_.slice(0, -TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE)
+        .reverse();
   }
 
   private onAddClick_() {
@@ -187,10 +189,6 @@ export class TabDiscardExceptionListElement extends
 
   private onEditDialogClose_() {
     this.showEditDialog_ = false;
-  }
-
-  private onAddException_() {
-    this.overflowSiteListExpanded = true;
   }
 
   private onPrefsChanged_() {

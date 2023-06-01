@@ -180,9 +180,7 @@ suite('TabDiscardExceptionsDialog', function() {
   test('testTabDiscardExceptionsAddDialogSubmit', async function() {
     dialog = setupAddDialog();
     await assertUserInputValidated(VALID_RULE);
-    const addExceptionEvent = eventToPromise('add-exception', dialog);
     assertSubmit([EXISTING_RULE, VALID_RULE]);
-    await addExceptionEvent;
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
     assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
@@ -197,9 +195,7 @@ suite('TabDiscardExceptionsDialog', function() {
   test('testTabDiscardExceptionsTabbedAddDialogSubmit', async function() {
     dialog = await setupTabbedAddDialog();
     await assertUserInputValidated(VALID_RULE);
-    const addExceptionEvent = eventToPromise('add-exception', dialog);
     assertSubmit([EXISTING_RULE, VALID_RULE]);
-    await addExceptionEvent;
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
     assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
@@ -269,9 +265,7 @@ suite('TabDiscardExceptionsDialog', function() {
     getRulesListEntry(dialog, 2).click();
     assertFalse(dialog.$.actionButton.disabled);
     getRulesListEntry(dialog, 4).click();
-    const addExceptionEvent = eventToPromise('add-exception', dialog);
     assertSubmit([EXISTING_RULE, 'rule2', 'rule4']);
-    await addExceptionEvent;
   });
 
   function switchAddDialogTab(

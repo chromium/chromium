@@ -46,10 +46,6 @@ export class TabDiscardExceptionAddInputElement extends
     assert(!this.submitDisabled);
     const rule = this.rule.trim();
     this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
-    this.dispatchEvent(new CustomEvent('add-exception', {
-      bubbles: true,
-      composed: true,
-    }));
     this.metricsProxy_.recordExceptionListAction(
         HighEfficiencyModeExceptionListAction.ADD);
   }

@@ -73,12 +73,12 @@
 </cr-lazy-render>
 <template is="dom-if" if="[[showAddDialog_]]" restamp>
   <tab-discard-exception-add-dialog prefs="{{prefs}}"
-      on-close="onAddDialogClose_" on-add-exception="onAddException_">
+      on-close="onAddDialogClose_">
   </tab-discard-exception-add-dialog>
 </template>
 <template is="dom-if" if="[[showTabbedAddDialog_]]" restamp>
   <tab-discard-exception-tabbed-add-dialog prefs="{{prefs}}"
-      on-close="onTabbedAddDialogClose_" on-add-exception="onAddException_">
+      on-close="onTabbedAddDialogClose_">
   </tab-discard-exception-tabbed-add-dialog>
 </template>
 <template is="dom-if" if="[[showEditDialog_]]" restamp>

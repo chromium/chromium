@@ -93,15 +93,11 @@ export class TabDiscardExceptionCurrentSitesListElement extends
     return index + 1;
   }
 
-  async submit() {
+  submit() {
     assert(!this.submitDisabled);
     this.selectedSites_.forEach(rule => {
       this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     });
-    this.dispatchEvent(new CustomEvent('add-exception', {
-      bubbles: true,
-      composed: true,
-    }));
     this.metricsProxy_.recordExceptionListAction(
         HighEfficiencyModeExceptionListAction.ADD);
   }

@@ -268,7 +268,8 @@ suite('TabDiscardExceptionList', function() {
   function assertExceptionListEquals(rules: string[], message?: string) {
     const actual = tabDiscardExceptionsList.$.list.items!
                        .concat(tabDiscardExceptionsList.$.overflowList.items!)
-                       .map(entry => entry.site);
+                       .map(entry => entry.site)
+                       .reverse();
     assertDeepEquals(rules, actual, message);
   }
 
@@ -283,9 +284,10 @@ suite('TabDiscardExceptionList', function() {
   }
 
   function getExceptionListEntry(idx: number): TabDiscardExceptionEntryElement {
-    const entry = [...tabDiscardExceptionsList.shadowRoot!
-                       .querySelectorAll<TabDiscardExceptionEntryElement>(
-                           'tab-discard-exception-entry')][idx];
+    const entries = [...tabDiscardExceptionsList.shadowRoot!
+                         .querySelectorAll<TabDiscardExceptionEntryElement>(
+                             'tab-discard-exception-entry')];
+    const entry = entries[entries.length - 1 - idx];
     assertTrue(!!entry);
     return entry;
   }
@@ -446,9 +448,7 @@ suite('TabDiscardExceptionList', function() {
     const addDialog = await getAddDialog();
     assertTrue(addDialog.$.dialog.open);
     assertEquals('', addDialog.$.input.$.input.value);
-    const addExceptionEvent = eventToPromise('add-exception', addDialog);
     await inputDialog(addDialog, 'bar');
-    await addExceptionEvent;
     assertEquals(
         HighEfficiencyModeExceptionListAction.ADD,
         await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
@@ -506,7 +506,7 @@ suite('TabDiscardExceptionList', function() {
     const newRule = `rule${TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1}`;
     const addDialog = await getAddDialog();
     await inputDialog(addDialog, newRule);
-    assertTrue(tabDiscardExceptionsList.$.collapse.opened);
+    assertFalse(tabDiscardExceptionsList.$.collapse.opened);
     assertExceptionListEquals([...entries, newRule]);
   });
 
@@ -514,13 +514,17 @@ suite('TabDiscardExceptionList', function() {
     if (!loadTimeData.getBoolean('isDiscardExceptionsImprovementsEnabled')) {
       return;
     }
-    performanceBrowserProxy.setCurrentOpenSites([
-      ...Array(3).keys(),
-    ].map(index => `rule${index}`));
+    const existingEntry = 'www.foo.com';
+    setupExceptionListEntries([existingEntry]);
+    const entries = [
+      ...Array(TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE).keys(),
+    ].map(index => `rule${index}`);
+    performanceBrowserProxy.setCurrentOpenSites(entries);
     tabDiscardExceptionsList.$.addButton.click();
     flush();
 
     const addDialog = await getTabbedAddDialog();
+    await eventToPromise('iron-resize', addDialog);
     flush();
 
     addDialog.$.list.$.list
@@ -528,13 +532,12 @@ suite('TabDiscardExceptionList', function() {
         .forEach(checkboxElement => {
           checkboxElement.click();
         });
-    const addExceptionEvent = eventToPromise('add-exception', addDialog);
     assertFalse(addDialog.$.actionButton.disabled);
     addDialog.$.actionButton.click();
-    await addExceptionEvent;
     flush();
 
-    assertTrue(tabDiscardExceptionsList.$.collapse.opened);
+    assertEquals(false, tabDiscardExceptionsList.$.collapse.opened);
+    assertExceptionListEquals([existingEntry, ...entries]);
   });
 
   test('testTabDiscardExceptionsListOverflowEdit', async function() {
