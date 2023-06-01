@@ -178,11 +178,10 @@ TEST_F(AnimationAnimationInputHelpersTest, PropertyHandleToKeyframeAttribute) {
             PropertyHandleToKeyframeAttribute(GetCSSPropertyOffset(), true));
 
   // SVG attributes.
-  EXPECT_EQ("calcMode", PropertyHandleToKeyframeAttribute(QualifiedName(
-                            g_null_atom, "calcMode", g_null_atom)));
-  EXPECT_EQ("overline-position",
-            PropertyHandleToKeyframeAttribute(
-                QualifiedName(g_null_atom, "overline-position", g_null_atom)));
+  EXPECT_EQ("calcMode",
+            PropertyHandleToKeyframeAttribute(QualifiedName("calcMode")));
+  EXPECT_EQ("overline-position", PropertyHandleToKeyframeAttribute(
+                                     QualifiedName("overline-position")));
 }
 
 }  // namespace blink

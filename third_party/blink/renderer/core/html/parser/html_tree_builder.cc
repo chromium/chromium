@@ -521,7 +521,7 @@ void MapLoweredLocalNameToName(PrefixedNameToQualifiedNameMap* map,
 }
 
 void AddManualLocalName(PrefixedNameToQualifiedNameMap* map, const char* name) {
-  const QualifiedName item(g_null_atom, AtomicString(name), g_null_atom);
+  const QualifiedName item{AtomicString(name)};
   const blink::QualifiedName* const names = &item;
   MapLoweredLocalNameToName<QualifiedName>(map, &names, 1);
 }

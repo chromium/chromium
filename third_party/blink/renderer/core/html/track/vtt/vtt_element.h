@@ -68,14 +68,12 @@ class VTTElement final : public Element {
   void SetLanguage(AtomicString value) { language_ = value; }
 
   static const QualifiedName& VoiceAttributeName() {
-    DEFINE_STATIC_LOCAL(QualifiedName, voice_attr,
-                        (g_null_atom, AtomicString("voice"), g_null_atom));
+    DEFINE_STATIC_LOCAL(QualifiedName, voice_attr, (AtomicString("voice")));
     return voice_attr;
   }
 
   static const QualifiedName& LangAttributeName() {
-    DEFINE_STATIC_LOCAL(QualifiedName, attr,
-                        (g_null_atom, AtomicString("lang"), g_null_atom));
+    DEFINE_STATIC_LOCAL(QualifiedName, attr, (AtomicString("lang")));
     return attr;
   }
 

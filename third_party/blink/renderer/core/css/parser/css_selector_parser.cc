@@ -1438,7 +1438,7 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenRange& range) {
 
   QualifiedName qualified_name =
       namespace_prefix.IsNull()
-          ? QualifiedName(g_null_atom, attribute_name, g_null_atom)
+          ? QualifiedName(attribute_name)
           : QualifiedName(namespace_prefix, attribute_name, namespace_uri);
 
   if (block.AtEnd()) {

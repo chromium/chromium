@@ -2486,9 +2486,7 @@ void Content::ApplyValue(StyleResolverState& state,
         builder.SetHasAttrContent();
         // TODO: Can a namespace be specified for an attr(foo)?
         QualifiedName attr(
-            g_null_atom,
-            To<CSSCustomIdentValue>(function_value->Item(0)).Value(),
-            g_null_atom);
+            To<CSSCustomIdentValue>(function_value->Item(0)).Value());
         const AtomicString& attr_value = state.GetElement().getAttribute(attr);
         string = attr_value.IsNull() ? g_empty_string : attr_value.GetString();
       } else {

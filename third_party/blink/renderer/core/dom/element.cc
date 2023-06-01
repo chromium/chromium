@@ -8416,8 +8416,7 @@ void Element::SynchronizeAttributeHinted(
     // if Element::SynchronizeAttribute() is called on all attributes,
     // svg_attributes_are_dirty_ remains true. This information is available in
     // the attribute->property map in SVGElement.
-    To<SVGElement>(this)->SynchronizeSVGAttribute(
-        QualifiedName(g_null_atom, local_name, g_null_atom));
+    To<SVGElement>(this)->SynchronizeSVGAttribute(QualifiedName(local_name));
   }
 }
 
@@ -8439,20 +8438,16 @@ std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
     AtomicString name,
     WTF::AtomicStringTable::WeakResult hint) const {
   if (!HasElementData()) {
-    return std::make_pair(
-        kNotFound,
-        QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
-                      g_null_atom));
+    return std::make_pair(kNotFound,
+                          QualifiedName(LowercaseIfNecessary(std::move(name))));
   }
 
   AttributeCollection attributes = GetElementData()->Attributes();
   wtf_size_t index = attributes.FindIndexHinted(name, hint);
   return std::make_pair(
-      index,
-      index != kNotFound
-          ? attributes[index].GetName()
-          : QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
-                          g_null_atom));
+      index, index != kNotFound
+                 ? attributes[index].GetName()
+                 : QualifiedName(LowercaseIfNecessary(std::move(name))));
 }
 
 void Element::setAttribute(const QualifiedName& name,

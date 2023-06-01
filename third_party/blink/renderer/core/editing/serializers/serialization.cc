@@ -98,7 +98,7 @@ class AttributeChange {
   DISALLOW_NEW();
 
  public:
-  AttributeChange() : name_(g_null_atom, g_null_atom, g_null_atom) {}
+  AttributeChange() : name_(QualifiedName::Null()) {}
 
   AttributeChange(Element* element,
                   const QualifiedName& name,

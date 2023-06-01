@@ -333,7 +333,7 @@ void AtomicHTMLToken::InitializeAttributes(
     QualifiedName name = LookupHTMLAttributeName(attribute.NameBuffer().data(),
                                                  attribute.NameBuffer().size());
     if (name == g_null_name) {
-      name = QualifiedName(g_null_atom, attribute.GetName(), g_null_atom);
+      name = QualifiedName(attribute.GetName());
     }
 
     if constexpr (DedupWithHash) {

@@ -1121,8 +1121,7 @@ Element* Document::CreateElementForBinding(const AtomicString& name,
                          html_names::xhtmlNamespaceURI);
     return MakeGarbageCollected<HTMLUnknownElement>(q_name, *this);
   }
-  return MakeGarbageCollected<Element>(
-      QualifiedName(g_null_atom, name, g_null_atom), this);
+  return MakeGarbageCollected<Element>(QualifiedName(name), this);
 }
 
 AtomicString GetTypeExtension(
@@ -7248,8 +7247,7 @@ Attr* Document::createAttribute(const AtomicString& name,
     return nullptr;
   }
   return MakeGarbageCollected<Attr>(
-      *this, QualifiedName(g_null_atom, ConvertLocalName(name), g_null_atom),
-      g_empty_atom);
+      *this, QualifiedName(ConvertLocalName(name)), g_empty_atom);
 }
 
 Attr* Document::createAttributeNS(const AtomicString& namespace_uri,

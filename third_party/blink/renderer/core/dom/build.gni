@@ -316,6 +316,7 @@ blink_core_tests_dom = [
   "node_traversal_test.cc",
   "nth_index_cache_test.cc",
   "pseudo_element_test.cc",
+  "qualified_name_test.cc",
   "range_test.cc",
   "scripted_animation_controller_test.cc",
   "scripted_idle_task_controller_test.cc",

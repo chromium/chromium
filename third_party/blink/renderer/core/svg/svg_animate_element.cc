@@ -87,7 +87,7 @@ QualifiedName ConstructQualifiedName(const SVGElement& svg_element,
   if (attribute_name.empty())
     return AnyQName();
   if (!attribute_name.Contains(':'))
-    return QualifiedName(g_null_atom, attribute_name, g_null_atom);
+    return QualifiedName(attribute_name);
 
   AtomicString prefix;
   AtomicString local_name;
