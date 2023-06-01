@@ -28,6 +28,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         /* dynamicParams= */ url, /* removeSearch= */ true);
 
     document.body.appendChild(page);
+    provider.observeKeyboardSettings(page);
     await flushTasks();
   });
 

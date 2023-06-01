@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, ModifierKey} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
@@ -91,5 +91,17 @@ suite('FakeInputDeviceSettings', () => {
     // Verify if the first point stick settings are updated.
     const result = await provider.getConnectedPointingStickSettings();
     assertDeepEquals(updatedFirstPointingStick, result[0]);
+  });
+
+  test('restoreDefaultKeyboardModifierRemappings', async () => {
+    provider.setFakeKeyboards(fakeKeyboards);
+    // Restore the default modifier remappings for the first keyboard settings.
+    provider.restoreDefaultKeyboardModifierRemappings(fakeKeyboards[0]!.id!);
+    // Verify if the first keyboard settings are updated.
+    const result = await provider.getConnectedKeyboardSettings();
+    assertDeepEquals(result[0]!.settings!.modifierRemappings, {
+      [ModifierKey.kControl]: ModifierKey.kMeta,
+      [ModifierKey.kMeta]: ModifierKey.kControl,
+    });
   });
 });

@@ -244,6 +244,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
   const ::ash::mojom::MousePolicies& GetMousePolicies() override {
     return *mouse_policies_;
   }
+  void RestoreDefaultKeyboardModifierRemappings(DeviceId id) override {
+    ++num_times_restore_default_keyboard_modifier_remappings_called_;
+  }
   void SetKeyboardSettings(
       DeviceId id,
       ::ash::mojom::KeyboardSettingsPtr settings) override {
@@ -339,6 +342,9 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
     pointing_sticks_.erase(iter);
     observer_->OnPointingStickDisconnected(*temp_pointing_stick);
   }
+  int num_times_restore_default_keyboard_modifier_remappings_called() {
+    return num_times_restore_default_keyboard_modifier_remappings_called_;
+  }
   int num_times_set_keyboard_settings_called() {
     return num_times_set_keyboard_settings_called_;
   }
@@ -363,6 +369,7 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
       ::ash::mojom::MousePolicies::New();
 
   raw_ptr<InputDeviceSettingsController::Observer> observer_ = nullptr;
+  int num_times_restore_default_keyboard_modifier_remappings_called_ = 0;
   int num_times_set_keyboard_settings_called_ = 0;
   int num_times_set_pointing_stick_settings_called_ = 0;
   int num_times_set_mouse_settings_called_ = 0;
@@ -409,6 +416,25 @@ TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, controller_->num_times_set_keyboard_settings_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest,
+       TestRestoreDefaultKeyboardModifierRemappings) {
+  controller_->AddKeyboard(kKeyboard1.Clone());
+  provider_->RestoreDefaultKeyboardModifierRemappings(kKeyboard1.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      1, controller_
+             ->num_times_restore_default_keyboard_modifier_remappings_called());
+
+  controller_->AddKeyboard(kKeyboard2.Clone());
+  provider_->RestoreDefaultKeyboardModifierRemappings(kKeyboard2.id);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      2, controller_
+             ->num_times_restore_default_keyboard_modifier_remappings_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetPointingStickSettings) {
