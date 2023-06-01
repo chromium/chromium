@@ -102,6 +102,7 @@
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
     "chromeos-arm-generic-rel": "Ubuntu-22.04",
+    "chromeos-js-code-coverage": "Ubuntu-22.04",
     "fuchsia-binary-size": "Ubuntu-22.04",
     "fuchsia-x64-cast-receiver-rel": "Ubuntu-22.04",
     "fuchsia-x64-cast-receiver-rel-compilator": "Ubuntu-22.04",
