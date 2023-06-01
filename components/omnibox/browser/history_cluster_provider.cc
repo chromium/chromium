@@ -159,11 +159,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
   //  Ideally, relevance would depend on how many keywords matched, how
   //  significant the keywords were, how significant their clusters were etc.
   match.relevance =
-      history_clusters::GetConfig()
-              .omnibox_history_cluster_provider_inherit_search_match_score
-          ? search_match.relevance - 1
-          : history_clusters::GetConfig()
-                .omnibox_history_cluster_provider_score;
+      history_clusters::GetConfig().omnibox_history_cluster_provider_score;
 
   const auto& text = search_match.contents;
 

@@ -1002,10 +1002,6 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
-  history_clusters::Config config;
-  config.omnibox_history_cluster_provider_shortcuts = true;
-  history_clusters::SetConfigForTesting(config);
-
   const auto create_test_data =
       [](std::string text, bool is_history_cluster) -> TestShortcutData {
     return {GetGuid(), text, "fill_into_edit",
@@ -1074,15 +1070,5 @@ TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
   EXPECT_EQ(matches[4].suggestion_group_id, absl::nullopt);
   EXPECT_EQ(matches[5].suggestion_group_id, absl::nullopt);
   EXPECT_EQ(matches[6].suggestion_group_id, absl::nullopt);
-
-  // With `omnibox_history_cluster_provider_allow_default`, should be allowed
-  // default.
-  config.omnibox_history_cluster_provider_allow_default = true;
-  history_clusters::SetConfigForTesting(config);
-  provider_->Start(input, false);
-  const auto matches_with_allow_default = provider_->matches();
-  ASSERT_EQ(matches.size(), matches.size());
-  for (const auto& m : matches_with_allow_default)
-    EXPECT_TRUE(m.allowed_to_be_default_match);
 }
 #endif  // !BUILDFLAG(IS_IOS)
