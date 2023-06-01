@@ -1108,6 +1108,7 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
       case ::media::VideoDecoderType::kTesting:
         return media::stable::mojom::VideoDecoderType::kTesting;
       case ::media::VideoDecoderType::kUnknown:
+        return media::stable::mojom::VideoDecoderType::kUnknown;
       case ::media::VideoDecoderType::kFFmpeg:
       case ::media::VideoDecoderType::kVpx:
       case ::media::VideoDecoderType::kAom:
@@ -1119,7 +1120,9 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
       case ::media::VideoDecoderType::kD3D11:
       case ::media::VideoDecoderType::kBroker:
       case ::media::VideoDecoderType::kOutOfProcess:
-        return media::stable::mojom::VideoDecoderType::kUnknown;
+      case ::media::VideoDecoderType::kVideoToolbox:
+        // Only decoders used on CrOS are supported.
+        NOTREACHED_NORETURN();
     }
 
     NOTREACHED_NORETURN();

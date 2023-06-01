@@ -2,20 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/media_switches.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 #include "media/gpu/ipc/service/vda_video_decoder.h"
+#include "media/gpu/mac/video_toolbox_video_decoder.h"
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 namespace media {
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
+  if (base::FeatureList::IsEnabled(kVideoToolboxVideoDecoder) &&
+      IsMultiPlaneFormatForHardwareVideoEnabled()) {
+    return std::make_unique<VideoToolboxVideoDecoder>(
+        traits.task_runner, traits.media_log->Clone(), traits.gpu_task_runner,
+        traits.get_command_buffer_stub_cb);
+  }
+
   return VdaVideoDecoder::Create(
       traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
       *traits.target_color_space, traits.gpu_preferences,
@@ -29,6 +40,7 @@ GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
+  // TODO(crbug.com/1331597): Implement for VideoToolboxVideoDecoder.
   return std::move(get_vda_configs).Run();
 }
 
