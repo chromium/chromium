@@ -222,12 +222,14 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
       GetBucket(params.storage_key, params.name, StorageType::kTemporary);
 
   if (!bucket_result.has_value()) {
-    if (bucket_result.error() != QuotaError::kNotFound) {
-      bucket_result.error().sqlite_error = sqlite_error_code_;
-      return bucket_result;
+    if (bucket_result.error() == QuotaError::kNotFound) {
+      bucket_result = CreateBucketInternal(params, StorageType::kTemporary,
+                                           max_bucket_count);
     }
-    return CreateBucketInternal(params, StorageType::kTemporary,
-                                max_bucket_count);
+    if (!bucket_result.has_value()) {
+      bucket_result.error().sqlite_error = sqlite_error_code_;
+    }
+    return bucket_result;
   }
 
   // Don't bother updating anything if the bucket is expired.
