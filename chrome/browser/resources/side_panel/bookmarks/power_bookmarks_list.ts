@@ -240,6 +240,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.setAttribute('role', 'application');
     listenOnce(this.$.powerBookmarksContainer, 'dom-change', () => {
       setTimeout(() => this.bookmarksApi_.showUi(), 0);
     });
