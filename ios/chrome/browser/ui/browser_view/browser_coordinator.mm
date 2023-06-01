@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
@@ -63,7 +64,6 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
-#import "ios/chrome/browser/shared/public/commands/password_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
@@ -707,6 +707,7 @@ enum class ToolbarKind {
   // handlers.
   NSArray<Protocol*>* protocols = @[
     @protocol(ActivityServiceCommands),
+    @protocol(AutofillBottomSheetCommands),
     @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
@@ -715,7 +716,6 @@ enum class ToolbarKind {
     @protocol(FindInPageCommands),
     @protocol(NewTabPageCommands),
     @protocol(PageInfoCommands),
-    @protocol(PasswordBottomSheetCommands),
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
@@ -1392,7 +1392,7 @@ enum class ToolbarKind {
   [self.sharingCoordinator start];
 }
 
-#pragma mark - PasswordBottomSheetCommands
+#pragma mark - AutofillBottomSheetCommands
 
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
   self.passwordSuggestionBottomSheetCoordinator =

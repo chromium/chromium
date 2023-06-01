@@ -15,8 +15,8 @@
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/password_bottom_sheet_commands.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
@@ -38,33 +38,29 @@ AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
 
 // Public methods
 
-void AutofillBottomSheetTabHelper::SetPasswordBottomSheetHandler(
-    id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler) {
-  password_bottom_sheet_commands_handler_ =
-      password_bottom_sheet_commands_handler;
+void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
+    id<AutofillBottomSheetCommands> commands_handler) {
+  commands_handler_ = commands_handler;
 }
 
 void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
-  if (!password_bottom_sheet_commands_handler_ ||
-      !password_account_storage_notice_handler_ ||
+  if (!commands_handler_ || !password_account_storage_notice_handler_ ||
       !autofill::FormActivityParams::FromMessage(message, &params)) {
     return;
   }
 
   if (![password_account_storage_notice_handler_
           shouldShowAccountStorageNotice]) {
-    [password_bottom_sheet_commands_handler_ showPasswordBottomSheet:params];
+    [commands_handler_ showPasswordBottomSheet:params];
     return;
   }
 
-  __weak id<PasswordBottomSheetCommands>
-      weak_password_bottom_sheet_commands_handler =
-          password_bottom_sheet_commands_handler_;
+  __weak id<AutofillBottomSheetCommands> weak_commands_handler =
+      commands_handler_;
   [password_account_storage_notice_handler_ showAccountStorageNotice:^{
-    [weak_password_bottom_sheet_commands_handler
-        showPasswordBottomSheet:params];
+    [weak_commands_handler showPasswordBottomSheet:params];
   }];
 }
 

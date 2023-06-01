@@ -14,9 +14,9 @@ class ScriptMessage;
 class WebFrame;
 }  // namespace web
 
+@protocol AutofillBottomSheetCommands;
 @class CommandDispatcher;
 @protocol PasswordsAccountStorageNoticeHandler;
-@protocol PasswordBottomSheetCommands;
 
 class AutofillBottomSheetTabHelper
     : public web::WebStateObserver,
@@ -35,9 +35,9 @@ class AutofillBottomSheetTabHelper
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
 
-  // Sets the Password CommandDispatcher.
-  void SetPasswordBottomSheetHandler(
-      id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler);
+  // Sets the bottom sheet CommandDispatcher.
+  void SetAutofillBottomSheetHandler(
+      id<AutofillBottomSheetCommands> commands_handler);
 
   // Prepare bottom sheet using data from the password form prediction.
   void AttachPasswordListeners(
@@ -65,8 +65,7 @@ class AutofillBottomSheetTabHelper
   bool HasReachedDismissLimit();
 
   // Handler used to request showing the password bottom sheet.
-  __weak id<PasswordBottomSheetCommands>
-      password_bottom_sheet_commands_handler_;
+  __weak id<AutofillBottomSheetCommands> commands_handler_;
 
   // Handler used for the passwords account storage notice.
   // TODO(crbug.com/1434606): Remove this when the move to account storage

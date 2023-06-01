@@ -8,6 +8,7 @@ source_set("commands") {
   sources = [
     "activity_service_commands.h",
     "application_commands.h",
+    "autofill_bottom_sheet_commands.h",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",
     "browser_commands.h",
@@ -30,7 +31,6 @@ source_set("commands") {
     "open_new_tab_command.h",
     "open_new_tab_command.mm",
     "page_info_commands.h",
-    "password_bottom_sheet_commands.h",
     "password_breach_commands.h",
     "password_protection_commands.h",
     "password_suggestion_commands.h",

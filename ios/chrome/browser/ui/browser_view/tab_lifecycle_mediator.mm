@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/password_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
@@ -89,8 +89,8 @@
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
-  bottomSheetTabHelper->SetPasswordBottomSheetHandler(
-      HandlerForProtocol(_commandDispatcher, PasswordBottomSheetCommands));
+  bottomSheetTabHelper->SetAutofillBottomSheetHandler(
+      HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands));
 
   DCHECK(_delegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
@@ -164,7 +164,7 @@
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(webState);
-  bottomSheetTabHelper->SetPasswordBottomSheetHandler(nil);
+  bottomSheetTabHelper->SetAutofillBottomSheetHandler(nil);
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
