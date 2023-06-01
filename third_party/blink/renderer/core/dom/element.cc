@@ -3265,7 +3265,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   // relative units changed. It are not guaranteed to reach RecalcOwnStyle for
   // the container, so this update happens here instead.
   if (ContainerQueryEvaluator* evaluator = GetContainerQueryEvaluator()) {
-    evaluator->UpdateValuesIfNeeded(GetDocument(), *this, child_change);
+    evaluator->UpdateContainerValuesFromUnitChanges(child_change);
   }
 
   // We're done with self style, notify the display lock.
@@ -5886,7 +5886,7 @@ ContainerQueryEvaluator& Element::EnsureContainerQueryEvaluator() {
   ContainerQueryData& data = EnsureElementRareData().EnsureContainerQueryData();
   ContainerQueryEvaluator* evaluator = data.GetContainerQueryEvaluator();
   if (!evaluator) {
-    evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+    evaluator = MakeGarbageCollected<ContainerQueryEvaluator>(*this);
     data.SetContainerQueryEvaluator(evaluator);
   }
   return *evaluator;

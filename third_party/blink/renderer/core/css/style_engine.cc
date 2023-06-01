@@ -3041,8 +3041,8 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   StyleRecalcChange change;
   ContainerQueryEvaluator& evaluator =
       container.EnsureContainerQueryEvaluator();
-  ContainerQueryEvaluator::Change query_change = evaluator.SizeContainerChanged(
-      GetDocument(), container, PhysicalSize(), kPhysicalAxisNone);
+  ContainerQueryEvaluator::Change query_change =
+      evaluator.SizeContainerChanged(PhysicalSize(), kPhysicalAxisNone);
   switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:
       DCHECK(cq_data->SkippedStyleRecalc());
@@ -3095,13 +3095,12 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   StyleRecalcChange change;
 
-  ContainerQueryEvaluator& evaluator =
-      container.EnsureContainerQueryEvaluator();
+  ContainerQueryEvaluator::Change query_change =
+      container.EnsureContainerQueryEvaluator().SizeContainerChanged(
+          physical_size, physical_axes);
+
   ContainerQueryData* cq_data = container.GetContainerQueryData();
   CHECK(cq_data);
-
-  ContainerQueryEvaluator::Change query_change = evaluator.SizeContainerChanged(
-      GetDocument(), container, physical_size, physical_axes);
 
   switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:

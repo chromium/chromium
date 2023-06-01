@@ -59,17 +59,12 @@ absl::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
        container;
        container = ContainerQueryEvaluator::FindContainer(
            container->ParentOrShadowHostElement(), selector, tree_scope)) {
-    ContainerQueryEvaluator* evaluator =
-        container->GetContainerQueryEvaluator();
-    if (!evaluator) {
-      evaluator = &container->EnsureContainerQueryEvaluator();
-      evaluator->SizeContainerChanged(container->GetDocument(), *container,
-                                      PhysicalSize(), kPhysicalAxisNone);
-    }
-    evaluator->SetReferencedByUnit();
+    ContainerQueryEvaluator& evaluator =
+        container->EnsureContainerQueryEvaluator();
+    evaluator.SetReferencedByUnit();
     absl::optional<double> size = requested_axis == kPhysicalAxisHorizontal
-                                      ? evaluator->Width()
-                                      : evaluator->Height();
+                                      ? evaluator.Width()
+                                      : evaluator.Height();
     if (!size.has_value()) {
       continue;
     }
