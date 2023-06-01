@@ -24,7 +24,6 @@
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "media/base/limits.h"
 #include "media/base/media_util.h"
-#include "media/gpu/ipc/client/gpu_video_decode_accelerator_host.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"

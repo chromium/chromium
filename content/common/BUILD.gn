@@ -219,7 +219,6 @@ source_set("common") {
     "//media/base/ipc",
     "//media/capture",
     "//media/gpu:buildflags",
-    "//media/gpu/ipc/client",
     "//media/gpu/ipc/common",
     "//media/midi",
     "//media/midi:mojo",

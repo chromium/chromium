@@ -225,8 +225,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
                          GetGpuFenceHandleCallback callback) override;
   void SignalSyncToken(const SyncToken& sync_token, uint32_t id) override;
   void SignalQuery(uint32_t query, uint32_t id) override;
-  void BindMediaReceiver(mojo::GenericPendingAssociatedReceiver receiver,
-                         BindMediaReceiverCallback callback) override;
 
   virtual void OnSetDefaultFramebufferSharedImage(const Mailbox& mailbox,
                                                   int samples_count,
