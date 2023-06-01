@@ -109,6 +109,7 @@
     "ios-simulator": "Ubuntu-22.04",
     "lacros-amd64-generic-rel": "Ubuntu-22.04",
     "lacros-arm-generic-rel": "Ubuntu-22.04",
+    "layout_test_leak_detection": "Ubuntu-22.04",
     "linux-chromeos-compile-dbg": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-chromeos-rel-compilator": "Ubuntu-22.04",
