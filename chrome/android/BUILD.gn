@@ -247,6 +247,7 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":app_hooks_java",
       "//chrome/browser/accessibility/hierarchysnapshotter/android:delegate_public_impl_java",
+      "//chrome/browser/auxiliary_search:delegate_public_impl_java",
       "//chrome/browser/feed/android:hooks_public_impl_java",
       "//chrome/browser/feedback/android:delegate_public_impl_java",
       "//chrome/browser/lens:delegate_public_impl_java",
@@ -305,6 +306,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/android/messages:java",
       "//chrome/browser/autofill/android:java",
+      "//chrome/browser/auxiliary_search:java",
       "//chrome/browser/back_press/android:java",
       "//chrome/browser/banners/android:java",
       "//chrome/browser/battery/android:java",
