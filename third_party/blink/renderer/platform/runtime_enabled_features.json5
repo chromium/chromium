@@ -2077,10 +2077,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNewFormCentering",
-      status: "stable",
-    },
-    {
       name: "LayoutNewSubtreeRoot",
       status: "stable",
     },

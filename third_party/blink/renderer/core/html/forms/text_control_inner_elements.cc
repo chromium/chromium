@@ -190,8 +190,6 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
         1 << (kPseudoIdScrollbar - kFirstPublicPseudoId));
 
     style_builder.SetDisplay(EDisplay::kFlowRoot);
-    if (parentNode()->IsShadowRoot())
-      style_builder.SetAlignSelfBlockCenter(true);
   }
 
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like

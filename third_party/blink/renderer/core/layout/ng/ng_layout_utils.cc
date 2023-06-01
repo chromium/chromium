@@ -291,9 +291,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       return NGLayoutCacheStatus::kNeedsLayout;
     }
 
-    if (layout_result.DisableSimplifiedLayout())
-      return NGLayoutCacheStatus::kNeedsLayout;
-
     // If we are the document or body element in quirks mode, changing our size
     // means that a scrollbar was added/removed. Require full layout.
     if (node.IsQuirkyAndFillsViewport())

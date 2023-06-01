@@ -389,20 +389,6 @@ TEST(LayoutUnitTest, IntMod) {
   EXPECT_EQ(LayoutUnit(), IntMod(LayoutUnit(), LayoutUnit(123)));
 }
 
-TEST(LayoutUnitTest, LayoutMod) {
-#define CHECK_LAYOUT_MOD(a, b) EXPECT_EQ(a, (a / b) * b + LayoutMod(a, b))
-  CHECK_LAYOUT_MOD(LayoutUnit(55), LayoutUnit(10));
-  CHECK_LAYOUT_MOD(LayoutUnit(1234), LayoutUnit(789));
-  CHECK_LAYOUT_MOD(LayoutUnit::Max(), LayoutUnit::Max());
-  CHECK_LAYOUT_MOD(LayoutUnit::Max(), LayoutUnit::Min());
-  CHECK_LAYOUT_MOD(LayoutUnit::Min(), LayoutUnit::Max());
-  CHECK_LAYOUT_MOD(LayoutUnit::Min(), LayoutUnit::Min());
-
-  EXPECT_EQ(LayoutUnit(), LayoutMod(LayoutUnit(123), 2));
-  EXPECT_EQ(LayoutUnit(LayoutUnit::Epsilon()),
-            LayoutMod(LayoutUnit(123 + LayoutUnit::Epsilon()), 2));
-}
-
 TEST(LayoutUnitTest, Fraction) {
   EXPECT_TRUE(LayoutUnit(-1.9f).HasFraction());
   EXPECT_TRUE(LayoutUnit(-1.6f).HasFraction());

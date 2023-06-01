@@ -10493,14 +10493,6 @@ void Zoom::ApplyValue(StyleResolverState& state,
   state.SetZoom(StyleBuilderConverter::ConvertZoom(state, value));
 }
 
-const CSSValue* InternalAlignSelfBlock::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext&,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeIdent<CSSValueID::kCenter,
-                                         CSSValueID::kNormal>(range);
-}
-
 const CSSValue* InternalAlignContentBlock::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,

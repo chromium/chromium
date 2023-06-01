@@ -238,8 +238,7 @@
                 "justify-self", "contain", "contain-intrinsic-width",
                 "contain-intrinsic-height", "container-type",
                 "content-visibility", "aspect-ratio", "overflow-clip-margin",
-                "-internal-align-content-block",
-                "-internal-align-self-block", "orphans", "widows",
+                "-internal-align-content-block", "orphans", "widows",
                 "scrollbar-gutter", "break-after", "break-before",
                 "break-inside", "baseline-source", "text-wrap"],
         methods_to_diff: [
