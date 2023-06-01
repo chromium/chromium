@@ -30,14 +30,17 @@ KcerImpl::KcerImpl(scoped_refptr<base::TaskRunner> token_task_runner,
                    base::WeakPtr<KcerToken> device_token)
     : token_task_runner_(std::move(token_task_runner)),
       user_token_(std::move(user_token)),
-      device_token_(std::move(device_token)) {}
+      device_token_(std::move(device_token)) {
+  if (user_token_.MaybeValid() || device_token_.MaybeValid()) {
+    notifier_.Initialize();
+  }
+}
 
 KcerImpl::~KcerImpl() = default;
 
 base::CallbackListSubscription KcerImpl::AddObserver(
     base::RepeatingClosure callback) {
-  // TODO(244408716): Implement.
-  return {};
+  return notifier_.AddObserver(std::move(callback));
 }
 
 void KcerImpl::GenerateRsaKey(Token token,

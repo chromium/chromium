@@ -13,6 +13,8 @@ component("kcer") {
     "kcer.h",
     "kcer_impl.cc",
     "kcer_impl.h",
+    "kcer_notifier_net.cc",
+    "kcer_notifier_net.h",
     "kcer_token.h",
     "token_key_finder.cc",
     "token_key_finder.h",

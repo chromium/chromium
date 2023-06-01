@@ -1497,6 +1497,7 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
 template <typename T>
 void KcerTokenImplNss::HandleInitializationFailed(
     base::OnceCallback<void(base::expected<T, Error>)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::move(callback).Run(base::unexpected(Error::kTokenInitializationFailed));
   // Multiple tasks might be handled in a row, schedule the next task
   // asynchronously to not overload the stack and not occupy the thread for
