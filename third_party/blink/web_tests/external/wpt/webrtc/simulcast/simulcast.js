@@ -86,6 +86,15 @@ function midToRid(description, localDescription, rids) {
     if (localMidExtension) {
       rtpParameters.headerExtensions.push(localMidExtension);
     }
+  } else {
+    // Find unused id in remote description to formally have a mid.
+    for (let id = 1; id < 15; id++) {
+      if (rtpParameters.headerExtensions.find(ext => ext.id === id) === undefined) {
+        rtpParameters.headerExtensions.push(
+          {id, uri: 'urn:ietf:params:rtp-hdrext:sdes:mid'});
+        break;
+      }
+    }
   }
 
   if (!rids) {
