@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -195,6 +196,7 @@
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
@@ -294,6 +296,9 @@ enum class ToolbarKind {
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PasswordSuggestionBottomSheetCoordinator*
     passwordSuggestionBottomSheetCoordinator;
+
+// Coordinator for the choice screen.
+@property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
 
 // Coordinator-ish provider for context menus.
 @property(nonatomic, strong)
@@ -1058,6 +1063,8 @@ enum class ToolbarKind {
     [self.popupMenuCoordinator startPopupMenuHelpCoordinator];
   }
 
+  /* choiceCoordinator is created and started by a BrowserCommand */
+
   /* NetExportCoordinator is created and started by a delegate method */
 
   /* passwordBreachCoordinator is created and started by a BrowserCommand */
@@ -1276,6 +1283,9 @@ enum class ToolbarKind {
 
   [self.defaultBrowserPromoManager stop];
   self.defaultBrowserPromoManager = nil;
+
+  [self.choiceCoordinator stop];
+  self.choiceCoordinator = nil;
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -1672,6 +1682,19 @@ enum class ToolbarKind {
     self.defaultBrowserPromoCoordinator.handler = self;
   }
   [self.defaultBrowserPromoCoordinator start];
+}
+
+- (void)showChoice {
+  if (!ios::provider::IsChoiceEnabled()) {
+    return;
+  }
+
+  if (!self.choiceCoordinator) {
+    self.choiceCoordinator =
+        ios::provider::CreateChoiceCoordinatorWithViewController(
+            self.viewController, self.browser);
+  }
+  [self.choiceCoordinator start];
 }
 
 #pragma mark - DefaultBrowserPromoCommands
