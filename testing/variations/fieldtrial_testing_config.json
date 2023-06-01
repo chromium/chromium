@@ -6880,22 +6880,6 @@
             ]
         }
     ],
-    "IOSEditMenuSearchWith": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSEditMenuHideSearchWeb",
-                        "IOSEditMenuSearchWith"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSEmailExperience": [
         {
             "platforms": [
