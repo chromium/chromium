@@ -6340,6 +6340,11 @@ const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
     "on Alpha.";
 
+const char kScalableIphName[] = "Enable ChromeOS scalable IPH.";
+const char kScalableIphDescription[] =
+    "Enable scalable IPH. In addition to this flag, each respective IPH "
+    "trigger condition needs to be met before an IPH notifier is shown.";
+
 const char kScanningAppJellyName[] =
     "Enable jelly colors for the Scanning App.";
 const char kScanningAppJellyDescription[] =

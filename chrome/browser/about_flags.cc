@@ -7567,6 +7567,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-nudges", flag_descriptions::kContextualNudgesName,
      flag_descriptions::kContextualNudgesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kContextualNudges)},
+
+    {"scalable-iph", flag_descriptions::kScalableIphName,
+     flag_descriptions::kScalableIphDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kScalableIph)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

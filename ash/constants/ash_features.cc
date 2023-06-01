@@ -1985,6 +1985,9 @@ BASE_FEATURE(kRenderArcNotificationsByChrome,
 
 BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables ChromeOS scalable IPH.
+BASE_FEATURE(kScalableIph, "ScalableIph", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the jelly colors will be used in the scanning app. Requires
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kScanningAppJelly,
@@ -3445,6 +3448,10 @@ bool IsSameAppWindowCycleEnabled() {
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
   return base::FeatureList::IsEnabled(
       kEnableSamlNotificationOnPasswordChangeSuccess);
+}
+
+bool IsScalableIphEnabled() {
+  return base::FeatureList::IsEnabled(kScalableIph);
 }
 
 bool IsSeparateNetworkIconsEnabled() {
