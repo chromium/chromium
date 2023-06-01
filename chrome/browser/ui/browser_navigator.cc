@@ -651,8 +651,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   // If no source WebContents was specified, we use the selected one from
   // the target browser. This must happen first, before
-  // GetBrowserForDisposition() has a chance to replace |params->browser| with
-  // another one.
+  // GetBrowserAndTabForDisposition() has a chance to replace |params->browser|
+  // with another one.
   if (!params->source_contents && params->browser) {
     params->source_contents =
         params->browser->tab_strip_model()->GetActiveWebContents();
