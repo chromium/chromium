@@ -85,7 +85,8 @@
     "win-cr23-rel": "Ubuntu-22.04",
     "win-network-sandbox-tester": "Ubuntu-22.04",
     "win-perfetto-rel": "Ubuntu-22.04",
-    "win-upload-perfetto": "Ubuntu-22.04"
+    "win-upload-perfetto": "Ubuntu-22.04",
+    "win10-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
