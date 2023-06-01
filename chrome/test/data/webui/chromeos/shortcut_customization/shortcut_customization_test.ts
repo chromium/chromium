@@ -20,6 +20,7 @@ import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/acceler
 import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
@@ -153,6 +154,68 @@ suite('shortcutCustomizationAppTest', function() {
   function triggerOnAcceleratorUpdated(): Promise<void> {
     provider.triggerOnAcceleratorUpdated();
     return flushTasks();
+  }
+
+  async function validateAcceleratorInDialog(
+      acceleratorConfigResult: AcceleratorConfigResult,
+      expectedErrorMessage: string) {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+
+    // Open dialog for first accelerator in second subsection.
+    await openDialogForAcceleratorInSubsection(1);
+    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Grab the first accelerator from second subsection.
+    const dialogAccels =
+        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
+            'accelerator-edit-view');
+    // Expect only 1 accelerator initially.
+    assertEquals(1, dialogAccels!.length);
+
+    // Click on add button.
+    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
+     CrButtonElement)
+        .click();
+
+    await flushTasks();
+
+    const editElement =
+        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
+        AcceleratorEditViewElement;
+    // Assert no error has occurred prior to pressing a shortcut.
+    assertFalse(editElement.hasError);
+
+    const viewElement =
+        editElement!.shadowRoot!.querySelector('#acceleratorItem');
+
+    // Set the fake mojo return call.
+    const fakeResult: AcceleratorResultData = {
+      result: acceleratorConfigResult,
+      shortcutName: stringToMojoString16('BRIGHTNESS_UP'),
+    };
+    provider.setFakeAddAcceleratorResult(fakeResult);
+
+    // press alt + ].
+    const fakeKeyboardEvent = new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: 221,
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    });
+
+    // Dispatch an add event, this should fail as it has a failure state.
+    viewElement!.dispatchEvent(fakeKeyboardEvent);
+    await flushTasks();
+
+    assertTrue(editElement.hasError);
+    assertEquals(
+        expectedErrorMessage, editElement.getStatusMessageForTesting());
   }
 
   test('LoadFakeWindowsAndDesksPage', async () => {
@@ -489,60 +552,57 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(editElement.hasError);
   });
 
-  test('AddAcceleratorMaximumAccelerators', async () => {
-    page = initShortcutCustomizationAppElement();
-    await flushTasks();
+  test('ValidateAcceleratorMaximumAccelerators', async () => {
+    const acceleratorConfigResult =
+        AcceleratorConfigResult.kMaximumAcceleratorsReached;
+    const expectedErrorMessage = 'Maximum accelerators have reached.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
 
-    // Open dialog for first accelerator in second subsection.
-    await openDialogForAcceleratorInSubsection(1);
-    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
-    assertTrue(!!editDialog);
+  test('ValidateAcceleratorShiftOnlyNotAllowed', async () => {
+    const acceleratorConfigResult =
+        AcceleratorConfigResult.kShiftOnlyNotAllowed;
+    const expectedErrorMessage =
+        'Shortcut is not valid. Shift can not be used as the only modifier ' +
+        'key. Press a new shortcut.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
 
-    // Grab the first accelerator from second subsection.
-    const dialogAccels =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-    // Expect only 1 accelerator initially.
-    assertEquals(1, dialogAccels!.length);
+  test('ValidateAcceleratorMissingAccelerator', async () => {
+    const acceleratorConfigResult = AcceleratorConfigResult.kMissingModifier;
+    const expectedErrorMessage =
+        'Shortcut is not valid. Must include at lease one modifier key. ' +
+        'Press a new shortcut.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
 
-    // Click on add button.
-    (editDialog!.shadowRoot!.querySelector('#addAcceleratorButton') as
-     CrButtonElement)
-        .click();
+  test('ValidateAcceleratorKeyNotAllowed', async () => {
+    const acceleratorConfigResult = AcceleratorConfigResult.kKeyNotAllowed;
+    const expectedErrorMessage =
+        'Shortcut with top row keys need to include the search key.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
 
-    await flushTasks();
+  test('ValidateAcceleratorConflict', async () => {
+    const acceleratorConfigResult = AcceleratorConfigResult.kConflict;
+    const expectedErrorMessage =
+        'Shortcut is used by BRIGHTNESS_UP. Press a new shortcut to replace.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
 
-    const editElement =
-        editDialog!.shadowRoot!.querySelector('#pendingAccelerator') as
-        AcceleratorEditViewElement;
-
-    // Assert no error has occurred prior to pressing a shortcut.
-    assertFalse(editElement.hasError);
-
-    const viewElement =
-        editElement!.shadowRoot!.querySelector('#acceleratorItem');
-
-    // Set the fake mojo return call.
-    const fakeResult: AcceleratorResultData = {
-      result: AcceleratorConfigResult.kMaximumAcceleratorsReached,
-      shortcutName: undefined,
-    };
-    provider.setFakeAddAcceleratorResult(fakeResult);
-
-    // Dispatch an add event, this should fail as it has a failure state.
-    viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
-      key: ']',
-      keyCode: 221,
-      code: 'Key]',
-      ctrlKey: false,
-      altKey: true,
-      shiftKey: false,
-      metaKey: false,
-    }));
-
-    await flushTasks();
-
-    assertTrue(editElement.hasError);
+  test('ValidateAcceleratorConflictCanOverride', async () => {
+    const acceleratorConfigResult =
+        AcceleratorConfigResult.kConflictCanOverride;
+    const expectedErrorMessage =
+        'Shortcut is used by BRIGHTNESS_UP. Press a new shortcut or press ' +
+        'the same one again to use it for this action instead.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
   });
 
   test('DisableDefaultAccelerator', async () => {
