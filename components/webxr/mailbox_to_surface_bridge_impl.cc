@@ -270,6 +270,9 @@ void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
 }
 
 void MailboxToSurfaceBridgeImpl::ResizeSurface(int width, int height) {
+  // Make sure we have the surface.
+  CHECK(surface_handle_);
+
   surface_width_ = width;
   surface_height_ = height;
 
