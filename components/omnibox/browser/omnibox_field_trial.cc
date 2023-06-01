@@ -708,9 +708,7 @@ bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
 }
 
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
-  return features::GetChromeRefresh2023Level() ==
-             features::ChromeRefresh2023Level::kLevel2 ||
-         base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateTextStyle);
 }
 
 // In order to control the value of this "font size" param via Finch, the
