@@ -55,6 +55,7 @@ static_library("external_arc") {
     "//ui/accessibility:accessibility",
     "//ui/accessibility:ax_base",
     "//ui/aura",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/message_center",
     "//ui/views",

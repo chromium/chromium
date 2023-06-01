@@ -12,12 +12,14 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -85,7 +87,10 @@ ArcNotificationView::ArcNotificationView(
                      message_center::kNotificationCornerRadius);
 
   auto* const focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColorId(ui::kColorAshFocusRing);
+  focus_ring->SetColorId(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
+          : ui::kColorAshFocusRing);
   // Focus control is delegated to its content view if it's available. So we
   // need to set the focus predicate to let `focus_ring` know the focus change
   // on the content.
@@ -138,14 +143,25 @@ void ArcNotificationView::UpdateBackgroundPainter() {
       SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
       return;
   }
+
+  const auto* ash_color_provider = AshColorProvider::Get();
+  const auto* color_provider = GetColorProvider();
+
+  const SkColor color_in_popup =
+      chromeos::features::IsJellyEnabled()
+          ? color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated)
+          : ash_color_provider->GetBaseLayerColor(
+                AshColorProvider::BaseLayerType::kTransparent80);
+  const SkColor color_in_message_center =
+      chromeos::features::IsJellyEnabled()
+          ? color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase)
+          : ash_color_provider->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::
+                    kControlBackgroundColorInactive);
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius(), bottom_radius(),
-          shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                                AshColorProvider::BaseLayerType::kTransparent80)
-                          : AshColorProvider::Get()->GetControlsLayerColor(
-                                AshColorProvider::ControlsLayerType::
-                                    kControlBackgroundColorInactive))));
+          shown_in_popup_ ? color_in_popup : color_in_message_center)));
 }
 
 void ArcNotificationView::UpdateControlButtonsVisibility() {
