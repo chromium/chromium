@@ -272,16 +272,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.ModifyOriginalLang" units="units"
-    expires_after="2023-10-15">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the source language in the translate infobar has been
-    changed.
-  </summary>
-</histogram>
-
 <histogram name="Translate.NeverTranslateLang" units="units"
     expires_after="2023-10-08">
   <owner>megjablon@google.com</owner>

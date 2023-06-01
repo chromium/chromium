@@ -23,7 +23,6 @@ namespace {
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
-const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
 
 }  // namespace
@@ -80,8 +79,6 @@ void TranslateUIDelegate::UpdateAndRecordSourceLanguageIndex(
           language_index)) {
     return;
   }
-
-  UMA_HISTOGRAM_BOOLEAN(kModifySourceLang, true);
 
   if (translate_manager_) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogSourceLanguage(
