@@ -1240,6 +1240,7 @@
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4040350669425716613">କଲେଜ ଏବଂ ବିଶ୍ୱବିଦ୍ୟାଳୟଗୁଡ଼ିକ</translation>
 <translation id="4047351652147966654">18 x 24 ଇଞ୍ଚ</translation>
+<translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ଥିବା ଏକ୍ସଟେନସନ ପାଇଁ ଅପଡେଟ URL ଅବୈଧ ଅଟେ କିମ୍ବା ଏହା ଏକ ଅସମର୍ଥିତ ସ୍କିମ ବ୍ୟବହାର କରେ। ସମର୍ଥିତ ସ୍କିମଗୁଡ଼ିକ ହେଉଛି: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ଏବଂ <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">ଆପଣ ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ</translation>
 <translation id="405399507749852140">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="4056223980640387499">ସେପିଆ</translation>
@@ -2290,6 +2291,7 @@
 <translation id="6569366777234823130">ଡ୍ରାମା ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="6573200754375280815">ଡାହାଣ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="6576181918031900030">କାଷ୍ଟିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
+<translation id="6578434528542148658">ଅବୈଧ ଏକ୍ସଟେନସନ ID।</translation>
 <translation id="657902945730878902">ଡ୍ରଇଂ ଏବଂ କଲରିଂ</translation>
 <translation id="6579630537141957243">MIDI ଡିଭାଇସ୍ ସଂଯୋଗ କରିବେ?</translation>
 <translation id="6579990219486187401">ହାଲ୍‌କା ଗୋଲାପି</translation>

@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">مرکز اعلان</translation>
 <translation id="1190678134285018527">دستگاه باید به نسخه قبلی برگردد</translation>
 <translation id="1195412055398077112">بزرگ‌تر از صفحه</translation>
+<translation id="1195667586424773550">کشیدن پیوند به نوار نشانی برگه</translation>
 <translation id="119944043368869598">پاک کردن همه</translation>
 <translation id="1199716647557067911">مطمئنید می‌خواهید «دسترسی کلیدی» را خاموش کنید؟</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -1806,6 +1807,7 @@
 <translation id="925832987464884575">پنهان کردن پیش‌نمایش‌ها</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> از شما می‌خواهد <ph name="DEVICE_TYPE" /> را فوراً به‌روزرسانی کنید</translation>
 <translation id="938963181863597773">‏?What's on my calendar (در تقویم من چه رویدادی هست؟)</translation>
+<translation id="945383118875625837">پیوندها را به نوار نشانک‌ها بکشید</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="953431725143473984">دستگاه خاموش شود؟</translation>

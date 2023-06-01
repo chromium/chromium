@@ -107,6 +107,7 @@
 <translation id="1838709767668011582">Google Sites-Website</translation>
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
 <translation id="1864756863218646478">Die Datei wurde nicht gefunden.</translation>
+<translation id="1877377730633446520">Dafür wird Speicherplatz von ungefähr <ph name="REQUIRED_SPACE" /> belegt. Momentan ist Speicherplatz von <ph name="FREE_SPACE" /> verfügbar.</translation>
 <translation id="1884013283844450420">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Verbinden</translation>
 <translation id="1920670151694390848">Malayalam (Transliteration)</translation>
 <translation id="1920798810075583923">Wassermelone</translation>
@@ -118,6 +119,7 @@
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
+<translation id="2004942826429452291">Dateien werden in der Cloud und auf deinem Chromebook gespeichert.</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russisch</translation>
@@ -128,6 +130,7 @@
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
+<translation id="2089751716171649322">Ganz einfach offline auf Google Drive-Dateien zugreifen</translation>
 <translation id="2111134541987263231">Aktiviere die Option <ph name="BEGIN_BOLD" />Im Inkognitomodus zulassen<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gelöscht und können nicht wiederhergestellt werden.</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
@@ -296,6 +299,7 @@
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3486821258960016770">Mongolisch</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> Fehler</translation>
+<translation id="3501954296166022751">Deine Google Drive-Dateien sind offline verfügbar</translation>
 <translation id="3509680540198371098">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="3511705761158917664">Synchronisierung von <ph name="NUMBER_OF_ITEMS" /> Elementen wird vorbereitet…</translation>
 <translation id="3522708245912499433">Portugiesisch</translation>
@@ -570,6 +574,7 @@
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5500122897333236901">Isländisch</translation>
 <translation id="5508696409934741614">Punkte</translation>
+<translation id="5519161320735100193">Google Drive-Einstellungen</translation>
 <translation id="5522908512596376669">Die Dateiliste wird jetzt in der Listenansicht angezeigt.</translation>
 <translation id="5524517123096967210">Die Datei konnte nicht gelesen werden.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-Bild</translation>
@@ -861,6 +866,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebräisch</translation>
 <translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
@@ -873,15 +879,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Durch die Formatierung einer Partition werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst.</translation>
 <translation id="7925247922861151263">AAA-Prüfung fehlgeschlagen</translation>
 <translation id="7925686952655276919">Keine mobilen Daten für die Synchronisierung verwenden</translation>
 <translation id="7928710562641958568">Gerät auswerfen</translation>
+<translation id="7933875256234974853">Synchronisierung der Drive-Dateien wird vorbereitet...</translation>
 <translation id="7943385054491506837">USA – Colemak</translation>
 <translation id="7953739707111622108">Dieses Gerät kann nicht geöffnet werden, da das Dateisystem nicht erkannt wurde.</translation>
 <translation id="7969525169268594403">Slowenisch</translation>
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> Dateien werden synchronisiert</translation>
 <translation id="8000066093800657092">Kein Netzwerk</translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -1037,6 +1046,7 @@
 <translation id="9213073329713032541">Die Installation wurde gestartet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Mondlandschaft</translation>
+<translation id="937795003075802289">1 Datei wird synchronisiert</translation>
 <translation id="938470336146445890">Installiere ein Nutzerzertifikat.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="943972244133411984">Geändert von</translation>

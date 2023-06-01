@@ -2316,6 +2316,7 @@
 <translation id="2923234477033317484">Κατάργηση αυτού του λογαριασμού</translation>
 <translation id="2923644930701689793">Πρόσβαση στις φωτογραφίες κάμερας του τηλεφώνου</translation>
 <translation id="292371311537977079">Ρυθμίσεις του Chrome</translation>
+<translation id="2925658782192398150">Ολοκληρώθηκε, δεν βρέθηκαν προβλήματα</translation>
 <translation id="2926085873880284723">Επαναφορά προεπιλεγμένων συντομεύσεων</translation>
 <translation id="2926620265753325858">Δεν υποστηρίζεται η συσκευή <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">Αποθηκευτικός χώρος κρυφής μνήμης</translation>
@@ -3770,6 +3771,7 @@
 <translation id="42126664696688958">Εξαγωγή</translation>
 <translation id="42137655013211669">Η πρόσβαση σε αυτόν τον πόρο απαγορεύεται από το διακομιστή.</translation>
 <translation id="4214192212360095377">Απενεργοποίηση τώρα</translation>
+<translation id="4217558091331485702">Σάρωση πριν από το άνοιγμα</translation>
 <translation id="4217571870635786043">Υπαγόρευση</translation>
 <translation id="4218081191298393750">Κάντε κλικ στο εικονίδιο ηχείου για σίγαση της καρτέλας</translation>
 <translation id="4220648711404560261">Παρουσιάστηκε σφάλμα κατά την ενεργοποίηση.</translation>
@@ -7881,7 +7883,6 @@
 <translation id="7835178595033117206">Ο σελιδοδείκτης καταργήθηκε</translation>
 <translation id="7836577093182643605">Λίστα θεμάτων που αποκλείσατε και δεν θέλετε να κοινοποιούνται σε ιστοτόπους</translation>
 <translation id="7836850009646241041">Δοκιμάστε να αγγίξετε ξανά το κλειδί ασφαλείας σας</translation>
-<translation id="7837290304480415481">Διαχείριση αδειών και ρυθμίσεων</translation>
 <translation id="7837776265184002579">Η αρχική σελίδα σας άλλαξε σε <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Δεν ήταν δυνατή η αποθήκευση του δικτύου "<ph name="NETWORK_NAME" />" από τη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Έγινε αποστολή <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}other{Έγινε αποστολή <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}}</translation>

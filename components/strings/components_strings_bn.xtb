@@ -1244,6 +1244,7 @@
 <translation id="4031179711345676612">মাইক্রোফোন ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4040350669425716613">কলেজ ও বিশ্ববিদ্যালয়</translation>
 <translation id="4047351652147966654">১৮ x ২৪ ইঞ্চি</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" আইডি যুক্ত এক্সটেনশনের আপডেট URL ভুল বা এতে ব্যবহারযোগ্য নয় এমন স্কিম ব্যবহার করা হচ্ছে। ব্যবহারযোগ্য স্কিমগুলি হল: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> এবং <ph name="FILE_SCHEME" />।</translation>
 <translation id="4050392779074832022">আপনি এটি সমস্ত Google প্রোডাক্ট জুড়ে ব্যবহার করতে পারবেন</translation>
 <translation id="405399507749852140">কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="4056223980640387499">সেপিয়া</translation>
@@ -2293,6 +2294,7 @@
 <translation id="6569366777234823130">ড্রামা সিনেমা</translation>
 <translation id="6573200754375280815">ডানদিকে ডুয়াল পাঞ্চ</translation>
 <translation id="6576181918031900030">কাস্ট করা শুরু করুন</translation>
+<translation id="6578434528542148658">ভুল এক্সটেনশন আইডি।</translation>
 <translation id="657902945730878902">অঙ্কন ও রঙ করা</translation>
 <translation id="6579630537141957243">MIDI ডিভাইস কানেক্ট করবেন?</translation>
 <translation id="6579990219486187401">হালকা গোলাপি</translation>

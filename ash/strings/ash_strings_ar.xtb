@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">مركز الإشعارات</translation>
 <translation id="1190678134285018527">يجب إعادة الجهاز إلى الإصدار السابق</translation>
 <translation id="1195412055398077112">الخروج عن إطار الشاشة</translation>
+<translation id="1195667586424773550">اسحب الرابط إلى شريط عناوين علامة التبويب</translation>
 <translation id="119944043368869598">محو الكل</translation>
 <translation id="1199716647557067911">هل تريد فعلًا إيقاف ميزة "الوصول عبر مفتاح التحويل"؟</translation>
 <translation id="1201402288615127009">التالي</translation>
@@ -1810,6 +1811,7 @@
 <translation id="925832987464884575">إخفاء المعاينات</translation>
 <translation id="937214777182567951">يتطلّب <ph name="MANAGER" /> منك تحديث جهاز <ph name="DEVICE_TYPE" /> فورًا.</translation>
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>
+<translation id="945383118875625837">اسحب الرابط إلى شريط الإشارات</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="951991426597076286">رفض</translation>
 <translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>

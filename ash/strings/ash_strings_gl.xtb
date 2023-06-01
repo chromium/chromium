@@ -49,6 +49,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
 <translation id="1190678134285018527">O dispositivo debe cambiarse a unha versión anterior</translation>
 <translation id="1195412055398077112">sobrevarrido</translation>
+<translation id="1195667586424773550">Arrastra a ligazón á barra de enderezos da pestana</translation>
 <translation id="119944043368869598">Borrar todo</translation>
 <translation id="1199716647557067911">Seguro que queres desactivar a función Acceso con interruptores?</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -444,6 +445,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3038571455154067151">Para iniciar sesión, escribe o teu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">Batería do lapis óptico ao <ph name="PERCENTAGE" /> %.</translation>
+<translation id="304097922505898963">Abrir aplicación Key Shortcuts</translation>
 <translation id="3045488863354895414">Boas tardes!</translation>
 <translation id="3047761520276763270">Proba a dicir:</translation>
 <translation id="3055162170959710888">Hoxe utilizaches este dispositivo durante <ph name="USED_TIME" /></translation>
@@ -1114,6 +1116,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6012623610530968780">Páxina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destaca o elemento seguinte no andel</translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
 <translation id="6022924867608035986">Borrar texto da caixa de busca</translation>
 <translation id="602472752137106327">Seleccionouse o botón de opción para mostrar as ventás de todos os escritorios</translation>
@@ -1807,6 +1810,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato</translation>
 <translation id="938963181863597773">Que hai no meu calendario?</translation>
+<translation id="945383118875625837">Arrastra a ligazón á barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="953431725143473984">Queres apagar o dispositivo?</translation>

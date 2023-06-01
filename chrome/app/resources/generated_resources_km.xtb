@@ -2316,6 +2316,7 @@
 <translation id="2923234477033317484">លុប​គណនី​នេះ</translation>
 <translation id="2923644930701689793">ចូលប្រើរបុំកាមេរ៉ាទូរសព្ទរបស់អ្នក</translation>
 <translation id="292371311537977079">ការកំណត់ Chrome</translation>
+<translation id="2925658782192398150">រួចរាល់ រកមិនឃើញ​បញ្ហា​ទេ</translation>
 <translation id="2926085873880284723">ស្ដារ​​ផ្លូវកាត់​លំនាំដើម</translation>
 <translation id="2926620265753325858">មិនអាចប្រើ <ph name="DEVICE_NAME" /> បានទេ។</translation>
 <translation id="2927017729816812676">ទំហំផ្ទុកឃ្លាំងសម្ងាត់</translation>
@@ -3770,6 +3771,7 @@
 <translation id="42126664696688958">នាំចេញ</translation>
 <translation id="42137655013211669">ការចូលប្រើធនធាននេះត្រូវបានហាមឃាត់ដោយម៉ាស៊ីនមេ។</translation>
 <translation id="4214192212360095377">បិទឥឡូវនេះ</translation>
+<translation id="4217558091331485702">ស្កេនមុនពេល​បើក</translation>
 <translation id="4217571870635786043">ការសរសេរ​តាមអាន​</translation>
 <translation id="4218081191298393750">ចុចលើរូបឧបករណ៍បំពងសំឡេង ដើម្បីបិទសំឡេងផ្ទាំងនេះ</translation>
 <translation id="4220648711404560261">មានបញ្ហា​បានកើតឡើង អំឡុងពេល​បើកដំណើរការ។</translation>
@@ -7881,7 +7883,6 @@
 <translation id="7835178595033117206">បាន​លុប​​​ចំណាំ​</translation>
 <translation id="7836577093182643605">បញ្ជី​ប្រធានបទ​ដែល​អ្នក​បាន​ទប់ស្កាត់ ដែលអ្នក​​មិន​​ចង់​ឱ្យ​ចែករំលែក​ជា​មួយ​គេហទំព័រ</translation>
 <translation id="7836850009646241041">សាកល្បងប៉ះ​សោសុវត្ថិភាពរបស់អ្នកម្ដងទៀត</translation>
-<translation id="7837290304480415481">គ្រប់គ្រង​ការអនុញ្ញាត និង​ការកំណត់</translation>
 <translation id="7837776265184002579">ទំព័រដើមរបស់អ្នកបានប្តូរទៅ <ph name="URL" /> ។</translation>
 <translation id="7838838951812478896">មិនអាចរក្សាទុក '<ph name="NETWORK_NAME" />' ពី <ph name="DEVICE_NAME" /> បានទេ</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{បានផ្ញើ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" />}other{បានផ្ញើ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" />}}</translation>

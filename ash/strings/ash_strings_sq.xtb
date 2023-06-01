@@ -49,6 +49,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
 <translation id="1190678134285018527">Pajisja duhet të kthehet në versionin e mëparshëm</translation>
 <translation id="1195412055398077112">mbiskanim</translation>
+<translation id="1195667586424773550">Zvarrit lidhjen në shiritin e adresës së skedës</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
 <translation id="1199716647557067911">Je i sigurt që dëshiron të çaktivizosh "Qasjen me çelës"?</translation>
 <translation id="1201402288615127009">Para</translation>
@@ -444,6 +445,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3036649622769666520">Hap skedarët</translation>
 <translation id="3038571455154067151">Për t'u identifikuar, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="3039939407102840004">Bateria e stilolapsit është <ph name="PERCENTAGE" /> për qind.</translation>
+<translation id="304097922505898963">Hap aplikacionin "Shkurtoret e tasteve"</translation>
 <translation id="3045488863354895414">Mirëdita,</translation>
 <translation id="3047761520276763270">Provo të thuash:</translation>
 <translation id="3055162170959710888">Sot e ke përdorur këtë pajisje për <ph name="USED_TIME" /></translation>
@@ -1113,6 +1115,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Thekso artikullin tjetër në raft</translation>
 <translation id="6018164090099858612">Po del nga modaliteti i pasqyrës</translation>
+<translation id="6019566113895157499">Shkurtoret e tasteve</translation>
 <translation id="602001110135236999">Lëviz majtas</translation>
 <translation id="6022924867608035986">Pastro testin e kutisë së kërkimit</translation>
 <translation id="602472752137106327">Shfaq dritaret nga të gjitha tavolinat e punës, butoni i radios i zgjedhur</translation>
@@ -1806,6 +1809,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="925832987464884575">Fshih pamjet paraprake</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kërkon që ta përditësosh menjëherë <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Çfarë ka në kalendarin tim?</translation>
+<translation id="945383118875625837">Zvarrit lidhjen te shiriti i faqeshënuesve</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="953431725143473984">Të fiket pajisja?</translation>

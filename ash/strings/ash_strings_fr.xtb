@@ -49,6 +49,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1190609913194133056">Centre de notification</translation>
 <translation id="1190678134285018527">Vous devez rétablir une version antérieure de l'appareil</translation>
 <translation id="1195412055398077112">Surbalayage</translation>
+<translation id="1195667586424773550">Faites glisser le lien vers la barre d'adresse de l'onglet</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199716647557067911">Voulez-vous vraiment désactiver Switch Access ?</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -444,6 +445,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
 <translation id="3039939407102840004">Le stylet est chargé à <ph name="PERCENTAGE" /> %.</translation>
+<translation id="304097922505898963">Ouvrir l'appli Raccourcis clavier</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
 <translation id="3047761520276763270">Essayez de dire :</translation>
 <translation id="3055162170959710888">Vous avez utilisé l'appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
@@ -1112,6 +1114,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Sélectionner l'élément suivant sur l'étagère</translation>
 <translation id="6018164090099858612">Sortie du mode Miroir…</translation>
+<translation id="6019566113895157499">Raccourcis clavier</translation>
 <translation id="602001110135236999">Vers la gauche</translation>
 <translation id="6022924867608035986">Effacer le texte de la zone de recherche</translation>
 <translation id="602472752137106327">Afficher toutes les fenêtres du bureau, case d'option cochée</translation>
@@ -1804,6 +1807,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> exige la mise à jour immédiate de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
+<translation id="945383118875625837">Faire glisser le lien vers la barre de favoris</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="953431725143473984">Éteindre l'appareil ?</translation>

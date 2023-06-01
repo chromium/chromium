@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
+<translation id="2840432500933227975">Öffne die Chrome-Einstellungen unter iOS, tippe auf „Standard-Browser-App“ und wähle „Chrome“ aus.</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
 <translation id="3030414234702425231">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3706101708757577809">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
+<translation id="3827545470516145620">Dieses Gerät wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3980220367029651214">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="3984746313391923992">Deine Organisation verlangt, dass du aus Chrome abgemeldet bleibst.</translation>

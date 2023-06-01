@@ -3282,6 +3282,7 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="3918339829588313389">Cho phép người dùng đặt mã PIN yếu</translation>
 <translation id="3924506460382372403">Tắt tính năng báo cáo trạng thái đồ hoạ của thiết bị</translation>
 <translation id="3925377537407648234">Đặt độ phân giải màn hình và hệ số tỷ lệ</translation>
+<translation id="3926681471685211524">Kiểm tra việc sử dụng khoá RSA cho các chứng chỉ máy chủ do các neo tin cậy cục bộ phát hành</translation>
 <translation id="3927137827189017535">Bật tính năng hỗ trợ tiếp cận về phím cố định trên màn hình đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì phím cố định sẽ luôn bật trên màn hình đăng nhập.
@@ -6486,6 +6487,29 @@ Trong tương lai, chúng tôi sẽ loại bỏ chính sách này khỏi <ph nam
 <translation id="6819838337315703072">Nếu dịch vụ hỗ trợ ứng dụng <ph name="LINUX_OS_NAME" /> đang bật thì việc đặt chính sách này thành Bật sẽ gửi thông tin liên quan đến hoạt động sử dụng các ứng dụng <ph name="LINUX_OS_NAME" /> trở lại cho máy chủ.
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này thì sẽ không có thông tin nào về hoạt động sử dụng được báo cáo.</translation>
+<translation id="6821870597514407499"><ph name="WEBVIEW_TAG_NAME" /> trong Ứng dụng Chrome cho phép
+hành vi đang trong quá trình bị xoá khỏi
+<ph name="PRODUCT_NAME" />.
+
+Hành vi trước đó cho phép sự kiện
+<ph name="WEBVIEW_TAG_NAME" />
+<ph name="NEWWINDOW_EVENT_NAME" />
+(https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow)
+đính kèm cửa sổ mới vào phần tử <ph name="WEBVIEW_TAG_NAME" />
+trong cửa sổ Ứng dụng riêng biệt từ
+<ph name="WEBVIEW_TAG_NAME" /> ban đầu. Hành vi mới
+vẫn cho phép đính kèm cửa sổ này. Tuy nhiên, tham chiếu cửa sổ trả về từ
+lệnh gọi <ph name="WINDOW_OPEN_NAME" /> trong
+<ph name="WEBVIEW_TAG_NAME" /> ban đầu sẽ bị vô hiệu hoá.
+
+Nếu bạn bật chính sách này, hành vi trước đó sẽ được sử dụng.
+Nếu bạn tắt hoặc không đặt chính sách này thì thay đổi về hành vi sẽ có hiệu lực khi được ra mắt
+thông qua quy trình phát hành <ph name="PRODUCT_NAME" />
+.
+
+Chính sách này là giải pháp tạm thời trong trường hợp doanh nghiệp
+gặp sự cố do thay đổi này. Chính sách này sẽ bị loại bỏ
+trong phiên bản 122.</translation>
 <translation id="6823711520976094072">Nếu bạn đặt giá trị nhỏ hơn 1 MB hoặc không đặt giá trị, thì <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng kích thước mặc định là 256 MiB để lưu ứng dụng và tiện ích vào bộ nhớ đệm nhằm giúp nhiều người dùng trên một thiết bị có thể cài đặt. Nhờ đó, người dùng không phải tải xuống lại từng ứng dụng/tiện ích.</translation>
 <translation id="6828729771894228555">Cho phép bạn thiết lập danh sách các mẫu URL chỉ định nguồn gốc cấp cao nhất (url trong thanh địa chỉ của thẻ) chặn phân vùng bộ nhớ của bên thứ ba (phân vùng bộ nhớ iframe tách biệt nhiều nguồn gốc).
           Nếu bạn không đặt chính sách này hoặc nguồn gốc cấp cao nhất không khớp, giá trị trong <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> sẽ được sử dụng.

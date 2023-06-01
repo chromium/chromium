@@ -1243,6 +1243,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4031179711345676612">Mikrofoni lejohet</translation>
 <translation id="4040350669425716613">Kolegjet dhe universitetet</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
+<translation id="404831776305217138">URL-ja e përditësimit për shtesën me ID "<ph name="EXTENSION_ID" />" është e pavlefshme ose përdor një skemë që nuk mbështetet. Skemat e mbështetura janë: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> dhe <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Do të mund ta përdorësh atë nëpër produktet e Google</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2292,6 +2293,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6569366777234823130">Filmat dramë</translation>
 <translation id="6573200754375280815">Dy shpime djathtas</translation>
 <translation id="6576181918031900030">Nis transmetimin</translation>
+<translation id="6578434528542148658">ID e pavlefshme e shtesës.</translation>
 <translation id="657902945730878902">Vizatimi dhe ngjyrosja</translation>
 <translation id="6579630537141957243">Të lidhet pajisja MIDI?</translation>
 <translation id="6579990219486187401">Rozë e çelur</translation>

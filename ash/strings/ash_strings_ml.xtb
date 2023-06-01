@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">അറിയിപ്പ് കേന്ദ്രം</translation>
 <translation id="1190678134285018527">ഉപകരണത്തിന് മുമ്പത്തെ പതിപ്പിലേക്ക് തിരികെ പോകേണ്ടതുണ്ട്.</translation>
 <translation id="1195412055398077112">ഓവർസ്‌കാൻ</translation>
+<translation id="1195667586424773550">ടാബിന്റെ വിലാസ ബാറിലേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="119944043368869598">എല്ലാം നീക്കുക</translation>
 <translation id="1199716647557067911">'സ്വിച്ച് ആക്‌സസ്' ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="1201402288615127009">അടുത്തത്</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">ഫയലുകള്‍‌ തുറക്കുക</translation>
 <translation id="3038571455154067151">സൈൻ ഇൻ ചെയ്യാൻ, നിങ്ങളുടെ Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക</translation>
 <translation id="3039939407102840004">സ്റ്റൈലസ് ബാറ്ററി <ph name="PERCENTAGE" /> ശതമാനത്തിലാണ്.</translation>
+<translation id="304097922505898963">Key Shortcuts ആപ്പ് തുറക്കുക</translation>
 <translation id="3045488863354895414">ഗുഡ് ആഫ്‌റ്റർനൂൺ,</translation>
 <translation id="3047761520276763270">ഇങ്ങനെ പറഞ്ഞ് നോക്കൂ:</translation>
 <translation id="3055162170959710888">നിങ്ങൾ ഇന്ന് <ph name="USED_TIME" />, ഈ ഉപകരണം ഉപയോഗിച്ചു</translation>
@@ -1113,6 +1115,7 @@
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ഷെൽഫിലെ അടുത്ത ഇനം ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">ഇടത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="6022924867608035986">തിരയൽ ബോക്‌സ് ടെക്‌സ്‌റ്റ് മായ്‌ക്കുക</translation>
 <translation id="602472752137106327">എല്ലാ ഡെസ്‌കുകളിൽ നിന്നുമുള്ള വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
@@ -1806,6 +1809,7 @@
 <translation id="925832987464884575">പ്രിവ്യുകൾ മറയ്‌ക്കുക</translation>
 <translation id="937214777182567951">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉടനടി അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" />ആവശ്യപ്പെടുന്നു</translation>
 <translation id="938963181863597773">എന്റെ കലണ്ടറിൽ എന്താണുള്ളത്?</translation>
+<translation id="945383118875625837">ബുക്ക്‌മാർക്കുകളുടെ ബാറിലേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="951991426597076286">നിരസിക്കുക</translation>
 <translation id="953431725143473984">ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യണോ?</translation>

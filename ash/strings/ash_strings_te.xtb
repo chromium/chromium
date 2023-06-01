@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
 <translation id="1190678134285018527">పరికరాన్ని దాని మునపటి వెర్షన్‌కు మార్చడం అవసరం</translation>
 <translation id="1195412055398077112">ఓవర్‌స్కాన్</translation>
+<translation id="1195667586424773550">ట్యాబ్ యొక్క అడ్రస్‌ బార్‌లోకి లింక్‌ను లాగండి</translation>
 <translation id="119944043368869598">అన్ని క్లియర్ చేయండి</translation>
 <translation id="1199716647557067911">స్విచ్ యాక్సెస్‌ను మీరు ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">ఫైళ్ళను తెరువు</translation>
 <translation id="3038571455154067151">సైన్ ఇన్ చేయడానికి, మీ Family Link తల్లిదండ్రుల యాక్సెస్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3039939407102840004">స్టైలస్ బ్యాటరీ <ph name="PERCENTAGE" /> శాతం ఉంది.</translation>
+<translation id="304097922505898963">కీ షార్ట్‌కట్‌ల యాప్‌ను తెరవండి</translation>
 <translation id="3045488863354895414">గుడ్ ఆఫ్టర్‌నూన్,</translation>
 <translation id="3047761520276763270">ఇలా చెప్పి ట్రై చేయండి:</translation>
 <translation id="3055162170959710888">మీరు ఈ పరికరాన్ని ఈ రోజు <ph name="USED_TIME" /> పాటు ఉపయోగించారు</translation>
@@ -1114,6 +1116,7 @@
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />లో <ph name="SELECTED_PAGE" />వ పేజీ</translation>
 <translation id="601304062528754300">షెల్ఫ్‌లో తర్వాతి ఐటెమ్‌ను హైలైట్ చేయండి</translation>
 <translation id="6018164090099858612">ప్రతిబింబ మోడ్ నుండి నిష్క్రమిస్తోంది</translation>
+<translation id="6019566113895157499">కీ షార్ట్‌కట్‌లు</translation>
 <translation id="602001110135236999">ఎడమకు స్క్రోల్ చేయి</translation>
 <translation id="6022924867608035986">శోధన పెట్టె వచనాన్ని క్లియర్ చేయండి</translation>
 <translation id="602472752137106327">అన్ని డెస్క్‌ల నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>
@@ -1807,6 +1810,7 @@
 <translation id="925832987464884575">ప్రివ్యూలను దాచండి</translation>
 <translation id="937214777182567951">వెంటనే మీ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయాలని <ph name="MANAGER" /> తెలియజేస్తోంది</translation>
 <translation id="938963181863597773">నా క్యాలెండర్‌లో ఏమి ఉన్నాయి?</translation>
+<translation id="945383118875625837">‌లింక్‌ను బుక్‌మార్క్‌ల బార్ వద్దకు లాగండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="951991426597076286">తిరస్కరించు</translation>
 <translation id="953431725143473984">పరికరాన్ని షట్ డౌన్ చేయాలా?</translation>

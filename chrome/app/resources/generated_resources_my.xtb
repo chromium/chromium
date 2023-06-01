@@ -2314,6 +2314,7 @@
 <translation id="2923234477033317484">ဤအကောင့်ကို ဖယ်ရှားရန်</translation>
 <translation id="2923644930701689793">သင့်ဖုန်း၏ ကင်မရာရိုးလ်ကို သုံးခွင့်ရယူနိုင်သည်</translation>
 <translation id="292371311537977079">Chrome ဆက်တင်များ</translation>
+<translation id="2925658782192398150">ပြီးပြီ၊ ပြဿနာမတွေ့ပါ</translation>
 <translation id="2926085873880284723">မူရင်းဖြတ်လမ်းလင့်ခ်များ ပြန်ယူရန်</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ကို ပံ့ပိုးမထားပါ။</translation>
 <translation id="2927017729816812676">ကက်ရှ် သိုလှောင်ခန်း</translation>
@@ -3767,6 +3768,7 @@
 <translation id="42126664696688958">တင်ပို့ရန်</translation>
 <translation id="42137655013211669">ဤရင်းမြစ်သို့ ဝင်ရောက်သုံးခြင်းအား ဆာဗာမှ တားမြစ်ထား၏</translation>
 <translation id="4214192212360095377">ယခုပိတ်ရန်</translation>
+<translation id="4217558091331485702">မဖွင့်မီ စကင်ဖတ်ပါ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
 <translation id="4218081191298393750">ဤတဘ်ကိုအသံပိတ်ရန် စပီကာသင်္ကေတကို နှိပ်နိုင်သည်</translation>
 <translation id="4220648711404560261">စတင်နေစဉ်အတွင်း အမှားဖြစ်သွားသည်။</translation>
@@ -7875,7 +7877,6 @@
 <translation id="7835178595033117206">ဝဘ်လိပ်စာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="7836577093182643605">ဝဘ်ဆိုက်များနှင့် မျှဝေလိုခြင်းမရှိ၍ သင်ပိတ်ပင်ထားသော အကြောင်းအရာစာရင်း</translation>
 <translation id="7836850009646241041">သင့်လုံခြုံရေးကီးကို ထပ်ထိကြည့်ပါ</translation>
-<translation id="7837290304480415481">ခွင့်ပြုချက်နှင့် ဆက်တင်များ စီမံရန်</translation>
 <translation id="7837776265184002579">သင်၏ ပင်မစာမျက်နှာကို <ph name="URL" /> သို့ ပြောင်းထားပါသည်။</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> ထံမှ '<ph name="NETWORK_NAME" />' ကို သိမ်း၍မရပါ</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> သို့ <ph name="ATTACHMENTS" /> ပို့ထားသည်}other{<ph name="DEVICE_NAME" /> သို့ <ph name="ATTACHMENTS" /> ပို့ထားသည်}}</translation>

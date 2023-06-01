@@ -1749,7 +1749,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="2445726032315793326">Partial magnifier</translation>
 <translation id="244641233057214044">Related to your search</translation>
-<translation id="2448312741937722512">Types</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="2448810255793562605">Switch Access auto-scan</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
@@ -2316,6 +2316,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2923234477033317484">Remove this account</translation>
 <translation id="2923644930701689793">Access your phone's camera roll</translation>
 <translation id="292371311537977079">Chrome settings</translation>
+<translation id="2925658782192398150">Done, no issues found</translation>
 <translation id="2926085873880284723">Restore default shortcuts</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> is not supported.</translation>
 <translation id="2927017729816812676">Cache Storage</translation>
@@ -3770,6 +3771,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="42126664696688958">Export</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
 <translation id="4214192212360095377">Turn Off Now</translation>
+<translation id="4217558091331485702">Scan before opening</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4218081191298393750">Click the speaker icon to mute this tab</translation>
 <translation id="4220648711404560261">An error occurred during activation.</translation>
@@ -7880,7 +7882,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7835178595033117206">Bookmark removed</translation>
 <translation id="7836577093182643605">List of topics that you blocked that you don't want shared with sites</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
-<translation id="7837290304480415481">Manage permissions and settings</translation>
 <translation id="7837776265184002579">Your homepage was changed to <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Couldn't save '<ph name="NETWORK_NAME" />' from <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}}</translation>

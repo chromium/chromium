@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">বিজ্ঞপ্তি কেন্দ্র</translation>
 <translation id="1190678134285018527">ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যেতে হবে</translation>
 <translation id="1195412055398077112">ওভারস্ক্যান</translation>
+<translation id="1195667586424773550">ট্যাব অ্যাড্রেস বারে লিঙ্কটি টেনে আনুন</translation>
 <translation id="119944043368869598">সব পরিষ্কার করুন</translation>
 <translation id="1199716647557067911">আপনি কি সত্যিই 'অ্যাক্সেস পাল্টান' ফিচার বন্ধ করতে চান?</translation>
 <translation id="1201402288615127009">পরের</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">ফাইল খুলুন</translation>
 <translation id="3038571455154067151">সাইন-ইন করতে, আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
 <translation id="3039939407102840004">স্টাইলাস ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>
+<translation id="304097922505898963">Key Shortcuts অ্যাপ খুলুন</translation>
 <translation id="3045488863354895414">শুভ অপরাহ্ন,</translation>
 <translation id="3047761520276763270">এটি বলে দেখুন:</translation>
 <translation id="3055162170959710888">এই ডিভাইসটি আজ আপনি <ph name="USED_TIME" /> ব্যবহার করেছেন</translation>
@@ -1113,6 +1115,7 @@
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />টি পৃষ্ঠার মধ্যে <ph name="SELECTED_PAGE" />টি পৃষ্ঠা</translation>
 <translation id="601304062528754300">শেল্ফে পরের আইটেম হাইলাইট করুন</translation>
 <translation id="6018164090099858612">মিরর মোড থেকে প্রস্থান করছে</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">বাঁ দিকে স্ক্রল করুন</translation>
 <translation id="6022924867608035986">সার্চ বক্সের টেক্সট সাফ করুন</translation>
 <translation id="602472752137106327">সব ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
@@ -1806,6 +1809,7 @@
 <translation id="925832987464884575">প্রিভিউ লুকান</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> আপনাকে এখনই <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
+<translation id="945383118875625837">বুকমার্ক বারে লিঙ্কটি টেনে আনুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="953431725143473984">ডিভাইস বন্ধ করবেন?</translation>

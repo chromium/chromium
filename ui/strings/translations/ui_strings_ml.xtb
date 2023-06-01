@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">വിപുലീകരണം അൺപിൻ ചെയ്തു</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ഒരു മാസം ശേഷിക്കുന്നു}other{# മാസം ശേഷിക്കുന്നു}}</translation>
 <translation id="4888938634149558681">കോൾ ചെയ്യുക</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ഒരു സെക്കന്‍ഡ്}other{# സെക്കൻഡ്}}</translation>
 <translation id="4971687151119236543">മുമ്പത്തെ മീഡിയാ ട്രാക്ക്</translation>
 <translation id="5046499563572181734">ഇവിടെ ടാപ്പുചെയ്യുക</translation>

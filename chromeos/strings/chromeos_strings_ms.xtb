@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Kekunci <ph name="KEY_NAME" /> tidak ditekan</translation>
 <translation id="1435763214710588005">Menetapkan semula penggunaan data secara automatik setiap bulan pada hari yang dipilih</translation>
 <translation id="1442433966118452622">Sumber imej</translation>
+<translation id="1449035143498573192">Buka dalam Google Search</translation>
 <translation id="1451536289672181509">Peranti ialah papan kekunci.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1468664791493211953">Tawaran</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Masukan</translation>
 <translation id="7955587717700691983">Papan kekunci Bluetooth</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7971535376154084247">Kawalan umum</translation>
 <translation id="7977800524392185497">Untuk menyertai rangkaian <ph name="NETWORK_NAME" />, pergi ke Tetapan</translation>
 <translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nama pembekal tempatan</translation>
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
 <translation id="8476242415522716722">cahaya bawah papan kekunci</translation>
+<translation id="8476942730579767658">Tetingkap dan meja</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat menyambung melalui tembok api ke laman web HTTP daripada apl Android</translation>

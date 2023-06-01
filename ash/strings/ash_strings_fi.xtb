@@ -49,6 +49,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1190609913194133056">Ilmoituskeskus</translation>
 <translation id="1190678134285018527">Laite täytyy palauttaa aiempaan versioon</translation>
 <translation id="1195412055398077112">kuvasta rajataan pois osa</translation>
+<translation id="1195667586424773550">Vedä linkki välilehden osoitepalkkiin</translation>
 <translation id="119944043368869598">Tyhjennä kaikki</translation>
 <translation id="1199716647557067911">Haluatko varmasti ottaa kytkimen käytön pois päältä?</translation>
 <translation id="1201402288615127009">Seuraava</translation>
@@ -444,6 +445,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3036649622769666520">Avaa tiedostot</translation>
 <translation id="3038571455154067151">Voit kirjautua sisään vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
+<translation id="304097922505898963">Avaa Key Shortcuts ‑sovellus</translation>
 <translation id="3045488863354895414">Hyvää päivää</translation>
 <translation id="3047761520276763270">Kokeile sanoa:</translation>
 <translation id="3055162170959710888">Olet käyttänyt tätä laitetta tänään <ph name="USED_TIME" /></translation>
@@ -1113,6 +1115,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Korosta seuraava kohde hyllyssä</translation>
 <translation id="6018164090099858612">Poistutaan peilitilasta</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Vieritä vasemmalle</translation>
 <translation id="6022924867608035986">Tyhjennä hakukentän teksti</translation>
 <translation id="602472752137106327">Näytä ikkunat kaikilta työpöydiltä, valintanappi valittu</translation>
@@ -1805,6 +1808,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="925832987464884575">Piilota esikatselut</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> edellyttää, että <ph name="DEVICE_TYPE" /> päivitetään heti</translation>
 <translation id="938963181863597773">Mitä kalenterissani on?</translation>
+<translation id="945383118875625837">Vedä linkki kirjanmerkkipalkkiin</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="951991426597076286">Hylkää</translation>
 <translation id="953431725143473984">Sammutetaanko laite?</translation>

@@ -2316,6 +2316,7 @@
 <translation id="2923234477033317484">இந்தக் கணக்கை அகற்று</translation>
 <translation id="2923644930701689793">உங்கள் மொபைலின் கேமரா ரோலை அணுகலாம்</translation>
 <translation id="292371311537977079">Chrome அமைப்புகள்</translation>
+<translation id="2925658782192398150">முடிந்தது, சிக்கல்கள் இல்லை</translation>
 <translation id="2926085873880284723">இயல்பு ஷார்ட்கட்களை மீட்டமை</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> சாதனத்தில் பயன்படுத்த முடியாது.</translation>
 <translation id="2927017729816812676">தற்காலிகச் சேமிப்பிடம்</translation>
@@ -3770,6 +3771,7 @@
 <translation id="42126664696688958">ஏற்றுமதி செய்</translation>
 <translation id="42137655013211669">இதற்கான அணுகல் சேவையகத்தால் தடுக்கப்பட்டிருக்கிறது.</translation>
 <translation id="4214192212360095377">இப்போதே முடக்கு</translation>
+<translation id="4217558091331485702">திறப்பதற்கு முன் ஸ்கேன் செய்யுங்கள்</translation>
 <translation id="4217571870635786043">சொல்வதை எழுதுவது</translation>
 <translation id="4218081191298393750">இந்தப் பக்கத்தை ஒலியடக்க, ஸ்பீக்கர் ஐகானைக் கிளிக் செய்யவும்</translation>
 <translation id="4220648711404560261">செயலாக்கும் போது பிழை ஏற்பட்டது.</translation>
@@ -7881,7 +7883,6 @@
 <translation id="7835178595033117206">புக்மார்க் அகற்றப்பட்டது</translation>
 <translation id="7836577093182643605">தளங்களுடன் பகிர விரும்பாமல் நீங்கள் தடுத்துள்ள தலைப்புகளின் பட்டியல்</translation>
 <translation id="7836850009646241041">உங்கள் பாதுகாப்பு விசையை மீண்டும் தொடவும்</translation>
-<translation id="7837290304480415481">அனுமதிகளையும் அமைப்புகளையும் நிர்வகியுங்கள்</translation>
 <translation id="7837776265184002579">முகப்புப்பக்கம் <ph name="URL" />க்கு மாற்றப்பட்டது.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து '<ph name="NETWORK_NAME" />' ஐச் சேமிக்க முடியவில்லை</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திற்கு <ph name="ATTACHMENTS" /> ஆவணம் அனுப்பப்பட்டது}other{<ph name="DEVICE_NAME" /> சாதனத்திற்கு <ph name="ATTACHMENTS" /> ஆவணங்கள் அனுப்பப்பட்டன}}</translation>

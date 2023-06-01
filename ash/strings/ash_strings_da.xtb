@@ -49,6 +49,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
 <translation id="1190678134285018527">Der skal skiftes tilbage til en tidligere version af enheden</translation>
 <translation id="1195412055398077112">overscan</translation>
+<translation id="1195667586424773550">Træk linket til adresselinjen på fanen</translation>
 <translation id="119944043368869598">Ryd alle</translation>
 <translation id="1199716647557067911">Er du sikker på, at du vil deaktivere kontaktadgang?</translation>
 <translation id="1201402288615127009">Næste</translation>
@@ -444,6 +445,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3036649622769666520">Åbn filer</translation>
 <translation id="3038571455154067151">Angiv forældreadgangskoden til Family Link for at logge ind</translation>
 <translation id="3039939407102840004">Styluspennens batteriniveau er på <ph name="PERCENTAGE" /> procent.</translation>
+<translation id="304097922505898963">Åbn appen Key Shortcuts</translation>
 <translation id="3045488863354895414">Goddag</translation>
 <translation id="3047761520276763270">Prøv at sige:</translation>
 <translation id="3055162170959710888">Du har brugt denne enhed i <ph name="USED_TIME" /> i dag</translation>
@@ -1113,6 +1115,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> ud af <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Fremhæv det næste element på hylden</translation>
 <translation id="6018164090099858612">Lukker spejltilstand</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Rul til venstre</translation>
 <translation id="6022924867608035986">Ryd teksten i søgefeltet</translation>
 <translation id="602472752137106327">Vis vinduer fra alle skriveborde. Alternativknappen er valgt.</translation>
@@ -1806,6 +1809,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
+<translation id="945383118875625837">Træk linket til bogmærkelinjen</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Afvis</translation>
 <translation id="953431725143473984">Vil du slukke enheden?</translation>

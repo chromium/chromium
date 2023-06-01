@@ -2317,6 +2317,7 @@
 <translation id="2923234477033317484">Отстранете ја сметкава</translation>
 <translation id="2923644930701689793">Пристапете до лентата на камерата на телефонот</translation>
 <translation id="292371311537977079">Поставки за Chrome</translation>
+<translation id="2925658782192398150">Готово, не се најдени проблеми</translation>
 <translation id="2926085873880284723">Врати ги стандардните кратенки</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> не е поддржано.</translation>
 <translation id="2927017729816812676">Склад за кеш</translation>
@@ -3771,6 +3772,7 @@
 <translation id="42126664696688958">Извези</translation>
 <translation id="42137655013211669">Пристапот до изворов е забранет од серверот.</translation>
 <translation id="4214192212360095377">Исклучи сега</translation>
+<translation id="4217558091331485702">Скенирај пред отворање</translation>
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4218081191298393750">Кликнете на иконата за звучник за да го исклучите звукот на картичкава</translation>
 <translation id="4220648711404560261">Грешка при активацијата.</translation>
@@ -7883,7 +7885,6 @@
 <translation id="7835178595033117206">Обележувачот е отстранет</translation>
 <translation id="7836577093182643605">Список со блокирани теми што не сакате да се споделуваат со сајтови</translation>
 <translation id="7836850009646241041">Допрете го безбедносниот клуч пак</translation>
-<translation id="7837290304480415481">Управувајте со дозволи и поставки</translation>
 <translation id="7837776265184002579">Вашата почетна страница е променета во <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Не можеше да се зачува „<ph name="NETWORK_NAME" />“ од <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> е испратен на <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> е испратена на <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> се испратени на <ph name="DEVICE_NAME" />}}</translation>

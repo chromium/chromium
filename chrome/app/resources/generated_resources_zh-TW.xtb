@@ -2301,6 +2301,7 @@
 <translation id="2923234477033317484">移除這個帳戶</translation>
 <translation id="2923644930701689793">存取手機的相機膠卷</translation>
 <translation id="292371311537977079">Chrome 設定</translation>
+<translation id="2925658782192398150">已完成，未發現任何問題</translation>
 <translation id="2926085873880284723">還原預設捷徑</translation>
 <translation id="2926620265753325858">不支援「<ph name="DEVICE_NAME" />」。</translation>
 <translation id="2927017729816812676">快取儲存空間</translation>
@@ -2443,6 +2444,7 @@
 <translation id="3038272154009688107">查看所有網站</translation>
 <translation id="3038612606416062604">手動新增印表機</translation>
 <translation id="3039491566278747710">無法在裝置上安裝離線政策。</translation>
+<translation id="3040982432432547149">協助我們改善 Chromebook 適用的 Steam</translation>
 <translation id="3043016484125065343">登入即可查看書籤</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">來自 <ph name="ORIGIN" /></translation>
@@ -3754,6 +3756,7 @@
 <translation id="42126664696688958">匯出</translation>
 <translation id="42137655013211669">伺服器禁止存取這個資源。</translation>
 <translation id="4214192212360095377">立即關閉</translation>
+<translation id="4217558091331485702">開啟前先掃描</translation>
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4218081191298393750">按一下「喇叭」圖示即可將這個分頁設為靜音</translation>
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
@@ -4019,6 +4022,7 @@
 <translation id="4445446646109808714">使用者授權協議：<ph name="EULA_LINK" /></translation>
 <translation id="4446933390699670756">鏡像模式</translation>
 <translation id="4448914100439890108">在 <ph name="DOMAIN" /> 上隱藏 <ph name="USERNAME" /> 的密碼</translation>
+<translation id="4449247303975391730">管理權限</translation>
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
 <translation id="4449996769074858870">這個分頁正在播放音訊。</translation>
 <translation id="4450974146388585462">診斷</translation>
@@ -5122,6 +5126,7 @@
 <translation id="5445400788035474247">10 倍</translation>
 <translation id="5446983216438178612">顯示機構憑證</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> 項商品</translation>
+<translation id="5448092089030025717">{NUM_REUSED,plural, =0{沒有重複使用的密碼}=1{1 個重複使用的密碼}other{{NUM_REUSED} 個重複使用的密碼}}</translation>
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
@@ -7857,7 +7862,6 @@
 <translation id="7835178595033117206">已移除書籤</translation>
 <translation id="7836577093182643605">這份主題封鎖清單列出了你不希望與其他網站分享的主題</translation>
 <translation id="7836850009646241041">請再次輕觸你的安全金鑰</translation>
-<translation id="7837290304480415481">管理權限和設定</translation>
 <translation id="7837776265184002579">你的首頁已變更為 <ph name="URL" />。</translation>
 <translation id="7838838951812478896">無法透過 <ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}other{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}}</translation>
@@ -8310,7 +8314,7 @@
 <translation id="8208188204689616705">這些網站屬於由 <ph name="FPS_OWNER" /> 定義的群組，群組中的網站可以查看你在該群組的活動。</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="821119981794423735">如要將密碼匯入到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
+<translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在執行一項下載作業}other{正在執行多項下載作業}}</translation>
 <translation id="8212601853154459483">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，你必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立個別的設定檔</translation>
 <translation id="8214489666383623925">開啟檔案...</translation>

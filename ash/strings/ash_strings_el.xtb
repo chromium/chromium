@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">Κέντρο ειδοποιήσεων</translation>
 <translation id="1190678134285018527">Η συσκευή πρέπει να επιστρέψει στην προηγούμενη έκδοση</translation>
 <translation id="1195412055398077112">υπερσάρωση</translation>
+<translation id="1195667586424773550">Σύρετε τον σύνδεσμο στη γραμμή διευθύνσεων της καρτέλας</translation>
 <translation id="119944043368869598">Διαγραφή όλων</translation>
 <translation id="1199716647557067911">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε την πρόσβαση με διακόπτη;</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
@@ -1808,6 +1809,7 @@
 <translation id="925832987464884575">Απόκρυψη προεπισκοπήσεων</translation>
 <translation id="937214777182567951">Ο τομέας <ph name="MANAGER" /> απαιτεί να ενημερώσετε άμεσα τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Τι υπάρχει στο ημερολόγιό μου;</translation>
+<translation id="945383118875625837">Σύρετε τον σύνδεσμο στη γραμμή σελιδοδεικτών</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="951991426597076286">Απόρριψη</translation>
 <translation id="953431725143473984">Να τερματιστεί η λειτουργία της συσκευής;</translation>

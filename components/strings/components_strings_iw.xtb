@@ -1243,6 +1243,7 @@
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4040350669425716613">מכללות ואוניברסיטאות</translation>
 <translation id="4047351652147966654">‏18x24 אינץ'</translation>
+<translation id="404831776305217138">‏כתובת ה-URL לעדכון של התוסף עם המזהה '<ph name="EXTENSION_ID" />' לא תקינה או שיש בה סכימה שלא נתמכת. הסכימות הנתמכות הן: <ph name="HTTP_SCHEME" />,‏ <ph name="HTTPS_SCHEME" /> ו-<ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏ניתן יהיה להשתמש בה בכל מוצרי Google</translation>
 <translation id="405399507749852140">קבלת התראות על הנחות באתר כלשהו</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
@@ -2298,6 +2299,7 @@ Del</translation>
 <translation id="6569366777234823130">סרטי דרמה</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
 <translation id="6576181918031900030">‏התחלת ההעברה (cast)</translation>
+<translation id="6578434528542148658">מזהה התוסף לא תקין.</translation>
 <translation id="657902945730878902">ציור וצביעה</translation>
 <translation id="6579630537141957243">‏לחבר התקן MIDI?</translation>
 <translation id="6579990219486187401">ורוד בהיר</translation>

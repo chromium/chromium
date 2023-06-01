@@ -49,6 +49,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1190609913194133056">Centrum oznámení</translation>
 <translation id="1190678134285018527">Zařízení je třeba vrátit na předchozí verzi</translation>
 <translation id="1195412055398077112">přesah obrazu</translation>
+<translation id="1195667586424773550">Přetáhněte odkaz na adresní řádek na kartě</translation>
 <translation id="119944043368869598">Vymazat vše</translation>
 <translation id="1199716647557067911">Opravdu chcete přístup pomocí přepínačů vypnout?</translation>
 <translation id="1201402288615127009">Další</translation>
@@ -444,6 +445,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3036649622769666520">Otevřít soubory</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
 <translation id="3039939407102840004">Baterie dotykového pera je na <ph name="PERCENTAGE" /> procentech.</translation>
+<translation id="304097922505898963">Otevřít aplikaci Klávesové zkratky</translation>
 <translation id="3045488863354895414">Dobré odpoledne,</translation>
 <translation id="3047761520276763270">Řekněte:</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
@@ -1113,6 +1115,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6012623610530968780">Stránka <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Zvýraznit další položku na poličce</translation>
 <translation id="6018164090099858612">Ukončování režimu zrcadlení</translation>
+<translation id="6019566113895157499">Klávesové zkratky</translation>
 <translation id="602001110135236999">Posunout doleva</translation>
 <translation id="6022924867608035986">Vymazat text z vyhledávacího pole</translation>
 <translation id="602472752137106327">Zobrazit okna ze všech ploch, je vybrán přepínač</translation>
@@ -1805,6 +1808,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="925832987464884575">Skrýt náhledy</translation>
 <translation id="937214777182567951">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> okamžitě aktualizovali.</translation>
 <translation id="938963181863597773">Co mám v kalendáři?</translation>
+<translation id="945383118875625837">Přetáhněte odkaz na lištu záložek</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="953431725143473984">Vypnout zařízení?</translation>

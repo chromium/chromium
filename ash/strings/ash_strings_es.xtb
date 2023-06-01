@@ -49,6 +49,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1190609913194133056">Centro de notificaciones</translation>
 <translation id="1190678134285018527">El dispositivo debe volver a la versión anterior</translation>
 <translation id="1195412055398077112">reajustar</translation>
+<translation id="1195667586424773550">Arrastra el enlace a la barra de direcciones de la pestaña</translation>
 <translation id="119944043368869598">Borrar todo</translation>
 <translation id="1199716647557067911">¿Seguro que quieres desactivar la accesibilidad con interruptores?</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -444,6 +445,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3036649622769666520">Abrir archivos</translation>
 <translation id="3038571455154067151">Para iniciar sesión, introduce tu código de acceso parental de Family Link</translation>
 <translation id="3039939407102840004">La batería del lápiz óptico está al <ph name="PERCENTAGE" /> por ciento.</translation>
+<translation id="304097922505898963">Abrir la aplicación Combinaciones de teclas</translation>
 <translation id="3045488863354895414">Buenas tardes,</translation>
 <translation id="3047761520276763270">Prueba a decir:</translation>
 <translation id="3055162170959710888">Hoy has utilizado este dispositivo durante <ph name="USED_TIME" /></translation>
@@ -1114,6 +1116,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destaca el siguiente elemento de la estantería</translation>
 <translation id="6018164090099858612">Saliendo del modo Espejo</translation>
+<translation id="6019566113895157499">Combinaciones de teclas</translation>
 <translation id="602001110135236999">Desplazar a la izquierda</translation>
 <translation id="6022924867608035986">Borrar el texto del cuadro de búsqueda</translation>
 <translation id="602472752137106327">Mostrar ventanas de todos los escritorios, botón seleccionado</translation>
@@ -1807,6 +1810,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> inmediatamente</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
+<translation id="945383118875625837">Arrastra el enlace a la barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="953431725143473984">¿Apagar el dispositivo?</translation>

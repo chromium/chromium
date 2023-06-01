@@ -2310,6 +2310,7 @@
 <translation id="2923234477033317484">ይህን መለያ አስወግድ</translation>
 <translation id="2923644930701689793">የስልክዎን የካሜራ ጥቅል ይድረሱ</translation>
 <translation id="292371311537977079">የChrome ቅንብሮች</translation>
+<translation id="2925658782192398150">ተከናውኗል፣ ምንም ችግሮች አልተገኙም</translation>
 <translation id="2926085873880284723">ነባሪ አቋራጮችን ወደነበሩበት መልስ</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> አይደገፍም።</translation>
 <translation id="2927017729816812676">የመሸጎጫ ማከማቻ</translation>
@@ -3762,6 +3763,7 @@
 <translation id="42126664696688958">ወደ ውጭ ላክ</translation>
 <translation id="42137655013211669">የዚህ መርጃ መዳረሻ በአገልጋዩ ተከልክሏል።</translation>
 <translation id="4214192212360095377">አሁን አጥፋ</translation>
+<translation id="4217558091331485702">ከመክፈት በፊት ይቃኙ</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
 <translation id="4218081191298393750">በዚህ ትር ላይ ድምጸ-ከል ለማድረግ የድምጽ ማውጫ አዶውን ጠቅ ያድርጉ</translation>
 <translation id="4220648711404560261">በማግበር ጊዜ አንድ ስህተት ተከስቷል።</translation>
@@ -7873,7 +7875,6 @@
 <translation id="7835178595033117206">ዕልባት ተወግዷል</translation>
 <translation id="7836577093182643605">ለጣቢያዎች እንዲጋሩ የማይፈልጓቸው ያገዷቸው ርዕሶች ዝርዝር</translation>
 <translation id="7836850009646241041">የደህንነት ቁልፍዎን ዳግም ለመንካት ይሞክሩ</translation>
-<translation id="7837290304480415481">ፈቃዶችን እና ቅንብሮችን ያስተዳድሩ</translation>
 <translation id="7837776265184002579">የእርስዎ ጅምር ገፅ ወደ <ph name="URL" /> ተቀይሯል።</translation>
 <translation id="7838838951812478896">«<ph name="NETWORK_NAME" />»ን ከ<ph name="DEVICE_NAME" /> ማስቀመጥ አልተቻለም</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{ወደ <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> ተልኳል}one{ወደ <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> ተልኳል}other{ወደ <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> ተልኳል}}</translation>

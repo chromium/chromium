@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">Екстензијата е откачена</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Преостанува 1 месец}one{Преостанува # месец}other{Преостануваат # месеци}}</translation>
 <translation id="4888938634149558681">Јави се</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 секунда}one{# секунда}other{# секунди}}</translation>
 <translation id="4971687151119236543">Претходна песна на медиуми</translation>
 <translation id="5046499563572181734">Допрете тука</translation>

@@ -2319,6 +2319,7 @@
 <translation id="2923234477033317484">Видалити цей обліковий запис</translation>
 <translation id="2923644930701689793">Отримайте доступ до фотоплівки на телефоні</translation>
 <translation id="292371311537977079">Налаштування Chrome</translation>
+<translation id="2925658782192398150">Готово. Проблем не виявлено.</translation>
 <translation id="2926085873880284723">Відновити ярлики за умовчанням</translation>
 <translation id="2926620265753325858">Пристрій <ph name="DEVICE_NAME" /> не підтримується</translation>
 <translation id="2927017729816812676">Кеш-пам’ять</translation>
@@ -3773,6 +3774,7 @@
 <translation id="42126664696688958">Експортувати</translation>
 <translation id="42137655013211669">Сервер заборонив доступ до цього ресурсу.</translation>
 <translation id="4214192212360095377">Вимкнути</translation>
+<translation id="4217558091331485702">Cканувати файл, перш ніж відкрити</translation>
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4218081191298393750">Щоб вимкнути звук на цій вкладці, натисніть значок колонки</translation>
 <translation id="4220648711404560261">Під час активації сталася помилка.</translation>
@@ -7885,7 +7887,6 @@
 <translation id="7835178595033117206">Закладку видалено</translation>
 <translation id="7836577093182643605">Список заблокованих тем, до яких ви не хочете надавати сайтам доступ</translation>
 <translation id="7836850009646241041">Спробуйте торкнутися ключа безпеки ще раз</translation>
-<translation id="7837290304480415481">Керувати дозволами й налаштуваннями</translation>
 <translation id="7837776265184002579">Головну сторінку змінено на <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Не вдалося зберегти дані мережі "<ph name="NETWORK_NAME" />" з пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}}</translation>

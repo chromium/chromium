@@ -1243,6 +1243,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4040350669425716613">Colegau a phrifysgolion</translation>
 <translation id="4047351652147966654">18 x 24 modfedd</translation>
+<translation id="404831776305217138">Diweddaru URL ar gyfer estyniad gyda ID '<ph name="EXTENSION_ID" />' yn annilys neu'n defnyddio cynllun heb ei gefnogi. Y cynlluniau a gefnogir yw: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> a <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Byddwch yn gallu ei ddefnyddio ar draws cynhyrchion Google</translation>
 <translation id="405399507749852140">Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2293,6 +2294,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6569366777234823130">Ffilmiau drama</translation>
 <translation id="6573200754375280815">Dau dwll ar y dde</translation>
 <translation id="6576181918031900030">Dechrau trosi</translation>
+<translation id="6578434528542148658">ID estyniad annilys.</translation>
 <translation id="657902945730878902">Llunio a lliwio</translation>
 <translation id="6579630537141957243">Cysylltu dyfais MIDI?</translation>
 <translation id="6579990219486187401">Pinc Golau</translation>

@@ -48,6 +48,7 @@
 <translation id="1190609913194133056">Цэнтр апавяшчэнняў</translation>
 <translation id="1190678134285018527">Неабходна вярнуцца да ранейшай версіі АС</translation>
 <translation id="1195412055398077112">вылет разгорткі</translation>
+<translation id="1195667586424773550">Перацягнуць спасылку на адрасны радок укладкі</translation>
 <translation id="119944043368869598">Выдаліць усё</translation>
 <translation id="1199716647557067911">Сапраўды выключыць доступ праз пераключальнікі?</translation>
 <translation id="1201402288615127009">Далей</translation>
@@ -436,6 +437,7 @@
 <translation id="3036649622769666520">Адкрыццё файлаў</translation>
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
 <translation id="3039939407102840004">Узровень зараду акумулятара пяра – <ph name="PERCENTAGE" />%.</translation>
+<translation id="304097922505898963">Адкрыць праграму "Спалучэнні клавіш"</translation>
 <translation id="3045488863354895414">Добры дзень,</translation>
 <translation id="3047761520276763270">Паспрабуйце сказаць:</translation>
 <translation id="3055162170959710888">Сёння гэтай прыладай карысталіся <ph name="USED_TIME" /></translation>
@@ -1099,6 +1101,7 @@
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Вылучыць наступны элемент на панэлі доступу</translation>
 <translation id="6018164090099858612">Выхад з рэжыму адлюстравання</translation>
+<translation id="6019566113895157499">Спалучэнні клавіш</translation>
 <translation id="602001110135236999">Прагартаць улева</translation>
 <translation id="6022924867608035986">Ачысціць поле пошуку</translation>
 <translation id="602472752137106327">Паказ вокнаў усіх працоўных сталоў, выбраны пераключальнік</translation>
@@ -1791,6 +1794,7 @@
 <translation id="925832987464884575">Выключыць перадпрагляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> патрабуе, каб вы неадкладна абнавілі прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Што ў маім календары?</translation>
+<translation id="945383118875625837">Перацягнуць спасылку на панэль закладак</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="951991426597076286">Адхіліць</translation>
 <translation id="953431725143473984">Завяршыць працу прылады?</translation>

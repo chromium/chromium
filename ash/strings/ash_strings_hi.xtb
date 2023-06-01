@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">सूचना केंद्र</translation>
 <translation id="1190678134285018527">डिवाइस को पिछले वर्शन पर ले जाने की ज़रूरत है</translation>
 <translation id="1195412055398077112">ओवरस्कैन</translation>
+<translation id="1195667586424773550">लिंक को टैब के पता बार में खींचें और छोड़ें</translation>
 <translation id="119944043368869598">सारा डेटा मिटाएं</translation>
 <translation id="1199716647557067911">क्या आप वाकई ऐक्सेस करने का तरीका बदलने की सुविधा बंद करना चाहते हैं?</translation>
 <translation id="1201402288615127009">अगला</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">फ़ाइलें खोलें</translation>
 <translation id="3038571455154067151">साइन इन करने के लिए, अपने Family Link का अभिभावक ऐक्सेस कोड डालें</translation>
 <translation id="3039939407102840004">स्टाइलस बैटरी <ph name="PERCENTAGE" /> प्रतिशत बची है.</translation>
+<translation id="304097922505898963">Keyboard Shortcuts ऐप्लिकेशन खोलें</translation>
 <translation id="3045488863354895414">गुड आफ़्टरनून,</translation>
 <translation id="3047761520276763270">यह बोलकर देखें:</translation>
 <translation id="3055162170959710888">आपने आज इस डिवाइस का <ph name="USED_TIME" /> तक इस्तेमाल कर लिया है</translation>
@@ -1114,6 +1116,7 @@
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> में से <ph name="SELECTED_PAGE" /> पेज</translation>
 <translation id="601304062528754300">शेल्फ़ पर अगला आइटम हाइलाइट करने के लिए</translation>
 <translation id="6018164090099858612">मिरर मोड से बाहर निकाला जा रहा है</translation>
+<translation id="6019566113895157499">Keyboard Shortcuts</translation>
 <translation id="602001110135236999">बाईं ओर स्क्रोल करें</translation>
 <translation id="6022924867608035986">खोज बॉक्स का लेख मिटाएं</translation>
 <translation id="602472752137106327">सभी डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
@@ -1807,6 +1810,7 @@
 <translation id="925832987464884575">झलक छिपाएं</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अपना <ph name="DEVICE_TYPE" /> तुरंत अपडेट करें</translation>
 <translation id="938963181863597773">मेरे कैलेंडर पर आज के लिए क्या काम हैं?</translation>
+<translation id="945383118875625837">लिंक को बुकमार्क बार में खीचें और छोड़ें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="951991426597076286">अस्वीकार करें</translation>
 <translation id="953431725143473984">डिवाइस को शट डाउन करना है?</translation>

@@ -49,6 +49,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
 <translation id="1190678134285018527">Device needs to go back to previous version</translation>
 <translation id="1195412055398077112">overscan</translation>
+<translation id="1195667586424773550">Drag the link to the tab's address bar</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199716647557067911">Are you sure that you want to turn off Switch Access?</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -326,7 +327,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
 <translation id="24452542372838207">Expand notification</translation>
-<translation id="2448312741937722512">Types</translation>
+<translation id="2448312741937722512">Type</translation>
 <translation id="2449089818483227734">Low battery</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
@@ -1808,6 +1809,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="925832987464884575">Hide previews</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>
+<translation id="945383118875625837">Drag link to bookmarks bar</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="953431725143473984">Shut down the device?</translation>

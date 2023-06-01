@@ -2301,6 +2301,7 @@
 <translation id="2923234477033317484">ამ ანგარიშის ამოშლა</translation>
 <translation id="2923644930701689793">იქონიეთ წვდომა თქვენი ტელეფონის კამერის ალბომზე</translation>
 <translation id="292371311537977079">Chrome-ის პარამეტრები</translation>
+<translation id="2925658782192398150">მზადაა, პრობლემები არ მოიძებნა</translation>
 <translation id="2926085873880284723">ნაგულისხმევი მალსახმობების აღდგენა</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> მხარდაუჭერელია.</translation>
 <translation id="2927017729816812676">ქეშის მეხსიერება</translation>
@@ -3755,6 +3756,7 @@
 <translation id="42126664696688958">ექსპორტი</translation>
 <translation id="42137655013211669">ამ რესურსზე წვდომა აიკრძალა სერვერის მიერ.</translation>
 <translation id="4214192212360095377">ახლავე გამორთვა</translation>
+<translation id="4217558091331485702">გახსნამდე სკანირება</translation>
 <translation id="4217571870635786043">კარნახი</translation>
 <translation id="4218081191298393750">ამ ჩანართის დასადუმებლად შეეხეთ დინამიკის ხატულას</translation>
 <translation id="4220648711404560261">გააქტიურება ვერ მოხერხდა შეცდომის გამო.</translation>
@@ -7863,7 +7865,6 @@
 <translation id="7835178595033117206">სანიშნე ამოიშალა</translation>
 <translation id="7836577093182643605">თქვენ მიერ დაბლოკილი იმ თემების სია, რომლებიც არ გსურთ, გაზიარდეს საიტებთან</translation>
 <translation id="7836850009646241041">ხელახლა სცადეთ თქვენს უსაფრთხოების გასაღებზე შეხება</translation>
-<translation id="7837290304480415481">ნებართვებისა და პარამეტრების მართვა</translation>
 <translation id="7837776265184002579">თქვენი მთავარი გვერდი გახდა <ph name="URL" />.</translation>
 <translation id="7838838951812478896">„<ph name="NETWORK_NAME" />“ ვერ შეინახა <ph name="DEVICE_NAME" />-დან</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> გაიგზავნა აქ: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> გაიგზავნა აქ: <ph name="DEVICE_NAME" />}}</translation>

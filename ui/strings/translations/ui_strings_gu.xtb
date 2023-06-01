@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">એક્સ્ટેન્શન અનપિન કર્યું</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 મહિનો બાકી}one{# મહિનો બાકી}other{# મહિના બાકી}}</translation>
 <translation id="4888938634149558681">કૉલ કરો</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 સેકન્ડ}one{# સેકન્ડ}other{# સેકન્ડ}}</translation>
 <translation id="4971687151119236543">મીડિયા પાછલું ગીત</translation>
 <translation id="5046499563572181734">અહીં ટૅપ કરો</translation>

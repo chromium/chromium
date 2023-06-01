@@ -135,6 +135,7 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chromium პროფილში. თქვენი დათვალიერების მონაცემები რომ განაცალკევოთ, Chromium-ს შეუძლია თქვენთვის პერსონალური პროფილის შექმნა.</translation>
 <translation id="391789666908693569">თქვენს ანგარიშს მართავს <ph name="MANAGER_NAME" />. თქვენს ადმინისტრატორს შეუძლია ამ Chromium ბრაუზერის პროფილისა და მისი მონაცემების (მაგალითად, სანიშნეების, ისტორიისა და პაროლების) ნახვა და რედაქტირება.</translation>
 <translation id="3945058413678539331">Chromium ცდილობს პაროლების კოპირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი ამის დასაშვებად.</translation>
+<translation id="3962623956404948996">Chromium გირჩევთ, დაასკანიროთ ეს ფაილი, რადგან ის შეიძლება სახიფათო იყოს</translation>
 <translation id="3997429360543082038">ChromiumOS-ის შესახებ</translation>
 <translation id="4019629340646866719">ChromiumOS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="4036079820698952681">ხელი შეუწყვეთ Chromium-ის გაუმჯობესებას <ph name="BEGIN_LINK" />მიმდინარე პარამეტრების<ph name="END_LINK" /> გამოგზავნის მეშვეობით</translation>

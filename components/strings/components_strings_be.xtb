@@ -1240,6 +1240,7 @@
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4040350669425716613">Вышэйшыя навучальныя ўстановы</translation>
 <translation id="4047351652147966654">18 x 24 цалі</translation>
+<translation id="404831776305217138">URL-адрас для абнаўлення пашырэння з ідэнтыфікатарам "<ph name="EXTENSION_ID" />" з'яўляецца недапушчальным або яго схема не падтрымліваецца. Падтрымліваюцца наступныя схемы: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> і <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Вы зможаце выкарыстоўваць яго ў другіх прадуктах Google</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -2286,6 +2287,7 @@
 <translation id="6569366777234823130">Драмы</translation>
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
 <translation id="6576181918031900030">Пачаць трансляцыю</translation>
+<translation id="6578434528542148658">Недапушчальны ідэнтыфікатар пашырэння.</translation>
 <translation id="657902945730878902">Рысаванне і размалёўванне</translation>
 <translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>

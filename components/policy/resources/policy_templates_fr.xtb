@@ -214,6 +214,7 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 <translation id="1198183996903759302">Si cette règle est définie sur "True" (ou que la règle <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> est définie sur "False") les pages Web ne peuvent pas accéder à l'API WebGL, et les plug-ins ne peuvent pas utiliser l'API Pepper 3D.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL, et les plug-ins peuvent utiliser l'API Pepper 3D. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
+<translation id="1198458955128279215">Utiliser le comportement par défaut selon le calendrier de déploiement des fonctionnalités</translation>
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="120314092766637918">Si cette règle est activée ou n'est pas configurée, la protection contre l'hameçonnage côté client est contrôlée par <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> pour <ph name="PRODUCT_NAME" />. Si <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> est défini sur <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> ou <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" />, la protection contre l'hameçonnage côté client exécute un modèle local pour vérifier si une page est une tentative d'hameçonnage. Si le modèle considère que la page est une tentative d'hameçonnage, <ph name="PRODUCT_NAME" /> envoie une demande de verdict à Google.
 Si cette règle est désactivée, la protection contre l'hameçonnage côté client n'effectue aucune opération de protection et n'envoie pas de données à Google pour obtenir des verdicts.</translation>
@@ -840,6 +841,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1768225118528727376">Accorder l'autorisation de gestion des fenêtres sur ces sites</translation>
 <translation id="1770071413238151235">Format 12 heures</translation>
 <translation id="1771024053220392089">Désactiver Legacy Browser Support</translation>
+<translation id="1781225230395284182">Afficher la boîte de dialogue d'annulation quand event.preventDefault() est appelé pour un événement beforeunload.</translation>
 <translation id="1781356041596378058">Cette règle permet également de contrôler l'accès aux options pour les développeurs Android. Si vous définissez cette règle sur "True", les utilisateurs ne pourront pas accéder aux options pour les développeurs. Si vous la définissez sur "False" ou si vous ne la modifiez pas, les utilisateurs pourront accéder aux options pour les développeurs en appuyant sept fois sur le numéro de version dans l'application des paramètres Android.</translation>
 <translation id="1787790976045065845">Cette règle ne prend effet que si la règle <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> est définie sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> ou <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />, et si un utilisateur qui s'authentifie au moyen d'une carte à puce retire celle-ci. Elle indique alors la durée d'affichage, en secondes, d'une notification informant l'utilisateur de l'action qui va être exécutée. Cette notification bloque l'écran. L'action ne s'exécute que lorsque la notification disparaît. L'utilisateur peut empêcher l'action de s'exécuter en réinsérant la carte à puce avant que la notification disparaisse. Si cette règle est définie sur zéro, aucune notification ne s'affiche, et l'action s'exécute immédiatement.</translation>
 <translation id="1793346220873697538">Désactiver l'impression par code définie par défaut</translation>
@@ -1926,6 +1928,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2787774054174244402">Si vous définissez cette règle sur "True", les utilisateurs ne peuvent pas modifier les fichiers stockés sur les périphériques de stockage externes.
 
       À moins que les supports de stockage externes ne soient bloqués, si vous définissez la règle ExternalStorageReadOnly sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent créer et modifier des fichiers sur les périphériques de stockage externes accessibles en écriture. (Vous pouvez bloquer les supports de stockage externes en définissant la règle ExternalStorageDisable sur "True".)</translation>
+<translation id="2788443040242264100">Ne pas afficher la boîte de dialogue d'annulation quand event.preventDefault() est appelé pour un événement beforeunload.</translation>
 <translation id="2789742777235177478">Limiter la durée pendant laquelle un utilisateur authentifié via GAIA sans SAML peut se connecter hors connexion sur l'écran de verrouillage</translation>
 <translation id="2796714419743648316">Liste d'autorisation des limites de temps spécifiques à chaque application</translation>
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
@@ -2710,6 +2713,18 @@ Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" 
       Si cette règle n'est pas configurée ou si aucune période n'est définie :
       La recherche automatique de mises à jour n'est pas bloquée par cette règle, mais peut l'être par d'autres.
       Jusqu'à la version M88, cette fonctionnalité n'est activée que sur les appareils <ph name="PRODUCT_OS_NAME" /> configurés pour se lancer automatiquement en mode Kiosque. Cette règle ne limitera pas les autres appareils. Sachez toutefois qu'à partir de la version M89, cette règle est activée sur tous les appareils <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3457921137261127955">L'extension d'utilisation de clés X.509 spécifie comment la clé d'un certificat peut être utilisée. Ces instructions permettent de s'assurer que les certificats ne sont pas utilisés dans un contexte inattendu, ce qui offre une protection contre une classe d'attaques interprotocoles sur HTTPS et d'autres protocoles. Pour que cela fonctionne, les clients HTTPS doivent vérifier que les certificats de serveur correspondent aux paramètres TLS de la connexion.
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> effectue cette vérification.
+Cela aide à prévenir les attaques où un pirate informatique manipule le navigateur pour interpréter une clé d'une manière que le propriétaire du certificat n'avait pas prévue.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ignore cette vérification pour les connexions HTTPS qui à la fois négocient TLS 1.2 et utilisent un certificat RSA qui se lie à une ancre de confiance locale. Parmi les ancres de confiance locales figurent, par exemple, les certificats racines fournis par la règle ou installés par l'utilisateur. Dans tous les autres cas, la vérification est effectuée indépendamment du paramètre de cette règle.
+
+Si la règle n'est pas configurée, <ph name="PRODUCT_NAME" /> se comporte comme si elle était désactivée.
+
+Cette règle permet aux administrateurs de prévisualiser le comportement d'une future version. La vérification est alors activée par défaut. À ce stade, la règle reste temporairement accessible aux administrateurs qui ont besoin de plus de temps pour apporter une mise à jour.
+
+Si le résultat de la vérification n'est pas concluant pour une connexion, l'erreur ERR_SSL_KEY_USAGE_INCOMPATIBLE est générée. Dans ce cas, cela peut signifier qu'un certificat est mal configuré. Les suites de chiffrement ECDHE_RSA récentes utilisent l'option d'utilisation de clés "digitalSignature", tandis que les anciennes suites de déchiffrement RSA utilisent l'option d'utilisation de clés "keyEncipherment". En cas de doute, les administrateurs doivent inclure les deux dans les certificats RSA destinés à HTTPS.</translation>
 <translation id="3459509316159669723">Impression</translation>
 <translation id="3461279434465463233">Envoyer des rapports sur l'état de l'alimentation</translation>
 <translation id="3478024346823118645">Effacer les données utilisateur à la déconnexion</translation>
@@ -3466,6 +3481,14 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, ou si elle est vide, la page "Nouvel onglet" par défaut est utilisée.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+<translation id="4164511138197196839">Si cette règle est activée, les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées dans <ph name="PRODUCT_NAME" />.
+Elle ne s'applique qu'aux extensions installées et mises à jour à partir du Chrome Web Store.
+
+Les extensions non issues du Chrome Web Store, telles que celles non empaquetées installées en mode développeur et celles installées avec le commutateur de ligne de commande, sont ignorées.
+Les extensions installées d'office et auto-hébergées sont ignorées. Toutes les extensions dont la version est fixe sont aussi ignorées.
+
+Si la règle est définie sur <ph name="ALLOW_UNPUBLISHED" /> (0) ou n'est pas configurée, les extensions dont la publication est annulée sur le Chrome Web Store sont autorisées.
+Si la règle est définie sur <ph name="DISABLE_UNPUBLISHED" /> (1), les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées.</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4166174702671320480">Si cette règle est activée, les règles associées à un groupe atomique qui ne sont pas issues de la source ayant la plus haute priorité dans le groupe sont ignorées.
 
@@ -5216,6 +5239,21 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="583627479140113555">Activer l'importation des mots de passe enregistrés à la première exécution</translation>
 <translation id="5838452040629810808">Activer la mise en surbrillance du curseur</translation>
 <translation id="5842283830553218200">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé par défaut.</translation>
+<translation id="5844880038533636588">Permet de lister les applis et extensions qui s'installent de manière autonome, sans intervention de l'utilisateur, et que celui-ci ne peut pas désinstaller ni désactiver. Les autorisations sont accordées implicitement, y compris pour les API d'extension enterprise.deviceAttributes et enterprise.platformKeys (ces deux API ne sont pas disponibles pour les applis et extensions non installées d'office).
+
+      Si cette règle n'est pas configurée, aucune appli ni extension n'est installée automatiquement, et l'utilisateur peut désinstaller n'importe quelle appli ou extension dans <ph name="PRODUCT_NAME" />.
+
+      Cette règle remplace la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si une appli ou extension installée d'office est supprimée de cette liste, <ph name="PRODUCT_NAME" /> la désinstalle automatiquement.
+
+      Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Le code source de toute extension peut être modifié par les utilisateurs à l'aide des outils pour les développeurs, ce qui peut entraîner des dysfonctionnements. Si cela pose problème, configurez la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Chaque élément listé de la règle est une chaîne comprenant un ID d'extension et éventuellement une URL de mise à jour séparés par un point-virgule (;). L'ID d'extension est la chaîne de 32 lettres figurant, par exemple, sur la page chrome://extensions, quand le mode développeur est activé. Si indiquée, l'URL de mise à jour doit renvoyer vers un fichier manifeste au format XML (https://developer.chrome.com/extensions/autoupdate) et utiliser l'un des schémas suivants : <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ou <ph name="FILE_SCHEME" />. Par défaut, l'URL de mise à jour du Chrome Web Store est utilisée. L'URL de mise à jour spécifiée dans cette règle ne sert que pour l'installation initiale. Toute mise à jour ultérieure de l'extension utilise l'URL de mise à jour indiquée dans le fichier manifeste de l'extension.
+
+       Remarque : cette règle ne s'applique pas en mode navigation privée. Pour en savoir plus sur l'hébergement des extensions, consultez la page https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="5847509620317822100">Cette fonctionnalité a été supprimée dans Chrome 100.
 
       Si cette règle est activée, les applications précédemment installées par l'utilisateur sur d'autres appareils sont recommandées. Si aucun texte de recherche n'a été saisi, ces recommandations sont affichées dans le lanceur d'applications après les recommandations d'applis locales.
@@ -5931,6 +5969,7 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
 
       Remarque : Si le mode de saisie actuel n'est pas compatible, la disposition du clavier matériel (si elle est autorisée) ou la première entrée valide dans cette liste est utilisée. Les modes de saisie non valides ou incompatibles sont ignorés.</translation>
 <translation id="6483115462650732746">Afficher le menu d'accessibilité flottant en mode Kiosque</translation>
+<translation id="6485036313708130232">Contrôler le nouveau comportement de l'événement beforeunload qui affiche la boîte de dialogue de confirmation d'annulation quand preventDefault est appelé</translation>
 <translation id="6489084406497912050">Permet de déterminer si les utilisateurs peuvent ajouter ou non des comptes Kerberos.
 
           Si cette règle est activée ou si elle n'est pas définie, les utilisateurs peuvent ajouter des comptes Kerberos via les paramètres de comptes Kerberos sur la page "Paramètres Kerberos". Ils ont le plein contrôle des comptes qu'ils ont ajoutés et peuvent ainsi les modifier ou les supprimer.
@@ -7210,6 +7249,13 @@ AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela po
 <translation id="7613115815080726221">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'action à effectuer en cas d'inactivité est réalisée.</translation>
 <translation id="7614663184588396421">Liste des schémas de protocole désactivés</translation>
 <translation id="7616631530432070402">Les suites de chiffrement 3DES seront activées dans TLS</translation>
+<translation id="7617710923960807616">Cette règle permet de définir si la boîte de dialogue de confirmation doit s'afficher ou non quand une page appelle preventDefault pour un événement beforeunload. Auparavant, <ph name="PRODUCT_NAME" /> n'affichait pas cette boîte de dialogue, mais le comportement par défaut est en train d'être modifié. Cette règle est un mécanisme de secours temporaire. Elle est destinée aux entreprises dont les sites ne fonctionnent plus en raison du nouveau comportement et qui nécessitent un certain temps avant d'être à nouveau opérationnels.
+
+Si cette règle est activée, la boîte de dialogue de confirmation d'annulation s'affiche quand une page appelle preventDefault pour un événement beforeunload.
+
+Si cette règle est désactivée, aucune boîte de dialogue de confirmation d'annulation ne s'affiche quand une page appelle preventDefault pour un événement beforeunload.
+
+Si cette règle n'est pas configurée, le comportement par défaut s'applique, conformément au calendrier de déploiement des fonctionnalités de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="761788785484453836">Exiger l'isolation pour tous les sites Web</translation>
 <translation id="7620869951155758729">Cette règle définit la configuration utilisée pour générer et valider le code d'accès parental.
 
@@ -8001,6 +8047,7 @@ Si l'une des règles suivantes est définie, cette règle doit être désactivé
        La valeur de cette règle est définie en millisecondes.</translation>
 <translation id="8330437518362176921">N'utiliser que l'URL de mise à jour fournie par la règle pour télécharger et mettre à jour les applis Chrome Kiosk</translation>
 <translation id="8331479227794770304">Activer les touches persistantes</translation>
+<translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
 <translation id="8337114537412769126">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche suggérée à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche suggérée sont envoyées à l'aide de la méthode GET.</translation>
@@ -8287,6 +8334,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="8623672932476443039">Si cette règle est activée, elle permet aux utilisateurs d'accéder au mode développeur pour les applis isolées.
       Si elle est désactivée, les utilisateurs ne pourront pas bénéficier de ce mode.
       Si cette règle n'est pas configurée, l'option par défaut n'est pas autorisée pour les utilisateurs gérés par une entreprise sur Chrome OS, mais est autorisée pour tous les autres utilisateurs et OS.</translation>
+<translation id="862621549134406761">Activer la vérification de l'utilisation des clés RSA</translation>
 <translation id="8626826495474944836">Exiger l'isolation de chaque site</translation>
 <translation id="8631314130868563649">Désactiver l'alimentation alternée en heures pleines</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>
@@ -8538,6 +8586,7 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les données 
 
 Si elle est désactivée, <ph name="PRODUCT_NAME" /> n'est disponible sur aucune page Web.</translation>
 <translation id="8864975621965365890">Supprime l'invite de fermeture qui s'affiche lors du rendu d'un site par <ph name="PRODUCT_FRAME_NAME" />.</translation>
+<translation id="8865404058177794289">Utiliser le paramètre par défaut concernant la vérification de l'utilisation des clés RSA</translation>
 <translation id="8866430022832109569">Rapports sur l'inventaire des applis</translation>
 <translation id="886645881209114007">Autoriser les utilisateurs à utiliser <ph name="PLUGIN_VM_NAME" /> dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8867894831390233044">Permet de déterminer si les utilisateurs peuvent se servir ou non du débogage à distance.

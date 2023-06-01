@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">알림 센터</translation>
 <translation id="1190678134285018527">기기를 이전 버전으로 되돌리세요</translation>
 <translation id="1195412055398077112">오버스캔</translation>
+<translation id="1195667586424773550">링크를 탭의 검색주소창으로 드래그하세요.</translation>
 <translation id="119944043368869598">모두 삭제</translation>
 <translation id="1199716647557067911">스위치 제어를 중지하시겠습니까?</translation>
 <translation id="1201402288615127009">다음</translation>
@@ -1808,6 +1809,7 @@
 <translation id="925832987464884575">미리보기 숨기기</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요구합니다.</translation>
 <translation id="938963181863597773">오늘 내 일정이 어떻게 돼?</translation>
+<translation id="945383118875625837">링크를 북마크바로 드래그</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="953431725143473984">기기를 종료하시겠습니까?</translation>

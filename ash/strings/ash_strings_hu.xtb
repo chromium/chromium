@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">Értesítési központ</translation>
 <translation id="1190678134285018527">Az eszköznek vissza kell térnie a korábbi verzióhoz</translation>
 <translation id="1195412055398077112">túlpásztázás</translation>
+<translation id="1195667586424773550">A link húzása a lap címsávjára</translation>
 <translation id="119944043368869598">Összes törlése</translation>
 <translation id="1199716647557067911">Biztosan kikapcsolja a Kapcsolóalapú hozzáférést?</translation>
 <translation id="1201402288615127009">Tovább</translation>
@@ -1809,6 +1810,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="925832987464884575">Előnézetek elrejtése</translation>
 <translation id="937214777182567951">A(z) <ph name="MANAGER" /> megköveteli, hogy azonnal frissítse <ph name="DEVICE_TYPE" /> eszközét</translation>
 <translation id="938963181863597773">Mi van a naptáramban?</translation>
+<translation id="945383118875625837">Link húzása a könyvjelzősávra</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="951991426597076286">Elutasítás</translation>
 <translation id="953431725143473984">Leállítja az eszközt?</translation>

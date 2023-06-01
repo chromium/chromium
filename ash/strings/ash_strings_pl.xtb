@@ -49,6 +49,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
 <translation id="1190678134285018527">Na tym urządzeniu należy przywrócić wcześniejszą wersję systemu operacyjnego</translation>
 <translation id="1195412055398077112">nadmiarowość obrazu</translation>
+<translation id="1195667586424773550">Przeciągnij link na pasek adresu na karcie</translation>
 <translation id="119944043368869598">Wyczyść wszystko</translation>
 <translation id="1199716647557067911">Czy na pewno chcesz wyłączyć Switch Access?</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -62,6 +63,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1235458158152011030">Znane sieci</translation>
 <translation id="1239161794459865856">Funkcja <ph name="FEATURE_NAME" /> ma połączenie.</translation>
 <translation id="1240638468526743569">Aplikacja</translation>
+<translation id="1242704516557658755">Przełącz się wstecz na liście ostatnio używanych okien</translation>
 <translation id="124678866338384709">Zamknij bieżącą kartę</translation>
 <translation id="1246890715821376239">Nieobsługiwane aplikacje</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
@@ -73,6 +75,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
 <translation id="1275285675049378717">Zasilanie przez <ph name="POWER_SOURCE" /></translation>
+<translation id="1276975447697633661">Wybierz plik i naciśnij <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Znajdź telefon</translation>
 <translation id="1287002645302686982">Istnieje już zapisane biurko o nazwie <ph name="DESK_TEMPLATE_NAME" /></translation>
@@ -240,6 +243,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1998100899771863792">Bieżące biurko</translation>
 <translation id="2001444736072756133">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje.</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
+<translation id="2017998995161831444">Otwórz „Pomoc” w aplikacji Odkrywaj</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
 <translation id="2023558322300866873">Przechwytywanie pakietów możesz zatrzymać w dowolnym momencie</translation>
@@ -344,6 +348,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2528111225373402384">Ustawienia hotspota</translation>
 <translation id="2530896289327917474">Włącz lub wyłącz przeglądanie przy użyciu kursora</translation>
 <translation id="2531025035050312891">wolne urządzenie</translation>
+<translation id="2531107890083353124">Podczas przeciągania karty naciśnij <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
 <translation id="2549711466868162843">Polepsz oświetlenie</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
@@ -389,6 +394,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2750932254614666392">„Usuń”</translation>
 <translation id="2750941250130734256">Aktywne okno zostało oddokowane.</translation>
 <translation id="2761723519669354964">Otwórz podświetlony element z półki</translation>
+<translation id="2774348302533424868"><ph name="MODIFIER" /> <ph name="DELIMITER" /> klawisz od <ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="2778650143428714839">Urządzenie <ph name="DEVICE_TYPE" /> zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Zamknij tryb przechwytywania</translation>
 <translation id="2785499565474703580">1 połączone urządzenie</translation>
@@ -422,6 +428,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
 <translation id="2942516765047364088">Pozycja półki</translation>
 <translation id="2946119680249604491">Dodaj połączenie</translation>
+<translation id="2949420361496057765">Naciśnij <ph name="MODIFIER" /> i kliknij link</translation>
 <translation id="295852781144570696">Dźwięki z urządzenia</translation>
 <translation id="2960314608273155470">Tryb przechwytywania, domyślny to <ph name="SOURCE" /> <ph name="TYPE" />. Aby poruszać się za pomocą klawiatury, naciśnij Tab.</translation>
 <translation id="2961963223658824723">Coś poszło nie tak. Spróbuj ponownie za kilka sekund.</translation>
@@ -527,6 +534,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
 <translation id="3413817803639110246">Na razie nie ma nic do pokazania</translation>
 <translation id="3417835166382867856">Wyszukaj karty</translation>
+<translation id="3426253816581969877">Naciśnij i przytrzymaj <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" />, naciskaj <ph name="KEY" /> aż przejdziesz do okna, które chcesz otworzyć, i zwolnij klawisze</translation>
 <translation id="3428447136709161042">Odłączyć od sieci <ph name="NETWORK_NAME" />?</translation>
 <translation id="3430396595145920809">Aby wrócić, przesuń palcem od prawej strony</translation>
 <translation id="3431517721463707585">Biurko 14</translation>
@@ -541,6 +549,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="346243998268439747">Resetuj poziom powiększenia</translation>
 <translation id="3465223694362104965">Od czasu Twojego ostatniego logowania do tego urządzenia podłączono inną klawiaturę. Zanim jej użyjesz, upewnij się, że masz do niej zaufanie.</translation>
 <translation id="3465356146291925647">Zarządzana przez administratora</translation>
+<translation id="347117769229524881"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
 <translation id="3477079411857374384">Control+Shift+spacja</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Półka ukryta automatycznie</translation>
@@ -605,6 +614,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3677931086890821290">Ta funkcja sprawia, że wszystkie aplikacje i strony, które mają dostęp do lokalizacji, a także ChromeOS, mogą korzystać z Wi-Fi i sieci komórkowych do geolokalizacji.</translation>
 <translation id="3679827876008292680">Przejdź do ostatniej karty w oknie</translation>
 <translation id="36813544980941320">Twój telefon i <ph name="DEVICE_NAME" /> będą wspólnie korzystać z sieci Wi-Fi</translation>
+<translation id="3682279812299376603"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Witryny</translation>
 <translation id="3702809606464356667">Pokazuję okna z aktualnego biurka, naciśnij klawisz strzałki w górę, aby wyświetlić okna ze wszystkich biurek</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
@@ -620,6 +630,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3765841986579723851">Edytowane dzisiaj</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
+<translation id="3781910048497807059">Przenieś zaznaczenie na poprzedni panel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
 <translation id="3796198851576711985">stan baterii</translation>
@@ -632,6 +643,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="383058930331066723">Włączone jest oszczędzanie baterii.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="384082539148746321">Usunąć szablon?</translation>
+<translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" />, a potem <ph name="KEY_ONE" /> lub <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /> lub <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
@@ -757,6 +769,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
+<translation id="4427695046139341014">Panel gier</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4435022394553622295">Wyświetlaj powiadomienia i aplikacje z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">Aplikacje są posortowane według nazwy</translation>
@@ -789,6 +802,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4541706525461326392">Usuwam profil. Może to potrwać kilka minut.</translation>
 <translation id="4544483149666270818">Wybierz okno, które chcesz nagrać</translation>
 <translation id="454541942614298893">moje urządzenie</translation>
+<translation id="4545950850562423083">Zapisz bieżącą stronę jako zakładkę</translation>
 <translation id="4548482551627849548">Przenieś aktywne okno na biurko po lewej</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -845,8 +859,10 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4789348252524569426">Nie udało się zainstalować plików z mową. Urządzenie wymaga aktualizacji. Uruchom je ponownie i spróbuj jeszcze raz.</translation>
 <translation id="478959186716341421">Przesyłanie</translation>
 <translation id="4798622944000246716">Twoja sieć komórkowa nie obsługuje hotspota</translation>
+<translation id="4798888871844665150">Element został już skopiowany do schowka. Aby go wyświetlić, naciśnij <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
+<translation id="4813311884204119883">Przeciągnij link na pusty obszar na pasku kart</translation>
 <translation id="4814539958450445987">Ekran logowania</translation>
 <translation id="481455355267255546">Następne</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
@@ -854,6 +870,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
 <translation id="485634149294284819">Otwórz menu klawiatury</translation>
 <translation id="485806788160414322">Odtwórz lub wstrzymaj multimedia</translation>
+<translation id="4858764087721901597"><ph name="MODIFIER_ONE" />, a potem <ph name="KEY_ONE" /> lub <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /> lub <ph name="KEY_FOUR" /></translation>
 <translation id="4860284199500934869">Aby pobrać plik <ph name="FILENAME" />, sprawdź połączenie sieciowe</translation>
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4864648187878336334">Biurko 15</translation>
@@ -943,6 +960,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5229343007215035173">Włącz/wyłącz filtr prywatności</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
+<translation id="5238719049014159442">Otwórz/zamknij Menu z aplikacjami</translation>
 <translation id="5245201184978705914">Nie udało się wygenerować transkrypcji</translation>
 <translation id="5253783950165989294">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" />, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nie ma zapisanych biurek</translation>
@@ -996,6 +1014,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5463129623250377817">Wytnij zaznaczoną treść i przenieś ją do schowka</translation>
 <translation id="5465662442746197494">Potrzebujesz pomocy?</translation>
 <translation id="547979256943495781">Półka po prawej</translation>
+<translation id="5482205457807971887"><ph name="MODIFIER_ONE" /> + <ph name="KEY_ONE" /> lub <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Dostępne są aktualizacje oprogramowania</translation>
 <translation id="5503884284981862082">Otwórz/zamknij Asystenta Google</translation>
 <translation id="5506975627792768506">Włącz lub wyłącz lupę</translation>
@@ -1187,6 +1206,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone</translation>
+<translation id="6348449481487610270"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY_ONE" />, a potem <ph name="MODIFIER_THREE" /> + <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">SUGEROWANE APLIKACJE</translation>
 <translation id="6352082849089527770">Nieznane sieci</translation>
 <translation id="6359587239691116345">Zainstaluj najnowsze funkcje i poprawki zabezpieczeń. Jeśli odrzucisz tę aktualizację, urządzenie może przestać działać prawidłowo i możesz mieć problemy z bezpieczeństwem i wydajnością.</translation>
@@ -1232,6 +1252,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6537924328260219877">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
 <translation id="6565007273808762236">Połączenie eSIM jest niedostępne</translation>
@@ -1248,6 +1269,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
 <translation id="6625718907317144388">Powiadomienia z aplikacji <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> oraz inne powiadomienia zostały ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
+<translation id="662830937908749204">Przenieś zaznaczenie na następny panel</translation>
 <translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6641720045729354415">Włącz lub wyłącz napisy na żywo. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
@@ -1406,6 +1428,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7401222354741467707">Zrób zrzut lub nagranie całego ekranu</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="7406608787870898861">Dokończ konfigurowanie sieci komórkowej</translation>
+<translation id="7406854842098869085">Naciśnij i przytrzymaj <ph name="MODIFIER_1" />, naciskaj <ph name="KEY" />, aż przejdziesz do okna, które chcesz otworzyć, i zwolnij klawisze</translation>
 <translation id="740790383907119240">Skróty do aplikacji</translation>
 <translation id="7413851974711031813">Naciśnij Escape, aby zamknąć</translation>
 <translation id="7416471219712049036">Zapisz bieżącą stronę</translation>
@@ -1485,6 +1508,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
 <translation id="77365090426890123">wykorzystanie pamięci</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
+<translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7768784765476638775">Przeczytaj na głos</translation>
@@ -1501,6 +1525,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7842569679327885685">Ostrzeżenie: funkcja eksperymentalna</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7848989271541991537">Przeniesiono do strony <ph name="PAGE_NUMBER" />, wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851039877802112575">Przenieś zaznaczenie na wyskakujące okienka i okna dialogowe</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7862292329216937261">Aby korzystać z urządzenia jako gość, musisz się wylogować i kliknąć Przeglądaj jako gość u dołu ekranu.</translation>
@@ -1635,8 +1660,10 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8426708595819210923">Dobry wieczór <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8428810263141909179"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> <ph name="DELIMITER" /> klawisz od <ph name="KEY_ONE" /> do <ph name="KEY_TWO" /></translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8433977262951327081">Zmieniliśmy skrót, który pokazuje dymek menu opcji wejścia na półce. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="8437311513256731931">Otwórz narzędzie do przesyłania opinii</translation>
 <translation id="8443879455002739353">„Kopiuj”</translation>
 <translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
@@ -1665,6 +1692,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="856298576161209842"><ph name="MANAGER" /> zaleca aktualizację tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Ustawienia powiadomień</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
+<translation id="8581946341807941670">Naciśnij <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> i kliknij link</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Posortuj aplikacje według nazwy lub koloru</translation>
 <translation id="8609384513243082612">Otwórz nową kartę</translation>
@@ -1687,6 +1715,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
+<translation id="8704155109538237473">Zaznacz okno z obrazem w obrazie</translation>
 <translation id="870917907284186124">Włącz/wyłącz dyktowanie (pisanie głosowe)</translation>
 <translation id="8717459106217102612">Zaznacz poprzednie słowo lub znak</translation>
 <translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
@@ -1807,6 +1836,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="925832987464884575">Ukryj podglądy</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> wymaga jak najszybszego zaktualizowania urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
+<translation id="945383118875625837">Przeciągnij link na pasek zakładek</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="951991426597076286">Odrzuć</translation>
 <translation id="953431725143473984">Wyłączyć urządzenie?</translation>

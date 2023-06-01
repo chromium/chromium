@@ -49,6 +49,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1190609913194133056">Bildirishnomalar markazi</translation>
 <translation id="1190678134285018527">Qurilma tizimi eski versiyasiga qaytarilishi kerak</translation>
 <translation id="1195412055398077112">overscan</translation>
+<translation id="1195667586424773550">Havolani varaqning manzil qatoriga sudrang</translation>
 <translation id="119944043368869598">Barchasini tozalash</translation>
 <translation id="1199716647557067911">Switch Access funksiyasi faolsizlantirilsinmi?</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
@@ -444,6 +445,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3036649622769666520">Ochiq fayllar</translation>
 <translation id="3038571455154067151">Kirish uchun Family Link ota-ona ruxsat kodini tering</translation>
 <translation id="3039939407102840004">Stilus batareyasi <ph name="PERCENTAGE" />%.</translation>
+<translation id="304097922505898963">Key Shortcuts ilovasini ochish</translation>
 <translation id="3045488863354895414">Xayrli kun,</translation>
 <translation id="3047761520276763270">Aytib koʻring:</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
@@ -1113,6 +1115,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6012623610530968780">Sahifa: <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Paneldagi keyingi elementni ajratish koʻrsatish</translation>
 <translation id="6018164090099858612">Translatsiya rejimidan chiqish</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Chapga aylantirish</translation>
 <translation id="6022924867608035986">Qidiruv oynasidagi matnni tozalash</translation>
 <translation id="602472752137106327">Barcha ish stollari oynalarini chiqarish, radio tugma tanlandi</translation>
@@ -1806,6 +1809,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="925832987464884575">Razm solishni faolsizlantirish</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> tizimini yangilashni talab qilmoqda.</translation>
 <translation id="938963181863597773">Taqvimda nima bor?</translation>
+<translation id="945383118875625837">Havolani xatcho‘plar paneliga sudrash</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="953431725143473984">Qurilma oʻchirilsinmi?</translation>

@@ -2298,6 +2298,7 @@
 <translation id="2923234477033317484">Бұл аккаунтты өшіру</translation>
 <translation id="2923644930701689793">Телефон камерасының суреттер қалтасына кіру</translation>
 <translation id="292371311537977079">Chrome параметрлері</translation>
+<translation id="2925658782192398150">Аяқталды, ешқандай мәселе табылмады.</translation>
 <translation id="2926085873880284723">Әдепкі таңбашаларды қалпына келтіру</translation>
 <translation id="2926620265753325858">"<ph name="DEVICE_NAME" />" құрылғысына қолдау көрсетілмейді.</translation>
 <translation id="2927017729816812676">Кэш жады</translation>
@@ -3752,6 +3753,7 @@
 <translation id="42126664696688958">Экспорттау</translation>
 <translation id="42137655013211669">Бұл ресурсқа кіруге сервер тыйым салған.</translation>
 <translation id="4214192212360095377">Қазір өшіру</translation>
+<translation id="4217558091331485702">Ашпас бұрын сканерлеу</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4218081191298393750">Бұл қойынды индикаторының дыбысын өшіру үшін динамик белгішесін басыңыз.</translation>
 <translation id="4220648711404560261">Іске қосу кезінде қате шықты.</translation>
@@ -7857,7 +7859,6 @@
 <translation id="7835178595033117206">Бетбелгі өшірілген</translation>
 <translation id="7836577093182643605">Сіз бөгеген және сайттармен бөлісуді қаламайтын тақырыптар тізімі</translation>
 <translation id="7836850009646241041">Қауіпсіздік кілтін тағы түртіп көріңіз.</translation>
-<translation id="7837290304480415481">Рұқсаттар мен параметрлерді басқару</translation>
 <translation id="7837776265184002579">Негізгі бет <ph name="URL" /> болып өзгерді.</translation>
 <translation id="7838838951812478896">"<ph name="NETWORK_NAME" />" тіркелу дерегі <ph name="DEVICE_NAME" /> құрылғысынан сақталмады</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> құрылғысына жіберілді}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> құрылғысына жіберілді}}</translation>

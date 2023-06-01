@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">ቅጥያው ተነቅሏል</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ወር ቀርቷል}one{# ወሮች ቀርተዋል}other{# ወሮች ቀርተዋል}}</translation>
 <translation id="4888938634149558681">ጥሪ ያድርጉ</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />፣ <ph name="TYPE_2" />፣, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ሰከንድ}one{# ሰከንዶች}other{# ሰከንዶች}}</translation>
 <translation id="4971687151119236543">የሚዲያ ቀዳሚ ትራክ</translation>
 <translation id="5046499563572181734">እዚህ መታ ያድርጉ</translation>

@@ -1244,6 +1244,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4031179711345676612">Micrófono permitido</translation>
 <translation id="4040350669425716613">Colegios universitarios y universidades</translation>
 <translation id="4047351652147966654">45.72 × 60.96 cm</translation>
+<translation id="404831776305217138">La URL de actualización para la extensión con el ID "<ph name="EXTENSION_ID" />" no es válida o utiliza un esquema no compatible. Los esquemas compatibles son <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> y <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Podrás usarla en todos los productos de Google</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2294,6 +2295,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6569366777234823130">Películas de drama</translation>
 <translation id="6573200754375280815">Perforación doble a la derecha</translation>
 <translation id="6576181918031900030">Comenzar a transmitir contenido</translation>
+<translation id="6578434528542148658">El ID de la extensión no es válido.</translation>
 <translation id="657902945730878902">Dibujo y coloreado</translation>
 <translation id="6579630537141957243">¿Quieres conectar un dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>

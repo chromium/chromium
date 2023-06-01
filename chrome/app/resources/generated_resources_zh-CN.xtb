@@ -2293,6 +2293,7 @@
 <translation id="2923234477033317484">移除此帐号</translation>
 <translation id="2923644930701689793">访问您手机的相机胶卷</translation>
 <translation id="292371311537977079">Chrome 设置</translation>
+<translation id="2925658782192398150">已完成，未发现任何问题</translation>
 <translation id="2926085873880284723">恢复默认快捷方式</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" />不受支持。</translation>
 <translation id="2927017729816812676">缓存空间</translation>
@@ -3746,6 +3747,7 @@
 <translation id="42126664696688958">导出</translation>
 <translation id="42137655013211669">服务器禁止访问此资源。</translation>
 <translation id="4214192212360095377">立即关闭</translation>
+<translation id="4217558091331485702">打开前先扫描</translation>
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4218081191298393750">点击扬声器图标即可将此标签页静音</translation>
 <translation id="4220648711404560261">激活时出错。</translation>
@@ -7850,7 +7852,6 @@
 <translation id="7835178595033117206">已移除书签</translation>
 <translation id="7836577093182643605">主题列表，这些主题已被您屏蔽，因为您不想将它们分享给网站</translation>
 <translation id="7836850009646241041">请再次尝试轻触您的安全密钥</translation>
-<translation id="7837290304480415481">管理权限和设置</translation>
 <translation id="7837776265184002579">您的主页已改为 <ph name="URL" />。</translation>
 <translation id="7838838951812478896">未能保存由“<ph name="DEVICE_NAME" />”分享的“<ph name="NETWORK_NAME" />”</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}other{已向“<ph name="DEVICE_NAME" />”发送 <ph name="ATTACHMENTS" />}}</translation>

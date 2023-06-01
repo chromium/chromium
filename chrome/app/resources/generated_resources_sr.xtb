@@ -2300,6 +2300,7 @@
 <translation id="2923234477033317484">Уклони овај налог</translation>
 <translation id="2923644930701689793">Приступајте садржају са телефона</translation>
 <translation id="292371311537977079">Подешавања Chrome-а</translation>
+<translation id="2925658782192398150">Готово, није пронађен ниједан проблем</translation>
 <translation id="2926085873880284723">Врати подразумеване пречице</translation>
 <translation id="2926620265753325858">Уређај <ph name="DEVICE_NAME" /> није подржан.</translation>
 <translation id="2927017729816812676">Меморијски простор кеша</translation>
@@ -3754,6 +3755,7 @@
 <translation id="42126664696688958">Извези</translation>
 <translation id="42137655013211669">Сервер је забранио приступ овом ресурсу.</translation>
 <translation id="4214192212360095377">Искључи</translation>
+<translation id="4217558091331485702">Скенирајте пре отварања</translation>
 <translation id="4217571870635786043">Диктирање</translation>
 <translation id="4218081191298393750">Кликните на икону звучника да бисте искључили звук за ову картицу</translation>
 <translation id="4220648711404560261">Дошло је до грешке при активацији.</translation>
@@ -7867,7 +7869,6 @@
 <translation id="7835178595033117206">Обележивач је уклоњен</translation>
 <translation id="7836577093182643605">Листа тема које сте блокирали и за које не желите да се деле са сајтовима</translation>
 <translation id="7836850009646241041">Поново додирните безбедносни кључ</translation>
-<translation id="7837290304480415481">Управљајте дозволама и подешавањима</translation>
 <translation id="7837776265184002579">Почетна страница је промењена у <ph name="URL" />.</translation>
 <translation id="7838838951812478896"><ph name="NETWORK_NAME" /> – чување није успело са: <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{Ставке (<ph name="ATTACHMENTS" />) су послате на уређај <ph name="DEVICE_NAME" />}one{Ставке (<ph name="ATTACHMENTS" />) су послате на уређај <ph name="DEVICE_NAME" />}few{Ставке (<ph name="ATTACHMENTS" />) су послате на уређај <ph name="DEVICE_NAME" />}other{Ставке (<ph name="ATTACHMENTS" />) су послате на уређај <ph name="DEVICE_NAME" />}}</translation>

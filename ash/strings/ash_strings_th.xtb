@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
 <translation id="1190678134285018527">อุปกรณ์ต้องกลับไปใช้เวอร์ชันก่อนหน้า</translation>
 <translation id="1195412055398077112">โอเวอร์สแกน</translation>
+<translation id="1195667586424773550">ลากลิงก์ไปยังแถบที่อยู่ของแท็บ</translation>
 <translation id="119944043368869598">ล้างทั้งหมด</translation>
 <translation id="1199716647557067911">คุณแน่ใจไหมว่าต้องการปิดการเข้าถึงด้วยสวิตช์</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -1804,6 +1805,7 @@
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> กำหนดให้คุณต้องอัปเดต <ph name="DEVICE_TYPE" /> โดยทันที</translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
+<translation id="945383118875625837">ลากลิงก์ไปยังแถบบุ๊กมาร์ก</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>
 <translation id="953431725143473984">ปิดอุปกรณ์ใช่ไหม</translation>

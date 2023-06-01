@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
 <translation id="1190678134285018527">यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नु पर्छ</translation>
 <translation id="1195412055398077112">अत्याधिकस्क्यान</translation>
+<translation id="1195667586424773550">लिंकलाई ट्याबको ठेगाना पट्टीमा ड्र्याग गर्नुहोस्</translation>
 <translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
 <translation id="1199716647557067911">तपाईंलाई साँच्चिकै स्विचमार्फत पहुँच राख्ने सुविधा निष्क्रिय पार्न चाहनुहुन्छ?</translation>
 <translation id="1201402288615127009">अर्को</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
 <translation id="3038571455154067151">साइन इन गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्</translation>
 <translation id="3039939407102840004">स्टाइलसको ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत बाँकी छ।</translation>
+<translation id="304097922505898963">Key Shortcuts एप खोल्नुहोस्</translation>
 <translation id="3045488863354895414">नमस्ते,</translation>
 <translation id="3047761520276763270">यसो भनी हेर्नुहोस्:</translation>
 <translation id="3055162170959710888">तपाईंले आज यो डिभाइस <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
@@ -1113,6 +1115,7 @@
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> मध्ये <ph name="SELECTED_PAGE" /> पृष्ठ</translation>
 <translation id="601304062528754300">सेल्फमा भएको अर्को वस्तु हाइलाइट गर्नुहोस्</translation>
 <translation id="6018164090099858612">मिरर मोडबाट बाहिर निस्कँदै</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">बायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="6022924867608035986">खोजबाकसको पाठ खाली गर्नुहोस्</translation>
 <translation id="602472752137106327">सबै डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
@@ -1806,6 +1809,7 @@
 <translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> का अनुसार तपाईंले तुरुन्तै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
+<translation id="945383118875625837">लिंकलाई ड्र्याग गरी पुस्तक चिन्ह पट्टीमा लैजानुहोस्</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="953431725143473984">डिभाइस सट डाउन गर्ने हो?</translation>

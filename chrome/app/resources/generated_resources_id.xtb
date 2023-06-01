@@ -2316,6 +2316,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2923234477033317484">Hapus akun ini</translation>
 <translation id="2923644930701689793">Mengakses rol kamera ponsel Anda</translation>
 <translation id="292371311537977079">Setelan Chrome</translation>
+<translation id="2925658782192398150">Selesai, tidak ditemukan masalah</translation>
 <translation id="2926085873880284723">Pulihkan pintasan default</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> tidak didukung.</translation>
 <translation id="2927017729816812676">Penyimpanan Cache</translation>
@@ -3770,6 +3771,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="42126664696688958">Ekspor</translation>
 <translation id="42137655013211669">Akses ke sumber daya ini tidak diizinkan oleh server.</translation>
 <translation id="4214192212360095377">Nonaktifkan Sekarang</translation>
+<translation id="4217558091331485702">Pindai sebelum membuka</translation>
 <translation id="4217571870635786043">Dikte</translation>
 <translation id="4218081191298393750">Klik ikon speaker untuk membisukan tab ini</translation>
 <translation id="4220648711404560261">Terjadi error selama aktivasi.</translation>
@@ -7879,7 +7881,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7835178595033117206">Bookmark dihapus</translation>
 <translation id="7836577093182643605">Daftar topik yang Anda blokir dan tidak ingin dibagikan ke situs</translation>
 <translation id="7836850009646241041">Coba sentuh lagi kunci keamanan Anda</translation>
-<translation id="7837290304480415481">Mengelola izin dan setelan</translation>
 <translation id="7837776265184002579">Beranda diubah menjadi <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Tidak dapat menyimpan '<ph name="NETWORK_NAME" />' dari <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> dikirim ke <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> dikirim ke <ph name="DEVICE_NAME" />}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Desktops</translation>
 <translation id="1018219910092211213">DNS kann nicht aufgelöst werden</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1020274983236703756">Exklusive <ph name="PRODUCT_NAME" />-Assets jetzt verfügbar</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> Threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Neue Funktion verfügbar. Verwende den Aufwärtspfeil, um mehr zu erfahren.</translation>
@@ -268,6 +269,7 @@
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
+<translation id="3248223063252096240">Exklusiv für <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Fehlgeschlagen – Druckerklappe offen</translation>
 <translation id="3275729367986477355">Avatarbild</translation>
 <translation id="3283504360622356314">{0,plural, =1{Datei bearbeiten}other{Dateien bearbeiten}}</translation>
@@ -320,6 +322,7 @@
 <translation id="3632579075709132555">Privatsphärefunktion</translation>
 <translation id="3639846061339007994">oben</translation>
 <translation id="3651050199673793219">Temperatureinheit auswählen</translation>
+<translation id="3663574643422533538">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> – Test</translation>
 <translation id="370665806235115550">Wird geladen...</translation>
 <translation id="3708186454126126312">Zuletzt verbundene Geräte</translation>
@@ -369,6 +372,7 @@
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Album <ph name="TITLE" /> <ph name="DESC" /> auswählen</translation>
 <translation id="4111761024568264522">USB-Touchpad</translation>
+<translation id="4113067922640381334">Neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> jetzt verfügbar</translation>
 <translation id="4117637339509843559">Dunkler Modus</translation>
 <translation id="4130035430755296270">Für weitere Layoutoptionen Mauszeiger weiter darauf halten</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
@@ -931,6 +935,7 @@
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8593058461203131755">Medienwiedergabe pausieren</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
+<translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>
 <translation id="8651481478098336970">Stummschalten</translation>
 <translation id="8655295600908251630">Kanal</translation>

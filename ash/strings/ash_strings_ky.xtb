@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
 <translation id="1190678134285018527">Түзмөктү мурунку версияга кайтаруу керек</translation>
 <translation id="1195412055398077112">иштебеген аймак</translation>
+<translation id="1195667586424773550">Шилтемени өтмөктүн дарек тилкесине сүйрөңүз</translation>
 <translation id="119944043368869598">Баарын тазалоо</translation>
 <translation id="1199716647557067911">Switch Access функциясын чын эле өчүрөсүзбү?</translation>
 <translation id="1201402288615127009">Кийинки</translation>
@@ -444,6 +445,7 @@
 <translation id="3036649622769666520">Файлдарды ачуу</translation>
 <translation id="3038571455154067151">Кирүү үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="3039939407102840004">Стилус батареясынын кубаты <ph name="PERCENTAGE" /> пайыз.</translation>
+<translation id="304097922505898963">Key Shortcuts колдонмосун ачуу</translation>
 <translation id="3045488863354895414">Кутман күнүңүз менен,</translation>
 <translation id="3047761520276763270">Мындай деп көрүңүз:</translation>
 <translation id="3055162170959710888">Бүгүн бул түзмөктү <ph name="USED_TIME" /> колдондуңуз</translation>
@@ -1113,6 +1115,7 @@
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> барактын ичинен <ph name="SELECTED_PAGE" /> барак</translation>
 <translation id="601304062528754300">Текчедеги кийинки нерсени бөлүп көрсөтүү</translation>
 <translation id="6018164090099858612">Күзгү режиминен чыгууда</translation>
+<translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Солго сыдыруу</translation>
 <translation id="6022924867608035986">Издөө кутучасындагы текстти тазалоо</translation>
 <translation id="602472752137106327">Бардык иш такталардагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
@@ -1806,6 +1809,7 @@
 <translation id="925832987464884575">Алдын ала көрүүнү жашыруу</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү дароо жаңыртууну талап кылууда</translation>
 <translation id="938963181863597773">Жылнаамада эмне бар?</translation>
+<translation id="945383118875625837">Шилтемени кыстармалар тилкесине сүйрөө</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="951991426597076286">Четке кагуу</translation>
 <translation id="953431725143473984">Түзмөк өчүрүлсүнбү?</translation>

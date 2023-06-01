@@ -1243,6 +1243,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4031179711345676612">Mikrofona izin verildi</translation>
 <translation id="4040350669425716613">Liseler ve üniversiteler</translation>
 <translation id="4047351652147966654">18 x 24 inç</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" kimliğine sahip uzantının güncelleme URL'si geçersiz veya desteklenmeyen bir şema kullanıyor. Desteklenen şemalar şunlardır: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ve <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Bu adresi Google ürünlerinde kullanabilirsiniz</translation>
 <translation id="405399507749852140">Herhangi bir sitedeki fiyat düşüşüyle ilgili uyarıları alın</translation>
 <translation id="4056223980640387499">Sepya Tonu</translation>
@@ -2293,6 +2294,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6569366777234823130">Drama filmleri</translation>
 <translation id="6573200754375280815">Sağda ikili delik</translation>
 <translation id="6576181918031900030">Yayını başlat</translation>
+<translation id="6578434528542148658">Geçersiz uzantı kimliği.</translation>
 <translation id="657902945730878902">Çizim ve boyama</translation>
 <translation id="6579630537141957243">MIDI cihazına bağlanılsın mı?</translation>
 <translation id="6579990219486187401">Açık Pembe</translation>

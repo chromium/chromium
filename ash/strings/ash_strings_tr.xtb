@@ -49,6 +49,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
 <translation id="1190678134285018527">Cihazın önceki sürüme dönmesi gerekiyor</translation>
 <translation id="1195412055398077112">fazla tarama</translation>
+<translation id="1195667586424773550">Bağlantıyı sekmenin adres çubuğuna sürükleyin</translation>
 <translation id="119944043368869598">Tümünü temizle</translation>
 <translation id="1199716647557067911">Anahtar Erişimi'ni kapatmak istediğinizden emin misiniz?</translation>
 <translation id="1201402288615127009">İleri</translation>
@@ -444,6 +445,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3036649622769666520">Dosya Aç</translation>
 <translation id="3038571455154067151">Oturum açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="3039939407102840004">Ekran kalemi pil seviyesi yüzde <ph name="PERCENTAGE" />.</translation>
+<translation id="304097922505898963">Tuş Kısayolları uygulamasını açın</translation>
 <translation id="3045488863354895414">İyi günler,</translation>
 <translation id="3047761520276763270">Şunu demeyi deneyin:</translation>
 <translation id="3055162170959710888">Bugün bu cihazı <ph name="USED_TIME" /> kullandınız</translation>
@@ -1113,6 +1115,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6012623610530968780">Sayfa <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Rafta sonraki öğeyi vurgulayın</translation>
 <translation id="6018164090099858612">Ayna modundan çıkılıyor</translation>
+<translation id="6019566113895157499">Tuş Kısayolları</translation>
 <translation id="602001110135236999">Sola kaydır</translation>
 <translation id="6022924867608035986">Arama kutusu metnini temizle</translation>
 <translation id="602472752137106327">Tüm masalardaki pencereleri göster, radyo düğmesi seçildi</translation>
@@ -1806,6 +1809,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="925832987464884575">Önizlemeleri gizle</translation>
 <translation id="937214777182567951"><ph name="MANAGER" />, hemen <ph name="DEVICE_TYPE" /> cihazınızı güncellemenizi gerektiriyor</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>
+<translation id="945383118875625837">Bağlantıyı yer işaretleri çubuğuna sürükleyin</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="951991426597076286">Reddet</translation>
 <translation id="953431725143473984">Cihaz kapatılsın mı?</translation>

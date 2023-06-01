@@ -3489,6 +3489,14 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor a esta política o se deja en blanco, se utilizará la página Nueva pestaña predeterminada.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
+<translation id="4164511138197196839">Si se habilita esta política, las extensiones cuya publicación se haya anulado en Chrome Web Store se inhabilitarán en <ph name="PRODUCT_NAME" />.
+Esta política solo se aplica a las extensiones que se instalan y actualizan desde Chrome Web Store.
+
+Se ignoran las extensiones no incluidas en la tienda, como las que se descomprimen en el modo Desarrollador o las que se instalan mediante el interruptor de la línea de comandos.
+Las extensiones de instalación forzada que estén alojadas en servidores propios se ignorarán. También se ignoran todas las extensiones con una versión fija.
+
+Si se le asigna el valor <ph name="ALLOW_UNPUBLISHED" /> (0) a esta política o no se define, se permitirán las extensiones no publicadas en Chrome Web Store.
+Si se le asigna el valor <ph name="DISABLE_UNPUBLISHED" /> (1) a esta política, se inhabilitarán las extensiones que no estén publicadas en Chrome Web Store.</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4166174702671320480">Si se habilita esta política, se ignorarán las políticas procedentes de un grupo atómico que no compartan la fuente con mayor prioridad del grupo.
 
@@ -5253,6 +5261,21 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="583627479140113555">Habilitar la importación de las contraseñas guardadas en la primera ejecución</translation>
 <translation id="5838452040629810808">Habilitar el resaltado del cursor</translation>
 <translation id="5842283830553218200">Se usará el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados de forma predeterminada.</translation>
+<translation id="5844880038533636588">Si se define esta política, se especificará una lista de aplicaciones y extensiones que se instalarán de forma silenciosa, sin intervención del usuario, y que los usuarios no podrán desinstalar ni desactivar. Los permisos se concederán de forma implícita, incluidas las APIs de extensiones enterprise.deviceAttributes y enterprise.platformKeys. Estas dos APIs no estarán disponibles para las aplicaciones y extensiones que no se instalen de manera forzada.
+
+      Si no se asigna ningún valor a esta política, no se instalará automáticamente ninguna aplicación ni extensión y los usuarios podrán desinstalar cualquier aplicación o extensión en <ph name="PRODUCT_NAME" />.
+
+      Esta política sustituye a la política <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Si una aplicación o extensión que se haya instalado anteriormente de manera forzada se quita de esta lista, <ph name="PRODUCT_NAME" /> la desinstalará automáticamente.
+
+      En instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se instalan de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o <ph name="MS_AAD_NAME" />, o se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      En instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo pueden instalarse de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio mediante MCX o se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+      Los usuarios pueden modificar el código fuente de una extensión mediante las herramientas para desarrolladores, lo que podría provocar que la extensión no funcione correctamente. Si esto te preocupa, define la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Cada elemento de la lista de la política es una cadena que contiene un ID de extensión y, opcionalmente, una URL de actualización separados por punto y coma (;). El ID de extensión es la cadena de 32 letras que aparece, por ejemplo, en chrome://extensions si está habilitado el modo Desarrollador. Si se especifica, la URL de actualización debe dirigir a un documento XML de un archivo de manifiesto de actualización (https://developer.chrome.com/extensions/autoupdate). La URL de actualización debería usar uno de los siguientes esquemas: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. De forma predeterminada, se usa la URL de actualización de Chrome Web Store. La URL de actualización definida en esta política solo se usará para la instalación inicial. En las actualizaciones posteriores de la extensión se usará la URL de actualización indicada en el archivo de manifiesto de la extensión.
+
+       Nota: Esta política no se aplica al modo Incógnito. Consulta más información sobre el alojamiento de extensiones en https://developer.chrome.com/extensions/hosting.</translation>
 <translation id="5847509620317822100">Esta función se ha eliminado en Chrome 100.
 
       Si se habilita esta política, se mostrarán recomendaciones de aplicaciones instaladas anteriormente por el usuario en otros dispositivos. Estas recomendaciones aparecerán en el menú de aplicaciones después de las de aplicaciones locales si no se ha introducido ningún texto de búsqueda.

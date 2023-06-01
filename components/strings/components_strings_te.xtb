@@ -1245,6 +1245,7 @@
 <translation id="4031179711345676612">మైక్రోఫోన్ అనుమతించబడింది</translation>
 <translation id="4040350669425716613">కళాశాలలు &amp; విశ్వవిద్యాలయాలు</translation>
 <translation id="4047351652147966654">18 x 24 అంగుళాలు</translation>
+<translation id="404831776305217138">ID "<ph name="EXTENSION_ID" />" ఉన్న ఎక్స్‌టెన్షన్ కోసం అప్‌డేట్ URL చెల్లదు, లేదా సపోర్ట్ చేయని స్కీమ్‌ను ఉపయోగిస్తోంది. సపోర్ట్ ఉన్న స్కీమ్‌లు: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> ఇంకా <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">మీరు దానిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించగలరు</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
@@ -2295,6 +2296,7 @@
 <translation id="6569366777234823130">డ్రామా శైలి సినిమాలు</translation>
 <translation id="6573200754375280815">కుడివైపు రెండు రంధ్రాలు</translation>
 <translation id="6576181918031900030">ప్రసారాన్ని ప్రారంభించండి</translation>
+<translation id="6578434528542148658">చెల్లని ఎక్స్‌టెన్షన్ ID.</translation>
 <translation id="657902945730878902">డ్రాయింగ్ &amp; రంగులు వేయడం</translation>
 <translation id="6579630537141957243">MIDI పరికరానికి కనెక్ట్ చేయాలా?</translation>
 <translation id="6579990219486187401">లేత గులాబీ రంగు</translation>

@@ -49,6 +49,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1190609913194133056">Märguannete keskus</translation>
 <translation id="1190678134285018527">Seade peab kasutama operatsioonisüsteemi eelmist versiooni</translation>
 <translation id="1195412055398077112">liighälvitus</translation>
+<translation id="1195667586424773550">Lohistage link vahelehe aadressiribale</translation>
 <translation id="119944043368869598">Tühjenda kõik</translation>
 <translation id="1199716647557067911">Kas soovite lülitiga juurdepääsu kindlasti välja lülitada?</translation>
 <translation id="1201402288615127009">Järgmine</translation>
@@ -444,6 +445,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3036649622769666520">Failide avamine</translation>
 <translation id="3038571455154067151">Sisselogimiseks sisestage oma Family Linki vanema pääsukood</translation>
 <translation id="3039939407102840004">Elektronpliiatsi aku laetuse tase on <ph name="PERCENTAGE" />%.</translation>
+<translation id="304097922505898963">Avage rakendus Klaviatuuri otseteed</translation>
 <translation id="3045488863354895414">Tere päevast!</translation>
 <translation id="3047761520276763270">Püüdke öelda:</translation>
 <translation id="3055162170959710888">Kasutasite seda seadet täna <ph name="USED_TIME" /></translation>
@@ -1114,6 +1116,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Riiulil järgmise üksuse esiletõstmine</translation>
 <translation id="6018164090099858612">Peeglirežiimist väljumine</translation>
+<translation id="6019566113895157499">Klaviatuuri otseteed</translation>
 <translation id="602001110135236999">Keri vasakule</translation>
 <translation id="6022924867608035986">Kustuta otsingukastis olev tekst</translation>
 <translation id="602472752137106327">Valitud on raadionupp Näita kõikide töölaudade aknaid</translation>
@@ -1807,6 +1810,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="925832987464884575">Peida eelvaated</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi kohe</translation>
 <translation id="938963181863597773">Mis on minu kalendris?</translation>
+<translation id="945383118875625837">Lohistage link järjehoidjaribale</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
 <translation id="951991426597076286">Keeldu</translation>
 <translation id="953431725143473984">Kas lülitada seade välja?</translation>

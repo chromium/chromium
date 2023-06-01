@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">Центр сповіщень</translation>
 <translation id="1190678134285018527">На пристрої потрібно повернутися до попередньої версії</translation>
 <translation id="1195412055398077112">облямівка екрана</translation>
+<translation id="1195667586424773550">Перетягніть посилання в адресний рядок вкладки</translation>
 <translation id="119944043368869598">Очистити все</translation>
 <translation id="1199716647557067911">Вимкнути кнопковий доступ?</translation>
 <translation id="1201402288615127009">Далі</translation>
@@ -1808,6 +1809,7 @@
 <translation id="925832987464884575">Вимкнути попередній перегляд</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Які події заплановано?</translation>
+<translation id="945383118875625837">Перетягнути посилання на панель закладок</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="951991426597076286">Відхилити</translation>
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>

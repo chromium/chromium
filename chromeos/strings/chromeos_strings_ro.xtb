@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Tasta <ph name="KEY_NAME" /> nu a fost apăsată</translation>
 <translation id="1435763214710588005">Resetează automat utilizarea datelor în fiecare lună, în ziua selectată</translation>
 <translation id="1442433966118452622">Sursa imaginii</translation>
+<translation id="1449035143498573192">Deschide în Căutarea Google</translation>
 <translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Oferte</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Metode de introducere a textului</translation>
 <translation id="7955587717700691983">Tastatură Bluetooth</translation>
 <translation id="7960831585769876809">Temperatură</translation>
+<translation id="7971535376154084247">Comenzi generale</translation>
 <translation id="7977800524392185497">Pentru a te conecta la o rețea <ph name="NETWORK_NAME" />, accesează Setările</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Numele furnizorului local</translation>
 <translation id="8475690821716466388">Rețeaua Wi-Fi este securizată cu protocolul slab WEP PSK</translation>
 <translation id="8476242415522716722">iluminare slabă a tastaturii</translation>
+<translation id="8476942730579767658">Ferestre și desktopuri</translation>
 <translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
 <translation id="8483248364096924578">Adresă IP</translation>
 <translation id="8491311378305535241">Nu se poate conecta la site-uri HTTPS prin firewall din aplicații pentru Android</translation>

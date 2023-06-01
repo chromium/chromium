@@ -2319,6 +2319,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="2923234477033317484">Odstrani ta račun</translation>
 <translation id="2923644930701689793">Dostopajte do fotografij iz naprave v telefonu.</translation>
 <translation id="292371311537977079">Chromove nastavitve</translation>
+<translation id="2925658782192398150">Dokončano, ni težav.</translation>
 <translation id="2926085873880284723">Obnovi privzete bližnjice</translation>
 <translation id="2926620265753325858">Naprava <ph name="DEVICE_NAME" /> ni podprta.</translation>
 <translation id="2927017729816812676">Shramba predpomnilnika</translation>
@@ -3773,6 +3774,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="42126664696688958">Izvozi</translation>
 <translation id="42137655013211669">Strežnik je onemogočil dostop do tega vira.</translation>
 <translation id="4214192212360095377">Izklopi</translation>
+<translation id="4217558091331485702">Preglejte pred odpiranjem</translation>
 <translation id="4217571870635786043">Narek</translation>
 <translation id="4218081191298393750">Če želite izklopiti zvok tega zavihka, kliknite ikono zvočnika</translation>
 <translation id="4220648711404560261">Med aktiviranjem je prišlo do napake.</translation>
@@ -7891,7 +7893,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7835178595033117206">Zaznamek je bil odstranjen</translation>
 <translation id="7836577093182643605">Seznam tem, ki ste jih blokirali in jih ne želite deliti s spletnimi mesti</translation>
 <translation id="7836850009646241041">Poskusite se znova dotakniti varnostnega ključa</translation>
-<translation id="7837290304480415481">Upravljanje dovoljenj in nastavitev</translation>
 <translation id="7837776265184002579">Začetna stran je bila spremenjena v <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Omrežja »<ph name="NETWORK_NAME" />« iz naprave <ph name="DEVICE_NAME" /> ni bilo mogoče shraniti.</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> – poslano v napravo <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> – poslano v napravo <ph name="DEVICE_NAME" />}two{<ph name="ATTACHMENTS" /> – poslano v napravo <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> – poslano v napravo <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> – poslano v napravo <ph name="DEVICE_NAME" />}}</translation>

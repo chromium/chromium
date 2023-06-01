@@ -60,6 +60,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1269129608791067105">Aici vei vedea istoricul</translation>
 <translation id="1273937721055267968">Blochează <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
+<translation id="1289059016768036948">Ți se va solicita să te conectezi la Contul Google</translation>
 <translation id="1291207594882862231">Șterge istoricul, cookie-urile, datele privind site-urile și memoria cache…</translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1298077576058087471">Economisește până la 60 % din date, citește știrile de azi</translation>
@@ -127,6 +128,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="164269334534774161">Se afișează o versiune offline a acestei pagini de pe <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istoric</translation>
+<translation id="1657932388559784161">Foaia paginii Statistici din partea de jos este închisă</translation>
 <translation id="1668122540633280551">Alege cum se vor reda automat previzualizările videoclipului pe pagina de pornire Chrome.</translation>
 <translation id="1670399744444387456">De bază</translation>
 <translation id="1671236975893690980">Descărcare în așteptare…</translation>
@@ -297,6 +299,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="2647434099613338025">Adaugă o limbă</translation>
 <translation id="2649068648233607930">Browserul este gestionat de <ph name="DOMAIN" /></translation>
 <translation id="2650348088770008516">Prezentare a Ghidului privind confidențialitatea închisă</translation>
+<translation id="2650408372219180431">Exportă și șterge parolele salvate pe acest dispozitiv</translation>
 <translation id="2650751991977523696">Descarci din nou fișierul?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{Un fișier audio}few{# fișiere audio}other{# de fișiere audio}}</translation>
 <translation id="265156376773362237">Preîncărcare standard</translation>
@@ -507,6 +510,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3773856050682458546">Date de bază și informații despre site-urile accesate și aplicațiile folosite</translation>
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{O filă}few{# file}other{# de file}}</translation>
+<translation id="3795154175078851242">Copiază imaginea cu linkul</translation>
 <translation id="3803784507854318295">Gestionează redarea automată</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
@@ -809,6 +813,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5401851137404501592">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil.</translation>
 <translation id="5409881200985013443">Trimiți <ph name="ONE_TIME_CODE" /> la <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Se verifică...</translation>
+<translation id="542190472198460451">Toate parolele vor fi descărcate pe dispozitiv și șterse din Chrome <ph name="CHROME_CHANNEL" /></translation>
 <translation id="5423934151118863508">Cele mai accesate pagini vor apărea aici</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
 <translation id="543338862236136125">Editează parola</translation>
@@ -962,6 +967,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6232535412751077445">Dacă activezi opțiunea „Nu urmări”, o solicitare va fi inclusă împreună cu traficul de navigare. Efectul variază în funcție de răspunsul site-ului la solicitare și în funcție de modul în care este interpretată solicitarea.
 
 De exemplu, unele site-uri pot răspunde la această solicitare afișând anunțuri care nu se bazează pe alte site-uri accesate de tine. Numeroase site-uri vor culege și vor utiliza în continuare datele de navigare. De exemplu, pentru a îmbunătăți securitatea, pentru a oferi conținut, anunțuri și recomandări și pentru a genera statistici de raportare.</translation>
+<translation id="6233974827872475843">Salvează parolele de pe acest dispozitiv în Contul Google activând sincronizarea</translation>
 <translation id="6255794742848779505">Schimbăm modul în care se salvează parolele pe acest dispozitiv</translation>
 <translation id="6264376385120300461">Descarcă oricum</translation>
 <translation id="6277522088822131679">A apărut o problemă la printarea paginii. Încercați din nou.</translation>
@@ -1370,6 +1376,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8221401890884589479">Poți să blochezi site-urile pe care nu le dorești. În plus, Chrome șterge automat site-urile din listă mai vechi de 30 de zile. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Meniul cardului din feed</translation>
 <translation id="8236097722223016103">Adaugă la marcaje</translation>
+<translation id="8237871086242677046">Foaia paginii Statistici din partea de jos</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="8255617931166444521">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
 <translation id="8259179246279078674">Întrucât paginile preîncărcate sunt criptate, Google nu va afla nimic despre conținutul paginii preîncărcate. Serverele Google vor afla ce site-uri sunt preîncărcate în mod privat. Aceste informații sunt folosite numai la preîncărcarea paginilor și nu sunt conectate cu alte informații din Contul Google.</translation>
@@ -1469,6 +1476,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8746155870861185046">Distribuie selecția</translation>
 <translation id="874726034427945498">Pentru a vedea sugestii mai bune în bara de adrese, sincronizează filele și istoricul</translation>
 <translation id="8748850008226585750">Conținutul este ascuns</translation>
+<translation id="8754448020583829686">Copiază fără link</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8766529642647037772">Creezi un link evidențiat ca acesta?</translation>
@@ -1480,6 +1488,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8805097383171548551">Pentru a scana un cod QR, folosește un dispozitiv cu cameră.</translation>
 <translation id="8812260976093120287">Pe unele site-uri, poți plăti folosind aplicațiile acceptate pentru plăți de mai sus de pe dispozitiv.</translation>
+<translation id="8816556050903368450">Inclusiv linkul: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Conținutul filei Previzualizează nu poate fi afișat.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="8835786707922974220">Asigură-te că ai în permanență acces la parolele salvate</translation>
@@ -1567,6 +1576,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="938850635132480979">Eroare: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="950679278154734362">Pentru a sincroniza informațiile și a păstra datele în siguranță în mașină, trebuie să creezi o blocare a profilului. Vei folosi un cod sau o parolă de fiecare dată când intri în mașină.</translation>
+<translation id="952301137339791907">Foaia paginii Statistici din partea de jos este deschisă</translation>
 <translation id="95817756606698420">Chrome poate să folosească <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pentru căutare în China. Poți să schimbi acest lucru din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Instalează aplicația</translation>
 <translation id="96681097142096641">Vrei să afișezi pagina simplificată?</translation>

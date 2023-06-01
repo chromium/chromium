@@ -2301,6 +2301,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2923234477033317484">Suprimeix aquest compte</translation>
 <translation id="2923644930701689793">Accedeix al carret del teu telèfon</translation>
 <translation id="292371311537977079">Configuració de Chrome</translation>
+<translation id="2925658782192398150">Fet. No s'ha trobat cap problema.</translation>
 <translation id="2926085873880284723">Restaura les dreceres predeterminades</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> no s'admet.</translation>
 <translation id="2927017729816812676">Emmagatzematge a la memòria cau</translation>
@@ -3754,6 +3755,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="42126664696688958">Exporta</translation>
 <translation id="42137655013211669">El servidor ha prohibit l'accés a aquest recurs.</translation>
 <translation id="4214192212360095377">Desactiva ara</translation>
+<translation id="4217558091331485702">Analitza el fitxer abans d'obrir-lo</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4218081191298393750">Fes clic a la icona del micròfon per silenciar aquesta pestanya</translation>
 <translation id="4220648711404560261">S'ha produït un error durant l'activació.</translation>
@@ -7862,7 +7864,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7835178595033117206">L'adreça d'interès s'ha suprimit</translation>
 <translation id="7836577093182643605">Llista de temes que has bloquejat i que no vols que es comparteixin amb els llocs web</translation>
 <translation id="7836850009646241041">Torna a tocar la clau de seguretat</translation>
-<translation id="7837290304480415481">Gestiona els permisos i la configuració</translation>
 <translation id="7837776265184002579">La pàgina d'inici ha canviat a <ph name="URL" />.</translation>
 <translation id="7838838951812478896">No s'ha pogut desar "<ph name="NETWORK_NAME" />" del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{S'ha enviat <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{S'han enviat <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>

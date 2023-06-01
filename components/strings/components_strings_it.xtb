@@ -1240,6 +1240,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4031179711345676612">Microfono consentito</translation>
 <translation id="4040350669425716613">Istituti superiori e Università</translation>
 <translation id="4047351652147966654">45,7 × 60,9 cm</translation>
+<translation id="404831776305217138">L'URL di aggiornamento per l'estensione con ID "<ph name="EXTENSION_ID" />" non è valido o utilizza uno schema non supportato. Gli schemi supportati sono: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> e <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Potrai usarlo su tutti i prodotti Google</translation>
 <translation id="405399507749852140">Ricevi avvisi se il prezzo cala su qualsiasi sito</translation>
 <translation id="4056223980640387499">Seppia</translation>
@@ -2289,6 +2290,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6569366777234823130">Film drammatici</translation>
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
 <translation id="6576181918031900030">Inizia a trasmettere</translation>
+<translation id="6578434528542148658">ID estensione non valido.</translation>
 <translation id="657902945730878902">Disegno e immagini da colorare</translation>
 <translation id="6579630537141957243">Connettere un dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa chiaro</translation>

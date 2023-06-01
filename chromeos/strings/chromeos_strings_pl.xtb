@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Nie naciśnięto klawisza <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Automatycznie resetuje użycie danych co miesiąc w wybrany dzień</translation>
 <translation id="1442433966118452622">Źródło obrazu</translation>
+<translation id="1449035143498573192">Otwórz w wyszukiwarce Google</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1468664791493211953">Okazje</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Metody wprowadzania</translation>
 <translation id="7955587717700691983">Klawiatura Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7971535376154084247">Ustawienia ogólne</translation>
 <translation id="7977800524392185497">Aby połączyć się z siecią <ph name="NETWORK_NAME" />, otwórz Ustawienia</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Nazwa operatora macierzystego</translation>
 <translation id="8475690821716466388">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP PSK</translation>
 <translation id="8476242415522716722">podświetlenie klawiatury</translation>
+<translation id="8476942730579767658">Okna i biurka</translation>
 <translation id="8477551185774834963">Opóźnienie DNS nieco przekracza dopuszczalny próg</translation>
 <translation id="8483248364096924578">Adres IP</translation>
 <translation id="8491311378305535241">Nie można połączyć się z witrynami HTTP przez zaporę sieciową w aplikacjach na Androida</translation>

@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">‘နောက်ဆက်တွဲ’ ပင်ဖြုတ်ပြီးပြီ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{၁ လ ကျန်သည်}other{# လ ကျန်သည်}}</translation>
 <translation id="4888938634149558681">ဖုန်းခေါ်ရန်</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{၁ စက္ကန့်}other{# စက္ကန့်}}</translation>
 <translation id="4971687151119236543">မီဒီယာ ယခင်သီချင်းပုဒ်</translation>
 <translation id="5046499563572181734">ဤနေရာကို တို့ပါ</translation>

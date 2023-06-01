@@ -49,6 +49,7 @@
 <translation id="1190609913194133056">通知中心</translation>
 <translation id="1190678134285018527">裝置需要回復為先前的版本</translation>
 <translation id="1195412055398077112">溢出掃描描</translation>
+<translation id="1195667586424773550">將連結拖曳至分頁的網址列</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199716647557067911">確定要關閉「按鈕控制」功能嗎？</translation>
 <translation id="1201402288615127009">下一個</translation>
@@ -62,6 +63,7 @@
 <translation id="1235458158152011030">已知網絡</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">有應用程式</translation>
+<translation id="1242704516557658755">在最近使用的視窗清單中反向移動</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內置)</translation>
@@ -73,6 +75,7 @@
 <translation id="1270290102613614947">屏幕鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275285675049378717">正在為 <ph name="POWER_SOURCE" /> 充電</translation>
+<translation id="1276975447697633661">選取檔案，然後按下<ph name="KEY" />鍵</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">尋找手機</translation>
 <translation id="1287002645302686982">系統中已有名稱為「<ph name="DESK_TEMPLATE_NAME" />」的桌面</translation>
@@ -344,6 +347,7 @@
 <translation id="2528111225373402384">無線基地台設定</translation>
 <translation id="2530896289327917474">開啟或關閉「鍵盤瀏覽」功能</translation>
 <translation id="2531025035050312891">裝置緩慢</translation>
+<translation id="2531107890083353124">拖曳分頁時按下 <ph name="KEY_ONE" /> 鍵</translation>
 <translation id="254900897760075745">將選取的內容複製至剪貼簿</translation>
 <translation id="2549711466868162843">提高亮度</translation>
 <translation id="2549985041256363841">開始錄影</translation>
@@ -389,6 +393,7 @@
 <translation id="2750932254614666392">「刪除」</translation>
 <translation id="2750941250130734256">已經取消固定用緊嘅視窗。</translation>
 <translation id="2761723519669354964">開啟捷徑列的突顯項目</translation>
+<translation id="2774348302533424868">按下 <ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /> 鍵</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2785499565474703580">已連接 1 部裝置</translation>
@@ -422,6 +427,7 @@
 <translation id="2942350706960889382">固定的放大鏡</translation>
 <translation id="2942516765047364088">捷徑列位置</translation>
 <translation id="2946119680249604491">新增連線</translation>
+<translation id="2949420361496057765">按下 <ph name="MODIFIER" /> 鍵，然後點選連結</translation>
 <translation id="295852781144570696">裝置音訊</translation>
 <translation id="2960314608273155470">擷取模式，預設係<ph name="SOURCE" /><ph name="TYPE" />。㩒 tab 鍵就可以睇下鍵盤導覽資料。</translation>
 <translation id="2961963223658824723">系統發生錯誤，請幾秒後再試。</translation>
@@ -527,6 +533,7 @@
 <translation id="3410336247007142655">顯示深色主題背景設定</translation>
 <translation id="3413817803639110246">目前尚未有任何通知</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
+<translation id="3426253816581969877">按住 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後輕觸 <ph name="KEY" /> 鍵，移至要開啟的視窗時再放開</translation>
 <translation id="3428447136709161042">中斷同<ph name="NETWORK_NAME" />嘅連線</translation>
 <translation id="3430396595145920809">從螢幕右側向左滑動即可返回</translation>
 <translation id="3431517721463707585">桌面 14</translation>
@@ -541,6 +548,7 @@
 <translation id="346243998268439747">重設縮放等級</translation>
 <translation id="3465223694362104965">自您上次登入以來，有另一個鍵盤連接到此裝置。請在使用前確定您信任此鍵盤。</translation>
 <translation id="3465356146291925647">由管理員管理</translation>
+<translation id="347117769229524881">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="KEY_TWO" /> 鍵或<ph name="KEY_THREE" />鍵</translation>
 <translation id="3477079411857374384">Control + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">自動隱藏捷徑列</translation>
@@ -605,6 +613,7 @@
 <translation id="3677931086890821290">此操作會允許所有獲得位置權限的應用程式和網站和 ChromeOS 使用 Wi-Fi 和流動網絡位置。</translation>
 <translation id="3679827876008292680">前往視窗中的最後一個分頁</translation>
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
+<translation id="3682279812299376603">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="KEY_TWO" /> 鍵</translation>
 <translation id="3694122362646626770">網站</translation>
 <translation id="3702809606464356667">顯示緊來自目前桌面嘅視窗，㩒向上箭咀掣就可以顯示來自所有桌面嘅視窗</translation>
 <translation id="3702846122927433391">尼日利亞嘅人口</translation>
@@ -632,6 +641,7 @@
 <translation id="383058930331066723">「慳電模式」已開啟</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="384082539148746321">要刪除範本嗎？</translation>
+<translation id="3844627820291068572">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> 鍵，然後按<ph name="KEY_ONE" />鍵、<ph name="KEY_TWO" />鍵、<ph name="KEY_THREE" />鍵或<ph name="KEY_FOUR" />鍵</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
@@ -847,6 +857,7 @@
 <translation id="4798622944000246716">你的行動網路不支援無線基地台</translation>
 <translation id="479989351350248267">搜尋</translation>
 <translation id="4804818685124855865">中斷連線</translation>
+<translation id="4813311884204119883">將連結拖曳到分頁列上的空白區域</translation>
 <translation id="4814539958450445987">登入畫面</translation>
 <translation id="481455355267255546">即將舉行的活動</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
@@ -854,6 +865,7 @@
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
 <translation id="485634149294284819">輸入鍵盤選單</translation>
 <translation id="485806788160414322">播放或暫停媒體</translation>
+<translation id="4858764087721901597">按下 <ph name="MODIFIER_ONE" /> 鍵，然後按<ph name="KEY_ONE" />、<ph name="KEY_TWO" />鍵、<ph name="KEY_THREE" />鍵或<ph name="KEY_FOUR" />鍵</translation>
 <translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
@@ -995,6 +1007,7 @@
 <translation id="5463129623250377817">將選取的內容剪下至剪貼簿</translation>
 <translation id="5465662442746197494">需要協助嗎？</translation>
 <translation id="547979256943495781">捷徑列喺螢幕右邊</translation>
+<translation id="5482205457807971887">按下 <ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> 或 <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 鍵</translation>
 <translation id="5491186829646618080">有可用的韌體更新</translation>
 <translation id="5503884284981862082">開啟/關閉「Google 助理」</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
@@ -1186,6 +1199,7 @@
 <translation id="6330012934079202188">顯示緊來自所有桌面嘅視窗，㩒向上箭咀掣就可以顯示來自目前桌面嘅視窗</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
 <translation id="6344138931392227467">已連結 <ph name="DEVICE_NAME" /></translation>
+<translation id="6348449481487610270">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或<ph name="KEY_THREE" />鍵</translation>
 <translation id="6351032674660237738">應用程式建議</translation>
 <translation id="6352082849089527770">不明網絡</translation>
 <translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
@@ -1231,6 +1245,7 @@
 <translation id="6537924328260219877">訊號強度係 <ph name="SIGNAL_STRENGTH" />，手機電量係 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
+<translation id="6555373427270923730">在網址列輸入網址，然後按下 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
 <translation id="6559976592393364813">詢問管理員</translation>
 <translation id="6565007273808762236">無法連接 eSIM</translation>
@@ -1634,6 +1649,7 @@
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8428810263141909179">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> 到 <ph name="KEY_TWO" /> 鍵</translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8433977262951327081">在捷徑列中顯示輸入選項選單小視窗的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="8443879455002739353">「複製」</translation>
@@ -1664,6 +1680,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> 建議您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>
+<translation id="8581946341807941670">按下 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後點選連結</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名稱或顏色將應用程式排序</translation>
 <translation id="8609384513243082612">開啟新分頁</translation>
@@ -1806,6 +1823,7 @@
 <translation id="925832987464884575">隱藏預覽</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">我日曆有咩活動？</translation>
+<translation id="945383118875625837">將連結拖曳至書籤列</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="953431725143473984">確定要關閉裝置嗎？</translation>

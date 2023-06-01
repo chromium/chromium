@@ -1239,6 +1239,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4040350669425716613">Fakultateak eta unibertsitateak</translation>
 <translation id="4047351652147966654">45,72 × 60,96 cm (18 × 24 in)</translation>
+<translation id="404831776305217138">"<ph name="EXTENSION_ID" />" identifikatzailea daukan eguneratze URLak ez du balio edo onartzen ez den eskema bat darabil. Eskema hauek onartzen dira: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> eta <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">Google-ren produktu guztietan erabili ahal izango duzu</translation>
 <translation id="405399507749852140">Jaso alertak webguneren batean prezioa jaisten bada</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -2288,6 +2289,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6569366777234823130">Drama-filmak</translation>
 <translation id="6573200754375280815">Bi zulo eskuinean</translation>
 <translation id="6576181918031900030">Hasi igortzen</translation>
+<translation id="6578434528542148658">Luzapenaren identifikatzaileak ez du balio.</translation>
 <translation id="657902945730878902">Marraztea eta koloreztatzea</translation>
 <translation id="6579630537141957243">MIDI gailua konektatu nahi duzu?</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>

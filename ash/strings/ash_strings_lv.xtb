@@ -49,6 +49,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1190609913194133056">Paziņojumu centrs</translation>
 <translation id="1190678134285018527">Ierīcē ir jāatjauno iepriekšējā versija</translation>
 <translation id="1195412055398077112">attēla izvērse</translation>
+<translation id="1195667586424773550">Vilkt saiti uz cilnes adreses joslu</translation>
 <translation id="119944043368869598">Notīrīt visu</translation>
 <translation id="1199716647557067911">Vai tiešām vēlaties izslēgt slēdžu piekļuvi?</translation>
 <translation id="1201402288615127009">Tālāk</translation>
@@ -444,6 +445,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3036649622769666520">Atvērt failus</translation>
 <translation id="3038571455154067151">Lai pierakstītos, ievadiet Family Link vecāku piekļuves kodu</translation>
 <translation id="3039939407102840004">Skārienekrāna pildspalvas akumulatora uzlādes līmenis: <ph name="PERCENTAGE" /> procenti.</translation>
+<translation id="304097922505898963">Atvērt lietotni Galvenās saīsnes</translation>
 <translation id="3045488863354895414">Labdien!</translation>
 <translation id="3047761520276763270">Mēģiniet teikt:</translation>
 <translation id="3055162170959710888">Šodien jūs izmantojāt šo ierīci: <ph name="USED_TIME" /></translation>
@@ -1113,6 +1115,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. lapa no <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Plauktā atzīmēt nākamo vienumu</translation>
 <translation id="6018164090099858612">Notiek iziešana no spoguļošanas režīma</translation>
+<translation id="6019566113895157499">Galvenās saīsnes</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
 <translation id="6022924867608035986">Notīrīt meklēšanas lodziņa tekstu</translation>
 <translation id="602472752137106327">Atlasīta poga “Rādīt visu darbvirsmu logus”</translation>
@@ -1806,6 +1809,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="925832987464884575">Paslēpt priekšskatījumus</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> pieprasa, lai jūs nekavējoties atjauninātu ierīci <ph name="DEVICE_TYPE" /></translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
+<translation id="945383118875625837">Vilkt saiti uz grāmatzīmju joslu</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="951991426597076286">Noraidīt</translation>
 <translation id="953431725143473984">Vai izslēgt ierīci?</translation>

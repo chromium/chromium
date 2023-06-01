@@ -2315,6 +2315,7 @@
 <translation id="2923234477033317484">ລຶບບັນຊີນີ້ອອກ</translation>
 <translation id="2923644930701689793">ເຂົ້າເຖິງຮູບຈາກອະລະບໍ້າກ້ອງຂອງໂທລະສັບທ່ານ</translation>
 <translation id="292371311537977079">ການຕັ້ງຄ່າ Chrome</translation>
+<translation id="2925658782192398150">ແລ້ວໆ, ບໍ່ພົບບັນຫາ</translation>
 <translation id="2926085873880284723">ກູ້ຄືນທາງລັດເລີ່ມຕົ້ນ</translation>
 <translation id="2926620265753325858">ບໍ່ຮອງຮັບ <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">ແຄ​ຊ໌​ບ່ອນເກັບຂໍ້ມູນ</translation>
@@ -3769,6 +3770,7 @@
 <translation id="42126664696688958">​ສົ່ງ​ອອກ</translation>
 <translation id="42137655013211669">ເຊີບເວີຫ້າມການເຂົ້າເຖິງຊັບພະຍາກອນນີ້.</translation>
 <translation id="4214192212360095377">ປິດດຽວນີ້</translation>
+<translation id="4217558091331485702">ສະແກນກ່ອນເປີດ</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4218081191298393750">ຄລິກໃສ່ໄອຄອນລຳໂພງເພື່ອປິດສຽງແຖບນີ້</translation>
 <translation id="4220648711404560261">ເກີດຄວາມຜິດພາດໃນລະຫວ່າງການເປີດນຳໃຊ້.</translation>
@@ -7876,7 +7878,6 @@
 <translation id="7835178595033117206">ລຶບບຸກມາກອອກແລ້ວ</translation>
 <translation id="7836577093182643605">ລາຍຊື່ຂອງຫົວຂໍ້ທີ່ທ່ານບລັອກ ແລະ ບໍ່ຕ້ອງການແບ່ງປັນໃຫ້ເວັບໄຊ</translation>
 <translation id="7836850009646241041">ລອງແຕະກະແຈຄວາມປອດໄພຂອງທ່ານອີກຄັ້ງ</translation>
-<translation id="7837290304480415481">ຈັດການການອະນຸຍາດ ແລະ ການຕັ້ງຄ່າ</translation>
 <translation id="7837776265184002579">ໜ້າຫຼັກຂອງທ່ານໄດ້ຖືກປ່ຽນເປັນ <ph name="URL" /> ແລ້ວ.</translation>
 <translation id="7838838951812478896">ບໍ່ສາມາດບັນທຶກ '<ph name="NETWORK_NAME" />' ຈາກ <ph name="DEVICE_NAME" /> ໄດ້</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{ສົ່ງ <ph name="ATTACHMENTS" /> ຫາ <ph name="DEVICE_NAME" /> ແລ້ວ}other{ສົ່ງ <ph name="ATTACHMENTS" /> ຫາ <ph name="DEVICE_NAME" /> ແລ້ວ}}</translation>

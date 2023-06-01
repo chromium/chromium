@@ -115,6 +115,7 @@
 <translation id="4746179598275229723">এক্সটেনশন আনপিন করা হয়েছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাস বাকি}one{# মাস বাকি}other{# মাস বাকি}}</translation>
 <translation id="4888938634149558681">কল করুন</translation>
+<translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{১ সেকেন্ড}one{# সেকেন্ড}other{# সেকেন্ড}}</translation>
 <translation id="4971687151119236543">মিডিয়া পূর্ববর্তী ট্র্যাক</translation>
 <translation id="5046499563572181734">এখানে আলতো চাপুন</translation>

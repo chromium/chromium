@@ -135,11 +135,13 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> är redan inloggad på den här Chromium-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chromium.</translation>
 <translation id="391789666908693569">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chromium-profilen och tillhörande data som bokmärken, historik och lösenord.</translation>
 <translation id="3945058413678539331">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Chromium kopieras.</translation>
+<translation id="3962623956404948996">Den här filen bör genomsökas eftersom den kan vara farlig</translation>
 <translation id="3997429360543082038">Om Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Hjälp oss att förbättra Chromium genom att rapportera dina <ph name="BEGIN_LINK" />aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
+<translation id="4055805654398742145">Lösenordshantering</translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chromium</translation>
 <translation id="421369550622382712">Upptäck fantastiska appar, spel, tillägg och teman för Chromium.</translation>

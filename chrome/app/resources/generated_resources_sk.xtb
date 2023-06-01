@@ -2303,6 +2303,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2923234477033317484">Odstrániť tento účet</translation>
 <translation id="2923644930701689793">Prístup k snímkam telefónu</translation>
 <translation id="292371311537977079">Nastavenia Chromu</translation>
+<translation id="2925658782192398150">Hotovo, nenašli sa žiadne problémy</translation>
 <translation id="2926085873880284723">Obnoviť predvolené skratky</translation>
 <translation id="2926620265753325858">Zariadenie <ph name="DEVICE_NAME" /> nie je podporované.</translation>
 <translation id="2927017729816812676">Úložisko vyrovnávacej pamäte</translation>
@@ -3757,6 +3758,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="42126664696688958">Exportovať</translation>
 <translation id="42137655013211669">Server zakázal prístup k tomuto zdroju</translation>
 <translation id="4214192212360095377">Vypnúť</translation>
+<translation id="4217558091331485702">Pred otvorením skontrolovať</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
 <translation id="4218081191298393750">Ak chcete vypnúť zvuk tejto karty, kliknite na ikonu reproduktora</translation>
 <translation id="4220648711404560261">Počas aktivácie sa vyskytla chyba.</translation>
@@ -7869,7 +7871,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7835178595033117206">Záložka bola odstránená</translation>
 <translation id="7836577093182643605">Zoznam tém, ktorých zdieľanie s webmi ste zablokovali</translation>
 <translation id="7836850009646241041">Skúste znova klepnúť na svoj bezpečnostný kľúč</translation>
-<translation id="7837290304480415481">Spravovať povolenia a nastavenia</translation>
 <translation id="7837776265184002579">Vaša domovská stránka bola zmenená na <ph name="URL" />.</translation>
 <translation id="7838838951812478896"><ph name="NETWORK_NAME" /> sa nepodarilo uložiť v zariadení <ph name="DEVICE_NAME" /></translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> bol odoslaný do zariadenia <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> boli odoslané do zariadenia <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> bolo odoslaných do zariadenia <ph name="DEVICE_NAME" />}}</translation>

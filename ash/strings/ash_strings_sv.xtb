@@ -49,6 +49,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
 <translation id="1190678134285018527">Enheten måste återställas till en tidigare version</translation>
 <translation id="1195412055398077112">överskanning</translation>
+<translation id="1195667586424773550">Dra länken till flikens adressfält</translation>
 <translation id="119944043368869598">Ta bort alla</translation>
 <translation id="1199716647557067911">Vill du inaktivera brytarstyrning?</translation>
 <translation id="1201402288615127009">Nästa</translation>
@@ -444,6 +445,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3036649622769666520">Öppna filer</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
+<translation id="304097922505898963">Öppna appen Kortkommandon</translation>
 <translation id="3045488863354895414">Hej!</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
 <translation id="3055162170959710888">Du har använt den här enheten i <ph name="USED_TIME" /> i dag</translation>
@@ -1113,6 +1115,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Markera nästa objekt på hyllan</translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
+<translation id="6019566113895157499">Kortkommandon</translation>
 <translation id="602001110135236999">Scrolla åt vänster</translation>
 <translation id="6022924867608035986">Rensa sökrutan</translation>
 <translation id="602472752137106327">Visa fönster från alla skrivbord, alternativknapp har markerats</translation>
@@ -1806,6 +1809,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="925832987464884575">Dölj förhandsgranskningar</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart</translation>
 <translation id="938963181863597773">Vad står det i min kalender?</translation>
+<translation id="945383118875625837">Dra länken till bokmärkesfältet</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="953431725143473984">Vill du stänga av enheten?</translation>

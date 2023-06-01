@@ -2313,6 +2313,7 @@
 <translation id="2923234477033317484">حذف این حساب</translation>
 <translation id="2923644930701689793">دسترسی به حلقه فیلم دوربین تلفن</translation>
 <translation id="292371311537977079">‏تنظیمات Chrome</translation>
+<translation id="2925658782192398150">تمام شد، مشکلی پیدا نشد</translation>
 <translation id="2926085873880284723">بازیابی میان‌برهای پیش‌فرض</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> پشتیبانی نمی‌شود.</translation>
 <translation id="2927017729816812676">فضای حافظه پنهان</translation>
@@ -3767,6 +3768,7 @@
 <translation id="42126664696688958">صادر کردن</translation>
 <translation id="42137655013211669">سرور، دسترسی به این منبع را ممنوع کرد.</translation>
 <translation id="4214192212360095377">اکنون خاموش شود</translation>
+<translation id="4217558091331485702">قبل‌از باز کردن اسکن کنید</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4218081191298393750">برای بی‌صدا کردن این برگه، روی نماد بلندگو کلیک کنید</translation>
 <translation id="4220648711404560261">خطایی درحین فعال‌سازی روی داد.</translation>
@@ -7878,7 +7880,6 @@
 <translation id="7835178595033117206">نشانک حذف شد</translation>
 <translation id="7836577093182643605">فهرست موضوعاتی که مسدود کرده‌اید و نمی‌خواهید با سایت‌ها هم‌رسانی شود</translation>
 <translation id="7836850009646241041">دوباره کلید امنیتی خود را لمس کنید</translation>
-<translation id="7837290304480415481">مدیریت اجازه‌ها و تنظیمات</translation>
 <translation id="7837776265184002579">صفحه اصلی به <ph name="URL" /> تغییر کرد.</translation>
 <translation id="7838838951812478896">«<ph name="NETWORK_NAME" />» از <ph name="DEVICE_NAME" /> ذخیره نشد</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ارسال شد}one{<ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ارسال شد}other{<ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ارسال شد}}</translation>

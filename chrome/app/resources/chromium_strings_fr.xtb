@@ -134,11 +134,13 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="390528597099634151">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chromium. Chromium peut vous créer un profil de navigation individuel.</translation>
 <translation id="391789666908693569">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut afficher et modifier ce profil de navigateur Chromium et ses données, comme les favoris, l'historique et les mots de passe.</translation>
 <translation id="3945058413678539331">Chromium tente de copier les mots de passe. Saisissez votre mot de passe Windows pour autoriser cette opération.</translation>
+<translation id="3962623956404948996">Chromium recommande d'analyser ce fichier, car il est peut-être dangereux</translation>
 <translation id="3997429360543082038">À propos de Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />, et l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" /> en est un.</translation>
 <translation id="4036079820698952681">Aidez-nous à améliorer Chromium en nous signalant vos <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4050599136622776556">Chromium essaie de modifier les modes de paiement.</translation>
+<translation id="4055805654398742145">Gestionnaire de mots de p&amp;asse</translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chromium</translation>
 <translation id="421369550622382712">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels pour Chromium.</translation>

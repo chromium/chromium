@@ -2315,6 +2315,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2923234477033317484">A fiók eltávolítása</translation>
 <translation id="2923644930701689793">Hozzáférés a telefon galériájához</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
+<translation id="2925658782192398150">Kész, nem találtunk problémát</translation>
 <translation id="2926085873880284723">Alapértelmezett billentyűparancsok visszaállítása</translation>
 <translation id="2926620265753325858">A(z) <ph name="DEVICE_NAME" /> eszköz nem támogatott</translation>
 <translation id="2927017729816812676">Gyorsítótár</translation>
@@ -3768,6 +3769,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="42126664696688958">Exportálás</translation>
 <translation id="42137655013211669">A szerver letiltotta a hozzáférést ehhez az erőforráshoz.</translation>
 <translation id="4214192212360095377">Kikapcsolás most</translation>
+<translation id="4217558091331485702">Ellenőrizze a fájlt a megnyitás előtt</translation>
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4218081191298393750">A lap elnémításához kattintson a hangszóró ikonra</translation>
 <translation id="4220648711404560261">Hiba történt az aktiválás során.</translation>
@@ -7879,7 +7881,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7835178595033117206">Könyvjelző eltávolítva</translation>
 <translation id="7836577093182643605">Azoknak az Ön által letiltott témaköröknek a listája, amelyeket nem szeretne megosztani a webhelyekkel.</translation>
 <translation id="7836850009646241041">Próbálja meg ismét megérinteni a biztonsági kulcsot</translation>
-<translation id="7837290304480415481">Engedélyek és beállítások kezelése</translation>
 <translation id="7837776265184002579">Kezdőlapja a következőre módosult: <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Nem sikerült menteni a(z) „<ph name="NETWORK_NAME" />” hálózatot a(z) <ph name="DEVICE_NAME" /> eszközről</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> elküldve a következőnek: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> elküldve a következőnek: <ph name="DEVICE_NAME" />}}</translation>

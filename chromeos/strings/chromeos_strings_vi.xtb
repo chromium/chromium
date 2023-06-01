@@ -58,6 +58,7 @@
 <translation id="1423591390236870726">Chưa nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
+<translation id="1449035143498573192">Mở trong Google Tìm kiếm</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
 <translation id="1468664791493211953">Ưu đãi</translation>
@@ -859,6 +860,7 @@
 <translation id="7953669802889559161">Phương thức nhập</translation>
 <translation id="7955587717700691983">Bàn phím Bluetooth</translation>
 <translation id="7960831585769876809">Nhiệt độ</translation>
+<translation id="7971535376154084247">Chế độ điều khiển chung</translation>
 <translation id="7977800524392185497">Để kết nối với mạng <ph name="NETWORK_NAME" />, hãy đi tới phần Cài đặt</translation>
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
@@ -922,6 +924,7 @@
 <translation id="8461329675984532579">Tên nhà mạng nội hạt</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
 <translation id="8476242415522716722">đèn nền bàn phím</translation>
+<translation id="8476942730579767658">Cửa sổ và không gian làm việc</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="8483248364096924578">Địa chỉ IP</translation>
 <translation id="8491311378305535241">Không thể kết nối với các trang web HTTP qua tường lửa từ các ứng dụng Android</translation>
