@@ -11187,7 +11187,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "queueing_level": "full"
+                        "queueing_level": "avoid-redundant"
                     },
                     "enable_features": [
                         "QueueNavigationsWhileWaitingForCommit"
