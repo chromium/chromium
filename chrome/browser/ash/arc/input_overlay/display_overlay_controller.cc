@@ -553,6 +553,16 @@ int DisplayOverlayController::GetInputMappingListSize() {
   return input_mapping_view_->children().size();
 }
 
+void DisplayOverlayController::AddTouchInjectorObserver(
+    TouchInjectorObserver* observer) {
+  touch_injector_->AddObserver(observer);
+}
+
+void DisplayOverlayController::RemoveTouchInjectorObserver(
+    TouchInjectorObserver* observer) {
+  touch_injector_->RemoveObserver(observer);
+}
+
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
   if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
       event->type() != ui::ET_MOUSE_PRESSED) {

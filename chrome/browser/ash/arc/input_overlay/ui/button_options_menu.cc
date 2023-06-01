@@ -100,9 +100,13 @@ ButtonOptionsMenu* ButtonOptionsMenu::Show(DisplayOverlayController* controller,
 
 ButtonOptionsMenu::ButtonOptionsMenu(DisplayOverlayController* controller,
                                      Action* action)
-    : display_overlay_controller_(controller), action_(action) {}
+    : TouchInjectorObserver(), controller_(controller), action_(action) {
+  controller_->AddTouchInjectorObserver(this);
+}
 
-ButtonOptionsMenu::~ButtonOptionsMenu() = default;
+ButtonOptionsMenu::~ButtonOptionsMenu() {
+  controller_->RemoveTouchInjectorObserver(this);
+}
 
 void ButtonOptionsMenu::Init() {
   SetUseDefaultFillLayout(true);
@@ -302,8 +306,7 @@ void ButtonOptionsMenu::CalculatePosition() {
   auto position = action_->GetUICenterPosition();
   auto x = position.x();
   auto y = position.y();
-  auto parent_size =
-      display_overlay_controller_->GetOverlayWidgetContentsView()->size();
+  auto parent_size = controller_->GetOverlayWidgetContentsView()->size();
 
   // Set the menu at the middle if there is not enough margin on the right
   // or left side.
@@ -322,12 +325,12 @@ void ButtonOptionsMenu::CalculatePosition() {
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
   // TODO(b/270969760): Implement close menu functionality.
-  display_overlay_controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveButtonOptionsMenu();
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   // TODO(b/270969760): Implement save menu functionality.
-  display_overlay_controller_->RemoveButtonOptionsMenu();
+  controller_->RemoveButtonOptionsMenu();
 }
 
 void ButtonOptionsMenu::OnTapButtonPressed() {
@@ -362,6 +365,19 @@ void ButtonOptionsMenu::OnPaintBackground(gfx::Canvas* canvas) {
 gfx::Size ButtonOptionsMenu::CalculatePreferredSize() const {
   // TODO(b/270969760): Dynamically calculate height based on action selection.
   return gfx::Size(kMenuWidth, GetHeightForWidth(kMenuWidth));
+}
+
+void ButtonOptionsMenu::OnActionRemoved(const Action& action) {
+  NOTIMPLEMENTED();
+}
+
+void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
+                                            const Action& new_action) {
+  NOTIMPLEMENTED();
+}
+
+void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace arc::input_overlay

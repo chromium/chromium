@@ -33,6 +33,7 @@ class MenuEntryView;
 class MessageView;
 class NudgeView;
 class TouchInjector;
+class TouchInjectorObserver;
 
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog. It also handles the visibility of the
@@ -81,6 +82,10 @@ class DisplayOverlayController : public ui::EventHandler,
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
+
+  // Add UIs to observer touch injector change.
+  void AddTouchInjectorObserver(TouchInjectorObserver* observer);
+  void RemoveTouchInjectorObserver(TouchInjectorObserver* observer);
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

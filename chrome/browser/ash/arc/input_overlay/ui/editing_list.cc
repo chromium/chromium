@@ -46,8 +46,13 @@ EditingList* EditingList::Show(DisplayOverlayController* controller) {
 }
 
 EditingList::EditingList(DisplayOverlayController* controller)
-    : controller_(controller) {}
-EditingList::~EditingList() = default;
+    : TouchInjectorObserver(), controller_(controller) {
+  controller_->AddTouchInjectorObserver(this);
+}
+
+EditingList::~EditingList() {
+  controller_->RemoveTouchInjectorObserver(this);
+}
 
 void EditingList::Init() {
   SetUseDefaultFillLayout(true);
@@ -182,6 +187,22 @@ void EditingList::OnDoneButtonPressed() {
 
 gfx::Size EditingList::CalculatePreferredSize() const {
   return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
+}
+
+void EditingList::OnActionAdded(const Action& action) {
+  NOTIMPLEMENTED();
+}
+void EditingList::OnActionRemoved(const Action& action) {
+  NOTIMPLEMENTED();
+}
+
+void EditingList::OnActionTypeChanged(const Action& action,
+                                      const Action& new_action) {
+  NOTIMPLEMENTED();
+}
+
+void EditingList::OnActionUpdated(const Action& action) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace arc::input_overlay
