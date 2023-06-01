@@ -125,8 +125,9 @@ export class PasswordDetailsSectionElement extends
       return;
     }
     assert(selectedGroup);
-    this.updateShownCredentials(selectedGroup).catch(this.navigateBack_);
-    this.startListeningForUpdates_();
+    this.updateShownCredentials(selectedGroup)
+        .then(this.startListeningForUpdates_.bind(this))
+        .catch(this.navigateBack_);
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
         PasswordViewPageInteractions.CREDENTIAL_FOUND);
   }
