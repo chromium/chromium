@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const FALSE_COUNT: number = 0;
+const TRUE_COUNT: number = 1;
+
 export class FakeMetricsPrivate {
-  collectedMetrics: Map<string, {[key: string]: number}>;
+  collectedMetrics: Map<string, {[key: number]: number}>;
   constructor() {
     this.collectedMetrics = new Map();
   }
@@ -23,7 +26,7 @@ export class FakeMetricsPrivate {
     this.collectedMetrics.set(metric, metricEntry);
   }
 
-  countMetricValue(metric: string, value: string): number {
+  countMetricValue(metric: string, value: number): number {
     const metricEntry = this.collectedMetrics.get(metric);
 
     if (metricEntry) {
@@ -35,12 +38,12 @@ export class FakeMetricsPrivate {
   }
 
   recordBoolean(metric: string, value: boolean): void {
-    const metricEntry =
-        this.collectedMetrics.get(metric) || {trueCnt: 0, falseCnt: 0};
+    const metricEntry = this.collectedMetrics.get(metric) ||
+        {[TRUE_COUNT]: 0, [FALSE_COUNT]: 0};
     if (value) {
-      metricEntry['trueCnt'] += 1;
+      metricEntry[TRUE_COUNT] += 1;
     } else {
-      metricEntry['falseCnt'] += 1;
+      metricEntry[FALSE_COUNT] += 1;
     }
     this.collectedMetrics.set(metric, metricEntry);
   }
@@ -50,9 +53,9 @@ export class FakeMetricsPrivate {
 
     if (metricEntry) {
       if (value) {
-        return metricEntry['trueCnt'] as number;
+        return metricEntry[TRUE_COUNT] as number;
       } else {
-        return metricEntry['falseCnt'] as number;
+        return metricEntry[FALSE_COUNT] as number;
       }
     } else {
       return 0;
