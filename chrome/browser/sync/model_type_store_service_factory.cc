@@ -9,7 +9,8 @@
 
 // static
 ModelTypeStoreServiceFactory* ModelTypeStoreServiceFactory::GetInstance() {
-  return base::Singleton<ModelTypeStoreServiceFactory>::get();
+  static base::NoDestructor<ModelTypeStoreServiceFactory> instance;
+  return instance.get();
 }
 
 // static

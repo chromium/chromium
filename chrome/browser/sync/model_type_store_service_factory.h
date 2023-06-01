@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_MODEL_TYPE_STORE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_MODEL_TYPE_STORE_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
@@ -24,7 +24,7 @@ class ModelTypeStoreServiceFactory : public ProfileKeyedServiceFactory {
       delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<ModelTypeStoreServiceFactory>;
+  friend base::NoDestructor<ModelTypeStoreServiceFactory>;
 
   ModelTypeStoreServiceFactory();
   ~ModelTypeStoreServiceFactory() override;

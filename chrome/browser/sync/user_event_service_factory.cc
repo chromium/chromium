@@ -26,7 +26,8 @@ namespace browser_sync {
 
 // static
 UserEventServiceFactory* UserEventServiceFactory::GetInstance() {
-  return base::Singleton<UserEventServiceFactory>::get();
+  static base::NoDestructor<UserEventServiceFactory> instance;
+  return instance.get();
 }
 
 // static

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 
@@ -19,7 +19,8 @@ SyncSessionsWebContentsRouterFactory::GetForProfile(Profile* profile) {
 // static
 SyncSessionsWebContentsRouterFactory*
 SyncSessionsWebContentsRouterFactory::GetInstance() {
-  return base::Singleton<SyncSessionsWebContentsRouterFactory>::get();
+  static base::NoDestructor<SyncSessionsWebContentsRouterFactory> instance;
+  return instance.get();
 }
 
 SyncSessionsWebContentsRouterFactory::SyncSessionsWebContentsRouterFactory()

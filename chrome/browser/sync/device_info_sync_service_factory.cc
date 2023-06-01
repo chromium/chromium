@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,7 +36,8 @@ syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
 
 // static
 DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
-  return base::Singleton<DeviceInfoSyncServiceFactory>::get();
+  static base::NoDestructor<DeviceInfoSyncServiceFactory> instance;
+  return instance.get();
 }
 
 // static

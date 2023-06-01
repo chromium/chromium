@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -21,7 +21,8 @@ desks_storage::DeskSyncService* DeskSyncServiceFactory::GetForProfile(
 
 // static
 DeskSyncServiceFactory* DeskSyncServiceFactory::GetInstance() {
-  return base::Singleton<DeskSyncServiceFactory>::get();
+  static base::NoDestructor<DeskSyncServiceFactory> instance;
+  return instance.get();
 }
 
 DeskSyncServiceFactory::DeskSyncServiceFactory()

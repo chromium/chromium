@@ -11,7 +11,7 @@ class Profile;
 
 namespace base {
 template <typename T>
-struct DefaultSingletonTraits;
+class NoDestructor;
 }  // namespace base
 
 namespace desks_storage {
@@ -25,7 +25,7 @@ class DeskSyncServiceFactory : public ProfileKeyedServiceFactory {
   static DeskSyncServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<DeskSyncServiceFactory>;
+  friend base::NoDestructor<DeskSyncServiceFactory>;
 
   DeskSyncServiceFactory();
   DeskSyncServiceFactory(const DeskSyncServiceFactory&) = delete;
