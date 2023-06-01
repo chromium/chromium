@@ -114,11 +114,34 @@ void PopupTestBase::SetUpWindowManagement(Browser* browser) {
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
+  // TODO(crbug.com/1450391): Resolve flaky permission failures.
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::WaitForRenderFrameReady(rfh));
+  ASSERT_EQ("complete", EvalJs(web_contents, "document.readyState"));
+  ASSERT_EQ("visible", EvalJs(web_contents, "document.visibilityState"));
   ASSERT_GT(EvalJs(web_contents,
                    R"JS(getScreenDetails().then(s => {
                           window.screenDetails = s;
                           return s.screens.length; }))JS"),
-            0);
+            0)
+      << " GetVisibleURL: "
+      << web_contents->GetVisibleURL().possibly_invalid_spec()
+      << " GetLastCommittedURL: "
+      << rfh->GetLastCommittedURL().possibly_invalid_spec()
+      << " GetLastCommittedOrigin: "
+      << rfh->GetLastCommittedOrigin().GetDebugString()
+      << " IsInPrimaryMainFrame: " << rfh->IsInPrimaryMainFrame()
+      << " GetLifecycleState: "
+      << static_cast<std::underlying_type<
+             content::RenderFrameHost::LifecycleState>::type>(
+             rfh->GetLifecycleState())
+      << " IsActive: " << rfh->IsActive()
+      << " IsDOMContentLoaded: " << rfh->IsDOMContentLoaded()
+      << " IsFeatureEnabled: "
+      << rfh->IsFeatureEnabled(
+             blink::mojom::PermissionsPolicyFeature::kWindowManagement);
+
   // Do not auto-accept any other permission requests.
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::NONE);
