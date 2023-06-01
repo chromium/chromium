@@ -62,6 +62,7 @@
     "linux-extended-tracing-rel": "Ubuntu-22.04",
     "linux-fieldtrial-rel": "Ubuntu-22.04",
     "linux-headless-shell-rel": "Ubuntu-22.04",
+    "linux-lacros-builder-fyi-rel": "Ubuntu-22.04",
     "linux-lacros-tester-rel": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rel-jammy-dev": "Ubuntu-22.04",
