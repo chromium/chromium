@@ -25,10 +25,10 @@ struct Family {
     return head_of_household_;
   }
   const absl::optional<const Member>& GetParent() const { return parent_; }
-  const std::vector<const Member>& GetRegularMembers() const {
+  const std::vector<Member>& GetRegularMembers() const {
     return regular_members_;
   }
-  const std::vector<const Member>& GetChildren() const { return children_; }
+  const std::vector<Member>& GetChildren() const { return children_; }
 
   Family() = delete;
   explicit Family(
@@ -58,8 +58,8 @@ struct Family {
  private:
   absl::optional<const Member> head_of_household_;
   absl::optional<const Member> parent_;
-  std::vector<const Member> regular_members_;
-  std::vector<const Member> children_;
+  std::vector<Member> regular_members_;
+  std::vector<Member> children_;
 };
 
 }  // namespace
