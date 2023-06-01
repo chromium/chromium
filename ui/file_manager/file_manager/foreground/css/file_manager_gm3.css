@@ -161,7 +161,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 16px 16px;
+  background-size: 20px 20px;
 }
 
 #directory-tree .tree-row > .file-row > .label {
