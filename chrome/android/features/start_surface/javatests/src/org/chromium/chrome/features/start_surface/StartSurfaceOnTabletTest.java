@@ -683,13 +683,14 @@ public class StartSurfaceOnTabletTest {
                             / (mvTilesItemWidth + minHorizontalSpacing),
                     1, MostVisitedTilesCoordinator.MAX_TILE_COLUMNS_FOR_GRID);
             int expectedIntervalPadding =
-                    (mvTilesLayoutWidth - mvTilesItemWidth * numColumns - expectedEdgeMargin * 2)
-                    / (numColumns - 1);
+                    Math.round((float) (mvTilesLayoutWidth - mvTilesItemWidth * numColumns
+                                       - expectedEdgeMargin * 2)
+                            / (numColumns - 1));
             if (expectedIntervalPadding >= minHorizontalSpacing
                     && expectedIntervalPadding <= maxHorizontalSpacing) {
                 Assert.assertEquals("The edge margin of the most visited tiles element to "
                                 + "the MV tiles layout is wrong.",
-                        mvt1LeftMargin, expectedEdgeMargin);
+                        expectedEdgeMargin, mvt1LeftMargin, 1);
                 Assert.assertEquals(
                         "The padding between each element of the most visited tiles is incorrect.",
                         expectedIntervalPadding,
