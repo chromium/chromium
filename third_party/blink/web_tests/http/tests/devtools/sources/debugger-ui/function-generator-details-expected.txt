@@ -3,7 +3,7 @@ Tests that Debugger.getGeneratorObjectDetails command returns correct result.
 
 Running: testiterNotStarted
 iterNotStarted: type = object, subtype = generator
-lineNumber = 17
+lineNumber = 20
 columnNumber = 19
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -17,7 +17,7 @@ script is valid: yes
 
 Running: testiterSuspended
 iterSuspended: type = object, subtype = generator
-lineNumber = 19
+lineNumber = 22
 columnNumber = 10
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -31,7 +31,7 @@ script is valid: yes
 
 Running: testiterClosed
 iterClosed: type = object, subtype = generator
-lineNumber = 17
+lineNumber = 20
 columnNumber = 19
 script is valid: yes
 [[GeneratorState]] = closed
@@ -45,7 +45,7 @@ script is valid: yes
 
 Running: testiterObjGenerator
 iterObjGenerator: type = object, subtype = generator
-lineNumber = 28
+lineNumber = 31
 columnNumber = 14
 script is valid: yes
 [[GeneratorState]] = suspended
@@ -59,7 +59,7 @@ script is valid: yes
 
 Running: testanonymousGenIter
 anonymousGenIter: type = object, subtype = generator
-lineNumber = 42
+lineNumber = 45
 columnNumber = 10
 script is valid: yes
 [[GeneratorState]] = suspended

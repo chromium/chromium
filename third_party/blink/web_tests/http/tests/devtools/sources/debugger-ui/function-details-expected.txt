@@ -4,7 +4,7 @@ Tests that Debugger.getFunctionDetails command returns correct location. Bug 718
 Running: testGetFirstLineFunctionDetails
 firstLineFunction type = function
 Function details: 
-lineNumber: 9
+lineNumber: 12
 columnNumber: 34
 scriptId is valid: true
 functionName: firstLineFunction
@@ -12,7 +12,7 @@ functionName: firstLineFunction
 Running: testGetNonFirstLineFunctionDetails
 notFirstLineFunction type = function
 Function details: 
-lineNumber: 14
+lineNumber: 17
 columnNumber: 37
 scriptId is valid: true
 functionName: notFirstLineFunction
@@ -20,7 +20,7 @@ functionName: notFirstLineFunction
 Running: testGetDetailsOfFunctionWithInferredName
 obj.m type = function
 Function details: 
-lineNumber: 20
+lineNumber: 23
 columnNumber: 23
 scriptId is valid: true
 functionName: m
@@ -28,7 +28,7 @@ functionName: m
 Running: testGetDetailsOfFunctionWithDisplayName
 functionWithDisplayName type = function
 Function details: 
-lineNumber: 23
+lineNumber: 26
 columnNumber: 40
 scriptId is valid: true
 functionName: user-friendly name
@@ -36,7 +36,7 @@ functionName: user-friendly name
 Running: testGetDetailsOfFunctionWithDisplayNameGetter
 functionWithDisplayNameGetter type = function
 Function details: 
-lineNumber: 26
+lineNumber: 29
 columnNumber: 46
 scriptId is valid: true
 functionName: functionWithDisplayNameGetter
@@ -44,7 +44,7 @@ functionName: functionWithDisplayNameGetter
 Running: testSmallClosure
 smallClosure type = function
 Function details: 
-lineNumber: 29
+lineNumber: 32
 columnNumber: 57
 scriptId is valid: true
 functionName: 
@@ -52,7 +52,7 @@ functionName:
 Running: testBigClosure
 bigClosure type = function
 Function details: 
-lineNumber: 42
+lineNumber: 45
 columnNumber: 35
 scriptId is valid: true
 functionName: 
@@ -60,7 +60,7 @@ functionName:
 Running: testGenFunction
 gen type = function
 Function details: 
-lineNumber: 49
+lineNumber: 52
 columnNumber: 21
 scriptId is valid: true
 functionName: gen

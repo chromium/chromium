@@ -75,7 +75,7 @@ Snippet3:1 1
 
 Running: testEvaluateEditReload
 Run Snippet1..
-script-snippet-model.js:142 Console was cleared
+script-snippet-model.js:146 Console was cleared
 VM Snippet1:1 undefined
 Page reloaded.
 

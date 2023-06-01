@@ -1,7 +1,7 @@
 Tests that scheduled pause is cleared after processing event with empty handler.
 
 Call stack:
-    0) addEmptyEventListenerAndClick (break-on-empty-event-listener.js:25)
+    0) addEmptyEventListenerAndClick (break-on-empty-event-listener.js:28)
     1)  (:1)
     [setTimeout]
     0)  (:1)

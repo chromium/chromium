@@ -2,17 +2,17 @@ Tests that "Show Generator Location" jumps to the correct location.
 
 
 Running: testiterNotStarted
-Generator location revealed: [17:20]
+Generator location revealed: [20:20]
 
 Running: testiterSuspended1
-Generator location revealed: [19:11]
+Generator location revealed: [22:11]
 
 Running: testiterSuspended2
-Generator location revealed: [20:11]
+Generator location revealed: [23:11]
 
 Running: testiterSuspended3
-Generator location revealed: [21:11]
+Generator location revealed: [24:11]
 
 Running: testiterClosed
-Generator location revealed: [17:20]
+Generator location revealed: [20:20]
 

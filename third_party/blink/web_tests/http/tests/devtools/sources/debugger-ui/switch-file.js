@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SDKTestRunner} from 'sdk_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests how switch to next file with the same name and different extension feature works.\n`);
-  await TestRunner.loadTestModule('sdk_test_runner');
   await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
