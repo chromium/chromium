@@ -3293,6 +3293,10 @@ void AddStorageAccessStrings(content::WebUIDataSource* html_source) {
       {"storageAccessDescription", IDS_SETTINGS_STORAGE_ACCESS_DESCRIPTION},
       {"storageAccessAllowed", IDS_SETTINGS_STORAGE_ACCESS_ALLOWED},
       {"storageAccessBlocked", IDS_SETTINGS_STORAGE_ACCESS_BLOCKED},
+      {"storageAccessAllowedExceptions",
+       IDS_SETTINGS_STORAGE_ACCESS_ALLOWED_EXCEPTIONS},
+      {"storageAccessBlockedExceptions",
+       IDS_SETTINGS_STORAGE_ACCESS_BLOCKED_EXCEPTIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

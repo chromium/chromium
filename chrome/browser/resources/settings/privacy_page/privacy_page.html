@@ -1117,6 +1117,13 @@
                 block-option-label="$i18n{storageAccessBlocked}"
                 block-option-icon="settings:block">
             </settings-category-default-radio-group>
+            <category-setting-exceptions
+                category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
+                block-header="$i18n{storageAccessBlockedExceptions}"
+                allow-header="$i18n{storageAccessAllowedExceptions}"
+                search-filter="[[searchFilter_]]"
+                read-only-list>
+            </category-setting-exceptions>
           </settings-subpage>
         </template>
       </template>
