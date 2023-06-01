@@ -167,23 +167,6 @@ const char kJavaScriptFlags[] = "js-flags";
 // Controls whether WebSQL is force enabled.
 const char kWebSQLAccess[] = "web-sql-access";
 
-// Used to communicate managed policy for the EventPath feature. This feature is
-// typically controlled by base::Feature (see blink/common/features.*) but
-// requires an enterprise policy override. This is implicitly a tri-state, and
-// can be either unset, or set to "1" for force enable, or "0" for force
-// disable.
-extern const char kEventPathPolicy[] = "event-path-policy";
-extern const char kEventPathPolicy_ForceDisable[] = "0";
-extern const char kEventPathPolicy_ForceEnable[] = "1";
-
-// The EventPath feature is disabled by default on almost all platforms and
-// channels, with a few exceptions that require a more gradual removal. Those
-// platforms/channels should pass this flag to renderer to enable the feature.
-// The flag has higher precedence than Blink runtime enabled feature, but lower
-// precedence than base::Feature overrides and enterprise policy.
-extern const char kEventPathEnabledByDefault[] =
-    "event-path-enabled-by-default";
-
 // Used to communicate managed policy for the OffsetParentNewSpecBehavior
 // feature. This feature is typically controlled by base::Feature (see
 // blink/common/features.*) but requires an enterprise policy override. This is

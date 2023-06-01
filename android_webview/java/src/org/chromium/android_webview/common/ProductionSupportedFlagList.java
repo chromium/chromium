@@ -252,7 +252,6 @@ public final class ProductionSupportedFlagList {
                             + "thread."),
             Flag.baseFeature(BaseFeatures.OPTIMIZE_DATA_URLS,
                     "Optimizes parsing and loading of data: URLs."),
-            Flag.baseFeature(BlinkFeatures.EVENT_PATH, "Enables the deprecated Event.path API."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
                     "If enabled, font lookup tables will be prefetched on renderer startup."),
             Flag.baseFeature(BlinkFeatures.PRECOMPILE_INLINE_SCRIPTS,

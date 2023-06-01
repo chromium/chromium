@@ -1490,11 +1490,6 @@
       status: "experimental",
     },
     {
-      // Non-standard API Event.path. Should be replaced by Event.composedPath.
-      name: "EventPath",
-      public: true,
-    },
-    {
       name: "EventTimingInteractionCount",
       status: "experimental",
       base_feature: "none",

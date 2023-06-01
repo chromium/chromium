@@ -1637,8 +1637,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIsolatedAppsDeveloperModeAllowed, true);
 
-  registry->RegisterBooleanPref(policy::policy_prefs::kEventPathEnabled, false);
-
   registry->RegisterBooleanPref(
       prefs::kStrictMimetypeCheckForWorkerScriptsEnabled, true);
 
@@ -2758,14 +2756,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      // Override EventPath feature if its Enterprise Policy is specified.
-      if (prefs->HasPrefPath(policy::policy_prefs::kEventPathEnabled)) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kEventPathPolicy,
-            prefs->GetBoolean(policy::policy_prefs::kEventPathEnabled)
-                ? blink::switches::kEventPathPolicy_ForceEnable
-                : blink::switches::kEventPathPolicy_ForceDisable);
-      }
       // Override OffsetParentNewSpecBehavior feature if its Enterprise policy
       // is specified.
       if (prefs->HasPrefPath(

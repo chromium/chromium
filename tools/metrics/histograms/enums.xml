@@ -38222,7 +38222,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="342" label="PrefixedPerformanceSetResourceTimingBufferSize"/>
   <int value="343" label="EventSrcElement"/>
   <int value="344" label="EventCancelBubble"/>
-  <int value="345" label="EventPath"/>
+  <int value="345" label="OBSOLETE_EventPath"/>
   <int value="346" label="EventClipboardData"/>
   <int value="347" label="NodeIteratorDetach"/>
   <int value="348" label="AttrNodeValue"/>

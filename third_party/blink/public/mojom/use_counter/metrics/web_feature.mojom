@@ -200,7 +200,7 @@ enum WebFeature {
   kSVGSVGElementInXMLDocument = 329,
   kEventSrcElement = 343,
   kEventCancelBubble = 344,
-  kEventPath = 345,
+  kOBSOLETE_EventPath = 345,
   kNodeIteratorDetach = 347,
   kEventGetReturnValueTrue = 350,
   kEventGetReturnValueFalse = 351,

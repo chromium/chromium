@@ -177,16 +177,6 @@
       milestone: 127,
     },
     {
-      name: "EventPath",
-      message: "`Event.path` is deprecated and will be removed. Please use `Event.composedPath()` instead.",
-      translation_note: "Warning displayed to developers when the non-standard `Event.path` API is used to notify them that this API is deprecated.",
-      web_features: [
-        "kEventPath",
-      ],
-      chrome_status_feature: 5726124632965120,
-      milestone: 109,
-    },
-    {
       name: "ExpectCTHeader",
       message: "The `Expect-CT` header is deprecated and will be removed. Chrome requires Certificate Transparency for all publicly trusted certificates issued after April 30, 2018.",
       translation_note: "This message is shown when the deprecated Expect-CT header is present.",

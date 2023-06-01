@@ -43,10 +43,6 @@ BLINK_COMMON_EXPORT extern const char kEnablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kEnableRasterSideDarkModeForImages[];
 BLINK_COMMON_EXPORT extern const char kEnableRGBA4444Textures[];
 BLINK_COMMON_EXPORT extern const char kEnableZeroCopy[];
-BLINK_COMMON_EXPORT extern const char kEventPathPolicy[];
-BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceDisable[];
-BLINK_COMMON_EXPORT extern const char kEventPathPolicy_ForceEnable[];
-BLINK_COMMON_EXPORT extern const char kEventPathEnabledByDefault[];
 BLINK_COMMON_EXPORT extern const char kOffsetParentNewSpecBehaviorPolicy[];
 BLINK_COMMON_EXPORT extern const char
     kOffsetParentNewSpecBehaviorPolicy_ForceDisable[];

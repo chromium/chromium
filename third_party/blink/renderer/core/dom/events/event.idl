@@ -54,8 +54,4 @@
     [MeasureAs=EventSrcElement] readonly attribute EventTarget srcElement;
     [MeasureAs=EventReturnValue, CallWith=ScriptState, ImplementedAs=legacyReturnValue] attribute boolean returnValue;
     [MeasureAs=EventCancelBubble, CallWith=ScriptState] attribute boolean cancelBubble;
-
-    // Non-standard APIs
-    [MeasureAs=EventPath, CallWith=ScriptState, RuntimeEnabled=EventPath]
-    readonly attribute object path;
 };
