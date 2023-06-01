@@ -59,7 +59,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabNotClosing() {
-        mTarget.setTabOffsets(2, mInput, 0, 0, 0, 0, 0, 0, false, false, false, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(mInput, false, false, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -74,8 +74,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabClosing() {
-        mTarget.setTabOffsets(
-                2, mInput, 0, 0, 0, 0, 0, STRIP_WIDTH, false, true, false, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(mInput, true, false, CACHED_TAB_WIDTH);
 
         for (StripLayoutTab tab : mInput) {
             verify(tab).setDrawY(TAB_OFFSET_Y);
@@ -88,8 +87,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testSetTabOffsets_tabCreating() {
-        mTarget.setTabOffsets(
-                2, mInput, 0, 0, 0, 0, 0, STRIP_WIDTH, false, false, true, CACHED_TAB_WIDTH);
+        mTarget.setTabOffsets(mInput, false, true, CACHED_TAB_WIDTH);
 
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
@@ -107,7 +105,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Test
     public void testPerformOcclusionPass() {
-        mTarget.performOcclusionPass(2, mInput, 2 * TAB_WIDTH);
+        mTarget.performOcclusionPass(mInput, 2 * TAB_WIDTH);
 
         for (StripLayoutTab tab : mInput) {
             if (tab == mTab1 || tab == mTab5) {

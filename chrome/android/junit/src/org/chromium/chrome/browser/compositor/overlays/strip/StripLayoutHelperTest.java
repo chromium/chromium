@@ -1036,8 +1036,8 @@ public class StripLayoutHelperTest {
         // Act: Set scroll offset greater than -960.
         mStripLayoutHelper.testSetScrollOffset(-800);
 
-        // Assert: Expand duration is 250.
-        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 250);
+        // Assert: Scroll duration is 250.
+        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 250);
     }
 
     @Test
@@ -1047,8 +1047,8 @@ public class StripLayoutHelperTest {
         // Act: Set scroll offset between -960 and -1920.
         mStripLayoutHelper.testSetScrollOffset(-1000);
 
-        // Assert: Expand duration is 350.
-        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 350);
+        // Assert: Scroll duration is 350.
+        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 350);
     }
 
     @Test
@@ -1058,8 +1058,8 @@ public class StripLayoutHelperTest {
         // Act: Set scroll offset less than -1920
         mStripLayoutHelper.testSetScrollOffset(-2000);
 
-        // Assert: Expand duration is 450.
-        assertEquals(mStripLayoutHelper.getExpandDurationForTesting(), 450);
+        // Assert: Scroll duration is 450.
+        assertEquals(mStripLayoutHelper.getScrollDurationForTesting(), 450);
     }
 
     @Test
