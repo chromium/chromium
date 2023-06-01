@@ -191,8 +191,9 @@ void MLInstallabilityPromoter::DidUpdateFaviconURL(
   site_quality_metrics_.favicons_count = candidates.size();
 }
 
-void MLInstallabilityPromoter::OnRegistrationCompleted(const GURL& pattern) {
-  if (!content::ServiceWorkerContext::ScopeMatches(pattern, site_url_)) {
+void MLInstallabilityPromoter::OnRegistrationStored(int64_t registration_id,
+                                                    const GURL& scope) {
+  if (!content::ServiceWorkerContext::ScopeMatches(scope, site_url_)) {
     return;
   }
 

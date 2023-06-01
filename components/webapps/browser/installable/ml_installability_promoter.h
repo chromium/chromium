@@ -98,7 +98,8 @@ class MLInstallabilityPromoter
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
 
   // content::ServiceWorkerContextObserver overrides
-  void OnRegistrationCompleted(const GURL& pattern) override;
+  void OnRegistrationStored(int64_t registration_id,
+                            const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // This proceeds the ML pipeline only if:

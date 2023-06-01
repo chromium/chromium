@@ -69,7 +69,8 @@ class ServiceWorkerLoadAwaiter : public content::ServiceWorkerContextObserver {
   }
 
  private:
-  void OnRegistrationCompleted(const GURL& pattern) override {
+  void OnRegistrationStored(int64_t registration_id,
+                            const GURL& pattern) override {
     if (content::ServiceWorkerContext::ScopeMatches(pattern, site_url_)) {
       service_worker_reg_complete_ = true;
       run_loop_.Quit();
@@ -260,9 +261,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 }
 
 // SiteQualityMetrics tests.
-// TODO(crbug.com/1450421): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       DISABLED_SiteQualityMetrics_ServiceWorker_FetchHandler) {
+                       SiteQualityMetrics_ServiceWorker_FetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
@@ -272,10 +272,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 
   EXPECT_TRUE(quality_metrics.has_service_worker);
   EXPECT_TRUE(quality_metrics.has_fetch_handler);
-
-  // TODO(b/284157768): The quota service does not accurately collect service
-  // worker script data, uncomment once that is fixed.
-  // EXPECT_GT(quality_metrics.service_worker_script_size, 0);
+  EXPECT_GT(quality_metrics.service_worker_script_size, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
@@ -290,10 +287,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_EQ(quality_metrics.service_worker_script_size, 0);
 }
 
-// TODO(crbug.com/1450421): Disabled for being flaky.
-IN_PROC_BROWSER_TEST_F(
-    MLPromotionBrowsertest,
-    DISABLED_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+                       SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSWEmptyFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSWEmptyFetchHandler());
@@ -307,10 +302,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(quality_metrics.has_fetch_handler);
 }
 
-// TODO(crbug.com/1450421): Disabled for being flaky.
-IN_PROC_BROWSER_TEST_F(
-    MLPromotionBrowsertest,
-    DISABLED_SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+                       SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSwNoFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSwNoFetchHandler());
