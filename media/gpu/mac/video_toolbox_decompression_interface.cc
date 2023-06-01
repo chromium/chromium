@@ -188,6 +188,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
     return false;
   }
 
+#if BUILDFLAG(IS_MAC)
   CFDictionarySetValue(
       decoder_config,
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
@@ -196,6 +197,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
       decoder_config,
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
+#endif
 
   VTDecompressionOutputCallbackRecord callback = {OnOutputThunk, this};
 
