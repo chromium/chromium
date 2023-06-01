@@ -518,6 +518,7 @@ void OnAccountsRequestParsed(
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
+    const GURL& token_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
@@ -536,8 +537,7 @@ void OnTokenRequestParsed(
   }
 
   if (continue_on) {
-    GURL url(*continue_on);
-    // TODO(crbug.com/1429083): support relative urls.
+    GURL url = token_url.Resolve(*continue_on);
     // TODO(crbug.com/1429083): check that the continue_on url is
     // same-origin with the idp origin.
     if (url.is_valid()) {
@@ -690,7 +690,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback),
-                     std::move(continue_on)),
+                     std::move(continue_on), token_url),
       maxResponseSizeInKiB * 1024);
 }
 
