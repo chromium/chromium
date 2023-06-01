@@ -575,13 +575,47 @@ export class BrowsingContextImpl {
   }
 
   async captureScreenshot(): Promise<BrowsingContext.CaptureScreenshotResult> {
-    const [, result] = await Promise.all([
-      // XXX: Either make this a proposal in the BiDi spec, or focus the
-      // original tab right after the screenshot is taken.
-      // The screenshot command gets blocked until we focus the active tab.
-      this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront'),
-      this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {}),
-    ]);
+    // XXX: Focus the original tab after the screenshot is taken.
+    // This is needed because the screenshot gets blocked until the active tab gets focus.
+    await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+
+    let clip: Protocol.DOM.Rect;
+
+    if (this.isTopLevelContext()) {
+      clip = (
+        await this.#cdpTarget.cdpClient.sendCommand('Page.getLayoutMetrics')
+      ).cssContentSize;
+    } else {
+      const {
+        result: {value: iframeDocRect},
+      } = await this.#cdpTarget.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(() => {
+            const docRect =
+              globalThis.document.documentElement.getBoundingClientRect();
+            return JSON.stringify({
+              x: docRect.x,
+              y: docRect.y,
+              width: docRect.width,
+              height: docRect.height,
+            });
+          }),
+          executionContextId: this.#defaultRealm.executionContextId,
+        }
+      );
+      clip = JSON.parse(iframeDocRect);
+    }
+
+    const result = await this.#cdpTarget.cdpClient.sendCommand(
+      'Page.captureScreenshot',
+      {
+        clip: {
+          ...clip,
+          scale: 1.0,
+        },
+      }
+    );
     return {
       result: {
         data: result.data,

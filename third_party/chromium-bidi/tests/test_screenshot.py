@@ -36,7 +36,9 @@ def assert_images_equal(img1: Image, img2: Image):
     equal_content = not ImageChops.difference(img1.convert("RGB"),
                                               img2.convert("RGB")).getbbox()
 
-    assert equal_size and equal_alphas and equal_content
+    assert equal_alphas
+    assert equal_size
+    assert equal_content
 
 
 @pytest.mark.asyncio
