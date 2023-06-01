@@ -62,25 +62,6 @@ function initializeOobe() {
   document.removeEventListener('DOMContentLoaded', initializeOobe);
   traceExecution(TraceEvent.DOM_CONTENT_LOADED);
 
-  const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
-  if (isOobeJellyEnabled) {
-    // Required on body to apply cros_color_overrides
-    document.body.classList.add('jelly-enabled');
-
-    // Start listening for color changes in 'chrome://theme/colors.css'. Force
-    // reload it once to account for any missed color change events between
-    // loading oobe.html and here.
-    startColorChangeUpdater();
-    refreshColorCss();
-
-    // TODO(b/268463435): Move include directly to the oobe.html after Jelly
-    // flag will be enabled by default.
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'chrome://theme/typography.css';
-    document.head.appendChild(fontLink);
-  }
-
   // Initialize the on-screen debugger if present.
   if (OobeDebugger.DebuggerUI) {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
@@ -154,6 +135,25 @@ function startOobe() {
   Oobe.updateDocumentLocalizedStrings();
 
   prepareGlobalValues();
+
+  const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
+  if (isOobeJellyEnabled) {
+    // Required on body to apply cros_color_overrides
+    document.body.classList.add('jelly-enabled');
+
+    // Start listening for color changes in 'chrome://theme/colors.css'. Force
+    // reload it once to account for any missed color change events between
+    // loading oobe.html and here.
+    startColorChangeUpdater();
+    refreshColorCss();
+
+    // TODO(b/268463435): Move include directly to the oobe.html after Jelly
+    // flag will be enabled by default.
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'chrome://theme/typography.css';
+    document.head.appendChild(fontLink);
+  }
 
   // Add OOBE or LOGIN screens to the document.
   const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
