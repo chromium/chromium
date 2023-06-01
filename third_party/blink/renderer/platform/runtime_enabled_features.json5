@@ -2061,10 +2061,6 @@
       settable_from_internals: true,
     },
     {
-      name: "LayoutDisableBrokenIntrinsicSize",
-      status: "stable",
-    },
-    {
       name: "LayoutDisableWebkitBoxSafeAlignment",
       status: "stable",
     },
