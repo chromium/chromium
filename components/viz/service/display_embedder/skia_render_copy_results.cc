@@ -329,11 +329,15 @@ NV12PlanesReadyContext::NV12PlanesReadyContext(
     const gfx::Rect& result_rect,
     const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
         mailbox_holders,
-    const gfx::ColorSpace& color_space)
+    const gfx::ColorSpace& color_space,
+    bool is_multiplane)
     : request_(std::move(request)),
       result_rect_(result_rect),
       mailbox_holders_(mailbox_holders),
-      color_space_(color_space) {}
+      color_space_(color_space),
+      is_multiplane_(is_multiplane) {
+  outstanding_mailboxes_ = is_multiplane ? 1 : CopyOutputResult::kNV12MaxPlanes;
+}
 
 NV12PlanesReadyContext::~NV12PlanesReadyContext() {
   DCHECK_EQ(outstanding_mailboxes_, 0);
@@ -348,8 +352,10 @@ void NV12PlanesReadyContext::OnMailboxReady() {
 
   outstanding_mailboxes_--;
   if (outstanding_mailboxes_ == 0) {
+    auto format = is_multiplane_ ? CopyOutputResult::Format::NV12_MULTIPLANE
+                                 : CopyOutputResult::Format::NV12_PLANES;
     request_->SendResult(std::make_unique<CopyOutputTextureResult>(
-        CopyOutputResult::Format::NV12_PLANES, result_rect_,
+        format, result_rect_,
         CopyOutputResult::TextureResult(mailbox_holders_, color_space_),
         CopyOutputResult::ReleaseCallbacks()));
   }

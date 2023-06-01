@@ -341,6 +341,16 @@ class SkiaOutputSurfaceImplOnGpu
                                            gpu::GrContextType::kGraphiteDawn;
   }
 
+  // Helper for `FlushSurface()` & `FlushContext()` methods, flushes writes
+  // to either the surface if it is non-null or to the context otherwise, using
+  // |end_semaphores| and |end_state|.
+  bool FlushInternal(
+      SkSurface* surface,
+      std::vector<GrBackendSemaphore>& end_semaphores,
+      gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
+      GrGpuFinishedProc finished_proc = nullptr,
+      GrGpuFinishedContext finished_context = nullptr);
+
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
@@ -392,6 +402,14 @@ class SkiaOutputSurfaceImplOnGpu
       GrGpuFinishedProc finished_proc = nullptr,
       GrGpuFinishedContext finished_context = nullptr);
 
+  // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods, flushes writes
+  // to the Skia context with |end_semaphores| and |end_state|.
+  bool FlushContext(
+      std::vector<GrBackendSemaphore>& end_semaphores,
+      gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
+      GrGpuFinishedProc finished_proc = nullptr,
+      GrGpuFinishedContext finished_context = nullptr);
+
   // Creates surfaces needed to store the data in NV12 format.
   // |mailbox_access_datas| will be populated with information needed to access
   // the NV12 planes.
@@ -407,7 +425,8 @@ class SkiaOutputSurfaceImplOnGpu
   bool ImportSurfacesForNV12Planes(
       const BlitRequest& blit_request,
       std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          mailbox_access_datas);
+          mailbox_access_datas,
+      bool is_multiplane);
 
   // Helper, blends `BlendBitmap`s set on the |blit_request| over the |canvas|.
   // Used to implement handling of `CopyOutputRequest`s that contain

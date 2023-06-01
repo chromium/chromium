@@ -109,7 +109,8 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
-  DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
+  DCHECK(result_format() == ResultFormat::NV12_PLANES ||
+         result_format() == ResultFormat::NV12_MULTIPLANE);
   DCHECK(has_result_selection());
 
   // Destination region must start at an even offset for NV12 results:

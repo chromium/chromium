@@ -189,7 +189,8 @@ class NV12PlanesReadyContext : public base::RefCounted<NV12PlanesReadyContext> {
       const gfx::Rect& result_rect,
       const std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes>&
           mailbox_holders,
-      const gfx::ColorSpace& color_space);
+      const gfx::ColorSpace& color_space,
+      bool is_multiplane);
 
   NV12PlanesReadyContext(const NV12PlanesReadyContext& other) = delete;
   NV12PlanesReadyContext& operator=(const NV12PlanesReadyContext& other) =
@@ -213,8 +214,11 @@ class NV12PlanesReadyContext : public base::RefCounted<NV12PlanesReadyContext> {
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailbox_holders_;
   gfx::ColorSpace color_space_;
 
-  // Number of mailboxes that still need to report completion:
-  int outstanding_mailboxes_ = CopyOutputResult::kNV12MaxPlanes;
+  // Number of mailboxes that still need to report completion, initialized
+  // either to 1 for multiplanar or to the number of NV12 planes otherwise.
+  int outstanding_mailboxes_ = 0;
+
+  bool is_multiplane_;
 
   THREAD_CHECKER(thread_checker_);
 };
