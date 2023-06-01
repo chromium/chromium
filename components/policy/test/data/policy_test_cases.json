@@ -3248,7 +3248,7 @@
             {
               "principal": "user1@realm",
               "password": "password1",
-              "remember_password": true
+              "remember_password_from_policy": true
             },
             {
               "principal": "${LOGIN_EMAIL}"

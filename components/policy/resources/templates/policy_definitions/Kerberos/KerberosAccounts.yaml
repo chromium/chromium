@@ -1,6 +1,6 @@
 caption: Configure Kerberos accounts
 desc: |-
-  Adds prefilled Kerberos accounts. If the Kerberos credentials match the login credentials, an account can be configured to reuse the login credentials by specifying '<ph name="LOGIN_EMAIL_PLACEHOLDER">${LOGIN_EMAIL}</ph>' and <ph name="PASSWORD_PLACEHOLDER">${PASSWORD}</ph>' for principal and password, respectively, so that the Kerberos ticket can be retrieved automatically unless two-factor authentication is configured. Users cannot modify accounts added via this policy.
+  Adds prefilled Kerberos accounts. If the Kerberos credentials match the login credentials, an account can be configured to reuse the login credentials by specifying '<ph name="LOGIN_EMAIL_PLACEHOLDER">${LOGIN_EMAIL}</ph>' and <ph name="PASSWORD_PLACEHOLDER">${PASSWORD}</ph>' for principal and password, respectively, so that the Kerberos ticket can be retrieved automatically, unless two-factor authentication is configured. Users cannot modify accounts added via this policy.
 
             If this policy is enabled, the list of accounts defined by the policy is added to the Kerberos Accounts settings.
 
@@ -9,7 +9,7 @@ example_value:
 - password: ${PASSWORD}
   principal: ${LOGIN_EMAIL}
 - principal: user1@REALM.COM
-  remember_password: true
+  remember_password_from_policy: true
 - krb5conf:
   - '[libdefaults]'
   - '  default_tgs_enctypes = aes256-cts-hmac-sha1-96'
@@ -54,11 +54,16 @@ schema:
           the full principal 'user@realm'.
         pattern: ^(?:[^@]+@[^@]+)|(?:\${LOGIN_ID})|(?:\${LOGIN_EMAIL})$
         type: string
-      remember_password:
-        description: Whether to remember the Kerberos password. If not set or
+      remember_password_from_policy:
+        description: Whether to remember the Kerberos password value set in this
+          policy item. If not set or set to true, the password is remembered. If
           set to false, the password is not remembered. Ignored if the password
-          is not specified.
+          field is not specified for this account. This field is supported since
+          ChromeOS version 116.
         type: boolean
+      # Note that the `remember_password` field has been deprecated in favor of
+      # the `remember_password_from_policy` field, which defaults to a different
+      # value.
     required:
     - principal
     type: object
