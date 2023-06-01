@@ -139,8 +139,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
-// TODO(crbug.com/1111076): Flaky on iOS simulator and device.
-- (void)DISABLED_testAddressesStateAfterPresentingManageAddresses {
+- (void)testAddressesStateAfterPresentingManageAddresses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
