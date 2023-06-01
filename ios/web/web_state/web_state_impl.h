@@ -314,7 +314,7 @@ class WebStateImpl final : public WebState {
   int GetNavigationItemCount() const final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
-  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;
+  absl::optional<GURL> GetLastCommittedURLIfTrusted() const final;
   id<CRWWebViewProxy> GetWebViewProxy() const final;
   void DidChangeVisibleSecurityState() final;
   InterfaceBinder* GetInterfaceBinderForMainFrame() final;

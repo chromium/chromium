@@ -12,7 +12,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
-#import "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/task_observer_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -143,8 +142,7 @@ void WebTestWithWebState::DestroyWebState() {
 }
 
 std::string WebTestWithWebState::BaseUrl() const {
-  web::URLVerificationTrustLevel unused_level;
-  return web_state()->GetCurrentURL(&unused_level).spec();
+  return web_state()->GetLastCommittedURL().spec();
 }
 
 web::WebState* WebTestWithWebState::web_state() {

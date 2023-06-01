@@ -1019,7 +1019,7 @@ NavigationManagerImpl::GetLastCommittedItemInCurrentOrRestoredSession() const {
     // Don't check trust level here, as at this point it's expected
     // the _documentURL and the last_commited_item URL have an origin
     // mismatch.
-    GURL document_url = GetWebState()->GetCurrentURL(/*trust_level=*/nullptr);
+    GURL document_url = delegate_->GetCurrentURL();
     if (!last_committed_web_view_item_) {
       last_committed_web_view_item_ = CreateNavigationItemWithRewriters(
           /*url=*/GURL::EmptyGURL(), Referrer(),

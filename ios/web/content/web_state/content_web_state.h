@@ -104,7 +104,7 @@ class ContentWebState : public WebState,
   int GetNavigationItemCount() const override;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
-  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
+  absl::optional<GURL> GetLastCommittedURLIfTrusted() const override;
   WebFramesManager* GetWebFramesManager(ContentWorld world) override;
   CRWWebViewProxyType GetWebViewProxy() const override;
   void AddObserver(WebStateObserver* observer) override;

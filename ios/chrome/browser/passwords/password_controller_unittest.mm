@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -472,8 +471,7 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   std::string BaseUrl() const {
-    web::URLVerificationTrustLevel unused_level;
-    return web_state()->GetCurrentURL(&unused_level).spec();
+    return web_state()->GetLastCommittedURL().spec();
   }
 
   web::WebState* web_state() const { return web_state_.get(); }

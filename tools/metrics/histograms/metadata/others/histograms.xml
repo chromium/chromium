@@ -14215,22 +14215,6 @@ regressions. -->
   <token key="Target" variants="VoiceIntentTargetVariant"/>
 </histogram>
 
-<histogram name="Web.CurrentOriginEqualsLastCommittedOrigin"
-    enum="BooleanEqual" expires_after="2023-11-17">
-  <owner>ajuma@chromium.org</owner>
-  <owner>gambard@chromium.org</owner>
-  <summary>
-    [iOS] Reports URL matches between the return value from the WebState's
-    GetLastCommittedURL and GetCurrentURL methods. It is expected the origins
-    will be equal to confirm that GetCurrentURL can now be replaced with
-    GetLastCommittedURL. This will be called each time WebStateImpl::
-    GetCurrentURL(URLVerificationTrustLevel* trust_level) is called, which is an
-    old method of obtaining the url and trust level. The trust level was only
-    relevant with UIWebView, so this method is only called from code which has
-    not yet been updated since UIWebView was removed.
-  </summary>
-</histogram>
-
 <histogram name="WebContentsObserver.{Method}" units="ms"
     expires_after="2023-07-28">
   <owner>cduvall@chromium.org</owner>

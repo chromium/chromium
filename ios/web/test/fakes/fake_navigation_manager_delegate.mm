@@ -40,6 +40,10 @@ NavigationItemImpl* FakeNavigationManagerDelegate::GetPendingItem() {
   return nullptr;
 }
 
+GURL FakeNavigationManagerDelegate::GetCurrentURL() const {
+  return GURL();
+}
+
 void FakeNavigationManagerDelegate::SetWebViewNavigationProxy(id web_view) {
   test_web_view_ = web_view;
 }

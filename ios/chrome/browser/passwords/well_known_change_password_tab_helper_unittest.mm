@@ -172,9 +172,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
 };
 
 GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {
-  web::URLVerificationTrustLevel trust_level =
-      web::URLVerificationTrustLevel::kAbsolute;
-  GURL url = web_state()->GetCurrentURL(&trust_level);
+  GURL url = web_state()->GetLastCommittedURL();
   // When redirecting with WebState::OpenURL() `web_state_` is not
   // updated, we only see the registered request in
   // FakeWebStateDelegate::last_open_url_request().

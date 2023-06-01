@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "ios/web/common/user_agent.h"
+#import "url/gurl.h"
 
 @protocol CRWWebViewNavigationProxy;
 @class WKBackForwardListItem;
@@ -71,6 +72,11 @@ class NavigationManagerDelegate {
 
   // Used to access pending item stored in NavigationContext.
   virtual NavigationItemImpl* GetPendingItem() = 0;
+
+  // Returns the NavigationManagerDelegate's view of the current URL. This is
+  // used as a fallback in situations where the NavigationManager doesn't trust
+  // its own view of the last committed item.
+  virtual GURL GetCurrentURL() const = 0;
 };
 
 }  // namespace web

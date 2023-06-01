@@ -12,8 +12,5 @@ source_set("deprecated") {
     "//ios/web/public:web_state_observer",
     "//url",
   ]
-  sources = [
-    "global_web_state_observer.h",
-    "url_verification_constants.h",
-  ]
+  sources = [ "global_web_state_observer.h" ]
 }
