@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppManagementFileHandlingItemElement} from 'chrome://resources/cr_components/app_management/file_handling_item.js';
+import {AppManagementToggleRowElement} from 'chrome://resources/cr_components/app_management/toggle_row.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {FakePageHandler} from './fake_page_handler.js';
+import {replaceBody, replaceStore, setupFakeHandler} from './test_util.js';
 
 suite('<app-management-file-handling-item>', () => {
-  let fileHandlingItem;
-  let fakeHandler;
+  let fileHandlingItem: AppManagementFileHandlingItemElement;
+  let fakeHandler: FakePageHandler;
 
-  setup(async function() {
+  setup(() => {
     fakeHandler = setupFakeHandler();
     replaceStore();
 
@@ -27,7 +30,7 @@ suite('<app-management-file-handling-item>', () => {
   // Simple test that just verifies the file handling item is present and
   // doesn't throw errors. More comprehensive testing is in cross platform
   // app_management tests.
-  test('PWA - basic file handling test', async function() {
+  test('PWA - basic file handling test', async () => {
     const pwaOptions = {
       type: AppType.kWeb,
       fileHandlingState: {
@@ -54,7 +57,10 @@ suite('<app-management-file-handling-item>', () => {
     fakeHandler.flushPipesForTesting();
     flushTasks();
 
-    assertFalse(
-        fileHandlingItem.shadowRoot.querySelector('#toggle-row').isChecked());
+    const toggleRow =
+        fileHandlingItem.shadowRoot!
+            .querySelector<AppManagementToggleRowElement>('#toggle-row');
+    assertTrue(!!toggleRow);
+    assertFalse(toggleRow.isChecked());
   });
 });
