@@ -5540,11 +5540,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillVirtualCardsOnTouchToFillAndroid)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-autofill-manual-fallback",
-     flag_descriptions::kAutofillManualFallbackAndroidName,
-     flag_descriptions::kAutofillManualFallbackAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillManualFallbackAndroid)},
-
     {"enable-autofill-touch-to-fill-for-credit-cards",
      flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidName,
      flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidDescription,
@@ -7830,14 +7825,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewDemo)},
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"recover-from-never-save-android",
-     flag_descriptions::kRecoverFromNeverSaveAndroidName,
-     flag_descriptions::kRecoverFromNeverSaveAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kRecoverFromNeverSaveAndroid)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"fullscreen-popup-windows", flag_descriptions::kFullscreenPopupWindowsName,
      flag_descriptions::kFullscreenPopupWindowsDescription,
