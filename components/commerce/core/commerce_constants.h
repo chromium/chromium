@@ -13,6 +13,9 @@ extern const char kChromeUICommerceInternalsHost[];
 // The host for the shopping insights side panel page.
 extern const char kChromeUIShoppingInsightsSidePanelHost[];
 
+// The url for the shopping insights side panel page.
+extern const char kChromeUIShoppingInsightsSidePanelUrl[];
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_CONSTANTS_H_

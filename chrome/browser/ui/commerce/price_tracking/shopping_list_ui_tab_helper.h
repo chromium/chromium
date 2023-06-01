@@ -17,7 +17,7 @@
 #include "ui/gfx/image/image.h"
 
 class GURL;
-
+class SidePanelUI;
 namespace bookmarks {
 class BookmarkModel;
 }
@@ -31,12 +31,18 @@ namespace image_fetcher {
 class ImageFetcher;
 }
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace commerce {
 
 struct CommerceSubscription;
 
 // This tab helper is used to update and maintain the state of the shopping list
 // and price tracking UI on desktop.
+// TODO(b:283833590): Rename this class since it serves for all shopping
+// features now.
 class ShoppingListUiTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<ShoppingListUiTabHelper>,
@@ -117,6 +123,18 @@ class ShoppingListUiTabHelper
 
   bool IsSameDocumentWithSameCommittedUrl(
       content::NavigationHandle* navigation_handle);
+
+  // Make the ShoppingInsights entry available in the side panel.
+  void MakeShoppingInsightsSidePanelAvailable();
+
+  // Make the ShoppingInsights entry unavailable in the side panel. If the
+  // ShoppingInsights side panel is currently showing, close the side panel
+  // first.
+  void MakeShoppingInsightsSidePanelUnavailable();
+
+  std::unique_ptr<views::View> CreateShoppingInsightsWebView();
+
+  SidePanelUI* GetSidePanelUI() const;
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
