@@ -226,7 +226,7 @@ public class ChromeActionModeHandlerUnitTest {
     }
 
     private void addMenuItem(Menu menu, int order, String packageName) {
-        menu.add(R.id.select_action_menu_text_processing_menus, Menu.NONE, order, "title")
+        menu.add(R.id.select_action_menu_text_processing_items, Menu.NONE, order, "title")
                 .setIntent(new Intent()
                                    .setAction(Intent.ACTION_PROCESS_TEXT)
                                    .setType("text/plain")

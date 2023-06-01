@@ -144,7 +144,7 @@ public class ChromeActionModeHandler {
             Set<String> launchers = getPackageNames(PackageManagerUtils.queryAllLaunchersInfo());
             for (int i = 0; i < menu.size(); i++) {
                 MenuItem item = menu.getItem(i);
-                if (item.getGroupId() != R.id.select_action_menu_text_processing_menus
+                if (item.getGroupId() != R.id.select_action_menu_text_processing_items
                         || item.getIntent() == null || item.getIntent().getComponent() == null) {
                     continue;
                 }

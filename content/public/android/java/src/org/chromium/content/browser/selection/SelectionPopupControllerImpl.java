@@ -9,9 +9,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Browser;
@@ -19,7 +18,6 @@ import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +25,8 @@ import android.view.WindowManager;
 import android.view.textclassifier.SelectionEvent;
 import android.view.textclassifier.TextClassifier;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -43,20 +41,23 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content.R;
-import org.chromium.content.browser.ContentClassFactory;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.input.ImeAdapterImpl;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActionMenuDelegate;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
+import org.chromium.content_public.browser.SelectionMenuGroup;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.Clipboard;
@@ -68,7 +69,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
-import java.util.List;
+import java.util.PriorityQueue;
 
 /**
  * Implementation of the interface {@link SelectionPopupController}.
@@ -76,7 +77,7 @@ import java.util.List;
 @JNINamespace("content")
 public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         implements ImeEventObserver, SelectionPopupController, WindowEventObserver, HideablePopup,
-                   ContainerViewObserver, UserData {
+                   ContainerViewObserver, UserData, SelectActionMenuDelegate {
     private static final String TAG = "SelectionPopupCtlr"; // 20 char limit
     private static final boolean DEBUG = false;
 
@@ -133,7 +134,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private SelectionClient.ResultCallback mResultCallback;
 
     // Used to customize PastePopupMenu
-    private ActionMode.Callback mNonSelectionCallback;
+    private AdditionalSelectionMenuItemProvider mNonSelectionAdditionalItemProvider;
 
     // Selection rectangle in DIP.
     private final Rect mSelectionRect = new Rect();
@@ -159,7 +160,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private boolean mEditable;
     private boolean mIsPasswordType;
     private boolean mIsInsertionForTesting;
-    private boolean mCanSelectAllForPastePopup;
+    private boolean mCanSelectAll;
     private boolean mCanEditRichly;
 
     private boolean mUnselectAllOnDismiss;
@@ -197,8 +198,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private boolean mPreserveSelectionOnNextLossOfFocus;
 
     private MagnifierAnimator mMagnifierAnimator;
-
-    private AdditionalMenuItemProvider mAdditionalMenuItemProvider;
 
     /**
      * An interface for getting {@link View} for readback.
@@ -323,7 +322,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         mResultCallback = new SmartSelectionCallback();
         mLastSelectedText = "";
-        mAdditionalMenuItemProvider = ContentClassFactory.get().createAddtionalMenuItemProvider();
         getPopupController().registerPopup(this);
     }
 
@@ -382,8 +380,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
-    public void setNonSelectionActionModeCallback(ActionMode.Callback callback) {
-        mNonSelectionCallback = callback;
+    public void setNonSelectionAdditionalMenuItemProvider(
+            AdditionalSelectionMenuItemProvider provider) {
+        mNonSelectionAdditionalItemProvider = provider;
     }
 
     @Override
@@ -428,7 +427,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             return MENU_ITEM_SHARE;
         } else if (id == R.id.select_action_menu_web_search) {
             return MENU_ITEM_WEB_SEARCH;
-        } else if (groupId == R.id.select_action_menu_text_processing_menus) {
+        } else if (groupId == R.id.select_action_menu_text_processing_items) {
             return MENU_ITEM_PROCESS_TEXT;
         }
         return 0;
@@ -452,7 +451,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mLastSelectionOffset = selectionStartOffset;
         mHasSelection = selectionText.length() != 0;
         mIsPasswordType = isPasswordType;
-        mCanSelectAllForPastePopup = canSelectAll;
+        mCanSelectAll = canSelectAll;
         mCanEditRichly = canRichlyEdit;
         mUnselectAllOnDismiss = true;
 
@@ -566,7 +565,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
                     @Override
                     public boolean canPaste() {
-                        return Clipboard.getInstance().canPaste();
+                        return SelectionPopupControllerImpl.this.canPaste();
                     }
 
                     @Override
@@ -586,8 +585,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 };
         Context windowContext = mWindowAndroid.getContext().get();
         if (windowContext == null) return;
-        mPastePopupMenu =
-                new FloatingPastePopupMenu(windowContext, mView, delegate, mNonSelectionCallback);
+        mPastePopupMenu = new FloatingPastePopupMenu(
+                windowContext, mView, delegate, mNonSelectionAdditionalItemProvider);
         showPastePopup();
     }
 
@@ -760,115 +759,162 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-        if (mAdditionalMenuItemProvider != null) {
-            mAdditionalMenuItemProvider.clearMenuItemListeners();
-        }
-        // Only remove action mode items we added. See more http://crbug.com/709878.
-        menu.removeGroup(R.id.select_action_menu_default_items);
-        menu.removeGroup(R.id.select_action_menu_assist_items);
-        menu.removeGroup(R.id.select_action_menu_text_processing_menus);
-        menu.removeGroup(android.R.id.textAssist);
-        createActionMenu(mode, menu);
+        SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
+        createSelectionActionMenu(mode, menu);
         return true;
     }
 
+    public static void initializeNonSelectionMenu(SelectActionMenuDelegate delegate,
+            Context context,
+            @Nullable AdditionalSelectionMenuItemProvider nonSelectionAdditionalItemProvider,
+            ActionMode mode, Menu menu) {
+        PriorityQueue<SelectionMenuGroup> nonSelectionMenuItems =
+                SelectActionMenuHelper.getNonSelectionMenuItems(
+                        delegate, nonSelectionAdditionalItemProvider);
+        initializeActionMenu(context, nonSelectionMenuItems, mode, menu, null);
+    }
+
     /**
-     * Initialize the menu by populating all the available items. Embedders should remove
-     * the items that are not relevant to the input text being edited.
+     * Initializes the selection menu.
+     * @param additionalMenuItemClickListener additional actions that need to be executed after a
+     *         menu item is clicked.
      */
-    public static void initializeMenu(Context context, ActionMode mode, Menu menu) {
-        if (!sMustUseWebContentsContext) {
-            // For WebView the correct choice is to use the actionMode context because webview
-            // assets have been added to its asset path. However we need to fall back to
-            // using the web contents context in the case where the AssetManager associated with
-            // the actionMode context does not contain our assets, because not doing so will cause a
-            // crash.
-            try {
-                mode.getMenuInflater().inflate(R.menu.select_action_menu, menu);
-                return;
-            } catch (Resources.NotFoundException e) {
-                // TODO(tobiasjs) by the time we get here we have already
-                // caused a resource loading failure to be logged. WebView
-                // resource access needs to be improved so that this
-                // logspam can be avoided.
+    private static void initializeSelectionMenu(SelectActionMenuDelegate delegate, Context context,
+            @Nullable SelectionClient.Result classificationResult, boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
+            @Nullable SelectActionMenuHelper
+                    .TextProcessingIntentHandler textProcessingIntentHandler,
+            ActionMode mode, Menu menu,
+            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
+        PriorityQueue<SelectionMenuGroup> selectionMenuItems =
+                SelectActionMenuHelper.getSelectionMenuItems(delegate, context,
+                        classificationResult, isSelectionPassword, isSelectionReadOnly,
+                        textProcessingIntentHandler);
+        initializeActionMenu(
+                context, selectionMenuItems, mode, menu, additionalMenuItemClickListener);
+    }
+
+    /**
+     * Initializes a {@link Menu} with items from the {@link SelectionMenuGroup}s.
+     * {@link SelectionMenuItem}s where {@link SelectionMenuItem#isEnabled} returns false
+     * are not added.
+     */
+    private static void initializeActionMenu(Context context,
+            PriorityQueue<SelectionMenuGroup> menuGroups, ActionMode mode, Menu menu,
+            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
+        for (SelectionMenuGroup group : menuGroups) {
+            addMenuGroupToMenu(context, group, mode, menu, additionalMenuItemClickListener);
+        }
+    }
+
+    private static void addMenuGroupToMenu(Context context, SelectionMenuGroup group,
+            ActionMode mode, Menu menu,
+            @Nullable MenuItem.OnMenuItemClickListener additionalMenuItemClickListener) {
+        for (SelectionMenuItem item : group.items) {
+            if (!item.isEnabled) {
+                // We will only add items if they are enabled. This will prevent us from
+                // needing to remove them.
+                continue;
             }
+            MenuItem menuItem =
+                    menu.add(group.id, item.id, item.orderInCategory, item.getTitle(context))
+                            .setShowAsActionFlags(item.showAsActionFlags);
+            @Nullable
+            Drawable icon = item.getIcon(context);
+            if (icon != null) {
+                menuItem.setIcon(icon);
+            }
+            @Nullable
+            Character alphabeticShortcut = item.alphabeticShortcut;
+            if (alphabeticShortcut != null) {
+                menuItem.setAlphabeticShortcut(alphabeticShortcut);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Content descriptions supported on O+.
+                @Nullable
+                CharSequence contentDescription = item.contentDescription;
+                if (contentDescription != null) {
+                    menuItem.setContentDescription(contentDescription);
+                }
+            }
+            menuItem.setOnMenuItemClickListener(clickedMenuItem -> {
+                if (additionalMenuItemClickListener != null) {
+                    additionalMenuItemClickListener.onMenuItemClick(clickedMenuItem);
+                }
+                View.OnClickListener clickListener = item.clickListener;
+                if (clickListener != null) {
+                    clickListener.onClick(null);
+                    mode.finish();
+                    return true;
+                }
+                return false;
+            });
         }
-        new MenuInflater(context).inflate(R.menu.select_action_menu, menu);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    public static void setPasteAsPlainTextMenuItemTitle(Menu menu) {
-        MenuItem item = menu.findItem(R.id.select_action_menu_paste_as_plain_text);
-        if (item == null) return;
-        // android.R.string.paste_as_plain_text is available in SDK since O.
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-        item.setTitle(android.R.string.paste_as_plain_text);
+    private void createSelectionActionMenu(ActionMode mode, Menu menu) {
+        SelectActionMenuHelper.TextProcessingIntentHandler textProcessingIntentHandler = null;
+        if (isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
+            textProcessingIntentHandler = this::processText;
+        }
+        initializeSelectionMenu(this, mContext, mClassificationResult, isSelectionPassword(),
+                !isFocusedNodeEditable(), textProcessingIntentHandler, mode, menu, item -> {
+                    logSelectionAction(item.getGroupId(), item.getItemId());
+                    return false;
+                });
     }
 
-    private void createActionMenu(ActionMode mode, Menu menu) {
-        initializeMenu(mContext, mode, menu);
-        updateAssistMenuItem(menu);
-        removeActionMenuItemsIfNecessary(menu);
-        setPasteAsPlainTextMenuItemTitle(menu);
-
-        Context windowContext = mWindowAndroid.getContext().get();
-        if (mClassificationResult != null && mAdditionalMenuItemProvider != null
-                && windowContext != null) {
-            mAdditionalMenuItemProvider.addMenuItems(windowContext, menu,
-                    mClassificationResult.textClassification,
-                    mClassificationResult.additionalIcons);
-        }
-
-        if (!hasSelection() || isSelectionPassword()) return;
-
-        initializeTextProcessingMenu(menu);
+    /**
+     * Checks if copy action is available.
+     */
+    @Override
+    public boolean canCopy() {
+        return hasSelection() && !isSelectionPassword() && Clipboard.getInstance().canCopy();
     }
 
-    private void removeActionMenuItemsIfNecessary(Menu menu) {
-        if (!isFocusedNodeEditable() || !Clipboard.getInstance().canPaste()) {
-            menu.removeItem(R.id.select_action_menu_paste);
-            menu.removeItem(R.id.select_action_menu_paste_as_plain_text);
-        }
+    /**
+     * Checks if cut action is available.
+     */
+    @Override
+    public boolean canCut() {
+        return hasSelection() && !isSelectionPassword() && Clipboard.getInstance().canCopy()
+                && isFocusedNodeEditable();
+    }
 
-        if (!canPasteAsPlainText()) {
-            menu.removeItem(R.id.select_action_menu_paste_as_plain_text);
-        }
+    /**
+     * Checks if paste action is available.
+     */
+    @Override
+    public boolean canPaste() {
+        return isFocusedNodeEditable() && Clipboard.getInstance().canPaste();
+    }
 
-        if (!hasSelection()) {
-            menu.removeItem(R.id.select_action_menu_select_all);
-            menu.removeItem(R.id.select_action_menu_cut);
-            menu.removeItem(R.id.select_action_menu_copy);
-            menu.removeItem(R.id.select_action_menu_share);
-            menu.removeItem(R.id.select_action_menu_web_search);
-            return;
-        }
+    /**
+     * Checks if share action is available.
+     */
+    @Override
+    public boolean canShare() {
+        return hasSelection() && !isFocusedNodeEditable()
+                && isSelectActionModeAllowed(MENU_ITEM_SHARE);
+    }
 
-        if (!isFocusedNodeEditable()) {
-            menu.removeItem(R.id.select_action_menu_cut);
-        }
-
-        if (isFocusedNodeEditable() || !isSelectActionModeAllowed(MENU_ITEM_SHARE)) {
-            menu.removeItem(R.id.select_action_menu_share);
-        }
-
-        if (isFocusedNodeEditable() || isIncognito()
-                || !isSelectActionModeAllowed(MENU_ITEM_WEB_SEARCH)) {
-            menu.removeItem(R.id.select_action_menu_web_search);
-        }
-
-        if (isSelectionPassword() || !Clipboard.getInstance().canCopy()) {
-            menu.removeItem(R.id.select_action_menu_copy);
-            menu.removeItem(R.id.select_action_menu_cut);
-        }
+    /**
+     * Checks if web search action is available.
+     */
+    @Override
+    public boolean canWebSearch() {
+        return hasSelection() && !isFocusedNodeEditable() && !isIncognito()
+                && isSelectActionModeAllowed(MENU_ITEM_WEB_SEARCH);
     }
 
     /**
      * Check if need to show "paste as plain text" option.
-     * "paste as plain text" option needs clibpoard content is rich text, and editor supports rich
+     * "paste as plain text" option needs clipboard content is rich text, and editor supports rich
      * text as well.
      */
-    @VisibleForTesting
+    @Override
     public boolean canPasteAsPlainText() {
+        if (!canPaste()) return false;
         // String resource "paste_as_plain_text" only exist in O+.
         // Also this is an O feature, we need to make it consistent with TextView.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
@@ -881,49 +927,20 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return Clipboard.getInstance().hasHTMLOrStyledText();
     }
 
-    private void updateAssistMenuItem(Menu menu) {
-        // There is no Assist functionality before Android O.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-
-        if (mClassificationResult != null && mClassificationResult.hasNamedAction()) {
-            menu.add(R.id.select_action_menu_assist_items, android.R.id.textAssist, 1,
-                        mClassificationResult.label)
-                    .setIcon(mClassificationResult.icon);
-        }
-    }
-
     /**
-     * Intialize the menu items for processing text, if there is any.
+     * Testing use only. Initialize the menu items for processing text, if there is any.
      */
     @VisibleForTesting
-    /* package */ void initializeTextProcessingMenu(Menu menu) {
+    /* package */ void initializeTextProcessingMenuForTesting(ActionMode mode, Menu menu) {
         if (!isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
             return;
         }
 
-        List<ResolveInfo> supportedActivities =
-                PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
-        for (int i = 0; i < supportedActivities.size(); i++) {
-            ResolveInfo resolveInfo = supportedActivities.get(i);
-            if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
-
-            CharSequence label = resolveInfo.loadLabel(mContext.getPackageManager());
-            menu.add(R.id.select_action_menu_text_processing_menus, Menu.NONE,
-                        MENU_ITEM_ORDER_TEXT_PROCESS_START + i, label)
-                    .setIntent(createProcessTextIntentForResolveInfo(resolveInfo))
-                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        SelectionMenuGroup textProcessingItems = SelectActionMenuHelper.getTextProcessingItems(
+                mContext, false, false, this::processText);
+        if (textProcessingItems != null) {
+            addMenuGroupToMenu(mContext, textProcessingItems, mode, menu, null);
         }
-    }
-
-    private static Intent createProcessTextIntent() {
-        return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
-    }
-
-    private Intent createProcessTextIntentForResolveInfo(ResolveInfo info) {
-        boolean isReadOnly = !isFocusedNodeEditable();
-        return createProcessTextIntent()
-                .putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, isReadOnly)
-                .setClassName(info.activityInfo.packageName, info.activityInfo.name);
     }
 
     @Override
@@ -933,17 +950,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (!isActionModeValid()) return true;
 
         int id = item.getItemId();
-        int groupId = item.getGroupId();
 
-        if (hasSelection() && mSmartSelectionEventProcessor != null) {
-            mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText, mLastSelectionOffset,
-                    getActionType(id, groupId), mClassificationResult);
-        }
-
-        if (groupId == R.id.select_action_menu_assist_items && id == android.R.id.textAssist) {
-            doAssistAction();
-            mode.finish();
-        } else if (id == R.id.select_action_menu_select_all) {
+        if (id == R.id.select_action_menu_select_all) {
             selectAll();
         } else if (id == R.id.select_action_menu_cut) {
             cut();
@@ -964,15 +972,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         } else if (id == R.id.select_action_menu_web_search) {
             search();
             mode.finish();
-        } else if (groupId == R.id.select_action_menu_text_processing_menus) {
-            processText(item.getIntent());
-            // The ActionMode is not dismissed to match the behavior with
-            // TextView in Android M.
-        } else if (groupId == android.R.id.textAssist) {
-            if (mAdditionalMenuItemProvider != null) {
-                mAdditionalMenuItemProvider.performAction(item, mView);
-                mode.finish();
-            }
         } else {
             return false;
         }
@@ -985,6 +984,16 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         setActionMode(null);
         if (mUnselectAllOnDismiss) {
             clearSelection();
+        }
+    }
+
+    private void logSelectionAction(@IdRes int groupId, @IdRes int id) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            return;
+        }
+        if (hasSelection() && mSmartSelectionEventProcessor != null) {
+            mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText, mLastSelectionOffset,
+                    getActionType(id, groupId), mClassificationResult);
         }
     }
 
@@ -1044,31 +1053,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             return SelectionEvent.ACTION_SMART_SHARE;
         }
         return SelectionEvent.ACTION_OTHER;
-    }
-
-    /**
-     * Perform an action that depends on the semantics of the selected text.
-     */
-    @VisibleForTesting
-    void doAssistAction() {
-        assert mView != null;
-        if (mClassificationResult == null || !mClassificationResult.hasNamedAction()) return;
-
-        assert mClassificationResult.onClickListener != null
-                || mClassificationResult.intent != null;
-
-        if (mClassificationResult.onClickListener != null) {
-            mClassificationResult.onClickListener.onClick(mView);
-            return;
-        }
-
-        if (mClassificationResult.intent != null) {
-            Context context = mWindowAndroid.getContext().get();
-            if (context == null) return;
-
-            context.startActivity(mClassificationResult.intent);
-            return;
-        }
     }
 
     /**
@@ -1211,9 +1195,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     /**
      * @return true if the current selection can select all.
      */
-    @VisibleForTesting
+    @Override
     public boolean canSelectAll() {
-        return mCanSelectAllForPastePopup;
+        return mCanSelectAll;
     }
 
     /**

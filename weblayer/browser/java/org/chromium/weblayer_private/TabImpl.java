@@ -33,8 +33,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.autofill.AutofillSelectionMenuItemProvider;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -371,7 +371,7 @@ public final class TabImpl extends ITab.Stub {
                     mAutofillProvider = null;
                 }
                 if (selectionController != null) {
-                    selectionController.setNonSelectionActionModeCallback(null);
+                    selectionController.setNonSelectionAdditionalMenuItemProvider(null);
                 }
             } else {
                 if (mAutofillProvider == null) {
@@ -387,8 +387,8 @@ public final class TabImpl extends ITab.Stub {
                         mBrowser.getBrowserFragment().getViewAndroidDelegateContainerView());
                 mAutofillProvider.setWebContents(mWebContents);
                 if (selectionController != null) {
-                    selectionController.setNonSelectionActionModeCallback(
-                            new AutofillActionModeCallback(
+                    selectionController.setNonSelectionAdditionalMenuItemProvider(
+                            new AutofillSelectionMenuItemProvider(
                                     mBrowser.getContext(), mAutofillProvider));
                 }
             }

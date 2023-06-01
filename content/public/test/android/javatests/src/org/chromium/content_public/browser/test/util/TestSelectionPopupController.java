@@ -11,6 +11,7 @@ import android.view.textclassifier.TextClassifier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 
@@ -25,7 +26,8 @@ public class TestSelectionPopupController implements SelectionPopupController {
     public void setActionModeCallback(ActionMode.Callback2 callback) {}
 
     @Override
-    public void setNonSelectionActionModeCallback(ActionMode.Callback callback) {}
+    public void setNonSelectionAdditionalMenuItemProvider(
+            AdditionalSelectionMenuItemProvider provider) {}
 
     @Override
     public SelectionClient.ResultCallback getResultCallback() {

@@ -5,7 +5,9 @@
 package org.chromium.content.browser.selection;
 
 import android.annotation.SuppressLint;
+import android.app.RemoteAction;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.LocaleList;
@@ -30,6 +32,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controls Smart Text selection. Talks to the Android TextClassificationManager API.
@@ -247,11 +251,25 @@ public class SmartSelectionProvider {
             result.textClassification = tc;
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                result.additionalIcons = AdditionalMenuItemProviderImpl.loadIconDrawables(
-                        mContext, result.textClassification);
+                result.additionalIcons = loadIconDrawables(mContext, result.textClassification);
             }
 
             return result;
+        }
+
+        // Because Icon#loadDrawable() should not be called on UI thread, we pre-load the icons on
+        // background thread right after we get the text classification result in
+        // SmartSelectionProvider. TextClassification#getActions() is only available on P and above,
+        // so
+        @RequiresApi(Build.VERSION_CODES.P)
+        private List<Drawable> loadIconDrawables(Context context, TextClassification tc) {
+            if (context == null || tc == null) return null;
+
+            ArrayList<Drawable> res = new ArrayList<>();
+            for (RemoteAction action : tc.getActions()) {
+                res.add(action.getIcon().loadDrawable(context));
+            }
+            return res;
         }
 
         @Override

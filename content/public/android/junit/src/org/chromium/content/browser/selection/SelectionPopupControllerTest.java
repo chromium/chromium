@@ -659,7 +659,7 @@ public class SelectionPopupControllerTest {
 
         Menu menu1 = new RoboMenu();
         assertEquals(0, menu1.size());
-        spyController.initializeTextProcessingMenu(menu1);
+        spyController.initializeTextProcessingMenuForTesting(mActionMode, menu1);
         assertEquals(0, menu1.size());
 
         // test activityInfo exported=true
@@ -670,7 +670,7 @@ public class SelectionPopupControllerTest {
 
         Menu menu2 = new RoboMenu();
         assertEquals(0, menu2.size());
-        spyController.initializeTextProcessingMenu(menu2);
+        spyController.initializeTextProcessingMenuForTesting(mActionMode, menu2);
         assertEquals(1, menu2.size());
 
         // test null activityInfo
@@ -682,7 +682,7 @@ public class SelectionPopupControllerTest {
 
         Menu menu3 = new RoboMenu();
         assertEquals(0, menu3.size());
-        spyController.initializeTextProcessingMenu(menu3);
+        spyController.initializeTextProcessingMenuForTesting(mActionMode, menu3);
         assertEquals(0, menu3.size());
     }
 

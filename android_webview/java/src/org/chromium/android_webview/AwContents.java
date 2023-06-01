@@ -78,8 +78,8 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.autofill.AutofillSelectionMenuItemProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
@@ -1172,8 +1172,8 @@ public class AwContents implements SmartClipProvider {
             mAutofillProvider.setWebContents(mWebContents);
         }
         SelectionPopupController.fromWebContents(mWebContents)
-                .setNonSelectionActionModeCallback(
-                        new AutofillActionModeCallback(mContext, mAutofillProvider));
+                .setNonSelectionAdditionalMenuItemProvider(
+                        new AutofillSelectionMenuItemProvider(mContext, mAutofillProvider));
         AwContentsJni.get().initializeAndroidAutofill(mNativeAwContents);
     }
 
