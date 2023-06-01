@@ -273,8 +273,17 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // RunUntilQuitOrError() on it.
   void RunUntilQuitOrEndedOrError(base::RunLoop* run_loop);
 
+  // Implementation of `Pipeline::Client::OnBufferingStateChange()` used during
+  // seeks.  This handles failed seeks as well as successful ones, which have
+  // different behavior around exiting the seek.
+  void OnBufferingStateChangeForSeek(BufferingState state,
+                                     BufferingStateChangeReason reason);
+
   CreateVideoDecodersCB prepend_video_decoders_cb_;
   CreateAudioDecodersCB prepend_audio_decoders_cb_;
+
+  // First buffering state we get from the pipeline.
+  absl::optional<BufferingState> buffering_state_;
 
   base::OnceClosure on_ended_closure_;
   base::OnceClosure on_error_closure_;
