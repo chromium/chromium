@@ -710,6 +710,29 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return cell;
 }
 
+- (void)collectionView:(UICollectionView*)collectionView
+       willDisplayCell:(UICollectionViewCell*)cell
+    forItemAtIndexPath:(NSIndexPath*)indexPath {
+  // Checking and updating the GridCell's `state` if needed.
+  //
+  // For the context: `setMode:` method updates the `state` property of the
+  // visible GridCells only. However, there are might be some cells that were
+  // dequeued already but haven't been displayed yet. Those will never update
+  // their `state` unless we forcely handle it here.
+  //
+  // See crbug.com//1427278
+  if ([cell isKindOfClass:[GridCell class]]) {
+    GridCell* gridCell = base::mac::ObjCCastStrict<GridCell>(cell);
+
+    BOOL isTabGridInSelectionMode = _mode == TabGridModeSelection;
+    BOOL isGridCellInSelectionMode = gridCell.state != GridCellStateNotEditing;
+
+    if (isTabGridInSelectionMode != isGridCellInSelectionMode) {
+      gridCell.state = isTabGridInSelectionMode ? GridCellStateEditingUnselected
+                                                : GridCellStateNotEditing;
+    }
+  }
+}
 #pragma mark - UICollectionViewDelegate
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
