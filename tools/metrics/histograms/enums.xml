@@ -13636,11 +13636,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Top Frame Origin Present"/>
 </enum>
 
-<enum name="BooleanTranslate">
-  <int value="0" label="Not Translated"/>
-  <int value="1" label="Translated"/>
-</enum>
-
 <enum name="BooleanUnavailable">
   <int value="0" label="Available"/>
   <int value="1" label="Unavailable"/>
