@@ -108,9 +108,9 @@ class TestShimClient : public chrome::mojom::AppShim {
     // lifetime here.
     const IpczAPI& ipcz = mojo::core::GetIpczAPIForMojo();
     IpczHandle node;
-    IpczResult result = ipcz.CreateNode(
-        &mojo::core::GetIpczDriverForMojo(), IPCZ_INVALID_DRIVER_HANDLE,
-        IPCZ_CREATE_NODE_AS_BROKER, nullptr, &node);
+    IpczResult result =
+        ipcz.CreateNode(&mojo::core::GetIpczDriverForMojo(),
+                        IPCZ_CREATE_NODE_AS_BROKER, nullptr, &node);
     CHECK_EQ(IPCZ_RESULT_OK, result);
     secondary_ipcz_broker_.reset(mojo::Handle{node});
 

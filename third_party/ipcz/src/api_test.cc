@@ -28,20 +28,18 @@ TEST_F(APITest, CreateNodeInvalid) {
 
   // Null driver.
   EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().CreateNode(nullptr, IPCZ_INVALID_DRIVER_HANDLE,
-                              IPCZ_NO_FLAGS, nullptr, &node));
+            ipcz().CreateNode(nullptr, IPCZ_NO_FLAGS, nullptr, &node));
 
   // Null output handle.
-  EXPECT_EQ(IPCZ_RESULT_INVALID_ARGUMENT,
-            ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE,
-                              IPCZ_NO_FLAGS, nullptr, nullptr));
+  EXPECT_EQ(
+      IPCZ_RESULT_INVALID_ARGUMENT,
+      ipcz().CreateNode(&kDefaultDriver, IPCZ_NO_FLAGS, nullptr, nullptr));
 }
 
 TEST_F(APITest, CreateNode) {
   IpczHandle node;
   EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().CreateNode(&kDefaultDriver, IPCZ_INVALID_DRIVER_HANDLE,
-                              IPCZ_NO_FLAGS, nullptr, &node));
+            ipcz().CreateNode(&kDefaultDriver, IPCZ_NO_FLAGS, nullptr, &node));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().Close(node, IPCZ_NO_FLAGS, nullptr));
 }
 

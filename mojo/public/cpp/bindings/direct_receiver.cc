@@ -36,9 +36,8 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
       .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
   IpczHandle node;
-  const IpczResult create_result =
-      ipcz.CreateNode(&core::ipcz_driver::kDriver, IPCZ_INVALID_DRIVER_HANDLE,
-                      IPCZ_NO_FLAGS, &create_options, &node);
+  const IpczResult create_result = ipcz.CreateNode(
+      &core::ipcz_driver::kDriver, IPCZ_NO_FLAGS, &create_options, &node);
   CHECK_EQ(create_result, IPCZ_RESULT_OK);
   node_.reset(Handle(node));
 

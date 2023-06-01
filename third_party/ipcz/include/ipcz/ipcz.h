@@ -1035,11 +1035,6 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // Nodes which will be interconnected must use the same or compatible driver
   // implementations.
   //
-  // `driver_node` is a driver-side handle to assign to the node throughout its
-  // lifetime. This handle provides the driver with additional context when ipcz
-  // makes driver API calls pertaining to a specific node. May be
-  // IPCZ_INVALID_DRIVER_HANDLE if not used by the driver.
-  //
   // If `flags` contains IPCZ_CREATE_NODE_AS_BROKER then the node will act as
   // the broker in its cluster of connected nodes. See details on that flag
   // description above.
@@ -1061,7 +1056,6 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        lock-free 32-bit and 64-bit atomics.
   IpczResult(IPCZ_API* CreateNode)(
       const struct IpczDriver* driver,              // in
-      IpczDriverHandle driver_node,                 // in
       IpczCreateNodeFlags flags,                    // in
       const struct IpczCreateNodeOptions* options,  // in
       IpczHandle* node);                            // out

@@ -159,8 +159,7 @@ TEST_F(RefCountedFragmentTest, Move) {
 }
 
 TEST_F(RefCountedFragmentTest, Free) {
-  auto node = MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver,
-                                   IPCZ_INVALID_DRIVER_HANDLE);
+  auto node = MakeRefCounted<Node>(Node::Type::kNormal, kTestDriver);
   DriverMemoryWithMapping buffer = NodeLinkMemory::AllocateMemory(kTestDriver);
   auto memory =
       NodeLinkMemory::Create(std::move(node), std::move(buffer.mapping));

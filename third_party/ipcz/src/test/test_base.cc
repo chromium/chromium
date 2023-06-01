@@ -23,8 +23,7 @@ void CreateNodeChecked(const IpczAPI& ipcz,
                        const IpczDriver& driver,
                        IpczCreateNodeFlags flags,
                        IpczHandle& handle) {
-  const IpczResult result = ipcz.CreateNode(&driver, IPCZ_INVALID_DRIVER_HANDLE,
-                                            flags, nullptr, &handle);
+  const IpczResult result = ipcz.CreateNode(&driver, flags, nullptr, &handle);
   ASSERT_EQ(IPCZ_RESULT_OK, result);
 }
 

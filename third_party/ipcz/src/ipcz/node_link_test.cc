@@ -57,10 +57,8 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
 using NodeLinkTest = testing::Test;
 
 TEST_F(NodeLinkTest, BasicTransmission) {
-  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver,
-                                         IPCZ_INVALID_DRIVER_HANDLE);
-  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver,
-                                         IPCZ_INVALID_DRIVER_HANDLE);
+  Ref<Node> node0 = MakeRefCounted<Node>(Node::Type::kBroker, kDriver);
+  Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver);
 
   // The choice of OperationContext is arbitrary and irrelevant for this test.
   const OperationContext context{OperationContext::kTransportNotification};
