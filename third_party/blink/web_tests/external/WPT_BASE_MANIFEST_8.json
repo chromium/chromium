@@ -163464,7 +163464,7 @@
       ]
      ],
      "first-letter-digraph.html": [
-      "b9bc10016d71a6b74803278c227787bdee6cda48",
+      "b539457cf0c5ddab61cb2c63ef45fab47057877e",
       [
        null,
        [
@@ -272992,16 +272992,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "9e32d0b63109ddec8f62552c718ed7ef44d059aa",
-     []
-    ],
-    "mtime.json": [
-     "05503c67f756973eaf2853420f5ec3746958ddf3",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -317082,7 +317072,7 @@
        []
       ],
       "first-letter-digraph-ref.html": [
-       "7dbefc9dbdbd32ea8b05a8d3ec87f24e7d4edcc1",
+       "4eef817d7062a58066cf952c0c7f830f0fc87d37",
        []
       ],
       "first-line-with-inline-block-ref.html": [
@@ -339407,10 +339397,6 @@
       []
      ],
      "parsing": {
-      "offset-parsing-valid-expected.txt": [
-       "d8642537583809acaab3e3c5ed75756f4ffbbf4c",
-       []
-      ],
       "offset-parsing-valid.html.ini": [
        "72cd2f9c91756992a282ff296743d16c3d4b09d1",
        []
@@ -339421,10 +339407,6 @@
       ],
       "offset-path-parsing-valid.html.ini": [
        "3904fa7f1f71a8b03a31fbd0964399404176907e",
-       []
-      ],
-      "offset-shorthand-expected.txt": [
-       "f588c32423ba1df1a09f23c47a495aa0dcbf892d",
        []
       ],
       "offset-shorthand.html.ini": [
@@ -358820,7 +358802,7 @@
        []
       ],
       "iframe-test.js": [
-       "f788cbd1ebdb7a76dff082d0a59649bf756310b2",
+       "f13e76869023ef5604ab7be083a37b6ff05b1b85",
        []
       ],
       "popup-test.js": [
@@ -398111,7 +398093,7 @@
       []
      ],
      "simulcast.js": [
-      "679ae2a1af2289150d63ecc8767c816ed034c0ef",
+      "1886531023d6a98c99c517a3ef0f4421714e92f1",
       []
      ],
      "vp9-scalability-mode.https.html.ini": [
@@ -445549,6 +445531,13 @@
       ],
       "style-not-sharing-float.html": [
        "7c76bb32bf2a5db0352ea6fcdaaae4c6247a06db",
+       [
+        null,
+        {}
+       ]
+      ],
+      "style-query-with-unknown-width.html": [
+       "8b05d6c11200c94670a304cf4b490e6f590f6244",
        [
         null,
         {}
