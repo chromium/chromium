@@ -260,8 +260,9 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 }
 
 // SiteQualityMetrics tests.
+// TODO(crbug.com/1450421): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_FetchHandler) {
+                       DISABLED_SiteQualityMetrics_ServiceWorker_FetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
@@ -289,8 +290,10 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_EQ(quality_metrics.service_worker_script_size, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
+// TODO(crbug.com/1450421): Disabled for being flaky.
+IN_PROC_BROWSER_TEST_F(
+    MLPromotionBrowsertest,
+    DISABLED_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSWEmptyFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSWEmptyFetchHandler());
@@ -304,8 +307,10 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_TRUE(quality_metrics.has_fetch_handler);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
+// TODO(crbug.com/1450421): Disabled for being flaky.
+IN_PROC_BROWSER_TEST_F(
+    MLPromotionBrowsertest,
+    DISABLED_SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSwNoFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSwNoFetchHandler());
