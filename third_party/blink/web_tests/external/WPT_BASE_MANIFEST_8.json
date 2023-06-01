@@ -168005,6 +168005,19 @@
      }
     },
     "css-scrollbars": {
+     "input-scrollbar-color.html": [
+      "fa03b1391e44941bd2d37c8db1c7c518a1c181ff",
+      [
+       null,
+       [
+        [
+         "/css/css-scrollbars/input-scrollbar-color-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollbar-width-paint-001.html": [
       "3621a65b39ed7d9e3b0afea4e1770427b31534de",
       [
@@ -246489,6 +246502,32 @@
        {}
       ]
      ],
+     "offset-path-ray-013.html": [
+      "196ff4efd6fb91265857e357cfbd0bdff689cd6c",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-ray-014.html": [
+      "42e431de3548315530abb0e4a35dc720cb57fb7c",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-014-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "offset-path-ray-contain-001.html": [
       "ba03f1115f6e782f558fbe4fcca0a89aa795e5fb",
       [
@@ -272953,6 +272992,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "db2e48ba1d65c02b2bdb6fe17990cb0065f146da",
+     []
+    ],
+    "mtime.json": [
+     "eaf500034001d674c09133e265043cb82e466832",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -282150,6 +282199,10 @@
        "dbf85bd79f4a35587450e92e6277a328cfdda5df",
        []
       ],
+      "border-color-011.xht.ini": [
+       "d817cc36867fb4ef336f2dd9effe28bed5394f97",
+       []
+      ],
       "border-color-012-ref.xht": [
        "c85c5408cb7f24ce549bee696cac0e09476f1625",
        []
@@ -284580,6 +284633,10 @@
       ],
       "block-in-inline-align-justify-001-ref.html": [
        "ec0de542954369d95373444949090fefe3176c20",
+       []
+      ],
+      "block-in-inline-align-justify-001.html.ini": [
+       "65267a330c254ceaf4bb3e8fbe276743f1f28e95",
        []
       ],
       "block-in-inline-align-last-001-ref.html": [
@@ -293627,6 +293684,10 @@
       "ecd22b307a9b3b12f05c8231e7c8cf6a17c3ff5d",
       []
      ],
+     "contain-paint-clip-015.html.ini": [
+      "d4c306d78fe6d7323d0bb9d4241cf1a9f34c7a10",
+      []
+     ],
      "contain-paint-containing-block-absolute-001-ref.html": [
       "8861d19f888aa155ffdb6c3bbdd8a81e04ccaf8b",
       []
@@ -298734,7 +298795,7 @@
       []
      ],
      "OWNERS": [
-      "871ef84196f4f4e316c5e6e4488ffd50b18d9074",
+      "53463b38f4154029f9fadf7c337119f9828f57b4",
       []
      ],
      "fontface-descriptor-updates-ref.html": [
@@ -311460,6 +311521,14 @@
        "82b36b4a1d0bbcfcfcb391618121654b3e753d71",
        []
       ],
+      "list-style-computed.sub-expected.txt": [
+       "2359237d5ef5f90a245ad3d9f34fd2e8b71e2560",
+       []
+      ],
+      "list-style-computed.sub.html.ini": [
+       "3b84f76afb69bce539282af03b1c6af4b3ad2e45",
+       []
+      ],
       "list-style-image-computed.sub-expected.txt": [
        "686d9338b4481728c68e1418af1112a65f432e84",
        []
@@ -311702,6 +311771,14 @@
      "animations": {
       "clip-interpolation.html.ini": [
        "bca9838edabd20e3a6c9b98a69d563c440e99146",
+       []
+      ],
+      "clip-path-composition-expected.txt": [
+       "c76588444a2deddcdd2219882830abeda7ebba11",
+       []
+      ],
+      "clip-path-composition.html.ini": [
+       "63fd6cb46bcc10fd8e58c38d5ab10dfccc4d798f",
        []
       ],
       "clip-path-interpolation-001.html.ini": [
@@ -312218,6 +312295,14 @@
       ],
       "clip-path-viewBox-1c.html.ini": [
        "21bb32713d08c06bc9eae692ad5fe5b4fb34ca41",
+       []
+      ],
+      "interpolation-expected.txt": [
+       "4f0218d613ce911ce46e2be2433c3f84c0369282",
+       []
+      ],
+      "interpolation.html.ini": [
+       "1686045ef7f0d5d67fbf05d0995730194b23d751",
        []
       ],
       "reference": {
@@ -313119,11 +313204,11 @@
        []
       ],
       "clip-path-valid-expected.txt": [
-       "d7f4dc810f36f3a815a21ccb5f7df2780ccac9ac",
+       "c00ad998536c7f5224e9140f94cbd7bd6a59e069",
        []
       ],
       "clip-path-valid.html.ini": [
-       "130466484ebfa42d1cd69d6cab1c19bc36716338",
+       "275fb9e0aeacb4e4f83a549ac80ca3f44d0b8eb8",
        []
       ],
       "mask-position-valid-expected.txt": [
@@ -318047,6 +318132,10 @@
       "f7c0439e202113c9611405ae967b33c2b12cfcee",
       []
      ],
+     "input-scrollbar-color-ref.html": [
+      "389cf34b716ea17620c6a1d750ac5406945bf9ba",
+      []
+     ],
      "scrollbar-width-paint-001-ref.html": [
       "42295b1fb9d7d7ef8622c729265e344117c65cc2",
       []
@@ -318144,11 +318233,35 @@
       []
      ],
      "animation": {
+      "shape-outside-composition-expected.txt": [
+       "7a02a8306e2916e23ea5d888fdad221f9faf0d34",
+       []
+      ],
+      "shape-outside-composition.html.ini": [
+       "f5b9906d2a34c9477caa8b6bcd28b44e072fe355",
+       []
+      ],
       "shape-outside-interpolation.html.ini": [
        "a5e4d5585520baa2795aca725ae69ebfba1d595e",
        []
       ]
      },
+     "basic-shape-circle-ellipse-serialization-expected.txt": [
+      "8c2294cd11b366d5e88b3a64f0984f8f9b81fcf4",
+      []
+     ],
+     "basic-shape-circle-ellipse-serialization.html.ini": [
+      "bf9694aa1fd487ea9cc4321672f48647b014b3f4",
+      []
+     ],
+     "basic-shape-interpolation-expected.txt": [
+      "ae91524d1773a43e3c4179686cadb667b6efd3e4",
+      []
+     ],
+     "basic-shape-interpolation.html.ini": [
+      "93eb6d16258433d658c347e483fd7458a91d7939",
+      []
+     ],
      "parsing": {
       "shape-outside-computed-expected.txt": [
        "dfce55e4327f225cf301184b77efb6f5a4c2903f",
@@ -318159,11 +318272,11 @@
        []
       ],
       "shape-outside-valid-expected.txt": [
-       "69e88ee65db9e059e9c79691f16404e23d6cabd4",
+       "666f1b37c4daaa050a00cace41e03ed0c292007b",
        []
       ],
       "shape-outside-valid.html.ini": [
-       "a4001b95152b406a94659c72edb8917121259ff1",
+       "034661551a2ec14ca94aee83a46473a7a218a7eb",
        []
       ]
      },
@@ -318983,20 +319096,48 @@
         "cd490849bfe3d3edcb90dd7cc0a586ee3bbae0e9",
         []
        ],
+       "shape-outside-circle-000-expected.txt": [
+        "830cb460a2a496c3596e0c5d6b1e55d6aaea7367",
+        []
+       ],
+       "shape-outside-circle-000.html.ini": [
+        "978a2d77acda88e78707cb06bc9d3f6627f1f6a0",
+        []
+       ],
+       "shape-outside-circle-001-expected.txt": [
+        "acde659e9b9f0419f029a0be6c52e98747cfee6f",
+        []
+       ],
+       "shape-outside-circle-001.html.ini": [
+        "93fb1e94f31a763baa3308fe68a6c6e66186bcee",
+        []
+       ],
        "shape-outside-circle-004.html.ini": [
         "1ee78fe1865c3d9b9cf5ffdc219d9c2105604e99",
         []
        ],
+       "shape-outside-circle-005-expected.txt": [
+        "9bcd96e96fadecbafccf41c31b149480226e3386",
+        []
+       ],
        "shape-outside-circle-005.html.ini": [
-        "ca54c62fe04cc90c95801cd1a6e04d5fcd12002b",
+        "3a52245f7472c561309c969e2418cb933416afc0",
+        []
+       ],
+       "shape-outside-circle-006-expected.txt": [
+        "839fcf2138d15f32e7a3d86dd354949eddfc958a",
+        []
+       ],
+       "shape-outside-circle-006.html.ini": [
+        "cb8668338525fa43ef62f493b57607a764715262",
         []
        ],
        "shape-outside-circle-010-expected.txt": [
-        "cbc22af0376abc7cc2861202f2a38825596a1687",
+        "b64a71cdb0ab893d5f27397a3c1466b53b028725",
         []
        ],
        "shape-outside-circle-010.html.ini": [
-        "1fd96b577b8030a085fc1e8a353529ad34bbdd8c",
+        "266bacf6fc80b5c8640d280b68b8655ff37b2b95",
         []
        ],
        "shape-outside-circle-011-expected.txt": [
@@ -319011,20 +319152,48 @@
         "bffebd1ab4f0a9e8c910d4e83843ef6d283b81e6",
         []
        ],
+       "shape-outside-ellipse-000-expected.txt": [
+        "a256a39bb8472adcc0551d02600f9041fd469bfd",
+        []
+       ],
+       "shape-outside-ellipse-000.html.ini": [
+        "06e9e9a8527a635b17c83c245a83df2c18e9261e",
+        []
+       ],
+       "shape-outside-ellipse-001-expected.txt": [
+        "ecd3cf20fb0b99391baaf407df63972d92cb67a8",
+        []
+       ],
+       "shape-outside-ellipse-001.html.ini": [
+        "4388a41d67e4d57e1a736ba1ed7ce90ad83017d5",
+        []
+       ],
        "shape-outside-ellipse-004.html.ini": [
         "694a2e2fe93aef7105b1c517ca0375f1e89ab80a",
         []
        ],
+       "shape-outside-ellipse-005-expected.txt": [
+        "1696c446d48f8f4d1578dc10dffa10b642fe6fb0",
+        []
+       ],
        "shape-outside-ellipse-005.html.ini": [
-        "7255d439a3faf6dcfc6000b09d502b362db9632d",
+        "f8d3c7eca05dfb301ba77db7ea6aa89a678a75a6",
+        []
+       ],
+       "shape-outside-ellipse-006-expected.txt": [
+        "ad019d39d99f5a825bd45fc3ed04915f7ed7ea0d",
+        []
+       ],
+       "shape-outside-ellipse-006.html.ini": [
+        "19f2a244dda8c2e4326ff089a6bb7c9eab8817d3",
         []
        ],
        "shape-outside-ellipse-010-expected.txt": [
-        "f4329b8c6782ed6ad405a96a479f0e0f8e302b70",
+        "d3d48dffde5c196dcd886fcdfdbb5f40c2fa9dab",
         []
        ],
        "shape-outside-ellipse-010.html.ini": [
-        "a059f994ca7cd31e26c05d1dd97e7f02a69483f0",
+        "6487f4b7b7a8e641105fa8ea77d1fb64afd56f06",
         []
        ],
        "shape-outside-ellipse-011-expected.txt": [
@@ -330450,6 +330619,10 @@
        "35fd610ca98a59ca67e85a4a229c2604a0ff47e9",
        []
       ],
+      "kind-of-widget-fallback-input-reset-background-position-001.html.ini": [
+       "cd22f297564026b3335dcd3d48477db6728f37cb",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-background-size-001.html.ini": [
        "84b2aa611163625a43a4f6dddf833d523ef30051",
        []
@@ -330875,7 +331048,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-color-001.html.ini": [
-       "3e1ca17d015f496ff83effd81cc96f76165ea8a7",
+       "4bcb04280ccb238d1d1e2fe848cdc3e055e8fa80",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-style-001.html.ini": [
@@ -339105,6 +339278,14 @@
       "dfb34bf784f07bcfa8cbe3c204df8af162f5ff8c",
       []
      ],
+     "offset-path-ray-013-ref.html": [
+      "d6bf4c037ba3853474132ede2193f1e7dc6183fd",
+      []
+     ],
+     "offset-path-ray-014-ref.html": [
+      "cd0fab44c3658956801a3fd75048f8faf521fa2d",
+      []
+     ],
      "offset-path-ray-contain-001-ref.html": [
       "05f54d9dc55dff6159df20d226eaf0753f351385",
       []
@@ -339236,10 +339417,6 @@
       ],
       "offset-path-parsing-invalid.html.ini": [
        "d52a1264506f57db77cc7136ecc812ed2457a8a3",
-       []
-      ],
-      "offset-path-parsing-valid-expected.txt": [
-       "9040d603e8f82ea7da7f0e67e609fc4df198ea9a",
        []
       ],
       "offset-path-parsing-valid.html.ini": [
@@ -355350,12 +355527,6 @@
         []
        ]
       },
-      "drawing-images-to-the-canvas": {
-       "2d.drawImage.svg.html.ini": [
-        "1a3fc37e1e658c02f96935be17d1d8f0fc228366",
-        []
-       ]
-      },
       "drawing-text-to-the-canvas": {
        "2d.text.draw.fill.basic.png": [
         "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
@@ -356869,40 +357040,8 @@
        []
       ],
       "drawing-images-to-the-canvas": {
-       "2d.drawImage.svg-expected.txt": [
-        "26f3a1a58bdb336e60300e16b8c934e427a98a23",
-        []
-       ],
-       "2d.drawImage.svg.html.ini": [
-        "6879b65b15252084319d837459c0e1ed5cfc4e95",
-        []
-       ],
-       "2d.drawImage.svg.worker-expected.txt": [
-        "26f3a1a58bdb336e60300e16b8c934e427a98a23",
-        []
-       ],
-       "2d.drawImage.svg.worker.js.ini": [
-        "ee8c386c0989ab55e3f16a96aba489a829ed46ee",
-        []
-       ],
        "2d.drawImage.transform.html.ini": [
         "1f76e3507603b3deff7a598af11fe90c7d0ff199",
-        []
-       ],
-       "2d.drawImage.zerosource.image-expected.txt": [
-        "e7b3db3703a70fa11a5bdc8470c09bd6c400ab8b",
-        []
-       ],
-       "2d.drawImage.zerosource.image.html.ini": [
-        "ceda955c52ad8437fc4cbe09ea1734143401e04f",
-        []
-       ],
-       "2d.drawImage.zerosource.image.worker-expected.txt": [
-        "e7b3db3703a70fa11a5bdc8470c09bd6c400ab8b",
-        []
-       ],
-       "2d.drawImage.zerosource.image.worker.js.ini": [
-        "7c323703c036b60488463a2c5c9a9b3c1f71ca68",
         []
        ]
       },
@@ -357453,7 +357592,7 @@
      },
      "tools": {
       "PRESUBMIT.py": [
-       "048e96b7012b70b276922ace2d7cdd811ebb3291",
+       "c7fb93ae6fd14e0006dda63ba5279524d6bad9b8",
        []
       ],
       "gentest.py": [
@@ -357506,7 +357645,7 @@
         []
        ],
        "testharness_offscreen.html": [
-        "40f9b9df1d553361d36dcae35806fe5db749e273",
+        "8ebbff77a6c13f18aca58c3be0859496cc49bb30",
         []
        ],
        "testharness_worker.js": [
@@ -357590,7 +357729,7 @@
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "074d1bc546dd8d1a5bfa0bc9d3fbe0177dae3ba1",
+        "93c556288d7125988f3190c0ecd8e3ce2e71f3fe",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
@@ -381145,7 +381284,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "7c4bee45897d29ddb5f6dd97e816828e924088e3",
+     "78615f8cc070853de521e9178d27181cb05d8001",
      []
     ],
     "modulepreload-expected.txt": [
@@ -383463,7 +383602,7 @@
      []
     ],
     "OWNERS": [
-     "db77910a1179d4fa931b6c311a33f1b1da297a9c",
+     "016bca8d23669ac39ddfc7b072a0ee75e4c9d830",
      []
     ],
     "SyntheticResponse.py": [
@@ -393665,7 +393804,7 @@
      []
     ],
     "request-video-frame-callback-webrtc.https.html.ini": [
-     "20571581481f78b37829a43493535217a0100531",
+     "a767712a408045a8855befeb8982f1a1c622d717",
      []
     ]
    },
@@ -397972,7 +398111,7 @@
       []
      ],
      "simulcast.js": [
-      "9cfab17ffeb934f1e01cc653830dc2738b144499",
+      "679ae2a1af2289150d63ecc8767c816ed034c0ef",
       []
      ],
      "vp9-scalability-mode.https.html.ini": [
@@ -453956,7 +454095,7 @@
        ]
       ],
       "list-style-computed.sub.html": [
-       "611fae5bf93636cd4d3402e91b1cd47148303617",
+       "f86915831e0577ca040afb473203ca089a90b5e4",
        [
         null,
         {}
@@ -473513,7 +473652,7 @@
        ]
       ],
       "offset-path-interpolation-006.html": [
-       "a19908e4fffc2383a940e04ef0c00c486085cfee",
+       "5b95501909ceca7d55ebcab03654d942edb43756",
        [
         null,
         {}
@@ -473634,7 +473773,7 @@
        ]
       ],
       "offset-path-parsing-valid.html": [
-       "69acc9291f9274757e028333c55a05f2894d78df",
+       "8a22b9420eed7831dcf564b64db8f9ebe36b453e",
        [
         null,
         {}
@@ -473655,7 +473794,7 @@
        ]
       ],
       "offset-position-parsing-valid.html": [
-       "f71730f89eb52c8affb05ee7c7103eb20f6b2ab3",
+       "9d49724906c284f5133adb937859ebd7cafcf9e3",
        [
         null,
         {}
@@ -526008,13 +526147,6 @@
           null,
           {}
          ]
-        ],
-        "drawimage_zerosize-image.html": [
-         "1c4e74866ab2825c57fc16ad419e2ad59e80067c",
-         [
-          null,
-          {}
-         ]
         ]
        },
        "drawing-paths-to-the-canvas": {
@@ -530980,16 +531112,9 @@
         ]
        ],
        "2d.drawImage.svg.html": [
-        "cd293595fe8f4e714b4703ce394eeab184da5fce",
+        "c2ebd265cfaf36e01ad8beaa383a056d0dbc53b9",
         [
          null,
-         {}
-        ]
-       ],
-       "2d.drawImage.svg.worker.js": [
-        "8293e89f247af9fe093b88b29daa32fe4da8c778",
-        [
-         "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.svg.worker.html",
          {}
         ]
        ],
@@ -531043,16 +531168,9 @@
         ]
        ],
        "2d.drawImage.zerosource.image.html": [
-        "5dfb2f3002c24b1710ba800652790a8171cdb852",
+        "77182242d4c78de8262eaf6966dc20a2d17dcc5e",
         [
          null,
-         {}
-        ]
-       ],
-       "2d.drawImage.zerosource.image.worker.js": [
-        "467beb4d12fac2c3251efeeb197547b065a96d27",
-        [
-         "html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.zerosource.image.worker.html",
          {}
         ]
        ],
@@ -643697,7 +643815,7 @@
      ]
     ],
     "RTCPeerConnection-setRemoteDescription-simulcast.https.html": [
-     "98b5d2bab7aa9429352a1842360c6c6a8a75c189",
+     "c5d46cedfd8a34c2a4085804aa43c9f8d8b6222b",
      [
       null,
       {}
@@ -644252,7 +644370,7 @@
       ]
      ],
      "simulcast-answer.html": [
-      "5e19bc08ff5d7fa4860e8e53e4a0611e00d3c6c1",
+      "f3732ca44c9b7872f26e90aedc2ae05f653343f4",
       [
        null,
        {}
