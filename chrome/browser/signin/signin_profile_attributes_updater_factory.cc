@@ -20,7 +20,8 @@ SigninProfileAttributesUpdaterFactory::GetForProfile(Profile* profile) {
 // static
 SigninProfileAttributesUpdaterFactory*
 SigninProfileAttributesUpdaterFactory::GetInstance() {
-  return base::Singleton<SigninProfileAttributesUpdaterFactory>::get();
+  static base::NoDestructor<SigninProfileAttributesUpdaterFactory> instance;
+  return instance.get();
 }
 
 SigninProfileAttributesUpdaterFactory::SigninProfileAttributesUpdaterFactory()
@@ -29,7 +30,7 @@ SigninProfileAttributesUpdaterFactory::SigninProfileAttributesUpdaterFactory()
 }
 
 SigninProfileAttributesUpdaterFactory::
-    ~SigninProfileAttributesUpdaterFactory() {}
+    ~SigninProfileAttributesUpdaterFactory() = default;
 
 KeyedService* SigninProfileAttributesUpdaterFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

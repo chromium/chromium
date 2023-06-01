@@ -10,7 +10,8 @@
 // static
 AccountConsistencyModeManagerFactory*
 AccountConsistencyModeManagerFactory::GetInstance() {
-  return base::Singleton<AccountConsistencyModeManagerFactory>::get();
+  static base::NoDestructor<AccountConsistencyModeManagerFactory> instance;
+  return instance.get();
 }
 
 // static

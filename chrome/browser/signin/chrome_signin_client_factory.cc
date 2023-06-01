@@ -19,7 +19,7 @@ ChromeSigninClientFactory::ChromeSigninClientFactory()
   DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 }
 
-ChromeSigninClientFactory::~ChromeSigninClientFactory() {}
+ChromeSigninClientFactory::~ChromeSigninClientFactory() = default;
 
 // static
 SigninClient* ChromeSigninClientFactory::GetForProfile(Profile* profile) {
@@ -29,7 +29,8 @@ SigninClient* ChromeSigninClientFactory::GetForProfile(Profile* profile) {
 
 // static
 ChromeSigninClientFactory* ChromeSigninClientFactory::GetInstance() {
-  return base::Singleton<ChromeSigninClientFactory>::get();
+  static base::NoDestructor<ChromeSigninClientFactory> instance;
+  return instance.get();
 }
 
 KeyedService* ChromeSigninClientFactory::BuildServiceInstanceFor(

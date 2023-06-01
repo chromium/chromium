@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_ACCOUNT_CONSISTENCY_MODE_MANAGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 
@@ -17,8 +17,7 @@ class AccountConsistencyModeManagerFactory : public ProfileKeyedServiceFactory {
   static AccountConsistencyModeManager* GetForProfile(Profile* profile);
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      AccountConsistencyModeManagerFactory>;
+  friend base::NoDestructor<AccountConsistencyModeManagerFactory>;
 
   AccountConsistencyModeManagerFactory();
   ~AccountConsistencyModeManagerFactory() override;
