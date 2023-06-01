@@ -154,8 +154,8 @@ export class BrailleCaptionsBackground {
    */
   static getVirtualDisplayState() {
     if (BrailleCaptionsBackground.isEnabled()) {
-      const rows = Number(SettingsManager.get('virtualBrailleRows'));
-      const columns = Number(SettingsManager.get('virtualBrailleColumns'));
+      const rows = SettingsManager.getNumber('virtualBrailleRows');
+      const columns = SettingsManager.getNumber('virtualBrailleColumns');
       return {available: true, textRowCount: rows, textColumnCount: columns};
     } else {
       return {available: false, textRowCount: 0, textColumnCount: 0};
