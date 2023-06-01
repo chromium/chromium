@@ -42,7 +42,6 @@
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
-#include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 #include <memory>
@@ -109,7 +108,6 @@
 #include "components/exo/wayland/zwp_text_input_manager.h"
 #include "components/exo/wayland/zxdg_decoration_manager.h"
 #include "components/exo/wayland/zxdg_output_manager.h"
-#include "components/exo/wayland/zxdg_shell.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -398,11 +396,6 @@ void Server::Initialize() {
                    GetTextInputExtensionV1Version(),
                    zcr_text_input_extension_data_.get(),
                    bind_text_input_extension);
-
-  zxdg_shell_data_ =
-      std::make_unique<WaylandZxdgShell>(display_, serial_tracker_.get());
-  wl_global_create(wl_display_.get(), &zxdg_shell_v6_interface, 1,
-                   zxdg_shell_data_.get(), bind_zxdg_shell_v6);
 
   xdg_shell_data_ =
       std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());

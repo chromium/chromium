@@ -6,37 +6,12 @@
 
 #include <ostream>
 
-#include <xdg-shell-unstable-v6-server-protocol.h>
-
 namespace exo::wayland {
 
 namespace {
 
 std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
-DecomposeUnstableAnchor(uint32_t anchor) {
-  WaylandPositioner::Direction x, y;
-
-  if (anchor & ZXDG_POSITIONER_V6_ANCHOR_LEFT) {
-    x = WaylandPositioner::Direction::kNegative;
-  } else if (anchor & ZXDG_POSITIONER_V6_ANCHOR_RIGHT) {
-    x = WaylandPositioner::Direction::kPositive;
-  } else {
-    x = WaylandPositioner::Direction::kNeutral;
-  }
-
-  if (anchor & ZXDG_POSITIONER_V6_ANCHOR_TOP) {
-    y = WaylandPositioner::Direction::kNegative;
-  } else if (anchor & ZXDG_POSITIONER_V6_ANCHOR_BOTTOM) {
-    y = WaylandPositioner::Direction::kPositive;
-  } else {
-    y = WaylandPositioner::Direction::kNeutral;
-  }
-
-  return std::make_pair(x, y);
-}
-
-std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
-DecomposeStableAnchor(uint32_t anchor) {
+DecomposeAnchor(uint32_t anchor) {
   switch (anchor) {
     default:
     case XDG_POSITIONER_ANCHOR_NONE:
@@ -70,30 +45,7 @@ DecomposeStableAnchor(uint32_t anchor) {
 }
 
 std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
-DecomposeUnstableGravity(uint32_t gravity) {
-  WaylandPositioner::Direction x, y;
-
-  if (gravity & ZXDG_POSITIONER_V6_GRAVITY_LEFT) {
-    x = WaylandPositioner::Direction::kNegative;
-  } else if (gravity & ZXDG_POSITIONER_V6_GRAVITY_RIGHT) {
-    x = WaylandPositioner::Direction::kPositive;
-  } else {
-    x = WaylandPositioner::Direction::kNeutral;
-  }
-
-  if (gravity & ZXDG_POSITIONER_V6_GRAVITY_TOP) {
-    y = WaylandPositioner::Direction::kNegative;
-  } else if (gravity & ZXDG_POSITIONER_V6_GRAVITY_BOTTOM) {
-    y = WaylandPositioner::Direction::kPositive;
-  } else {
-    y = WaylandPositioner::Direction::kNeutral;
-  }
-
-  return std::make_pair(x, y);
-}
-
-std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
-DecomposeStableGravity(uint32_t gravity) {
+DecomposeGravity(uint32_t gravity) {
   switch (gravity) {
     default:
     case XDG_POSITIONER_GRAVITY_NONE:
@@ -337,11 +289,7 @@ std::pair<Range1D, ConstraintAdjustment> DetermineBestConstraintAdjustment(
 void WaylandPositioner::SetAnchor(uint32_t anchor) {
   std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
       decompose;
-  if (version_ == UNSTABLE) {
-    decompose = DecomposeUnstableAnchor(anchor);
-  } else {
-    decompose = DecomposeStableAnchor(anchor);
-  }
+  decompose = DecomposeAnchor(anchor);
   anchor_x_ = decompose.first;
   anchor_y_ = decompose.second;
 }
@@ -349,11 +297,7 @@ void WaylandPositioner::SetAnchor(uint32_t anchor) {
 void WaylandPositioner::SetGravity(uint32_t gravity) {
   std::pair<WaylandPositioner::Direction, WaylandPositioner::Direction>
       decompose;
-  if (version_ == UNSTABLE) {
-    decompose = DecomposeUnstableGravity(gravity);
-  } else {
-    decompose = DecomposeStableGravity(gravity);
-  }
+  decompose = DecomposeGravity(gravity);
   gravity_x_ = decompose.first;
   gravity_y_ = decompose.second;
 }

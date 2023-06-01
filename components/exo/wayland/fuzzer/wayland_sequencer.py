@@ -182,24 +182,7 @@ def GetManualSequences(dep_graph):
 
   e = SequenceBuilder('empty', dep_graph)
 
-  p = SequenceBuilder('popup_configuration', dep_graph)
-  p_positioner = p.BuildInterface('zxdg_positioner_v6')
-  p_parent = p.BuildInterface('zxdg_toplevel_v6')
-  p.AppendCall('zxdg_surface_v6', 'set_window_geometry',
-               [('receiver', p_parent), ('x', 0), ('y', 0), ('width', 10),
-                ('height', 10)])
-  p.AppendRoundTrip()
-  p.AppendCall('wl_surface', 'commit', [('receiver', p_parent)])
-  p.AppendRoundTrip()
-  p.AppendCall('zxdg_surface_v6', 'ack_configure', [('receiver', p_parent),
-                                                    ('serial', 1)])
-  p_child = p.BuildInterface('zxdg_surface_v6')
-  p.AppendCall('zxdg_surface_v6', 'get_popup', [('receiver', p_child),
-                                                ('parent', p_parent),
-                                                ('positioner', p_positioner)])
-  p.AppendRoundTrip()
-
-  return [c, e, p]
+  return [c, e]
 
 
 def SequenceToTemplate(parsed_arguments, builder):

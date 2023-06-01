@@ -622,65 +622,29 @@ bool ClientBase::Init(const InitParams& params) {
       wl_shell_surface_set_toplevel(shell_surface.get());
     }
   } else {
-    if (!globals_.xdg_wm_base) {
-      // use zxdg
-      if (!globals_.xdg_shell_v6) {
-        LOG(ERROR) << "Can't find xdg_shell or zxdg_shell_v6 interface";
-        return false;
-      }
-
-      zxdg_surface_.reset(zxdg_shell_v6_get_xdg_surface(
-          globals_.xdg_shell_v6.get(), surface_.get()));
-      if (!zxdg_surface_) {
-        LOG(ERROR) << "Can't get zxdg surface";
-        return false;
-      }
-      static const zxdg_surface_v6_listener zxdg_surface_v6_listener = {
-          [](void* data, struct zxdg_surface_v6* zxdg_surface_v6,
-             uint32_t layout_mode) {
-            zxdg_surface_v6_ack_configure(zxdg_surface_v6, layout_mode);
-          },
-      };
-      zxdg_surface_v6_add_listener(zxdg_surface_.get(),
-                                   &zxdg_surface_v6_listener, this);
-      zxdg_toplevel_.reset(zxdg_surface_v6_get_toplevel(zxdg_surface_.get()));
-      if (!zxdg_toplevel_) {
-        LOG(ERROR) << "Can't get zxdg toplevel";
-        return false;
-      }
-      static const zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
-          [](void* data, struct zxdg_toplevel_v6* zxdg_toplevel_v6,
-             int32_t width, int32_t height, struct wl_array* states) {},
-          [](void* data, struct zxdg_toplevel_v6* zxdg_toplevel_v6) {}};
-      zxdg_toplevel_v6_add_listener(zxdg_toplevel_.get(),
-                                    &zxdg_toplevel_v6_listener, this);
-    } else {
-      // use xdg
-      xdg_surface_.reset(xdg_wm_base_get_xdg_surface(globals_.xdg_wm_base.get(),
-                                                     surface_.get()));
-      if (!xdg_surface_) {
-        LOG(ERROR) << "Can't get xdg surface";
-        return false;
-      }
-      static const xdg_surface_listener xdg_surface_listener = {
-          [](void* data, struct xdg_surface* xdg_surface,
-             uint32_t layout_mode) {
-            xdg_surface_ack_configure(xdg_surface, layout_mode);
-          },
-      };
-      xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
-      xdg_toplevel_.reset(xdg_surface_get_toplevel(xdg_surface_.get()));
-      if (!xdg_toplevel_) {
-        LOG(ERROR) << "Can't get xdg toplevel";
-        return false;
-      }
-      static const xdg_toplevel_listener xdg_toplevel_listener = {
-          [](void* data, struct xdg_toplevel* xdg_toplevel, int32_t width,
-             int32_t height, struct wl_array* states) {},
-          [](void* data, struct xdg_toplevel* xdg_toplevel) {}};
-      xdg_toplevel_add_listener(xdg_toplevel_.get(), &xdg_toplevel_listener,
-                                this);
+    xdg_surface_.reset(xdg_wm_base_get_xdg_surface(globals_.xdg_wm_base.get(),
+                                                   surface_.get()));
+    if (!xdg_surface_) {
+      LOG(ERROR) << "Can't get xdg surface";
+      return false;
     }
+    static const xdg_surface_listener xdg_surface_listener = {
+        [](void* data, struct xdg_surface* xdg_surface, uint32_t layout_mode) {
+          xdg_surface_ack_configure(xdg_surface, layout_mode);
+        },
+    };
+    xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
+    xdg_toplevel_.reset(xdg_surface_get_toplevel(xdg_surface_.get()));
+    if (!xdg_toplevel_) {
+      LOG(ERROR) << "Can't get xdg toplevel";
+      return false;
+    }
+    static const xdg_toplevel_listener xdg_toplevel_listener = {
+        [](void* data, struct xdg_toplevel* xdg_toplevel, int32_t width,
+           int32_t height, struct wl_array* states) {},
+        [](void* data, struct xdg_toplevel* xdg_toplevel) {}};
+    xdg_toplevel_add_listener(xdg_toplevel_.get(), &xdg_toplevel_listener,
+                              this);
 
     if (fullscreen_) {
       LOG(ERROR) << "full screen not supported yet.";
