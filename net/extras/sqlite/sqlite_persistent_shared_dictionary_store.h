@@ -100,11 +100,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       const uint64_t cache_max_size,
       const uint64_t low_watermark,
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void GetAllDiskCacheKeyTokens(
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
+  void DeleteDictionariesByDiskCacheKeyTokens(
+      std::set<base::UnguessableToken> disk_cache_key_tokens,
+      base::OnceCallback<void(Error)> callback);
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
                                     base::Time last_used_time);
-
-  // TODO(crbug.com/1413922): Add a method for the garbage collection logic of
-  // SharedDictionaryDiskCache by using `disk_cache_key_token`.
 
   base::WeakPtr<SQLitePersistentSharedDictionaryStore> GetWeakPtr();
 

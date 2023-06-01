@@ -221,6 +221,36 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
+  std::set<base::UnguessableToken> GetAllDiskCacheKeyTokens() {
+    base::RunLoop run_loop;
+    std::set<base::UnguessableToken> tokens;
+    store_->GetAllDiskCacheKeyTokens(base::BindLambdaForTesting(
+        [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+                result) {
+          ASSERT_TRUE(result.has_value());
+          tokens = std::move(result.value());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return tokens;
+  }
+
+  SQLitePersistentSharedDictionaryStore::Error
+  DeleteDictionariesByDiskCacheKeyTokens(
+      std::set<base::UnguessableToken> disk_cache_key_tokens) {
+    base::RunLoop run_loop;
+    SQLitePersistentSharedDictionaryStore::Error error_out;
+    store_->DeleteDictionariesByDiskCacheKeyTokens(
+        std::move(disk_cache_key_tokens),
+        base::BindLambdaForTesting(
+            [&](SQLitePersistentSharedDictionaryStore::Error result_error) {
+              error_out = result_error;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return error_out;
+  }
+
   void CorruptDatabaseFile() {
     // Execute CreateStore(), ClearAllDictionaries() and DestroyStore() to
     // create a database file.
@@ -288,6 +318,8 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   void RunProcessEvictionFailureTest(
       uint64_t cache_max_size,
       uint64_t low_watermark,
+      SQLitePersistentSharedDictionaryStore::Error expected_error);
+  void RunGetAllDiskCacheKeyTokensFailureTest(
       SQLitePersistentSharedDictionaryStore::Error expected_error);
 
   base::ScopedTempDir temp_dir_;
@@ -927,6 +959,73 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
 }
 
+void SQLitePersistentSharedDictionaryStoreTest::
+    RunGetAllDiskCacheKeyTokensFailureTest(
+        SQLitePersistentSharedDictionaryStore::Error expected_error) {
+  CreateStore();
+  base::RunLoop run_loop;
+  store_->GetAllDiskCacheKeyTokens(base::BindLambdaForTesting(
+      [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+              result) {
+        ASSERT_FALSE(result.has_value());
+        EXPECT_EQ(expected_error, result.error());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  DestroyStore();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       GetAllDiskCacheKeyTokensErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  RunGetAllDiskCacheKeyTokensFailureTest(
+      SQLitePersistentSharedDictionaryStore::Error::
+          kFailedToInitializeDatabase);
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       GetAllDiskCacheKeyTokensErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  RunGetAllDiskCacheKeyTokensFailureTest(
+      SQLitePersistentSharedDictionaryStore::Error::kInvalidSql);
+}
+
+TEST_F(
+    SQLitePersistentSharedDictionaryStoreTest,
+    DeleteDictionariesByDiskCacheKeyTokensErrorDatabaseInitializationFailure) {
+  CorruptDatabaseFile();
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToInitializeDatabase,
+      DeleteDictionariesByDiskCacheKeyTokens(
+          {dictionary_info_.disk_cache_key_token()}));
+  DestroyStore();
+  CheckStoreRecovered();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       DeleteDictionariesByDiskCacheKeyTokensErrorInvalidSql) {
+  ManipulateDatabase({"CREATE TABLE dictionaries (dummy TEST NOT NULL)"});
+  CreateStore();
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kInvalidSql,
+            DeleteDictionariesByDiskCacheKeyTokens(
+                {dictionary_info_.disk_cache_key_token()}));
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       DeleteDictionariesByDiskCacheKeyTokensErrorFailedToGetTotalDictSize) {
+  CreateStore();
+  RegisterDictionary(isolation_key_, dictionary_info_);
+  DestroyStore();
+  ManipulateDatabase({"DELETE FROM meta WHERE key='total_dict_size'"});
+  CreateStore();
+  EXPECT_EQ(
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize,
+      DeleteDictionariesByDiskCacheKeyTokens(
+          {dictionary_info_.disk_cache_key_token()}));
+}
+
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
   CreateStore();
   auto register_dictionary_result =
@@ -1421,6 +1520,137 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
   EXPECT_TRUE(GetAllDictionaries().empty());
 
   // Check the total size of remaining dictionaries.
+  EXPECT_EQ(0u, GetTotalDictionarySize());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
+  CreateStore();
+  EXPECT_TRUE(GetAllDiskCacheKeyTokens().empty());
+
+  auto token1 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict1 = SharedDictionaryInfo(
+      GURL("https://a.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(4),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
+      /*disk_cache_key_token=*/token1,
+      /*primary_key_in_database=*/absl::nullopt);
+  RegisterDictionary(isolation_key_, dict1);
+
+  EXPECT_THAT(GetAllDiskCacheKeyTokens(), ElementsAreArray({token1}));
+
+  auto token2 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict2 = SharedDictionaryInfo(
+      GURL("https://b.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(3),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
+      /*disk_cache_key_token=*/token2,
+      /*primary_key_in_database=*/absl::nullopt);
+  RegisterDictionary(isolation_key_, dict2);
+
+  EXPECT_THAT(GetAllDiskCacheKeyTokens(),
+              UnorderedElementsAreArray({token1, token2}));
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       DeleteDictionariesByDiskCacheKeyTokens) {
+  CreateStore();
+  EXPECT_TRUE(GetAllDiskCacheKeyTokens().empty());
+
+  auto token1 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict1 = SharedDictionaryInfo(
+      GURL("https://a.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(4),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/1000, net::SHA256HashValue({{0x00, 0x01}}),
+      /*disk_cache_key_token=*/token1,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result1 = RegisterDictionary(isolation_key_, dict1);
+  dict1.set_primary_key_in_database(result1.primary_key_in_database);
+
+  EXPECT_THAT(GetAllDiskCacheKeyTokens(), ElementsAreArray({token1}));
+
+  auto token2 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict2 = SharedDictionaryInfo(
+      GURL("https://b.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(3),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/3000, net::SHA256HashValue({{0x00, 0x02}}),
+      /*disk_cache_key_token=*/token2,
+      /*primary_key_in_database=*/absl::nullopt);
+  RegisterDictionary(isolation_key_, dict2);
+  auto result2 = RegisterDictionary(isolation_key_, dict2);
+  dict2.set_primary_key_in_database(result2.primary_key_in_database);
+
+  auto token3 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict3 = SharedDictionaryInfo(
+      GURL("https://c.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(2),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/5000, net::SHA256HashValue({{0x00, 0x03}}),
+      /*disk_cache_key_token=*/token3,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result3 = RegisterDictionary(isolation_key_, dict3);
+  dict3.set_primary_key_in_database(result3.primary_key_in_database);
+
+  auto token4 = base::UnguessableToken::Create();
+  SharedDictionaryInfo dict4 = SharedDictionaryInfo(
+      GURL("https://d.example/dict"),
+      /*response_time=*/base::Time::Now() - base::Seconds(1),
+      /*expiration*/ base::Seconds(100), "/pattern*",
+      /*last_used_time*/ base::Time::Now(),
+      /*size=*/7000, net::SHA256HashValue({{0x00, 0x04}}),
+      /*disk_cache_key_token=*/token4,
+      /*primary_key_in_database=*/absl::nullopt);
+  auto result4 = RegisterDictionary(isolation_key_, dict4);
+  dict4.set_primary_key_in_database(result4.primary_key_in_database);
+
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens({}));
+
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray(
+                                           {dict1, dict2, dict3, dict4}))));
+  EXPECT_EQ(16000u, GetTotalDictionarySize());
+
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens({token1}));
+
+  // dict1 must have been deleted.
+  EXPECT_THAT(GetAllDictionaries(),
+              ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray(
+                                                   {dict2, dict3, dict4}))));
+  EXPECT_EQ(15000u, GetTotalDictionarySize());
+
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens({token2, token3}));
+
+  // dict2 and dict3 must have been deleted.
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray({dict4}))));
+  EXPECT_EQ(7000u, GetTotalDictionarySize());
+
+  // Call DeleteDictionariesByDiskCacheKeyTokens() with no-maching token.
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens(
+                {base::UnguessableToken::Create()}));
+  EXPECT_THAT(
+      GetAllDictionaries(),
+      ElementsAre(Pair(isolation_key_, UnorderedElementsAreArray({dict4}))));
+  EXPECT_EQ(7000u, GetTotalDictionarySize());
+
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens({token4}));
+  // dict4 must have been deleted.
+  EXPECT_TRUE(GetAllDictionaries().empty());
   EXPECT_EQ(0u, GetTotalDictionarySize());
 }
 

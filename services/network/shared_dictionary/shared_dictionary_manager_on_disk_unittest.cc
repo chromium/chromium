@@ -85,14 +85,57 @@ void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
 }
 
 bool DiskCacheEntryExists(SharedDictionaryManager* manager,
-                          const base::UnguessableToken& disk_cache_key_token) {
+                          const std::string& disk_cache_key) {
   TestEntryResultCompletionCallback open_callback;
   disk_cache::EntryResult open_result = open_callback.GetResult(
       static_cast<SharedDictionaryManagerOnDisk*>(manager)
           ->disk_cache()
-          .OpenOrCreateEntry(disk_cache_key_token.ToString(),
+          .OpenOrCreateEntry(disk_cache_key,
                              /*create=*/false, open_callback.callback()));
   return open_result.net_error() == net::OK;
+}
+
+bool DiskCacheEntryExists(SharedDictionaryManager* manager,
+                          const base::UnguessableToken& disk_cache_key_token) {
+  return DiskCacheEntryExists(manager, disk_cache_key_token.ToString());
+}
+
+void DoomDiskCacheEntry(SharedDictionaryManager* manager,
+                        const base::UnguessableToken& disk_cache_key_token) {
+  net::TestCompletionCallback doom_callback;
+  EXPECT_EQ(net::OK, doom_callback.GetResult(
+                         static_cast<SharedDictionaryManagerOnDisk*>(manager)
+                             ->disk_cache()
+                             .DoomEntry(disk_cache_key_token.ToString(),
+                                        doom_callback.callback())));
+}
+
+void WriteDiskCacheEntry(SharedDictionaryManager* manager,
+                         const std::string& disk_cache_key,
+                         const std::string& data) {
+  SharedDictionaryDiskCache& disk_cache =
+      static_cast<SharedDictionaryManagerOnDisk*>(manager)->disk_cache();
+
+  TestEntryResultCompletionCallback create_callback;
+
+  // Create the entry.
+  disk_cache::EntryResult create_result =
+      create_callback.GetResult(disk_cache.OpenOrCreateEntry(
+          disk_cache_key, /*create=*/true, create_callback.callback()));
+  EXPECT_EQ(net::OK, create_result.net_error());
+  disk_cache::ScopedEntryPtr created_entry;
+  created_entry.reset(create_result.ReleaseEntry());
+  ASSERT_TRUE(created_entry);
+
+  // Write to the entry.
+  scoped_refptr<net::StringIOBuffer> write_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(data);
+  net::TestCompletionCallback write_callback;
+  EXPECT_EQ(
+      base::checked_cast<int>(data.size()),
+      write_callback.GetResult(created_entry->WriteData(
+          /*index=*/1, /*offset=*/0, write_buffer.get(), write_buffer->size(),
+          write_callback.callback(), /*truncate=*/false)));
 }
 
 base::UnguessableToken GetDiskCacheKeyTokenOfFirstDictionary(
@@ -1159,6 +1202,210 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token2));
   EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token3));
   EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token4));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionMetadataUnavailableDictionary) {
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  const std::string entry_key = token.ToString();
+  const std::string kTestData = "Hello world";
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  WriteDiskCacheEntry(manager.get(), entry_key, kTestData);
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(DiskCacheEntryExists(manager.get(), entry_key));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionInvalidDiskCacheEntry) {
+  const std::string kTestKey = "test";
+  const std::string kTestData = "Hello world";
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  WriteDiskCacheEntry(manager.get(), kTestKey, kTestData);
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), kTestKey));
+
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), kTestKey));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(DiskCacheEntryExists(manager.get(), kTestKey));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionDiskCacheEntryUnavailableDictionary) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://target1.test/d"), "p*",
+                    kTestData1);
+    // FlushCacheTasks() to finish the persistence operation.
+    FlushCacheTasks();
+
+    const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+    EXPECT_THAT(dictionary_map,
+                ElementsAre(Pair(
+                    url::SchemeHostPort(GURL("https://target1.test/")),
+                    ElementsAre(Pair(
+                        "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+
+    DoomDiskCacheEntry(manager.get(),
+                       GetDiskCacheKeyTokenOfFirstDictionary(
+                           dictionary_map, "https://target1.test/"));
+
+    base::RunLoop run_loop;
+    manager->ClearData(
+        base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+        base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_FALSE(GetOnDiskDictionaryMap(storage.get()).empty());
+
+    task_environment_.RunUntilIdle();
+
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+    // Releasing `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  // The storage must be empty.
+  EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionCanBeTriggeredOnlyOnce) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  // Calls ClearData() to trigger MismatchingEntryDeletionTask.
+  base::RunLoop run_loop1;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop1.QuitClosure());
+  run_loop1.Run();
+  task_environment_.RunUntilIdle();
+
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  const std::string entry_key = token.ToString();
+  const std::string kTestData = "Hello world";
+
+  WriteDiskCacheEntry(manager.get(), entry_key, kTestData);
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+
+  base::RunLoop run_loop2;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+  task_environment_.RunUntilIdle();
+  // MismatchingEntryDeletionTask can be triggered only once. So the disk cache
+  // entry should not be deleted.
+  EXPECT_TRUE(DiskCacheEntryExists(manager.get(), entry_key));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionWritingEntryMustNotBeDeleted) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // Start writing a dictionary.
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(base::StrCat(
+          {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
+           ": match=\"/p*\"\n\n"}));
+  ASSERT_TRUE(headers);
+  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
+      GURL("https://target1.test/d"), base::Time::Now(), *headers);
+  ASSERT_TRUE(writer);
+  writer->Append(kTestData1.c_str(), kTestData1.size());
+
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  // Finish writing the dictionary.
+  writer->Finish();
+
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+  EXPECT_THAT(dictionary_map,
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       MismatchingEntryDeletionWritingDiskCacheEntryMustNotBeDeleted) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+  // Write a dictionary.
+  WriteDictionary(storage.get(), GURL("https://target1.test/d"), "p*",
+                  kTestData1);
+  // But do not call FlushCacheTasks() to keep writing the disk cache entry.
+  base::RunLoop run_loop;
+  manager->ClearData(
+      base::Time::Now() - base::Days(2), base::Time::Now() - base::Days(1),
+      base::RepeatingCallback<bool(const GURL&)>(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+  EXPECT_THAT(dictionary_map,
+              ElementsAre(Pair(
+                  url::SchemeHostPort(GURL("https://target1.test/")),
+                  ElementsAre(Pair(
+                      "/p*", DictionaryUrlIs("https://target1.test/d"))))));
 }
 
 }  // namespace network

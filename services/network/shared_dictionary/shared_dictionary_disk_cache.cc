@@ -160,6 +160,32 @@ int SharedDictionaryDiskCache::ClearAll(net::CompletionOnceCallback callback) {
   }
 }
 
+void SharedDictionaryDiskCache::CreateIterator(
+    base::OnceCallback<void(std::unique_ptr<disk_cache::Backend::Iterator>)>
+        callback) {
+  switch (state_) {
+    case State::kBeforeInitialize:
+      NOTREACHED();
+      return;
+    case State::kInitializing:
+      // It is safe to use Unretained() below because
+      // `pending_disk_cache_tasks_` is owned by `this` and the passed task
+      // `SharedDictionaryDiskCache::CreateIterator()` will be called only when
+      // `this` is available.
+      pending_disk_cache_tasks_.push_back(
+          base::BindOnce(&SharedDictionaryDiskCache::CreateIterator,
+                         base::Unretained(this), std::move(callback)));
+      return;
+    case State::kInitialized:
+      DCHECK(backend_);
+      std::move(callback).Run(backend_->CreateIterator());
+      return;
+    case State::kFailed:
+      std::move(callback).Run(nullptr);
+      return;
+  }
+}
+
 void SharedDictionaryDiskCache::DidCreateBackend(
     disk_cache::BackendResult result) {
   if (result.net_error != net::OK) {

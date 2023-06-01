@@ -92,10 +92,12 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   };
 
   class ClearDataTask;
+  class MismatchingEntryDeletionTask;
   class CacheEvictionTask;
   class ExpiredDictionaryDeletionTask;
 
   class ClearDataTaskInfo;
+  class MismatchingEntryDeletionTaskInfo;
   class CacheEvictionTaskInfo;
   class ExpiredDictionaryDeletionTaskInfo;
 
@@ -121,11 +123,18 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void OnFinishSerializedTask();
   void MaybeStartSerializedTask();
 
+  void MaybePostMismatchingEntryDeletionTask();
   void MaybePostCacheEvictionTask();
   void MaybePostExpiredDictionaryDeletionTask();
 
-  void OnDictionaryDeletedFromDatabase(
-      const std::set<base::UnguessableToken>& disk_cache_key_tokens);
+  void OnDictionaryDeleted(
+      const std::set<base::UnguessableToken>& disk_cache_key_tokens,
+      bool need_to_doom_disk_cache_entries);
+
+  const std::set<base::UnguessableToken>& writing_disk_cache_key_tokens()
+      const {
+    return writing_disk_cache_key_tokens_;
+  }
 
   uint64_t cache_max_size() const { return cache_max_size_; }
 
@@ -136,6 +145,9 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   std::unique_ptr<SerializedTask> running_serialized_task_;
   std::deque<std::unique_ptr<SerializedTaskInfo>> pending_serialized_task_info_;
 
+  std::set<base::UnguessableToken> writing_disk_cache_key_tokens_;
+
+  bool mismatching_entry_deletion_task_posted_ = false;
   bool cache_eviction_task_queued_ = false;
   bool expired_entry_deletion_task_queued_ = false;
 
