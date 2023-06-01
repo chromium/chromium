@@ -47,6 +47,7 @@
     "lacros-arm-generic-rel-skylab-fyi": "Ubuntu-22.04",
     "lacros-arm64-generic-rel": "Ubuntu-22.04",
     "lacros-arm64-generic-rel-skylab": "Ubuntu-22.04",
+    "lacros-arm64-generic-rel-skylab-fyi": "Ubuntu-22.04",
     "linux-ash-chromium-generator-rel": "Ubuntu-22.04",
     "linux-bfcache-rel": "Ubuntu-22.04",
     "linux-build-perf-developer": "Ubuntu-22.04",
