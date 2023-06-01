@@ -1552,12 +1552,20 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
+// Test is flaky on win_asan. https://crbug.com/1448038
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Logic_ShouldAttemptToOfferToSaveIfNamesConflict \
+  DISABLED_Logic_ShouldAttemptToOfferToSaveIfNamesConflict
+#else
+#define MAYBE_Logic_ShouldAttemptToOfferToSaveIfNamesConflict \
+  Logic_ShouldAttemptToOfferToSaveIfNamesConflict
+#endif
 // Tests the upload save logic. Ensures that Chrome lets Payments decide whether
 // upload save should be offered, even if multiple conflicting names are
 // detected.
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldAttemptToOfferToSaveIfNamesConflict) {
+    MAYBE_Logic_ShouldAttemptToOfferToSaveIfNamesConflict) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
