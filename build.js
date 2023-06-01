@@ -86,10 +86,11 @@ if (!REPLAY_LOCAL_DRIVER_DIR) {
   fs.unlinkSync(driverJSON);
 }
 
-let driverString = "";
+let driverString = [];
 for (let i = 0; i < driverContents.length; i++) {
-  driverString += `\\${driverContents[i].toString(8)}`;
+  driverString.push(`\\${driverContents[i].toString(8)}`);
 }
+driverString = driverString.join("");
 
 const buildSuffix = process.env["BUILDKITE"] ? "-buildkite" : (process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "");
 const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
