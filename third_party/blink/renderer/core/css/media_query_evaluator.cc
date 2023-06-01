@@ -1434,6 +1434,13 @@ static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
+                                  MediaQueryOperator op,
+                                  const MediaValues& media_values) {
+  // TODO(crbug.com/1445189): Implement matching.
+  return false;
+}
+
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
   switch (op) {
     case MediaQueryOperator::kNone:

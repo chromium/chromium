@@ -1275,6 +1275,7 @@
     "-webkit-repeating-radial-gradient",
     "-webkit-image-set",
     "image-set",
+    "type",
 
     // deprecated gradients
     "from",
@@ -1475,8 +1476,17 @@
     "inline-size",
 
     // @container
-    "name",
-    "type",
+    // size
+    // style
+    "state",
+    // top
+    // left
+    // right
+    // bottom
+    "inset-block-start",
+    "inset-block-end",
+    "inset-inline-start",
+    "inset-inline-end",
 
     // grid auto-repeat
     "auto-fill",

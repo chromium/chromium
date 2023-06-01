@@ -29,6 +29,9 @@ ContainerSelector::ContainerSelector(AtomicString name,
   if (feature_flags & MediaQueryExpNode::kFeatureStyle) {
     has_style_query_ = true;
   }
+  if (feature_flags & MediaQueryExpNode::kFeatureState) {
+    has_sticky_query_ = true;
+  }
 }
 
 unsigned ContainerSelector::GetHash() const {
@@ -36,6 +39,7 @@ unsigned ContainerSelector::GetHash() const {
   WTF::AddIntToHash(hash, physical_axes_.value());
   WTF::AddIntToHash(hash, logical_axes_.value());
   WTF::AddIntToHash(hash, has_style_query_);
+  WTF::AddIntToHash(hash, has_sticky_query_);
   return hash;
 }
 
@@ -51,7 +55,9 @@ unsigned ContainerSelector::Type(WritingMode writing_mode) const {
   if ((axes & kLogicalAxisBlock).value()) {
     type |= kContainerTypeBlockSize;
   }
-
+  if (has_sticky_query_) {
+    type |= kContainerTypeSticky;
+  }
   return type;
 }
 

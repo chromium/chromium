@@ -128,7 +128,8 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   const ContainerSelector& selector = query.Selector();
   bool selects_size = selector.SelectsSizeContainers();
   bool selects_style = selector.SelectsStyleContainers();
-  if (!selects_size && !selects_style) {
+  bool selects_sticky = selector.SelectsStickyContainers();
+  if (!selects_size && !selects_style && !selects_sticky) {
     return false;
   }
 
@@ -137,6 +138,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   }
   if (selects_style) {
     match_result.SetDependsOnStyleContainerQueries();
+  }
+  if (selects_sticky) {
+    match_result.SetDependsOnStickyContainerQueries();
   }
 
   Element* starting_element =
@@ -234,6 +238,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   }
   if (!depends_on_style_) {
     depends_on_style_ = query.Selector().SelectsStyleContainers();
+  }
+  if (!depends_on_sticky_) {
+    depends_on_sticky_ = query.Selector().SelectsStickyContainers();
   }
   unit_flags_ |= result.unit_flags;
 

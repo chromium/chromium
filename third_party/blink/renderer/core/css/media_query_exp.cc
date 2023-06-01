@@ -153,6 +153,25 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kStuckMediaFeature) {
+      switch (ident) {
+        case CSSValueID::kNone:
+        case CSSValueID::kTop:
+        case CSSValueID::kLeft:
+        case CSSValueID::kBottom:
+        case CSSValueID::kRight:
+        case CSSValueID::kInsetBlockStart:
+        case CSSValueID::kInsetBlockEnd:
+        case CSSValueID::kInsetInlineStart:
+        case CSSValueID::kInsetInlineEnd:
+          return true;
+        default:
+          return false;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -806,6 +825,9 @@ MediaQueryExpNode::FeatureFlags MediaQueryFunctionExpNode::CollectFeatureFlags()
   FeatureFlags flags = MediaQueryUnaryExpNode::CollectFeatureFlags();
   if (name_ == AtomicString("style")) {
     flags |= kFeatureStyle;
+  }
+  if (name_ == AtomicString("state")) {
+    flags |= kFeatureState;
   }
   return flags;
 }

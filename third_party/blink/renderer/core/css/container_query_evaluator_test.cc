@@ -723,6 +723,49 @@ TEST_F(ContainerQueryEvaluatorTest, FindContainer) {
             outer_size);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, FindStickyContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="container-type: sticky size">
+      <div style="container-name:outer;container-type: sticky">
+        <div style="container-name:outer">
+          <div style="container-type: sticky">
+            <div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* sticky_size = ParentNode::firstElementChild(*GetDocument().body());
+  Element* outer_sticky = ParentNode::firstElementChild(*sticky_size);
+  Element* outer = ParentNode::firstElementChild(*outer_sticky);
+  Element* inner_sticky = ParentNode::firstElementChild(*outer);
+  Element* inner = ParentNode::firstElementChild(*inner_sticky);
+
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("state(stuck: top) and style(--foo: bar)")->Selector(),
+          &GetDocument()),
+      inner_sticky);
+  EXPECT_EQ(ContainerQueryEvaluator::FindContainer(
+                inner,
+                ParseContainer("outer state(stuck: top) and style(--foo: bar)")
+                    ->Selector(),
+                &GetDocument()),
+            outer_sticky);
+  EXPECT_EQ(
+      ContainerQueryEvaluator::FindContainer(
+          inner,
+          ParseContainer("state(stuck: top) and (width > 0px)")->Selector(),
+          &GetDocument()),
+      sticky_size);
+}
+
 TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
   GetDocument()
       .documentElement()

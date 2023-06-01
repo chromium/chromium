@@ -289,6 +289,26 @@ TEST_F(ContainerQueryTest, ImplicitContainerSelector) {
             orientation.Type(WritingMode::kVerticalRl));
 }
 
+TEST_F(ContainerQueryTest, StickyContainerSelector) {
+  ContainerSelector stuck_right = ContainerSelectorFrom("state(stuck: right)");
+  EXPECT_EQ(kContainerTypeSticky, stuck_right.Type(WritingMode::kHorizontalTb));
+
+  ContainerSelector stuck_and_style =
+      ContainerSelectorFrom("state(stuck: right) and style(--foo: bar)");
+  EXPECT_EQ(kContainerTypeSticky,
+            stuck_and_style.Type(WritingMode::kHorizontalTb));
+
+  ContainerSelector stuck_and_inline_size = ContainerSelectorFrom(
+      "state(stuck: inset-block-end) or (inline-size > 10px)");
+  EXPECT_EQ((kContainerTypeSticky | kContainerTypeInlineSize),
+            stuck_and_inline_size.Type(WritingMode::kHorizontalTb));
+
+  ContainerSelector stuck_and_block_size =
+      ContainerSelectorFrom("state(stuck: inset-block-end) and (height)");
+  EXPECT_EQ((kContainerTypeSticky | kContainerTypeBlockSize),
+            stuck_and_block_size.Type(WritingMode::kHorizontalTb));
+}
+
 TEST_F(ContainerQueryTest, RuleParsing) {
   StyleRuleContainer* container = ParseAtContainer(R"CSS(
     @container test_name (min-width: 100px) {

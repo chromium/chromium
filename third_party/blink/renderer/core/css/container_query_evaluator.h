@@ -133,6 +133,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool referenced_by_unit_ = false;
   bool font_dirty_ = false;
   bool depends_on_style_ = false;
+  bool depends_on_sticky_ = false;
 };
 
 }  // namespace blink

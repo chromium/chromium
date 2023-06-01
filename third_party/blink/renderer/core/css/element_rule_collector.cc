@@ -574,16 +574,21 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         // changes may cause pseudo elements to start being generated.
         bool selects_size = false;
         bool selects_style = false;
+        bool selects_sticky = false;
         for (const ContainerQuery* current = container_query; current;
              current = current->Parent()) {
           selects_size |= current->Selector().SelectsSizeContainers();
           selects_style |= current->Selector().SelectsStyleContainers();
+          selects_sticky |= current->Selector().SelectsStickyContainers();
         }
         if (selects_size) {
           result_.SetDependsOnSizeContainerQueries();
         }
         if (selects_style) {
           result_.SetDependsOnStyleContainerQueries();
+        }
+        if (selects_sticky) {
+          result_.SetDependsOnStickyContainerQueries();
         }
       }
     }
