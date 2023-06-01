@@ -469,4 +469,102 @@ public class BaseSuggestionViewBinderUnitTest {
 
         Assert.assertEquals(state1, state2);
     }
+
+    @Test
+    public void iconPadding() {
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        int startPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        int startPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        int endPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+
+        SuggestionDrawableState smallState =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, smallState);
+        verify(mIconView).setPadding(startPadding, 0, startPadding, 0);
+
+        SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
+                                                     .setUseRoundedCorners(true)
+                                                     .setLarge(true)
+                                                     .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, largeState);
+        verify(mIconView).setPadding(startPaddingLarge, 0, endPaddingLarge, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void iconStartPadding_smallestMarginsRevamp() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        int padding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        int startPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        int endPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+
+        SuggestionDrawableState smallState =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, smallState);
+        verify(mIconView).setPadding(padding, 0, padding, 0);
+
+        SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
+                                                     .setUseRoundedCorners(true)
+                                                     .setLarge(true)
+                                                     .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, largeState);
+        verify(mIconView).setPadding(startPaddingLarge, 0, endPaddingLarge, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void iconStartPadding_smallerMarginsRevamp() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        int startPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        int startPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        int endPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+
+        SuggestionDrawableState smallState =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, smallState);
+        verify(mIconView).setPadding(startPadding, 0, startPadding, 0);
+
+        SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
+                                                     .setUseRoundedCorners(true)
+                                                     .setLarge(true)
+                                                     .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, largeState);
+        verify(mIconView).setPadding(startPaddingLarge, 0, endPaddingLarge, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    @Config(qualifiers = "w600dp-h820dp")
+    public void iconStartPadding_tabletRevamp() {
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        int startPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_margin_start);
+        int startPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_start);
+        int endPaddingLarge =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_margin_end);
+
+        SuggestionDrawableState smallState =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, smallState);
+        verify(mIconView).setPadding(startPadding, 0, startPadding, 0);
+
+        SuggestionDrawableState largeState = SuggestionDrawableState.Builder.forColor(0)
+                                                     .setUseRoundedCorners(true)
+                                                     .setLarge(true)
+                                                     .build();
+        mModel.set(BaseSuggestionViewProperties.ICON, largeState);
+        verify(mIconView).setPadding(startPaddingLarge, 0, endPaddingLarge, 0);
+    }
 }

@@ -339,11 +339,9 @@ public class LocationBarLayout extends FrameLayout {
 
         // Set the left space expansion width.
         ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
-        int dimen = OmniboxResourceProvider.selectMarginDimen(
-                R.dimen.location_bar_status_view_left_space_width,
-                R.dimen.location_bar_status_view_left_space_width_bigger,
-                R.dimen.location_bar_status_view_left_space_width_bigger);
-        leftSpacingParams.width = (int) (getResources().getDimensionPixelSize(dimen) * percent);
+        int fullSpacing = OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext());
+
+        leftSpacingParams.width = (int) (fullSpacing * percent);
         mStatusViewLeftSpace.setLayoutParams(leftSpacingParams);
     }
 
