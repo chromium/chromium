@@ -359,18 +359,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected Rect getAppRectInWindow() {
+    protected Rect getAppRectOnScreen() {
         // This is necessary if app handler cannot rely on the popup window that ensures the menu
         // will not be clipped off the screen, which can happen in partial CCT.
         // TODO(crbug.com/1382010): Add a render test to prevent regressions.
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             View coord = mActivity.findViewById(R.id.coordinator);
             int[] location = new int[2];
-            coord.getLocationInWindow(location);
+            coord.getLocationOnScreen(location);
             return new Rect(location[0], location[1], location[0] + coord.getWidth(),
                     location[1] + coord.getHeight());
         }
-        return super.getAppRectInWindow();
+        return super.getAppRectOnScreen();
     }
 
     @Override

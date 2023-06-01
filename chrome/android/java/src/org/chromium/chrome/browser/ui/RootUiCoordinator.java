@@ -1335,7 +1335,7 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
-                    this::getAppRectInWindow);
+                    this::getAppRectOnScreen);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(
@@ -1365,7 +1365,7 @@ public class RootUiCoordinator
     /**
      * Returns {@link Rect} that represents the app client area the app menu should fit in.
      */
-    protected Rect getAppRectInWindow() {
+    protected Rect getAppRectOnScreen() {
         Rect appRect = new Rect();
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
         return appRect;

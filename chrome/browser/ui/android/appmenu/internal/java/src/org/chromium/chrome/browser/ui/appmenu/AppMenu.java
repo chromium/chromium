@@ -156,7 +156,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      *                              to software button or keyboard).
      * @param screenRotation        Current device screen rotation.
      * @param visibleDisplayFrame   The display area rect in which AppMenu is supposed to fit in.
-     * @param screenHeight          Current device screen height.
      * @param footerResourceId      The resource id for a view to add as a fixed view at the bottom
      *                              of the menu.  Can be 0 if no such view is required.  The footer
      *                              is always visible and overlays other app menu items if
@@ -175,10 +174,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
      *                              the start.
      */
     void show(Context context, final View anchorView, boolean isByPermanentButton,
-            int screenRotation, Rect visibleDisplayFrame, int screenHeight,
-            @IdRes int footerResourceId, @IdRes int headerResourceId,
-            @IdRes int groupDividerResourceId, Integer highlightedItemId,
-            @Nullable List<CustomViewBinder> customViewBinders, boolean isMenuIconAtStart) {
+            int screenRotation, Rect visibleDisplayFrame, @IdRes int footerResourceId,
+            @IdRes int headerResourceId, @IdRes int groupDividerResourceId,
+            Integer highlightedItemId, @Nullable List<CustomViewBinder> customViewBinders,
+            boolean isMenuIconAtStart) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -285,16 +284,19 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // See crbug.com/761726.
         mListView.setAdapter(mAdapter);
 
-        int popupHeight = setMenuHeight(menuItemIds, heightList, visibleDisplayFrame, screenHeight,
-                sizingPadding, footerHeight, headerHeight, anchorView, groupDividerResourceId);
+        anchorView.getLocationOnScreen(mTempLocation);
+        int anchorViewOffset = Math.min(Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
+                Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
+        int popupHeight = setMenuHeight(menuItemIds, heightList, visibleDisplayFrame, sizingPadding,
+                footerHeight, headerHeight, anchorView, groupDividerResourceId, anchorViewOffset);
         int[] popupPosition = getPopupPosition(mTempLocation, mIsByPermanentButton,
                 mNegativeSoftwareVerticalOffset, mNegativeVerticalOffsetNotTopAnchored,
                 mCurrentScreenRotation, visibleDisplayFrame, sizingPadding, anchorView, popupWidth,
                 popupHeight, anchorView.getRootView().getLayoutDirection());
         mPopup.setContentView(contentView);
 
-        if (popupHeight + popupPosition[1] > visibleDisplayFrame.bottom) {
-            mPopup.setHeight(visibleDisplayFrame.height());
+        if (popupHeight + popupPosition[1] > visibleDisplayFrame.height() - anchorViewOffset) {
+            mPopup.setHeight(visibleDisplayFrame.height() - anchorViewOffset);
         }
 
         try {
@@ -520,26 +522,18 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     }
 
     private int setMenuHeight(List<Integer> menuItemIds, List<Integer> heightList,
-            Rect appDimensions, int screenHeight, Rect padding, int footerHeight, int headerHeight,
-            View anchorView, @IdRes int groupDividerResourceId) {
-        anchorView.getLocationOnScreen(mTempLocation);
-        int anchorViewY = mTempLocation[1] - appDimensions.top;
-
+            Rect appDimensions, Rect padding, int footerHeight, int headerHeight, View anchorView,
+            @IdRes int groupDividerResourceId, int anchorViewOffset) {
         int anchorViewImpactHeight = mIsByPermanentButton ? anchorView.getHeight() : 0;
 
-        // Set appDimensions.height() for abnormal anchorViewLocation.
-        if (anchorViewY > screenHeight) {
-            anchorViewY = appDimensions.height();
-        }
-        int availableScreenSpace = Math.max(
-                anchorViewY, appDimensions.height() - anchorViewY - anchorViewImpactHeight);
+        int availableScreenSpace = appDimensions.height() - anchorViewOffset - padding.bottom
+                - footerHeight - headerHeight - anchorViewImpactHeight;
 
-        availableScreenSpace -= (padding.bottom + footerHeight + headerHeight);
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
         if (availableScreenSpace <= 0 && sExceptionReporter != null) {
             String logMessage = String.format(
                     "there is no screen space for app menn, mIsByPermanentButton = "
-                    + mIsByPermanentButton + ", anchorViewY = " + anchorViewY
+                    + mIsByPermanentButton + ", anchorViewOffset = " + anchorViewOffset
                     + ", appDimensions.height() = " + appDimensions.height()
                     + ", anchorView.getHeight() = " + anchorView.getHeight()
                     + " padding.top = " + padding.top + ", padding.bottom = " + padding.bottom
@@ -560,6 +554,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             @IdRes int groupDividerResourceId, int screenSpaceForItems) {
         int availableScreenSpace = screenSpaceForItems > 0 ? screenSpaceForItems : 0;
         int spaceForFullItems = 0;
+
         for (int i = 0; i < heightList.size(); i++) {
             spaceForFullItems += heightList.get(i);
         }
@@ -585,6 +580,11 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             while (lastItem > 1
                     && (spaceForItems + spaceForPartialItem > availableScreenSpace
                             || menuItemIds.get(lastItem) == groupDividerResourceId)) {
+                // If we have space for < 2.5 items, size menu to available screen space.
+                if (spaceForItems <= availableScreenSpace && lastItem < 3) {
+                    spaceForPartialItem = availableScreenSpace - spaceForItems;
+                    break;
+                }
                 spaceForItems -= heightList.get(lastItem - 1);
                 spaceForPartialItem =
                         (int) (LAST_ITEM_SHOW_FRACTION * heightList.get(lastItem - 1));
