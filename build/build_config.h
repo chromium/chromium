@@ -336,18 +336,13 @@
 #define ARCH_CPU_BIG_ENDIAN 1
 #endif
 #elif defined(__loongarch__)
-// Phase out _LOONG with _LOONGARCH, since the latter is more intuitive.
-// TODO(loongarch): Remove XXX_LOONG definition after it's all cleaned up.
 #define ARCH_CPU_LOONGARCH_FAMILY 1
-#define ARCH_CPU_LOONG_FAMILY 1
 #define ARCH_CPU_LITTLE_ENDIAN 1
 #if __loongarch_grlen == 64
 #define ARCH_CPU_LOONGARCH64 1
-#define ARCH_CPU_LOONG64 1
 #define ARCH_CPU_64_BITS 1
 #else
 #define ARCH_CPU_LOONGARCH32 1
-#define ARCH_CPU_LOONG32 1
 #define ARCH_CPU_32_BITS 1
 #endif
 #elif defined(__riscv) && (__riscv_xlen == 64)
