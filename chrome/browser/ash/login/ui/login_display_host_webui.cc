@@ -567,18 +567,16 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
         wizard_controller_->current_screen() == welcome_screen;
-    if (!should_show) {
-      // When the booting animation might be played we postpone the wallpaper
-      // call. So we need to make it here if the animation won't be played.
-      WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
-      return;
+    if (should_show) {
+      ash::Shell::Get()
+          ->booting_animation_controller()
+          ->ShowAnimationWithEndCallback(base::BindOnce(
+              &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
+              weak_factory_.GetWeakPtr()));
     }
-    ash::Shell::Get()
-        ->booting_animation_controller()
-        ->ShowAnimationWithEndCallback(base::BindOnce(
-            &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
-            weak_factory_.GetWeakPtr()));
-    // We can show the wallpaper after the animation widget is shown.
+    // Show the underlying OOBE WebUI and wallpaper so they are ready once
+    // animation has finished playing.
+    login_window_->Show();
     WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   }
 }
@@ -854,7 +852,9 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
-  login_window_->Show();
+  if (!ash::features::IsOobeSimonEnabled()) {
+    login_window_->Show();
+  }
   CHECK(GetOobeUI());
   GetOobeUI()->AddObserver(this);
 }
