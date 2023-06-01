@@ -10,22 +10,25 @@ static_library("common") {
     "cdm_message_generator.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "cdm_messages_android.h",
-      "clearkey_drm_delegate_android.cc",
-      "clearkey_drm_delegate_android.h",
-      "widevine_drm_delegate_android.cc",
-      "widevine_drm_delegate_android.h",
-    ]
-  }
-
   deps = [
     "//base",
     "//content/public/common",
     "//ipc",
     "//media",
   ]
+
+  if (is_android) {
+    sources += [
+      "android_cdm_registration.cc",
+      "android_cdm_registration.h",
+      "cdm_messages_android.h",
+      "clearkey_drm_delegate_android.cc",
+      "clearkey_drm_delegate_android.h",
+      "widevine_drm_delegate_android.cc",
+      "widevine_drm_delegate_android.h",
+    ]
+    deps += [ "//third_party/widevine/cdm:buildflags" ]
+  }
 
   if (enable_library_cdms) {
     sources += [

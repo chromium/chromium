@@ -11,7 +11,6 @@
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/url_constants.h"
 #include "android_webview/renderer/aw_content_settings_client.h"
-#include "android_webview/renderer/aw_key_systems.h"
 #include "android_webview/renderer/aw_print_render_frame_helper_delegate.h"
 #include "android_webview/renderer/aw_render_frame_ext.h"
 #include "android_webview/renderer/aw_render_view_ext.h"
@@ -24,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "components/android_system_error_page/error_page_populator.h"
+#include "components/cdm/renderer/key_system_support_update.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
@@ -214,9 +214,8 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
 
 void AwContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  media::KeySystemInfos key_systems;
-  AwAddKeySystems(&key_systems);
-  std::move(cb).Run(std::move(key_systems));
+  // WebView always allows persisting data.
+  cdm::GetSupportedKeySystemsUpdates(/*can_persist_data=*/true, std::move(cb));
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

@@ -10,8 +10,6 @@ source_set("renderer") {
     "aw_content_renderer_client.h",
     "aw_content_settings_client.cc",
     "aw_content_settings_client.h",
-    "aw_key_systems.cc",
-    "aw_key_systems.h",
     "aw_print_render_frame_helper_delegate.cc",
     "aw_print_render_frame_helper_delegate.h",
     "aw_render_frame_ext.cc",
