@@ -30,7 +30,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   static const CSSProperty& Get(CSSPropertyID id) {
     DCHECK(id != CSSPropertyID::kInvalid);
     DCHECK(id <= kLastCSSProperty);  // last property id
-    return To<CSSProperty>(CSSUnresolvedProperty::GetNonAliasProperty(id));
+    return To<CSSProperty>(*GetPropertyInternal(id));
   }
 
   static bool IsShorthand(const CSSPropertyName&);
@@ -219,16 +219,18 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   };
 
  private:
-  uint16_t property_id_;
-  char repetition_separator_;
-  Flags flags_;
+  static constexpr size_t kPropertyIdBits = 16;
+  uint64_t property_id_ : kPropertyIdBits;  // NOLINT(runtime/bitfields)
+  uint64_t repetition_separator_ : 8;       // NOLINT(runtime/bitfields)
+  uint64_t flags_ : 40;                     // NOLINT(runtime/bitfields)
 
   // Make sure we have room for all valid CSSPropertyIDs.
-  // (Using a smaller type here reduces CSSProperty size from 24 to 16
+  // (Using bit fields here reduces CSSProperty size from 24 to 16
   // bytes, and we have many of them that are frequently accessed
   // during style application.)
-  static_assert(sizeof(property_id_) * 8 >= kCSSPropertyIDBitLength);
+  static_assert(kPropertyIdBits >= kCSSPropertyIDBitLength);
 };
+static_assert(sizeof(CSSProperty) <= 16);
 
 template <>
 struct DowncastTraits<CSSProperty> {

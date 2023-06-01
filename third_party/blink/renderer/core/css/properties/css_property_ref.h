@@ -64,7 +64,7 @@ class CORE_EXPORT CSSPropertyRef {
 
   const CSSUnresolvedProperty& GetUnresolvedProperty() const {
     if (IsPropertyAlias(property_id_)) {
-      return *CSSUnresolvedProperty::GetAliasProperty(property_id_);
+      return *GetPropertyInternal(property_id_);
     }
     return GetProperty();
   }

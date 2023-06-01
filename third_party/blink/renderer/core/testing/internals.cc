@@ -957,15 +957,13 @@ uint16_t Internals::compareTreeScopePosition(
     ExceptionState& exception_state) const {
   DCHECK(node1 && node2);
   const TreeScope* tree_scope1 =
-      IsA<Document>(node1)
-          ? static_cast<const TreeScope*>(To<Document>(node1))
-          : IsA<ShadowRoot>(node1)
-                ? static_cast<const TreeScope*>(To<ShadowRoot>(node1))
-                : nullptr;
+      IsA<Document>(node1) ? static_cast<const TreeScope*>(To<Document>(node1))
+      : IsA<ShadowRoot>(node1)
+          ? static_cast<const TreeScope*>(To<ShadowRoot>(node1))
+          : nullptr;
   const TreeScope* tree_scope2 =
-      IsA<Document>(node2)
-          ? static_cast<const TreeScope*>(To<Document>(node2))
-          : IsA<ShadowRoot>(node2)
+      IsA<Document>(node2) ? static_cast<const TreeScope*>(To<Document>(node2))
+      : IsA<ShadowRoot>(node2)
           ? static_cast<const TreeScope*>(To<ShadowRoot>(node2))
           : nullptr;
   if (!tree_scope1 || !tree_scope2) {
@@ -2373,7 +2371,7 @@ AtomicString Internals::htmlNamespace() {
 
 Vector<AtomicString> Internals::htmlTags() {
   Vector<AtomicString> tags(html_names::kTagsCount);
-  std::unique_ptr<const HTMLQualifiedName* []> qualified_names =
+  std::unique_ptr<const HTMLQualifiedName*[]> qualified_names =
       html_names::GetTags();
   for (wtf_size_t i = 0; i < html_names::kTagsCount; ++i)
     tags[i] = qualified_names[i]->LocalName();
@@ -2386,7 +2384,7 @@ AtomicString Internals::svgNamespace() {
 
 Vector<AtomicString> Internals::svgTags() {
   Vector<AtomicString> tags(svg_names::kTagsCount);
-  std::unique_ptr<const SVGQualifiedName* []> qualified_names =
+  std::unique_ptr<const SVGQualifiedName*[]> qualified_names =
       svg_names::GetTags();
   for (wtf_size_t i = 0; i < svg_names::kTagsCount; ++i)
     tags[i] = qualified_names[i]->LocalName();
@@ -3685,10 +3683,9 @@ Vector<String> Internals::getCSSPropertyAliases() const {
   Vector<String> result;
   for (CSSPropertyID alias : kCSSPropertyAliasList) {
     DCHECK(IsPropertyAlias(alias));
-    const CSSUnresolvedProperty* property_class =
-        CSSUnresolvedProperty::GetAliasProperty(alias);
-    if (property_class->IsWebExposed(document_->GetExecutionContext())) {
-      result.push_back(property_class->GetPropertyNameString());
+    const CSSUnresolvedProperty& property_class = *GetPropertyInternal(alias);
+    if (property_class.IsWebExposed(document_->GetExecutionContext())) {
+      result.push_back(property_class.GetPropertyNameString());
     }
   }
   return result;

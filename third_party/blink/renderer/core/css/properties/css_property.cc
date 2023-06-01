@@ -14,7 +14,7 @@
 namespace blink {
 
 const CSSProperty& GetCSSPropertyVariable() {
-  return To<CSSProperty>(GetCSSPropertyVariableInternal());
+  return To<CSSProperty>(*GetPropertyInternal(CSSPropertyID::kVariable));
 }
 
 bool CSSProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {

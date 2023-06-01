@@ -299,10 +299,10 @@ void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
       }
     }
     for (CSSPropertyID property_id : kCSSPropertyAliasList) {
-      const CSSUnresolvedProperty* property_class =
-          CSSUnresolvedProperty::GetAliasProperty(property_id);
-      if (property_class->IsWebExposed(execution_context)) {
-        property_names.push_back(property_class->GetJSPropertyName());
+      const CSSUnresolvedProperty& property_class =
+          *GetPropertyInternal(property_id);
+      if (property_class.IsWebExposed(execution_context)) {
+        property_names.push_back(property_class.GetJSPropertyName());
       }
     }
     std::sort(property_names.begin(), property_names.end(),

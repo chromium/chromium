@@ -13,34 +13,53 @@
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 
 namespace blink {
-namespace static_properties {
-{% for property in properties %}
-const ::blink::{{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
-{% endfor %}
-{% for property in aliases %}
-const ::blink::{{property.namespace}}::{{property.classname}} property_{{property.property_id.lower()}};
-{% endfor %}
-} // namespace static_properties
 
-const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
-  DCHECK_GT(id, kLastCSSProperty);  // last property id
-  DCHECK_LE(id, kLastUnresolvedCSSProperty);  // last unresolved property id
-  switch (id) {
-    {% for property in aliases %}
-    case CSSPropertyID::{{property.enum_key}}:
-      return &static_properties::property_{{property.property_id.lower()}};
-    {% endfor %}
-    default:
-      NOTREACHED();
-      return nullptr;
+// NOTE: Everything in here must be reinterpret_cast-able
+// to CSSUnresolvedProperty! In particular, this means that
+// multiple inheritance is forbidden. We enforce this through
+// DCHECKs as much as we can; this also checks (compile-time)
+// that everything inherits from CSSUnresolvedProperty.
+union alignas(kCSSPropertyUnionBytes) CSSPropertyUnion {
+  constexpr CSSPropertyUnion() {}  // For kInvalid.
+  constexpr CSSPropertyUnion(Variable property)
+    : variable_(std::move(property)) {
+    DCHECK(reinterpret_cast<const CSSUnresolvedProperty *>(this) ==
+        static_cast<const CSSUnresolvedProperty *>(&variable_));
   }
-}
 
-const CSSUnresolvedProperty* const kPropertyClasses[] = {
-  nullptr,  // kInvalid.
-  nullptr,  // kVariable.
   {% for property in properties %}
-  &static_properties::property_{{property.property_id.lower()}},  // {{property.property_id}}
+  constexpr CSSPropertyUnion(::blink::{{property.namespace}}::{{property.classname}} property)
+    : {{property.property_id.lower()}}_(std::move(property)) {
+    DCHECK(reinterpret_cast<const CSSUnresolvedProperty *>(this) ==
+        static_cast<const CSSUnresolvedProperty *>(&{{property.property_id.lower()}}_));
+  }
+  {% endfor %}
+  {% for property in aliases %}
+  constexpr CSSPropertyUnion(::blink::{{property.namespace}}::{{property.classname}} property)
+    : {{property.property_id.lower()}}_(std::move(property)) {
+    DCHECK(reinterpret_cast<const CSSUnresolvedProperty *>(this) ==
+        static_cast<const CSSUnresolvedProperty *>(&{{property.property_id.lower()}}_));
+  }
+  {% endfor %}
+
+  Variable variable_;
+  {% for property in properties %}
+  ::blink::{{property.namespace}}::{{property.classname}} {{property.property_id.lower()}}_;
+  {% endfor %}
+  {% for property in aliases %}
+  ::blink::{{property.namespace}}::{{property.classname}} {{property.property_id.lower()}}_;
+  {% endfor %}
+};
+static_assert(sizeof(CSSPropertyUnion) == kCSSPropertyUnionBytes);
+
+const CSSPropertyUnion kProperties[] = {
+  {},  // kInvalid.
+  Variable(),
+  {% for property in properties %}
+  ::blink::{{property.namespace}}::{{property.classname}}(),
+  {% endfor %}
+  {% for property in aliases %}
+  ::blink::{{property.namespace}}::{{property.classname}}(),
   {% endfor %}
 };
 
