@@ -145,6 +145,7 @@ class TlsClientConnectionTest : public ::testing::Test {
   void SetUp() override {
     task_runner_ = std::make_unique<openscreen_platform::TaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
+    client_ = std::make_unique<StrictMock<MockTlsConnectionClient>>();
     socket_streams_ = std::make_unique<FakeSocketStreams>();
     connection_ = std::make_unique<TlsClientConnection>(
         task_runner_.get(), kValidEndpointOne, kValidEndpointTwo,
@@ -156,16 +157,18 @@ class TlsClientConnectionTest : public ::testing::Test {
   void TearDown() override {
     connection_.reset();
     socket_streams_.reset();
+    client_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
+  StrictMock<MockTlsConnectionClient>* client() const { return client_.get(); }
   FakeSocketStreams* socket_streams() const { return socket_streams_.get(); }
   TlsClientConnection* connection() const { return connection_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<openscreen_platform::TaskRunner> task_runner_;
-
+  std::unique_ptr<StrictMock<MockTlsConnectionClient>> client_;
   std::unique_ptr<FakeSocketStreams> socket_streams_;
   std::unique_ptr<TlsClientConnection> connection_;
 };
@@ -175,8 +178,7 @@ TEST_F(TlsClientConnectionTest, CallsClientOnReadForInboundData) {
   // correctly after each read.
   constexpr int kNumReads = 3;
 
-  StrictMock<MockTlsConnectionClient> client;
-  connection()->SetClient(&client);
+  connection()->SetClient(client());
 
   for (int i = 0; i < kNumReads; ++i) {
     // Send a different message in each iteration.
@@ -185,29 +187,27 @@ TEST_F(TlsClientConnectionTest, CallsClientOnReadForInboundData) {
     for (uint8_t& byte : expected_data) {
       byte ^= i;
     }
-    EXPECT_CALL(client, OnRead(connection(), expected_data)).Times(1);
+    EXPECT_CALL(*client(), OnRead(connection(), expected_data)).Times(1);
     socket_streams()->SimulateSocketReceive(expected_data.data(),
                                             expected_data.size());
     base::RunLoop().RunUntilIdle();
-    Mock::VerifyAndClearExpectations(&client);
+    Mock::VerifyAndClearExpectations(client());
   }
 }
 
 TEST_F(TlsClientConnectionTest, CallsClientOnErrorWhenSocketInboundCloses) {
-  StrictMock<MockTlsConnectionClient> client;
-  EXPECT_CALL(client, OnError(connection(), _)).Times(1);
-  connection()->SetClient(&client);
+  EXPECT_CALL(*client(), OnError(connection(), _)).Times(1);
+  connection()->SetClient(client());
 
   socket_streams()->SimulateInboundClose();
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
-  StrictMock<MockTlsConnectionClient> client;
   // Note: Client::OnError() should not be called during this test since an
   // outbound-blocked socket is not a fatal error.
-  EXPECT_CALL(client, OnError(connection(), _)).Times(0);
-  connection()->SetClient(&client);
+  EXPECT_CALL(*client(), OnError(connection(), _)).Times(0);
+  connection()->SetClient(client());
 
   std::vector<uint8_t> message(kDataPipeCapacity / 2);
   for (int i = 0; i < kDataPipeCapacity / 2; ++i) {
@@ -249,9 +249,8 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
 
 TEST_F(TlsClientConnectionTest,
        CallsClientOnErrorWhenSendingToClosedOutboundStream) {
-  StrictMock<MockTlsConnectionClient> client;
-  EXPECT_CALL(client, OnError(connection(), _)).Times(0);
-  connection()->SetClient(&client);
+  EXPECT_CALL(*client(), OnError(connection(), _)).Times(0);
+  connection()->SetClient(client());
 
   // Send a message and immediately close the outbound stream.
   EXPECT_TRUE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
@@ -259,10 +258,10 @@ TEST_F(TlsClientConnectionTest,
   base::RunLoop().RunUntilIdle();
 
   // The Client should not have encountered any fatal errors yet.
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client());
 
   // Now, call Send() again and this should trigger a fatal error.
-  EXPECT_CALL(client, OnError(connection(), _)).Times(1);
+  EXPECT_CALL(*client(), OnError(connection(), _)).Times(1);
   EXPECT_FALSE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
 }
 
