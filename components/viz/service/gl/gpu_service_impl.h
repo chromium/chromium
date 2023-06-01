@@ -258,7 +258,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // running in host process or (b) the context loss is irrecoverable and an
   // immediate crash is better than entering a context loss loop. An error
   // message will be logged.
-  void MaybeExitOnContextLost(bool synthetic_loss) override;
+  void MaybeExitOnContextLost(
+      bool synthetic_loss,
+      gpu::error::ContextLostReason context_lost_reason) override;
   bool IsExiting() const override;
   gpu::Scheduler* GetGpuScheduler() override;
 

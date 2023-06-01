@@ -710,7 +710,8 @@ void CommandBufferStub::CheckContextLost() {
         decoder_context_ &&
         decoder_context_->WasContextLostByRobustnessExtension();
     channel_->gpu_channel_manager()->OnContextLost(/*context_lost_count=*/-1,
-                                                   !was_lost_by_robustness);
+                                                   !was_lost_by_robustness,
+                                                   state.context_lost_reason);
   }
 
   CheckCompleteWaits();

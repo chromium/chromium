@@ -76,7 +76,8 @@ class GPU_GLES2_EXPORT SharedContextState
       public base::RefCounted<SharedContextState>,
       public GrContextOptions::ShaderErrorHandler {
  public:
-  using ContextLostCallback = base::OnceCallback<void(bool)>;
+  using ContextLostCallback =
+      base::OnceCallback<void(bool, error::ContextLostReason)>;
 
   // TODO(vikassoni): Refactor code to have seperate constructor for GL and
   // Vulkan and not initialize/use GL related info for vulkan and vice-versa.

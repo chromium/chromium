@@ -126,7 +126,8 @@ TEST_F(GpuServiceTest, LoseAllContexts) {
       /*shutdown_event=*/nullptr);
   gpu_service_remote.FlushForTesting();
 
-  gpu_service()->MaybeExitOnContextLost(/*synthetic_loss=*/false);
+  gpu_service()->MaybeExitOnContextLost(
+      /*synthetic_loss=*/false, gpu::error::ContextLostReason::kUnknown);
   EXPECT_TRUE(gpu_service()->IsExiting());
 }
 
