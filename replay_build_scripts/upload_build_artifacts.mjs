@@ -23,8 +23,18 @@ const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
   outputArchitecture()
 );
 
+// If this env var is set, we then we (also) use this as our cue that
+// we're building on a developer's machine, and will run some different
+// logic.
+const IS_LOCAL_BUILD = !!process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"];
+
 function uploadToAllBuckets(localPath, s3Path) {
-  for (const bucket of [S3Bucket, S3DevBucket]) {
+  const buckets = [S3DevBucket];
+  // If we're on a local machine, don't include the prod S3 bucket.
+  if (!IS_LOCAL_BUILD) {
+    buckets.push(S3Bucket);
+  }
+  for (const bucket of buckets) {
     spawnChecked(
       "aws",
       [
@@ -103,9 +113,11 @@ function prepareLinuxBinaries(buildId) {
 
   copyBuildFiles("out/Release", "replay-chromium");
 
-  spawnChecked("tar", ["cfz", buildArchive, "replay-chromium"], {
+  // Parallel build (requires xz), unlimited cores, w/ reasonable compression.
+  spawnChecked("tar", ["-c", "-I", "xz -2 -T0", "-f", buildArchive, "replay-chromium"], {
     stdio: "inherit",
   });
+
   spawnChecked("sudo", ["rm", "-rf", "replay-chromium"], { stdio: "inherit" });
   return [buildArchive];
 }
@@ -205,32 +217,25 @@ async function main(options) {
 
   log(`Pushing Artifacts to S3`);
 
-  const downloadUris = [];
-  for (const buildArchive of buildArchives) {
-    // Push build to S3.
-    uploadToAllBuckets(buildArchive, `builds/${buildArchive}`);
-    fs.unlinkSync(buildArchive);
+  const downloadUris = uploadArchives(buildArchives);
 
-    // Copy build to downloads folder.
-    const s3WebsiteUri = `s3://${S3Website}/downloads/${buildArchive}`;
-    spawnChecked(
-      "aws",
-      [
-        "s3",
-        "cp",
-        "--cache-control",
-        "max-age=3600",
-        `s3://${S3Bucket}/builds/${buildArchive}`,
-        s3WebsiteUri,
-      ],
-      { stdio: "inherit" }
-    );
-    downloadUris.push(s3WebsiteUri);
+  const symbolsFile = `${buildId}.symbols.tgz`;
+  uploadToAllBuckets(symbolsFile, `symbols/${symbolsFile}`);
+  fs.unlinkSync(symbolsFile);
+
+  for (const buildArchive of buildArchives) {
+    log(`BuildUploaded https://static.replay.io/downloads/${buildArchive}`);
   }
 
+  // Perform all buildkite-specific stuff
+  if (process.env["BUILDKITE"]) {
+    buildkiteStuff(downloadUris, platform, buildId);
+  }
+}
+
+function buildkiteStuff(downloadUris, platform, buildId) {
   const markdownDownloadList = downloadUris
-    .map((uri) =>
-      uri.replace("s3://recordreplay-website", "https://static.replay.io")
+    .map((uri) => uri.replace("s3://recordreplay-website", "https://static.replay.io")
     )
     .map((uri) => `* [${path.basename(uri)}](${uri})`)
     .join("\n");
@@ -244,14 +249,6 @@ async function main(options) {
       stdio: "inherit",
     }
   );
-
-  const symbolsFile = `${buildId}.symbols.tgz`;
-  uploadToAllBuckets(symbolsFile, `symbols/${symbolsFile}`);
-  fs.unlinkSync(symbolsFile);
-
-  for (const buildArchive of buildArchives) {
-    log(`BuildUploaded https://static.replay.io/downloads/${buildArchive}`);
-  }
 
   // Write the build_id artifact.  This is how buildkite agents will know which build
   // to download from S3: by first downloading this file.
@@ -267,6 +264,35 @@ async function main(options) {
   );
 }
 
+function uploadArchives(buildArchives) {
+  const downloadUris = [];
+  for (const buildArchive of buildArchives) {
+    // Push build to S3.
+    uploadToAllBuckets(buildArchive, `builds/${buildArchive}`);
+    fs.unlinkSync(buildArchive);
+
+    // Don't copy archives if we're on a local developer's machine.
+    if (!IS_LOCAL_BUILD) {
+      // Copy build to downloads folder.
+      const s3WebsiteUri = `s3://${S3Website}/downloads/${buildArchive}`;
+      spawnChecked(
+        "aws",
+        [
+          "s3",
+          "cp",
+          "--cache-control",
+          "max-age=3600",
+          `s3://${S3Bucket}/builds/${buildArchive}`,
+          s3WebsiteUri,
+        ],
+        { stdio: "inherit" }
+      );
+      downloadUris.push(s3WebsiteUri);
+    }
+  }
+  return downloadUris;
+}
+
 async function buildChromiumSymbols(options) {
   log(`ChromiumSymbols Start`);
 
@@ -278,16 +304,22 @@ async function buildChromiumSymbols(options) {
 
   assert(match);
   const buildId = match[1];
-  const expectedBuildId = computeBuildId(
-    "chromium",
-    readShortRevision(),
-    options.driverRevision
-  );
 
-  assert(
-    buildId == expectedBuildId,
-    `Build ID mismatch: expected ${expectedBuildId} got ${buildId}`
-  );
+  // Only do build id checking if we're in CI.  On local builds, we randomly generate
+  // the runtime revision to ensure s3 freshness.
+  if (!IS_LOCAL_BUILD) {
+    const expectedBuildId = computeBuildId(
+      "chromium",
+      readShortRevision(),
+      options.driverRevision,
+      options.buildIdExtension
+    );
+
+    assert(
+      buildId == expectedBuildId,
+      `Build ID mismatch: expected ${expectedBuildId} got ${buildId}`
+    );
+  }
 
   const libraries = [];
   const pdbs = [];
@@ -351,36 +383,41 @@ function getLinkerRevisionDate(revision = "HEAD", spawnOptions) {
   return new Date(dateString).toISOString().substring(0, 10).replace(/-/g, "");
 }
 
-function computeBuildId(runtimeName, runtimeRevision, driverRevision) {
+function computeBuildId(runtimeName, runtimeRevision, driverRevision, buildIdExtension) {
   // Download the archive for this driver revision, using the latest version
   // if no revision was specified.
-  const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
-  let downloadArchive = driverArchive;
-  if (driverRevision) {
-    downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision}.tgz`;
+  let driverJSONStr = "";
+  const driverJSONFile = `${currentPlatform()}-recordreplay.json`;
+
+  if (process.env["REPLAY_LOCAL_DRIVER_DIR"]) {
+    const driverJSONFileFull = path.resolve(process.env["REPLAY_LOCAL_DRIVER_DIR"], driverJSONFile);
+    driverJSONStr = fs.readFileSync(driverJSONFileFull, "utf8");
+  } else {
+    const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
+
+    const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
+    let downloadArchive = driverArchive;
+    if (driverRevision) {
+      downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision}.tgz`;
+    }
+    spawnChecked(
+      "curl",
+      [
+        `https://static.replay.io/downloads/${downloadArchive}`,
+        "-o",
+        driverArchive,
+      ],
+      { stdio: "inherit" }
+    );
+  
+    spawnChecked("tar", ["xf", driverArchive]);
+  
+    driverJSONStr = fs.readFileSync(driverJSONFile, "utf8")
+    fs.unlinkSync(driverArchive);
+    fs.unlinkSync(driverFile);
+    fs.unlinkSync(driverJSONFile);  
   }
-  spawnChecked(
-    "curl",
-    [
-      `https://static.replay.io/downloads/${downloadArchive}`,
-      "-o",
-      driverArchive,
-    ],
-    { stdio: "inherit" }
-  );
-
-  spawnChecked("tar", ["xf", driverArchive]);
-
-  const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
-  const driverJSON = `${currentPlatform()}-recordreplay.json`;
-
-  const { revision: archiveDriverRevision, date: driverDate } = JSON.parse(
-    fs.readFileSync(driverJSON, "utf8")
-  );
-
-  fs.unlinkSync(driverArchive);
-  fs.unlinkSync(driverFile);
-  fs.unlinkSync(driverJSON);
+  const { revision: archiveDriverRevision, date: driverDate } = JSON.parse(driverJSONStr);
 
   if (driverRevision) {
     assert(driverRevision == archiveDriverRevision);
@@ -397,7 +434,7 @@ function computeBuildId(runtimeName, runtimeRevision, driverRevision) {
       ? runtimeDate
       : driverDate;
 
-  return `${currentPlatform()}-${runtimeName}-${date}-${runtimeRevision}-${driverRevision}-buildkite`;
+  return `${currentPlatform()}-${runtimeName}-${date}-${runtimeRevision}-${driverRevision}${buildIdExtension}`;
 }
 
 async function buildSymbolsArchive(
@@ -431,4 +468,5 @@ async function buildSymbolsArchive(
   fs.unlinkSync(jsonFile);
 }
 
-main({ driverRevision: process.env.DRIVER_REVISION });
+const buildIdExtension = process.env["BUILDKITE"] ? "-buildkite" : (process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "");
+main({buildIdExtension, driverRevision: process.env.DRIVER_REVISION});

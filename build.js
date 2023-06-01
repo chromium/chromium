@@ -6,6 +6,11 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
+// If this env var is set, we then we (also) use this as our cue that
+// we're building on a developer's machine, and will run some different
+// logic.
+const IS_LOCAL_BUILD = !!process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"];
+
 const { REPLAY_LOCAL_DRIVER_DIR } = process.env;
 
 if (REPLAY_LOCAL_DRIVER_DIR && process.env.DRIVER_REVISION) {
@@ -68,7 +73,7 @@ if (REPLAY_LOCAL_DRIVER_DIR) {
 
 // Embed the driver in the source.
 console.log(
-  `Embedding ${REPLAY_LOCAL_DRIVER_DIR ? "LOCAL" : "DOWNLOADED"} driver...`
+  `Embedding ${REPLAY_LOCAL_DRIVER_DIR ? "LOCAL" : "DOWNLOADED"} driver from ${driverFile}...`
 );
 const driverContents = fs.readFileSync(driverFile);
 const { revision: driverRevision, date: driverDate } = JSON.parse(
@@ -86,8 +91,8 @@ for (let i = 0; i < driverContents.length; i++) {
   driverString += `\\${driverContents[i].toString(8)}`;
 }
 
-const buildkiteSuffix = process.env["BUILDKITE"] ? "-buildkite" : "";
-const buildId = `${computeBuildId(driverDate, driverRevision)}${buildkiteSuffix}`;
+const buildSuffix = process.env["BUILDKITE"] ? "-buildkite" : (process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "");
+const buildId = `${computeBuildId(driverDate, driverRevision)}${buildSuffix}`;
 
 fs.writeFileSync(
   `${__dirname}/base/record_replay_driver.cc`,
@@ -175,16 +180,25 @@ function getRevisionDate(revision = "HEAD", spawnOptions) {
  * When changing this: always keep all versions of this in sync, or else, builds will break.
  */
 function computeBuildId(driverDate, driverRevision) {
-  // Note: this build ID doesn't include revision etc. information for v8 or other inner git
-  // repositories. It would be good to either fix this or enforce that the chromium revision
-  // gets bumped whenever an inner repository changes.
-  const chromiumRevision = spawnChecked("git", [
-    "rev-parse",
-    "--short=12",
-    "HEAD",
-  ])
-    .stdout.toString()
-    .trim();
+  let chromiumRevision = "";
+  if (IS_LOCAL_BUILD) {
+    // For local builds, we just generate a random hash, in order to ensure s3 freshness.
+    const LOOKUP = "0123456789abcdef";
+    for (let i = 0; i < 12; i++) {
+      chromiumRevision += LOOKUP[Math.floor(Math.random() * 16)];
+    }
+  } else {
+    // Note: this build ID doesn't include revision etc. information for v8 or other inner git
+    // repositories. It would be good to either fix this or enforce that the chromium revision
+    // gets bumped whenever an inner repository changes.
+    chromiumRevision = spawnChecked("git", [
+      "rev-parse",
+      "--short=12",
+      "HEAD",
+    ])
+      .stdout.toString()
+      .trim();
+  }
 
   const runtimeDate = getRevisionDate();
 
