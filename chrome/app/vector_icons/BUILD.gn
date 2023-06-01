@@ -293,6 +293,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     sources += [
       "autocorrect_undo.icon",
       "full_restore_notification.icon",
+      "game_controls_add.icon",
       "game_controls_delete.icon",
       "game_controls_done.icon",
       "game_controls_dpad_keyboard.icon",

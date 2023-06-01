@@ -99,7 +99,7 @@ void EditingList::AddHeader(views::View* container) {
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnAddButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &kAddIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   header_container->AddChildView(ash::bubble_utils::CreateLabel(
@@ -109,7 +109,7 @@ void EditingList::AddHeader(views::View* container) {
   header_container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&EditingList::OnDoneButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &ash::kCheckIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
       // TODO(b/279117180): Update a11y string.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
