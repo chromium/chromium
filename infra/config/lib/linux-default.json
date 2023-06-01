@@ -80,7 +80,8 @@
     "linux-wpt-content-shell-leak-detection": "Ubuntu-22.04",
     "linux-wpt-fyi-rel": "Ubuntu-22.04",
     "linux-wpt-identity-fyi-rel": "Ubuntu-22.04",
-    "linux-wpt-input-fyi-rel": "Ubuntu-22.04"
+    "linux-wpt-input-fyi-rel": "Ubuntu-22.04",
+    "win-annotator-rel": "Ubuntu-22.04"
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
