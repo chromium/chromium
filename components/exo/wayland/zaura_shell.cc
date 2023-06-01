@@ -947,6 +947,10 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   if (state_type == chromeos::WindowStateType::kMinimized)
     AddState(&states, ZAURA_TOPLEVEL_STATE_MINIMIZED);
 
+  if (state_type == chromeos::WindowStateType::kPip) {
+    AddState(&states, ZAURA_TOPLEVEL_STATE_PIP);
+  }
+
   zaura_toplevel_send_configure(aura_toplevel_resource_, bounds.x(), bounds.y(),
                                 bounds.width(), bounds.height(), &states);
   wl_array_release(&states);
