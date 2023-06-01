@@ -51,6 +51,7 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
   init_params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
   init_params.debug_identifier = "dummyDebugName";
+  init_params.is_regular_profile_for_uma = true;
 
   return init_params;
 }

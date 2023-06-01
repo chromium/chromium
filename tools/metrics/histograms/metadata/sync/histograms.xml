@@ -1031,6 +1031,36 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.ModelTypeUpToDateTime{SyncModelType}" units="ms"
+    expires_after="2024-05-26">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Time from browser startup required to reach up-to-date download status for
+    {SyncModelType}. Recorded at most once per browser session if sync and the
+    data type is enabled (in either transport or full-sync mode) and there are
+    no errors. If the data type is waiting for updates for too long, it will be
+    recorded in Sync.ModelTypeWaitingForUpdatesTimeout.
+  </summary>
+  <token key="SyncModelType" variants="SyncModelType">
+    <variant name="" summary="all data types"/>
+  </token>
+</histogram>
+
+<histogram name="Sync.ModelTypeWaitingForUpdatesTimeout" enum="SyncModelTypes"
+    expires_after="2024-05-26">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded whenever a data type waits for updates during browser startup for
+    too long, and it hasn't reached up-to-date or error download status. Each
+    data type can be recorded at most once per browser session. Recorded only if
+    the data type (and the whole sync) is enabled and there are no errors.
+  </summary>
+</histogram>
+
 <histogram
     name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2{SyncModelType}"
     units="ms" expires_after="2024-04-24">

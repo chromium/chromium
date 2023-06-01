@@ -56,6 +56,12 @@ namespace syncer {
 
 namespace {
 
+// The time after browser startup to report sync configuration metrics.
+constexpr base::TimeDelta kRecordDownloadStatusTimeout = base::Seconds(30);
+
+constexpr char kModelTypeReachedUpToDateHistogramPrefix[] =
+    "Sync.ModelTypeUpToDateTime";
+
 // The initial state of sync, for the Sync.InitialState2 histogram. Even if
 // this value is CAN_START, sync startup might fail for reasons that we may
 // want to consider logging in the future, such as a passphrase needed for
@@ -75,8 +81,7 @@ enum SyncInitialState {
 
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                             bool is_sync_feature_requested,
-                            bool initial_sync_feature_setup_complete,
-                            bool is_regular_profile_for_uma) {
+                            bool initial_sync_feature_setup_complete) {
   SyncInitialState sync_state = CAN_START;
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
     sync_state = NOT_SIGNED_IN;
@@ -92,9 +97,7 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
   } else if (!initial_sync_feature_setup_complete) {
     sync_state = NEEDS_CONFIRMATION;
   }
-  if (is_regular_profile_for_uma) {
-    base::UmaHistogramEnumeration("Sync.InitialState2", sync_state);
-  }
+  base::UmaHistogramEnumeration("Sync.InitialState2", sync_state);
 }
 
 EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
@@ -260,15 +263,26 @@ void SyncServiceImpl::Initialize() {
     StopAndClear();
   }
 
-  // Note: We need to record the initial state *after* calling
-  // RegisterForAuthNotifications(), because before that the authenticated
-  // account isn't initialized.
-  RecordSyncInitialState(
-      GetDisableReasons(),
-      /*is_sync_feature_requested=*/
-      IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
-      user_settings_->IsInitialSyncFeatureSetupComplete(),
-      is_regular_profile_for_uma_);
+  if (is_regular_profile_for_uma_) {
+    // Note: We need to record the initial state *after* calling
+    // RegisterForAuthNotifications(), because before that the authenticated
+    // account isn't initialized.
+    RecordSyncInitialState(
+        GetDisableReasons(),
+        /*is_sync_feature_requested=*/
+        IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
+        user_settings_->IsInitialSyncFeatureSetupComplete());
+
+    ModelTypeSet data_types_to_track =
+        Intersection(GetRegisteredDataTypes(), ProtocolTypes());
+    if (!data_types_to_track.Empty()) {
+      download_status_recorder_ = std::make_unique<DownloadStatusRecorder>(
+          this,
+          base::BindOnce(&SyncServiceImpl::OnDownloadStatusRecorderFinished,
+                         weak_factory_.GetWeakPtr()),
+          data_types_to_track);
+    }
+  }
 
   if (base::FeatureList::IsEnabled(
           kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
@@ -1850,7 +1864,11 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     ModelType type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
+  // Download status doesn't make sense for non-real data types.
+  CHECK(IsRealDataType(type));
+
+  if (!IsLocalSyncEnabled() &&
+      !auth_manager_->IsActiveAccountInfoFullyLoaded()) {
     DVLOG(1) << "Waiting for refresh tokens to be loaded from the disk";
     // GetDisableReasons() won't be empty until then.
     return ModelTypeDownloadStatus::kWaitingForUpdates;
@@ -2133,6 +2151,106 @@ bool SyncServiceImpl::ShouldAutoStartSyncFeature() const {
 #else
   return IsLocalSyncEnabled();
 #endif
+}
+
+void SyncServiceImpl::OnDownloadStatusRecorderFinished() {
+  download_status_recorder_.reset();
+}
+
+SyncServiceImpl::DownloadStatusRecorder::DownloadStatusRecorder(
+    SyncService* sync_service,
+    base::OnceClosure on_finished_callback,
+    ModelTypeSet data_types_to_track)
+    : sync_service_(sync_service),
+      on_finished_callback_(std::move(on_finished_callback)),
+      data_types_to_track_(data_types_to_track) {
+  CHECK(sync_service_);
+  CHECK(on_finished_callback_);
+  CHECK(!data_types_to_track_.Empty());
+  sync_service_->AddObserver(this);
+  startup_metrics_timer_.Start(
+      FROM_HERE, kRecordDownloadStatusTimeout, this,
+      &SyncServiceImpl::DownloadStatusRecorder::OnTimeout);
+}
+
+SyncServiceImpl::DownloadStatusRecorder::~DownloadStatusRecorder() {
+  sync_service_->RemoveObserver(this);
+}
+
+void SyncServiceImpl::DownloadStatusRecorder::OnStateChanged(
+    SyncService* service) {
+  CHECK_EQ(sync_service_, service);
+
+  // Report download status metrics only during browser startup.
+  if (!startup_metrics_timer_.IsRunning()) {
+    return;
+  }
+
+  // |data_types_to_track_| must not be empty if |on_finished_callback_| deletes
+  // the current object.
+  CHECK(!data_types_to_track_.Empty());
+
+  // Types which reached kUpToDate or kError download status. These types will
+  // be removed from tracked data types.
+  ModelTypeSet types_to_remove_from_tracking;
+
+  base::TimeTicks timer_start_time = startup_metrics_timer_.desired_run_time() -
+                                     startup_metrics_timer_.GetCurrentDelay();
+  base::TimeDelta time_since_startup =
+      base::TimeTicks::Now() - timer_start_time;
+  for (ModelType type : data_types_to_track_) {
+    ModelTypeDownloadStatus status = sync_service_->GetDownloadStatusFor(type);
+    if (status == ModelTypeDownloadStatus::kWaitingForUpdates) {
+      continue;
+    }
+
+    // Remove |type| from tracking if it has reached kUpToDate or kError state.
+    // Histograms are reported for only kUpToDate status.
+    types_to_remove_from_tracking.Put(type);
+    if (status == ModelTypeDownloadStatus::kUpToDate) {
+      std::string histogram_prefix =
+          kModelTypeReachedUpToDateHistogramPrefix + std::string(".");
+      base::UmaHistogramMediumTimes(
+          histogram_prefix + ModelTypeToHistogramSuffix(type),
+          time_since_startup);
+    }
+  }
+  data_types_to_track_.RemoveAll(types_to_remove_from_tracking);
+
+  if (data_types_to_track_.Empty()) {
+    if (!sync_service_->GetActiveDataTypes().Empty()) {
+      // This histogram will be reported at most once per browser session only
+      // if there is at least one active data type (to exclude cases when sync
+      // is disabled).
+      base::UmaHistogramMediumTimes(kModelTypeReachedUpToDateHistogramPrefix,
+                                    time_since_startup);
+    }
+    std::move(on_finished_callback_).Run();
+  }
+}
+
+void SyncServiceImpl::DownloadStatusRecorder::OnSyncShutdown(
+    SyncService* service) {
+  CHECK_EQ(service, sync_service_);
+  startup_metrics_timer_.Reset();
+  std::move(on_finished_callback_).Run();
+}
+
+void SyncServiceImpl::DownloadStatusRecorder::OnTimeout() {
+  // Log if some data types are still waiting for updates.
+  for (ModelType type : data_types_to_track_) {
+    // Ignore kError state for the purpose of the histogram. This is required to
+    // filter out cases when data types are not running, e.g. due to transport
+    // mode or because there is no signed-in user.
+    if (sync_service_->GetDownloadStatusFor(type) ==
+        ModelTypeDownloadStatus::kWaitingForUpdates) {
+      base::UmaHistogramEnumeration("Sync.ModelTypeWaitingForUpdatesTimeout",
+                                    ModelTypeHistogramValue(type));
+    }
+  }
+
+  // Delete current object after all the histograms are recorded.
+  std::move(on_finished_callback_).Run();
 }
 
 }  // namespace syncer

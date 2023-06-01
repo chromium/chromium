@@ -206,7 +206,10 @@ class SyncService : public KeyedService {
   };
 
   enum class ModelTypeDownloadStatus {
-    // State is unknown or there are updates to download from the server.
+    // State is unknown or there are updates to download from the server. Data
+    // types will be in this state until sync engine is initialized (or there is
+    // a reason to disable sync). Note that sync initialization may be deferred,
+    // the callers may use StartSyncFlare to start syncing ASAP.
     kWaitingForUpdates = 0,
 
     // There are no known server-side changes to download (local data is
@@ -513,6 +516,9 @@ class SyncService : public KeyedService {
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) = 0;
 
+  // Returns current download status for the given |type|. The caller can use
+  // SyncServiceObserver::OnStateChanged() to track status changes. Must be
+  // called for real data types only.
   virtual ModelTypeDownloadStatus GetDownloadStatusFor(
       ModelType type) const = 0;
 

@@ -204,6 +204,7 @@ class SyncServiceImplTest : public ::testing::Test {
     SyncStatus status = engine()->GetDetailedStatus();
     status.notifications_enabled = true;
     engine()->SetDetailedStatus(status);
+    service()->OnInvalidationStatusChanged();
   }
 
   void TriggerPassphraseRequired() {
@@ -1381,13 +1382,19 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatusWhenSyncDisabled) {
+  base::HistogramTester histogram_tester;
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignIn();
   CreateService();
   InitializeForNthSync();
 
+  // OnInvalidationStatusChanged() is used to only notify observers. This will
+  // cause the histogram recorder to check data types status.
+  service()->OnInvalidationStatusChanged();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kError);
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
+                                    /*expected_count=*/0);
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
@@ -1434,6 +1441,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
+  base::HistogramTester histogram_tester;
   SignIn();
   CreateService();
   InitializeForNthSync(/*run_until_idle=*/false);
@@ -1451,6 +1459,12 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kError);
+
+  SetInvalidationsEnabled();
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
+                                    /*expected_count=*/1);
 }
 
 TEST_F(SyncServiceImplTest, ShouldWaitUntilNoInvalidations) {
@@ -1482,6 +1496,7 @@ TEST_F(SyncServiceImplTest, ShouldWaitForInitializedInvalidations) {
 }
 
 TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
+  base::HistogramTester histogram_tester;
   SignIn();
   CreateService();
   InitializeForNthSync();
@@ -1489,13 +1504,29 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
   ASSERT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kUpToDate);
 
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
+                                    /*expected_count=*/1);
+
+  // OnInvalidationStatusChanged() is used to only notify observers, this is
+  // required for metrics since they are calculated only when SyncService state
+  // changes.
   engine()->SetPollIntervalElapsed(true);
+  service()->OnInvalidationStatusChanged();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
 
   engine()->SetPollIntervalElapsed(false);
+  service()->OnInvalidationStatusChanged();
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kUpToDate);
+
+  // The histograms should be recorded only once.
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime.BOOKMARK",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
+                                    /*expected_count=*/1);
 }
 
 }  // namespace

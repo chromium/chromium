@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
@@ -259,6 +261,37 @@ class SyncServiceImpl : public SyncService,
     kMaxValue = kResetLocalData
   };
 
+  // Records UMA histograms related to download status during browser startup.
+  class DownloadStatusRecorder : public SyncServiceObserver {
+   public:
+    DownloadStatusRecorder(SyncService* sync_service,
+                           base::OnceClosure on_finished_callback,
+                           ModelTypeSet data_types_to_track);
+    DownloadStatusRecorder(const DownloadStatusRecorder&) = delete;
+    DownloadStatusRecorder& operator=(const DownloadStatusRecorder&) = delete;
+    ~DownloadStatusRecorder() override;
+
+    // SyncServiceObserver implementation.
+    void OnStateChanged(SyncService* service) override;
+    void OnSyncShutdown(SyncService* service) override;
+
+   private:
+    void OnTimeout();
+
+    raw_ptr<SyncService> sync_service_ = nullptr;
+
+    // Set on browser startup to report metrics related to sync configuration.
+    base::OneShotTimer startup_metrics_timer_;
+
+    // Used to notify once all the browser startup related histograms are
+    // recorded.
+    base::OnceClosure on_finished_callback_;
+
+    // Used to track data types they are in kWaitingForUpdates download status
+    // during browser startup. Used for metrics only.
+    ModelTypeSet data_types_to_track_;
+  };
+
   // Callbacks for SyncAuthManager.
   void AccountStateChanged();
   void CredentialsChanged();
@@ -350,6 +383,9 @@ class SyncServiceImpl : public SyncService,
   // ChromeOS Ash). In practice it means SyncRequested and FirstSetupComplete
   // are set automatically.
   bool ShouldAutoStartSyncFeature() const;
+
+  // Clean up download status recorder.
+  void OnDownloadStatusRecorderFinished();
 
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
@@ -472,6 +508,9 @@ class SyncServiceImpl : public SyncService,
   // Cleared on the first start attempt, regardless of success and who triggered
   // that attempt (the posted task or a new TryStart()).
   base::Time deferring_first_start_since_;
+
+  // Used to track download status changes during browser startup.
+  std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
 
   // This weak factory invalidates its issued pointers when Sync is disabled.
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};
