@@ -1127,8 +1127,11 @@ void WidgetInputHandlerManager::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate) {
+  if (!input_handler_proxy_) {
+    return;
+  }
+
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
-  DCHECK(input_handler_proxy_);
   input_handler_proxy_->UpdateBrowserControlsState(constraints, current,
                                                    animate);
 }
