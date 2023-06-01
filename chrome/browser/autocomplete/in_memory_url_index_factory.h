@@ -8,7 +8,8 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
-template <typename T> struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 class InMemoryURLIndex;
@@ -20,7 +21,7 @@ class InMemoryURLIndexFactory : public ProfileKeyedServiceFactory {
   static InMemoryURLIndexFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<InMemoryURLIndexFactory>;
+  friend base::NoDestructor<InMemoryURLIndexFactory>;
 
   InMemoryURLIndexFactory();
   ~InMemoryURLIndexFactory() override;

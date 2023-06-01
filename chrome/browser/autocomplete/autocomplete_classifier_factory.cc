@@ -31,7 +31,8 @@ AutocompleteClassifier* AutocompleteClassifierFactory::GetForProfile(
 
 // static
 AutocompleteClassifierFactory* AutocompleteClassifierFactory::GetInstance() {
-  return base::Singleton<AutocompleteClassifierFactory>::get();
+  static base::NoDestructor<AutocompleteClassifierFactory> instance;
+  return instance.get();
 }
 
 // static
@@ -64,8 +65,7 @@ AutocompleteClassifierFactory::AutocompleteClassifierFactory()
   DependsOn(RemoteSuggestionsServiceFactory::GetInstance());
 }
 
-AutocompleteClassifierFactory::~AutocompleteClassifierFactory() {
-}
+AutocompleteClassifierFactory::~AutocompleteClassifierFactory() = default;
 
 bool AutocompleteClassifierFactory::ServiceIsNULLWhileTesting() const {
   return true;
