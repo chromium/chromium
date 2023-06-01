@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/exo/wayland/wayland_display_output.h"
 
+#include <aura-shell-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <cstdint>
 
@@ -77,6 +78,11 @@ class ShellClientData : public test::TestClient::CustomData {
 
   void Pin() {
     zcr_remote_surface_v2_pin(remote_surface_.get(), /*trusted=*/true);
+  }
+
+  void UnsetSnap() {
+    zaura_toplevel_unset_snap(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client_->aura_shell(), xdg_toplevel_.get()));
   }
 
   // Common to both xdg toplevel and remote surface.
@@ -258,6 +264,35 @@ TEST_F(RemoteShellTest, DestroyRootSurfaceBeforeCommit) {
 
   EXPECT_FALSE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
                                                                   surface_key));
+}
+
+// Tests UnsetSnap() w/o attaching buffer doesn't crash (b/278147793).
+TEST_F(RemoteShellTest, UnsetSnapBeforeCommit) {
+  test::ResourceKey surface_key;
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto data = std::make_unique<ShellClientData>(client);
+    auto* data_ptr = data.get();
+    client->set_data(std::move(data));
+    data_ptr->CreateXdgToplevel();
+    surface_key = data_ptr->GetSurfaceResourceKey();
+  });
+  EXPECT_TRUE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
+                                                                 surface_key));
+  // Verify the widget is not created yet.
+  Surface* surface = test::server_util::GetUserDataForResource<Surface>(
+      server_.get(), surface_key);
+  ShellSurfaceBase* shell_surface_base =
+      static_cast<ShellSurfaceBase*>(surface->GetDelegateForTesting());
+  ASSERT_TRUE(shell_surface_base);
+  EXPECT_FALSE(shell_surface_base->GetWidget());
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data_ptr = client->GetDataAs<ShellClientData>();
+    data_ptr->UnsetSnap();
+  });
+  EXPECT_TRUE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
+                                                                 surface_key));
 }
 
 }  // namespace exo::wayland

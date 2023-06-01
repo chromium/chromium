@@ -544,8 +544,10 @@ void ShellSurfaceBase::SetSnapSecondary(float snap_ratio) {
 }
 
 void ShellSurfaceBase::UnsetSnap() {
-  CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone,
-             chromeos::kDefaultSnapRatio);
+  if (widget_ && widget_->GetNativeWindow()) {
+    CommitSnap(widget_->GetNativeWindow(), chromeos::SnapDirection::kNone,
+               chromeos::kDefaultSnapRatio);
+  }
 }
 
 void ShellSurfaceBase::SetCanGoBack() {
