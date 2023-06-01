@@ -1220,6 +1220,10 @@
       depends_on: ["CSSTextWrap"],
     },
     {
+      name: "CSSWordBoundaryDetection",
+      status: "test",
+    },
+    {
       name: "CSSZoom",
       status: "stable",
     },
