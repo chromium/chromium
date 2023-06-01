@@ -99,9 +99,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   // container.
   Member<LayoutMultiColumnSpannerPlaceholder> spanner_placeholder_;
 
-  LayoutUnit override_logical_width_;
-  LayoutUnit override_logical_height_;
-
   bool has_override_containing_block_content_logical_width_ : 1;
   bool has_override_containing_block_content_logical_height_ : 1;
   bool has_previous_content_box_rect_ : 1;
@@ -868,11 +865,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool StretchBlockSizeIfAuto() const;
   bool HasOverrideLogicalHeight() const;
   bool HasOverrideLogicalWidth() const;
-  void SetOverrideLogicalHeight(LayoutUnit);
-  void SetOverrideLogicalWidth(LayoutUnit);
-  void ClearOverrideLogicalHeight();
-  void ClearOverrideLogicalWidth();
-  void ClearOverrideSize();
 
   LayoutUnit OverrideContentLogicalWidth() const;
   LayoutUnit OverrideContentLogicalHeight() const;

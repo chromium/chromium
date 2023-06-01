@@ -126,16 +126,10 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout() {
                                          LayoutUnit(viewport_.height() * zoom))
                                 .ConvertToLogical(style.GetWritingMode());
 
-  if (!RuntimeEnabledFeatures::LayoutNewSVGForeignObjectEntryEnabled()) {
-    SetOverrideLogicalWidth(zoomed_size.inline_size);
-    SetOverrideLogicalHeight(zoomed_size.block_size);
-  }
-
   // Use the zoomed version of the viewport as the location, because we will
   // interpose a transform that "unzooms" the effective zoom to let the children
   // of the foreign object exist with their specified zoom.
-  gfx::PointF zoomed_location =
-      gfx::ScalePoint(viewport_.origin(), style.EffectiveZoom());
+  gfx::PointF zoomed_location = gfx::ScalePoint(viewport_.origin(), zoom);
 
   // Set box origin to the foreignObject x/y translation, so positioned objects
   // in XHTML content get correct positions. A regular LayoutBoxModelObject
@@ -144,17 +138,13 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout() {
   // specifying them through CSS.
   overridden_location_ = LayoutPoint(zoomed_location);
 
-  if (RuntimeEnabledFeatures::LayoutNewSVGForeignObjectEntryEnabled()) {
-    NGConstraintSpaceBuilder builder(
-        style.GetWritingMode(), style.GetWritingDirection(),
-        /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
-    builder.SetAvailableSize(zoomed_size);
-    builder.SetIsFixedInlineSize(true);
-    builder.SetIsFixedBlockSize(true);
-    NGBlockNode(this).Layout(builder.ToConstraintSpace());
-  } else {
-    UpdateNGBlockLayout();
-  }
+  NGConstraintSpaceBuilder builder(
+      style.GetWritingMode(), style.GetWritingDirection(),
+      /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
+  builder.SetAvailableSize(zoomed_size);
+  builder.SetIsFixedInlineSize(true);
+  builder.SetIsFixedBlockSize(true);
+  NGBlockNode(this).Layout(builder.ToConstraintSpace());
 
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   const bool bounds_changed = old_frame_rect != FrameRect();

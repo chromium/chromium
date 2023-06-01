@@ -2061,14 +2061,6 @@
       status: "stable",
     },
     {
-      name: "LayoutNewSVGForeignObjectEntry",
-      status: "stable",
-    },
-    {
-      name: "LayoutNewSVGTextEntry",
-      status: "stable",
-    },
-    {
       name: "LayoutNewTextAreaScrollbar",
       status: "stable",
     },

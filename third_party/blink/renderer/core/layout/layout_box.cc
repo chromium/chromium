@@ -463,8 +463,6 @@ void BoxLayoutExtraInput::Trace(Visitor* visitor) const {
 
 LayoutBoxRareData::LayoutBoxRareData()
     : spanner_placeholder_(nullptr),
-      override_logical_width_(-1),
-      override_logical_height_(-1),
       // TODO(rego): We should store these based on physical direction.
       has_override_containing_block_content_logical_width_(false),
       has_override_containing_block_content_logical_height_(false),
@@ -512,7 +510,6 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
 
 void LayoutBox::WillBeDestroyed() {
   NOT_DESTROYED();
-  ClearOverrideSize();
   ClearOverrideContainingBlockContentSize();
 
   if (IsOutOfFlowPositioned())
@@ -680,14 +677,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
   UpdateShapeOutsideInfoAfterStyleChange(*Style(), old_style);
   UpdateGridPositionAfterStyleChange(old_style);
-
-  // When we're no longer a flex item because we're now absolutely positioned,
-  // we need to clear the override size so we're not affected by it anymore.
-  // This technically covers too many cases (even when out-of-flow did not
-  // change) but that should be harmless.
-  if (IsOutOfFlowPositioned() && Parent() &&
-      Parent()->StyleRef().IsDisplayFlexibleOrGridBox())
-    ClearOverrideSize();
 
   if (old_style) {
     // Regular column content (i.e. non-spanners) have a hook into the flow
@@ -2042,7 +2031,7 @@ LayoutUnit LayoutBox::OverrideLogicalWidth() const {
   DCHECK(HasOverrideLogicalWidth());
   if (extra_input_ && extra_input_->override_inline_size)
     return *extra_input_->override_inline_size;
-  return rare_data_->override_logical_width_;
+  return kIndefiniteSize;
 }
 
 LayoutUnit LayoutBox::OverrideLogicalHeight() const {
@@ -2050,7 +2039,7 @@ LayoutUnit LayoutBox::OverrideLogicalHeight() const {
   DCHECK(HasOverrideLogicalHeight());
   if (extra_input_ && extra_input_->override_block_size)
     return *extra_input_->override_block_size;
-  return rare_data_->override_logical_height_;
+  return kIndefiniteSize;
 }
 
 bool LayoutBox::IsOverrideLogicalHeightDefinite() const {
@@ -2070,50 +2059,12 @@ bool LayoutBox::StretchBlockSizeIfAuto() const {
 
 bool LayoutBox::HasOverrideLogicalHeight() const {
   NOT_DESTROYED();
-  if (extra_input_ && extra_input_->override_block_size)
-    return true;
-  return rare_data_ && rare_data_->override_logical_height_ != -1;
+  return extra_input_ && extra_input_->override_block_size;
 }
 
 bool LayoutBox::HasOverrideLogicalWidth() const {
   NOT_DESTROYED();
-  if (extra_input_ && extra_input_->override_inline_size)
-    return true;
-  return rare_data_ && rare_data_->override_logical_width_ != -1;
-}
-
-void LayoutBox::SetOverrideLogicalHeight(LayoutUnit height) {
-  NOT_DESTROYED();
-  DCHECK(!extra_input_);
-  DCHECK_GE(height, 0);
-  EnsureRareData().override_logical_height_ = height;
-}
-
-void LayoutBox::SetOverrideLogicalWidth(LayoutUnit width) {
-  NOT_DESTROYED();
-  DCHECK(!extra_input_);
-  DCHECK_GE(width, 0);
-  EnsureRareData().override_logical_width_ = width;
-}
-
-void LayoutBox::ClearOverrideLogicalHeight() {
-  NOT_DESTROYED();
-  DCHECK(!extra_input_);
-  if (rare_data_)
-    rare_data_->override_logical_height_ = LayoutUnit(-1);
-}
-
-void LayoutBox::ClearOverrideLogicalWidth() {
-  NOT_DESTROYED();
-  DCHECK(!extra_input_);
-  if (rare_data_)
-    rare_data_->override_logical_width_ = LayoutUnit(-1);
-}
-
-void LayoutBox::ClearOverrideSize() {
-  NOT_DESTROYED();
-  ClearOverrideLogicalHeight();
-  ClearOverrideLogicalWidth();
+  return extra_input_ && extra_input_->override_inline_size;
 }
 
 LayoutUnit LayoutBox::OverrideContentLogicalWidth() const {
