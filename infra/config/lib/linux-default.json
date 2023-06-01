@@ -58,6 +58,7 @@
     "linux-cfm-rel": "Ubuntu-22.04",
     "linux-chromeos-annotator-rel": "Ubuntu-22.04",
     "linux-chromeos-dbg": "Ubuntu-22.04",
+    "linux-cr23-rel": "Ubuntu-22.04",
     "linux-extended-tracing-rel": "Ubuntu-22.04",
     "linux-lacros-tester-rel": "Ubuntu-22.04",
     "linux-local-ssd-rel-dev": "Ubuntu-22.04",
