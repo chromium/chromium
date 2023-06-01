@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
-#import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_items.h"
@@ -242,9 +241,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   BOOL _faviconMetricLogged;
 }
 
-// Object handling passwords export operations.
-@property(nonatomic, strong) PasswordExporter* passwordExporter;
-
 // Current passwords search term.
 @property(nonatomic, copy) NSString* searchTerm;
 
@@ -275,10 +271,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
-
-// On-device encryption state according to the sync service.
-@property(nonatomic, assign)
-    OnDeviceEncryptionState onDeviceEncryptionStateInModel;
 
 // Return YES if the search bar should be enabled.
 @property(nonatomic, assign) BOOL shouldEnableSearchBar;
@@ -323,9 +315,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
     [self updateUIForEditState];
   }
-  // This value represents the state in the UI. It is set to
-  // `OnDeviceEncryptionStateNotShown` because nothing is currently shown.
-  _onDeviceEncryptionStateInModel = OnDeviceEncryptionStateNotShown;
   return self;
 }
 
