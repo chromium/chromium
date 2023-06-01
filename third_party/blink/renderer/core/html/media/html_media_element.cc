@@ -1498,9 +1498,7 @@ void HTMLMediaElement::StartPlayerLoad() {
   }
 
   LocalFrame* frame = LocalFrameForPlayer();
-  // TODO(srirama.m): Figure out how frame can be null when
-  // coming from executeDeferredLoad()
-  if (!frame) {
+  if (!frame || !GetExecutionContext()) {
     MediaLoadingFailed(
         WebMediaPlayer::kNetworkStateFormatError,
         BuildElementErrorMessage("Player load failure: document has no frame"));
