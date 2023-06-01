@@ -75,7 +75,8 @@
     "linux-rel-jammy-dev": "Ubuntu-22.04",
     "linux-remote-ssd-rel-dev": "Ubuntu-22.04",
     "linux-upload-perfetto": "Ubuntu-22.04",
-    "linux-wpt-content-shell-asan-fyi-rel": "Ubuntu-22.04"
+    "linux-wpt-content-shell-asan-fyi-rel": "Ubuntu-22.04",
+    "linux-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "try": {
     "android-12-x64-rel": "Ubuntu-22.04",
