@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
@@ -796,8 +797,7 @@
 }
 
 - (void)fakeboxTapped {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFakebox
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kFakebox, [self isStartSurface]);
   [self focusFakebox];
 }
 
@@ -1221,30 +1221,24 @@
 #pragma mark - NewTabPageMetricsDelegate
 
 - (void)recentTabTileOpened {
-  [self.NTPMetricsRecorder
-      recordHomeActionType:IOSHomeActionType::kReturnToRecentTab
-            onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kReturnToRecentTab,
+                   [self isStartSurface]);
 }
 
 - (void)feedArticleOpened {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kFeedCard
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kFeedCard, [self isStartSurface]);
 }
 
 - (void)mostVisitedTileOpened {
-  [self.NTPMetricsRecorder
-      recordHomeActionType:IOSHomeActionType::kMostVisitedTile
-            onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kMostVisitedTile, [self isStartSurface]);
 }
 
 - (void)shortcutTileOpened {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kShortcuts
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kShortcuts, [self isStartSurface]);
 }
 
 - (void)setUpListItemOpened {
-  [self.NTPMetricsRecorder recordHomeActionType:IOSHomeActionType::kSetUpList
-                                 onStartSurface:[self isStartSurface]];
+  RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner

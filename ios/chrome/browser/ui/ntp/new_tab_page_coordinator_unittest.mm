@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"

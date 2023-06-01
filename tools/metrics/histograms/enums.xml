@@ -54251,8 +54251,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Return to Recent Tab tile"/>
   <int value="3" label="Feed Card"/>
-  <int value="4" label="Fake Omnibox"/>
+  <int value="4" label="Fake Omnibox tap"/>
   <int value="5" label="Set Up List"/>
+  <int value="6" label="Omnibox navigation"/>
 </enum>
 
 <enum name="IOSInspectConsoleAction">
