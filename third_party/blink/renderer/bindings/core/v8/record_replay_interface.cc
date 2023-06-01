@@ -2658,7 +2658,7 @@ async function getCachedResource(url, hash) {
 
   log(`fetching sourcemap resource ${key}`);
 
-  const res = await fetchText(key);
+  const res = await fetchText(url);
   cache[key] = res;
   return res;
 }
