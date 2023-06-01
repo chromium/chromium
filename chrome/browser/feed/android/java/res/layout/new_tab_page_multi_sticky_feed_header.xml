@@ -46,8 +46,8 @@ found in the LICENSE file.
         android:layout_height="@dimen/feed_header_tab_layout_height"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/feed_header_tab_list_view_top_bottom_margin"
+        android:layout_marginBottom="@dimen/feed_header_tab_list_view_top_bottom_margin"
         style="@style/NtpHeaderTabLayoutStyle" />
 
     <TextView

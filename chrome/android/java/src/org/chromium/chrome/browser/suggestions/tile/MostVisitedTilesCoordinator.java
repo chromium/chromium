@@ -41,7 +41,8 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * The maximum number of tiles to try and fit in a row. On smaller screens, there may not be
      * enough space to fit all of them.
      */
-    private static final int MAX_TILE_COLUMNS_FOR_GRID = 4;
+    @VisibleForTesting
+    public static final int MAX_TILE_COLUMNS_FOR_GRID = 4;
 
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;

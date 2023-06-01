@@ -113,7 +113,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
         // Determine how much padding to use between and around the tiles.
         int gridWidthMinusColumns = Math.max(0, totalWidth - numColumns * childWidth);
         Pair<Integer, Integer> gridProperties =
-                computeHorizontalDimensions(true, gridWidthMinusColumns, numColumns);
+                computeHorizontalDimensions(gridWidthMinusColumns, numColumns);
         int gridStart = gridProperties.first;
         int horizontalSpacing = gridProperties.second;
 
@@ -150,14 +150,12 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     }
 
     /**
-     * @param spreadTiles Whether to spread the tiles with the same space between and around them.
      * @param availableWidth The space available to spread between and around the tiles.
      * @param numColumns The number of columns to be organised.
      * @return The [gridStart, horizontalSpacing] pair of dimensions.
      */
     @VisibleForTesting
-    Pair<Integer, Integer> computeHorizontalDimensions(
-            boolean spreadTiles, int availableWidth, int numColumns) {
+    Pair<Integer, Integer> computeHorizontalDimensions(int availableWidth, int numColumns) {
         int gridStart;
         float horizontalSpacing;
         if (mIsMultiColumnFeedOnTabletEnabled) {
@@ -167,25 +165,22 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
                     : mTileViewPortraitEdgePaddingTablet;
             horizontalSpacing = (availableWidth - gridStart * 2) / (numColumns - 1);
         } else {
-            if (spreadTiles) {
-                // Identically sized spacers are added both between and around the tiles.
-                int spacerCount = numColumns + 1;
-                horizontalSpacing = (float) availableWidth / spacerCount;
-                gridStart = Math.round(horizontalSpacing);
-                if (horizontalSpacing < mMinHorizontalSpacing) {
-                    return computeHorizontalDimensions(false, availableWidth, numColumns);
-                }
+            // Identically sized spacers are added both between and around the tiles.
+            int spacerCount = numColumns + 1;
+            horizontalSpacing = (float) availableWidth / spacerCount;
+            gridStart = Math.round(horizontalSpacing);
+        }
+
+        if (horizontalSpacing < mMinHorizontalSpacing
+                || horizontalSpacing > mMaxHorizontalSpacing) {
+            // Ensure column spacing isn't greater than mMaxHorizontalSpacing.
+            long gridSidePadding = availableWidth - (long) mMaxHorizontalSpacing * (numColumns - 1);
+            if (gridSidePadding > 0) {
+                horizontalSpacing = mMaxHorizontalSpacing;
+                gridStart = (int) (gridSidePadding / 2);
             } else {
-                // Ensure column spacing isn't greater than mMaxHorizontalSpacing.
-                long gridSidePadding =
-                        availableWidth - (long) mMaxHorizontalSpacing * (numColumns - 1);
-                if (gridSidePadding > 0) {
-                    horizontalSpacing = mMaxHorizontalSpacing;
-                    gridStart = (int) (gridSidePadding / 2);
-                } else {
-                    horizontalSpacing = (float) availableWidth / Math.max(1, numColumns - 1);
-                    gridStart = 0;
-                }
+                horizontalSpacing = (float) availableWidth / Math.max(1, numColumns - 1);
+                gridStart = 0;
             }
         }
 
@@ -217,6 +212,16 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     @Override
     public void setIsMultiColumnFeedOnTabletEnabled(boolean isMultiColumnFeedOnTabletEnabled) {
         mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
+    }
+
+    @VisibleForTesting
+    public int getMinHorizontalSpacingForTesting() {
+        return mMinHorizontalSpacing;
+    }
+
+    @VisibleForTesting
+    public int getMaxHorizontalSpacingForTesting() {
+        return mMaxHorizontalSpacing;
     }
 
     // TODO(crbug.com/1329288): Remove this method when the Feed position experiment is cleaned up.
