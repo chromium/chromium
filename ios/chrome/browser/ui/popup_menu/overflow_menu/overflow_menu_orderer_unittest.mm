@@ -49,11 +49,11 @@ class OverflowMenuOrdererTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  void InitializeOverflowMenuOrderer() {
+  void InitializeOverflowMenuOrderer(BOOL isIncognito) {
     CreatePrefs();
 
     overflow_menu_orderer_ =
-        [[OverflowMenuOrderer alloc] initWithIsIncognito:NO];
+        [[OverflowMenuOrderer alloc] initWithIsIncognito:isIncognito];
 
     overflow_menu_orderer_.localStatePrefs = prefs_.get();
 
@@ -61,8 +61,9 @@ class OverflowMenuOrdererTest : public PlatformTest {
   }
 
   void InitializeOverflowMenuOrdererWithRanking(
+      BOOL isIncognito,
       NSArray<OverflowMenuDestination*>* ranking) {
-    InitializeOverflowMenuOrderer();
+    InitializeOverflowMenuOrderer(isIncognito);
     [overflow_menu_orderer_ sortedDestinationsFromCarouselDestinations:ranking];
   }
 
@@ -133,7 +134,7 @@ class OverflowMenuOrdererTest : public PlatformTest {
 
 // Tests that the ranking pref gets populated after sorting once.
 TEST_F(OverflowMenuOrdererTest, StoresInitialRanking) {
-  InitializeOverflowMenuOrderer();
+  InitializeOverflowMenuOrderer(NO);
   NSArray<OverflowMenuDestination*>* sample_destinations = SampleDestinations();
   [overflow_menu_orderer_
       sortedDestinationsFromCarouselDestinations:sample_destinations];
@@ -197,7 +198,7 @@ TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationInMiddleOfRanking) {
 
   // Creates `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   // Same as `current_destinations`, but has a new element,
   // `all_destinations[7]`, which should eventually be inserted starting at
@@ -234,7 +235,7 @@ TEST_F(OverflowMenuOrdererTest, InsertsNewDestinationsInMiddleOfRanking) {
 
   // Initializes `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   // Same as `current_destinations`, but has new elements (`all_destinations[6]`
   // and `all_destinations[7]`) inserted starting at position 4 in the carousel
@@ -274,7 +275,7 @@ TEST_F(OverflowMenuOrdererTest, InsertsAndRemovesNewDestinationsInRanking) {
 
   // Initializes `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   NSArray<OverflowMenuDestination*>* updated_destinations = @[
     // NOTE: all_destinations[0] was removed
@@ -315,7 +316,7 @@ TEST_F(OverflowMenuOrdererTest, MoveBadgedDestinationsInRanking) {
 
   // Initializes `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   NSArray<OverflowMenuDestination*>* updated_destinations = @[
     all_destinations[0],
@@ -356,7 +357,7 @@ TEST_F(OverflowMenuOrdererTest, PriorityToErrorBadgeOverOtherBadges) {
   all_destinations[3].badge = BadgeTypePromo;
 
   // Initializes `OverflowMenuOrderer`.
-  InitializeOverflowMenuOrderer();
+  InitializeOverflowMenuOrderer(NO);
 
   // Set the initial ranking to `current_destinations`.
   NSArray<OverflowMenuDestination*>* initial_ranking = [overflow_menu_orderer_
@@ -384,7 +385,7 @@ TEST_F(OverflowMenuOrdererTest, DontMoveBadgedDestinationWithGoodRanking) {
   all_destinations[0].badge = BadgeTypePromo;
 
   // Initializes `OverflowMenuOrderer`.
-  InitializeOverflowMenuOrderer();
+  InitializeOverflowMenuOrderer(NO);
 
   // Set the initial ranking to `current_destinations`.
   NSArray<OverflowMenuDestination*>* initial_ranking = [overflow_menu_orderer_
@@ -409,7 +410,7 @@ TEST_F(OverflowMenuOrdererTest, PriorityToBadgeOverNewDestinationStatus) {
 
   // Initializes `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   NSArray<OverflowMenuDestination*>* updated_destinations = @[
     all_destinations[0],
@@ -452,7 +453,7 @@ TEST_F(OverflowMenuOrdererTest, PriorityToNewDestinationWithBadge) {
 
   // Initializes `OverflowMenuOrderer` with initial ranking
   // `current_destinations`.
-  InitializeOverflowMenuOrdererWithRanking(current_destinations);
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
 
   NSArray<OverflowMenuDestination*>* updated_destinations = @[
     all_destinations[0],
@@ -483,4 +484,81 @@ TEST_F(OverflowMenuOrdererTest, PriorityToNewDestinationWithBadge) {
             all_destinations[6]);
   ASSERT_EQ(sorted_ranking[kNewDestinationsInsertionIndex + 4],
             all_destinations[3]);
+}
+
+// Tests that the destinations are still promoted when there is no usage
+// history ranking.
+TEST_F(OverflowMenuOrdererTest, TestNewDestinationsWhenNoHistoryUsageRanking) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+    all_destinations[6],
+  ];
+
+  // Creates `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(YES, current_destinations);
+
+  // Same as `current_destinations`, but has a new element,
+  // `all_destinations[7]`, which should eventually be inserted starting at
+  // position 4 in the carousel (this is the expected behavior defined by
+  // product).
+  NSArray<OverflowMenuDestination*>* updated_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+    all_destinations[6],
+    // New destination
+    all_destinations[7],
+  ];
+
+  NSArray<OverflowMenuDestination*>* sorted_ranking = [overflow_menu_orderer_
+      sortedDestinationsFromCarouselDestinations:updated_destinations];
+
+  ASSERT_NSEQ(sorted_ranking[3], all_destinations[7]);
+}
+
+TEST_F(OverflowMenuOrdererTest, MovesBadgedDestinationsWithNoUsageHistory) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+  ];
+
+  // Initializes `OverflowMenuOrderer` with initial ranking
+  // `current_destinations`.
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  NSArray<OverflowMenuDestination*>* updated_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+    // New destinations
+    all_destinations[6],
+  ];
+
+  all_destinations[4].badge = BadgeTypeError;
+
+  NSArray<OverflowMenuDestination*>* sorted_ranking = [overflow_menu_orderer_
+      sortedDestinationsFromCarouselDestinations:updated_destinations];
+
+  ASSERT_EQ(sorted_ranking[kNewDestinationsInsertionIndex],
+            all_destinations[4]);
+  ASSERT_EQ(sorted_ranking[kNewDestinationsInsertionIndex + 1],
+            all_destinations[6]);
 }
