@@ -364,7 +364,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 # they are not attributed to some known issue that needs resolving.
 
 crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
-crbug.com/1450358 [ chromeos chromeos-board-kevin ] conformance/textures/misc/texture-srgb-upload.html [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -702,9 +701,15 @@ crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExt
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
+###############################
+# New failures in WebGL rolls #
+###############################
+
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448573 [ android ] conformance/extensions/oes-texture-float.html [ Failure ]
-crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Skip ]
+crbug.com/1448573 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/oes-texture-float.html [ Failure ]
+crbug.com/1448743 [ android-nexus-5x ] conformance/textures/misc/texture-srgb-upload.html [ Slow ]
+crbug.com/1448743 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-srgb-upload.html [ Slow ]
 crbug.com/1448643 [ win angle-d3d11 ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
 
 #######################################################################

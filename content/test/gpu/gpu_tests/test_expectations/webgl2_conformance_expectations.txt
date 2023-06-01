@@ -709,8 +709,6 @@ crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/r
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
-crbug.com/1405252 [ android android-pixel-2 ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
-crbug.com/1405252 [ android android-pixel-2 ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 
 
 ## Pixel 4 ##
@@ -810,10 +808,6 @@ crbug.com/1213198 [ chromeos chromeos-board-kevin no-passthrough ] WebglExtensio
 crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 
-crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
-crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
-crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
-
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
@@ -851,7 +845,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
-crbug.com/1450357 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #
@@ -906,6 +899,10 @@ crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExt
 #[ highsierra nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 #[ mac nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 
+###############################
+# New failures in WebGL rolls #
+###############################
+
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448567 [ android ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
 crbug.com/1448567 [ chromeos ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
@@ -915,7 +912,14 @@ crbug.com/1448567 [ mac ] conformance2/transform_feedback/simultaneous_binding.h
 crbug.com/1448567 [ win ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
 crbug.com/1448570 [ android-pixel-4 ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
 crbug.com/1448570 [ android-pixel-4 ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
+crbug.com/1448570 [ android android-pixel-2 ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
+crbug.com/1448570 [ android android-pixel-2 ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
+crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
+crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
+crbug.com/1405252 [ chromeos chromeos-board-kevin no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
+crbug.com/1450357 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
+crbug.com/1450367 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-clip-cull-distance.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
