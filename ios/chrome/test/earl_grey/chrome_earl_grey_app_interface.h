@@ -682,6 +682,15 @@
 // message.
 + (void)disableDefaultBrowserPromo;
 
+#pragma mark - First Run Utilities
+
+// Writes the First Run Sentinel file, used to record that First Run has
+// completed.
++ (void)writeFirstRunSentinel;
+
+// Remove the FirstRun sentinel file.
++ (void)removeFirstRunSentinel;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_APP_INTERFACE_H_
