@@ -7,7 +7,6 @@
 enum ResponseType { "basic", "cors", "default", "error", "opaque", "opaqueredirect" };
 
 [
-    ActiveScriptWrappable,
     Exposed=(Window,Worker)
 ] interface Response {
     // TODO(yhirano): We use "any" for body because the IDL processor doesn't

@@ -532,16 +532,6 @@ Response* Response::clone(ScriptState* script_state,
                                         headers);
 }
 
-bool Response::HasPendingActivity() const {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
-    return false;
-  if (!InternalBodyBuffer())
-    return false;
-  if (InternalBodyBuffer()->HasPendingActivity())
-    return true;
-  return Body::HasPendingActivity();
-}
-
 mojom::blink::FetchAPIResponsePtr Response::PopulateFetchAPIResponse(
     const KURL& request_url) {
   return response_->PopulateFetchAPIResponse(request_url);
@@ -558,10 +548,7 @@ Response::Response(ExecutionContext* context, FetchResponseData* response)
 Response::Response(ExecutionContext* context,
                    FetchResponseData* response,
                    Headers* headers)
-    : ActiveScriptWrappable<Response>({}),
-      Body(context),
-      response_(response),
-      headers_(headers) {}
+    : Body(context), response_(response), headers_(headers) {}
 
 bool Response::HasBody() const {
   return response_->InternalBuffer();
@@ -596,7 +583,6 @@ FetchHeaderList* Response::InternalHeaderList() const {
 
 void Response::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  ActiveScriptWrappable<Response>::Trace(visitor);
   Body::Trace(visitor);
   visitor->Trace(response_);
   visitor->Trace(headers_);

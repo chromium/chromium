@@ -27,9 +27,7 @@ class BodyStreamBuffer;
 class ExceptionState;
 class RequestInit;
 
-class CORE_EXPORT Request final : public ScriptWrappable,
-                                  public ActiveScriptWrappable<Request>,
-                                  public Body {
+class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -87,11 +85,6 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.
   Request* clone(ScriptState*, ExceptionState&);
-
-  // ScriptWrappable override
-  bool HasPendingActivity() const override {
-    return Body::HasPendingActivity();
-  }
 
   FetchRequestData* PassRequestData(ScriptState*);
   mojom::blink::FetchAPIRequestPtr CreateFetchAPIRequest() const;

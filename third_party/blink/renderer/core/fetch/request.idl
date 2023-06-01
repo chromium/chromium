@@ -32,7 +32,6 @@ enum ReferrerPolicy {
 };
 
 [
-    ActiveScriptWrappable,
     Exposed=(Window,Worker)
 ] interface Request {
     [CallWith=ScriptState, RaisesException] constructor(RequestInfo input, optional RequestInit init = {});

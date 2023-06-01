@@ -53,8 +53,6 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   // True if the body is locked.
   bool IsBodyLocked() const;
 
-  bool HasPendingActivity() const;
-
  private:
   // TODO(e_hakkinen): Fix |MimeType()| to always contain parameters and
   // remove |ContentType()|.
