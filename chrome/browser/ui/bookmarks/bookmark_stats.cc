@@ -29,6 +29,13 @@ auto GetMetricProfile(const Profile* profile) {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out,
+                         const BookmarkLaunchAction& launch_action) {
+  return out << "BookmarkLaunchAction(location = "
+             << static_cast<int>(launch_action.location)
+             << ", action_time = " << launch_action.action_time << ")";
+}
+
 void RecordBookmarkLaunch(BookmarkLaunchLocation location,
                           profile_metrics::BrowserProfileType profile_type) {
   if (IsBookmarkBarLocation(location)) {

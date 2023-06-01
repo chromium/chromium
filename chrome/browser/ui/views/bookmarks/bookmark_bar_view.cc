@@ -1567,8 +1567,9 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   // are directed to ::OnMenuButtonPressed().
   DCHECK(node->is_url());
   RecordAppLaunch(browser_->profile(), node->url());
-  chrome::OpenAllIfAllowed(browser_, {node},
-                           ui::DispositionFromEventFlags(event.flags()), false);
+  chrome::OpenAllIfAllowed(
+      browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false,
+      {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   if (event.IsMouseEvent()) {
     base::UmaHistogramEnumeration(
         "Prerender.Experimental.BookmarkUrlButtonEvent",
@@ -1587,7 +1588,8 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       (event.flags() & ui::EF_PLATFORM_ACCELERATOR)) {
     RecordBookmarkFolderLaunch(BookmarkLaunchLocation::kAttachedBar);
     chrome::OpenAllIfAllowed(
-        browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false);
+        browser_, {node}, ui::DispositionFromEventFlags(event.flags()), false,
+        {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);
     const size_t start_index = (node == bookmark_model_->bookmark_bar_node())

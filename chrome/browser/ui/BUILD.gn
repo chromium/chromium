@@ -1093,6 +1093,8 @@ static_library("ui") {
       "bookmarks/bookmark_editor.h",
       "bookmarks/bookmark_stats.cc",
       "bookmarks/bookmark_stats.h",
+      "bookmarks/bookmark_stats_tab_helper.cc",
+      "bookmarks/bookmark_stats_tab_helper.h",
       "bookmarks/bookmark_tab_helper.cc",
       "bookmarks/bookmark_tab_helper.h",
       "bookmarks/bookmark_tab_helper_observer.h",
