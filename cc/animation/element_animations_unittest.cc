@@ -472,8 +472,9 @@ TEST_F(ElementAnimationsTest, Activation) {
   EXPECT_EQ(
       KeyframeModel::WAITING_FOR_DELETION,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
-  // The impl thread animations should have de-activated.
-  EXPECT_EQ(0u, host_impl->ticking_animations_for_testing().size());
+  // The impl thread animations will be deactivated once a commit clears the
+  // animation.
+  EXPECT_EQ(1u, host_impl->ticking_animations_for_testing().size());
 
   EXPECT_EQ(1u, events->events_.size());
   animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);

@@ -201,7 +201,8 @@ void KeyframeEffect::TickKeyframeModel(base::TimeTicks monotonic_time,
                                        KeyframeModel* keyframe_model) {
   if ((keyframe_model->run_state() != KeyframeModel::STARTING &&
        keyframe_model->run_state() != KeyframeModel::RUNNING &&
-       keyframe_model->run_state() != KeyframeModel::PAUSED) ||
+       keyframe_model->run_state() != KeyframeModel::PAUSED &&
+       keyframe_model->run_state() != KeyframeModel::WAITING_FOR_DELETION) ||
       !keyframe_model->HasActiveTime(monotonic_time)) {
     return;
   }

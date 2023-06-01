@@ -234,7 +234,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
         *element_, timing, NormalizedTiming(timing), 0, absl::nullopt,
-        base::TimeDelta(), effect, keyframe_models, animation_playback_rate);
+        base::TimeDelta(), effect, keyframe_models, animation_playback_rate,
+        /*is_monotonic_timeline=*/true);
   }
 
   CompositorAnimations::FailureReasons
@@ -1808,7 +1809,9 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   std::unique_ptr<cc::KeyframeModel> keyframe_model =
       ConvertToCompositorAnimation(*effect);
-  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
+  // Time based animations implicitly fill forwards to remain active until
+  // the subsequent commit.
+  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1827,7 +1830,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(0, keyframe_model->time_offset().InSecondsF());
   EXPECT_EQ(cc::KeyframeModel::Direction::NORMAL, keyframe_model->direction());
   EXPECT_EQ(1.0, keyframe_model->playback_rate());
-  EXPECT_EQ(cc::KeyframeModel::FillMode::NONE, keyframe_model->fill_mode());
+  // Time based animations implicitly fill forwards to remain active until
+  // the subsequent commit.
+  EXPECT_EQ(cc::KeyframeModel::FillMode::FORWARDS, keyframe_model->fill_mode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

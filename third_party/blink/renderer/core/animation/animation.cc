@@ -2272,7 +2272,9 @@ void Animation::StartAnimationOnCompositor(
   }
   To<KeyframeEffect>(content_.Get())
       ->StartAnimationOnCompositor(compositor_group_, start_time_s, time_offset,
-                                   EffectivePlaybackRate());
+                                   EffectivePlaybackRate(),
+                                   /*compositor_animation=*/nullptr,
+                                   timeline()->IsMonotonicallyIncreasing());
 }
 
 // TODO(crbug.com/960944): Rename to SetPendingCommit. This method handles both

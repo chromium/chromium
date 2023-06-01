@@ -144,23 +144,7 @@ void Animation::PushPropertiesTo(Animation* animation_impl) {
 
 void Animation::Tick(base::TimeTicks tick_time) {
   DCHECK(!IsWorkletAnimation());
-  if (IsScrollLinkedAnimation()) {
-    // blink::Animation uses its start time to calculate local time for each of
-    // its keyframes. However, in cc the start time is stored at the Keyframe
-    // level so we have to delegate the tick time to a lower level to calculate
-    // the local time.
-    // With ScrollTimeline, the start time of the animation is calculated
-    // differently i.e. it is not the current time at the moment of start.
-    // To deal with this the scroll timeline pauses the animation at its desired
-    // time and then ticks it which side-steps the start time altogether. See
-    // crbug.com/1076012 for alternative design choices considered for future
-    // improvement.
-    keyframe_effect()->Pause(tick_time, PauseCondition::kAfterStart);
-    keyframe_effect()->Tick(base::TimeTicks());
-  } else {
-    DCHECK(!tick_time.is_null());
-    keyframe_effect()->Tick(tick_time);
-  }
+  keyframe_effect()->Tick(tick_time);
 }
 
 bool Animation::IsScrollLinkedAnimation() const {

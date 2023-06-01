@@ -74,8 +74,9 @@ void KeyframeModel::SetRunState(RunState run_state,
 void KeyframeModel::Pause(base::TimeDelta pause_offset) {
   // Convert pause offset which is in local time to monotonic time.
   // TODO(crbug.com/912407): This should be scaled by playbackrate.
-  base::TimeTicks monotonic_time =
-      pause_offset + start_time_ + total_paused_duration_;
+  base::TimeTicks monotonic_time = pause_offset +
+                                   start_time_.value_or(base::TimeTicks()) +
+                                   total_paused_duration_;
   SetRunState(PAUSED, monotonic_time);
 }
 
@@ -253,7 +254,8 @@ base::TimeDelta KeyframeModel::ConvertMonotonicTimeToLocalTime(
 
   // If we're paused, time is 'stuck' at the pause time.
   base::TimeTicks time = (run_state_ == PAUSED) ? pause_time_ : monotonic_time;
-  return time - start_time_ - total_paused_duration_;
+  return time - start_time_.value_or(base::TimeTicks()) -
+         total_paused_duration_;
 }
 
 }  // namespace gfx

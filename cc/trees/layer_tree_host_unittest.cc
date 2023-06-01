@@ -2149,10 +2149,12 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
         PostSetNeedsCommitToMainThread();
         break;
       case 1:
+        impl->sync_tree()->SetOpacityMutated(root->element_id(), 0.75f);
         EXPECT_EQ(node->opacity, 0.75f);
         PostSetNeedsCommitToMainThread();
         break;
       case 2:
+        impl->sync_tree()->SetOpacityMutated(root->element_id(), 0.75f);
         EXPECT_EQ(node->opacity, 0.75f);
         impl->sync_tree()->SetOpacityMutated(root->element_id(), 0.75f);
         PostSetNeedsCommitToMainThread();
@@ -2168,13 +2170,15 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
         PostSetNeedsCommitToMainThread();
         break;
       case 5:
+        impl->sync_tree()->SetFilterMutated(root->element_id(),
+                                            brightness_filter_);
         EXPECT_EQ(node->filters, brightness_filter_);
         PostSetNeedsCommitToMainThread();
         break;
       case 6:
-        EXPECT_EQ(node->filters, brightness_filter_);
         impl->sync_tree()->SetFilterMutated(root->element_id(),
                                             brightness_filter_);
+        EXPECT_EQ(node->filters, brightness_filter_);
         PostSetNeedsCommitToMainThread();
         break;
       case 7:
@@ -2258,12 +2262,13 @@ class LayerTreeHostTestTransformTreeSync : public LayerTreeHostTest {
         PostSetNeedsCommitToMainThread();
         break;
       case 1:
+        impl->sync_tree()->SetTransformMutated(layer->element_id(), rotate20);
         EXPECT_EQ(node->local, rotate20);
         PostSetNeedsCommitToMainThread();
         break;
       case 2:
-        EXPECT_EQ(node->local, rotate20);
         impl->sync_tree()->SetTransformMutated(layer->element_id(), rotate20);
+        EXPECT_EQ(node->local, rotate20);
         PostSetNeedsCommitToMainThread();
         break;
       case 3:

@@ -17,6 +17,7 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
+#include "cc/base/features.h"
 #include "cc/trees/property_animation_state.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
@@ -116,12 +117,20 @@ void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   if (needs_to_start_keyframe_models_)
     StartKeyframeModels(monotonic_time);
 
+  bool became_inactive = false;
   for (auto& keyframe_model : keyframe_models()) {
     TickKeyframeModel(monotonic_time, keyframe_model.get());
+    bool was_active = last_tick_time_.has_value() &&
+                      keyframe_model->HasActiveTime(*last_tick_time_);
+    bool is_active = keyframe_model->HasActiveTime(monotonic_time);
+    became_inactive |= (was_active && !is_active);
   }
 
   last_tick_time_ = monotonic_time;
   element_animations_->UpdateClientAnimationState();
+  if (became_inactive) {
+    animation_->SetNeedsCommit();
+  }
 }
 
 void KeyframeEffect::RemoveFromTicking() {
@@ -434,8 +443,17 @@ bool KeyframeEffect::AffectsNativeProperty() const {
 
 bool KeyframeEffect::HasNonDeletedKeyframeModel() const {
   for (const auto& keyframe_model : keyframe_models()) {
-    if (keyframe_model->run_state() != gfx::KeyframeModel::WAITING_FOR_DELETION)
+    KeyframeModel* cc_keyframe_model =
+        KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+    if (keyframe_model->run_state() !=
+            gfx::KeyframeModel::WAITING_FOR_DELETION ||
+        // deleted impl side keyframe models keep ticking until the commit
+        // removes them.
+        (base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
+         cc_keyframe_model->is_controlling_instance() &&
+         !cc_keyframe_model->is_impl_only())) {
       return true;
+    }
   }
   return false;
 }

@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
@@ -2484,6 +2486,8 @@ class CommitToPendingTreeLayerTreeImplTest : public LayerTreeImplTest {
 
 TEST_F(CommitToPendingTreeLayerTreeImplTest,
        ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
   ASSERT_FALSE(host_impl().CommitToActiveTree());
 
   // When we have a pending tree (e.g. commit_to_active_tree is false), the
@@ -2576,6 +2580,10 @@ TEST_F(CommitToPendingTreeLayerTreeImplTest,
 }
 
 TEST_F(LayerTreeImplTest, ElementIdToAnimationMapsTrackOnlyOnSyncTree) {
+  // The kNoPreserveLastMutation feature makes this test obsolete.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kNoPreserveLastMutation);
+
   ASSERT_TRUE(host_impl().CommitToActiveTree());
 
   // When we are commiting directly to the active tree, the various ElementId to

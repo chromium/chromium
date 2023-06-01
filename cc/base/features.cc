@@ -77,6 +77,10 @@ BASE_FEATURE(kNonBlockingCommit,
              "NonBlockingCommit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNoPreserveLastMutation,
+             "NoPreserveLastMutation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSlidingWindowForDroppedFrameCounter,
              "SlidingWindowForDroppedFrameCounter",
              base::FEATURE_DISABLED_BY_DEFAULT);
