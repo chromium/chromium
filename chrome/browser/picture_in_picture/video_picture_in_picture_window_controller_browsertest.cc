@@ -1035,8 +1035,16 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
+// The test is flaky on linux-msan. https://crbug.com/1447238
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_CrossOriginFrameEnterLeaveCloseWindow \
+  DISABLED_CrossOriginFrameEnterLeaveCloseWindow
+#else
+#define MAYBE_CrossOriginFrameEnterLeaveCloseWindow \
+  CrossOriginFrameEnterLeaveCloseWindow
+#endif
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
-                       CrossOriginFrameEnterLeaveCloseWindow) {
+                       MAYBE_CrossOriginFrameEnterLeaveCloseWindow) {
   GURL embed_url = embedded_test_server()->GetURL(
       "a.com", "/media/picture-in-picture/iframe-content.html");
   GURL main_url = embedded_test_server()->GetURL(
