@@ -5,47 +5,11 @@
 #ifndef MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_
 #define MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_
 
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/sequence_checker.h"
-#include "media/base/media_export.h"
-#include "media/formats/mp4/fourccs.h"
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/muxers/mp4_box_writer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The file contains the box writer of `moov` and its children.
 namespace media {
-
-class Mp4MuxerContext;
-
-#define DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(class_name) \
-  class MEDIA_EXPORT class_name : public Mp4BoxWriter {  \
-   public:                                               \
-    explicit class_name(const Mp4MuxerContext& context); \
-    ~class_name() override;                              \
-    class_name(const class_name&) = delete;              \
-    class_name& operator=(const class_name&) = delete;   \
-    void Write(BoxByteStream& writer) override;          \
-                                                         \
-   private:                                              \
-    SEQUENCE_CHECKER(sequence_checker_);                 \
-  }
-
-// |box_| field is not a raw_ref<> because it was filtered by the rewriter
-// for: #macro
-#define DECLARE_MP4_BOX_WRITER_CLASS(class_name, box_type)           \
-  class MEDIA_EXPORT class_name : public Mp4BoxWriter {              \
-   public:                                                           \
-    class_name(const Mp4MuxerContext& context, const box_type& box); \
-    ~class_name() override;                                          \
-    class_name(const class_name&) = delete;                          \
-    class_name& operator=(const class_name&) = delete;               \
-    void Write(BoxByteStream& writer) override;                      \
-                                                                     \
-   private:                                                          \
-    RAW_PTR_EXCLUSION const box_type& box_;                          \
-    SEQUENCE_CHECKER(sequence_checker_);                             \
-  }
 
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBoxWriter, mp4::writable_boxes::Movie);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieHeaderBoxWriter,

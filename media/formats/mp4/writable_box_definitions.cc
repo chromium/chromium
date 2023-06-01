@@ -35,4 +35,20 @@ ElementaryStreamDescriptor& ElementaryStreamDescriptor::operator=(
     const ElementaryStreamDescriptor&) = default;
 #endif
 
+TrackFragmentRun::TrackFragmentRun() = default;
+TrackFragmentRun::~TrackFragmentRun() = default;
+TrackFragmentRun::TrackFragmentRun(const TrackFragmentRun&) = default;
+TrackFragmentRun& TrackFragmentRun::operator=(const TrackFragmentRun&) =
+    default;
+
+MovieFragment::MovieFragment() = default;
+MovieFragment::~MovieFragment() = default;
+MovieFragment::MovieFragment(const MovieFragment&) = default;
+MovieFragment& MovieFragment::operator=(const MovieFragment&) = default;
+
+MediaData::MediaData() = default;
+MediaData::~MediaData() = default;
+MediaData::MediaData(const MediaData&) = default;
+MediaData& MediaData::operator=(const MediaData&) = default;
+
 }  // namespace media::mp4::writable_boxes

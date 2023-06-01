@@ -173,7 +173,7 @@ Mp4MovieTrackExtendsBoxWriter::~Mp4MovieTrackExtendsBoxWriter() = default;
 void Mp4MovieTrackExtendsBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TREX);
+  writer.StartFullBox(mp4::FOURCC_TREX, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(box_.track_id);
   writer.WriteU32(box_.default_sample_description_index);
@@ -221,7 +221,7 @@ Mp4MovieTrackHeaderBoxWriter::~Mp4MovieTrackHeaderBoxWriter() = default;
 void Mp4MovieTrackHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_TKHD, box_.flags, /*version*/ 1);
+  writer.StartFullBox(mp4::FOURCC_TKHD, box_.flags);
 
   WriteIsoTime(writer, box_.creation_time);
   WriteIsoTime(writer, box_.modification_time);
@@ -318,7 +318,7 @@ Mp4MovieMediaHandlerBoxWriter::~Mp4MovieMediaHandlerBoxWriter() = default;
 void Mp4MovieMediaHandlerBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_HDLR);
+  writer.StartFullBox(mp4::FOURCC_HDLR, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(0);  // predefined = 0;
   writer.WriteU32(box_.handler_type);
@@ -379,7 +379,7 @@ Mp4MovieVideoHeaderBoxWriter::~Mp4MovieVideoHeaderBoxWriter() = default;
 void Mp4MovieVideoHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_VMHD);
+  writer.StartFullBox(mp4::FOURCC_VMHD, /*flags=*/1, /*version=*/0);
 
   writer.WriteU16(0);  // graphics_mode.
   writer.WriteU16(0);  // op_color[0].
@@ -401,7 +401,7 @@ Mp4MovieSoundHeaderBoxWriter::~Mp4MovieSoundHeaderBoxWriter() = default;
 void Mp4MovieSoundHeaderBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_SMHD);
+  writer.StartFullBox(mp4::FOURCC_SMHD, /*flags=*/0, /*version=*/0);
 
   writer.WriteU16(0);  // balance.
   writer.WriteU16(0);  // reserved.
@@ -447,7 +447,7 @@ Mp4MovieDataReferenceBoxWriter::~Mp4MovieDataReferenceBoxWriter() = default;
 void Mp4MovieDataReferenceBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_DREF);
+  writer.StartFullBox(mp4::FOURCC_DREF, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(box_.entries.size());
 
@@ -468,7 +468,7 @@ Mp4MovieDataUrlEntryBoxWriter::~Mp4MovieDataUrlEntryBoxWriter() = default;
 void Mp4MovieDataUrlEntryBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_URL);
+  writer.StartFullBox(mp4::FOURCC_URL, /*flags=*/0, /*version=*/0);
 
   // We use empty Url location to prevent accidental PII leak.
   writer.WriteString("");
@@ -514,7 +514,7 @@ Mp4MovieSampleToChunkBoxWriter::~Mp4MovieSampleToChunkBoxWriter() = default;
 void Mp4MovieSampleToChunkBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_STSC);
+  writer.StartFullBox(mp4::FOURCC_STSC, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(0);  // entry_count.
 
@@ -534,7 +534,7 @@ Mp4MovieDecodingTimeToSampleBoxWriter::
 void Mp4MovieDecodingTimeToSampleBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_STTS);
+  writer.StartFullBox(mp4::FOURCC_STTS, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(0);  // entry_count.
 
@@ -574,7 +574,7 @@ Mp4MovieSampleChunkOffsetBoxWriter::~Mp4MovieSampleChunkOffsetBoxWriter() =
 void Mp4MovieSampleChunkOffsetBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_STCO);
+  writer.StartFullBox(mp4::FOURCC_STCO, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(0);  // entry_count.
 
@@ -605,7 +605,7 @@ Mp4MovieSampleDescriptionBoxWriter::~Mp4MovieSampleDescriptionBoxWriter() =
 void Mp4MovieSampleDescriptionBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartFullBox(mp4::FOURCC_STSD);
+  writer.StartFullBox(mp4::FOURCC_STSD, /*flags=*/0, /*version=*/0);
 
   writer.WriteU32(box_.entry_count);
 

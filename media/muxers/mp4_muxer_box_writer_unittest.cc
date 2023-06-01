@@ -20,7 +20,9 @@
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/writable_box_definitions.h"
 #include "media/formats/mpeg/adts_stream_parser.h"
+#include "media/muxers/box_byte_stream.h"
 #include "media/muxers/mp4_box_writer.h"
+#include "media/muxers/mp4_fragment_box_writer.h"
 #include "media/muxers/mp4_movie_box_writer.h"
 #include "media/muxers/mp4_muxer_context.h"
 #include "media/muxers/mp4_type_conversion.h"
@@ -104,6 +106,15 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void FlushAndWait(Mp4BoxWriter* box_writer) {
     // Flush at requested.
     box_writer->WriteAndFlush();
+
+    // Wait for finishing flush of all boxes.
+    run_loop_.Run();
+  }
+
+  void FlushWithBoxWriterAndWait(Mp4BoxWriter* box_writer,
+                                 BoxByteStream& box_byte_stream) {
+    // Flush at requested.
+    box_writer->WriteAndFlush(box_byte_stream);
 
     // Wait for finishing flush of all boxes.
     run_loop_.Run();
@@ -707,5 +718,251 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
   EXPECT_FALSE(metadata_frame);
 }
 #endif
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
+  // Tests `mvex/trex` box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  constexpr uint32_t kSampleDurations[] = {960, 960, 960};
+  constexpr uint32_t kSampleSizes[] = {6400, 333, 333};
+  constexpr uint32_t kSampleCount = 3u;
+  constexpr uint32_t kVideoBaseDecodeTime = 123u;
+  constexpr uint32_t kAudioBaseDecodeTime = 345u;
+  constexpr uint32_t kVideoDataSize = 4000u;
+  constexpr uint32_t kAudioDataSize = 2000u;
+  constexpr uint32_t kBoxHeaderSize = 8u;
+
+  using H =
+      std::underlying_type_t<mp4::writable_boxes::TrackFragmentHeaderFlags>;
+  using R = std::underlying_type_t<mp4::writable_boxes::TrackFragmentRunFlags>;
+  using S = std::underlying_type_t<mp4::writable_boxes::FragmentSampleFlags>;
+
+  mp4::writable_boxes::MovieFragment moof;
+
+  moof.header.sequence_number = 2u;
+
+  {  // `video`.
+    mp4::writable_boxes::TrackFragment video_fragment;
+    video_fragment.header.track_id = 1u;
+    video_fragment.header.flags =
+        (static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kDefaultBaseIsMoof) |
+         static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kDefaultSampleDurationPresent) |
+         static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kkDefaultSampleFlagsPresent));
+
+    video_fragment.header.default_sample_duration = base::Seconds(kDuration1);
+    video_fragment.header.default_sample_flags = static_cast<S>(
+        mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsNo);
+
+    video_fragment.decode_time.base_media_decode_time =
+        base::Seconds(kVideoBaseDecodeTime);
+
+    {  // `video, trun`
+      mp4::writable_boxes::TrackFragmentRun video_trun;
+      video_trun.flags =
+          (static_cast<R>(
+               mp4::writable_boxes::TrackFragmentRunFlags::kDataOffsetPresent) |
+           static_cast<R>(mp4::writable_boxes::TrackFragmentRunFlags::
+                              kFirstSampleFlagsPresent) |
+           static_cast<R>(mp4::writable_boxes::TrackFragmentRunFlags::
+                              kSampleDurationPresent));
+
+      video_trun.sample_count = kSampleCount;
+      video_trun.first_sample_flags =
+          (static_cast<S>(
+               mp4::writable_boxes::FragmentSampleFlags::kSampleFlagIsNonSync) |
+           static_cast<S>(mp4::writable_boxes::FragmentSampleFlags::
+                              kSampleFlagDependsYes));
+
+      std::vector<base::TimeDelta> durations;
+      for (auto* iter = std::begin(kSampleDurations);
+           iter != std::end(kSampleDurations); ++iter) {
+        durations.push_back(base::Seconds(*iter));
+      }
+      video_trun.sample_durations = std::move(durations);
+      video_fragment.run = std::move(video_trun);
+    }
+    moof.track_fragments.push_back(std::move(video_fragment));
+  }
+
+  {  // `audio`.
+    mp4::writable_boxes::TrackFragment audio_fragment;
+    audio_fragment.header.track_id = 2u;
+    audio_fragment.header.flags =
+        (static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kDefaultBaseIsMoof) |
+         static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kDefaultSampleSizePresent) |
+         static_cast<H>(mp4::writable_boxes::TrackFragmentHeaderFlags::
+                            kkDefaultSampleFlagsPresent));
+
+    audio_fragment.header.default_sample_size = kDefaultSampleSize;
+    audio_fragment.header.default_sample_flags =
+        (static_cast<S>(
+             mp4::writable_boxes::FragmentSampleFlags::kSampleFlagIsNonSync) |
+         static_cast<S>(
+             mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsYes));
+
+    audio_fragment.decode_time.base_media_decode_time =
+        base::Seconds(kAudioBaseDecodeTime);
+
+    {  // `audio, trun.
+      mp4::writable_boxes::TrackFragmentRun audio_trun;
+      audio_trun.flags =
+          (static_cast<R>(
+               mp4::writable_boxes::TrackFragmentRunFlags::kDataOffsetPresent) |
+           static_cast<R>(mp4::writable_boxes::TrackFragmentRunFlags::
+                              kSampleDurationPresent) |
+           static_cast<R>(
+               mp4::writable_boxes::TrackFragmentRunFlags::kSampleSizePresent));
+
+      audio_trun.sample_count = kSampleCount;
+      audio_trun.first_sample_flags =
+          (static_cast<S>(
+               mp4::writable_boxes::FragmentSampleFlags::kSampleFlagIsNonSync) |
+           static_cast<S>(mp4::writable_boxes::FragmentSampleFlags::
+                              kSampleFlagDependsYes));
+
+      std::vector<base::TimeDelta> durations;
+      for (auto* iter = std::begin(kSampleDurations);
+           iter != std::end(kSampleDurations); ++iter) {
+        durations.push_back(base::Seconds(*iter));
+      }
+      audio_trun.sample_durations = std::move(durations);
+
+      std::vector<uint32_t> sizes(std::begin(kSampleSizes),
+                                  std::end(kSampleSizes));
+      audio_trun.sample_sizes = std::move(sizes);
+      audio_fragment.run = std::move(audio_trun);
+    }
+    moof.track_fragments.push_back(std::move(audio_fragment));
+  }
+
+  // Write `mdat` data.
+  mp4::writable_boxes::MediaData media_data;
+  std::vector<uint8_t> video_data(kVideoDataSize, 0);
+  std::vector<uint8_t> audio_data(kAudioDataSize, 1);
+
+  base::span<uint8_t> video_span(video_data);
+  base::span<uint8_t> audio_span(audio_data);
+
+  media_data.data.push_back(std::move(video_span));
+  media_data.data.push_back(std::move(audio_span));
+
+  // Write `moof` boxes.
+  Mp4MovieFragmentBoxWriter box_writer(*context(), moof);
+  BoxByteStream box_byte_stream;
+  box_writer.Write(box_byte_stream);
+
+  // Write `mdat` box with `moof` boxes writer object.
+  Mp4MediaDataBoxWriter box_mdat_writer(*context(), media_data);
+  FlushWithBoxWriterAndWait(&box_mdat_writer, box_byte_stream);
+
+  // Validation of the written boxes.
+
+  // `written_data` test.
+  std::unique_ptr<mp4::BoxReader> reader;
+  mp4::ParseResult result = mp4::BoxReader::ReadTopLevelBox(
+      written_data.data(), written_data.size(), nullptr, &reader);
+
+  EXPECT_EQ(result, mp4::ParseResult::kOk);
+  EXPECT_TRUE(reader);
+
+  // `moof` test.
+  EXPECT_EQ(mp4::FOURCC_MOOF, reader->type());
+  EXPECT_TRUE(reader->ScanChildren());
+
+  // `mfhd` test.
+  mp4::MovieFragmentHeader mfhd_box;
+  EXPECT_TRUE(reader->ReadChild(&mfhd_box));
+
+  EXPECT_EQ(2u, mfhd_box.sequence_number);
+
+  // `traf` test.
+  std::vector<mp4::TrackFragment> traf_boxes;
+  EXPECT_TRUE(reader->ReadChildren(&traf_boxes));
+  ASSERT_EQ(traf_boxes.size(), 2u);
+
+  // `tfhd` test of video.
+  EXPECT_EQ(1u, traf_boxes[0].header.track_id);
+  EXPECT_EQ(kDuration1, traf_boxes[0].header.default_sample_duration);
+  EXPECT_EQ(0u, traf_boxes[0].header.default_sample_size);
+  EXPECT_EQ(true, traf_boxes[0].header.has_default_sample_flags);
+  EXPECT_EQ(static_cast<S>(
+                mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsNo),
+            traf_boxes[0].header.default_sample_flags);
+
+  // `tfdt` test of video.
+  EXPECT_EQ(kVideoBaseDecodeTime, traf_boxes[0].decode_time.decode_time);
+
+  // `trun` test of video.
+  uint32_t mdat_video_data_offset;
+
+  ASSERT_EQ(1u, traf_boxes[0].runs.size());
+  EXPECT_EQ(kSampleCount, traf_boxes[0].runs[0].sample_count);
+  EXPECT_EQ(208u, traf_boxes[0].runs[0].data_offset);
+  mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
+
+  ASSERT_EQ(kSampleCount, traf_boxes[0].runs[0].sample_durations.size());
+  EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurations),
+                                  std::end(kSampleDurations)),
+            traf_boxes[0].runs[0].sample_durations);
+  ASSERT_EQ(0u, traf_boxes[0].runs[0].sample_sizes.size());
+  // kFirstSampleFlagsPresent enabled and no sample_flags entry,
+  // then sample_flags will have a value of the first sample flags.
+  ASSERT_EQ(1u, traf_boxes[0].runs[0].sample_flags.size());
+  ASSERT_EQ(0u, traf_boxes[0].runs[0].sample_composition_time_offsets.size());
+
+  // `tfhd` test of audio.
+  EXPECT_EQ(2u, traf_boxes[1].header.track_id);
+  EXPECT_EQ(0u, traf_boxes[1].header.default_sample_duration);
+  EXPECT_EQ(kDefaultSampleSize, traf_boxes[1].header.default_sample_size);
+  EXPECT_EQ(true, traf_boxes[1].header.has_default_sample_flags);
+  EXPECT_EQ(
+      (static_cast<S>(
+           mp4::writable_boxes::FragmentSampleFlags::kSampleFlagIsNonSync) |
+       static_cast<S>(
+           mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsYes)),
+      traf_boxes[1].header.default_sample_flags);
+
+  // `tfdt` test of audio.
+  EXPECT_EQ(kAudioBaseDecodeTime, traf_boxes[1].decode_time.decode_time);
+
+  // `trun` test of audio.
+  ASSERT_EQ(1u, traf_boxes[1].runs.size());
+  EXPECT_EQ(kSampleCount, traf_boxes[1].runs[0].sample_count);
+
+  uint32_t audio_data_offset = mdat_video_data_offset + kVideoDataSize;
+  EXPECT_EQ(audio_data_offset, traf_boxes[1].runs[0].data_offset);
+  ASSERT_EQ(kSampleCount, traf_boxes[1].runs[0].sample_durations.size());
+  EXPECT_EQ(std::vector<uint32_t>(std::begin(kSampleDurations),
+                                  std::end(kSampleDurations)),
+            traf_boxes[1].runs[0].sample_durations);
+
+  ASSERT_EQ(kSampleCount, traf_boxes[1].runs[0].sample_sizes.size());
+  ASSERT_EQ(0u, traf_boxes[1].runs[0].sample_flags.size());
+  EXPECT_EQ(
+      std::vector<uint32_t>(std::begin(kSampleSizes), std::end(kSampleSizes)),
+      traf_boxes[1].runs[0].sample_sizes);
+  ASSERT_EQ(0u, traf_boxes[1].runs[0].sample_composition_time_offsets.size());
+
+  // `mdat` test.
+  std::unique_ptr<mp4::BoxReader> mdat_reader;
+  mp4::ParseResult result1 = mp4::BoxReader::ReadTopLevelBox(
+      written_data.data() + mdat_video_data_offset - kBoxHeaderSize,
+      written_data.size() - mdat_video_data_offset + kBoxHeaderSize, nullptr,
+      &mdat_reader);
+
+  EXPECT_EQ(result1, mp4::ParseResult::kOk);
+  EXPECT_TRUE(mdat_reader);
+  EXPECT_EQ(mp4::FOURCC_MDAT, mdat_reader->type());
+  EXPECT_EQ(kVideoDataSize + kAudioDataSize + kBoxHeaderSize,
+            mdat_reader->box_size());
+  // Once Flush, it needs to reset the internal objects of context and buffer.
+  Reset();
+}
 
 }  // namespace media

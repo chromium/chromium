@@ -35,22 +35,6 @@ void Mp4MuxerContext::SetAudioIndex(size_t index) {
   audio_index_ = index;
 }
 
-void Mp4MuxerContext::SetCurrentFragmentMoofOffset(size_t offset) {
-  moof_offset_in_fragment_ = offset;
-}
-
-size_t Mp4MuxerContext::GetCurrentFragmentMoofOffset() const {
-  return moof_offset_in_fragment_.value();
-}
-
-void Mp4MuxerContext::SetCurrentFragmentMdatOffset(size_t offset) {
-  mdat_offset_in_fragment_ = offset;
-}
-
-size_t Mp4MuxerContext::GetCurrentFragmentMdatOffset() const {
-  return mdat_offset_in_fragment_.value();
-}
-
 OutputPositionTracker& Mp4MuxerContext::GetOutputPositionTracker() const {
   return *output_position_tracker_;
 }

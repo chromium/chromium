@@ -19,6 +19,8 @@ source_set("muxers") {
     "live_webm_muxer_delegate.h",
     "mp4_box_writer.cc",
     "mp4_box_writer.h",
+    "mp4_fragment_box_writer.cc",
+    "mp4_fragment_box_writer.h",
     "mp4_movie_box_writer.cc",
     "mp4_movie_box_writer.h",
     "mp4_muxer_context.cc",

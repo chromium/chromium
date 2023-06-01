@@ -5,6 +5,7 @@
 #ifndef MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 #define MEDIA_MUXERS_BOX_BYTE_STREAM_H_
 
+#include <queue>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -40,7 +41,6 @@ class MEDIA_EXPORT BoxByteStream {
   // type.
   void WriteU8(uint8_t value);
   void WriteU16(uint16_t value);
-  void WriteU24(uint32_t value);
   void WriteU32(uint32_t value);
   void WriteU64(uint64_t value);
   void WriteBytes(const void* buf, size_t len);
@@ -54,6 +54,19 @@ class MEDIA_EXPORT BoxByteStream {
   // is a summation of the box itself with its children.
   void EndBox();
 
+  // Write placeholder for the track data offset of the `trun` box. The data
+  // is stored in the `mdat` box so its value will be written during `mdat'
+  // box `Write` time.
+  void WriteOffsetPlaceholder();
+
+  // Populate the placeholder, which was set by `WriteOffsetPlaceholder`
+  // with the current offset. The current offset is a data offset only
+  // when the `BoxByteStream` is created with `moof` box.
+  void FlushCurrentOffset();
+
+  // Validates whether there is a open box or not.
+  bool has_open_boxes() const { return !size_offsets_.empty(); }
+
   // TODO(crbug.com/1072056): Investigate if this is a reasonable starting size.
   static constexpr int kDefaultBufferLimit = 4096;
 
@@ -65,6 +78,8 @@ class MEDIA_EXPORT BoxByteStream {
   void GrowWriter();
 
   std::vector<size_t> size_offsets_;
+  std::queue<size_t> data_offsets_by_track_;
+
   size_t position_ = 0;
   std::vector<uint8_t> buffer_;
   absl::optional<base::BigEndianWriter> writer_;

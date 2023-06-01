@@ -36,23 +36,11 @@ class MEDIA_EXPORT Mp4MuxerContext {
   absl::optional<size_t> GetAudioIndex() const;
   void SetAudioIndex(size_t index);
 
-  void SetCurrentFragmentMoofOffset(size_t offset);
-  size_t GetCurrentFragmentMoofOffset() const;
-
-  void SetCurrentFragmentMdatOffset(size_t offset);
-  size_t GetCurrentFragmentMdatOffset() const;
-
   OutputPositionTracker& GetOutputPositionTracker() const;
 
  private:
   absl::optional<size_t> video_index_;
   absl::optional<size_t> audio_index_;
-
-  // MOOF offset will be `base_data_offset` of TFHD in the same fragment.
-  absl::optional<size_t> moof_offset_in_fragment_;
-
-  // MDAT offset will be `data_offset` of TRUN in the same fragment.
-  absl::optional<size_t> mdat_offset_in_fragment_;
 
   std::unique_ptr<OutputPositionTracker> output_position_tracker_;
 
