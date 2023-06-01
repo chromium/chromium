@@ -32,7 +32,9 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -602,6 +604,11 @@ class CopyOrMoveIOTaskWithScansTest
   OperationType GetOperationType() { return GetParam(); }
 
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("test-profile");
+
     scoped_feature_list_.InitWithFeatures(
         {features::kFileTransferEnterpriseConnector}, {});
 
@@ -613,13 +620,13 @@ class CopyOrMoveIOTaskWithScansTest
     // Set the analysis connector (enterprise_connectors) for FILE_TRANSFER.
     // It is also required for FileTransferAnalysisDelegate::IsEnabled() to
     // return a meaningful result.
-    safe_browsing::SetAnalysisConnector(profile_.GetPrefs(),
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
                                         enterprise_connectors::FILE_TRANSFER,
                                         kBlockingScansForDlpAndMalware);
 
     source_destination_testing_helper_ =
         std::make_unique<enterprise_connectors::SourceDestinationTestingHelper>(
-            &profile_, kVolumeInfos);
+            profile_, kVolumeInfos);
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         nullptr, source_destination_testing_helper_->GetTempDirPath());
@@ -648,6 +655,11 @@ class CopyOrMoveIOTaskWithScansTest
             },
             base::BindRepeating(&CopyOrMoveIOTaskWithScansTest::SetupMock,
                                 base::Unretained(this))));
+  }
+
+  void TearDown() override {
+    profile_manager_->DeleteAllTestingProfiles();
+    profile_manager_.reset();
   }
 
   // Setup the expectations of the mock.
@@ -939,7 +951,6 @@ class CopyOrMoveIOTaskWithScansTest
       source_destination_testing_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   std::map<storage::FileSystemURL,
            enterprise_connectors::FileTransferAnalysisDelegate::
@@ -947,6 +958,8 @@ class CopyOrMoveIOTaskWithScansTest
            storage::FileSystemURL::Comparator>
       scanning_expectations_;
   storage::FileSystemURLSet directory_scanning_expectations_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {
@@ -974,7 +987,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
-                        dest, &profile_, file_system_context_);
+                        dest, profile_, file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1007,7 +1020,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultUnknown) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
-                        dest, &profile_, file_system_context_);
+                        dest, profile_, file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1039,7 +1052,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, AllowSingleFileUsingResultAllowed) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
-                        dest, &profile_, file_system_context_);
+                        dest, profile_, file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1068,7 +1081,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, SingleFileOnDisabledFileSystem) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(), GetSourceUrlsFromFileInfos({file}),
-                        dest, &profile_, file_system_context_);
+                        dest, profile_, file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1111,8 +1124,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, FilesOnDisabledAndEnabledFileSystems) {
   // Start the copy/move.
   CopyOrMoveIOTask task(
       GetOperationType(),
-      GetSourceUrlsFromFileInfos({enabled_file, disabled_file}), dest,
-      &profile_, file_system_context_);
+      GetSourceUrlsFromFileInfos({enabled_file, disabled_file}), dest, profile_,
+      file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1166,8 +1179,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockAll) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(),
-                        GetSourceUrlsFromFileInfos({directory}), dest,
-                        &profile_, file_system_context_);
+                        GetSourceUrlsFromFileInfos({directory}), dest, profile_,
+                        file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1222,8 +1235,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockOne) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(),
-                        GetSourceUrlsFromFileInfos({directory}), dest,
-                        &profile_, file_system_context_);
+                        GetSourceUrlsFromFileInfos({directory}), dest, profile_,
+                        file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();
@@ -1271,8 +1284,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferAllowAll) {
 
   // Start the copy/move.
   CopyOrMoveIOTask task(GetOperationType(),
-                        GetSourceUrlsFromFileInfos({directory}), dest,
-                        &profile_, file_system_context_);
+                        GetSourceUrlsFromFileInfos({directory}), dest, profile_,
+                        file_system_context_);
   task.Execute(progress_callback.Get(), complete_callback.Get());
   // Wait for the copy/move to be completed.
   run_loop.Run();

@@ -103,6 +103,9 @@ message ClientMetadata {
     optional string profile_path = 3;
     optional string profile_name = 4;
     optional string client_id = 5;
+    // True if the request comes from a Managed Guest Session on ChromeOS. False
+    // in all other cases.
+    optional bool is_chrome_os_managed_guest_session = 6;
   };
   optional Profile profile = 3;
 };
