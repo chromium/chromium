@@ -698,6 +698,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.FailToShowHomeSurfaceUI"
+    enum="FailToShowHomeSurfaceReason" expires_after="2023-10-22">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the reason of why failed to show a home surface UI on the chosen
+    NTP. Logged in cold or warm startup when failed to show the home surface UI.
+    This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.FeedPositionSegmentationResult"
     enum="FeedPositionSegmentationResult" expires_after="2023-09-10">
   <owner>hanxi@chromium.org</owner>

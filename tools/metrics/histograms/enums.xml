@@ -37220,6 +37220,14 @@ Called by update_extension_permission.py.-->
   <int value="1" label="Failed to move the file to the .Trash/info folder"/>
 </enum>
 
+<enum name="FailToShowHomeSurfaceReason">
+  <int value="0" label="Fail to create a NTP Tab"/>
+  <int value="1" label="Fail to find a NTP Tab"/>
+  <int value="2" label="Not a native page"/>
+  <int value="3" label="Not a NTP native page"/>
+  <int value="4" label="The native page is frozen"/>
+</enum>
+
 <enum name="FallbackDNSTestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
