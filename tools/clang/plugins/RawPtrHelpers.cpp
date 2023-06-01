@@ -118,14 +118,14 @@ clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
                  isInGeneratedLocation(),
                  isInLocationListedInFilterFile(options.paths_to_exclude),
                  isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                 ImplicitFieldDeclaration());
+                 ImplicitFieldDeclaration(), isObjCSynthesize());
   } else {
     return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
                  isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
                  isInGeneratedLocation(),
                  isInLocationListedInFilterFile(options.paths_to_exclude),
                  isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                 ImplicitFieldDeclaration(),
+                 ImplicitFieldDeclaration(), isObjCSynthesize(),
                  hasDescendant(StackAllocatedQualType(
                      options.stack_allocated_predicate)));
   }
