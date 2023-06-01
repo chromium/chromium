@@ -85,9 +85,9 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs) {
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
                                bookmarks::StorageType type) {
-  DCHECK(folder);
-  DCHECK(folder->is_folder()) << "node type: " << folder->type()
-                              << ", storage type: " << static_cast<int>(type);
+  CHECK(folder);
+  CHECK(folder->is_folder()) << "node type: " << folder->type()
+                             << ", storage type: " << static_cast<int>(type);
   prefs->SetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks,
                   folder->id());
   prefs->SetInteger(prefs::kIosBookmarkLastUsedStorageReceivingBookmarks,
