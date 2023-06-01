@@ -115,9 +115,10 @@ void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
   // We should never receive an accelerator that was never registered.
   DCHECK(delegate_map_.contains(accelerator.key_code()));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // For privacy, we don't want to handle media keys when the system is locked.
-  // On Windows and Mac OS X, this will happen unless we explicitly prevent it.
+  // On Windows and Apple platforms, this will happen unless we explicitly
+  // prevent it.
   // TODO(steimel): Consider adding an idle monitor instead and disabling the
   // RemoteCommandCenter/SystemMediaTransportControls on lock so that other OS
   // apps can take control.
@@ -217,11 +218,11 @@ void MediaKeysListenerManagerImpl::EnsureAuxiliaryServices() {
   if (auxiliary_services_started_)
     return;
 
-#if BUILDFLAG(IS_MAC)
-  // On Mac OS, we need to initialize the idle monitor in order to check if the
-  // system is locked.
+#if BUILDFLAG(IS_APPLE)
+  // On Apple platforms, we need to initialize the idle monitor in order to
+  // check if the system is locked.
   ui::InitIdleMonitor();
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
   auxiliary_services_started_ = true;
 }
