@@ -1536,6 +1536,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSignedOutViewDemotionName,
      flag_descriptions::kEnableSignedOutViewDemotionDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableSignedOutViewDemotion)},
+    {"autofill-use-two-dots-for-last-four-digits",
+     flag_descriptions::kAutofillUseTwoDotsForLastFourDigitsName,
+     flag_descriptions::kAutofillUseTwoDotsForLastFourDigitsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillUseTwoDotsForLastFourDigits)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

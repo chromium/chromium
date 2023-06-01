@@ -686,6 +686,14 @@
     "expiry_milestone": 106
   },
   {
+    "name": "autofill-use-two-dots-for-last-four-digits",
+    "owners": [
+      "smcgruer",
+      "chrome-payments-team@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "back-forward-cache",
     "owners": [ "bfcache-dev@chromium.org" ],
     "expiry_milestone": 120

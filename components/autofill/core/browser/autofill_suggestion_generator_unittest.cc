@@ -811,6 +811,19 @@ class AutofillCreditCardSuggestionContentTest
 #endif
   }
 
+#if BUILDFLAG(IS_IOS)
+  // Return the obfuscation length for the last four digits on iOS.
+  // Although this depends on the kAutofillUseTwoDotsForLastFourDigits flag,
+  // that flag is not tested explicitly by this test; see
+  // AutofillCreditCardSuggestionIOSObfuscationLengthContentTest instead.
+  int ios_obfuscation_length() const {
+    return base::FeatureList::IsEnabled(
+               features::kAutofillUseTwoDotsForLastFourDigits)
+               ? 2
+               : 4;
+  }
+#endif
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   bool keyboard_accessory_enabled_;
@@ -851,12 +864,13 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
 
 #if BUILDFLAG(IS_IOS)
   // There should be 2 lines of labels:
-  // 1. Obfuscated last 4 digits "....1111".
+  // 1. Obfuscated last 4 digits "..1111" or "....1111".
   // 2. Virtual card label.
   ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 2U);
   ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
-            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+            internal::GetObfuscatedStringForCardDigits(
+                u"1111", ios_obfuscation_length()));
 #else
   if (keyboard_accessory_enabled()) {
     // There should be only 1 line of label: obfuscated last 4 digits "..1111".
@@ -903,7 +917,7 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
   // Only card number is displayed on the first line.
   EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", 4)}));
+                                         u"1111", ios_obfuscation_length())}));
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value, u"");
 #else
   if (keyboard_accessory_enabled()) {
@@ -952,11 +966,12 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
   EXPECT_EQ(real_card_name_field_suggestion.minor_text.value, u"");
 
 #if BUILDFLAG(IS_IOS)
-  // For IOS, the label is "....1111".
+  // For IOS, the label is "..1111" or "....1111".
   ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
   ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
-            internal::GetObfuscatedStringForCardDigits(u"1111", 4));
+            internal::GetObfuscatedStringForCardDigits(
+                u"1111", ios_obfuscation_length()));
 #else
   if (keyboard_accessory_enabled()) {
     // For the keyboard accessory, the label is "..1111".
@@ -993,7 +1008,7 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
   // Only the card number is displayed on the first line.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
-                                         u"1111", 4)}));
+                                         u"1111", ios_obfuscation_length())}));
   EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
 #else
   // For Desktop/Android, split the first line and populate the card name and
@@ -1011,6 +1026,64 @@ TEST_P(AutofillCreditCardSuggestionContentTest,
             base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
                           base::UTF8ToUTF16(test::NextYear().substr(2))}));
 }
+
+#if BUILDFLAG(IS_IOS)
+// Tests that credit card suggestions on iOS use the correct number of '•'
+// characters depending on the kAutofillUseTwoDotsForLastFourDigits feature.
+class AutofillCreditCardSuggestionIOSObfuscationLengthContentTest
+    : public AutofillSuggestionGeneratorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillCreditCardSuggestionIOSObfuscationLengthContentTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillUseTwoDotsForLastFourDigits, GetParam());
+  }
+
+  ~AutofillCreditCardSuggestionIOSObfuscationLengthContentTest() override =
+      default;
+
+  int expected_obfuscation_length() const { return GetParam() ? 2 : 4; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillCreditCardSuggestionContentTest,
+    AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
+    testing::Bool());
+
+TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
+       CreateCreditCardSuggestion_CorrectObfuscationLength) {
+  CreditCard server_card = CreateServerCard();
+
+  // Name field suggestion.
+  Suggestion card_name_field_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, AutofillType(CREDIT_CARD_NAME_FULL),
+          /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  ASSERT_EQ(card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(card_name_field_suggestion.labels[0][0].value,
+            internal::GetObfuscatedStringForCardDigits(
+                u"1111", expected_obfuscation_length()));
+
+  // Card number field suggestion.
+  Suggestion card_number_field_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, AutofillType(CREDIT_CARD_NUMBER),
+          /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  EXPECT_EQ(
+      card_number_field_suggestion.main_text.value,
+      base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
+                                   u"1111", expected_obfuscation_length())}));
+}
+
+#endif  // BUILDFLAG(IS_IOS)
 
 class AutofillSuggestionGeneratorTestForMetadata
     : public AutofillSuggestionGeneratorTest,

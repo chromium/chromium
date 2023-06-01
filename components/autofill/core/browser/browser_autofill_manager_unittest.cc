@@ -1131,6 +1131,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   virtual int ObfuscationLength() {
 #if BUILDFLAG(IS_ANDROID)
     return IsKeyboardAccessoryEnabled() ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+    return base::FeatureList::IsEnabled(
+               features::kAutofillUseTwoDotsForLastFourDigits)
+               ? 2
+               : 4;
 #else
     return 4;
 #endif
@@ -1319,6 +1324,11 @@ class CreditCardSuggestionTest : public BrowserAutofillManagerTest,
   int ObfuscationLength() override {
 #if BUILDFLAG(IS_ANDROID)
     return is_keyboard_accessory_enabled_ ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+    return base::FeatureList::IsEnabled(
+               features::kAutofillUseTwoDotsForLastFourDigits)
+               ? 2
+               : 4;
 #else
     return 4;
 #endif
@@ -1932,11 +1942,11 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_EmptyValue) {
   // Test that we sent the credit card suggestions to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -1963,11 +1973,11 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_Whitespace) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -1994,11 +2004,11 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_StopCharsOnly) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -2026,11 +2036,11 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -2062,11 +2072,12 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
   // Test that we sent the right value to the external delegate.
-  CheckSuggestions(field.global_id(),
-                   Suggestion(std::string("Mastercard  ") +
-                                  test::ObfuscatedCardDigitsAsUTF8("3123"),
-                              master_card_label, kMasterCard,
-                              PopupItemId::kCreditCardEntry));
+  CheckSuggestions(
+      field.global_id(),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "3123", ObfuscationLength()),
+                 master_card_label, kMasterCard,
+                 PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return only matching credit card profile suggestions when the
@@ -2089,9 +2100,9 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       field.global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test that we return credit card profile suggestions when the selected form
@@ -2240,11 +2251,11 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -2272,11 +2283,11 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -2314,15 +2325,15 @@ TEST_F(BrowserAutofillManagerTest,
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("8765"),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "8765", ObfuscationLength()),
                  master_card_label1, kMasterCard,
                  PopupItemId::kCreditCardEntry),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("3456"),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "3456", ObfuscationLength()),
                  master_card_label2, kMasterCard,
                  PopupItemId::kCreditCardEntry));
 }
@@ -2408,15 +2419,16 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_ExpiredCards) {
 
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion(std::string("Mastercard  ") +
-                     test::ObfuscatedCardDigitsAsUTF8("5100"),
+      Suggestion(std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                   "5100", ObfuscationLength()),
                  master_card_label, kMasterCard, PopupItemId::kCreditCardEntry),
-      Suggestion(
-          std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
-          amex_card_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
+      Suggestion(std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "0005", ObfuscationLength()),
+                 amex_card_label, kAmericanExpressCard,
+                 PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test cards that are expired AND disused are suppressed when suppression is
@@ -2466,15 +2478,18 @@ TEST_F(BrowserAutofillManagerTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
-        test::ObfuscatedCardDigitsAsUTF8("5100");
-    const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength());
+    const std::string visa_label =
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
     const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100") +
+        std::string("Mastercard  ") +
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength()) +
         std::string(", expires on 04/99");
-    const std::string visa_label = std::string("Visa  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("3456") +
-                                   std::string(", expires on 04/10");
+    const std::string visa_label =
+        std::string("Visa  ") +
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
+        std::string(", expires on 04/10");
 #endif
 
     CheckSuggestions(form.fields[0].global_id(),
@@ -2492,10 +2507,11 @@ TEST_F(BrowserAutofillManagerTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     const std::string mastercard_label =
-        test::ObfuscatedCardDigitsAsUTF8("5100");
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength());
 #else
     const std::string mastercard_label =
-        std::string("Mastercard  ") + test::ObfuscatedCardDigitsAsUTF8("5100") +
+        std::string("Mastercard  ") +
+        test::ObfuscatedCardDigitsAsUTF8("5100", ObfuscationLength()) +
         std::string(", expires on 04/99");
 #endif
 
@@ -2511,11 +2527,13 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    const std::string visa_label = test::ObfuscatedCardDigitsAsUTF8("3456");
+    const std::string visa_label =
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
-    const std::string visa_label = std::string("Visa  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("3456") +
-                                   std::string(", expires on 04/10");
+    const std::string visa_label =
+        std::string("Visa  ") +
+        test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
+        std::string(", expires on 04/10");
 #endif
 
     CheckSuggestions(form.fields[0].global_id(),
@@ -2530,11 +2548,13 @@ TEST_F(BrowserAutofillManagerTest,
     GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    const std::string amex_label = test::ObfuscatedCardDigitsAsUTF8("0005");
+    const std::string amex_label =
+        test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength());
 #else
-    const std::string amex_label = std::string("Amex  ") +
-                                   test::ObfuscatedCardDigitsAsUTF8("0005") +
-                                   std::string(", expires on 01/10");
+    const std::string amex_label =
+        std::string("Amex  ") +
+        test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()) +
+        std::string(", expires on 01/10");
 #endif
 
     CheckSuggestions(
@@ -2585,21 +2605,24 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
   const std::string amex_card_exp_label = std::string("Expires on 04/99");
 #endif
 
-  CheckSuggestions(form.fields[1].global_id(),
-                   Suggestion(std::string("Amex  ") +
-                                  test::ObfuscatedCardDigitsAsUTF8("0005"),
-                              amex_card_exp_label, kAmericanExpressCard,
-                              PopupItemId::kCreditCardEntry));
+  CheckSuggestions(
+      form.fields[1].global_id(),
+      Suggestion(std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "0005", ObfuscationLength()),
+                 amex_card_exp_label, kAmericanExpressCard,
+                 PopupItemId::kCreditCardEntry));
 
   // Query by cardholder name field.
   GetAutofillSuggestions(form, form.fields[0]);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const std::string amex_card_label = test::ObfuscatedCardDigitsAsUTF8("0005");
+  const std::string amex_card_label =
+      test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength());
 #else
-  const std::string amex_card_label = std::string("Amex  ") +
-                                      test::ObfuscatedCardDigitsAsUTF8("0005") +
-                                      std::string(", expires on 04/99");
+  const std::string amex_card_label =
+      std::string("Amex  ") +
+      test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()) +
+      std::string(", expires on 04/99");
 #endif
 
   CheckSuggestions(
@@ -8139,9 +8162,9 @@ TEST_F(BrowserAutofillManagerTest,
 
   CheckSuggestions(
       form.fields[3].global_id(),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 visa_label, kVisaCard, PopupItemId::kCreditCardEntry));
 }
 
 // Test that inputs detected to be CVC inputs are forced to
@@ -8845,21 +8868,24 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 
   Suggestion virtual_card_suggestion = Suggestion(
       "Virtual card",
-      std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
+      std::string("nickname  ") +
+          test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()),
       label, kVisaCard, autofill::PopupItemId::kVirtualCreditCardEntry);
 
-  CheckSuggestions(form.fields[1].global_id(), virtual_card_suggestion,
-                   Suggestion(std::string("nickname  ") +
-                                  test::ObfuscatedCardDigitsAsUTF8("3456"),
-                              label, kVisaCard, PopupItemId::kCreditCardEntry));
+  CheckSuggestions(
+      form.fields[1].global_id(), virtual_card_suggestion,
+      Suggestion(std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                                 "3456", ObfuscationLength()),
+                 label, kVisaCard, PopupItemId::kCreditCardEntry));
 
   // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  label = test::ObfuscatedCardDigitsAsUTF8("3456");
+  label = test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength());
 #else
-  label = std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456") +
+  label = std::string("nickname  ") +
+          test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()) +
           std::string(", expires on 04/99");
 #endif
 
@@ -10429,11 +10455,11 @@ class BrowserAutofillManagerTestForVirtualCardOption
     external_delegate_->CheckSuggestionCount(field_id, 1);
     // Suggestion details need to match the credit card added in the SetUp()
     // above.
-    CheckSuggestions(
-        field_id,
-        Suggestion(
-            std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-            "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry));
+    CheckSuggestions(field_id, Suggestion(std::string("Visa  ") +
+                                              test::ObfuscatedCardDigitsAsUTF8(
+                                                  "3456", ObfuscationLength()),
+                                          "Expires on 04/99", kVisaCard,
+                                          PopupItemId::kCreditCardEntry));
   }
 
  private:
@@ -10497,10 +10523,10 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   GetAutofillSuggestions(form, form.fields[0]);  // Cardholder name field.
 
   external_delegate_->CheckSuggestionCount(form.fields[0].global_id(), 1);
-  const std::string visa_label =
-      base::JoinString({"Visa  ", test::ObfuscatedCardDigitsAsUTF8("3456"),
-                        ", expires on 04/99"},
-                       "");
+  const std::string visa_label = base::JoinString(
+      {"Visa  ", test::ObfuscatedCardDigitsAsUTF8("3456", ObfuscationLength()),
+       ", expires on 04/99"},
+      "");
   CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Elvis Presley", visa_label, kVisaCard,
                               PopupItemId::kCreditCardEntry));
@@ -10589,9 +10615,9 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   external_delegate_->CheckSuggestionCount(field_id, 2);
   CheckSuggestions(
       field_id,
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
                  "", "", PopupItemId::kUseVirtualCard));
@@ -10628,12 +10654,12 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   external_delegate_->CheckSuggestionCount(field_id, 3);
   CheckSuggestions(
       field_id,
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("1111"),
-          "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
-      Suggestion(
-          std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-          "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "1111", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
+      Suggestion(std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8(
+                                             "3456", ObfuscationLength()),
+                 "Expires on 04/99", kVisaCard, PopupItemId::kCreditCardEntry),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
                  "", "", PopupItemId::kUseVirtualCard));
@@ -10890,11 +10916,12 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 
   CheckSuggestions(
       form.fields[1].global_id(),
-      Suggestion((expected_nickname_.empty() ? std::string("Amex")
-                                             : expected_nickname_) +
-                     "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),
-                 exp_label, kAmericanExpressCard,
-                 PopupItemId::kCreditCardEntry));
+      Suggestion(
+          (expected_nickname_.empty() ? std::string("Amex")
+                                      : expected_nickname_) +
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()),
+          exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry));
 }
 
 TEST_P(BrowserAutofillManagerTestForSharingNickname,
@@ -10929,11 +10956,13 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
       form.fields[1].global_id(),
       Suggestion(
           (local_nickname_.empty() ? std::string("Amex") : local_nickname_) +
-              "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("0005", ObfuscationLength()),
           exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry),
       Suggestion(
           (server_nickname_.empty() ? std::string("Amex") : server_nickname_) +
-              "  " + test::ObfuscatedCardDigitsAsUTF8("8431"),
+              "  " +
+              test::ObfuscatedCardDigitsAsUTF8("8431", ObfuscationLength()),
           exp_label, kAmericanExpressCard, PopupItemId::kCreditCardEntry));
 }
 

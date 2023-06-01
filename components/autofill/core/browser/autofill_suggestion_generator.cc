@@ -74,9 +74,19 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
 }
 
 int GetObfuscationLength() {
-  // The obfuscation length is 2 for the Android keyboard accessory. It is 4 for
-  // other platforms.
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the obfuscation length is 2 when the Android keyboard
+  // accessory is enabled (though this length applies to all Suggestions
+  // created for Android).
   return IsKeyboardAccessoryEnabled() ? 2 : 4;
+#elif BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(
+             features::kAutofillUseTwoDotsForLastFourDigits)
+             ? 2
+             : 4;
+#else
+  return 4;
+#endif
 }
 
 bool ShouldSplitCardNameAndLastFourDigits() {
@@ -592,7 +602,8 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
   }
 
 #if BUILDFLAG(IS_IOS)
-  // On iOS, the label is formatted as "••••1234".
+  // On iOS, the label is formatted as either "••••1234" or "••1234", depending
+  // on the obfuscation length.
   return {
       Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
           GetObfuscationLength()))};

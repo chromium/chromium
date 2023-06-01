@@ -54,6 +54,10 @@ BASE_DECLARE_FEATURE(kAutofillUseEloRegexForBinMatching);
 extern const base::FeatureParam<int>
     kAutofillVirtualCardEnrollDelayInStrikeDatabaseInDays;
 
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
+#endif
+
 // Return whether a [No thanks] button and new messaging is shown in the save
 // card bubbles. This will be called only on desktop platforms.
 bool ShouldShowImprovedUserConsentForCreditCardSave();
