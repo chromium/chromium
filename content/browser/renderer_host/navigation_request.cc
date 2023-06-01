@@ -1072,47 +1072,6 @@ absl::optional<std::string> GetTopicsHeaderValueForNavigationRequest(
   return DeriveTopicsHeaderValue(topics, num_versions_in_epochs);
 }
 
-// Support logging OriginAgentClusterEndResult with VLOG.
-std::ostream& operator<<(
-    std::ostream& out,
-    NavigationRequest::OriginAgentClusterEndResult result) {
-  using OriginAgentClusterEndResult =
-      NavigationRequest::OriginAgentClusterEndResult;
-  switch (result) {
-    case OriginAgentClusterEndResult::kNotRequestedAndNotOriginKeyed:
-      out << "kNotRequestedAndNotOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kNotRequestedButOriginKeyed:
-      out << "kNotRequestedButOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kRequestedButNotOriginKeyed:
-      out << "kRequestedButNotOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kRequestedAndOriginKeyed:
-      out << "kRequestedAndOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kExplicitlyNotRequestedAndNotOriginKeyed:
-      out << "kExplicitlyNotRequestedAndNotOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kExplicitlyNotRequestedButOriginKeyed:
-      out << "kExplicitlyNotRequestedButOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kExplicitlyRequestedButNotOriginKeyed:
-      out << "kExplicitlyRequestedButNotOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kExplicitlyRequestedAndOriginKeyed:
-      out << "kExplicitlyRequestedAndOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kNotExplicitlyRequestedButNotOriginKeyed:
-      out << "kNotExplicitlyRequestedButNotOriginKeyed";
-      break;
-    case OriginAgentClusterEndResult::kNotExplicitlyRequestedAndOriginKeyed:
-      out << "kNotExplicitlyRequestedAndOriginKeyed";
-      break;
-  }
-  return out;
-}
-
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -3501,20 +3460,20 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
                                                  requested_isolation_state)
           .is_origin_agent_cluster();
 
-  bool are_origin_agent_clusters_enabled_by_default =
-      SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
-          frame_tree_node_->navigator().controller().GetBrowserContext());
-  // When OAC is enabled by default, report enum values that distinguish
-  // between explicitly requesting OAC (on or off) and having no related
-  // header.
-  bool was_explicitly_requested =
-      response_head_ && response_head_->parsed_headers->origin_agent_cluster ==
-                            network::mojom::OriginAgentClusterValue::kTrue;
-  bool was_explicitly_not_requested =
-      response_head_ && response_head_->parsed_headers->origin_agent_cluster ==
-                            network::mojom::OriginAgentClusterValue::kFalse;
+  if (SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
+    // When OAC is enabled by default, report enum values that distinguish
+    // between explicitly requesting OAC (on or off) and having no related
+    // header.
+    bool was_explicitly_requested =
+        response_head_ &&
+        response_head_->parsed_headers->origin_agent_cluster ==
+            network::mojom::OriginAgentClusterValue::kTrue;
+    bool was_explicitly_not_requested =
+        response_head_ &&
+        response_head_->parsed_headers->origin_agent_cluster ==
+            network::mojom::OriginAgentClusterValue::kFalse;
 
-  if (are_origin_agent_clusters_enabled_by_default) {
     if (got_origin_agent_cluster) {
       if (was_explicitly_requested) {
         origin_agent_cluster_end_result_ =
@@ -3577,37 +3536,6 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   commit_params_->origin_agent_cluster_left_as_default =
       !response_head_ || response_head_->parsed_headers->origin_agent_cluster ==
                              network::mojom::OriginAgentClusterValue::kAbsent;
-
-  // TODO(vogelheim): Support debugging crbug.com/1429587: Log the
-  // origin-agent clustering decision at VLOG(2), plus the variables
-  // that inform this decision. Revert this change once crbug.com/1429587
-  // is fixed.
-  VLOG(2) << __func__ << ": "
-          << "url = " << GetURL().spec() << "\n"
-          << "\torigin_agent_cluster_end_result_ = "
-          << origin_agent_cluster_end_result_ << "\n"
-          << "\tcommit_params_->origin_agent_cluster = "
-          << commit_params_->origin_agent_cluster << "\n"
-          << "\tcommit_params_->origin_agent_cluster_left_as_default = "
-          << commit_params_->origin_agent_cluster_left_as_default << "\n"
-          << "\tis_opaque_origin_because_sandbox = "
-          << is_opaque_origin_because_sandbox << "\n"
-          << "\tis_requested = " << is_requested << "\n"
-          << "\texpects_origin_agent_cluster = " << expects_origin_agent_cluster
-          << "\n"
-          << "\trequires_origin_keyed_process = "
-          << requires_origin_keyed_process << "\n"
-          << "\trequested_isolation_state = "
-          << "(is_origin_agent_cluster="
-          << requested_isolation_state.is_origin_agent_cluster()
-          << ",requires_origin_keyed_process="
-          << requested_isolation_state.requires_origin_keyed_process() << ")\n"
-          << "\tgot_origin_agent_cluster = " << got_origin_agent_cluster << "\n"
-          << "\tare_origin_agent_clusters_enabled_by_default = "
-          << are_origin_agent_clusters_enabled_by_default << "\n"
-          << "\twas_explicitly_requested = " << was_explicitly_requested << "\n"
-          << "\twas_explicitly_not_requested = " << was_explicitly_not_requested
-          << "\n";
 }
 
 void NavigationRequest::ProcessOriginAgentClusterEndResult() {
