@@ -9,6 +9,8 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/optional_bool.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // Loading info.
@@ -75,6 +77,30 @@ interface AuthChallengeResponder {
    // Called in response to an authentication request. See
    // URLLoaderNetworkServiceObserver::OnAuthRequired.
    OnAuthCredentials(AuthCredentials? credentials);
+};
+
+// Shared Storage is an origin-keyed storage mechanism where the output is
+// carefully guarded to mitigate the risk of cross-site correlation.
+// See https://github.com/WICG/shared-storage/blob/main/README.md.
+//
+// Each type corresponds to one of the Shared Storage setter or deleter
+// operations that can be triggered by response headers.
+enum SharedStorageOperationType {
+  kSet = 0,
+  kAppend = 1,
+  kDelete = 2,
+  kClear = 3,
+};
+
+// Bundles an operation type with any needed parameters for Shared Storage
+// setter/deleter operations that can be triggered by response headers. The
+// raw structured headers are parsed into an array of this struct, then sent to
+// the browser process.
+struct SharedStorageOperation {
+  SharedStorageOperationType type;
+  string? key;
+  string? value;
+  OptionalBool ignore_if_present = kUnset;
 };
 
 // This interface is used by an URLLoaderFactory to provide notification
@@ -149,6 +175,34 @@ interface URLLoaderNetworkServiceObserver {
   // identifies the annotation of the request.
   OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
                   int64 sent_bytes);
+
+  // The syntactic parsing of "Shared-Storage-Write" response headers occurs in
+  // the network service for security and privacy; this method then notifies
+  // the browser process or other observer implementers that the raw headers
+  // have been parsed into an array of `SharedStorageOperation` structs.
+  //
+  // The order of the operations as listed in the header(s) is preserved, so
+  // that the browser process (the main implementer of this API) can guarantee
+  // that it will invoke the corresponding operations in their originally
+  // specified order.
+  //
+  // Note that any structured header list items that are not parsed as valid
+  // `SharedStorageOperation`s will simply be omitted. Moreover, if the header
+  // does not parse as a valid structured header list, or if the parsed list is
+  // empty, then this method will not be invoked.
+  //
+  // Unlike with calls to Shared Storage from the renderer, we don't check the
+  // the length requirements for keys and values using mojom traits, in order
+  // to avoid a dependency on blink. Instead, we must check these lengths in
+  // the implementation (e.g. in the browser process) before invoking the
+  // actual Shared Storage operations.
+  //
+  // TODO(crbug.com/1434529): Make the `OnSharedStorageHeaderReceived()` call
+  // synchronous so that we can guarantee that order is preserved between calls
+  // triggered by response headers and Shared Storage calls from the same
+  // renderer process where this request originated.
+  OnSharedStorageHeaderReceived(url.mojom.Origin request_origin,
+                 array<SharedStorageOperation> operations) => ();
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
