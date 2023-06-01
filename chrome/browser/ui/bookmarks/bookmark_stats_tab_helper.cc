@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_stats_tab_helper.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "content/public/browser/navigation_handle.h"
 
 BookmarkStatsTabHelper::~BookmarkStatsTabHelper() = default;
@@ -36,6 +38,16 @@ void BookmarkStatsTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {
     should_reset_launch_data_ = true;
+  }
+}
+
+void BookmarkStatsTabHelper::DidFirstVisuallyNonEmptyPaint() {
+  if (launch_action_ &&
+      tab_disposition_ == WindowOpenDisposition::CURRENT_TAB &&
+      launch_action_->location == BookmarkLaunchLocation::kAttachedBar) {
+    base::UmaHistogramTimes(
+        "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint",
+        base::TimeTicks::Now() - launch_action_->action_time);
   }
 }
 

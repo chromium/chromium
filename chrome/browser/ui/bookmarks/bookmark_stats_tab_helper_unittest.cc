@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -51,11 +52,14 @@ class BookmarkStatsTabHelperTest : public ::testing::Test {
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
@@ -91,6 +95,42 @@ TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
   CommitPendingNavigation();
   EXPECT_FALSE(helper->launch_action_for_testing().has_value());
   EXPECT_FALSE(helper->tab_disposition_for_testing().has_value());
+}
+
+TEST_F(BookmarkStatsTabHelperTest, EmitsNonEmptyPaintMetrics) {
+  // The launch action should start unset.
+  BookmarkStatsTabHelper* helper = GetHelper();
+  EXPECT_FALSE(helper->launch_action_for_testing().has_value());
+  EXPECT_FALSE(helper->tab_disposition_for_testing().has_value());
+  histogram_tester().ExpectTotalCount(
+      "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint", 0);
+
+  // Begin a navigation and attempt to set the launch action. This should now
+  // be reflected in the helper.
+  LoadUrl(kTestUrl1);
+  helper->SetLaunchAction(
+      {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
+      WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(helper->launch_action_for_testing().has_value());
+  EXPECT_TRUE(helper->tab_disposition_for_testing().has_value());
+
+  // Simulate a non-empty paint event. The non-empty paint metric should be
+  // emitted.
+  helper->DidFirstVisuallyNonEmptyPaint();
+  histogram_tester().ExpectTotalCount(
+      "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint", 1);
+
+  // A following navigation should clear the launch action data.
+  LoadUrl(kTestUrl2);
+  CommitPendingNavigation();
+  EXPECT_FALSE(helper->launch_action_for_testing().has_value());
+  EXPECT_FALSE(helper->tab_disposition_for_testing().has_value());
+
+  // Simulate a non-empty paint event. No metrics should have been emitted as
+  // the launch action should have been reset.
+  helper->DidFirstVisuallyNonEmptyPaint();
+  histogram_tester().ExpectTotalCount(
+      "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint", 1);
 }
 
 }  // namespace test

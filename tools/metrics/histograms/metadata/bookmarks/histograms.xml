@@ -73,6 +73,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint"
+    units="ms" expires_after="2024-01-31">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-cros@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Tracks the time between when the user first launches a bookmark from the
+    attached bookmark bar into the current tab to when we receive the first
+    visually non-empty paint. Emitted after the WebContents in the browser has
+    been notified of the non-empty paint.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.AverageNodeSize" units="Bytes"
     expires_after="2023-10-08">
   <owner>wylieb@chromium.org</owner>

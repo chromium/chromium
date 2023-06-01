@@ -34,6 +34,7 @@ class BookmarkStatsTabHelper
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
   const absl::optional<BookmarkLaunchAction>& launch_action_for_testing()
       const {
