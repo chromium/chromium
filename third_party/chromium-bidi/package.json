@@ -201,7 +201,7 @@
     "nyc": "15.1.0",
     "prettier": "2.8.8",
     "rimraf": "5.0.0",
-    "rollup": "3.21.3",
+    "rollup": "3.23.0",
     "sinon": "15.0.4",
     "source-map-support": "0.5.21",
     "terser": "5.17.1",
