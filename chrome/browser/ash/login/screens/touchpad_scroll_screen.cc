@@ -75,6 +75,15 @@ bool TouchpadScrollScreen::ShouldBeSkipped(const WizardContext& context) const {
     }
   }
 
+  // Skip the screen if `kShowTouchpadScrollScreenEnabled` preference is set by
+  // admin to false.
+  const PrefService::Preference* pref =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
+          prefs::kShowTouchpadScrollScreenEnabled);
+  if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
+    return true;
+  }
+
   return false;
 }
 
