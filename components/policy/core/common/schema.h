@@ -198,7 +198,7 @@ class POLICY_EXPORT Schema {
    private:
     scoped_refptr<const InternalStorage> storage_;
     raw_ptr<const internal::PropertyNode, AllowPtrArithmetic> it_;
-    raw_ptr<const internal::PropertyNode> end_;
+    raw_ptr<const internal::PropertyNode, AllowPtrArithmetic> end_;
   };
 
   // These methods should be called only if type() == Type::DICT,
