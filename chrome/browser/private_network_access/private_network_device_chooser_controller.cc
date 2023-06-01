@@ -35,7 +35,7 @@ PrivateNetworkDeviceChooserController::PrivateNetworkDeviceChooserController(
           CreateChooserTitle(render_frame_host,
                              IDS_PRIVATE_NETWORK_DEVICE_CHOOSER_PROMPT_ORIGIN)),
       device_(std::move(device)),
-      event_handler_(std::move(event_handler)) {
+      event_handler_(event_handler) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   origin_ = main_frame->GetLastCommittedOrigin();
 }

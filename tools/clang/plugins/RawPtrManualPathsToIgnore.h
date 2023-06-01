@@ -35,6 +35,10 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // win:pe_image target that uses this file does not depend on base/.
     "base/no_destructor.h",
 
+    // Can't depend on //base, pointers/references under this directory can't be
+    // rewritten.
+    "testing/rust_gtest_interop/",
+
     // Exclude - deprecated and contains legacy C++ and pre-C++11 code.
     "ppapi/",
 

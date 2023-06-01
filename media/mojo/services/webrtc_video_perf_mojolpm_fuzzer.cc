@@ -139,7 +139,7 @@ class WebrtcVideoPerfLPMFuzzer {
   }
 
   void NextAction() {
-    const auto& action = testcase_.actions(action_index_);
+    const auto& action = testcase_->actions(action_index_);
     switch (action.action_case()) {
       case fuzzing::webrtc_video_perf::proto::Action::kUpdateRecord: {
         const auto& update_record = action.update_record();
@@ -167,10 +167,10 @@ class WebrtcVideoPerfLPMFuzzer {
     ++action_index_;
   }
 
-  bool IsFinished() { return action_index_ >= testcase_.actions_size(); }
+  bool IsFinished() { return action_index_ >= testcase_->actions_size(); }
 
  private:
-  const fuzzing::webrtc_video_perf::proto::Testcase& testcase_;
+  const raw_ref<const fuzzing::webrtc_video_perf::proto::Testcase> testcase_;
   int action_index_ = 0;
 
   // Database storage.

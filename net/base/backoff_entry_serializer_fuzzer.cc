@@ -32,29 +32,29 @@ class ProtoTranslator {
       : input_(input) {}
 
   BackoffEntry::Policy policy() const {
-    return PolicyFromProto(input_.policy());
+    return PolicyFromProto(input_->policy());
   }
   base::Time parse_time() const {
-    return base::Time() + base::Microseconds(input_.parse_time());
+    return base::Time() + base::Microseconds(input_->parse_time());
   }
   base::TimeTicks parse_time_ticks() const {
-    return base::TimeTicks() + base::Microseconds(input_.parse_time());
+    return base::TimeTicks() + base::Microseconds(input_->parse_time());
   }
   base::Time serialize_time() const {
-    return base::Time() + base::Microseconds(input_.serialize_time());
+    return base::Time() + base::Microseconds(input_->serialize_time());
   }
   base::TimeTicks now_ticks() const {
-    return base::TimeTicks() + base::Microseconds(input_.now_ticks());
+    return base::TimeTicks() + base::Microseconds(input_->now_ticks());
   }
   absl::optional<base::Value> serialized_entry() const {
     json_proto::JsonProtoConverter converter;
-    std::string json_array = converter.Convert(input_.serialized_entry());
+    std::string json_array = converter.Convert(input_->serialized_entry());
     absl::optional<base::Value> value = base::JSONReader::Read(json_array);
     return value;
   }
 
  private:
-  const fuzz_proto::FuzzerInput& input_;
+  const raw_ref<const fuzz_proto::FuzzerInput> input_;
 
   static BackoffEntry::Policy PolicyFromProto(
       const fuzz_proto::BackoffEntryPolicy& policy) {

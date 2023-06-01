@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "base/debug/asan_invalid_access.h"
+#include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -103,19 +104,19 @@ class AsanTaskTraceTest {
   AsanTaskTraceTest() {}
 
   void Run() {
-    task_runner_.PostTask(
+    task_runner_->PostTask(
         FROM_HERE, BindOnce(&AsanTaskTraceTest::PostingTask, Unretained(this)));
     task_environment_.RunUntilIdle();
   }
 
  private:
   void PostingTask() {
-    task_runner_.PostTask(FROM_HERE, BindOnce(&AsanHeapUseAfterFree));
+    task_runner_->PostTask(FROM_HERE, BindOnce(&AsanHeapUseAfterFree));
   }
 
   test::TaskEnvironment task_environment_;
-  SingleThreadTaskRunner& task_runner_ =
-      *task_environment_.GetMainThreadTaskRunner();
+  const raw_ref<SingleThreadTaskRunner> task_runner_{
+      *task_environment_.GetMainThreadTaskRunner()};
 };
 
 TEST_F(AsanServiceTest, MAYBE_TaskTraceCallback) {

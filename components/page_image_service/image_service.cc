@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -111,10 +112,10 @@ class ImageService::SuggestEntityImageURLFetcher {
     }
 
     AutocompleteInput input(search_query_, metrics::OmniboxEventProto::JOURNEYS,
-                            autocomplete_scheme_classifier_);
+                            *autocomplete_scheme_classifier_);
     SearchSuggestionParser::Results results;
     if (!SearchSuggestionParser::ParseSuggestResults(
-            *response_data, input, autocomplete_scheme_classifier_,
+            *response_data, input, *autocomplete_scheme_classifier_,
             /*default_result_relevance=*/100,
             /*is_keyword_result=*/false, &results)) {
       UmaHistogramEnumerationForClient(
@@ -146,7 +147,8 @@ class ImageService::SuggestEntityImageURLFetcher {
   }
 
   // Embedder-specific logic on how to classify schemes.
-  const AutocompleteSchemeClassifier& autocomplete_scheme_classifier_;
+  const raw_ref<const AutocompleteSchemeClassifier>
+      autocomplete_scheme_classifier_;
 
   // The id of the UI requesting the image.
   mojom::ClientId client_id_;
