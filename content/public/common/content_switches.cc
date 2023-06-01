@@ -211,9 +211,6 @@ const char kDisablePepper3d[]               = "disable-pepper-3d";
 // Disables the Permissions API.
 const char kDisablePermissionsAPI[]         = "disable-permissions-api";
 
-// Disable Image Chromium for Pepper 3d.
-const char kDisablePepper3DImageChromium[] = "disable-pepper-3d-image-chromium";
-
 // Disables compositor-accelerated touch-screen pinch gestures.
 const char kDisablePinch[]                  = "disable-pinch";
 

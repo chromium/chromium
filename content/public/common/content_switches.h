@@ -74,7 +74,6 @@ CONTENT_EXPORT extern const char kDisableNotifications[];
 CONTENT_EXPORT extern const char kDisableNv12DxgiVideo[];
 CONTENT_EXPORT extern const char kDisableOriginTrialControlledBlinkFeatures[];
 extern const char kDisablePepper3d[];
-CONTENT_EXPORT extern const char kDisablePepper3DImageChromium[];
 CONTENT_EXPORT extern const char kDisablePermissionsAPI[];
 CONTENT_EXPORT extern const char kDisablePinch[];
 CONTENT_EXPORT extern const char kDisablePresentationAPI[];

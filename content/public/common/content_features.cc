@@ -791,14 +791,6 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If Pepper 3D Image Chromium is allowed, this feature controls whether it is
-// enabled.
-// TODO(https://crbug.com/1196009): Remove this feature, remove the code that
-// uses it.
-BASE_FEATURE(kPepper3DImageChromium,
-             "Pepper3DImageChromium",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill-switch to introduce a compatibility breaking restriction.
 BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
              "PepperCrossOriginRedirectRestriction",
