@@ -266,6 +266,7 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/system_extensions/api/window_management/cros_window_management_context_factory.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
@@ -883,6 +884,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::DlpRulesManagerFactory::GetInstance();
   policy::PolicyCertServiceFactory::GetInstance();
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::FilesPolicyNotificationManagerFactory::GetInstance();
 #endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
