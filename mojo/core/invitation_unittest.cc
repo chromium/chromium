@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <cstring>
 #include <string>
 
 #include "base/base_paths.h"
@@ -13,6 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
@@ -27,6 +31,7 @@
 #include "mojo/buildflags.h"
 #include "mojo/core/core.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/core/ipcz_api.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_switches.h"
@@ -460,15 +465,15 @@ class TestClientBase : public MAYBE_InvitationTest {
   }
 };
 
-#define DEFINE_TEST_CLIENT(name)             \
-  class name##Impl : public TestClientBase { \
-   public:                                   \
-    static void Run();                       \
-  };                                         \
-  MULTIPROCESS_TEST_MAIN(name) {             \
-    name##Impl::Run();                       \
-    return 0;                                \
-  }                                          \
+#define DEFINE_TEST_CLIENT(name)                \
+  class name##Impl : public TestClientBase {    \
+   public:                                      \
+    static void Run();                          \
+  };                                            \
+  MULTIPROCESS_TEST_MAIN(name) {                \
+    name##Impl::Run();                          \
+    return testing::Test::HasFailure() ? 1 : 0; \
+  }                                             \
   void name##Impl::Run()
 
 const std::string kTestMessage1 = "i am the pusher robot";
@@ -980,6 +985,115 @@ DEFINE_TEST_CLIENT(NonBrokerToNonBrokerClient) {
   WriteMessage(pipe_to_test, "ccc");
 
   EXPECT_EQ("bye", ReadMessage(host));
+  MojoClose(host);
+  MojoClose(pipe_to_test);
+}
+
+TEST_F(MAYBE_InvitationTest, MultiBrokerNetwork) {
+  // Regression test for https://crbug.com/1432382, ensuring that a non-broker
+  // can communicate with brokers other than its own and can transmit platform
+  // handles between them.
+
+  if (!mojo::core::IsMojoIpczEnabled()) {
+    // Mutli-broker networks are only supported with ipcz enabled.
+    GTEST_SKIP() << "This tests functionality which is only supported when "
+                 << "MojoIpcz is enabled, but MojoIpcz is not enabled.";
+  }
+
+  ASSERT_TRUE(mojo::core::GetIpczNodeOptions().is_broker);
+
+  // First we launch a second broker and connect to it.
+  MojoHandle secondary_broker;
+  base::Process secondary_broker_process =
+      LaunchChildTestClient("SecondaryBroker", &secondary_broker, 1,
+                            MOJO_SEND_INVITATION_FLAG_ISOLATED);
+
+  // Then launch a non-broker and connect to it.
+  MojoHandle client;
+  base::Process client_process = LaunchChildTestClient(
+      "MultiBrokerNetworkClient", &client, 1, MOJO_SEND_INVITATION_FLAG_NONE);
+
+  // Pass them each one end of the same pipe.
+  MessagePipe pipe;
+  MojoHandle broker_to_client = pipe.handle0.release().value();
+  MojoHandle client_to_broker = pipe.handle1.release().value();
+  WriteMessageWithHandles(secondary_broker, "hi", &broker_to_client, 1);
+  WriteMessageWithHandles(client, "hi", &client_to_broker, 1);
+
+  // Signal to the host that it's OK to terminate, then wait for acks.
+  WriteMessage(secondary_broker, "bye");
+  WriteMessage(client, "bye");
+  WaitForProcessToTerminate(secondary_broker_process);
+  WaitForProcessToTerminate(client_process);
+  MojoClose(secondary_broker);
+  MojoClose(client);
+}
+
+MojoHandle CreateMemory(base::StringPiece contents) {
+  auto region = base::WritableSharedMemoryRegion::Create(contents.size());
+  auto mapping = region.Map();
+  memcpy(mapping.memory(), contents.data(), contents.size());
+  auto buffer = WrapReadOnlySharedMemoryRegion(
+      base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region)));
+  return buffer.release().value();
+}
+
+std::string ReadMemory(MojoHandle handle) {
+  auto region = UnwrapReadOnlySharedMemoryRegion(
+      ScopedSharedBufferHandle{SharedBufferHandle{handle}});
+  auto mapping = region.Map();
+  base::StringPiece contents{reinterpret_cast<const char*>(mapping.memory()),
+                             region.GetSize()};
+  return std::string{contents};
+}
+
+constexpr size_t kNumMultiBrokerMessageIterations = 100;
+
+DEFINE_TEST_CLIENT(SecondaryBroker) {
+  ASSERT_TRUE(mojo::core::GetIpczNodeOptions().is_broker);
+  MojoHandle invitation =
+      AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_ISOLATED);
+  MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
+
+  MojoHandle client;
+  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &client, 1));
+
+  // Note that handle passing can succeed even if communication is broken
+  // between non-brokers and secondary brokers, as long as no direct link
+  // between them has been fully negotiated yet. We perform many iterations of
+  // handle passing to ensure adequate coverage.
+  for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
+    MojoHandle buffer = CreateMemory("lol");
+    WriteMessageWithHandles(client, "aaa", &buffer, 1);
+    EXPECT_EQ("bbb", ReadMessageWithHandles(client, &buffer, 1));
+    EXPECT_EQ("lmao", ReadMemory(buffer));
+  }
+
+  EXPECT_EQ("bye", ReadMessage(test_runner));
+
+  MojoClose(test_runner);
+  MojoClose(client);
+}
+
+DEFINE_TEST_CLIENT(MultiBrokerNetworkClient) {
+  ASSERT_FALSE(mojo::core::GetIpczNodeOptions().is_broker);
+  MojoHandle invitation = AcceptInvitation(MOJO_ACCEPT_INVITATION_FLAG_NONE);
+  MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
+
+  MojoHandle secondary_broker;
+  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &secondary_broker, 1));
+
+  for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
+    MojoHandle buffer = CreateMemory("lmao");
+    WriteMessageWithHandles(secondary_broker, "bbb", &buffer, 1);
+    EXPECT_EQ("aaa", ReadMessageWithHandles(secondary_broker, &buffer, 1));
+    EXPECT_EQ("lol", ReadMemory(buffer));
+  }
+
+  EXPECT_EQ("bye", ReadMessage(test_runner));
+
+  MojoClose(test_runner);
+  MojoClose(secondary_broker);
 }
 
 }  // namespace

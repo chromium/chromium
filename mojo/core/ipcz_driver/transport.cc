@@ -611,7 +611,7 @@ scoped_refptr<Transport> Transport::Deserialize(
   base::Process process;
   const auto& header = *reinterpret_cast<const TransportHeader*>(data.data());
 #if BUILDFLAG(IS_WIN)
-  if (handles.size() >= 2 && from_transport.remote_process().IsValid()) {
+  if (handles.size() >= 2) {
     process = base::Process(handles[1].ReleaseHandle());
   }
 #endif
