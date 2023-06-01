@@ -204,7 +204,13 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
+// TODO(crbug.com/1450419): Flaky on Linux + ChromeOS
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Default DISABLED_Default
+#else
+#define MAYBE_Default Default
+#endif
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, MAYBE_Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 
