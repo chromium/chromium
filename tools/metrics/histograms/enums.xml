@@ -89352,8 +89352,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="QuicWriteStatus">
   <int value="0" label="WRITE_STATUS_OK"/>
   <int value="1" label="WRITE_STATUS_BLOCKED"/>
-  <int value="2" label="WRITE_STATUS_ERROR"/>
-  <int value="3" label="WRITE_STATUS_MSG_TOO_BIG"/>
+  <int value="3" label="WRITE_STATUS_BLOCKED_DATA_BUFFERED"/>
+  <int value="4" label="WRITE_STATUS_ERROR"/>
+  <int value="5" label="WRITE_STATUS_MSG_TOO_BIG"/>
+  <int value="6" label="WRITE_STATUS_FAILED_TO_COALESCE_PACKET"/>
 </enum>
 
 <enum name="QuotaDatabaseDisabledReason">
