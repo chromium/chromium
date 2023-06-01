@@ -10413,6 +10413,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePolicyTestPageDescription, kOsAll,
      FEATURE_VALUE_TYPE(policy::features::kEnablePolicyTestPage)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"allow-devtools-in-system-ui",
+     flag_descriptions::kAllowDevtoolsInSystemUIName,
+     flag_descriptions::kAllowDevtoolsInSystemUIDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAllowDevtoolsInSystemUI)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

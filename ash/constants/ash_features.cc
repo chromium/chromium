@@ -53,6 +53,12 @@ BASE_FEATURE(kAllowAmbientEQ,
              "AllowAmbientEQ",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows DevTools to open from the context menu and shortcut keys in Ash if
+// Lacros is the only browser.
+BASE_FEATURE(kAllowDevtoolsInSystemUI,
+             "kAllowDevtoolsInSystemUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows network connections which use EAP methods that validate the
 // server certificate to use the default server CA certificate without
 // verifying the servers identity.

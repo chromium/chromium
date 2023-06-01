@@ -597,6 +597,77 @@ TEST_F(RenderViewContextMenuPrefsTest,
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verify that the "Inspect" item and the "View page source" item are not
+// present in the context menu if the lacros is the only browser and the
+// `kAllowDevtoolsInSystemUI` flag is not enabled.
+// TODO(junis): Change test fixture since this test has little to do with Prefs
+TEST_F(RenderViewContextMenuPrefsTest,
+       DeveloperItemsAreNotPresentByDefaultIfAshBrowserIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff},
+      {});
+
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+
+  ASSERT_FALSE(crosapi::browser_util::IsAshDevToolEnabled());
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+// Verify that the "Inspect" item and the "View page source" are present in the
+// context menu if the lacros is the only browser and the
+// `kAllowDevtoolsInSystemUI` flag is enabled.
+// TODO(junis): Change test fixture since this test has little to do with Prefs
+TEST_F(RenderViewContextMenuPrefsTest,
+       DeveloperItemsArePresentIfAshBrowserIsDisabledAndFlagIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+       ash::features::kLacrosOnly,
+       ash::features::kLacrosProfileMigrationForceOff,
+       ash::features::kAllowDevtoolsInSystemUI},
+      {});
+
+  auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+  auto* primary_user =
+      fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));
+  fake_user_manager->UserLoggedIn(primary_user->GetAccountId(),
+                                  primary_user->username_hash(),
+                                  /*browser_restart=*/false,
+                                  /*is_child=*/false);
+  auto scoped_user_manager = std::make_unique<user_manager::ScopedUserManager>(
+      std::move(fake_user_manager));
+
+  ASSERT_TRUE(crosapi::browser_util::IsAshDevToolEnabled());
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS)
 class RenderViewContextMenuDlpPrefsTest
     : public RenderViewContextMenuPrefsTest {

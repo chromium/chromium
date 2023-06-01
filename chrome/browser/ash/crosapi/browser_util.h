@@ -528,6 +528,9 @@ bool WasGotoFilesClicked(PrefService* local_state,
 // Returns true if ash 1st party extension keep list should be enforced.
 bool ShouldEnforceAshExtensionKeepList();
 
+// Indicates whether user can open DevTools in Ash.
+bool IsAshDevToolEnabled();
+
 }  // namespace crosapi::browser_util
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_

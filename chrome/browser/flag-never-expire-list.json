@@ -14,6 +14,7 @@
 // test (AboutFlagsTest.OnlyPermittedFlagsNeverExpire).
 [
   "allow-all-sites-to-initiate-mirroring",
+  "allow-devtools-in-system-ui",
   "allow-previews",
   "always-enable-hdcp",
   "arc-native-bridge-toggle",

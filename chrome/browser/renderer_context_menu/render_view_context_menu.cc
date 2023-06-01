@@ -1474,6 +1474,11 @@ void RenderViewContextMenu::AppendDeveloperItems() {
       IsDevToolsURL(params_.page_url) &&
       params_.page_url.query().find("debugFrontend=true") == std::string::npos;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  hide_developer_items =
+      hide_developer_items || !crosapi::browser_util::IsAshDevToolEnabled();
+#endif
+
   if (hide_developer_items)
     return;
 
