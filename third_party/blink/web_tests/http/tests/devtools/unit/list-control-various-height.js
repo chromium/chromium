@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult('Test ListControl rendering for various height items case.');
 

@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult("Tests that the hint displays properly on a UI.TextPrompt with autocomplete.");
 

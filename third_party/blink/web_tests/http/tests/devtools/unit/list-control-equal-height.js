@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult('Test ListControl rendering and selection for equal height items case.');
 
