@@ -196,7 +196,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             // the resized web contents.
             new Handler().postDelayed(() -> content.setVisibility(View.VISIBLE), 20);
         } else {
-            content.setVisibility(View.INVISIBLE);
+            content.setVisibility(View.GONE);
         }
     }
 
