@@ -1134,9 +1134,12 @@ int MenuController::OnDragUpdated(SubmenuView* source,
   MenuItemView* menu_item = GetMenuItemAt(source, event.location());
   bool over_empty_menu = false;
   if (!menu_item) {
-    // See if we're over an empty menu.
+    // See if we're over an empty menu. `GetMenuItemAt` fails in this case
+    // because it uses `GetEventHandlerForPoint`, which requires an enabled
+    // `View`, while `EmptyMenuMenuItem`s are disabled.
+    // `GetTooltipHandlerForPoint` does not have this restriction.
     menu_item = AsViewClass<EmptyMenuMenuItem>(
-        source->GetEventHandlerForPoint(event.location()));
+        source->GetTooltipHandlerForPoint(event.location()));
     if (menu_item)
       over_empty_menu = true;
   }
