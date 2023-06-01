@@ -136,6 +136,7 @@
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-lacros-rel-compilator": "Ubuntu-22.04",
     "linux-lacros-version-skew-fyi": "Ubuntu-22.04",
+    "linux-layout-tests-edit-ng": "Ubuntu-22.04",
     "linux-libfuzzer-asan-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
     "linux-rel-compilator": "Ubuntu-22.04",
