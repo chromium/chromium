@@ -166,6 +166,7 @@ bool IsVietnameseVniEngine(base::StringPiece engine_id) {
 mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseVniSettings::New();
+  settings->allow_flexible_diacritics = true;
   settings->show_underline_for_composition_text = true;
   return settings;
 }
@@ -173,6 +174,7 @@ mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
 mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
     const base::Value::Dict& input_method_specific_pref) {
   auto settings = mojom::VietnameseTelexSettings::New();
+  settings->allow_flexible_diacritics = true;
   settings->show_underline_for_composition_text = true;
   return settings;
 }
