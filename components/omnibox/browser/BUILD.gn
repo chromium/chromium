@@ -386,6 +386,10 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
+
   if (use_blink) {
     sources += [
       "actions/history_clusters_action.cc",

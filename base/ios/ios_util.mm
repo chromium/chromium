@@ -12,14 +12,17 @@
 #include "base/mac/foundation_util.h"
 #include "base/system/sys_info.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 std::string* g_icudtl_path_override = nullptr;
 
 }  // namespace
 
-namespace base {
-namespace ios {
+namespace base::ios {
 
 bool IsRunningOnIOS12OrLater() {
   static const bool is_running_on_or_later = IsRunningOnOrLater(12, 0, 0);
@@ -105,5 +108,4 @@ bool HasDynamicIsland() {
   return is_dynamic_island_model;
 }
 
-}  // namespace ios
-}  // namespace base
+}  // namespace base::ios

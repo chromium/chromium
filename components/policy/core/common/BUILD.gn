@@ -58,6 +58,9 @@ source_set("util") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos/ash/components/system" ]
   }
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
 }
 
 source_set("internal") {

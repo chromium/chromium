@@ -1267,6 +1267,10 @@ component("net") {
     configs += [ "//build/config/compiler:enable_arc" ]
   }
 
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
+
   if (is_win) {
     sources += [
       "base/file_stream_context_win.cc",
@@ -2056,7 +2060,10 @@ static_library("test_support") {
   }
 
   if (is_ios) {
-    deps += [ ":test_support_bundle_data" ]
+    deps += [
+      ":test_support_bundle_data",
+      "//base/ios",
+    ]
   }
 
   if (use_nss_certs) {
@@ -2937,6 +2944,10 @@ test("net_unittests") {
       "//sql",
       "//sql:test_support",
     ]
+  }
+
+  if (is_ios) {
+    deps += [ "//base/ios" ]
   }
 
   if (is_posix) {

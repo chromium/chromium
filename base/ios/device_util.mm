@@ -22,6 +22,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Client ID key in the user preferences.
@@ -54,8 +58,7 @@ NSString* GenerateClientId() {
 
 }  // namespace
 
-namespace ios {
-namespace device_util {
+namespace ios::device_util {
 
 std::string GetPlatform() {
 #if TARGET_OS_SIMULATOR
@@ -185,5 +188,4 @@ std::string GetSaltedString(const std::string& in_string,
   return base::SysCFStringRefToUTF8(device_id);
 }
 
-}  // namespace device_util
-}  // namespace ios
+}  // namespace ios::device_util

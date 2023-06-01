@@ -57,4 +57,8 @@ source_set("memory_system") {
   if (build_allocation_stack_trace_recorder) {
     deps += [ "//components/allocation_recorder/crash_client" ]
   }
+
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
 }

@@ -2165,16 +2165,6 @@ component("base") {
       "base_paths_mac.h",
       "base_paths_mac.mm",
       "critical_closure_internal_ios.mm",
-      "ios/block_types.h",
-      "ios/device_util.h",
-      "ios/device_util.mm",
-      "ios/ios_util.h",
-      "ios/ios_util.mm",
-      "ios/ns_error_util.h",
-      "ios/ns_error_util.mm",
-      "ios/ns_range.h",
-      "ios/scoped_critical_action.h",
-      "ios/scoped_critical_action.mm",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
@@ -2188,7 +2178,6 @@ component("base") {
         "files/file_path_watcher_kqueue.cc",
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
-        "ios/sim_header_shims.h",
         "mac/mach_port_rendezvous.cc",
         "mac/mach_port_rendezvous.h",
         "process/kill_mac.cc",
@@ -2211,6 +2200,9 @@ component("base") {
         "process/process_stubs.cc",
       ]
     }
+
+    public_deps += [ "//base/ios" ]
+    allow_circular_includes_from += [ "//base/ios" ]
 
     if (is_cronet_build) {
       sources += [
@@ -2739,6 +2731,10 @@ component("i18n") {
 
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
+  }
+
+  if (is_ios) {
+    deps += [ "//base/ios" ]
   }
 }
 

@@ -1098,6 +1098,10 @@ source_set("unit_tests") {
       "//third_party/blink/public/common",
     ]
   }
+
+  if (is_ios) {
+    deps += [ "//base/ios" ]
+  }
 }
 
 fuzzer_test("form_structure_fuzzer") {
