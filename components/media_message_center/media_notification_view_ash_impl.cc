@@ -265,6 +265,7 @@ void MediaNotificationViewAshImpl::UpdateWithMediaSessionInfo(
 
 void MediaNotificationViewAshImpl::UpdateWithMediaMetadata(
     const media_session::MediaMetadata& metadata) {
+  source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   source_label_->SetText(metadata.source_title);
   title_label_->SetText(metadata.title);
   artist_label_->SetText(metadata.artist);

@@ -42,7 +42,10 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
     // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring
     // and Remote Playback routes.
     if (source && source->ContainsStreamingApp()) {
-      return true;
+      // Don't hide it in case of MirroringType::kOffscreenTab.
+      // This happens when 1UA mode is being used. It uses a URL for MediaSource
+      // and a streaming receiver app for CastMediaSource.
+      return !route.media_source().url().SchemeIsHTTPOrHTTPS();
     }
   } else if (route.controller_type() !=
              media_router::RouteControllerType::kGeneric) {
