@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(LacrosPrimaryAshSyncTest, AshSyncsAllTypes) {
   EXPECT_EQ(sync_service->GetActiveDataTypes(), expected_active_types);
 }
 
-// TODO(crbug.com/1450589): Flaky on linux_chromeOS bot
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1450589): Flaky on ChromeOS bot
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AshSyncsOnlyOSTypes DISABLED_AshSyncsOnlyOSTypes
 #else
 #define MAYBE_AshSyncsOnlyOSTypes AshSyncsOnlyOSTypes
