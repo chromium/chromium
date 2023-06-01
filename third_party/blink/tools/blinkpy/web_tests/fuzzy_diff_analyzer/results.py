@@ -8,7 +8,7 @@ from typing import List, Tuple
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import tag_utils
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_data_types as dt
+from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
 
 class ResultProcessor:

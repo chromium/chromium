@@ -4,8 +4,8 @@
 
 import unittest
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_analyzer as analyzer
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_data_types as dt
+from blinkpy.web_tests.fuzzy_diff_analyzer import analyzer
+from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
 
 class FuzzyMatchingAnalyzerTest(unittest.TestCase):

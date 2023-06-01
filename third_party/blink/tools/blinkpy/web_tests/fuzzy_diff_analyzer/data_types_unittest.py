@@ -5,7 +5,7 @@
 import typing
 import unittest
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_data_types as data_types
+from blinkpy.web_tests.fuzzy_diff_analyzer import data_types
 
 
 class FuzzyDiffAnalyzerDataTypesUnittest(unittest.TestCase):

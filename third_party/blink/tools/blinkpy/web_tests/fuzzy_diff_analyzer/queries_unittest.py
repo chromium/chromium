@@ -6,7 +6,7 @@ import json
 import unittest
 import unittest.mock as mock
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_queries as queries
+from blinkpy.web_tests.fuzzy_diff_analyzer import queries
 from flake_suppressor_common import unittest_utils as uu
 
 QUERY_DATA = [{

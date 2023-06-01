@@ -6,7 +6,7 @@
 import numpy as np
 from typing import List
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_data_types as dt
+from blinkpy.web_tests.fuzzy_diff_analyzer import data_types as dt
 
 
 class ImageMatchingAnalyzer:

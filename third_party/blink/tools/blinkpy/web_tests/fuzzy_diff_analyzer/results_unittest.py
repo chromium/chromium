@@ -4,8 +4,8 @@
 
 import unittest
 
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_data_types as data_types
-from blinkpy.web_tests.fuzzy_diff_analyzer import fuzzy_diff_analyzer_results as results_processor
+from blinkpy.web_tests.fuzzy_diff_analyzer import data_types
+from blinkpy.web_tests.fuzzy_diff_analyzer import results
 from flake_suppressor_common import tag_utils as common_tag_utils
 from flake_suppressor_common import unittest_utils as uu
 
@@ -13,7 +13,7 @@ from flake_suppressor_common import unittest_utils as uu
 class BaseResultsUnittest(unittest.TestCase):
     def setUp(self) -> None:
         common_tag_utils.SetTagUtilsImplementation(uu.UnitTestTagUtils)
-        self._result_processor = results_processor.ResultProcessor()
+        self._result_processor = results.ResultProcessor()
 
 
 class AggregateResultsUnittest(BaseResultsUnittest):
