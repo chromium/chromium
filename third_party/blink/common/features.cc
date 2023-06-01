@@ -1077,6 +1077,8 @@ BASE_FEATURE(kAdInterestGroupAPIRestrictedPolicyByDefault,
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Feature flag to enable debug reporting APIs.
+// Due to an issue in how prevWins were stored this flag should not be enabled
+// until July 2023.
 BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
              "BiddingAndScoringDebugReportingAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
