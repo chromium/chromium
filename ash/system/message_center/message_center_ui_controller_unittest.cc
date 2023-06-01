@@ -158,11 +158,6 @@ TEST_F(MessageCenterUiControllerTest, BasicPopup) {
 
   ASSERT_TRUE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());
-
-  ui_controller_->HidePopupBubble();
-
-  ASSERT_FALSE(ui_controller_->popups_visible());
-  ASSERT_FALSE(ui_controller_->message_center_visible());
 }
 
 TEST_F(MessageCenterUiControllerTest, MessageCenterClosesPopups) {
@@ -227,11 +222,6 @@ TEST_F(MessageCenterUiControllerTest, ShowBubbleFails) {
   ASSERT_FALSE(ui_controller_->message_center_visible());
 
   ui_controller_->ShowMessageCenterBubble();
-
-  ASSERT_FALSE(ui_controller_->popups_visible());
-  ASSERT_FALSE(ui_controller_->message_center_visible());
-
-  ui_controller_->HidePopupBubble();
 
   ASSERT_FALSE(ui_controller_->popups_visible());
   ASSERT_FALSE(ui_controller_->message_center_visible());

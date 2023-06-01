@@ -93,16 +93,6 @@ void MessageCenterUiController::ShowPopupBubble() {
   NotifyUiControllerChanged();
 }
 
-// TODO(jamescook): Delete this function. It is only called from tests.
-bool MessageCenterUiController::HidePopupBubble() {
-  if (!popups_visible_)
-    return false;
-  HidePopupBubbleInternal();
-  NotifyUiControllerChanged();
-
-  return true;
-}
-
 void MessageCenterUiController::HidePopupBubbleInternal() {
   if (!popups_visible_)
     return;

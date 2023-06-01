@@ -56,9 +56,6 @@ class ASH_EXPORT MessageCenterUiController
   // Causes an update if the popup bubble is already shown.
   void ShowPopupBubble();
 
-  // Returns whether the popup was visible before.
-  bool HidePopupBubble();
-
   bool message_center_visible() { return message_center_visible_; }
   bool popups_visible() { return popups_visible_; }
   MessageCenterUiDelegate* delegate() { return delegate_; }
