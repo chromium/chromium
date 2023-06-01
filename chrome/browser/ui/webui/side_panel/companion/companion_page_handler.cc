@@ -58,6 +58,11 @@ CompanionPageHandler::CompanionPageHandler(
 
 CompanionPageHandler::~CompanionPageHandler() {
   consent_helper_->RemoveObserver(this);
+  if (web_contents() && !web_contents()->IsBeingDestroyed()) {
+    auto* tab_helper =
+        companion::CompanionTabHelper::FromWebContents(web_contents());
+    tab_helper->OnCompanionSidePanelClosed();
+  }
 }
 
 void CompanionPageHandler::OnUrlKeyedDataCollectionConsentStateChanged(
