@@ -573,6 +573,20 @@ const std::vector<SearchConcept>& GetAudioSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetAudioPowerSoundsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {
+          IDS_OS_SETTINGS_TAG_CHARGING_SOUNDS,
+          mojom::kAudioSubpagePath,
+          mojom::SearchResultIcon::kAudio,
+          mojom::SearchResultDefaultRank::kMedium,
+          mojom::SearchResultType::kSetting,
+          {.setting = mojom::Setting::kChargingSounds},
+      },
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetDisplayArrangementSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_DISPLAY_ARRANGEMENT,
@@ -988,9 +1002,14 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioToggleToUnmuteTooltip",
        IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP},
       {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
+      {"chargingSoundsLabel",
+       IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_CHARGING_SOUNDS_LABEL},
   };
 
   html_source->AddLocalizedStrings(kAudioStrings);
+
+  html_source->AddBoolean("areSystemSoundsEnabled",
+                          ash::features::AreSystemSoundsEnabled());
 }
 
 void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
@@ -1062,6 +1081,12 @@ DeviceSection::DeviceSection(Profile* profile,
 
   if (ash::features::IsAudioSettingsPageEnabled()) {
     updater.AddSearchTags(GetAudioSearchConcepts());
+
+    // Only when the feature is enabled, the toggle buttons for charging sounds
+    // and the low battery sound will be shown up.
+    if (ash::features::AreSystemSoundsEnabled()) {
+      updater.AddSearchTags(GetAudioPowerSoundsSearchConcepts());
+    }
   }
 
   chromeos::PowerManagerClient* power_manager_client =
@@ -1340,6 +1365,8 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_AUDIO_TITLE, mojom::Subpage::kAudio,
       mojom::SearchResultIcon::kAudio, mojom::SearchResultDefaultRank::kMedium,
       mojom::kAudioSubpagePath);
+  generator->RegisterNestedSetting(mojom::Setting::kChargingSounds,
+                                   mojom::Subpage::kAudio);
 
   // Power.
   generator->RegisterTopLevelSubpage(

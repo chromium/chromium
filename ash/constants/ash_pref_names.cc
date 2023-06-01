@@ -47,6 +47,9 @@ const char kESimProfiles[] = "cros_esim.esim_profiles";
 const char kManagedCellularIccidSmdpPair[] =
     "cros_esim.managed_iccid_smdp_pair";
 
+// A boolean pref for whether playing charging sounds is enabled.
+const char kChargingSoundsEnabled[] = "ash.charging_sounds.enabled";
+
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.
 const char kAudioDevicesMute[] = "settings.audio.devices.mute";

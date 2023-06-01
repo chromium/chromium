@@ -145,7 +145,8 @@
   </template>
   <template is="dom-if" route-path="/audio">
     <os-settings-subpage page-title="$i18n{audioTitle}">
-      <settings-audio show-audio-info="[[showAudioInfo_]]"></settings-audio>
+      <settings-audio prefs="{{prefs}}" show-audio-info="[[showAudioInfo_]]">
+      </settings-audio>
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/storage">

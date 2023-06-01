@@ -78280,6 +78280,7 @@ Called by update_net_trust_anchors.py.-->
       label="Keyboard: Switch Top Row Keys Between Function Keys And Chrome
              Actions"/>
   <int value="442" label="Keyboard: Remap Keys"/>
+  <int value="443" label="Charging sounds: On/Off"/>
   <int value="500" label="Open Wallpaper"/>
   <int value="501" label="Ambient Mode On/Off"/>
   <int value="502" label="Ambient Mode Source"/>

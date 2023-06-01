@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/test_system_sounds_delegate.h"
@@ -99,6 +100,11 @@ class PowerSoundsControllerTest : public AshTestBase {
   }
 
   void SetInitialPowerStatus() {
+    // The charging sounds toggle button is disabled as default, to test our
+    // charging sounds features, we will initialize it as enabled.
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kChargingSoundsEnabled, true);
+
     // The default status for power is connected with a charger and the battery
     // level is 1%. We set the initial power status for each unit test to
     // disconnected with a charger and 5% battery level.
@@ -234,6 +240,20 @@ TEST_F(PowerSoundsControllerTest, PlaySoundsOnlyIfLidIsOpened) {
   SetPowerStatus(10, /*line_power_connected=*/false);
   SetPowerStatus(5, /*line_power_connected=*/true);
   EXPECT_TRUE(VerifySounds({Sound::kChargeLowBattery}));
+}
+
+// Tests that when the user disables the toggle button for charging sounds, when
+// plugging in a charger, the device won't play any charging sound.
+TEST_F(PowerSoundsControllerTest, NoChargingSoundPlayedIfToggleButtonDisabled) {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  pref->SetBoolean(prefs::kChargingSoundsEnabled, false);
+  ASSERT_FALSE(pref->GetBoolean(prefs::kChargingSoundsEnabled));
+
+  // Charge the device after disabling the button, and no sounds will be played.
+  SetPowerStatus(5, /*line_power_connected=*/true);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
 }
 
 }  // namespace ash

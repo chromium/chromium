@@ -28,6 +28,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnterpriseAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChargingSoundsEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioDevicesMute[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAudioDevicesGainPercent[];

@@ -204,4 +204,9 @@
       </div>
     </div>
   </div>
+  <settings-toggle-button hidden$="[[!systemSoundsEnabled_]]"
+      id="chargingSoundsToggle" pref="{{prefs.ash.charging_sounds.enabled}}"
+      label="$i18n{chargingSoundsLabel}"
+      deep-link-focus-id$="[[Setting.kChargingSounds]]">
+  </settings-toggle-button>
 </template>
