@@ -364,9 +364,11 @@ export class BannerController extends EventTarget {
       if (util.isDriveFsBulkPinningEnabled()) {
         educationalBanners.push(DriveBulkPinningBannerTagName);
       }
-      educationalBanners.push(
-          HoldingSpaceWelcomeBannerTagName, DriveOfflinePinningBannerTagName,
-          PhotosWelcomeBannerTagName);
+      educationalBanners.push(HoldingSpaceWelcomeBannerTagName);
+      if (!util.isDriveFsBulkPinningEnabled()) {
+        educationalBanners.push(DriveOfflinePinningBannerTagName);
+      }
+      educationalBanners.push(PhotosWelcomeBannerTagName);
       this.setEducationalBannersInOrder(educationalBanners);
 
       this.setStateBannersInOrder([
