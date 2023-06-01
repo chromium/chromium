@@ -25865,6 +25865,7 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="Composited Not Axis Aligned - 3d Transform"/>
   <int value="9" label="Composited Not Axis Aligned - Shear Transform"/>
   <int value="10" label="Composited Not Axis Aligned - Rotated Transform"/>
+  <int value="11" label="Composited Feature Disabled"/>
 </enum>
 
 <enum name="DeleteBrowsingDataAction">

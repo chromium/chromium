@@ -5017,7 +5017,15 @@ class TestDelegatedOverlayProcessor : public OverlayProcessorDelegated {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane_;
 };
 
-using DelegatedTest = OverlayTest<TestDelegatedOverlayProcessor>;
+class DelegatedTest : public OverlayTest<TestDelegatedOverlayProcessor> {
+ public:
+  DelegatedTest() {
+    scoped_features.InitAndEnableFeature(features::kDelegatedCompositing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features;
+};
 
 gfx::Transform MakePerspectiveTransform() {
   gfx::Transform transform;
