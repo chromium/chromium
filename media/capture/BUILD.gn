@@ -191,6 +191,7 @@ component("capture_lib") {
       "video/mac/video_capture_device_decklink_mac.mm",
       "video/mac/video_capture_device_factory_mac.h",
       "video/mac/video_capture_device_factory_mac.mm",
+      "video/mac/video_capture_device_frame_receiver.h",
       "video/mac/video_capture_device_mac.h",
       "video/mac/video_capture_device_mac.mm",
       "video/mac/video_capture_metrics_mac.h",

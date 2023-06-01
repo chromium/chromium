@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_MAC_H_
 
-#include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/mac/video_capture_device_frame_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {

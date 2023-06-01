@@ -10,9 +10,9 @@
 #include "base/test/gmock_callback_support.h"
 #include "media/capture/video/mac/test/fake_av_capture_device_format.h"
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
+#include "media/capture/video/mac/video_capture_device_frame_receiver.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
