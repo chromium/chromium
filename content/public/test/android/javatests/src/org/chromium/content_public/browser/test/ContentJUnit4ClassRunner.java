@@ -10,6 +10,7 @@ import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.SkipCheck;
+import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestrictionSkipCheck;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 import org.chromium.ui.test.util.UiRestrictionSkipCheck;
@@ -43,5 +44,10 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     @Override
     protected List<TestHook> getPreTestHooks() {
         return addToList(super.getPreTestHooks(), new ChildProcessAllocatorSettingsHook());
+    }
+
+    @Override
+    protected List<ClassHook> getPreClassHooks() {
+        return addToList(super.getPreClassHooks(), EmbeddedTestServer.getPreClassHook());
     }
 }
