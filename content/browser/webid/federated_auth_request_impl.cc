@@ -1598,7 +1598,16 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     IdentityProviderConfigPtr idp,
     IdpNetworkRequestManager::FetchStatus status,
     const GURL& continue_on) {
-  if (!IsFedCmAuthzEnabled()) {
+  // We only allow loading continue_on urls that are same-origin
+  // with the IdP.
+  // This isn't necessarily final, but seemed like a safer
+  // and sufficient default for now.
+  // This behavior may change in https://crbug.com/1429083
+  bool is_same_origin =
+      url::Origin::Create(continue_on)
+          .IsSameOriginWith(url::Origin::Create(idp->config_url));
+
+  if (!IsFedCmAuthzEnabled() || !is_same_origin) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,

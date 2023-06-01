@@ -538,8 +538,6 @@ void OnTokenRequestParsed(
 
   if (continue_on) {
     GURL url = token_url.Resolve(*continue_on);
-    // TODO(crbug.com/1429083): check that the continue_on url is
-    // same-origin with the idp origin.
     if (url.is_valid()) {
       std::move(continue_on_callback)
           .Run({ParseStatus::kSuccess, fetch_status.response_code},

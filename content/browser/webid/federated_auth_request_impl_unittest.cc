@@ -4143,7 +4143,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
 
   // Set up the network expectations to return a "continue_on" response
   // rather than the typical idtoken response.
-  GURL continue_on("/more-permissions.php");
+  GURL continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
   config.continue_on = std::move(continue_on);
 
   // Set up the UI dialog controller to show a pop-up window, rather
@@ -4176,6 +4176,35 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   // we don't fetch the client metadata endpoint (which is used to
   // mediate - but not to delegate - the authorization prompt).
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
+}
+
+// Test successful AuthZ request that request the opening of pop-up
+// windows.
+TEST_F(FederatedAuthRequestImplTest,
+       FailsLoadingAContinueOnForADifferentOrigin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.identity_providers[0].scope = {"calendar.readonly"};
+
+  MockConfiguration config = kConfigurationValid;
+  config.succeed_with_console_message = true;
+
+  // Set up the network expectations to return a "continue_on" response
+  // rather than the typical idtoken response.
+  GURL continue_on =
+      GURL("https://another-origin.example").Resolve("/more-permissions.php");
+  config.continue_on = std::move(continue_on);
+
+  RequestExpectations error = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_statuses=*/{},
+      // TODO(https://crbug.com/1429083): introduce a more granular error.
+      /*standalone_console_messages=*/{"Provider's token is invalid."},
+      /*selected_idp_config_url=*/absl::nullopt};
+
+  RunAuthTest(parameters, error, config);
 }
 
 // Test that IdentityRegistry is notified when modal dialog view is closed.
