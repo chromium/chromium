@@ -85,7 +85,6 @@ std::unique_ptr<ProtocolParserXML> ParseOfflineManifest(
 
 }  // namespace
 
-// TODO(crbug/1409111): Handle errors for offline dir or manifest errors.
 void ReadInstallCommandFromManifest(
     const std::wstring& offline_dir_guid,
     const std::string& app_id,
