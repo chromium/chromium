@@ -270,8 +270,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                   : &vector_icons::kPhotoChromeRefreshIcon;
         break;
       case ContentSettingsType::JAVASCRIPT:
-        icon = show_blocked_badge ? &vector_icons::kCodeOffIcon
-                                  : &vector_icons::kCodeIcon;
+        icon = show_blocked_badge ? &vector_icons::kCodeOffChromeRefreshIcon
+                                  : &vector_icons::kCodeChromeRefreshIcon;
         break;
       case ContentSettingsType::POPUPS:
         icon = show_blocked_badge ? &vector_icons::kLaunchOffChromeRefreshIcon
@@ -308,8 +308,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
         break;
 #endif
       case ContentSettingsType::MIDI_SYSEX:
-        icon = show_blocked_badge ? &vector_icons::kMidiOffIcon
-                                  : &vector_icons::kMidiIcon;
+        icon = show_blocked_badge ? &vector_icons::kMidiOffChromeRefreshIcon
+                                  : &vector_icons::kMidiChromeRefreshIcon;
         break;
       case ContentSettingsType::BACKGROUND_SYNC:
         icon = show_blocked_badge ? &vector_icons::kSyncOffChromeRefreshIcon
@@ -329,8 +329,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : &vector_icons::kPageInfoContentPasteChromeRefreshIcon;
         break;
       case ContentSettingsType::SENSORS:
-        icon = show_blocked_badge ? &vector_icons::kSensorsOffIcon
-                                  : &vector_icons::kSensorsIcon;
+        icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshIcon
+                                  : &vector_icons::kSensorsChromeRefreshIcon;
         break;
       case ContentSettingsType::USB_GUARD:
         icon = show_blocked_badge ? &vector_icons::kUsbOffChromeRefreshIcon
@@ -361,8 +361,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : &vector_icons::kVrHeadsetChromeRefreshIcon;
         break;
       case ContentSettingsType::AR:
-        icon = show_blocked_badge ? &vector_icons::kViewInArOffIcon
-                                  : &vector_icons::kViewInArIcon;
+        icon = show_blocked_badge ? &vector_icons::kViewInArOffChromeRefreshIcon
+                                  : &vector_icons::kViewInArChromeRefreshIcon;
         break;
       case ContentSettingsType::WINDOW_MANAGEMENT:
         icon = show_blocked_badge
@@ -380,8 +380,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : &vector_icons::kVideogameAssetChromeRefreshIcon;
         break;
       case ContentSettingsType::IDLE_DETECTION:
-        icon = show_blocked_badge ? &vector_icons::kDevicesOffIcon
-                                  : &vector_icons::kDevicesIcon;
+        icon = show_blocked_badge ? &vector_icons::kDevicesOffChromeRefreshIcon
+                                  : &vector_icons::kDevicesChromeRefreshIcon;
         break;
       default:
         break;
