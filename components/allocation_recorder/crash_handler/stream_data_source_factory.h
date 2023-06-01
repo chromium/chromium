@@ -11,6 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 
+namespace base::debug::tracer {
+struct AllocationTraceRecorder;
+}
+
 namespace crashpad {
 class MinidumpUserExtensionStreamDataSource;
 }
@@ -27,7 +31,8 @@ class StreamDataSourceFactory
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
   virtual std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
-  CreateReportStream() const;
+  CreateReportStream(const base::debug::tracer::AllocationTraceRecorder&
+                         allocation_trace_recorder) const;
 #endif
 
  protected:

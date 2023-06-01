@@ -15,6 +15,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+#include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
 #include "components/allocation_recorder/crash_handler/stream_data_source_factory.h"
 #include "components/allocation_recorder/crash_handler/user_stream_data_source.h"
 #endif
@@ -34,6 +35,8 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
   user_stream_data_sources.push_back(
       std::make_unique<allocation_recorder::crash_handler::
                            AllocationRecorderStreamDataSource>(
+          base::MakeRefCounted<allocation_recorder::crash_handler::
+                                   AllocationRecorderHolder>(),
           base::MakeRefCounted<
               allocation_recorder::crash_handler::StreamDataSourceFactory>()));
 #endif

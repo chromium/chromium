@@ -4,6 +4,8 @@
 
 source_set("crash_handler") {
   sources = [
+    "allocation_recorder_holder.cc",
+    "allocation_recorder_holder.h",
     "stream_data_source_factory.cc",
     "stream_data_source_factory.h",
     "user_stream_data_source.cc",
