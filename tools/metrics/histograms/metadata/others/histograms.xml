@@ -4019,21 +4019,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistration.NavigationType.{RequestType}"
-    enum="AttributionNavigationType" expires_after="M117">
-  <owner>csharrison@chromium.org</owner>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    For any successfully registered {RequestType} navigation sources, records
-    the API surface that initiated the navigation.
-  </summary>
-  <token key="RequestType">
-    <variant name="Background" summary="background"/>
-    <variant name="Foreground" summary="foreground"/>
-  </token>
-</histogram>
-
 <histogram name="Conversions.SourceRegistrationError3"
     enum="ConversionSourceRegistrationError" expires_after="2023-11-12">
   <owner>tquintanilla@chromium.org</owner>

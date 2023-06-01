@@ -5639,12 +5639,6 @@ others/histograms.xml -->
   <int value="3" label="Disallowed (both limits)"/>
 </enum>
 
-<enum name="AttributionNavigationType">
-  <int value="0" label="Anchor"/>
-  <int value="1" label="window.open"/>
-  <int value="2" label="Context menu"/>
-</enum>
-
 <enum name="AuctionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Aborted"/>
