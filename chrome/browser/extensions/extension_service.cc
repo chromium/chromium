@@ -497,6 +497,7 @@ void ExtensionService::Shutdown() {
   external_install_manager_->Shutdown();
   corrupted_extension_reinstaller_.Shutdown();
   extension_registrar_.Shutdown();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionService::Init() {
