@@ -574,6 +574,9 @@ as required builders.
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
 
+* [mac13-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac13-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac13-arm64-rel""))
+  * Experiment percentage: 1.0
+
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
   * Experiment percentage: 10.0
 
