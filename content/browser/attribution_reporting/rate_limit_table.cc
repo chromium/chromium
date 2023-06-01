@@ -249,7 +249,7 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
 
   size_t max_origins =
       static_cast<size_t>(delegate_->GetRateLimits()
-                              .GetMaxSourceReportingOriginsPerReportingSite());
+                              .max_reporting_origins_per_source_reporting_site);
 
   base::Time min_timestamp =
       source_time - delegate_->GetRateLimits().origins_per_site_window;

@@ -17,6 +17,9 @@ namespace content {
 struct CONTENT_EXPORT AttributionConfig {
   // Controls rate limits for the API.
   struct CONTENT_EXPORT RateLimitConfig {
+    RateLimitConfig();
+    ~RateLimitConfig();
+
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
@@ -37,9 +40,13 @@ struct CONTENT_EXPORT AttributionConfig {
 
     static constexpr int kDefaultMaxReportingOriginsPerSourceReportingSite = 1;
 
-    base::TimeDelta origins_per_site_window = base::Days(1);
+    // Maximum number of distinct reporting origins for a given <source site,
+    // reporting site> in `origins_per_site_window`.
+    int max_reporting_origins_per_source_reporting_site =
+        kDefaultMaxReportingOriginsPerSourceReportingSite;
 
-    int GetMaxSourceReportingOriginsPerReportingSite() const;
+    // Controls the time window for reporting origins per site limit.
+    base::TimeDelta origins_per_site_window = base::Days(1);
 
     // When adding new members, the corresponding `Validate()` definition and
     // `operator==()` definition in `attribution_interop_parser_unittest.cc`

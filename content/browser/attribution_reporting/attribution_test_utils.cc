@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -28,6 +29,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
@@ -84,6 +86,13 @@ absl::optional<base::Time> GetReportWindowTimeForTesting(
     return absl::nullopt;
   }
   return source_time + *declared_window;
+}
+
+AttributionConfig::RateLimitConfig RateLimitWith(
+    base::FunctionRef<void(AttributionConfig::RateLimitConfig&)> f) {
+  AttributionConfig::RateLimitConfig limit;
+  f(limit);
+  return limit;
 }
 
 // Builds an impression with default values. This is done as a builder because
