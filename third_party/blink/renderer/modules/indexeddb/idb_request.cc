@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -146,7 +147,10 @@ IDBRequest::IDBRequest(ScriptState* script_state,
       source_(source),
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
-                                           TaskType::kDatabaseAccess)) {}
+                                           TaskType::kDatabaseAccess)) {
+  async_task_context_.Schedule(ExecutionContext::From(script_state),
+                               indexed_db_names::kIndexedDB);
+}
 
 IDBRequest::~IDBRequest() {
   if (!GetExecutionContext())
@@ -447,7 +451,49 @@ void IDBRequest::HandleResponse(
 
 void IDBRequest::OnClear(bool success) {
   if (success) {
+    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                                "clear");
     HandleResponse();
+  }
+}
+
+void IDBRequest::OnDelete(bool success) {
+  if (success) {
+    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                                "delete");
+    HandleResponse();
+  }
+}
+
+void IDBRequest::OnGet(mojom::blink::IDBDatabaseGetResultPtr result) {
+  if (result->is_error_result()) {
+    mojom::blink::IDBException code = result->get_error_result()->error_code;
+    // In some cases, the backend clears the pending transaction task queue
+    // which destroys all pending tasks.  If our callback was queued with a task
+    // that gets cleared, we'll get a signal with an IgnorableAbortError as the
+    // task is torn down.  This means the error response can be safely ignored.
+    if (code == mojom::blink::IDBException::kIgnorableAbortError) {
+      return;
+    }
+    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                                "error");
+    HandleResponse(MakeGarbageCollected<DOMException>(
+        static_cast<DOMExceptionCode>(code),
+        std::move(result->get_error_result()->error_message)));
+    return;
+  }
+
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "get");
+  if (result->is_empty()) {
+    HandleResponse();
+  } else if (result->is_key()) {
+    HandleResponse(std::move(result->get_key()));
+  } else if (result->is_value()) {
+    std::unique_ptr<IDBValue> value =
+        IDBValue::ConvertReturnValue(result->get_value());
+    value->SetIsolate(GetIsolate());
+    HandleResponse(std::move(value));
   }
 }
 

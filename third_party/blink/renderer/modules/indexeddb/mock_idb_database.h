@@ -122,7 +122,7 @@ class MockIDBDatabase : public testing::StrictMock<mojom::blink::IDBDatabase> {
               (int64_t transaction_id,
                int64_t object_store_id,
                mojom::blink::IDBKeyRangePtr,
-               mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>),
+               DeleteRangeCallback),
               (override));
   MOCK_METHOD(void,
               GetKeyGeneratorCurrentNumber,

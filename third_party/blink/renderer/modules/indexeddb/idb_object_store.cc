@@ -168,7 +168,7 @@ IDBRequest* IDBObjectStore::get(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
                    key_range, /*key_only=*/false,
-                   request->CreateWebCallbacks().release());
+                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -210,7 +210,7 @@ IDBRequest* IDBObjectStore::getKey(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   BackendDB()->Get(transaction_->Id(), Id(), IDBIndexMetadata::kInvalidId,
                    key_range, /*key_only=*/true,
-                   request->CreateWebCallbacks().release());
+                   WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 
@@ -726,9 +726,9 @@ IDBRequest* IDBObjectStore::deleteFunction(
     IDBRequest::AsyncTraceState metrics) {
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-
-  BackendDB()->DeleteRange(transaction_->Id(), Id(), key_range,
-                           request->CreateWebCallbacks().release());
+  BackendDB()->DeleteRange(
+      transaction_->Id(), Id(), key_range,
+      WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;
 }
 

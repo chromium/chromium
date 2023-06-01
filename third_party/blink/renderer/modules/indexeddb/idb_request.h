@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_transaction.h"
@@ -276,13 +277,14 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   void HandleResponse(Vector<std::unique_ptr<IDBValue>>);
   void HandleResponse(Vector<Vector<std::unique_ptr<IDBValue>>>);
   void HandleResponse(int64_t);
-  void HandleResponse();
   void HandleResponse(
       bool key_only,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
 
   void OnClear(bool success);
+  void OnDelete(bool success);
+  void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
 
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }
@@ -371,8 +373,13 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   AsyncTraceState metrics_;
 
  private:
+  friend class IDBRequestTest;
+
   // Calls EnqueueResponse().
   friend class IDBRequestQueueItem;
+
+  // See docs above for HandleResponse() variants.
+  void HandleResponse();
 
   void SetResultCursor(IDBCursor*,
                        std::unique_ptr<IDBKey>,
@@ -429,6 +436,8 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
   IDBRequestQueueItem* queue_item_ = nullptr;
+
+  probe::AsyncTaskContext async_task_context_;
 };
 
 }  // namespace blink

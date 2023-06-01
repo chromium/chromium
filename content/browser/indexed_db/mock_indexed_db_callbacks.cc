@@ -36,8 +36,6 @@ void MockIndexedDBCallbacks::OnError(const IndexedDBDatabaseError& error) {
   error_called_ = true;
 }
 
-void MockIndexedDBCallbacks::OnSuccess() {}
-
 void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
 
 void MockIndexedDBCallbacks::OnSuccess(

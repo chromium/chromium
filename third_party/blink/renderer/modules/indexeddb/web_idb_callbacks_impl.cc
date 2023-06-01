@@ -248,17 +248,6 @@ void WebIDBCallbacksImpl::SuccessInteger(int64_t value) {
   request->HandleResponse(value);
 }
 
-void WebIDBCallbacksImpl::Success() {
-  if (!request_)
-    return;
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse();
-}
-
 void WebIDBCallbacksImpl::SuccessCursorContinue(
     std::unique_ptr<IDBKey> key,
     std::unique_ptr<IDBKey> primary_key,

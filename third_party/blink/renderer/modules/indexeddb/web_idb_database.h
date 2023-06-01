@@ -43,14 +43,13 @@ class MODULES_EXPORT WebIDBDatabase final {
   void Close();
   void VersionChangeIgnored();
 
-  void Get(int64_t transaction_id,
-           int64_t object_store_id,
-           int64_t index_id,
-           const IDBKeyRange*,
-           bool key_only,
-           WebIDBCallbacks*);
-  void GetCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
-                   mojom::blink::IDBDatabaseGetResultPtr result);
+  void Get(
+      int64_t transaction_id,
+      int64_t object_store_id,
+      int64_t index_id,
+      const IDBKeyRange*,
+      bool key_only,
+      base::OnceCallback<void(mojom::blink::IDBDatabaseGetResultPtr)> result);
   void GetAll(int64_t transaction_id,
               int64_t object_store_id,
               int64_t index_id,
@@ -97,11 +96,11 @@ class MODULES_EXPORT WebIDBDatabase final {
   void Delete(int64_t transaction_id,
               int64_t object_store_id,
               const IDBKey* primary_key,
-              WebIDBCallbacks*);
+              base::OnceCallback<void(bool)> success_callback);
   void DeleteRange(int64_t transaction_id,
                    int64_t object_store_id,
                    const IDBKeyRange*,
-                   WebIDBCallbacks*);
+                   base::OnceCallback<void(bool)> success_callback);
   void GetKeyGeneratorCurrentNumber(int64_t transaction_id,
                                     int64_t object_store_id,
                                     WebIDBCallbacks*);

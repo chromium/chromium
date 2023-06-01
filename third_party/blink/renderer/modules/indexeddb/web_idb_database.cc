@@ -54,50 +54,21 @@ void WebIDBDatabase::VersionChangeIgnored() {
   database_->VersionChangeIgnored();
 }
 
-void WebIDBDatabase::Get(int64_t transaction_id,
-                         int64_t object_store_id,
-                         int64_t index_id,
-                         const IDBKeyRange* key_range,
-                         bool key_only,
-                         WebIDBCallbacks* callbacks_ptr) {
-  std::unique_ptr<WebIDBCallbacks> callbacks(callbacks_ptr);
+void WebIDBDatabase::Get(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    const IDBKeyRange* key_range,
+    bool key_only,
+    base::OnceCallback<void(mojom::blink::IDBDatabaseGetResultPtr)>
+        result_callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
   database_->Get(transaction_id, object_store_id, index_id,
                  std::move(key_range_ptr), key_only,
-                 WTF::BindOnce(&WebIDBDatabase::GetCallback,
-                               WTF::Unretained(this), std::move(callbacks)));
-}
-
-void WebIDBDatabase::GetCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
-                                 mojom::blink::IDBDatabaseGetResultPtr result) {
-  if (result->is_error_result()) {
-    callbacks->Error(result->get_error_result()->error_code,
-                     std::move(result->get_error_result()->error_message));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_empty()) {
-    callbacks->Success();
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_key()) {
-    callbacks->SuccessKey(std::move(result->get_key()));
-    callbacks.reset();
-    return;
-  }
-
-  if (result->is_value()) {
-    callbacks->SuccessValue(std::move(result->get_value()));
-    callbacks.reset();
-    return;
-  }
+                 std::move(result_callback));
 }
 
 void WebIDBDatabase::BatchGetAll(
@@ -241,29 +212,26 @@ void WebIDBDatabase::Count(int64_t transaction_id,
 void WebIDBDatabase::Delete(int64_t transaction_id,
                             int64_t object_store_id,
                             const IDBKey* primary_key,
-                            WebIDBCallbacks* callbacks) {
+                            base::OnceCallback<void(bool)> success_callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(IDBKeyRange::Create(primary_key));
-  callbacks->SetState(nullptr, transaction_id);
   database_->DeleteRange(transaction_id, object_store_id,
-                         std::move(key_range_ptr),
-                         GetCallbacksProxy(base::WrapUnique(callbacks)));
+                         std::move(key_range_ptr), std::move(success_callback));
 }
 
-void WebIDBDatabase::DeleteRange(int64_t transaction_id,
-                                 int64_t object_store_id,
-                                 const IDBKeyRange* key_range,
-                                 WebIDBCallbacks* callbacks) {
+void WebIDBDatabase::DeleteRange(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    const IDBKeyRange* key_range,
+    base::OnceCallback<void(bool)> success_callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
 
   mojom::blink::IDBKeyRangePtr key_range_ptr =
       mojom::blink::IDBKeyRange::From(key_range);
-  callbacks->SetState(nullptr, transaction_id);
   database_->DeleteRange(transaction_id, object_store_id,
-                         std::move(key_range_ptr),
-                         GetCallbacksProxy(base::WrapUnique(callbacks)));
+                         std::move(key_range_ptr), std::move(success_callback));
 }
 
 void WebIDBDatabase::GetKeyGeneratorCurrentNumber(int64_t transaction_id,

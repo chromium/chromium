@@ -83,7 +83,6 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   void SuccessArrayArray(
       Vector<Vector<mojom::blink::IDBReturnValuePtr>>) override;
   void SuccessInteger(int64_t) override;
-  void Success() override;
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primary_key,

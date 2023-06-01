@@ -439,7 +439,6 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
   ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
 
-  void OnSuccess() override {}
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
     connection_ = std::move(connection);

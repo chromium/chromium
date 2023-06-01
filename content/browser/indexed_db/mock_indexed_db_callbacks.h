@@ -30,7 +30,6 @@ class MockIndexedDBCallbacks : public IndexedDBCallbacks {
 
   void OnError(const IndexedDBDatabaseError& error) override;
 
-  void OnSuccess() override;
   void OnSuccess(int64_t result) override;
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const blink::IndexedDBDatabaseMetadata& metadata) override;
