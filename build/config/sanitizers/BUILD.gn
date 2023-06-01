@@ -318,9 +318,13 @@ config("cfi_flags") {
     ]
 
     # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
-    # behaviour.
+    # behaviour.  Rust needs to know the linker will be doing LTO in this case
+    # or it rejects the Zsplit-lto-unit flag.
     # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
-    rustflags += [ "-Zsplit-lto-unit" ]
+    rustflags += [
+      "-Zsplit-lto-unit",
+      "-Clinker-plugin-lto=yes",
+    ]
 
     if (use_cfi_cast) {
       cflags += [

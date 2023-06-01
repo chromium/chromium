@@ -772,8 +772,12 @@ config("compiler") {
       cflags += [ "-fwhole-program-vtables" ]
 
       # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
-      # behaviour.
-      rustflags += [ "-Zsplit-lto-unit" ]
+      # behaviour. Rust needs to know the linker will be doing LTO in this case
+      # or it rejects the Zsplit-lto-unit flag.
+      rustflags += [
+        "-Zsplit-lto-unit",
+        "-Clinker-plugin-lto=yes",
+      ]
 
       if (!is_win) {
         ldflags += [ "-fwhole-program-vtables" ]
