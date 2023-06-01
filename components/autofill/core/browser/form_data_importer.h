@@ -135,6 +135,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return iban_save_manager_.get();
   }
 
+  // This should only set
+  // `guid_of_card_if_no_interactive_authentication_flow_completed_` to a value
+  // when there was an autofill with no interactive authentication, otherwise it
+  // should set to nullopt.
+  void SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted(
+      absl::optional<std::string>
+          guid_of_card_if_no_interactive_authentication_flow_completed);
+  absl::optional<std::string>&
+  GetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted();
+
  protected:
   void set_credit_card_save_manager_for_testing(
       std::unique_ptr<CreditCardSaveManager> credit_card_save_manager) {
@@ -377,6 +387,16 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // Enables associating recently submitted forms with each other.
   FormAssociator form_associator_;
+
+  // Optional that will have a value when the most recent payments autofill flow
+  // had no interactive authentication. It will contain the GUID of the card
+  // where the most recent no interactive authentication has occurred. If this
+  // is empty upon form submission, it implies that the most recent autofill had
+  // an interactive authentication. Set when
+  // `SetGuidOfCardIfNoInteractiveAuthenticationFlowCompleted()` is called, and
+  // cleared on pag navigation.
+  absl::optional<std::string>
+      guid_of_card_if_no_interactive_authentication_flow_completed_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;

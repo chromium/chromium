@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/common/extensions/api/autofill_private.h"
+
+#include <memory>
+
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -11,7 +15,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -28,6 +31,8 @@ namespace extensions {
 
 namespace {
 
+// TODO(crbug.com/1449321): Remove this TestAutofillClient and use the main
+// TestAutofillClient instead.
 class TestChromeAutofillClient : public autofill::ChromeAutofillClient {
  public:
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
@@ -43,6 +48,16 @@ class TestChromeAutofillClient : public autofill::ChromeAutofillClient {
     return personal_data_manager_;
   }
 
+  autofill::FormDataImporter* GetFormDataImporter() override {
+    if (!form_data_importer_) {
+      form_data_importer_ = std::make_unique<autofill::FormDataImporter>(
+          /*client=*/this, /*payments_client=*/nullptr,
+          /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US");
+    }
+
+    return form_data_importer_.get();
+  }
+
   void SetDeviceAuthenticator(
       scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_auth) {
     mock_device_authenticator_ = mock_auth;
@@ -55,6 +70,7 @@ class TestChromeAutofillClient : public autofill::ChromeAutofillClient {
   scoped_refptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
   raw_ptr<autofill::TestPersonalDataManager> personal_data_manager_ = nullptr;
+  std::unique_ptr<autofill::FormDataImporter> form_data_importer_;
 #endif
 };
 
