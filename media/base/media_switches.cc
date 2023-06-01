@@ -823,6 +823,12 @@ BASE_FEATURE(kVideoToolboxVideoDecoder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
+// Inform webrtc with correct video color space information whenever
+// possible.
+BASE_FEATURE(kWebRTCColorAccuracy,
+             "WebRTCColorAccuracy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
 BASE_FEATURE(kVp9kSVCHWDecoding,
              "Vp9kSVCHWDecoding",

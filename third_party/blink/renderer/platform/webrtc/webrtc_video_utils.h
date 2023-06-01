@@ -32,6 +32,9 @@ WebRtcVideoFormatToMediaVideoCodecProfile(const webrtc::SdpVideoFormat& format);
 media::VideoColorSpace PLATFORM_EXPORT
 WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);
 
+webrtc::ColorSpace PLATFORM_EXPORT
+GfxToWebRtcColorSpace(const gfx::ColorSpace& color_space);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_UTILS_H_
