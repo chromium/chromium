@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -49,6 +50,9 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
@@ -894,8 +898,24 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
-  self.remoteTabsMediator = [[RecentTabsMediator alloc] init];
-  self.remoteTabsMediator.browserState = regularBrowserState;
+  sync_sessions::SessionSyncService* syncService =
+      SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(regularBrowserState);
+  sessions::TabRestoreService* restoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+          regularBrowserState);
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(regularBrowserState);
+  SyncSetupService* service =
+      SyncSetupServiceFactory::GetForBrowserState(regularBrowserState);
+  self.remoteTabsMediator =
+      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
+                                             identityManager:identityManager
+                                              restoreService:restoreService
+                                               faviconLoader:faviconLoader
+                                            syncSetupService:service];
+
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
   self.remoteTabsMediator.webStateList = regularWebStateList;
   baseViewController.remoteTabsViewController.imageDataSource =
@@ -918,7 +938,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // hierarchy. As a workaround, the view controller hierarchy is loaded here
   // before `RecentTabsMediator` updates are started.
   self.window.rootViewController = self.baseViewController;
-  if (self.remoteTabsMediator.browserState) {
+  if (regularBrowserState) {
     [self.remoteTabsMediator initObservers];
     [self.remoteTabsMediator refreshSessionsView];
   }

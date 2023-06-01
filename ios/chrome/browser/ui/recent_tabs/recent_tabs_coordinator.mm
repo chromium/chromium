@@ -8,6 +8,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -15,6 +17,9 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/session_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -90,9 +95,24 @@
   // OriginalChromeBrowserState since the mediator services need a SignIn
   // manager which is not present in an OffTheRecord BrowserState.
   DCHECK(!self.mediator);
-  self.mediator = [[RecentTabsMediator alloc] init];
-  self.mediator.browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  sync_sessions::SessionSyncService* syncService =
+      SessionSyncServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
+  sessions::TabRestoreService* restoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+  SyncSetupService* service =
+      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  self.mediator =
+      [[RecentTabsMediator alloc] initWithSessionSyncService:syncService
+                                             identityManager:identityManager
+                                              restoreService:restoreService
+                                               faviconLoader:faviconLoader
+                                            syncSetupService:service];
+
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].
   self.mediator.consumer = self.recentTabsTableViewController;
