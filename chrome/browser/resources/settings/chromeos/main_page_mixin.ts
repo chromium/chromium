@@ -20,15 +20,16 @@ import {Route, Router} from './router.js';
 enum RouteState {
   // Initial state before anything has loaded yet.
   INITIAL = 'initial',
-  // A dialog that has a dedicated URL (e.g. /importData).
-  DIALOG = 'dialog',
-  // A section (basically a scroll position within the top level page, e.g,
-  // /appearance.
+  // The root Settings page, '/'.
+  ROOT = 'root',
+  // A section, basically a scroll position within the root page.
+  // After infinite scroll is removed, this is a top-level page.
+  // e.g. /network, /bluetooth, /device
   SECTION = 'section',
-  // A subpage, or sub-subpage e.g, /searchEngins.
+  // A subpage, or nested subpage, e.g. /networkDetail.
   SUBPAGE = 'subpage',
-  // The top level Settings page, '/'.
-  TOP_LEVEL = 'top-level',
+  // A navigable dialog that has a dedicated URL. Currently unused in Settings.
+  DIALOG = 'dialog',
 }
 
 function classifyRoute(route: Route|undefined): RouteState {
@@ -37,7 +38,7 @@ function classifyRoute(route: Route|undefined): RouteState {
   }
   const routes = Router.getInstance().routes;
   if (route === routes.BASIC || route === routes.ABOUT) {
-    return RouteState.TOP_LEVEL;
+    return RouteState.ROOT;
   }
   if (route.isSubpage()) {
     return RouteState.SUBPAGE;
@@ -57,7 +58,7 @@ const ALL_STATES = new Set([
   RouteState.DIALOG,
   RouteState.SECTION,
   RouteState.SUBPAGE,
-  RouteState.TOP_LEVEL,
+  RouteState.ROOT,
 ]);
 
 /**
@@ -70,12 +71,12 @@ const VALID_TRANSITIONS = new Map([
     new Set([
       RouteState.SECTION,
       RouteState.SUBPAGE,
-      RouteState.TOP_LEVEL,
+      RouteState.ROOT,
     ]),
   ],
   [RouteState.SECTION, ALL_STATES],
   [RouteState.SUBPAGE, ALL_STATES],
-  [RouteState.TOP_LEVEL, ALL_STATES],
+  [RouteState.ROOT, ALL_STATES],
 ]);
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
@@ -247,7 +248,7 @@ export const MainPageMixin = dedupingMixin(
           //  oldRoute is /searchEngines AND
           //  newRoute is /help.
           if (containsOld && !containsNew) {
-            return [classifyRoute(oldRoute), RouteState.TOP_LEVEL];
+            return [classifyRoute(oldRoute), RouteState.ROOT];
           }
 
           // Case where return from an unrelated page to |this| page.
@@ -256,7 +257,7 @@ export const MainPageMixin = dedupingMixin(
           //  oldRoute is /help AND
           //  newRoute is /searchEngines
           if (!containsOld && containsNew) {
-            return [RouteState.TOP_LEVEL, classifyRoute(newRoute)];
+            return [RouteState.ROOT, classifyRoute(newRoute)];
           }
 
           // Case where transitioning between routes that both belong to |this|
@@ -283,7 +284,7 @@ export const MainPageMixin = dedupingMixin(
                 this.enterSubpage_(newRoute);
                 return;
 
-              case RouteState.TOP_LEVEL:
+              case RouteState.ROOT:
                 // TODO(b/282961146) Activate first top-level page (Network)
                 return;
 
@@ -294,7 +295,7 @@ export const MainPageMixin = dedupingMixin(
             }
           }
 
-          if (oldState === RouteState.TOP_LEVEL) {
+          if (oldState === RouteState.ROOT) {
             switch (newState) {
               case RouteState.SECTION:
                 this.activatePage(newRoute);
@@ -307,7 +308,7 @@ export const MainPageMixin = dedupingMixin(
 
               // Happens when clearing search results (Navigating from
               // '/?search=foo' to '/')
-              case RouteState.TOP_LEVEL:
+              case RouteState.ROOT:
                 // TODO(b/282961146) Activate first top-level page (Network)
                 return;
 
@@ -328,7 +329,7 @@ export const MainPageMixin = dedupingMixin(
                 this.enterSubpage_(newRoute);
                 return;
 
-              case RouteState.TOP_LEVEL:
+              case RouteState.ROOT:
                 this.scroller_.scrollTop = 0;
                 return;
 
@@ -374,7 +375,7 @@ export const MainPageMixin = dedupingMixin(
                 // focus the nested subpage's entry point.
                 return;
 
-              case RouteState.TOP_LEVEL:
+              case RouteState.ROOT:
                 this.enterMainPage_(oldRoute);
                 return;
 
@@ -398,8 +399,8 @@ export const MainPageMixin = dedupingMixin(
 
               // There are currently no known examples of these transitions.
               // Update when a relevant use-case exists.
+              case RouteState.ROOT:
               case RouteState.SECTION:
-              case RouteState.TOP_LEVEL:
               case RouteState.DIALOG:
               default:
                 return;

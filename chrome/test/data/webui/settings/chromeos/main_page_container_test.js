@@ -197,7 +197,7 @@ suite('<main-page-container>', function() {
               'os-settings-section[active]');
         }
 
-        suite('From Top-level', () => {
+        suite('From Root', () => {
           test('to Page should result in only one active page', async () => {
             // Simulate navigating from root to Network page
             const navigationCompletePromise =
@@ -253,20 +253,18 @@ suite('<main-page-container>', function() {
             assertEquals('osAccessibility', activePages[0].section);
           });
 
-          test(
-              'to Top-level should result in only one active page',
-              async () => {
-                // Simulate navigating from Network page to root
-                Router.getInstance().navigateTo(routes.INTERNET);
-                const navigationCompletePromise =
-                    eventToPromise('show-container', window);
-                Router.getInstance().navigateTo(routes.BASIC);
-                await navigationCompletePromise;
+          test('to Root should result in only one active page', async () => {
+            // Simulate navigating from Network page to root
+            Router.getInstance().navigateTo(routes.INTERNET);
+            const navigationCompletePromise =
+                eventToPromise('show-container', window);
+            Router.getInstance().navigateTo(routes.BASIC);
+            await navigationCompletePromise;
 
-                const activePages = queryActivePages();
-                assertEquals(1, activePages.length);
-                assertEquals('internet', activePages[0].section);
-              });
+            const activePages = queryActivePages();
+            assertEquals(1, activePages.length);
+            assertEquals('internet', activePages[0].section);
+          });
         });
       });
     });
