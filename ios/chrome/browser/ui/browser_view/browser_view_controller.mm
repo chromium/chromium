@@ -1545,30 +1545,28 @@ enum HeaderBehaviour {
 }
 
 - (void)addConstraintsToSecondaryToolbar {
-  if (self.toolbarCoordinator.secondaryToolbarCoordinator) {
-    // Create a constraint for the height of the toolbar to include the unsafe
-    // area height.
-    UIView* toolbarView =
-        self.toolbarCoordinator.secondaryToolbarViewController.view;
-    self.secondaryToolbarHeightConstraint = [toolbarView.heightAnchor
-        constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
-    self.secondaryToolbarHeightConstraint.active = YES;
-    AddSameConstraintsToSides(
-        self.secondaryToolbarContainerView, toolbarView,
-        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
+  // Create a constraint for the height of the toolbar to include the unsafe
+  // area height.
+  UIView* toolbarView =
+      self.toolbarCoordinator.secondaryToolbarViewController.view;
+  self.secondaryToolbarHeightConstraint = [toolbarView.heightAnchor
+      constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
+  self.secondaryToolbarHeightConstraint.active = YES;
+  AddSameConstraintsToSides(
+      self.secondaryToolbarContainerView, toolbarView,
+      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
 
-    // Constrain the container view to the bottom of self.view, and add a
-    // constant height constraint such that the container's frame is equal to
-    // that of the secondary toolbar at a fullscreen progress of 1.0.
-    UIView* containerView = self.secondaryToolbarContainerView;
-    self.secondaryToolbarNoFullscreenHeightConstraint =
-        [containerView.heightAnchor
-            constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
-    self.secondaryToolbarNoFullscreenHeightConstraint.active = YES;
-    AddSameConstraintsToSides(
-        self.view, containerView,
-        LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-  }
+  // Constrain the container view to the bottom of self.view, and add a
+  // constant height constraint such that the container's frame is equal to
+  // that of the secondary toolbar at a fullscreen progress of 1.0.
+  UIView* containerView = self.secondaryToolbarContainerView;
+  self.secondaryToolbarNoFullscreenHeightConstraint =
+      [containerView.heightAnchor
+          constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
+  self.secondaryToolbarNoFullscreenHeightConstraint.active = YES;
+  AddSameConstraintsToSides(
+      self.view, containerView,
+      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
@@ -1600,10 +1598,8 @@ enum HeaderBehaviour {
     // Add the toolbars as child view controllers.
     [self addChildViewController:self.toolbarCoordinator
                                      .primaryToolbarViewController];
-    if (self.toolbarCoordinator.secondaryToolbarCoordinator) {
-      [self addChildViewController:self.toolbarCoordinator
-                                       .secondaryToolbarViewController];
-    }
+    [self addChildViewController:self.toolbarCoordinator
+                                     .secondaryToolbarViewController];
 
     // Add the primary toolbar. On iPad, it should be in front of the tab strip
     // because the tab strip slides behind it when showing the thumb strip.
@@ -1624,16 +1620,14 @@ enum HeaderBehaviour {
     }
 
     // Add the secondary toolbar.
-    if (self.toolbarCoordinator.secondaryToolbarCoordinator) {
-      // Create the container view for the secondary toolbar and add it to
-      // the hierarchy
-      UIView* container = [[LegacyToolbarContainerView alloc] init];
-      container.translatesAutoresizingMaskIntoConstraints = NO;
-      [container addSubview:self.toolbarCoordinator
-                                .secondaryToolbarViewController.view];
-      [self.view insertSubview:container aboveSubview:primaryToolbarView];
-      self.secondaryToolbarContainerView = container;
-    }
+    // Create the container view for the secondary toolbar and add it to
+    // the hierarchy
+    UIView* container = [[LegacyToolbarContainerView alloc] init];
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    [container
+        addSubview:self.toolbarCoordinator.secondaryToolbarViewController.view];
+    [self.view insertSubview:container aboveSubview:primaryToolbarView];
+    self.secondaryToolbarContainerView = container;
 
     // Create the NamedGuides and add them to the browser view.
     NSArray<GuideName*>* guideNames = @[
@@ -1663,19 +1657,14 @@ enum HeaderBehaviour {
         .active = YES;
 
     LayoutSides contentSides = LayoutSides::kLeading | LayoutSides::kTrailing;
-    if (self.toolbarCoordinator.secondaryToolbarCoordinator) {
-      // If there's a bottom toolbar, the content area guide is constrained to
-      // its top.
-      UIView* secondaryToolbarView =
-          self.toolbarCoordinator.secondaryToolbarViewController.view;
-      [contentAreaGuide.bottomAnchor
-          constraintEqualToAnchor:secondaryToolbarView.topAnchor]
-          .active = YES;
-    } else {
-      // Otherwise, the content area guide is constrained to self.view's bootom
-      // along with its sides;
-      contentSides = contentSides | LayoutSides::kBottom;
-    }
+    // If there's a bottom toolbar, the content area guide is constrained to
+    // its top.
+    UIView* secondaryToolbarView =
+        self.toolbarCoordinator.secondaryToolbarViewController.view;
+    [contentAreaGuide.bottomAnchor
+        constraintEqualToAnchor:secondaryToolbarView.topAnchor]
+        .active = YES;
+
     AddSameConstraintsToSides(self.view, contentAreaGuide, contentSides);
 
     // Complete child UIViewController containment flow now that the views are
@@ -1684,10 +1673,8 @@ enum HeaderBehaviour {
         didMoveToParentViewController:self];
     [self.toolbarCoordinator.primaryToolbarViewController
         didMoveToParentViewController:self];
-    if (self.toolbarCoordinator.secondaryToolbarCoordinator) {
-      [self.toolbarCoordinator.secondaryToolbarViewController
-          didMoveToParentViewController:self];
-    }
+    [self.toolbarCoordinator.secondaryToolbarViewController
+        didMoveToParentViewController:self];
   }
 
   // Resize the typing shield to cover the entire browser view and bring it to

@@ -14,7 +14,6 @@
 @class PrimaryToolbarCoordinator;
 @class PrimaryToolbarViewController;
 @protocol SharingPositioner;
-@class SecondaryToolbarCoordinator;
 @class SecondaryToolbarViewController;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol ViewRevealingAnimatee;
@@ -41,8 +40,6 @@
 
 /// Returns `primaryToolbarCoordinator`.
 - (PrimaryToolbarCoordinator*)primaryToolbarCoordinator;
-/// Returns `secondaryToolbarCoordinator`.
-- (SecondaryToolbarCoordinator*)secondaryToolbarCoordinator;
 
 /// Returns `primaryToolbarViewController`.
 - (UIViewController*)primaryToolbarViewController;
