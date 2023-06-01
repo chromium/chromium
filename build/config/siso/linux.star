@@ -32,6 +32,7 @@ def __step_config(ctx, step_config):
             "container-image": "docker://gcr.io/chops-private-images-prod/rbe/siso-chromium/linux@sha256:d4fcda628ebcdb3dd79b166619c56da08d5d7bd43d1a7b1f69734904cc7a1bb2",
         },
     }
+
     # rewrapper_to_reproxy takes precedence over remote exec wrapper handler if enabled.
     if rewrapper_to_reproxy.enabled(ctx):
         step_config = rewrapper_to_reproxy.step_config(ctx, step_config)

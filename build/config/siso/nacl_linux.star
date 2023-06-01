@@ -59,6 +59,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
         {
             "name": "nacl_linux/pnacl-clang",
@@ -69,6 +70,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
         {
             "name": "nacl_linux/glibc/x86_64-nacl-gcc",
@@ -103,6 +105,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
         {
             "name": "nacl_linux/pnacl_newlib/x86_64-nacl-clang",
@@ -113,6 +116,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
         {
             "name": "nacl_linux/saigo_newlib/x86_64-nacl-clang++",
@@ -123,6 +127,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
         {
             "name": "nacl_linux/saigo_newlib/x86_64-nacl-clang",
@@ -133,6 +138,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "input_root_absolute_path": True,
+            "timeout": "2m",
         },
     ])
 

@@ -128,6 +128,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "clang/cc",
@@ -138,6 +139,7 @@ def __step_config(ctx, step_config):
             ],
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "clang-coverage/cxx",
@@ -150,6 +152,7 @@ def __step_config(ctx, step_config):
             "handler": "clang_compile_coverage",
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
         {
             "name": "clang-coverage/cc",
@@ -162,6 +165,7 @@ def __step_config(ctx, step_config):
             "handler": "clang_compile_coverage",
             "remote": True,
             "canonicalize_dir": True,
+            "timeout": "2m",
         },
     ])
     return step_config
