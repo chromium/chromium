@@ -334,6 +334,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -3514,7 +3515,7 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
 #if BUILDFLAG(IS_MAC)
 device::GeolocationManager*
 ChromeContentBrowserClient::GetGeolocationManager() {
-  return g_browser_process->geolocation_manager();
+  return device::GeolocationManager::GetInstance();
 }
 #endif
 

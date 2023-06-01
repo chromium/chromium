@@ -607,7 +607,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
   return true;
 #else
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   CHECK(geolocation_manager);
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
@@ -622,7 +622,7 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
 #else
 
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   CHECK(geolocation_manager);
   device::LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();

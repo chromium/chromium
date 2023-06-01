@@ -110,8 +110,8 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
         std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
   }
 
-  DCHECK(!g_browser_process->geolocation_manager());
-  g_browser_process->SetGeolocationManager(
+  DCHECK(!device::GeolocationManager::GetInstance());
+  device::GeolocationManager::SetInstance(
       SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 }
 
@@ -306,5 +306,5 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   kiosk_session_service_.reset();
 
   // Initialized in PreProfileInit.
-  g_browser_process->SetGeolocationManager(nullptr);
+  device::GeolocationManager::SetInstance(nullptr);
 }

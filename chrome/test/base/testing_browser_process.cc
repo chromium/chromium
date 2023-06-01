@@ -111,7 +111,7 @@ void TestingBrowserProcess::CreateInstance() {
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
-  process->SetGeolocationManager(std::move(fake_geolocation_manager));
+  device::GeolocationManager::SetInstance(std::move(fake_geolocation_manager));
 #endif
 }
 
@@ -210,10 +210,6 @@ TestingBrowserProcess::GetMetricsServicesManager() {
 
 metrics::MetricsService* TestingBrowserProcess::metrics_service() {
   return metrics_service_;
-}
-
-device::GeolocationManager* TestingBrowserProcess::geolocation_manager() {
-  return geolocation_manager_.get();
 }
 
 embedder_support::OriginTrialsSettingsStorage*
@@ -335,11 +331,6 @@ void TestingBrowserProcess::set_background_mode_manager_for_test(
   NOTREACHED();
 }
 #endif
-
-void TestingBrowserProcess::SetGeolocationManager(
-    std::unique_ptr<device::GeolocationManager> geolocation_manager) {
-  geolocation_manager_ = std::move(geolocation_manager);
-}
 
 StatusTray* TestingBrowserProcess::status_tray() {
   return status_tray_.get();

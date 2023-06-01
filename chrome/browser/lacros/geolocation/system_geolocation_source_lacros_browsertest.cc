@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceLacrosTests,
   };
 
   device::GeolocationManager* manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   ASSERT_TRUE(manager);
 
   Observer observer;

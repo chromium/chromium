@@ -1298,7 +1298,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
   device::GeolocationManager* geolocation_manager =
-      g_browser_process->geolocation_manager();
+      device::GeolocationManager::GetInstance();
   LocationSystemPermissionStatus permission =
       geolocation_manager->GetSystemPermission();
   if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
