@@ -10,6 +10,11 @@
 #include "base/command_line.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/installer/string.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace updater {
 
@@ -29,6 +34,9 @@ struct ProcessExitResult {
 // A stack-based string large enough to hold an executable to run
 // (which is a path), plus a few extra arguments.
 using CommandString = StackString<MAX_PATH * 4>;
+
+absl::optional<base::FilePath> FindOfflineDir(
+    const base::FilePath& unpack_path);
 
 // Handles elevating the installer, waiting for the installer process, and
 // returning the resulting process exit code.

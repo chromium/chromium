@@ -33,6 +33,7 @@ source_set("lib") {
     "//chrome/updater:branding_header",
     "//chrome/updater:constants_prod",
     "//chrome/updater/win:tag_extractor",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -120,6 +121,7 @@ template("generate_installer") {
       ":version",
       "//build/win:default_exe_manifest",
       "//chrome/updater:base",
+      "//third_party/abseil-cpp:absl",
     ]
   }
 }
