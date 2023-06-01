@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/io_task.h"
 
+#include <type_traits>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -15,6 +16,27 @@
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace file_manager::io_task {
+
+std::ostream& operator<<(std::ostream& out, OperationType op) {
+  switch (op) {
+#define PRINT(s)            \
+  case OperationType::k##s: \
+    return out << #s;
+    PRINT(Copy)
+    PRINT(Delete)
+    PRINT(EmptyTrash)
+    PRINT(Extract)
+    PRINT(Move)
+    PRINT(Restore)
+    PRINT(RestoreToDestination)
+    PRINT(Trash)
+    PRINT(Zip)
+#undef PRINT
+  }
+
+  return out << "OperationType("
+             << static_cast<std::underlying_type_t<OperationType>>(op) << ")";
+}
 
 void IOTask::Pause(PauseParams params) {}
 

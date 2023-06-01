@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 
 #include <cstddef>
+#include <ostream>
 #include <vector>
 
 #include "base/files/file.h"
@@ -64,6 +65,8 @@ enum class OperationType {
   kTrash,
   kZip,
 };
+
+std::ostream& operator<<(std::ostream& out, OperationType op);
 
 // The type of Data Protection policy error that occurred.
 enum class PolicyErrorType {

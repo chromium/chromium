@@ -51,7 +51,8 @@ using base::MakeRefCounted;
 using base::RepeatingClosure;
 using base::UTF8ToUTF16;
 using extensions::Event;
-using extensions::events::HistogramValue;
+using file_manager::io_task::IOTaskController;
+using file_manager::io_task::IOTaskId;
 using file_manager::io_task::OperationType;
 using file_manager::io_task::ProgressStatus;
 using file_manager::util::GetDisplayablePath;
@@ -63,7 +64,6 @@ using message_center::ButtonInfo;
 using message_center::HandleNotificationClickDelegate;
 using message_center::Notification;
 using message_center::NotificationDelegate;
-using message_center::NotificationType;
 using message_center::NotifierId;
 using message_center::RichNotificationData;
 using message_center::SystemNotificationWarningLevel;
@@ -77,6 +77,7 @@ using enum fmp::DeviceEventType;
 using enum fmp::DriveSyncErrorType;
 using enum fmp::MountCompletedEventType;
 using enum fmp::MountError;
+using enum message_center::NotificationType;
 
 void CancelCopyOnIOThread(FileSystemContextPtr file_system_context,
                           OperationID operation_id) {
@@ -102,15 +103,13 @@ bool NotificationIdToOperationId(const std::string& notification_id,
   return false;
 }
 
-void RecordDeviceNotificationMetric(
-    file_manager::DeviceNotificationUmaType type) {
-  UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationShowHistogramName, type);
+void RecordDeviceNotificationMetric(DeviceNotificationUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(kNotificationShowHistogramName, type);
 }
 
 void RecordDeviceNotificationUserActionMetric(
-    file_manager::DeviceNotificationUserActionUmaType type) {
-  UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationUserActionHistogramName,
-                            type);
+    DeviceNotificationUserActionUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(kNotificationUserActionHistogramName, type);
 }
 
 std::u16string GetIOTaskMessage(Profile* profile,
@@ -120,12 +119,11 @@ std::u16string GetIOTaskMessage(Profile* profile,
 
   // Display special copy to help users understand that pasting files to "My
   // Drive" does not mean that they are immediately synced.
-  auto* drive_integration_service =
+  drive::DriveIntegrationService* const service =
       drive::util::GetIntegrationServiceByProfile(profile);
   bool is_destination_drive =
-      drive_integration_service &&
-      drive_integration_service->GetMountPointPath().IsParent(
-          status.GetDestinationFolder().path());
+      service && service->GetMountPointPath().IsParent(
+                     status.GetDestinationFolder().path());
 
   switch (status.type) {
     case OperationType::kCopy:
@@ -174,8 +172,10 @@ std::u16string GetIOTaskMessage(Profile* profile,
       multiple_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING;
       break;
 
+    case OperationType::kEmptyTrash:
+    case OperationType::kRestore:
     default:
-      NOTREACHED();
+      NOTREACHED() << "Unexpected operation type " << status.type;
       return u"Unknown operation type";
   }
 
@@ -242,7 +242,7 @@ std::u16string GetPolicyNotificationProceedButton(
     case OperationType::kRestoreToDestination:
     case OperationType::kTrash:
     case OperationType::kZip:
-      NOTREACHED();
+      NOTREACHED() << "Unexpected operation type " << status.type;
       return u"";
   }
 }
@@ -254,8 +254,8 @@ NotificationPtr CreateSystemNotification(const std::string& notification_id,
                                          const std::u16string& message,
                                          DelegatePtr delegate) {
   return ash::CreateSystemNotificationPtr(
-      NotificationType::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-      message, GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
+      NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
       RichNotificationData(), std::move(delegate), ash::kFolderIcon,
       SystemNotificationWarningLevel::NORMAL);
 }
@@ -332,8 +332,8 @@ NotificationPtr SystemNotificationManager::CreateProgressNotification(
   rich_data.progress_status = message;
 
   return ash::CreateSystemNotificationPtr(
-      NotificationType::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, app_name_, GURL(), NotifierId(), rich_data,
+      NOTIFICATION_TYPE_PROGRESS, notification_id, title, message, app_name_,
+      GURL(), NotifierId(), rich_data,
       MakeRefCounted<HandleNotificationClickDelegate>(
           BindRepeating(&SystemNotificationManager::HandleProgressClick,
                         weak_ptr_factory_.GetWeakPtr(), notification_id)),
@@ -341,7 +341,7 @@ NotificationPtr SystemNotificationManager::CreateProgressNotification(
 }
 
 NotificationPtr SystemNotificationManager::CreateIOTaskProgressNotification(
-    file_manager::io_task::IOTaskId task_id,
+    IOTaskId task_id,
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
@@ -380,8 +380,8 @@ NotificationPtr SystemNotificationManager::CreateIOTaskProgressNotification(
       weak_ptr_factory_.GetWeakPtr(), task_id, notification_id, paused);
 
   auto notification = ash::CreateSystemNotificationPtr(
-      NotificationType::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, app_name_, GURL(), NotifierId(), rich_data,
+      NOTIFICATION_TYPE_PROGRESS, notification_id, title, message, app_name_,
+      GURL(), NotifierId(), rich_data,
       MakeRefCounted<IOTaskProgressNotificationClickDelegate>(
           std::move(notification_click_handler), paused),
       ash::kFolderIcon, SystemNotificationWarningLevel::NORMAL);
@@ -402,7 +402,7 @@ NotificationPtr SystemNotificationManager::CreateIOTaskProgressNotification(
 }
 
 void SystemNotificationManager::HandleIOTaskProgressNotificationClick(
-    file_manager::io_task::IOTaskId task_id,
+    IOTaskId task_id,
     const std::string& notification_id,
     const bool paused,
     absl::optional<int> button_index) {
@@ -431,7 +431,6 @@ static const char kDeviceFailNotificationId[] = "swa-device-fail-id";
 void SystemNotificationManager::HandleDeviceEvent(
     const fmp::DeviceEvent& event) {
   NotificationPtr notification;
-  std::u16string message;
   const std::string id = ToString(event.type);
   switch (event.type) {
     case DEVICE_EVENT_TYPE_DISABLED:
@@ -441,6 +440,7 @@ void SystemNotificationManager::HandleDeviceEvent(
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED);
       break;
+
     case DEVICE_EVENT_TYPE_REMOVED:
       // Hide device fail & storage disabled notifications.
       GetNotificationDisplayService()->Close(
@@ -451,29 +451,32 @@ void SystemNotificationManager::HandleDeviceEvent(
       // Remove the device from the mount status map.
       mount_status_.erase(event.device_path);
       break;
+
     case DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
                                         IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
+
     case DEVICE_EVENT_TYPE_FORMAT_START:
-      message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
-                                UTF8ToUTF16(event.device_label));
       notification = CreateNotification(
           id,
           GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
                           UTF8ToUTF16(event.device_label)),
-          message);
+          GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
+                          UTF8ToUTF16(event.device_label)));
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_START);
       break;
+
     case DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
     case DEVICE_EVENT_TYPE_FORMAT_FAIL:
-    case DEVICE_EVENT_TYPE_PARTITION_FAIL:
+    case DEVICE_EVENT_TYPE_PARTITION_FAIL: {
       // Hide the formatting notification.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
           ToString(DEVICE_EVENT_TYPE_FORMAT_START));
+      std::u16string message;
       if (event.type == DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
@@ -491,12 +494,15 @@ void SystemNotificationManager::HandleDeviceEvent(
           id,
           GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
                           UTF8ToUTF16(event.device_label)),
-          message);
+          std::move(message));
       break;
+    }
+
     case DEVICE_EVENT_TYPE_PARTITION_START:
     case DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
       // No-op.
       break;
+
     case DEVICE_EVENT_TYPE_RENAME_FAIL:
       notification =
           CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
@@ -504,8 +510,11 @@ void SystemNotificationManager::HandleDeviceEvent(
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::RENAME_FAIL);
       break;
 
+    case DEVICE_EVENT_TYPE_NONE:
+    case DEVICE_EVENT_TYPE_RENAME_START:
+    case DEVICE_EVENT_TYPE_RENAME_SUCCESS:
     default:
-      DLOG(WARNING) << "Unable to generate notification for " << id;
+      VLOG(1) << "No notification for device event " << id;
       break;
   }
 
@@ -699,8 +708,7 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
 
   // Work out if this is a sync or pin update.
   const bool is_sync_operation =
-      (event.histogram_value ==
-       HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
+      (event.histogram_value == FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
 
   constexpr char kDriveSyncId[] = "swa-drive-sync";
   constexpr char kDrivePinId[] = "swa-drive-pin";
@@ -758,21 +766,21 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
   bool force_as_system_notification = false;
   NotificationPtr notification;
   switch (event.histogram_value) {
-    case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
+    case FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
       notification = MakeDriveSyncErrorNotification(event);
       break;
 
-    case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
+    case FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
       notification = MakeDriveConfirmDialogNotification(event);
       force_as_system_notification = true;
       break;
 
-    case HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
-    case HistogramValue::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
+    case FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
+    case FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
       notification = UpdateDriveSyncNotification(event);
       break;
 
-    case HistogramValue::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
+    case FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
       notification = MakeBulkPinningErrorNotification(event);
       force_as_system_notification = true;
       break;
@@ -921,76 +929,80 @@ void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
 NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
     MountCompletedEvent& event,
     const Volume& volume) {
-  NotificationPtr notification;
-  std::vector<ButtonInfo> notification_buttons;
+  const auto it = mount_status_.find(volume.storage_device_path().value());
+  if (it == mount_status_.end()) {
+    return nullptr;
+  }
+
+  const std::u16string title =
+      GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
+  std::u16string message;
+  std::vector<ButtonInfo> buttons;
   std::vector<DeviceNotificationUserActionUmaType> uma_types_for_buttons;
-  auto device_mount_status =
-      mount_status_.find(volume.storage_device_path().value());
-  if (device_mount_status != mount_status_.end()) {
-    std::u16string title = GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
-    std::u16string message;
-    switch (device_mount_status->second) {
-      // We have either an unsupported or unknown filesystem on the mount.
-      case MOUNT_STATUS_ONLY_PARENT_ERROR:
-      case MOUNT_STATUS_CHILD_ERROR:
-        if (event.status == MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
-          if (volume.drive_label().empty()) {
-            message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
-          } else {
-            message = GetStringFUTF16(IDS_DEVICE_UNSUPPORTED_MESSAGE,
-                                      UTF8ToUTF16(volume.drive_label()));
-          }
-          RecordDeviceNotificationMetric(
-              DeviceNotificationUmaType::DEVICE_FAIL);
-        } else {
-          if (volume.drive_label().empty()) {
-            message = GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
-          } else {
-            message = GetStringFUTF16(IDS_DEVICE_UNKNOWN_MESSAGE,
-                                      UTF8ToUTF16(volume.drive_label()));
-          }
-          if (!volume.is_read_only()) {
-            // Give a format device button on the notification.
-            notification_buttons.emplace_back(
-                GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL));
-            uma_types_for_buttons.push_back(
-                DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL);
-            RecordDeviceNotificationMetric(
-                DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN);
-          } else {
-            RecordDeviceNotificationMetric(
-                DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY);
-          }
-        }
-        break;
-      // We have a multi-partition device for which at least one mount
-      // failed.
-      case MOUNT_STATUS_MULTIPART_ERROR:
+  switch (it->second) {
+    // We have either an unsupported or unknown filesystem on the mount.
+    case MOUNT_STATUS_ONLY_PARENT_ERROR:
+    case MOUNT_STATUS_CHILD_ERROR:
+      if (event.status == MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
         if (volume.drive_label().empty()) {
-          message =
-              GetStringUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+          message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
         } else {
-          message = GetStringFUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
+          message = GetStringFUTF16(IDS_DEVICE_UNSUPPORTED_MESSAGE,
                                     UTF8ToUTF16(volume.drive_label()));
         }
         RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
-        break;
-      default:
-        DLOG(WARNING) << "Unhandled mount status for "
-                      << device_mount_status->second;
-        return notification;
-    }
+      } else {
+        if (volume.drive_label().empty()) {
+          message = GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
+        } else {
+          message = GetStringFUTF16(IDS_DEVICE_UNKNOWN_MESSAGE,
+                                    UTF8ToUTF16(volume.drive_label()));
+        }
 
-    notification = CreateSystemNotification(
-        kDeviceFailNotificationId, title, message,
-        MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
-            &SystemNotificationManager::HandleRemovableNotificationClick,
-            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
-            uma_types_for_buttons)));
+        if (!volume.is_read_only()) {
+          // Give a format device button on the notification.
+          buttons.emplace_back(GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL));
+          uma_types_for_buttons.push_back(
+              DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL);
+          RecordDeviceNotificationMetric(
+              DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN);
+        } else {
+          RecordDeviceNotificationMetric(
+              DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY);
+        }
+      }
+      break;
 
-    DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
-    notification->set_buttons(notification_buttons);
+    // We have a multi-partition device for which at least one mount
+    // failed.
+    case MOUNT_STATUS_MULTIPART_ERROR:
+      if (volume.drive_label().empty()) {
+        message =
+            GetStringUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+      } else {
+        message = GetStringFUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
+                                  UTF8ToUTF16(volume.drive_label()));
+      }
+      RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
+      break;
+
+    case MOUNT_STATUS_NO_RESULT:
+    case MOUNT_STATUS_SUCCESS:
+    default:
+      VLOG(1) << "Unhandled mount status " << it->second;
+      return nullptr;
   }
+
+  NotificationPtr notification = CreateSystemNotification(
+      kDeviceFailNotificationId, title, message,
+      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+          &SystemNotificationManager::HandleRemovableNotificationClick,
+          weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+          uma_types_for_buttons)));
+
+  DCHECK_EQ(buttons.size(), uma_types_for_buttons.size());
+  notification->set_buttons(buttons);
+
   return notification;
 }
 
@@ -1159,8 +1171,7 @@ NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
                       weak_ptr_factory_.GetWeakPtr(), status.task_id);
   } else {  // Error - some files couldn't be transferred.
     DCHECK(status.HasPolicyError());
-    if (status.policy_error !=
-            file_manager::io_task::PolicyErrorType::kDlpWarningTimeout &&
+    if (status.policy_error != io_task::PolicyErrorType::kDlpWarningTimeout &&
         status.sources.size() > 1) {
       // If more than one file was blocked, add the "Review" button.
       notification_buttons.emplace_back(
@@ -1201,7 +1212,7 @@ SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
 }
 
 void SystemNotificationManager::ShowDataProtectionPolicyDialog(
-    file_manager::io_task::IOTaskId task_id,
+    IOTaskId task_id,
     policy::FilesDialogType type) {
   policy::FilesPolicyNotificationManager* manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
@@ -1215,8 +1226,7 @@ void SystemNotificationManager::ShowDataProtectionPolicyDialog(
   manager->ShowDialog(task_id, type);
 }
 
-void SystemNotificationManager::CancelTask(
-    file_manager::io_task::IOTaskId task_id) {
+void SystemNotificationManager::CancelTask(IOTaskId task_id) {
   if (io_task_controller_) {
     io_task_controller_->Cancel(task_id);
   } else {
@@ -1224,9 +1234,8 @@ void SystemNotificationManager::CancelTask(
   }
 }
 
-void SystemNotificationManager::ResumeTask(
-    file_manager::io_task::IOTaskId task_id,
-    policy::Policy policy) {
+void SystemNotificationManager::ResumeTask(IOTaskId task_id,
+                                           policy::Policy policy) {
   if (io_task_controller_) {
     io_task::ResumeParams params;
     params.policy_params->type = policy;
@@ -1247,6 +1256,7 @@ void SystemNotificationManager::HandleMountCompletedEvent(
         notification = MakeRemovableNotification(event, volume);
       }
       break;
+
     case MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kRemovableNotificationId);
@@ -1256,8 +1266,10 @@ void SystemNotificationManager::HandleMountCompletedEvent(
         UpdateDeviceMountStatus(event, volume);
       }
       break;
+
+    case MOUNT_COMPLETED_EVENT_TYPE_NONE:
     default:
-      DLOG(WARNING) << "Unhandled mount event for type " << event.event_type;
+      VLOG(1) << "Unexpected mount event " << event.event_type;
       break;
   }
 
@@ -1279,7 +1291,7 @@ void SystemNotificationManager::SetDriveFSEventRouter(
 }
 
 void SystemNotificationManager::SetIOTaskController(
-    file_manager::io_task::IOTaskController* io_task_controller) {
+    IOTaskController* io_task_controller) {
   io_task_controller_ = io_task_controller;
 }
 
