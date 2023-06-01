@@ -6275,6 +6275,12 @@ const char kPrinterSettingsRevampName[] = "Enable Printer Settings Revamped UI";
 const char kPrinterSettingsRevampDescription[] =
     "Show the enhanced UI for the OS Printer settings page.";
 
+const char kPrintPreviewDiscoveredPrintersName[] =
+    "Enables showing discovered printers in the Print Preview dialog.";
+const char kPrintPreviewDiscoveredPrintersDescription[] =
+    "Shows discovered printers in the Print Preview dialog that get set up "
+    "once selected.";
+
 const char kPrintingPpdChannelName[] = "Printing PPD channel";
 const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "

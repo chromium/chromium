@@ -1823,6 +1823,11 @@ BASE_FEATURE(kPrinterSettingsRevamp,
              "PrinterSettingsRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing discovered printers in the Print Preview dialog.
+BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
+             "PrintPreviewDiscoveredPrinters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing printer status on the OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsPrinterStatus,
              "PrinterSettingsPrinterStatus",
@@ -3342,6 +3347,10 @@ bool IsPrinterSettingsPrinterStatusEnabled() {
 
 bool IsPrinterSettingsRevampEnabled() {
   return base::FeatureList::IsEnabled(kPrinterSettingsRevamp);
+}
+
+bool IsPrintPreviewDiscoveredPrintersEnabled() {
+  return base::FeatureList::IsEnabled(kPrintPreviewDiscoveredPrinters);
 }
 
 bool IsPrivacyIndicatorsEnabled() {

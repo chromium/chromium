@@ -6224,6 +6224,13 @@
     "expiry_milestone": 122
   },
   {
+    "name": "print-preview-discovered-printers",
+    "owners": [
+      "//ash/webui/print_management/OWNERS"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig" ],
     "expiry_milestone": 122

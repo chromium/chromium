@@ -529,6 +529,8 @@ BASE_DECLARE_FEATURE(kPrinterSettingsPrinterStatus);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrinterSettingsRevamp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrintManagementJelly);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kPrintPreviewDiscoveredPrinters);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPrintManagementSetupAssistance);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrivacyIndicators);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProductivityLauncher);
@@ -911,6 +913,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPinAutosubmitFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrivacyIndicatorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrinterSettingsPrinterStatusEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrinterSettingsRevampEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPrintPreviewDiscoveredPrintersEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProductivityLauncherImageSearchEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorEnabled();

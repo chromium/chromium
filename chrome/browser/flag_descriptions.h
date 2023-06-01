@@ -3598,6 +3598,9 @@ extern const char kPrinterSettingsPrinterStatusDescription[];
 extern const char kPrinterSettingsRevampName[];
 extern const char kPrinterSettingsRevampDescription[];
 
+extern const char kPrintPreviewDiscoveredPrintersName[];
+extern const char kPrintPreviewDiscoveredPrintersDescription[];
+
 extern const char kPrintingPpdChannelName[];
 extern const char kPrintingPpdChannelDescription[];
 
