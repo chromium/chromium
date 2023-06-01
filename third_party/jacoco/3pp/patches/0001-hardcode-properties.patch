@@ -1,8 +1,8 @@
 diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
-index fb5cf5fb..31c9889e 100644
+index 1f1696ff..b46239d1 100644
 --- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
 +++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/Agent.java
-@@ -168,13 +168,16 @@ public class Agent implements IAgent {
+@@ -176,13 +176,9 @@ public class Agent implements IAgent {
  
  	private String createSessionId() {
  		String host;
@@ -15,22 +15,15 @@ index fb5cf5fb..31c9889e 100644
 -		}
 +		// Local modification: Do not try to get host address for StrictMode.
 +		// See crbug.com/1401476.
-+		// try {
-+		//	host = InetAddress.getLocalHost().getHostName();
-+		// } catch (final Exception e) {
-+		// 	// Also catch platform specific exceptions (like on Android) to
-+		// 	// avoid bailing out here
-+		// 	host = "unknownhost";
-+		//}
 +		host = "unknownhost";
  		return host + "-" + AbstractRuntime.createRandomId();
  	}
  
 diff --git a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
-index 9020c2fc..54c355c8 100644
+index c0d524fc..f6a2a66d 100644
 --- a/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
 +++ b/org.jacoco.agent.rt/src/org/jacoco/agent/rt/internal/ConfigLoader.java
-@@ -33,7 +33,15 @@ final class ConfigLoader {
+@@ -34,7 +34,16 @@ final class ConfigLoader {
  
  	static Properties load(final String resource, final Properties system) {
  		final Properties result = new Properties();
@@ -38,7 +31,8 @@ index 9020c2fc..54c355c8 100644
 +		// Local modification: Do not read from resource file on android because
 +		// strict mode doesn't allow this. See crbug.com/1401476. Using
 +		// hardcoded properties here.
-+		boolean isAndroid = "Android Runtime".equals(System.getProperty("java.runtime.name"));
++		boolean isAndroid = "Android Runtime"
++				.equals(System.getProperty("java.runtime.name"));
 +		if (isAndroid) {
 +			result.setProperty("output", "none");
 +		} else {
