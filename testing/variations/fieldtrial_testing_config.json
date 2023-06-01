@@ -5806,28 +5806,6 @@
             ]
         }
     ],
-    "FlushGpuAtDraw": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FlushGpuAtDraw"
-                    ]
-                }
-            ]
-        }
-    ],
     "FollowOnboarding": [
         {
             "platforms": [
@@ -8175,28 +8153,6 @@
                     },
                     "enable_features": [
                         "MacWebContentsOcclusion"
-                    ]
-                }
-            ]
-        }
-    ],
-    "MainRepaintScrollPrefersNewContent": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MainRepaintScrollPrefersNewContent"
                     ]
                 }
             ]
@@ -11793,26 +11749,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScreenTimeIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScrollUnification": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScrollUnification"
                     ]
                 }
             ]
