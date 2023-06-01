@@ -583,7 +583,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
     if (capture_controller->IsBound()) {
       resolver->RecordAndThrowDOMException(
           exception_state, DOMExceptionCode::kInvalidStateError,
-          "setFocusBehavior() can only be called before getDisplayMedia() or"
+          "setFocusBehavior() can only be called before getDisplayMedia() or "
           "immediately after.",
           UserMediaRequestResult::kInvalidStateError);
       return ScriptPromise();
