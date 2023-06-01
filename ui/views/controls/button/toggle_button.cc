@@ -369,6 +369,10 @@ bool ToggleButton::GetAcceptsEvents() const {
   return accepts_events_;
 }
 
+int ToggleButton::GetVisualHorizontalMargin() const {
+  return kTrackHorizontalMargin - kThumbInset;
+}
+
 void ToggleButton::AddLayerToRegion(ui::Layer* layer,
                                     views::LayerRegion region) {
   // Ink-drop layers should go above/below the ThumbView.

@@ -528,13 +528,6 @@ void MediaDialogView::OnSodaProgress(speech::LanguageCode language_code,
 
 void MediaDialogView::InitializeLiveCaptionSection() {
   auto live_caption_container = std::make_unique<View>();
-  auto* live_caption_container_layout =
-      live_caption_container->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets::VH(kVerticalMarginDip, kHorizontalMarginDip),
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
 
   auto live_caption_image = std::make_unique<views::ImageView>();
   live_caption_image->SetImage(ui::ImageModel::FromVectorIcon(
@@ -548,7 +541,6 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   live_caption_title->SetMultiLine(true);
   live_caption_title_ =
       live_caption_container->AddChildView(std::move(live_caption_title));
-  live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
 
   auto live_caption_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&MediaDialogView::OnLiveCaptionButtonPressed,
@@ -559,6 +551,17 @@ void MediaDialogView::InitializeLiveCaptionSection() {
   live_caption_button_ =
       live_caption_container->AddChildView(std::move(live_caption_button));
 
+  auto* live_caption_container_layout =
+      live_caption_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal,
+              gfx::Insets::TLBR(
+                  kVerticalMarginDip, kHorizontalMarginDip, kVerticalMarginDip,
+                  kHorizontalMarginDip -
+                      live_caption_button_->GetVisualHorizontalMargin()),
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  live_caption_container_layout->SetFlexForView(live_caption_title_, 1);
   live_caption_container_ = AddChildView(std::move(live_caption_container));
 }
 
@@ -566,15 +569,6 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   auto live_translate_container = std::make_unique<View>();
   live_translate_container->SetVisible(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
-  auto* live_translate_container_layout =
-      live_translate_container->SetLayoutManager(
-          std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets::VH(kVerticalMarginDip, kHorizontalMarginDip),
-              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-  live_translate_container_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
 
   auto live_translate_image = std::make_unique<views::ImageView>();
   live_translate_image->SetImage(ui::ImageModel::FromVectorIcon(
@@ -604,8 +598,6 @@ void MediaDialogView::InitializeLiveTranslateSection() {
 
   live_translate_label_wrapper_ = live_translate_container->AddChildView(
       std::move(live_translate_label_wrapper));
-  live_translate_container_layout->SetFlexForView(live_translate_label_wrapper_,
-                                                  1);
 
   auto live_translate_button = std::make_unique<views::ToggleButton>(
       base::BindRepeating(&MediaDialogView::OnLiveTranslateButtonPressed,
@@ -613,6 +605,20 @@ void MediaDialogView::InitializeLiveTranslateSection() {
   live_translate_button->SetIsOn(
       profile_->GetPrefs()->GetBoolean(prefs::kLiveTranslateEnabled));
   live_translate_button->SetAccessibleName(live_translate_title_->GetText());
+  auto* live_translate_container_layout =
+      live_translate_container->SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kHorizontal,
+              gfx::Insets::TLBR(
+                  kVerticalMarginDip, kHorizontalMarginDip, kVerticalMarginDip,
+                  kHorizontalMarginDip -
+                      live_translate_button->GetVisualHorizontalMargin()),
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  live_translate_container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  live_translate_container_layout->SetFlexForView(live_translate_label_wrapper_,
+                                                  1);
   live_translate_button_ =
       live_translate_container->AddChildView(std::move(live_translate_button));
   live_translate_container_ = AddChildView(std::move(live_translate_container));

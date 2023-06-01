@@ -52,6 +52,10 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void SetAcceptsEvents(bool accepts_events);
   bool GetAcceptsEvents() const;
 
+  // Gets the horizontal margin between the rounded edge of the thumb and the
+  // edge of the view.
+  int GetVisualHorizontalMargin() const;
+
   // views::View:
   void AddLayerToRegion(ui::Layer* layer, LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
