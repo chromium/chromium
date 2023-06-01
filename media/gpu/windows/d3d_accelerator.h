@@ -34,11 +34,17 @@ class D3DAccelerator {
 
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 
+  // TODO(crbug.com/1348104): Replace SetVideoDecoder() with this method.
+  void SetVideoDecoderWrapper(
+      std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper);
+
   raw_ptr<D3D11VideoDecoderClient> client_;
   raw_ptr<MediaLog> media_log_ = nullptr;
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;
   std::unique_ptr<VideoContextWrapper> video_context_;
+
+  std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper_;
 };
 
 }  // namespace media

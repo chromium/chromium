@@ -33,6 +33,7 @@
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
+#include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d11_vp9_accelerator.h"
 
 namespace gpu {
@@ -93,6 +94,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   bool OutputResult(const CodecPicture* picture,
                     D3D11PictureBuffer* picture_buffer) override;
   void SetDecoderCB(const SetAcceleratorDecoderCB&) override;
+  void SetDecoderWrapperCB(const SetAcceleratorDecoderWrapperCB&) override;
 
   static bool GetD3D11FeatureLevel(
       ComD3D11Device dev,
@@ -168,6 +170,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   // Create a D3D11VideoDecoder, if possible, based on the current config.
   D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
+
+  std::unique_ptr<D3D11VideoDecoderWrapper> CreateD3D11VideoDecoderWrapper(
+      ComD3D11VideoDecoder video_decoder);
 
   enum class D3D11LifetimeProgression {
     kInitializeStarted = 0,
@@ -291,6 +296,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Word-salad callback to set / update D3D11 Video callback to the
   // accelerator.  Needed for config changes.
   SetAcceleratorDecoderCB set_accelerator_decoder_cb_;
+  SetAcceleratorDecoderWrapperCB set_accelerator_decoder_wrapper_cb_;
 
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.
