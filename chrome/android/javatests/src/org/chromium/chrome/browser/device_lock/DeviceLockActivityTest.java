@@ -9,9 +9,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.MediumTest;
@@ -26,6 +28,9 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.IntentRequestTracker;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Tests for the {@link DeviceLockActivity}.
@@ -69,6 +74,20 @@ public class DeviceLockActivityTest {
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
     }
 
+    @Test
+    @MediumTest
+    public void testOnActivityResult_passesActivityResultToWindowAndroid() {
+        launchActivity();
+        MockIntentRequestTracker mockIntentRequestTracker = new MockIntentRequestTracker();
+        mDeviceLockActivity.setIntentRequestTrackerForTesting(mockIntentRequestTracker);
+
+        int testRequestCode = 1;
+        Intent data = new Intent();
+        mDeviceLockActivity.onActivityResult(testRequestCode, Activity.RESULT_OK, data);
+
+        assertTrue(mockIntentRequestTracker.mOnActivityResultCalled);
+    }
+
     public void launchActivity() {
         Intent intent = DeviceLockActivity.createIntent(
                 ContextUtils.getApplicationContext(), true, "testSelectedAccount");
@@ -76,5 +95,28 @@ public class DeviceLockActivityTest {
         mActivityScenario = ActivityScenario.launchActivityForResult(intent);
         mActivityScenario.onActivity(activity -> mDeviceLockActivity = activity);
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.RESUMED);
+    }
+
+    private class MockIntentRequestTracker implements IntentRequestTracker {
+        boolean mOnActivityResultCalled;
+
+        MockIntentRequestTracker() {}
+
+        @Override
+        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+            mOnActivityResultCalled = true;
+            return true;
+        }
+
+        @Override
+        public WeakReference<Activity> getActivity() {
+            return null;
+        }
+
+        @Override
+        public void saveInstanceState(Bundle bundle) {}
+
+        @Override
+        public void restoreInstanceState(Bundle bundle) {}
     }
 }

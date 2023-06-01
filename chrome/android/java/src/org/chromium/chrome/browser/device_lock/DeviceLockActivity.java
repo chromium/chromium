@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
@@ -36,7 +37,21 @@ public class DeviceLockActivity
 
     private FrameLayout mFrameLayout;
     private WindowAndroid mWindowAndroid;
+    private IntentRequestTracker mIntentRequestTracker;
     private DeviceLockCoordinator mDeviceLockCoordinator;
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mIntentRequestTracker != null) {
+            mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @VisibleForTesting
+    void setIntentRequestTrackerForTesting(IntentRequestTracker intentRequestTracker) {
+        mIntentRequestTracker = intentRequestTracker;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +60,7 @@ public class DeviceLockActivity
         setContentView(mFrameLayout);
         mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
                 IntentRequestTracker.createFromActivity(this));
+        mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();
 
         Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
         Account selectedAccount = AccountUtils.createAccountFromName(
