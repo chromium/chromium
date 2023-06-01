@@ -207,7 +207,7 @@ static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
 const base::FeatureParam<NavigationQueueingFeatureLevel>
     kNavigationQueueingFeatureLevelParam{
         &features::kQueueNavigationsWhileWaitingForCommit, "queueing_level",
-        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
+        NavigationQueueingFeatureLevel::kFull,
         &kNavigationQueueingFeatureLevels};
 
 NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
