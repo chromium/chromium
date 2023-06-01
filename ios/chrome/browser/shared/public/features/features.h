@@ -12,6 +12,9 @@
 // Feature flag to enable default browser blue dot promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
 
+// Feature flag to enable the Payments Bottom Sheet.
+BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
+
 // Enum for blue dot promo user groups (control/experiment) and its param. The
 // reason why we need a custom control group is to disable other independent
 // default browser promos, which are already shipped.

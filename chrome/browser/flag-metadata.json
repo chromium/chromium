@@ -4674,6 +4674,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "ios-payments-bottom-sheet",
+    "owners": ["veronguyen", "sugoi", "tmartino", "bling-integrations-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "ios-promo-password-bubble",
     "owners": ["nicolasmacbeth@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 120
