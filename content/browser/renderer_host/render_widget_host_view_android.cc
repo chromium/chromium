@@ -2537,20 +2537,10 @@ void RenderWidgetHostViewAndroid::OnRendererWidgetCreated() {
 
 bool RenderWidgetHostViewAndroid::OnMouseEvent(
     const ui::MotionEventAndroid& event) {
-  // Ignore ACTION_HOVER_ENTER & ACTION_HOVER_EXIT because every mouse-down on
-  // Android follows a hover-exit and is followed by a hover-enter.
-  // https://crbug.com/715114 filed on distinguishing actual hover
-  // enter/exit from these bogus ones.
-  auto action = event.GetAction();
-  if (action == ui::MotionEventAndroid::Action::HOVER_ENTER ||
-      action == ui::MotionEventAndroid::Action::HOVER_EXIT) {
-    return false;
-  }
-
   RecordToolTypeForActionDown(event);
 
   blink::WebInputEvent::Type webMouseEventType =
-      ui::ToWebMouseEventType(action);
+      ui::ToWebMouseEventType(event.GetAction());
 
   if (webMouseEventType == blink::WebInputEvent::Type::kUndefined) {
     return false;

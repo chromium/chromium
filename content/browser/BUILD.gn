@@ -375,8 +375,6 @@ source_set("browser") {
     "accessibility/one_shot_accessibility_tree_search.h",
     "accessibility/render_accessibility_host.cc",
     "accessibility/render_accessibility_host.h",
-    "accessibility/touch_passthrough_manager.cc",
-    "accessibility/touch_passthrough_manager.h",
     "accessibility/web_ax_platform_tree_manager_delegate.h",
     "accessibility/web_contents_accessibility.h",
     "after_startup_task_utils.cc",

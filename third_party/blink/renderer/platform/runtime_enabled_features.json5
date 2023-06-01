@@ -240,12 +240,6 @@
       base_feature: "none",
     },
     {
-      name: "AccessibilityAriaTouchPassthrough",
-      status: "experimental",
-      base_feature: "none",
-      origin_trial_feature_name: "AccessibilityAriaTouchPassthrough",
-    },
-    {
       name: "AccessibilityAriaVirtualContent",
       public: true,
       status: "experimental",
@@ -341,11 +335,6 @@
     {
       name: "AOMAriaRelationshipProperties",
       public: true,
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
-      name: "AriaTouchPassthrough",
       status: "experimental",
       base_feature: "none",
     },

@@ -130,11 +130,6 @@
       enum: ["ascending", "descending", "none", "other"],
       type: "token"
     },
-    {
-      name: "aria-touchpassthrough",
-      type: "boolean",
-      runtimeEnabled: "AriaTouchPassthrough"
-    },
     {name: "aria-valuemax", type: "decimal"},
     {name: "aria-valuemin", type: "decimal"},
     {name: "aria-valuenow", type: "decimal"},

@@ -865,10 +865,8 @@ enum BoolAttribute {
   // True if the node has any ARIA attributes set.
   kHasAriaAttribute = 19,
 
-  // This element allows touches to be passed through when a screen reader
-  // is in touch exploration mode, e.g. a virtual keyboard normally
-  // behaves this way.
-  kTouchPassthrough = 20,
+  // OBSOLETE - Do no use.
+  OBSOLETE_kTouchPassthrough = 20,
 
   // A hint to clients that the node is long clickable.
   [MinVersion=1] kLongClickable = 21,

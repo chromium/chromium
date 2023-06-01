@@ -41959,9 +41959,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3915" label="ClientHintsPrefersColorScheme"/>
   <int value="3916" label="OverscrollBehaviorWillBeFixed"/>
   <int value="3917" label="ControlledWorkerWillBeUncontrolled"/>
-  <int value="3918" label="ARIATouchpassthroughAttribute"/>
+  <int value="3918" label="OBSOLETE_kARIATouchpassthroughAttribute"/>
   <int value="3919" label="ARIAVirtualcontentAttribute"/>
-  <int value="3920" label="AccessibilityTouchPassthroughSet"/>
+  <int value="3920" label="OBSOLETE_kAccessibilityTouchPassthroughSet"/>
   <int value="3921" label="TextFragmentBlockedByForceLoadAtTop"/>
   <int value="3922" label="OBSOLETE_UrnDocumentAccessedCookies"/>
   <int value="3923" label="FontFaceAscentOverride"/>

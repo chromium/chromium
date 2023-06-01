@@ -1,5 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++genericContainer
-++++++canvas name='c1'
-++++++canvas name='c2' touchPassthrough=true

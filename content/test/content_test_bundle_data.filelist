@@ -1495,8 +1495,6 @@ data/accessibility/aria/aria-tooltip-expected-mac-before-11.txt
 data/accessibility/aria/aria-tooltip-expected-mac.txt
 data/accessibility/aria/aria-tooltip-expected-win.txt
 data/accessibility/aria/aria-tooltip.html
-data/accessibility/aria/aria-touchpassthrough-expected-blink.txt
-data/accessibility/aria/aria-touchpassthrough.html
 data/accessibility/aria/aria-tree-discontinuous-expected-android-external.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-android.txt
 data/accessibility/aria/aria-tree-discontinuous-expected-auralinux.txt
@@ -2452,7 +2450,6 @@ data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html
 data/accessibility/fullscreen/iframe.html
 data/accessibility/fullscreen/links.html
-data/accessibility/hit_testing/aria_touchpassthrough_key.html
 data/accessibility/hit_testing/input-color-with-popup-open.html
 data/accessibility/hit_testing/simple_rectangles.html
 data/accessibility/hit_testing/simple_rectangles_iframe.html
