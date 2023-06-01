@@ -23,6 +23,8 @@ android_aidl("js_sandbox_aidl") {
 
 android_library("js_sandbox_aidl_java") {
   srcjar_deps = [ ":js_sandbox_aidl" ]
+
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
 
 android_library("javascriptengine_common_java") {
