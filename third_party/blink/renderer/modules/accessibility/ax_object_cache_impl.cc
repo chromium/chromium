@@ -1437,6 +1437,13 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
 
+  // Only rebuild the child list of the parent if we had to compute
+  // the parent here, and it wasn't passed in as context. In other situations,
+  // we should know about the child already.
+  if (parent && parent != parent_if_known) {
+    parent->ChildrenChangedWithCleanLayout();
+  }
+
   return new_obj;
 }
 
