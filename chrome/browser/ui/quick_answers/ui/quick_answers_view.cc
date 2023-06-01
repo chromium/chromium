@@ -141,7 +141,6 @@ class MainView : public views::Button {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
     SetInstallFocusRingOnFocus(false);
-    set_suppress_default_focus_handling();
 
     // This is because waiting for mouse-release to fire buttons would be too
     // late, since mouse-press dismisses the menu.
@@ -374,6 +373,18 @@ views::UniqueWidgetPtr QuickAnswersView::CreateWidget(
       reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
 
   return widget;
+}
+
+void QuickAnswersView::RequestFocus() {
+  // When the Quick Answers view is focused, we actually want `main_view_`
+  // to have the focus for highlight and selection purposes.
+  main_view_->RequestFocus();
+}
+
+bool QuickAnswersView::HasFocus() const {
+  // When the Quick Answers view is focused, `main_view_` should have
+  // the focus.
+  return main_view_->HasFocus();
 }
 
 void QuickAnswersView::OnFocus() {
@@ -824,10 +835,10 @@ void QuickAnswersView::UpdateQuickAnswerResult(
 
 std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   std::vector<views::View*> focusable_views;
-  // The view itself does not gain focus for retry-view and transfers it to the
+  // The main view does not gain focus for retry-view and transfers it to the
   // retry-label, and so is not included when this is the case.
   if (!retry_label_) {
-    focusable_views.push_back(this);
+    focusable_views.push_back(main_view_);
   }
   if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
     focusable_views.push_back(dogfood_feedback_button_);

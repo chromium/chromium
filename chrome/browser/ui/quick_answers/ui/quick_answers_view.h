@@ -56,6 +56,8 @@ class QuickAnswersView : public views::View {
       base::WeakPtr<QuickAnswersUiController> controller);
 
   // views::View:
+  void RequestFocus() override;
+  bool HasFocus() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
