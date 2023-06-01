@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser;
+package org.chromium.chrome.browser.back_press;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.lifecycle.LifecycleOwner;
 
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
@@ -28,31 +29,35 @@ public final class BackPressHelper {
     }
 
     /**
-     * @deprecated Create a {@link BackPressHelper} that can handle a chain of handlers.
-     * Prefer {@link #create(LifecycleOwner, OnBackPressedDispatcher, BackPressHandler)}
-     * whenever possible.
      * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
      * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
-     * @param handler {@link ObsoleteBackPressedHandler} implementing the caller's back press
-     *         handler.
+     * @param handler {@link ObsoleteBackPressedHandler} implementing the caller's back press.
+     * @param activity {@link SecondaryActivity} handling the back press.
+     * handler.
+     * @deprecated Create a {@link BackPressHelper} that can handle a chain of handlers. Prefer
+     * {@link #create(LifecycleOwner, OnBackPressedDispatcher, BackPressHandler, int)} whenever
+     * possible.
      */
     @Deprecated
     public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            ObsoleteBackPressedHandler handler) {
-        new BackPressHelper(lifecycleOwner, dispatcher, handler);
+            ObsoleteBackPressedHandler handler, @SecondaryActivity int activity) {
+        new BackPressHelper(lifecycleOwner, dispatcher, handler, activity);
     }
 
     /**
      * Register a {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}.
+     *
      * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
      * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
      * @param handler {@link BackPressHandler} observing back press state and consuming back press.
+     * @param activity {@link SecondaryActivity} handling the back press.
      */
     public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressHandler handler) {
+            BackPressHandler handler, @SecondaryActivity int activity) {
         var callback = new OnBackPressedCallback(/* enabled */ false) {
             @Override
             public void handleOnBackPressed() {
+                SecondaryActivityBackPressUma.record(activity);
                 handler.handleBackPress();
             }
         };
@@ -61,20 +66,23 @@ public final class BackPressHelper {
     }
 
     /**
-     * Register a list of {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}.
-     * The first handler has the top priority and the last one has the least.
+     * Register a list of {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}. The
+     * first handler has the top priority and the last one has the least.
      * TODO(https://crbug.com/1406012): consider introducing a lightweight
      * {@link org.chromium.chrome.browser.back_press.BackPressManager} if too many handlers should
      * be registered.
+     *
      * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
      * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
-     * @param handlers {@link BackPressHandler} observing back press state and consuming back press.
+     * @param handlers {@link BackPressHandler} observing back press state and consuming back
+     * press.
+     * @param activity {@link SecondaryActivity} handling the back press.
      */
     public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            BackPressHandler[] handlers) {
+            BackPressHandler[] handlers, @SecondaryActivity int activity) {
         // OnBackPressedDispatcher triggers handlers in a reversed order.
         for (int i = handlers.length - 1; i >= 0; i--) {
-            create(lifecycleOwner, dispatcher, handlers[i]);
+            create(lifecycleOwner, dispatcher, handlers[i], activity);
         }
     }
 
@@ -95,11 +103,15 @@ public final class BackPressHelper {
     }
 
     private BackPressHelper(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
-            ObsoleteBackPressedHandler handler) {
+            ObsoleteBackPressedHandler handler, @SecondaryActivity int activity) {
         dispatcher.addCallback(lifecycleOwner, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (!handler.onBackPressed()) onBackPressed(dispatcher, this);
+                if (handler.onBackPressed()) {
+                    SecondaryActivityBackPressUma.record(activity);
+                } else {
+                    onBackPressed(dispatcher, this);
+                }
             }
         });
     }

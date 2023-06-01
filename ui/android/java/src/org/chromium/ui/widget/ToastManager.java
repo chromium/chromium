@@ -52,7 +52,7 @@ public class ToastManager {
     private Toast mToast;
 
     static boolean isEnabled() {
-        if (Boolean.FALSE.equals(sIsEnabled) || !LibraryLoader.getInstance().isInitialized()) {
+        if (Boolean.FALSE.equals(sIsEnabled) || !LibraryLoader.getInstance().isLoaded()) {
             return false;
         }
         if (sIsEnabled == null) {

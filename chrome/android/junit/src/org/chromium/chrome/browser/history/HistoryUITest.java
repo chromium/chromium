@@ -52,10 +52,12 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersBridge;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
@@ -203,10 +205,11 @@ public class HistoryUITest {
         // Some individual tests may override to enable this feature which is disabled by
         // the class by default.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)) {
-            BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager);
+            BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager,
+                    SecondaryActivity.HISTORY);
         } else {
-            BackPressHelper.create(
-                    mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager::onBackPressed);
+            BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher,
+                    mHistoryManager::onBackPressed, SecondaryActivity.HISTORY);
         }
     }
 
@@ -478,6 +481,7 @@ public class HistoryUITest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
     public void testSearchViewDismissedByBackPress() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -494,17 +498,23 @@ public class HistoryUITest {
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
 
         // Press back press to unselect item and the search view is showing again.
+        var backPressRecorder = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
+        backPressRecorder.assertExpected();
 
         // Press back to close the search view.
+        var backPressRecorder2 = HistogramWatcher.newSingleRecordWatcher(
+                "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         TestThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
+        backPressRecorder2.assertExpected();
     }
 
     @Test

@@ -6,8 +6,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/back_press/BackPressHelper.java",
     "java/src/org/chromium/chrome/browser/back_press/BackPressManager.java",
     "java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java",
+    "java/src/org/chromium/chrome/browser/back_press/SecondaryActivityBackPressUma.java",
   ]
 
   deps = [
@@ -21,11 +23,15 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
   ]
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/back_press/BackPressManagerUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/back_press/BackPressHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/back_press/BackPressManagerUnitTest.java",
+  ]
 
   deps = [
     ":java",
@@ -36,7 +42,10 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
