@@ -5018,6 +5018,21 @@
             ]
         }
     ],
+    "EnableADPFMidFrameBoost": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230601",
+                    "enable_features": [
+                        "EnableADPFMidFrameBoost"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFScrollBoost": [
         {
             "platforms": [
