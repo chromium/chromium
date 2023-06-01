@@ -45,7 +45,7 @@ void NativeThemeFluent::PaintArrowButton(
     State state,
     ColorScheme color_scheme,
     const ScrollbarArrowExtraParams& arrow) const {
-  PaintButton(canvas, color_provider, rect, color_scheme);
+  PaintButton(canvas, color_provider, rect, direction, color_scheme);
   PaintArrow(canvas, color_provider, rect, direction, state, color_scheme);
 }
 
@@ -57,10 +57,38 @@ void NativeThemeFluent::PaintScrollbarTrack(
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
+  gfx::Rect track_fill_rect = rect;
+  if (InForcedColorsMode()) {
+    gfx::Insets edge_insets;
+    if (part == NativeTheme::Part::kScrollbarHorizontalTrack) {
+      edge_insets.set_left_right(-kFluentScrollbarTrackOutlineWidth,
+                                 -kFluentScrollbarTrackOutlineWidth);
+    } else {
+      edge_insets.set_top_bottom(-kFluentScrollbarTrackOutlineWidth,
+                                 -kFluentScrollbarTrackOutlineWidth);
+    }
+    const gfx::InsetsF outline_insets(kFluentScrollbarTrackOutlineWidth / 2.0f);
+
+    gfx::RectF outline_rect(rect);
+    outline_rect.Inset(outline_insets + gfx::InsetsF(edge_insets));
+
+    const SkColor track_outline_color =
+        color_provider->GetColor(kColorScrollbarThumb);
+
+    cc::PaintFlags outline_flags;
+    outline_flags.setColor(track_outline_color);
+    outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    outline_flags.setStrokeWidth(kFluentScrollbarTrackOutlineWidth);
+    canvas->drawRect(gfx::RectFToSkRect(outline_rect), outline_flags);
+
+    // Adjust fill rect to not overlap with the outline stroke rect.
+    constexpr gfx::Insets fill_insets(kFluentScrollbarTrackOutlineWidth);
+    track_fill_rect.Inset(fill_insets + edge_insets);
+  }
   const SkColor track_color = color_provider->GetColor(kColorScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(track_color);
-  canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
+  canvas->drawIRect(gfx::RectToSkIRect(track_fill_rect), flags);
 }
 
 void NativeThemeFluent::PaintScrollbarThumb(cc::PaintCanvas* canvas,
@@ -138,11 +166,43 @@ gfx::Size NativeThemeFluent::GetPartSize(Part part,
 void NativeThemeFluent::PaintButton(cc::PaintCanvas* canvas,
                                     const ColorProvider* color_provider,
                                     const gfx::Rect& rect,
+                                    Part direction,
                                     ColorScheme color_scheme) const {
   const SkColor button_color = color_provider->GetColor(kColorScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(button_color);
-  canvas->drawIRect(gfx::RectToSkIRect(rect), flags);
+  gfx::Rect button_fill_rect = rect;
+  if (InForcedColorsMode()) {
+    const gfx::InsetsF outline_insets(kFluentScrollbarTrackOutlineWidth / 2.0f);
+    gfx::Insets edge_insets;
+    if (direction == NativeTheme::Part::kScrollbarUpArrow) {
+      edge_insets.set_bottom(-kFluentScrollbarTrackOutlineWidth);
+    } else if (direction == NativeTheme::Part::kScrollbarDownArrow) {
+      edge_insets.set_top(-kFluentScrollbarTrackOutlineWidth);
+    } else if (direction == NativeTheme::Part::kScrollbarLeftArrow) {
+      edge_insets.set_right(-kFluentScrollbarTrackOutlineWidth);
+    } else if (direction == NativeTheme::Part::kScrollbarRightArrow) {
+      edge_insets.set_left(-kFluentScrollbarTrackOutlineWidth);
+    }
+
+    gfx::RectF outline_rect(rect);
+    outline_rect.Inset(outline_insets + gfx::InsetsF(edge_insets));
+    const SkColor arrow_outline_color =
+        color_provider->GetColor(kColorScrollbarThumb);
+
+    cc::PaintFlags outline_flags;
+    outline_flags.setColor(arrow_outline_color);
+    outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    outline_flags.setStrokeWidth(kFluentScrollbarTrackOutlineWidth);
+
+    canvas->drawRect(gfx::RectFToSkRect(outline_rect), outline_flags);
+
+    // Adjust the fill rect to not overlap with the outline stroke rect.
+    constexpr gfx::Insets fill_insets(kFluentScrollbarTrackOutlineWidth);
+    button_fill_rect.Inset(fill_insets + edge_insets);
+  }
+
+  canvas->drawIRect(gfx::RectToSkIRect(button_fill_rect), flags);
 }
 
 void NativeThemeFluent::PaintArrow(cc::PaintCanvas* canvas,
