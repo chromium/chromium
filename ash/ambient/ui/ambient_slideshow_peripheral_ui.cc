@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/ambient/ui/ambient_shield_view.h"
+#include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/jitter_calculator.h"
@@ -17,9 +18,11 @@
 #include "base/logging.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -103,6 +106,11 @@ void AmbientSlideshowPeripheralUi::UpdateGlanceableInfoPosition() {
     media_string_transform.Translate(-jitter.x(), -jitter.y());
     media_string_view_->layer()->SetTransform(media_string_transform);
   }
+}
+
+void AmbientSlideshowPeripheralUi::UpdateLeftPaddingToMatchBottom() {
+  ambient_info_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, ambient_info_view_->GetAdjustedLeftPaddingToMatchBottom(), 0, 0)));
 }
 
 void AmbientSlideshowPeripheralUi::UpdateImageDetails(

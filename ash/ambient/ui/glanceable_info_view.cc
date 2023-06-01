@@ -190,6 +190,10 @@ void GlanceableInfoView::InitLayout() {
       0, 0, GetFontDescent(time_font_list) - GetTemperatureFontDescent(), 0)));
 }
 
+int GlanceableInfoView::GetTimeFontDescent() {
+  return GetFontDescent(GetTimeFontList(time_font_size_dip_));
+}
+
 BEGIN_METADATA(GlanceableInfoView, views::View)
 END_METADATA
 
