@@ -828,6 +828,7 @@ void PinManager::HandleQueryItem(Id dir_id,
     if (md.shortcut_details->target_lookup_status != LookupStatus::kOk) {
       // The shortcut target is not accessible.
       progress_.skipped_items++;
+      progress_.broken_shortcuts++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)
@@ -841,6 +842,7 @@ void PinManager::HandleQueryItem(Id dir_id,
     if (md.trashed) {
       // The shortcut target is in the trash bin.
       progress_.skipped_items++;
+      progress_.broken_shortcuts++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
               << "Target " << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id)

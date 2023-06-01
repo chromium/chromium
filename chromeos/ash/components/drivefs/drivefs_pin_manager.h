@@ -90,6 +90,11 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of skipped items (files, directories and shortcuts).
   int skipped_items = 0;
 
+  // Number of broken shortcuts (ie shortcuts to deleted or inaccessible files)
+  // found by search queries during the kListingFiles stage. This does not count
+  // shortcuts to directories.
+  int broken_shortcuts = 0;
+
   // Numbers of items, directories, files, hosted documents and shortcuts found
   // by search queries during the kListingFiles stage.
   int listed_items = 0;

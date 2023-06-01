@@ -2104,12 +2104,13 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   // Broken shortcuts.
   using LookupStatus = mojom::ShortcutDetails::LookupStatus;
   md.shortcut_details = mojom::ShortcutDetails::New();
-  md.type = FileMetadata::Type::kDirectory;
+  md.type = FileMetadata::Type::kFile;
   md.shortcut_details->target_stable_id = 201;
   md.shortcut_details->target_lookup_status = LookupStatus::kUnknown;
   md.stable_id++;
 
   EXPECT_EQ(manager.progress_.listed_shortcuts, 0);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 0);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2117,6 +2118,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2129,6 +2131,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2141,6 +2144,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2155,6 +2159,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 1);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2174,6 +2179,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_EQ(Id(md.stable_id), target_id);
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 0);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 1);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
@@ -2218,6 +2224,7 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
+  EXPECT_EQ(manager.progress_.broken_shortcuts, 0);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
