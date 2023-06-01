@@ -29,6 +29,9 @@ class DefaultSecurityDelegate : public SecurityDelegate {
     // TODO(b/200896773): Move into LacrosSecurityDelegate when it exists.
     if (ash::IsLacrosWindow(toplevel)) {
       return SetBoundsPolicy::DCHECK_IF_DECORATED;
+    } else if (ash::IsArcWindow(toplevel)) {
+      // TODO(b/285252684): Move into ArcSecurityDelegate when it exists.
+      return SetBoundsPolicy::ADJUST_IF_DECORATED;
     } else {
       return SetBoundsPolicy::IGNORE;
     }
