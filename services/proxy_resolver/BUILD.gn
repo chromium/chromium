@@ -77,5 +77,9 @@ source_set("tests") {
 
   configs += [ "//v8:external_startup_data" ]
 
-  data = [ "test/data/" ]
+  if (is_ios) {
+    deps += [ "test:test_bundle_data" ]
+  } else {
+    data = [ "test/data/" ]
+  }
 }

@@ -42,6 +42,7 @@ test("services_unittests") {
       "//services/media_session:tests",
       "//services/media_session/public/cpp:tests",
       "//services/preferences/tracked:unit_tests",
+      "//services/proxy_resolver:tests",
       "//services/resource_coordinator:tests",
       "//services/shape_detection:tests",
       "//services/viz/privileged/mojom:unit_tests",
@@ -55,7 +56,6 @@ test("services_unittests") {
   if (!is_ios) {
     deps += [
       "//services/data_decoder:tests",
-      "//services/proxy_resolver:tests",
       "//services/tracing:tests",
     ]
     if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
