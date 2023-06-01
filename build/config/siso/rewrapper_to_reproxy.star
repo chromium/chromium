@@ -17,7 +17,7 @@ def __remove_rewrapper(ctx, cmd):
     for i, arg in enumerate(cmd.args):
         if i == 0:
             continue
-        if not arg.startswith('-'):
+        if not arg.startswith("-"):
             non_flag_start = i
             break
     if non_flag_start < 1:
