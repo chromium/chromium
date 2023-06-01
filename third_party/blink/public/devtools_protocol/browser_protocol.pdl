@@ -3984,7 +3984,7 @@ experimental domain HeadlessExperimental
         jpeg
         png
         webp
-      # Compression quality from range [0..100] (jpeg only).
+      # Compression quality from range [0..100] (jpeg and webp only).
       optional integer quality
       # Optimize image encoding for speed, not for resulting size (defaults to false)
       optional boolean optimizeForSpeed
