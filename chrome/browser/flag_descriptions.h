@@ -3049,6 +3049,9 @@ extern const char kCaptureModeDemoToolsDescription[];
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 
+extern const char kCrosWebAppShortcutUiUpdateName[];
+extern const char kCrosWebAppShortcutUiUpdateDescription[];
+
 extern const char kDeskButtonName[];
 extern const char kDeskButtonDescription[];
 
@@ -3810,7 +3813,6 @@ extern const char kOobeSimonDescription[];
 
 extern const char kLibAssistantV2MigrationName[];
 extern const char kLibAssistantV2MigrationDescription[];
-
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)

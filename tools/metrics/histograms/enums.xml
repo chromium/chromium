@@ -60406,6 +60406,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesImprovedMessaging:enabled"/>
   <int value="-1309205592" label="SideSearchDSESupport:disabled"/>
   <int value="-1309066678" label="ServiceWorkerOnUI:enabled"/>
+  <int value="-1308991487" label="CrosWebAppShortcutUiUpdate:enabled"/>
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
   <int value="-1308390072"
       label="ImageServiceOptimizationGuideSalientImages:disabled"/>
@@ -61731,6 +61732,7 @@ from previous Chrome versions.
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
   <int value="-620030047" label="CrosCompUpdates:disabled"/>
+  <int value="-619967827" label="CrosWebAppShortcutUiUpdate:disabled"/>
   <int value="-619740638" label="ListAllDisplayModes:enabled"/>
   <int value="-619665653" label="DisableKeepaliveFetch:disabled"/>
   <int value="-619178844" label="NewOverviewLayout:disabled"/>

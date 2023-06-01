@@ -5312,6 +5312,12 @@ const char kCaptureModeGifRecordingName[] =
 const char kCaptureModeGifRecordingDescription[] =
     "Enables the ability to record the screen into animated GIFs";
 
+const char kCrosWebAppShortcutUiUpdateName[] =
+    "New ChromeOS Web app Shortcut UI";
+const char kCrosWebAppShortcutUiUpdateDescription[] =
+    "Enables new UI for shortcuts created from browser that backed by web app"
+    "system on ChromeOS.";
+
 extern const char kDeskButtonName[] = "Desk button in shelf";
 extern const char kDeskButtonDescription[] =
     "Show a desk button that provides quick access to the desk menu in the "

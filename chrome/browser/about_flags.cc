@@ -10418,7 +10418,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowDevtoolsInSystemUIName,
      flag_descriptions::kAllowDevtoolsInSystemUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowDevtoolsInSystemUI)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-web-app-shortcut-ui-update",
+     flag_descriptions::kCrosWebAppShortcutUiUpdateName,
+     flag_descriptions::kCrosWebAppShortcutUiUpdateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kCrosWebAppShortcutUiUpdate)},
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

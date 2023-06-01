@@ -1259,6 +1259,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cros-web-app-shortcut-ui-update",
+    "owners": [ "mxcai", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "crostini-container-install",
     "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 130

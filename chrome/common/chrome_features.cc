@@ -161,6 +161,12 @@ BASE_FEATURE(kCrostiniArcSideload,
              "CrostiniArcSideload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the new UI for browser created shortcut backed by web app system
+// on Chrome OS.
+BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
+             "CrosWebAppShortcutUiUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
 BASE_FEATURE(kCryptohomeDistributedModel,
