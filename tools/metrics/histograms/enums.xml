@@ -42940,6 +42940,20 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="BrowserObservedSignIn"/>
 </enum>
 
+<enum name="FedCmUserInfoStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Caller is not same origin with config URL"/>
+  <int value="2" label="Caller is not an iframe"/>
+  <int value="3" label="Config URL is not potentially trustworthy"/>
+  <int value="4" label="FedCM is disabled"/>
+  <int value="5" label="IDP Sign-in Status is signed out"/>
+  <int value="6" label="Not a returning user"/>
+  <int value="7" label="Invalid config or well known"/>
+  <int value="8" label="Invalid accounts response"/>
+  <int value="9" label="No returning user from accounts response"/>
+  <int value="10" label="Request is destroyed"/>
+</enum>
+
 <enum name="FederatedClientEvent">
   <int value="0" label="kExampleReceived"/>
   <int value="1" label="kGetExampleIteratorError"/>

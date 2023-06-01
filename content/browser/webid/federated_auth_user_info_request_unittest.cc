@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -320,6 +321,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;
   std::unique_ptr<FederatedAuthUserInfoRequest> request_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
@@ -333,6 +335,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, PreviouslySignedIn) {
                       /*was_granted_sharing_permission=*/false}};
   RunUserInfoTest(config, RequestUserInfoStatus::kSuccess,
                   {kAccount1Id, kAccount2Id});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequest::RequestStatus::kSuccess, 1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
@@ -346,6 +352,11 @@ TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
                       /*was_granted_sharing_permission=*/false}};
   RunUserInfoTest(config, RequestUserInfoStatus::kError, {});
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequest::RequestStatus::kNoAccountSharingPermission,
+      1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
@@ -358,6 +369,12 @@ TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
                      {kAccount2Id, /*login_state=*/LoginState::kSignUp,
                       /*was_granted_sharing_permission=*/true}};
   RunUserInfoTest(config, RequestUserInfoStatus::kError, {});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequest::RequestStatus::
+          kNoReturningUserFromFetchedAccounts,
+      1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
@@ -378,6 +395,11 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
   config.config_fetch_status = {ParseStatus::kHttpNotFoundError, 404};
 
   RunUserInfoTest(config, RequestUserInfoStatus::kError, {});
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.UserInfo.Status",
+      FederatedAuthUserInfoRequest::RequestStatus::kInvalidConfigOrWellKnown,
+      1);
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest,
