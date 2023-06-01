@@ -267,7 +267,13 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
 
     // We intentionally leave the image in legacy color space.
     SkBitmap black_bitmap;
-    black_bitmap.allocN32Pixels(size.width(), size.height());
+    if (!black_bitmap.tryAllocN32Pixels(size.width(), size.height())) {
+      // It is not possible to create such a big image bitmap, return null in
+      // that case which will fail ImageBitmap creation with an exception
+      // instead.
+      return nullptr;
+    }
+
     if (alpha_mode == V8GPUCanvasAlphaMode::Enum::kOpaque) {
       black_bitmap.eraseARGB(255, 0, 0, 0);
     } else {
