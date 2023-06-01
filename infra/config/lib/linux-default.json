@@ -147,6 +147,7 @@
     "linux-viz-rel": "Ubuntu-22.04",
     "linux-wayland-rel": "Ubuntu-22.04",
     "linux-wayland-rel-compilator": "Ubuntu-22.04",
+    "linux-webkit-msan-rel": "Ubuntu-22.04",
     "linux-x64-castos": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng-compilator": "Ubuntu-22.04",
