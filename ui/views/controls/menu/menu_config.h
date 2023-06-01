@@ -72,6 +72,7 @@ struct VIEWS_EXPORT MenuConfig {
   // icon are vertically centered within these heights.
   int minimum_text_item_height = 0;
   int minimum_container_item_height = 0;
+  int minimum_menu_width = 0;
 
   // TODO(ftirelo): Paddings should come from the layout provider, once Harmony
   // is the default behavior.
@@ -84,6 +85,9 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Horizontal border padding in a menu item
   int item_horizontal_border_padding = 0;
+
+  // Padding between the label and submenu arrow.
+  int label_to_arrow_padding = 8;
 
   // Padding between the arrow and the edge.
   int arrow_to_edge_padding = 5;
@@ -149,9 +153,8 @@ struct VIEWS_EXPORT MenuConfig {
   // Whether the keyboard accelerators are visible.
   bool show_accelerators = true;
 
-  // True if submenu arrows should get their own column, separate from minor
-  // text.
-  bool reserve_dedicated_arrow_column = true;
+  // True if submenu arrow and shortcut right edge should be aligned.
+  bool align_arrow_and_shortcut = false;
 
   // True if the context menu's should be offset from the cursor position.
   bool offset_context_menus = false;

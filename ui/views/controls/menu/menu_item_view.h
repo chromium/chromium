@@ -344,8 +344,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // negative margin is specified then MenuConfig values are used.
   void SetMargins(int top_margin, int bottom_margin);
 
-  void set_children_use_full_width(bool children_use_full_width) {
-    children_use_full_width_ = children_use_full_width;
+  // Suppress the right margin if this is set to false.
+  void set_use_right_margin(bool use_right_margin) {
+    use_right_margin_ = use_right_margin;
   }
 
   // Controls whether this menu has a forced visual selection state. This is
@@ -626,9 +627,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // X-coordinate of where the label starts.
   static int label_start_;
 
-  // The width of the padding after the minor text. If there is a dedicated
-  // submenu arrow column, it fits inside this.
-  static int trailing_padding_;
+  // Margins between the right of the item and the label.
+  static int item_right_margin_;
 
   // Preferred height of menu items. Reset every time a menu is run.
   static int pref_menu_height_;
@@ -653,10 +653,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   MenuPosition requested_menu_position_ = MenuPosition::kBestFit;
   MenuPosition actual_menu_position_ = MenuPosition::kBestFit;
 
-  // If set to true, children beyond the normal icon/labels/arrow will be laid
-  // out taking the full width of the menu, instead of stopping at any arrow
-  // column.
-  bool children_use_full_width_ = false;
+  // If set to false, the right margin will be removed for menu lines
+  // containing other elements.
+  bool use_right_margin_ = true;
 
   // Contains an image for the checkbox or radio icon.
   raw_ptr<ImageView, DanglingUntriaged> radio_check_image_view_ = nullptr;
