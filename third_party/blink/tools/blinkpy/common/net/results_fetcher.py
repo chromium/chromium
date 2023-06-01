@@ -289,7 +289,7 @@ class TestResultsFetcher:
                 'followEdges': {
                     'includedInvocations': True,
                 },
-                'artifactIdRegexp': 'wpt_reports_(.*)\.json',
+                'artifactIdRegexp': 'wpt_reports.json',
             })
         artifacts.sort(key=lambda artifact: artifact['artifactId'])
         return [artifact['fetchUrl'] for artifact in artifacts]

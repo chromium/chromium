@@ -3818,7 +3818,6 @@
       },
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
-          '--log-wptreport',
           '--use-upstream-wpt',
         ],
       },

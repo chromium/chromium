@@ -82,6 +82,7 @@ script_test("system_webview_wpt") {
   args = [
     "--product",
     "android_webview",
+    "--zero-tests-executed-ok",
     "--webview-provider",
     "@WrappedPath(apks/SystemWebView.apk)",
     "--browser-apk",

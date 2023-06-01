@@ -520,7 +520,6 @@
       'chrome_public_wpt': {
         'args': [
           '--no-wpt-internal',
-          '--log-wptreport',
         ],
         'swarming': {
           'shards': 36,
@@ -5556,7 +5555,6 @@
     'wpt_tests_ios': {
       'wpt_tests_ios': {
         'args': [
-          '--log-wptreport',
           '--no-wpt-internal',
         ],
         'merge': {
@@ -5577,9 +5575,6 @@
 
     'wpt_web_tests': {
       'wpt_tests_suite': {
-        'args': [
-          '--log-wptreport',
-        ],
         'merge': {
           'args': [
             '--verbose',
@@ -5596,9 +5591,6 @@
 
     'wpt_web_tests_content_shell': {
       'wpt_tests_suite': {
-        'args': [
-          '--log-wptreport'
-        ],
         'merge': {
           'args': [
             '--verbose',
@@ -5616,7 +5608,6 @@
     'wpt_web_tests_enable_leak_detection': {
       'wpt_tests_suite': {
         'args': [
-          '--log-wptreport',
           '--enable-leak-detection',
         ],
         'merge': {
@@ -5637,7 +5628,6 @@
     'wpt_web_tests_highdpi': {
       'wpt_tests_suite_highdpi': {
         'args': [
-          '--log-wptreport',
           '--flag-specific',
           'highdpi',
         ],
@@ -5704,7 +5694,6 @@
       'wpt_tests_suite_not_site_per_process': {
         'args': [
           '--child-processes=8',
-          '--log-wptreport',
           '--flag-specific',
           'disable-site-isolation-trials',
         ],

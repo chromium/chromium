@@ -2987,6 +2987,7 @@ if (current_toolchain == default_toolchain) {
     args = [
       "--product",
       "chrome_android",
+      "--zero-tests-executed-ok",
       "--browser-apk",
       "@WrappedPath(apks/ChromePublic.apk)",
       "-v",

@@ -18100,7 +18100,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
           "--no-wpt-internal",
           "--xcode-build-version",
           "14c18"
@@ -48659,7 +48658,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
           "--enable-sanitizer"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
@@ -48692,9 +48690,6 @@
   "linux-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
           "args": [
@@ -48722,7 +48717,6 @@
       },
       {
         "args": [
-          "--log-wptreport",
           "--flag-specific",
           "highdpi"
         ],
@@ -48754,7 +48748,6 @@
       {
         "args": [
           "--child-processes=8",
-          "--log-wptreport",
           "--flag-specific",
           "disable-site-isolation-trials"
         ],
@@ -48789,7 +48782,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
           "--enable-leak-detection"
         ],
         "experiment_percentage": 100,
@@ -48823,9 +48815,6 @@
   "linux-wpt-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate",
         "merge": {
           "args": [
@@ -51037,9 +51026,6 @@
   "mac10.15-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -51072,9 +51058,6 @@
   "mac11-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -51107,9 +51090,6 @@
   "mac12-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -51142,9 +51122,6 @@
   "mac12-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -51177,9 +51154,6 @@
   "mac13-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -51212,9 +51186,6 @@
   "mac13-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [
-          "--log-wptreport"
-        ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
         "merge": {
@@ -54050,7 +54021,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
           "--target",
           "Release_x64"
         ],
@@ -54087,7 +54057,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
           "--target",
           "Release_x64"
         ],

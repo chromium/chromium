@@ -1125,6 +1125,7 @@ if (!is_ios && !is_cronet_build) {
       args = [
         "--product=chrome",
         "--no-show-results",
+        "--zero-tests-executed-ok",
       ]
       data_deps = [
         "//chrome:chrome",
@@ -1134,7 +1135,10 @@ if (!is_ios && !is_cronet_build) {
     }
     script_test("wpt_tests_isolate_content_shell") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
-      args = [ "--no-show-results" ]
+      args = [
+        "--no-show-results",
+        "--zero-tests-executed-ok",
+      ]
       data_deps = [
         ":blink_web_tests_support_data",
         "//third_party/blink/tools:wpt_tests_isolate",

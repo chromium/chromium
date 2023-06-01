@@ -295,8 +295,7 @@ class WPTResultsProcessor:
             destination = self.fs.join(self.artifacts_dir, file)
             self.fs.copyfile(source, destination)
             if file == 'results.html':
-                _log.info('Copied results viewer (%s -> %s)', source,
-                          destination)
+                _log.info(f'View the test results at file://{destination}')
 
     def process_results_json(self,
                              raw_results_path,
