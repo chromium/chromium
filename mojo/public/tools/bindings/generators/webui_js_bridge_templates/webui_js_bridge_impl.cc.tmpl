@@ -9,27 +9,26 @@
 
 namespace {{module.namespace}} {
 
-{%- set class_name = "%sImpl" % webui_js_bridge.name -%}
+{%- set class_name = "%sImpl" % webui_js_bridge.name %}
 
 {{class_name}}::{{class_name}}(
     content::WebUIController* controller,
-  {{- macros.constructor_params(webui_js_bridge) -}}
-) :
+  {{- macros.constructor_params(webui_js_bridge) | indent(4) -}})
+    :
 {%- for method in webui_js_bridge.methods %}
-   {{method|binder_variable_name}}_({{method|binder_variable_name}})
-   {{-"," if not loop.last else ""}}
- {%- endfor %} {
+      {{method|binder_variable_name}}_({{method|binder_variable_name}})
+      {{-"," if not loop.last else ""}}
+{%- endfor %} {
   CHECK(controller->GetAs<{{class_name}}::WebUIControllerSubclass>());
 }
 
 {{class_name}}::~{{class_name}}() = default;
 
 {% for method in webui_js_bridge.methods %}
-  void {{class_name}}::{{method.name}}(
+void {{class_name}}::{{method.name}}(
 {%-  for param in method.parameters %}
     {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
-{%-   endfor -%}
-  ) {
+{%-   endfor -%}) {
   {{method|binder_variable_name}}_.Run(
 {%-  for param in method.parameters %}
     std::move({{param.name}}){{"," if not loop.last else ""}}

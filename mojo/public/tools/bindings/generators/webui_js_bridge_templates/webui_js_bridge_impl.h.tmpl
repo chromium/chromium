@@ -19,13 +19,13 @@ namespace content {
 class WebUIController;
 }  // namespace content
 
-{% if webui_controller_namespace != None %}
+{% if webui_controller_namespace != None -%}
 namespace {{webui_controller_namespace}} {
 class {{webui_controller_name}};
 }
-{% else %}
+{%- else -%}
 class {{webui_controller_name}};
-{% endif %}
+{%- endif %}
 
 namespace {{module.namespace}} {
 
@@ -33,40 +33,41 @@ namespace {{module.namespace}} {
 
 class {{class_name}} : public {{webui_js_bridge.name}} {
  public:
-{% for method in webui_js_bridge.methods %}
+{%- for method in webui_js_bridge.methods %}
   using BinderFor{{method.name}} = base::RepeatingCallback<void(
 {%-  for param in method.parameters %}
-    {{param.kind|cpp_type}}{{"," if not loop.last else ""}}
+      {{param.kind|cpp_type}}{{"," if not loop.last else ""}}
 {%-   endfor -%}
   )>;
-{% endfor %}
+{% endfor -%}
 
-{% if webui_controller_namespace != None -%}
+{% if webui_controller_namespace != None %}
   using WebUIControllerSubclass =
-    {{webui_controller_namespace}}::{{webui_controller_name}};
+      {{webui_controller_namespace}}::{{webui_controller_name}};
 {%- else %}
   using WebUIControllerSubclass = {{webui_controller_name}};
 {%- endif %}
 
   {{class_name}}(
-    content::WebUIController* controller,
-    {{- macros.constructor_params(webui_js_bridge) -}}
+      content::WebUIController* controller,
+      {{- macros.constructor_params(webui_js_bridge) | indent(6)  -}}
   );
 
   ~{{class_name}}();
 
-{% for method in webui_js_bridge.methods %}
+  // {{webui_js_bridge.name}}
+{%- for method in webui_js_bridge.methods %}
   void {{method.name}}(
 {%-  for param in method.parameters %}
-    {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
+      {{param.kind|cpp_type}} {{param.name}}{{"," if not loop.last else ""}}
 {%-   endfor -%}
   ) override;
-{% endfor %}
+{%- endfor %}
 
  private:
 {% for method in webui_js_bridge.methods %}
   BinderFor{{method.name}} {{method|binder_variable_name}}_;
-{% endfor %}
+{%- endfor %}
 };
 }  // {{module.namespace}}
 
