@@ -36,7 +36,6 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
-#include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace gfx {
+class PointF;
 class RectF;
 class SizeF;
 }  // namespace gfx
@@ -108,7 +109,13 @@ class BasicShapeCenterCoordinate {
   }
 
   Direction GetDirection() const { return direction_; }
+
+  // <length> that has not been adjusted based on starting edge/direction. Used
+  // for recreating a CSSValue.
   const Length& length() const { return length_; }
+
+  // <length> that has been adjusted based on starting edge/direction. Used to
+  // produce a used value.
   const Length& ComputedLength() const { return computed_length_; }
 
  private:
@@ -116,6 +123,11 @@ class BasicShapeCenterCoordinate {
   Length length_;
   Length computed_length_;
 };
+
+// Resolve a pair of <x, y> "center coordinates" into a point.
+gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
+                                     const BasicShapeCenterCoordinate& center_y,
+                                     gfx::SizeF box_size);
 
 class BasicShapeRadius {
   DISALLOW_NEW();

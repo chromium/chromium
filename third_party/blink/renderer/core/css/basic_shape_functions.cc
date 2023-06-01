@@ -485,12 +485,4 @@ scoped_refptr<BasicShape> BasicShapeForValue(
   return basic_shape;
 }
 
-gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
-                                     const BasicShapeCenterCoordinate& center_y,
-                                     gfx::SizeF box_size) {
-  float x = FloatValueForLength(center_x.ComputedLength(), box_size.width());
-  float y = FloatValueForLength(center_y.ComputedLength(), box_size.height());
-  return gfx::PointF(x, y);
-}
-
 }  // namespace blink
