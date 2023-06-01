@@ -411,7 +411,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Interval at which the free space is periodically checked.
   base::TimeDelta space_check_interval_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      base::Seconds(60);
+      base::Seconds(5);
 
   SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
   CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);

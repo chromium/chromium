@@ -1925,7 +1925,7 @@ TEST_F(DriveFsPinManagerTest, PeriodicSpaceCheck) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
 
   // Check the original time interval.
-  EXPECT_EQ(manager.space_check_interval_, base::Seconds(60));
+  EXPECT_EQ(manager.space_check_interval_, base::Seconds(5));
 
   // But use a much shorter interval for this test.
   manager.space_check_interval_ = base::Milliseconds(100);
