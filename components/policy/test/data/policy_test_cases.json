@@ -21444,7 +21444,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -21471,7 +21472,8 @@
           }
         }
       }
-    ]
+    ],
+    "reason_for_missing_test": "Policy does not cover Lacros"
   },
   "PersistentQuotaEnabled": {
     "reason_for_missing_test": "Policy was removed"
