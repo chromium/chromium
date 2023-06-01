@@ -299,13 +299,19 @@ StylusWritingTwoRectGesture::StylusWritingTwoRectGesture(
 absl::optional<PlainTextRange> StylusWritingTwoRectGesture::GestureRange(
     LocalFrame* local_frame,
     const mojom::blink::StylusWritingGestureGranularity granularity) {
+  Element* const root_editable_element =
+      local_frame->Selection().RootEditableElementOrDocumentElement();
   if (start_rect_.IsEmpty() && end_rect_.IsEmpty()) {
-    return GestureRangeForPoints(local_frame, start_rect_.origin(),
-                                 end_rect_.origin(), granularity);
+    start_rect_.UnionEvenIfEmpty(end_rect_);
+    start_rect_.InclusiveIntersect(root_editable_element->BoundsInWidget());
+    return GestureRangeForPoints(local_frame, start_rect_.left_center(),
+                                 start_rect_.right_center(), granularity);
   }
+  start_rect_.InclusiveIntersect(root_editable_element->BoundsInWidget());
   absl::optional<PlainTextRange> first_range =
       GestureRangeForPoints(local_frame, start_rect_.left_center(),
                             start_rect_.right_center(), granularity);
+  end_rect_.InclusiveIntersect(root_editable_element->BoundsInWidget());
   absl::optional<PlainTextRange> last_range =
       GestureRangeForPoints(local_frame, end_rect_.left_center(),
                             end_rect_.right_center(), granularity);
