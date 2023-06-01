@@ -156,6 +156,7 @@
     "linux-x64-castos": "Ubuntu-22.04",
     "linux-x64-castos-audio": "Ubuntu-22.04",
     "linux-x64-castos-dbg": "Ubuntu-22.04",
+    "linux_chromium_archive_rel_ng": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng": "Ubuntu-22.04",
     "linux_chromium_asan_rel_ng-compilator": "Ubuntu-22.04",
     "linux_chromium_compile_dbg_ng": "Ubuntu-22.04",
