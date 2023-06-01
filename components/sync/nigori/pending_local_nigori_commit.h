@@ -27,6 +27,9 @@ class PendingLocalNigoriCommit {
 
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreReencryption();
 
+  static std::unique_ptr<PendingLocalNigoriCommit>
+  ForPublicPrivateKeyInitialization();
+
   PendingLocalNigoriCommit() = default;
 
   PendingLocalNigoriCommit(const PendingLocalNigoriCommit&) = delete;

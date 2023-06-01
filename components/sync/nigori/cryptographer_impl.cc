@@ -65,6 +65,11 @@ std::string CryptographerImpl::EmplaceKey(
       Nigori::CreateByDerivation(derivation_params, passphrase));
 }
 
+void CryptographerImpl::EmplaceKeyPair(PublicPrivateKeyPair private_key,
+                                       uint32_t version) {
+  key_bag_.AddKeyPair(std::move(private_key), version);
+}
+
 void CryptographerImpl::EmplaceKeysFrom(const NigoriKeyBag& key_bag) {
   key_bag_.AddAllUnknownKeysFrom(key_bag);
 }
@@ -93,6 +98,10 @@ void CryptographerImpl::ClearAllKeys() {
 
 bool CryptographerImpl::HasKey(const std::string& key_name) const {
   return key_bag_.HasKey(key_name);
+}
+
+bool CryptographerImpl::HasKeyPair(const uint32_t key_pair_version) const {
+  return key_bag_.HasKeyPair(key_pair_version);
 }
 
 sync_pb::NigoriKey CryptographerImpl::ExportDefaultKey() const {
