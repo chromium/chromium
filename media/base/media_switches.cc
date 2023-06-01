@@ -1269,14 +1269,20 @@ BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
 // lacros-chrome through the crosapi.
 const base::Feature MEDIA_EXPORT kExposeOutOfProcessVideoDecodingToLacros{
     "ExposeOutOfProcessVideoDecodingToLacros",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 // Spawn utility processes to perform hardware decode acceleration instead of
 // using the GPU process.
 const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoDecoding{
-    "UseOutOfProcessVideoDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
+  "UseOutOfProcessVideoDecoding",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
