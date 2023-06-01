@@ -60,8 +60,10 @@ enum class DlcErrorTypeEnum {
 
 // Status contains information about the status of a Language Pack operation.
 struct PackResult {
-  // This string contains the error returns by DLC Service.
-  std::string operation_error;
+  // Needed for Complex type checker.
+  PackResult();
+  ~PackResult();
+  PackResult(const PackResult&);
 
   enum StatusCode {
     UNKNOWN = 0,
@@ -71,9 +73,19 @@ struct PackResult {
     INSTALLED
   };
 
+  // This string contains the error returned by the DLC Service.
+  std::string operation_error;
+
   // The code that indicates the current state of the Pack.
   // INSTALLED means that the Pack is ready to be used.
   StatusCode pack_state;
+
+  // The resolved language code that this Pack is associated with.
+  // Often this field matches the locale requested by the client, but due to
+  // various mappings between languages, regions and variants, it might be
+  // different.
+  // This is set only if the input locale is valid; undetermined otherwise.
+  std::string language_code;
 
   // The path where the Pack is available for users to use.
   std::string path;

@@ -73,10 +73,10 @@ DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str) {
 }
 
 PackResult CreateInvalidDlcPackResult() {
-  return {
-      .operation_error = dlcservice::kErrorInvalidDlc,
-      .pack_state = PackResult::WRONG_ID,
-  };
+  PackResult result;
+  result.operation_error = dlcservice::kErrorInvalidDlc;
+  result.pack_state = PackResult::WRONG_ID;
+  return result;
 }
 
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {

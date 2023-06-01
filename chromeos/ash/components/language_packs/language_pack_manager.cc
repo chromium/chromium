@@ -249,6 +249,21 @@ void OnGetDlcState(GetPackStateCallback callback,
 
 }  // namespace
 
+///////////////////////////////////////////////////////////
+// PackResult constructors and destructors.
+PackResult::PackResult() {
+  this->pack_state = PackResult::UNKNOWN;
+}
+
+PackResult::~PackResult() = default;
+
+PackResult::PackResult(const PackResult& pr)
+    : operation_error(pr.operation_error),
+      pack_state(pr.pack_state),
+      language_code(pr.language_code),
+      path(pr.path) {}
+///////////////////////////////////////////////////////////
+
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
                                           const std::string& locale) {
   // We search in the static list for the given Pack spec.
