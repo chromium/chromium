@@ -69485,32 +69485,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="System Transient Duck"/>
 </enum>
 
-<enum name="MediaSessionUserAction">
-  <int value="0" label="Play"/>
-  <int value="1" label="Play (default handler)"/>
-  <int value="2" label="Pause"/>
-  <int value="3" label="Pause (default handler)"/>
-  <int value="4" label="Stop (default handler)"/>
-  <int value="5" label="Previous track"/>
-  <int value="6" label="Next track"/>
-  <int value="7" label="Seek backward"/>
-  <int value="8" label="Seek forward"/>
-  <int value="9" label="Skip ad"/>
-  <int value="10" label="Stop"/>
-  <int value="11" label="Seek to"/>
-  <int value="12" label="Scrub to"/>
-  <int value="13" label="Enter picture-in-picture"/>
-  <int value="14" label="Exit picture-in-picture"/>
-  <int value="15" label="Switch audio device"/>
-  <int value="16" label="Toggle microphone"/>
-  <int value="17" label="Toggle camera"/>
-  <int value="18" label="Hang up"/>
-  <int value="19" label="Raise"/>
-  <int value="20" label="Mute"/>
-  <int value="21" label="Next slide"/>
-  <int value="22" label="Previous slide"/>
-</enum>
-
 <enum name="MediaSinkType">
   <int value="0" label="Cast"/>
   <int value="1" label="Cast Audio Group"/>
